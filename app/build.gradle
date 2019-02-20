@@ -1,0 +1,83 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+
+android {
+    def config = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion config["compile_sdk"]
+    buildToolsVersion config["build_tools"]
+
+    defaultConfig {
+        applicationId config["application_id"]
+        minSdkVersion config["min_sdk"]
+        targetSdkVersion config["target_sdk"]
+        versionCode config["version_code"]
+        versionName config["version_name"]
+        testInstrumentationRunner config["test_runner"]
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
+
+    lintOptions {
+        quiet true
+        abortOnError false
+        ignoreWarnings true
+        disable 'InvalidPackage'            //Some libraries have issues with this.
+        disable 'OldTargetApi'              //Lint gives this warning but SDK 20 would be Android L Beta.
+        disable 'IconDensities'             //For testing purpose. This is safe to remove.
+        disable 'IconMissingDensityFolder'  //For testing purpose. This is safe to remove.
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+ext {
+    android_compat_version = '28.0.0'
+}
+
+dependencies {
+    def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
+    def acceptanceTestDependencies = rootProject.ext.acceptanceTesting
+    def developmentDependencies = rootProject.ext.development
+
+    //Compile time dependencies
+    kapt applicationDependencies.daggerCompiler
+    kapt applicationDependencies.glideCompiler
+    compileOnly applicationDependencies.javaxAnnotation
+    compileOnly applicationDependencies.javaxInject
+
+    //Application dependencies
+    implementation applicationDependencies.kotlin
+
+    implementation "com.android.support:appcompat-v7:$android_compat_version"
+    implementation "com.android.support:design:$android_compat_version"
+    implementation "com.android.support:support-v4:$android_compat_version"
+    implementation "com.android.support:support-annotations:$android_compat_version"
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+
+    implementation applicationDependencies.glide
+
+    //Redactor
+    implementation 'com.ebolo:krichtexteditor:0.0.5'
+
+    //Unit/Integration tests dependencies
+    testImplementation unitTestDependencies.junit
+
+    //Acceptance tests dependencies
+}

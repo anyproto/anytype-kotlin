@@ -1,0 +1,12 @@
+apply plugin: 'kotlin'
+
+dependencies {
+
+    def domainTestDependencies = rootProject.ext.unitTesting
+
+    testImplementation domainTestDependencies.junit
+    testImplementation domainTestDependencies.mockito
+}
+
+sourceCompatibility = "7"
+targetCompatibility = "7"

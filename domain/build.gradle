@@ -4,6 +4,8 @@ dependencies {
 
     def domainTestDependencies = rootProject.ext.unitTesting
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.ext.kotlin_version}"
+
     testImplementation domainTestDependencies.junit
     testImplementation domainTestDependencies.mockito
 }

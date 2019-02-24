@@ -10,13 +10,22 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         btnART.setOnClickListener {
-            val editorFragment = kRichEditorFragment{
-            }
+
+            val editorFragment = kRichEditorFragment{}
+
             supportFragmentManager.beginTransaction()
                 .add(R.id.container, editorFragment)
                 .commit()
 
+        }
+
+        dragAndDropButton.setOnClickListener {
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.container, PageFragment.getInstance())
+                .commit()
         }
     }
 }

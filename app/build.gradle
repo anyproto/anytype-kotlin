@@ -80,4 +80,7 @@ dependencies {
     testImplementation unitTestDependencies.junit
 
     //Acceptance tests dependencies
+
+
+    implementation project(':domain')
 }

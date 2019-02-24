@@ -1,1 +1,3 @@
-include ':app'
+include ':app',
+        ':feature_login',
+        ':core_utils'

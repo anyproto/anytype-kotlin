@@ -25,6 +25,7 @@ ext {
     javaxInject_version = '1'
     retrofit_version = '2.3.0'
     okhttp_logging_interceptor_version = '3.8.1'
+    timber_version = '4.7.1'
 
     //Unit Testing
     robolectric_version = '3.8'
@@ -61,6 +62,7 @@ ext {
             javaxInject:                "javax.inject:javax.inject:$javaxInject_version",
             retrofit:                   "com.squareup.retrofit2:converter-gson:$retrofit_version",
             okhttpLoggingInterceptor:   "com.squareup.okhttp3:logging-interceptor:$okhttp_logging_interceptor_version",
+            timber:                     "com.jakewharton.timber:timber:$timber_version"
     ]
 
     unitTesting = [

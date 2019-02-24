@@ -50,10 +50,11 @@ ext {
 }
 
 dependencies {
+    implementation project(':feature_login')
+    implementation project(':core_utils')
+
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
-    def acceptanceTestDependencies = rootProject.ext.acceptanceTesting
-    def developmentDependencies = rootProject.ext.development
 
     //Compile time dependencies
     kapt applicationDependencies.daggerCompiler
@@ -64,6 +65,8 @@ dependencies {
     //Application dependencies
     implementation applicationDependencies.kotlin
 
+    implementation applicationDependencies.navigation
+    implementation applicationDependencies.navigationUi
     implementation "com.android.support:appcompat-v7:$android_compat_version"
     implementation "com.android.support:design:$android_compat_version"
     implementation "com.android.support:support-v4:$android_compat_version"
@@ -72,6 +75,8 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
     implementation applicationDependencies.glide
+    implementation applicationDependencies.dagger
+    implementation applicationDependencies.timber
 
     //Redactor
     implementation 'com.ebolo:krichtexteditor:0.0.5'

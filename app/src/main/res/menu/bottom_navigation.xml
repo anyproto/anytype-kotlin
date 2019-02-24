@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/fragmentA"
+        android:icon="@drawable/ic_docs"
+        android:title="Docs" />
+
+    <item
+        android:id="@+id/fragmentB"
+        android:icon="@drawable/ic_profile"
+        android:title="Profile" />
+
+    <item
+        android:id="@+id/fragmentC"
+        android:icon="@drawable/ic_settings"
+        android:title="Settings" />
+</menu>

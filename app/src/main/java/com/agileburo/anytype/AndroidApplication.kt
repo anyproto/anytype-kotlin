@@ -18,7 +18,7 @@ class AndroidApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         injectMembers()
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
     }

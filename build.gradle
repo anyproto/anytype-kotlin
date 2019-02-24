@@ -41,5 +41,3 @@ task clean(type: Delete) {
 task runUnitTests(dependsOn: [':app:testDebugUnitTest']) {
     description 'Run all unit tests'
 }
-
-

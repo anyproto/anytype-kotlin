@@ -50,6 +50,7 @@ ext {
 }
 
 dependencies {
+    implementation project(':feature_login')
     implementation project(':core_utils')
 
     def applicationDependencies = rootProject.ext.mainApplication
@@ -64,6 +65,8 @@ dependencies {
     //Application dependencies
     implementation applicationDependencies.kotlin
 
+    implementation applicationDependencies.navigation
+    implementation applicationDependencies.navigationUi
     implementation "com.android.support:appcompat-v7:$android_compat_version"
     implementation "com.android.support:design:$android_compat_version"
     implementation "com.android.support:support-v4:$android_compat_version"

@@ -8,13 +8,14 @@
                                                    tools:context=".MainActivity">
 
     <android.support.design.widget.BottomNavigationView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/bottomNavigationView"
-        app:menu="@menu/bottom_navigation"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottomNavigationView"
+            app:menu="@menu/bottom_navigation"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" android:background="@color/light_blue_500"
+            app:itemIconTint="@color/colorAccent"/>
 
     <fragment
         android:id="@+id/fragment"

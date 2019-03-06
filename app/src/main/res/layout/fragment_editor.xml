@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             app:behavior_hideable="true"
+                                             app:behavior_peekHeight="600dp"
+                                             app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+    <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:text="Name"
+            android:ems="10"
+            android:hint="Контент"
+            tools:text="Что произошло за день"
+            android:id="@+id/edContent" android:layout_marginTop="16dp"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginStart="32dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="32dp"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    <Button
+            android:text="Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnBold" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toStartOf="@+id/btnItalic"
+            android:layout_marginTop="16dp" app:layout_constraintTop_toBottomOf="@+id/edContent"/>
+    <Button
+            android:text="Italic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnItalic" app:layout_constraintStart_toEndOf="@+id/btnBold"
+            app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toStartOf="@+id/btnUnderscore"
+            android:layout_marginTop="16dp" app:layout_constraintTop_toBottomOf="@+id/edContent"/>
+    <Button
+            android:text="Underscore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnUnderscore"
+            app:layout_constraintStart_toEndOf="@+id/btnItalic" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp" app:layout_constraintTop_toBottomOf="@+id/edContent"/>
+</android.support.constraint.ConstraintLayout>

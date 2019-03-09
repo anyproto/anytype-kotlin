@@ -24,7 +24,8 @@
               android:paddingStart="16dp"
               tools:text="15"/>
 
-    <TextView android:id="@+id/content"
+    <EditText
+        android:id="@+id/content"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_below="@id/month"

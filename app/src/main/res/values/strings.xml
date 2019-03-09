@@ -1,3 +1,47 @@
 <resources>
     <string name="app_name">AnyType</string>
+
+    <string name="example_1">
+        To layout text on Android, the system does a lot of work. Each glyph is resolved — dependent on font, locale, size, font features (like bold or italic). Then the system will resolve rules for how they line up, combine, or merge as they form words. After all that, the words can finally be wrapped into available space.
+    </string>
+
+    <string name="example_2">
+        For these reasons, it makes sense that laying out text can be expensive. Android uses a per-word cache to avoid recomputing much of this data, but that can only help so much — new words showing on screen, or even just new fonts and text sizes limit this as an optimization.
+    </string>
+
+    <string name="example_3">
+        RecyclerView is especially sensitive to layout performance. As new items come on screen, they must layout as part of the first frame showing them. So if a complex paragraph of text in a RecyclerView item take 12ms to measure, that’s almost guaranteed to lead to jank, and dropped frames.
+    </string>
+
+    <string name="example_4">
+        In this article, we’ll talk about how to use the new PrecomputedText APIs to compute text layout early, before the UI thread needs it. We’ll also go over the new text prefetch APIs in Jetpack specifically designed for displaying large amounts of text in RecyclerView, and how they can reduce UI thread text measurement cost by 95%!
+    </string>
+
+    <string name="example_5">
+        The below images show a simple RecyclerView that presents large blocks of text. On a Pixel2 (Running Android P, CPU at 1GHz), measuring 80 words (~520 characters) takes TextView 15.6ms. That’s a huge amount of time! Each frame’s deadline is 16.67ms, so if the UI thread has to measure even one TextView of that complexity, it’ll blow past the deadline.
+
+You may not have that much text in your TextViews, but if you’re running on a low-end phone, displaying something more complex than Roman characters, or use varied fonts and styles, times like these can be quite realistic.
+
+Using Developer Options > Monitoring > Profile GPU rendering, we can see this problem visually. The green horizontal bar shows the 16.67ms ideal, and frames stack up vertically depending on how much time they take. Using a regular TextView on the left, there’s a lot of missed frames — big spikes in the graph when new items come on-screen.
+    </string>
+
+    <string name="example_6">
+        The capture on the right shows the same app, but using PrecomputedText to avoid expensive measure work on the UI thread. The remaining measurement work is still there, causing small spikes, but no longer causes jank. TextView.onMeasure is reduced to 0.9ms — that’s more than 16 times faster!
+    </string>
+
+    <string name="example_7">
+        PrecomputedText, announced at I/O this year, is a new API in Android P, with a compat version in Jetpack that reduces UI thread costs of text. It lets you pre-compute the vast majority of measure/layout work on a background thread.
+
+From the UI thread, determine layout parameters from a TextView:
+
+val params : PrecomputedTextCompat.Params =
+        TextViewCompat.getTextMetricsParams(myTextView)
+Do the computation of an expensive paragraph of text on a background thread:
+    </string>
+
+    <string name="example_8">
+        Тестирую текст
+    </string>
+
+
 </resources>

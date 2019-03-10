@@ -45,6 +45,7 @@ class FragmentA : Fragment() {
             { adapter.isBoldActive = it },
             { adapter.isItalicActive = it },
             { adapter.isStrokeThroughActive = it },
+            { throw NotImplementedError() },
             { throw NotImplementedError() }
         )
     }

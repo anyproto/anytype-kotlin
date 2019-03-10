@@ -1,5 +1,6 @@
 package com.agileburo.anytype
 
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.RecyclerView
 import android.text.*
 import android.view.LayoutInflater
@@ -55,7 +56,7 @@ class DaysAdapter(
         val tvMonth = view.month
         val tvDay = view.day
         val tvContent = view.content
-        val textWatcher: EditorTextWatcher = EditorTextWatcher()
+        val textWatcher: EditorTextWatcher = EditorTextWatcher(ResourcesCompat.getFont(view.context, R.font.inconsolata)!!)
 
         fun bind(day: Day, click: (Day) -> Unit) {
             itemView.setOnClickListener {

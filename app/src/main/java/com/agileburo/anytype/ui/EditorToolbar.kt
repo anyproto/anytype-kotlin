@@ -39,7 +39,8 @@ class EditorToolbar : ConstraintLayout {
         boldClick: (Boolean) -> Unit,
         italicClick: (Boolean) -> Unit,
         strokeClick: (Boolean) -> Unit,
-        underlineClick : (Boolean) -> Unit
+        underlineClick : (Boolean) -> Unit,
+        codeBlockClick : (Boolean) -> Unit
     ) {
         btnBold.setOnClickListener {
             it.isSelected = !it.isSelected
@@ -57,6 +58,11 @@ class EditorToolbar : ConstraintLayout {
             button.isSelected = !button.isSelected
             underlineClick(button.isSelected)
         }
+        codeBlock.setOnClickListener { button ->
+            button.isSelected = !button.isSelected
+            codeBlockClick(button.isSelected)
+        }
+
     }
 
 }

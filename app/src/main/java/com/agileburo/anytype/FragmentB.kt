@@ -2,6 +2,7 @@ package com.agileburo.anytype
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.res.ResourcesCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +11,15 @@ import kotlinx.android.synthetic.main.fragment_b.*
 
 class FragmentB : Fragment() {
 
+    private val codeBlockTypeface by lazy {
+        ResourcesCompat.getFont(context!!.applicationContext, R.font.inconsolata)
+    }
+
     private lateinit var editorTextWatcher: EditorTextWatcher
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        editorTextWatcher = EditorTextWatcher()
+        editorTextWatcher = EditorTextWatcher(codeBlockTypeface!!)
     }
 
     override fun onCreateView(
@@ -34,7 +39,8 @@ class FragmentB : Fragment() {
             boldClick = { editorTextWatcher.isBoldActive = it },
             italicClick = { editorTextWatcher.isItalicActive = it },
             strokeClick = { editorTextWatcher.isStrokeThroughActive = it },
-            underlineClick = { editorTextWatcher.isUnderlineActive = it }
+            underlineClick = { editorTextWatcher.isUnderlineActive = it },
+            codeBlockClick = { editorTextWatcher.isCodeBlockActive = it }
         )
     }
 

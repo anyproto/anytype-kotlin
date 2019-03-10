@@ -1,10 +1,7 @@
 package com.agileburo.anytype.editor
 
 import android.graphics.Typeface
-import android.text.Editable
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextWatcher
+import android.text.*
 import android.text.style.CharacterStyle
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
@@ -14,7 +11,7 @@ class EditorTextWatcher(
     private val codeBlockTypeface : Typeface
 ) : TextWatcher {
 
-    private var spannableText: SpannableString? = null
+    private var spannableText: SpannableStringBuilder? = null
 
     private var spanBold: StyleSpan? = null
     private var spanItalic: StyleSpan? = null
@@ -64,7 +61,7 @@ class EditorTextWatcher(
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        spannableText = SpannableString(s).apply {
+        spannableText = SpannableStringBuilder(s).apply {
             if (isBoldActive) {
                 spanBold = StyleSpan(Typeface.BOLD)
                 setSpan(spanBold, start, start + count, Spanned.SPAN_COMPOSING)

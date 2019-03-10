@@ -21,17 +21,19 @@ class EditorTextWatcher : TextWatcher {
     var isStrokeThroughActive = false
 
     override fun afterTextChanged(s: Editable?) {
-        spannableText?.let {
+
+        spannableText?.let { spannable ->
             spanBold?.let { span ->
-                s?.setSpanWithCheck(it.getSpanStart(span), it.getSpanEnd(span), span)
+                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
             }
             spanItalic?.let { span ->
-                s?.setSpanWithCheck(it.getSpanStart(span), it.getSpanEnd(span), span)
+                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
             }
             spanStrike?.let { span ->
-                s?.setSpanWithCheck(it.getSpanStart(span), it.getSpanEnd(span), span)
+                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
             }
         }
+
         spannableText = null
         spanBold = null
         spanItalic = null

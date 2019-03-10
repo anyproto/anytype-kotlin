@@ -42,6 +42,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="example_8">
         Тестирую текст
     </string>
+    <string name="editor_toolbar">button</string>
 
 
 </resources>

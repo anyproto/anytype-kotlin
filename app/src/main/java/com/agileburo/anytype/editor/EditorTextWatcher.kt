@@ -82,7 +82,6 @@ class EditorTextWatcher(
                 spanCodeBlock = CodeBlockSpan(codeBlockTypeface)
                 setSpan(spanCodeBlock, start, start + count, Spanned.SPAN_COMPOSING)
             }
-
         }
     }
 }

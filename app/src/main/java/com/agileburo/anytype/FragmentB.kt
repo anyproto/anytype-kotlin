@@ -6,12 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.agileburo.anytype.editor.EditorTextWatcher
-import com.agileburo.anytype.ui.EditorToolbar
 import kotlinx.android.synthetic.main.fragment_b.*
 
 class FragmentB : Fragment() {
 
-    private var editorToolbar: EditorToolbar? = null
     private lateinit var editorTextWatcher: EditorTextWatcher
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,11 +30,11 @@ class FragmentB : Fragment() {
 
         editText.addTextChangedListener(editorTextWatcher)
 
-        editorToolbar = view.findViewById(R.id.editor_toolbar)
-        editorToolbar!!.setMainActions(
-            { editorTextWatcher.isBoldActive = it },
-            { editorTextWatcher.isItalicActive = it },
-            { editorTextWatcher.isStrokeThroughActive = it }
+        editorToolbar.setMainActions(
+            boldClick = { editorTextWatcher.isBoldActive = it },
+            italicClick = { editorTextWatcher.isItalicActive = it },
+            strokeClick = { editorTextWatcher.isStrokeThroughActive = it },
+            underlineClick = { editorTextWatcher.isUnderlineActive = it }
         )
     }
 

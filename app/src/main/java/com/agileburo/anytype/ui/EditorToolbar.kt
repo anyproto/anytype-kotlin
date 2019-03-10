@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
 import com.agileburo.anytype.R
+import kotlinx.android.synthetic.main.view_anytype_editor_toolbar.view.*
 
 class EditorToolbar : ConstraintLayout {
 
@@ -37,7 +38,8 @@ class EditorToolbar : ConstraintLayout {
     fun setMainActions(
         boldClick: (Boolean) -> Unit,
         italicClick: (Boolean) -> Unit,
-        strokeClick: (Boolean) -> Unit
+        strokeClick: (Boolean) -> Unit,
+        underlineClick : (Boolean) -> Unit
     ) {
         btnBold.setOnClickListener {
             it.isSelected = !it.isSelected
@@ -50,6 +52,10 @@ class EditorToolbar : ConstraintLayout {
         btnStrokeThrough.setOnClickListener {
             it.isSelected = !it.isSelected
             strokeClick(it.isSelected)
+        }
+        underline.setOnClickListener { button ->
+            button.isSelected = !button.isSelected
+            underlineClick(button.isSelected)
         }
     }
 

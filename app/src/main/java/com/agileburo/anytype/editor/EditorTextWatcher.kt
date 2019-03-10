@@ -8,17 +8,21 @@ import android.text.TextWatcher
 import android.text.style.CharacterStyle
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
+import android.text.style.UnderlineSpan
 
 class EditorTextWatcher : TextWatcher {
 
-    var spannableText: SpannableString? = null
-    var spanBold: StyleSpan? = null
-    var spanItalic: StyleSpan? = null
-    var spanStrike: StrikethroughSpan? = null
+    private var spannableText: SpannableString? = null
+
+    private var spanBold: StyleSpan? = null
+    private var spanItalic: StyleSpan? = null
+    private var spanStrike: StrikethroughSpan? = null
+    private var spanUnderline : UnderlineSpan? = null
 
     var isBoldActive = false
     var isItalicActive = false
     var isStrokeThroughActive = false
+    var isUnderlineActive = false
 
     override fun afterTextChanged(s: Editable?) {
 
@@ -32,12 +36,21 @@ class EditorTextWatcher : TextWatcher {
             spanStrike?.let { span ->
                 s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
             }
+            spanUnderline?.let { span ->
+                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
+            }
         }
 
         spannableText = null
+
+        clearSpans()
+    }
+
+    private fun clearSpans() {
         spanBold = null
         spanItalic = null
         spanStrike = null
+        spanUnderline = null
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -56,6 +69,11 @@ class EditorTextWatcher : TextWatcher {
                 spanStrike = StrikethroughSpan()
                 setSpan(spanStrike, start, start + count, Spanned.SPAN_COMPOSING)
             }
+            if (isUnderlineActive) {
+                spanUnderline = UnderlineSpan()
+                setSpan(spanUnderline, start, start + count, Spanned.SPAN_COMPOSING)
+            }
+
         }
     }
 }

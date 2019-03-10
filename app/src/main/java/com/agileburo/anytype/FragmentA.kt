@@ -44,7 +44,8 @@ class FragmentA : Fragment() {
         editorToolbar!!.setMainActions(
             { adapter.isBoldActive = it },
             { adapter.isItalicActive = it },
-            { adapter.isStrokeThroughActive = it }
+            { adapter.isStrokeThroughActive = it },
+            { throw NotImplementedError() }
         )
     }
 

@@ -7,12 +7,13 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import com.agileburo.anytype.ui.EditorToolbar
 import kotlinx.android.synthetic.main.fragment_a.*
-import timber.log.Timber
 import java.time.Month
 
 class FragmentA : Fragment() {
+
+    private var editorToolbar: EditorToolbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,20 +40,12 @@ class FragmentA : Fragment() {
         val adapter = DaysAdapter(days = days, onClick = { onClick: Day -> onDayClick(onClick) })
         rvDays.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
         rvDays.adapter = adapter
-
-        with(editor_toolbar) {
-            findViewById<TextView>(R.id.btnBold).setOnClickListener {
-                Timber.d("On Bold click!")
-                adapter.setBold()
-            }
-            findViewById<View>(R.id.btnItalic).setOnClickListener {
-                Timber.d("On Italic click!")
-                adapter.setItalic()
-            }
-            findViewById<View>(R.id.btnStrike).setOnClickListener {
-                Timber.d("On Strike click!")
-            }
-        }
+        editorToolbar = view.findViewById(R.id.editor_toolbar)
+        editorToolbar!!.setMainActions(
+            { adapter.isBoldActive = it },
+            { adapter.isItalicActive = it },
+            { adapter.isStrokeThroughActive = it }
+        )
     }
 
     fun onDayClick(day: Day) {

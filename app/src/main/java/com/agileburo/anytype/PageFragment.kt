@@ -7,6 +7,8 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.agileburo.anytype.document.DocumentAdapter
+import com.agileburo.anytype.document.DragAndDropBehavior
 import com.agileburo.anytype.model.Block
 import kotlinx.android.synthetic.main.fragment_page.*
 

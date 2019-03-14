@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_navigation"
-    app:startDestination="@id/fragmentA">
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/main_navigation"
+            app:startDestination="@id/fragmentA">
 
     <fragment
-        android:id="@+id/loginFragment2"
-        android:name="com.agileburo.anytype.feature_login.ui.login.LoginFragment"
-        android:label="LoginFragment" />
+            android:id="@+id/loginFragment2"
+            android:name="com.agileburo.anytype.feature_login.ui.login.LoginFragment"
+            android:label="LoginFragment"/>
     <fragment
-        android:id="@+id/fragmentA"
-        android:name="com.agileburo.anytype.FragmentA"
-        android:label="FragmentA"
-        tools:layout="@layout/fragment_a" />
+            android:id="@+id/fragmentA"
+            android:name="com.agileburo.anytype.FragmentA"
+            android:label="FragmentA"
+            tools:layout="@layout/fragment_a"/>
     <fragment
-        android:id="@+id/fragmentB"
-        android:name="com.agileburo.anytype.FragmentB"
-        android:label="FragmentB"
-        tools:layout="@layout/fragment_b" />
+            android:id="@+id/fragmentB"
+            android:name="com.agileburo.anytype.FragmentB"
+            android:label="FragmentB"
+            tools:layout="@layout/fragment_b"/>
     <fragment
-        android:id="@+id/fragmentC"
-        android:name="com.agileburo.anytype.FragmentC"
-        android:label="FragmentC"
-        tools:layout="@layout/fragment_c" />
+            android:id="@+id/fragmentC"
+            android:name="com.agileburo.anytype.FragmentC"
+            android:label="FragmentC"
+            tools:layout="@layout/fragment_c"/>
+
+    <fragment android:id="@+id/pageFragment"
+              android:name="com.agileburo.anytype.PageFragment"
+              android:label="PageFragment"
+              tools:layout="@layout/fragment_page"/>
 </navigation>

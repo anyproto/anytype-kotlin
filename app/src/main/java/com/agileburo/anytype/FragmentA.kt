@@ -7,6 +7,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.agileburo.anytype.editor.DaysAdapter
+import com.agileburo.anytype.model.Day
 import com.agileburo.anytype.ui.EditorToolbar
 import kotlinx.android.synthetic.main.fragment_a.*
 import java.time.Month
@@ -37,7 +39,8 @@ class FragmentA : Fragment() {
         )
 
         rvDays.layoutManager = LinearLayoutManager(activity)
-        val adapter = DaysAdapter(days = days, onClick = { onClick: Day -> onDayClick(onClick) })
+        val adapter =
+            DaysAdapter(days = days, onClick = { onClick: Day -> onDayClick(onClick) })
         rvDays.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
         rvDays.adapter = adapter
         editorToolbar = view.findViewById(R.id.editor_toolbar)

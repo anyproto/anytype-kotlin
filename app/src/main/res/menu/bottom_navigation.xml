@@ -12,7 +12,7 @@
         android:title="Profile" />
 
     <item
-        android:id="@+id/fragmentC"
+        android:id="@+id/pageFragment"
         android:icon="@drawable/ic_settings"
-        android:title="Settings" />
+        android:title="PageFragment" />
 </menu>

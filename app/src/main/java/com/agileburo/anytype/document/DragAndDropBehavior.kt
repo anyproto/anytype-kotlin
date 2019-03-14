@@ -1,4 +1,4 @@
-package com.agileburo.anytype
+package com.agileburo.anytype.document
 
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper

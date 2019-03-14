@@ -1,10 +1,12 @@
-package com.agileburo.anytype
+package com.agileburo.anytype.document
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.agileburo.anytype.R
 import com.agileburo.anytype.model.Block
+import com.agileburo.anytype.swap
 
 class DocumentAdapter(private val blocks: MutableList<Block>) : RecyclerView.Adapter<DocumentAdapter.ViewHolder>() {
 

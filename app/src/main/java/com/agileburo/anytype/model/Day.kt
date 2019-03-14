@@ -1,4 +1,4 @@
-package com.agileburo.anytype
+package com.agileburo.anytype.model
 
 import java.time.Month
 

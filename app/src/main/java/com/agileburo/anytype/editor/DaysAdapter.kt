@@ -1,4 +1,4 @@
-package com.agileburo.anytype
+package com.agileburo.anytype.editor
 
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.RecyclerView
@@ -8,7 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
-import com.agileburo.anytype.editor.EditorTextWatcher
+import com.agileburo.anytype.R
+import com.agileburo.anytype.model.Day
 import kotlinx.android.synthetic.main.item_day.view.*
 
 /**
@@ -23,7 +24,8 @@ class DaysAdapter(
 
     fun update(day: Day) {
         val index = days.indexOf(day)
-        days[index] = Day(day = day.day, month = day.month, content = day.content, size = 1.3f)
+        days[index] =
+            Day(day = day.day, month = day.month, content = day.content, size = 1.3f)
         notifyItemChanged(index)
     }
 
@@ -31,7 +33,7 @@ class DaysAdapter(
     var isItalicActive = false
     var isStrokeThroughActive = false
 
-    override fun onCreateViewHolder(parent: ViewGroup, position: Int): DaysAdapter.DayViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, position: Int): DayViewHolder {
         return DayViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_day, parent, false)
         )
@@ -39,7 +41,7 @@ class DaysAdapter(
 
     override fun getItemCount() = days.size
 
-    override fun onBindViewHolder(holder: DaysAdapter.DayViewHolder, p1: Int) {
+    override fun onBindViewHolder(holder: DayViewHolder, p1: Int) {
         holder.apply {
             with(days[p1]) {
                 tvMonth.text = month.toString()
@@ -56,7 +58,12 @@ class DaysAdapter(
         val tvMonth = view.month
         val tvDay = view.day
         val tvContent = view.content
-        val textWatcher: EditorTextWatcher = EditorTextWatcher(ResourcesCompat.getFont(view.context, R.font.inconsolata)!!)
+        val textWatcher: EditorTextWatcher = EditorTextWatcher(
+            ResourcesCompat.getFont(
+                view.context,
+                R.font.inconsolata
+            )!!
+        )
 
         fun bind(day: Day, click: (Day) -> Unit) {
             itemView.setOnClickListener {

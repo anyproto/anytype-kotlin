@@ -1,6 +1,5 @@
 package com.agileburo.anytype.editor
 
-import android.app.Dialog
 import android.os.Bundle
 import android.support.design.widget.BottomSheetDialogFragment
 import android.view.LayoutInflater

@@ -1,14 +1,14 @@
 package com.agileburo.anytype.feature_login.ui.login
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.agileburo.anytype.feature_login.R
 
-class LoginFragment : Fragment() {
+class LoginFragment : androidx.fragment.app.Fragment() {
 
     companion object {
         fun newInstance() = LoginFragment()

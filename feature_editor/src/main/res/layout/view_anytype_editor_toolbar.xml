@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="#393834"
+    android:elevation="4dp">
+
+    <ImageView
+        android:id="@+id/btnBold"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:contentDescription="@string/editor_toolbar"
+        android:scaleType="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_editor_toolbar_bold" />
+
+    <ImageView
+        android:id="@+id/btnItalic"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:contentDescription="@string/editor_toolbar"
+        android:scaleType="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnBold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_editor_toolbar_italic" />
+
+    <ImageView
+        android:id="@+id/btnStroke"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:contentDescription="@string/editor_toolbar"
+        android:scaleType="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnItalic"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_editor_toolbar_strike_through" />
+
+    <TextView
+            android:gravity="center"
+            android:textColor="@color/button_tint"
+            android:text="U"
+            android:textSize="28dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/underline" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toEndOf="@+id/btnStroke"
+            android:layout_marginStart="32dp"/>
+
+    <TextView
+            android:gravity="center"
+            android:textColor="@color/button_tint"
+            android:text="Code"
+            android:textSize="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/codeBlock"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toEndOf="@+id/underline"
+            android:layout_marginStart="32dp"/>
+    <View
+            android:id="@+id/view"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="#6a6962"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/codeBlock" android:layout_marginStart="32dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

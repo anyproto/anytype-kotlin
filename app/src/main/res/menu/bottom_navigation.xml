@@ -7,7 +7,7 @@
         android:title="Docs" />
 
     <item
-        android:id="@+id/fragmentB"
+        android:id="@+id/documentFragment"
         android:icon="@drawable/ic_profile"
         android:title="Profile" />
 

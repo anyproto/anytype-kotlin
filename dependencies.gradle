@@ -29,6 +29,8 @@ ext {
     retrofit_version = '2.3.0'
     okhttp_logging_interceptor_version = '3.8.1'
     timber_version = '4.7.1'
+    rxjava2_version = '2.1.1'
+    moshi_version = '1.8.0'
 
     //Unit Testing
     robolectric_version = '3.8'
@@ -46,10 +48,11 @@ ext {
     mainApplication = [
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             coroutines:                 "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version",
-            androidxCore:              "androidx.core:core-ktx:$androidx_core_version",
+            androidxCore:               "androidx.core:core-ktx:$androidx_core_version",
             navigation:                 "android.arch.navigation:navigation-fragment-ktx:$navigation_version",
             navigationUi:               "android.arch.navigation:navigation-ui-ktx:$navigation_version",
             viewModel:                  "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version",
+            viewModelExtesions:         "androidx.lifecycle:lifecycle-extensions:$lifecycle_version",
             lifecycleCompiler:          "androidx.lifecycle:lifecycle-compiler:$lifecycle_version",
             appcompat:                  "androidx.appcompat:appcompat:$appcompat_version",
             constraintLayout:           "androidx.constraintlayout:constraintlayout:$constraintLayout_version",
@@ -66,7 +69,10 @@ ext {
             javaxInject:                "javax.inject:javax.inject:$javaxInject_version",
             retrofit:                   "com.squareup.retrofit2:converter-gson:$retrofit_version",
             okhttpLoggingInterceptor:   "com.squareup.okhttp3:logging-interceptor:$okhttp_logging_interceptor_version",
-            timber:                     "com.jakewharton.timber:timber:$timber_version"
+            timber:                     "com.jakewharton.timber:timber:$timber_version",
+            rxjava2:                    "io.reactivex.rxjava2:rxjava:$rxjava2_version",
+            rxAndroid:                  "io.reactivex.rxjava2:rxandroid:$rxjava2_version",
+            moshiKotlin:               "com.squareup.moshi:moshi-kotlin:$moshi_version"
     ]
 
     unitTesting = [

@@ -1,4 +1,3 @@
-include ':app',
+include ':app', ':feature_editor',
         ':feature_login',
-        ':core_utils',
-        ':domain'
+        ':core_utils'

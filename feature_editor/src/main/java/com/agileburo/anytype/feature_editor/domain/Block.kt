@@ -1,8 +1,5 @@
 package com.agileburo.anytype.feature_editor.domain
 
-import org.json.JSONException
-import org.json.JSONObject
-
 /**
  * Created by Konstantin Ivanov
  * email :  ki@agileburo.com
@@ -38,27 +35,11 @@ sealed class ContentType {
 data class Block(
     val id: String = "",
     val parentId: String = "",
-    val type: BlockType = BlockType.Editable,
-    val contentType: ContentType = ContentType.H1,
+    //val type: BlockType = BlockType.Editable,
+    //val contentType: ContentType = ContentType.H1,
     val content: String = "",
     val children: List<Block> = emptyList()
 )
-
-fun Block.fromJson(jsonObject: JSONObject): Block? = with(jsonObject) {
-    var block: Block? = null
-    try {
-        block = Block(
-            id = getString("id"),
-            parentId = getString("parentId"),
-            content = getString("content"),
-            contentType = getInt("contentType").toContentType(),
-            type = getInt("type").toBlockType()
-        )
-    } catch (e: JSONException) {
-        e.printStackTrace()
-    }
-    return@with block
-}
 
 fun Int.toContentType(): ContentType =
     when (this) {

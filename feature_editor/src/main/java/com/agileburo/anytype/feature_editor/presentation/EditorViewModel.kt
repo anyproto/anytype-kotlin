@@ -18,7 +18,12 @@ class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe({t: List<Block>? ->
-                    Timber.d("Get blocks success : $t")
+                    t?.forEach {
+                        Timber.d("Block : ${it.id}")
+                        it.children.forEach {
+                            Timber.d("          Child: ${it.id}")
+                        }
+                    }
                 },
                     {t: Throwable? ->
                         Timber.d("Get blocks error : $t")

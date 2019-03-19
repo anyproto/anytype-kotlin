@@ -74,6 +74,7 @@ dependencies {
     implementation applicationDependencies.glide
     implementation applicationDependencies.dagger
     implementation applicationDependencies.timber
+    implementation applicationDependencies.gson
 
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.junit

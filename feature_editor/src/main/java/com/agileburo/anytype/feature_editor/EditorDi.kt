@@ -8,6 +8,8 @@ import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.domain.EditorInteractorImpl
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModelFactory
 import com.agileburo.anytype.feature_editor.ui.EditorFragment
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -25,7 +27,11 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideRepo(context: Context): EditorRepo = EditorRepoImpl(context = context)
+    fun provideGson(): Gson = GsonBuilder().create()
+
+    @Provides
+    @PerFeature
+    fun provideRepo(context: Context, gson: Gson): EditorRepo = EditorRepoImpl(context = context, gson = gson)
 
     @Provides
     @PerFeature

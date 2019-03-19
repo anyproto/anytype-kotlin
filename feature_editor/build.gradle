@@ -43,6 +43,7 @@ dependencies {
     implementation applicationDependencies.rxAndroid
     implementation applicationDependencies.dagger
     implementation applicationDependencies.timber
+    implementation applicationDependencies.gson
 
     testImplementation unitTestDependencies.junit
 }

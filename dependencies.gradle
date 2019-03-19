@@ -31,6 +31,7 @@ ext {
     timber_version = '4.7.1'
     rxjava2_version = '2.1.1'
     moshi_version = '1.8.0'
+    gson_version = '2.8.5'
 
     //Unit Testing
     robolectric_version = '3.8'
@@ -67,6 +68,8 @@ ext {
             dagger:                     "com.google.dagger:dagger:$dagger_version",
             javaxAnnotation:            "javax.annotation:jsr250-api:$javaxAnnotations_version",
             javaxInject:                "javax.inject:javax.inject:$javaxInject_version",
+            gson:                       "com.google.code.gson:gson:$gson_version",
+
             retrofit:                   "com.squareup.retrofit2:converter-gson:$retrofit_version",
             okhttpLoggingInterceptor:   "com.squareup.okhttp3:logging-interceptor:$okhttp_logging_interceptor_version",
             timber:                     "com.jakewharton.timber:timber:$timber_version",

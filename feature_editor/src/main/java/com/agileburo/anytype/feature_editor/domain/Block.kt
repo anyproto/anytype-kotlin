@@ -37,8 +37,7 @@ data class Block(
     val parentId: String = "",
     //val type: BlockType = BlockType.Editable,
     //val contentType: ContentType = ContentType.H1,
-    val content: String = "",
-    val children: List<Block> = emptyList()
+    val content: String = ""
 )
 
 fun Int.toContentType(): ContentType =

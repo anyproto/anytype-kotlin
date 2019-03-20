@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModel
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModelFactory
+import kotlinx.android.synthetic.main.fragment_editor.*
 import javax.inject.Inject
 
 abstract class EditorFragment: Fragment(){
@@ -32,5 +33,6 @@ abstract class EditorFragment: Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getBlocks()
+        btnBack.setOnClickListener { viewModel.sendToIPFS() }
     }
 }

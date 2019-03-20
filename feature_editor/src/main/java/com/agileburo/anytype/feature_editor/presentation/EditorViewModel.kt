@@ -10,25 +10,29 @@ import timber.log.Timber
 
 class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
 
-    val disposable = CompositeDisposable()
+    private val disposable = CompositeDisposable()
+
+    private val state :MutableList<Block> = mutableListOf()
 
     fun getBlocks() {
         disposable.addAll(
             interactor.getBlocks()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe({t: List<Block>? ->
-                    t?.forEach {
+                .subscribe({blocks: List<Block> ->
+                    blocks.forEach {
                         Timber.d("Block : ${it.id}")
-                        it.children.forEach {
-                            Timber.d("          Child: ${it.id}")
-                        }
                     }
+                    state.addAll(blocks)
                 },
-                    {t: Throwable? ->
+                    {t: Throwable ->
                         Timber.d("Get blocks error : $t")
                     })
         )
+    }
+
+    fun sendToIPFS() {
+        interactor.saveState(state)
     }
 
     override fun onCleared() {

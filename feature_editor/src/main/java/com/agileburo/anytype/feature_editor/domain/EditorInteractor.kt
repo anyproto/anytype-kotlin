@@ -13,18 +13,18 @@ class EditorInteractorImpl @Inject constructor(private val repo: EditorRepo) : E
 
     override fun getBlocks(): Single<List<Block>> =
         repo.getBlocks().flatMap { t: List<Block> -> Single.just(unwrap(t)) }
-}
 
-fun unwrap(blocks: List<Block>): List<Block> {
-    val result = mutableListOf<Block>()
-    if (blocks.isEmpty()) return result
-    blocks.forEach {
-        result.add(it.toChildless())
-        if (it.children.isNotEmpty()) {
-            result.addAll(unwrap(it.children))
+    private fun unwrap(blocks: List<Block>): List<Block> {
+        val result = mutableListOf<Block>()
+        if (blocks.isEmpty()) return result
+        blocks.forEach {
+            result.add(it.toChildless())
+            if (it.children.isNotEmpty()) {
+                result.addAll(unwrap(it.children))
+            }
         }
+        return result
     }
-    return result
 }
 
 fun Block.toChildless() =

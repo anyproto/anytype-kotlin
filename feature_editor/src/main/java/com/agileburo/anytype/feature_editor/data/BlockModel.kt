@@ -6,8 +6,8 @@ package com.agileburo.anytype.feature_editor.data
  * on 20.03.2019.
  */
 data class BlockModel(
-    val id: String = "",
+    val id: String,
     val parentId: String = "",
     val content: String = "",
-    var children: MutableList<BlockModel>
+    val children: List<BlockModel>
 )

@@ -8,7 +8,7 @@ import javax.inject.Inject
 interface EditorRepo {
 
     fun getBlocks(): Single<List<Block>>
-    fun saveState(list: MutableList<Block>)
+    fun saveState(list: List<Block>)
 }
 
 class EditorRepoImpl @Inject constructor(
@@ -21,7 +21,7 @@ class EditorRepoImpl @Inject constructor(
             .flatMap { t: List<BlockModel> -> Single.just(unwrap(t)) }
     }
 
-    override fun saveState(list: MutableList<Block>) {
+    override fun saveState(list: List<Block>) {
         wrap(list)
     }
 
@@ -37,15 +37,8 @@ class EditorRepoImpl @Inject constructor(
         return result
     }
 
-    //TODO доделать функцию
+    //TODO предполагаем, что понадобится перевод листа блоков в дерево для отдачи беку
     private fun wrap(list: List<Block>): List<BlockModel> {
-        val models = mutableListOf<BlockModel>()
-        list.forEach { models.add(blockConverter.domainToModel(it)) }
-        models.forEachIndexed { index, blockModel ->
-            if (blockModel.parentId.isNotEmpty()) {
-
-            }
-        }
         return emptyList()
     }
 }

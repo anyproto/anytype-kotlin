@@ -1,35 +1,44 @@
 package com.agileburo.anytype.feature_editor.data
 
-import android.content.Context
+import com.agileburo.anytype.feature_editor.data.datasource.IPFSDataSource
 import com.agileburo.anytype.feature_editor.domain.Block
-import com.google.gson.Gson
 import io.reactivex.Single
-import io.reactivex.SingleEmitter
 import javax.inject.Inject
 
 interface EditorRepo {
 
     fun getBlocks(): Single<List<Block>>
+    fun saveState(list: List<Block>)
 }
 
 class EditorRepoImpl @Inject constructor(
-    private val context: Context,
-    private val gson: Gson
+    private val dataSource: IPFSDataSource,
+    private val blockConverter: BlockConverter
 ) : EditorRepo {
 
     override fun getBlocks(): Single<List<Block>> {
-        return Single.create<List<Block>> { emitter: SingleEmitter<List<Block>> ->
-            try {
-                val json = context.assets.open("test.json").bufferedReader().use {
-                    it.readText()
-                }
-                val blocksResponse = gson.fromJson<BlocksResponse>(json, BlocksResponse::class.java)
-                emitter.onSuccess(blocksResponse.blocks)
-            } catch (e: Exception) {
-                emitter.onError(e)
+        return dataSource.getBlocks()
+            .flatMap { t: List<BlockModel> -> Single.just(unwrap(t)) }
+    }
+
+    override fun saveState(list: List<Block>) {
+        wrap(list)
+    }
+
+    private fun unwrap(blocks: List<BlockModel>): List<Block> {
+        val result = mutableListOf<Block>()
+        if (blocks.isEmpty()) return result
+        blocks.forEach {
+            result.add(blockConverter.modelToDomain(it))
+            if (it.children.isNotEmpty()) {
+                result.addAll(unwrap(it.children))
             }
         }
+        return result
+    }
+
+    //TODO предполагаем, что понадобится перевод листа блоков в дерево для отдачи беку
+    private fun wrap(list: List<Block>): List<BlockModel> {
+        return emptyList()
     }
 }
-
-data class BlocksResponse(val blocks: List<Block> = emptyList())

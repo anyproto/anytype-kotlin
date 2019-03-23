@@ -37,7 +37,16 @@
           "type": 3,
           "contentType": 1,
           "content": "{\"text\":\"чайлд третьего\",\"marks\":[]}",
-          "children": []
+          "children": [
+            {
+              "id": "1983",
+              "parentId": "92152a56-40d3-53ec-a1fa-ec4e4d92b0ec",
+              "type": 3,
+              "contentType": 1,
+              "content": "{\"text\":\"чайлд 743\",\"marks\":[]}",
+              "children": []
+            }
+          ]
         },
         {
           "id": "92152a56-40d3-53ec-a1fa-ec4e4d92b0ec",

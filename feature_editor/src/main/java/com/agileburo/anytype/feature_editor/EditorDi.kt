@@ -2,8 +2,12 @@ package com.agileburo.anytype.feature_editor
 
 import android.content.Context
 import com.agileburo.anytype.core_utils.di.PerFeature
+import com.agileburo.anytype.feature_editor.data.BlockConverter
+import com.agileburo.anytype.feature_editor.data.BlockConverterImpl
 import com.agileburo.anytype.feature_editor.data.EditorRepo
 import com.agileburo.anytype.feature_editor.data.EditorRepoImpl
+import com.agileburo.anytype.feature_editor.data.datasource.IPFSDataSource
+import com.agileburo.anytype.feature_editor.data.datasource.IPFSDataSourceImpl
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.domain.EditorInteractorImpl
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModelFactory
@@ -31,12 +35,21 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideRepo(context: Context, gson: Gson): EditorRepo = EditorRepoImpl(context = context, gson = gson)
+    fun provideBlockConverter(): BlockConverter = BlockConverterImpl()
+
+    @Provides
+    @PerFeature
+    fun provideRepo(blockConverter: BlockConverter, dataSource: IPFSDataSource): EditorRepo =
+        EditorRepoImpl(dataSource = dataSource, blockConverter = blockConverter)
 
     @Provides
     @PerFeature
     fun provideInteractor(repo: EditorRepo): EditorInteractor = EditorInteractorImpl(repo = repo)
 
+    @Provides
+    @PerFeature
+    fun provideDataSource(context: Context, gson: Gson): IPFSDataSource =
+        IPFSDataSourceImpl(context = context, gson = gson)
 
     @Provides
     @PerFeature

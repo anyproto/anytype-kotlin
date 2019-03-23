@@ -40,6 +40,7 @@ dependencies {
     implementation applicationDependencies.recyclerView
 
     implementation applicationDependencies.rxjava2
+    implementation applicationDependencies.rxRelay
     implementation applicationDependencies.rxAndroid
     implementation applicationDependencies.dagger
     implementation applicationDependencies.timber

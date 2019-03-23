@@ -1,8 +1,11 @@
 package com.agileburo.anytype.feature_editor.presentation
 
 import androidx.lifecycle.ViewModel
+import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
+import com.agileburo.anytype.feature_editor.ui.EditorState
+import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -10,25 +13,29 @@ import timber.log.Timber
 
 class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
 
-    val disposable = CompositeDisposable()
+    private val disposable = CompositeDisposable()
+
+    private val state: MutableList<Block> = mutableListOf()
+
+    private val progress = BehaviorRelay.create<EditorState>()
+
+    fun observeState() = progress
 
     fun getBlocks() {
-        disposable.addAll(
-            interactor.getBlocks()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe({t: List<Block>? ->
-                    t?.forEach {
-                        Timber.d("Block : ${it.id}")
-                        it.children.forEach {
-                            Timber.d("          Child: ${it.id}")
-                        }
-                    }
-                },
-                    {t: Throwable? ->
-                        Timber.d("Get blocks error : $t")
-                    })
-        )
+        interactor.getBlocks()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({ blocks: List<Block> ->
+                progress.accept(EditorState.Result(blocks))
+            },
+                { t: Throwable ->
+                    Timber.d("Get blocks error : $t")
+                })
+            .disposedBy(disposable)
+    }
+
+    fun persist() {
+        interactor.saveState(state)
     }
 
     override fun onCleared() {

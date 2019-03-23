@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.disposedBy
@@ -17,8 +18,6 @@ import kotlinx.android.synthetic.main.fragment_editor.*
 import javax.inject.Inject
 
 abstract class EditorFragment : Fragment() {
-
-    private lateinit var editorAdapter: EditorAdapter
 
     @Inject
     lateinit var factory: EditorViewModelFactory
@@ -55,6 +54,7 @@ abstract class EditorFragment : Fragment() {
         layoutManager = LinearLayoutManager(requireContext())
         adapter = EditorAdapter(mutableListOf())
         setHasFixedSize(true)
+        addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
     }
 
     override fun onResume() {
@@ -71,7 +71,7 @@ abstract class EditorFragment : Fragment() {
         is EditorState.Loading -> {
         }
         is EditorState.Result -> {
-            editorAdapter.setBlocks(state.blocks)
+            (blockList.adapter as? EditorAdapter)?.setBlocks(state.blocks)
         }
     }
 }

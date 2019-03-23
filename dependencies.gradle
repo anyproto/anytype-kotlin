@@ -70,7 +70,7 @@ ext {
             javaxAnnotation:            "javax.annotation:jsr250-api:$javaxAnnotations_version",
             javaxInject:                "javax.inject:javax.inject:$javaxInject_version",
             gson:                       "com.google.code.gson:gson:$gson_version",
-            rxRelay:                   "com.jakewharton.rxrelay2:rxrelay:$rxrelay_version",
+            rxRelay:                    "com.jakewharton.rxrelay2:rxrelay:$rxrelay_version",
             retrofit:                   "com.squareup.retrofit2:converter-gson:$retrofit_version",
             okhttpLoggingInterceptor:   "com.squareup.okhttp3:logging-interceptor:$okhttp_logging_interceptor_version",
             timber:                     "com.jakewharton.timber:timber:$timber_version",

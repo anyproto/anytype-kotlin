@@ -46,11 +46,12 @@ android {
 }
 
 ext {
-    android_compat_version = '28.0.0'
+    android_compat_version = '1.0.0-beta01'
 }
 
 dependencies {
     implementation project(':feature_login')
+    implementation project(':feature_editor')
     implementation project(':core_utils')
 
     def applicationDependencies = rootProject.ext.mainApplication
@@ -64,22 +65,17 @@ dependencies {
 
     //Application dependencies
     implementation applicationDependencies.kotlin
-
     implementation applicationDependencies.navigation
     implementation applicationDependencies.navigationUi
-    implementation "com.android.support:appcompat-v7:$android_compat_version"
-    implementation "com.android.support:design:$android_compat_version"
-    implementation "com.android.support:support-v4:$android_compat_version"
-    implementation "com.android.support:support-annotations:$android_compat_version"
-    implementation 'com.android.support:recyclerview-v7:28.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-
+    implementation applicationDependencies.appcompat
+    implementation applicationDependencies.design
+    implementation applicationDependencies.recyclerView
+    implementation applicationDependencies.constraintLayout
     implementation applicationDependencies.glide
     implementation applicationDependencies.dagger
     implementation applicationDependencies.timber
-
-    //Redactor
-    implementation 'com.ebolo:krichtexteditor:0.0.5'
+    implementation applicationDependencies.gson
+    implementation applicationDependencies.rxRelay
 
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.junit

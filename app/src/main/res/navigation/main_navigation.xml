@@ -3,25 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
-    app:startDestination="@id/fragmentA">
+    app:startDestination="@id/documentFragment">
 
     <fragment
-        android:id="@+id/loginFragment2"
-        android:name="com.agileburo.anytype.feature_login.ui.login.LoginFragment"
-        android:label="LoginFragment" />
-    <fragment
-        android:id="@+id/fragmentA"
-        android:name="com.agileburo.anytype.FragmentA"
-        android:label="FragmentA"
-        tools:layout="@layout/fragment_a" />
-    <fragment
-        android:id="@+id/fragmentB"
-        android:name="com.agileburo.anytype.FragmentB"
-        android:label="FragmentB"
-        tools:layout="@layout/fragment_b" />
-    <fragment
-        android:id="@+id/fragmentC"
-        android:name="com.agileburo.anytype.FragmentC"
-        android:label="FragmentC"
-        tools:layout="@layout/fragment_c" />
+        android:id="@+id/documentFragment"
+        android:name="com.agileburo.anytype.ui.DocumentFragment"
+        android:label="DocumentFragment" />
+
 </navigation>

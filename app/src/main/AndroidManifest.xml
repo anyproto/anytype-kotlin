@@ -11,7 +11,8 @@
             android:supportsRtl="true"
             android:fullBackupContent="@xml/my_backup_rules"
             android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter android:label="filter">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

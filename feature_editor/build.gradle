@@ -1,0 +1,50 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    def config = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion config["compile_sdk"]
+
+    defaultConfig {
+        minSdkVersion config["min_sdk"]
+        targetSdkVersion config["target_sdk"]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] } }
+}
+
+dependencies {
+    implementation project(':core_utils')
+
+    def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
+
+    kapt applicationDependencies.daggerCompiler
+    compileOnly applicationDependencies.javaxInject
+
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.viewModel
+    implementation applicationDependencies.viewModelExtesions
+    implementation applicationDependencies.appcompat
+    implementation applicationDependencies.constraintLayout
+    implementation applicationDependencies.recyclerView
+
+    implementation applicationDependencies.rxjava2
+    implementation applicationDependencies.rxRelay
+    implementation applicationDependencies.rxAndroid
+    implementation applicationDependencies.dagger
+    implementation applicationDependencies.timber
+    implementation applicationDependencies.gson
+
+    testImplementation unitTestDependencies.junit
+}

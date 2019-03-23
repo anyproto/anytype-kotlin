@@ -2,12 +2,11 @@ package com.agileburo.anytype
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.agileburo.anytype.di.app.MainScreenComponent
 import kotlinx.android.synthetic.main.activity_main.*
-import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -32,7 +31,5 @@ class MainActivity : AppCompatActivity() {
             bottomNavigationView,
             Navigation.findNavController(this, R.id.fragment)
         )
-
-        Timber.d("Get context:$context")
     }
 }

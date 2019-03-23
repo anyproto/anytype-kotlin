@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.item_block_editable.view.*
 import kotlinx.android.synthetic.main.item_block_header_one.view.*
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
+import kotlinx.android.synthetic.main.item_block_quote.view.*
 import timber.log.Timber
 
 class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -42,6 +43,10 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
                 val view = inflater.inflate(R.layout.item_block_header_three, parent, false)
                 ViewHolder.HeaderThreeHolder(view)
             }
+            HOLDER_QUOTE -> {
+                val view = inflater.inflate(R.layout.item_block_quote, parent, false)
+                ViewHolder.QuoteHolder(view)
+            }
             else -> TODO()
         }
     }
@@ -52,6 +57,7 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
             is ContentType.H1 -> HOLDER_HEADER_ONE
             is ContentType.H2 -> HOLDER_HEADER_TWO
             is ContentType.H3 -> HOLDER_HEADER_THREE
+            is ContentType.Quote -> HOLDER_QUOTE
             else -> TODO()
         }
     }
@@ -64,6 +70,7 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
             is ViewHolder.HeaderOneHolder -> holder.bind(blocks[position])
             is ViewHolder.HeaderTwoHolder -> holder.bind(blocks[position])
             is ViewHolder.HeaderThreeHolder -> holder.bind(blocks[position])
+            is ViewHolder.QuoteHolder -> holder.bind(blocks[position])
         }
     }
 
@@ -107,6 +114,13 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
                 itemView.headerThreeContentText.text = block.content
             }
         }
+
+        class QuoteHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(block : Block) {
+                itemView.quoteContent.text = block.content
+            }
+        }
     }
 
     companion object {
@@ -114,5 +128,6 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
         const val HOLDER_HEADER_ONE = 1
         const val HOLDER_HEADER_TWO = 2
         const val HOLDER_HEADER_THREE = 3
+        const val HOLDER_QUOTE = 4
     }
 }

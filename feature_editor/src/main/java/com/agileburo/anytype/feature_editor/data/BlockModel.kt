@@ -9,5 +9,6 @@ data class BlockModel(
     val id: String,
     val parentId: String = "",
     val content: String = "",
+    val contentType : Int,
     val children: List<BlockModel>
 )

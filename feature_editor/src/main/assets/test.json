@@ -5,23 +5,23 @@
       "parentId": "",
       "type": 3,
       "contentType": 3,
-      "content": "{\"text\":\"Заголовок\",\"marks\":[]}",
+      "content": "{\"text\":\"Заголовок (h1)\",\"marks\":[]}",
       "children": []
     },
     {
       "id": "02ca4410-2cff-5978-81e5-09dc76dd003c",
       "parentId": "",
       "type": 3,
-      "contentType": 1,
-      "content": "{\"text\":\"первый элемент\",\"marks\":[]}",
+      "contentType": 4,
+      "content": "{\"text\":\"первый элемент (h3)\",\"marks\":[]}",
       "children": []
     },
     {
       "id": "116271cc-c6e3-5c58-8598-9342567b9a66",
       "parentId": "",
       "type": 3,
-      "contentType": 1,
-      "content": "{\"text\":\"второй элемент\",\"marks\":[]}",
+      "contentType": 5,
+      "content": "{\"text\":\"второй элемент (h2)\",\"marks\":[]}",
       "children": []
     },
     {

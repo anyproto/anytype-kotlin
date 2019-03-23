@@ -25,12 +25,10 @@ class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
         interactor.getBlocks()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
-            .subscribe({ blocks: List<Block> ->
-                progress.accept(EditorState.Result(blocks))
-            },
-                { t: Throwable ->
-                    Timber.d("Get blocks error : $t")
-                })
+            .subscribe(
+                { blocks -> progress.accept(EditorState.Result(blocks)) },
+                { error -> Timber.d("Get blocks error : $error") }
+            )
             .disposedBy(disposable)
     }
 

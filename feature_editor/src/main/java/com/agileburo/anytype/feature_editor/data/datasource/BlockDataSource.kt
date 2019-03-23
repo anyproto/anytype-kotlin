@@ -11,14 +11,14 @@ import javax.inject.Inject
  * email :  ki@agileburo.com
  * on 20.03.2019.
  */
-interface IPFSDataSource {
+interface BlockDataSource {
     fun getBlocks(): Single<List<BlockModel>>
 }
 
 class IPFSDataSourceImpl @Inject constructor(
     private val context: Context,
     private val gson: Gson
-) : IPFSDataSource {
+) : BlockDataSource {
 
     override fun getBlocks(): Single<List<BlockModel>> {
         return Single.create<List<BlockModel>> { emitter ->
@@ -26,8 +26,11 @@ class IPFSDataSourceImpl @Inject constructor(
                 val json = context.assets.open("test.json").bufferedReader().use {
                     it.readText()
                 }
+
                 val ipfsResponse = gson.fromJson<IpfsResponse>(json, IpfsResponse::class.java)
+
                 emitter.onSuccess(ipfsResponse.blocks)
+
             } catch (e: Exception) {
                 emitter.onError(e)
             }

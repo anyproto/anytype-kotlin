@@ -6,7 +6,7 @@ import com.agileburo.anytype.feature_editor.data.BlockConverter
 import com.agileburo.anytype.feature_editor.data.BlockConverterImpl
 import com.agileburo.anytype.feature_editor.data.EditorRepo
 import com.agileburo.anytype.feature_editor.data.EditorRepoImpl
-import com.agileburo.anytype.feature_editor.data.datasource.IPFSDataSource
+import com.agileburo.anytype.feature_editor.data.datasource.BlockDataSource
 import com.agileburo.anytype.feature_editor.data.datasource.IPFSDataSourceImpl
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.domain.EditorInteractorImpl
@@ -39,7 +39,7 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideRepo(blockConverter: BlockConverter, dataSource: IPFSDataSource): EditorRepo =
+    fun provideRepo(blockConverter: BlockConverter, dataSource: BlockDataSource): EditorRepo =
         EditorRepoImpl(dataSource = dataSource, blockConverter = blockConverter)
 
     @Provides
@@ -48,7 +48,7 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideDataSource(context: Context, gson: Gson): IPFSDataSource =
+    fun provideDataSource(context: Context, gson: Gson): BlockDataSource =
         IPFSDataSourceImpl(context = context, gson = gson)
 
     @Provides

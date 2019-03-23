@@ -33,11 +33,11 @@ sealed class ContentType {
 }
 
 data class Block(
-    val id: String = "",
-    val parentId: String = "",
-    //val type: BlockType = BlockType.Editable,
-    //val contentType: ContentType = ContentType.H1,
-    val content: String = ""
+    val id: String,
+    val parentId: String,
+    val contentType: ContentType,
+    val content: String
+    // TODO add blockType
 )
 
 fun Int.toContentType(): ContentType =
@@ -55,6 +55,15 @@ fun Int.toContentType(): ContentType =
         11 -> ContentType.H4
         else -> ContentType.H1
     }
+
+fun ContentType.toNumericalCode() : Int {
+    return when(this) {
+        ContentType.P -> 1
+        ContentType.H1 -> 3
+        ContentType.H2 -> 4
+        else -> TODO()
+    }
+}
 
 fun Int.toBlockType(): BlockType =
     when (this) {

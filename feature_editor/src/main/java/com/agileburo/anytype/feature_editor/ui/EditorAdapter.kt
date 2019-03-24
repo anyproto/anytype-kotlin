@@ -17,7 +17,9 @@ import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import timber.log.Timber
 
-class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class EditorAdapter(private val blocks: MutableList<Block>,
+                    private val listener: (Block) -> Unit):
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setBlocks(items: List<Block>) {
         Timber.d("Set blocks ${items.size}")
@@ -79,13 +81,13 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ViewHolder.ParagraphHolder -> holder.bind(blocks[position])
-            is ViewHolder.HeaderOneHolder -> holder.bind(blocks[position])
-            is ViewHolder.HeaderTwoHolder -> holder.bind(blocks[position])
-            is ViewHolder.HeaderThreeHolder -> holder.bind(blocks[position])
-            is ViewHolder.QuoteHolder -> holder.bind(blocks[position])
-            is ViewHolder.CheckBoxHolder -> holder.bind(blocks[position])
-            is ViewHolder.CodeSnippetHolder -> holder.bind(blocks[position])
+            is ViewHolder.ParagraphHolder -> holder.bind(blocks[position], listener)
+            is ViewHolder.HeaderOneHolder -> holder.bind(blocks[position], listener)
+            is ViewHolder.HeaderTwoHolder -> holder.bind(blocks[position], listener)
+            is ViewHolder.HeaderThreeHolder -> holder.bind(blocks[position], listener)
+            is ViewHolder.QuoteHolder -> holder.bind(blocks[position], listener)
+            is ViewHolder.CheckBoxHolder -> holder.bind(blocks[position], listener)
+            is ViewHolder.CodeSnippetHolder -> holder.bind(blocks[position], listener)
         }
     }
 
@@ -103,52 +105,59 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
 
         class ParagraphHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block) {
+            fun bind(block : Block, clickListener: (Block) -> Unit) {
                 itemView.tvId.text = "id :${block.id}"
                 itemView.tvContent.text = block.content
+                itemView.setOnClickListener { clickListener(block) }
             }
         }
 
         class HeaderOneHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block) {
+            fun bind(block : Block, clickListener: (Block) -> Unit) {
                 itemView.headerContentText.text = block.content
+                itemView.setOnClickListener { clickListener(block) }
             }
         }
 
         class HeaderTwoHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block) {
+            fun bind(block : Block, clickListener: (Block) -> Unit) {
                 itemView.headerTwoContentText.text = block.content
+                itemView.setOnClickListener { clickListener(block) }
             }
         }
 
         class HeaderThreeHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block) {
+            fun bind(block : Block, clickListener: (Block) -> Unit) {
                 itemView.headerThreeContentText.text = block.content
+                itemView.setOnClickListener { clickListener(block) }
             }
         }
 
         class QuoteHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block) {
+            fun bind(block : Block, clickListener: (Block) -> Unit) {
                 itemView.quoteContent.text = block.content
+                itemView.setOnClickListener { clickListener(block) }
             }
         }
 
         class CheckBoxHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block) {
+            fun bind(block : Block, clickListener: (Block) -> Unit) {
                 itemView.checkBoxContent.text = block.content
+                itemView.setOnClickListener { clickListener(block) }
             }
 
         }
 
         class CodeSnippetHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: Block) {
+            fun bind(block: Block, clickListener: (Block) -> Unit) {
                 itemView.codeSnippetContent.text = block.content
+                itemView.setOnClickListener { clickListener(block) }
             }
 
         }

@@ -11,10 +11,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.disposedBy
+import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModel
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModelFactory
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_editor.*
+import timber.log.Timber
 import javax.inject.Inject
 
 abstract class EditorFragment : Fragment() {
@@ -52,7 +54,7 @@ abstract class EditorFragment : Fragment() {
 
     private fun initializeView() = with(blockList) {
         layoutManager = LinearLayoutManager(requireContext())
-        adapter = EditorAdapter(mutableListOf())
+        adapter = EditorAdapter(mutableListOf(), {block: Block -> Timber.d("On Block click : $block") })
         setHasFixedSize(true)
         addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
     }

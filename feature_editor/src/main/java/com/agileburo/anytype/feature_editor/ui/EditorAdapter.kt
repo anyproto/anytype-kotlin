@@ -7,28 +7,85 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_utils.swap
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.domain.Block
+import com.agileburo.anytype.feature_editor.domain.ContentType
+import kotlinx.android.synthetic.main.item_block_checkbox.view.*
+import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import kotlinx.android.synthetic.main.item_block_editable.view.*
+import kotlinx.android.synthetic.main.item_block_header_one.view.*
+import kotlinx.android.synthetic.main.item_block_header_three.view.*
+import kotlinx.android.synthetic.main.item_block_header_two.view.*
+import kotlinx.android.synthetic.main.item_block_quote.view.*
 import timber.log.Timber
 
 class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    fun setBlocks(blocks: List<Block>) {
-        Timber.d("Set blocks ${blocks.size}")
-        this.blocks.addAll(blocks)
+    fun setBlocks(items: List<Block>) {
+        Timber.d("Set blocks ${items.size}")
+        blocks.addAll(items)
         notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.item_block_editable, parent, false)
-        return ViewHolder.TextHolder(view)
+
+        return when(viewType) {
+            HOLDER_PARAGRAPH -> {
+                val view = inflater.inflate(R.layout.item_block_editable, parent, false)
+                ViewHolder.ParagraphHolder(view)
+            }
+            HOLDER_HEADER_ONE -> {
+                val view = inflater.inflate(R.layout.item_block_header_one, parent, false)
+                ViewHolder.HeaderOneHolder(view)
+            }
+            HOLDER_HEADER_TWO -> {
+                val view = inflater.inflate(R.layout.item_block_header_two, parent, false)
+                ViewHolder.HeaderTwoHolder(view)
+            }
+            HOLDER_HEADER_THREE -> {
+                val view = inflater.inflate(R.layout.item_block_header_three, parent, false)
+                ViewHolder.HeaderThreeHolder(view)
+            }
+            HOLDER_QUOTE -> {
+                val view = inflater.inflate(R.layout.item_block_quote, parent, false)
+                ViewHolder.QuoteHolder(view)
+            }
+            HOLDER_CHECKBOX -> {
+                val view = inflater.inflate(R.layout.item_block_checkbox, parent, false)
+                ViewHolder.CheckBoxHolder(view)
+            }
+            HOLDER_CODE_SNIPPET -> {
+                val view = inflater.inflate(R.layout.item_block_code_snippet, parent, false)
+                ViewHolder.CodeSnippetHolder(view)
+            }
+            else -> TODO()
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return when(blocks[position].contentType) {
+            is ContentType.P -> HOLDER_PARAGRAPH
+            is ContentType.H1 -> HOLDER_HEADER_ONE
+            is ContentType.H2 -> HOLDER_HEADER_TWO
+            is ContentType.H3 -> HOLDER_HEADER_THREE
+            is ContentType.Quote -> HOLDER_QUOTE
+            is ContentType.Check -> HOLDER_CHECKBOX
+            is ContentType.Code -> HOLDER_CODE_SNIPPET
+            else -> TODO()
+        }
     }
 
     override fun getItemCount() = blocks.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ViewHolder.TextHolder -> holder.bind(blocks[position])
+            is ViewHolder.ParagraphHolder -> holder.bind(blocks[position])
+            is ViewHolder.HeaderOneHolder -> holder.bind(blocks[position])
+            is ViewHolder.HeaderTwoHolder -> holder.bind(blocks[position])
+            is ViewHolder.HeaderThreeHolder -> holder.bind(blocks[position])
+            is ViewHolder.QuoteHolder -> holder.bind(blocks[position])
+            is ViewHolder.CheckBoxHolder -> holder.bind(blocks[position])
+            is ViewHolder.CodeSnippetHolder -> holder.bind(blocks[position])
         }
     }
 
@@ -44,7 +101,7 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
 
     sealed class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        class TextHolder(itemView: View) : ViewHolder(itemView) {
+        class ParagraphHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block : Block) {
                 itemView.tvId.text = "id :${block.id}"
@@ -52,5 +109,58 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
             }
         }
 
+        class HeaderOneHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(block : Block) {
+                itemView.headerContentText.text = block.content
+            }
+        }
+
+        class HeaderTwoHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(block : Block) {
+                itemView.headerTwoContentText.text = block.content
+            }
+        }
+
+        class HeaderThreeHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(block : Block) {
+                itemView.headerThreeContentText.text = block.content
+            }
+        }
+
+        class QuoteHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(block : Block) {
+                itemView.quoteContent.text = block.content
+            }
+        }
+
+        class CheckBoxHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(block : Block) {
+                itemView.checkBoxContent.text = block.content
+            }
+
+        }
+
+        class CodeSnippetHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(block: Block) {
+                itemView.codeSnippetContent.text = block.content
+            }
+
+        }
+    }
+
+    companion object {
+        const val HOLDER_PARAGRAPH = 0
+        const val HOLDER_HEADER_ONE = 1
+        const val HOLDER_HEADER_TWO = 2
+        const val HOLDER_HEADER_THREE = 3
+        const val HOLDER_QUOTE = 4
+        const val HOLDER_CHECKBOX = 5
+        const val HOLDER_CODE_SNIPPET = 6
     }
 }

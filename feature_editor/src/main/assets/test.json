@@ -5,23 +5,31 @@
       "parentId": "",
       "type": 3,
       "contentType": 3,
-      "content": "{\"text\":\"Заголовок\",\"marks\":[]}",
+      "content": "{\"text\":\"Заголовок (h1)\",\"marks\":[]}",
       "children": []
     },
     {
       "id": "02ca4410-2cff-5978-81e5-09dc76dd003c",
       "parentId": "",
       "type": 3,
-      "contentType": 1,
-      "content": "{\"text\":\"первый элемент\",\"marks\":[]}",
+      "contentType": 4,
+      "content": "{\"text\":\"первый элемент (h3)\",\"marks\":[]}",
       "children": []
     },
     {
       "id": "116271cc-c6e3-5c58-8598-9342567b9a66",
       "parentId": "",
       "type": 3,
-      "contentType": 1,
-      "content": "{\"text\":\"второй элемент\",\"marks\":[]}",
+      "contentType": 8,
+      "content": "{\"text\":\"Все счастливые семьи похожи друг на друга, каждая несчастливая семья несчастлива по-своему\",\"marks\":[]}",
+      "children": []
+    },
+    {
+      "id": "116271cc-c6e3-5c58-8598-9342567b9a66",
+      "parentId": "",
+      "type": 3,
+      "contentType": 10,
+      "content": "{\"text\":\"Написать письмо\",\"marks\":[]}",
       "children": []
     },
     {
@@ -35,8 +43,8 @@
           "id": "22a8f9f5-b042-5532-bb5d-cbda07f579e0",
           "parentId": "93f8810e-590f-5962-a662-2c1fe17e5cbe",
           "type": 3,
-          "contentType": 1,
-          "content": "{\"text\":\"чайлд третьего\",\"marks\":[]}",
+          "contentType": 2,
+          "content": "{\"text\":\"data class User(val name : String)\",\"marks\":[]}",
           "children": [
             {
               "id": "1983",
@@ -62,8 +70,8 @@
       "id": "21fe093a-5f74-583b-9c17-ee798e1bfc7e",
       "parentId": "",
       "type": 3,
-      "contentType": 1,
-      "content": "{\"text\":\"четвертый элемент\",\"marks\":[]}",
+      "contentType": 2,
+      "content": "{\"text\":\"data class User(val name : String)\",\"marks\":[]}",
       "children": []
     },
     {

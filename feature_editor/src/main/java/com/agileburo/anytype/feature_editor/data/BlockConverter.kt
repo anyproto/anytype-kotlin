@@ -1,6 +1,8 @@
 package com.agileburo.anytype.feature_editor.data
 
 import com.agileburo.anytype.feature_editor.domain.Block
+import com.agileburo.anytype.feature_editor.domain.toContentType
+import com.agileburo.anytype.feature_editor.domain.toNumericalCode
 
 /**
  * Created by Konstantin Ivanov
@@ -17,13 +19,15 @@ class BlockConverterImpl : BlockConverter {
     override fun modelToDomain(model: BlockModel) = Block(
         id = model.id,
         content = model.content,
-        parentId = model.parentId
+        parentId = model.parentId,
+        contentType = model.contentType.toContentType()
     )
 
     override fun domainToModel(block: Block) = BlockModel(
         id = block.id,
         content = block.content,
         parentId = block.parentId,
-        children = mutableListOf()
+        children = mutableListOf(),
+        contentType = block.contentType.toNumericalCode()
     )
 }

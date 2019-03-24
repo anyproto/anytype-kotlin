@@ -10,6 +10,8 @@ import com.agileburo.anytype.feature_editor.data.datasource.BlockDataSource
 import com.agileburo.anytype.feature_editor.data.datasource.IPFSDataSourceImpl
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.domain.EditorInteractorImpl
+import com.agileburo.anytype.feature_editor.presentation.BlockContentTypeConverter
+import com.agileburo.anytype.feature_editor.presentation.BlockContentTypeConverterImpl
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModelFactory
 import com.agileburo.anytype.feature_editor.ui.EditorFragment
 import com.google.gson.Gson
@@ -55,4 +57,9 @@ class EditorModule {
     @PerFeature
     fun provideFactory(interactor: EditorInteractor): EditorViewModelFactory =
         EditorViewModelFactory(interactor)
+
+    @Provides
+    @PerFeature
+    fun provideContentTypeConverter(): BlockContentTypeConverter =
+            BlockContentTypeConverterImpl()
 }

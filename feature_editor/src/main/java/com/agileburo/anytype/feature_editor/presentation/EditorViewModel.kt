@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
+import com.agileburo.anytype.feature_editor.ui.EditBlockAction
 import com.agileburo.anytype.feature_editor.ui.EditorState
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,6 +21,23 @@ class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
     private val progress = BehaviorRelay.create<EditorState>()
 
     fun observeState() = progress
+
+    fun onBlockClicked(action: EditBlockAction) {
+        when (action) {
+            is EditBlockAction.TextClick -> {
+            }
+            is EditBlockAction.Header1Click -> {
+            }
+            is EditBlockAction.Header2Click -> {
+            }
+            is EditBlockAction.Header3Click -> {
+            }
+            is EditBlockAction.HighLightClick -> {
+            }
+            is EditBlockAction.BulletClick -> {
+            }
+        }
+    }
 
     fun getBlocks() {
         interactor.getBlocks()

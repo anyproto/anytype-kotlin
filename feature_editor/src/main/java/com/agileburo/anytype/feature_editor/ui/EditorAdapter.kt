@@ -9,6 +9,7 @@ import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
+import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import kotlinx.android.synthetic.main.item_block_editable.view.*
 import kotlinx.android.synthetic.main.item_block_header_one.view.*
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
@@ -25,6 +26,7 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
         val inflater = LayoutInflater.from(parent.context)
 
         return when(viewType) {
@@ -52,6 +54,10 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
                 val view = inflater.inflate(R.layout.item_block_checkbox, parent, false)
                 ViewHolder.CheckBoxHolder(view)
             }
+            HOLDER_CODE_SNIPPET -> {
+                val view = inflater.inflate(R.layout.item_block_code_snippet, parent, false)
+                ViewHolder.CodeSnippetHolder(view)
+            }
             else -> TODO()
         }
     }
@@ -64,6 +70,7 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
             is ContentType.H3 -> HOLDER_HEADER_THREE
             is ContentType.Quote -> HOLDER_QUOTE
             is ContentType.Check -> HOLDER_CHECKBOX
+            is ContentType.Code -> HOLDER_CODE_SNIPPET
             else -> TODO()
         }
     }
@@ -78,6 +85,7 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
             is ViewHolder.HeaderThreeHolder -> holder.bind(blocks[position])
             is ViewHolder.QuoteHolder -> holder.bind(blocks[position])
             is ViewHolder.CheckBoxHolder -> holder.bind(blocks[position])
+            is ViewHolder.CodeSnippetHolder -> holder.bind(blocks[position])
         }
     }
 
@@ -136,6 +144,14 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
             }
 
         }
+
+        class CodeSnippetHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(block: Block) {
+                itemView.codeSnippetContent.text = block.content
+            }
+
+        }
     }
 
     companion object {
@@ -145,5 +161,6 @@ class EditorAdapter(private val blocks: MutableList<Block>): RecyclerView.Adapte
         const val HOLDER_HEADER_THREE = 3
         const val HOLDER_QUOTE = 4
         const val HOLDER_CHECKBOX = 5
+        const val HOLDER_CODE_SNIPPET = 6
     }
 }

@@ -43,8 +43,8 @@
           "id": "22a8f9f5-b042-5532-bb5d-cbda07f579e0",
           "parentId": "93f8810e-590f-5962-a662-2c1fe17e5cbe",
           "type": 3,
-          "contentType": 1,
-          "content": "{\"text\":\"чайлд третьего\",\"marks\":[]}",
+          "contentType": 2,
+          "content": "{\"text\":\"data class User(val name : String)\",\"marks\":[]}",
           "children": [
             {
               "id": "1983",
@@ -70,8 +70,8 @@
       "id": "21fe093a-5f74-583b-9c17-ee798e1bfc7e",
       "parentId": "",
       "type": 3,
-      "contentType": 1,
-      "content": "{\"text\":\"четвертый элемент\",\"marks\":[]}",
+      "contentType": 2,
+      "content": "{\"text\":\"data class User(val name : String)\",\"marks\":[]}",
       "children": []
     },
     {

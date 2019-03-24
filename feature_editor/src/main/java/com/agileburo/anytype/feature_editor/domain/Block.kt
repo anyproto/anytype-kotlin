@@ -60,6 +60,7 @@ fun Int.toContentType(): ContentType =
 fun ContentType.toNumericalCode() : Int {
     return when(this) {
         ContentType.P -> 1
+        ContentType.Code -> 2
         ContentType.H1 -> 3
         ContentType.H2 -> 4
         ContentType.Quote -> 8

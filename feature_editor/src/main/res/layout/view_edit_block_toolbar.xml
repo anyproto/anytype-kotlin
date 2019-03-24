@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="#393834"
+    android:elevation="4dp"
+    >
+
+    <ImageView
+        android:id="@+id/btnText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:adjustViewBounds="false"
+        android:contentDescription="@string/editor_toolbar"
+        android:scaleType="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_text_block" />
+
+    <ImageView
+        android:id="@+id/btnHeader1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/editor_toolbar"
+        android:scaleType="center"
+        app:layout_constraintStart_toEndOf="@+id/btnText"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_header_1" />
+
+    <ImageView
+        android:id="@+id/btnHeader2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/editor_toolbar"
+        android:scaleType="center"
+        app:layout_constraintStart_toEndOf="@+id/btnHeader1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_header_2" />
+
+    <ImageView
+        android:id="@+id/btnHeader3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/editor_toolbar"
+        android:scaleType="center"
+        app:layout_constraintStart_toEndOf="@+id/btnHeader2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_header_3" />
+
+    <ImageView
+        android:id="@+id/btnHighlighted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/editor_toolbar"
+        android:scaleType="center"
+        app:layout_constraintStart_toEndOf="@+id/btnHeader3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_highlighted" />
+
+    <ImageView
+        android:id="@+id/btnBulleted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/editor_toolbar"
+        android:scaleType="center"
+        app:layout_constraintStart_toEndOf="@+id/btnHighlighted"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_bulleted" />
+</androidx.constraintlayout.widget.ConstraintLayout>

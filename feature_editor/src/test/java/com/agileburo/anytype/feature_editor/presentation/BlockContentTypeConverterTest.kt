@@ -10,7 +10,6 @@ class BlockContentTypeConverterTest {
     lateinit var converter: BlockContentTypeConverter
 
     private val CONTENT_TYPE = ContentType.Toggle
-    private val CONTENT_TYPE_OTHER = ContentType.Quote
     private val CONTENT_TYPE_SET_SIZE = ContentType::class::nestedClasses.get().size
 
     @Before
@@ -19,18 +18,10 @@ class BlockContentTypeConverterTest {
     }
 
     @Test
-    fun `should return set of size ContentType minus 1`() {
+    fun `should return set of size ContentType`() {
         Assert.assertEquals(
-            CONTENT_TYPE_SET_SIZE - 1,
+            CONTENT_TYPE_SET_SIZE,
             converter.getPermittedTypes(CONTENT_TYPE).size
         )
-    }
-
-    @Test
-    fun `should return set without initial content type`() {
-        val result = converter.getPermittedTypes(CONTENT_TYPE)
-        Assert.assertNotEquals(CONTENT_TYPE, CONTENT_TYPE_OTHER)
-        Assert.assertEquals(false, result.contains(CONTENT_TYPE))
-        Assert.assertEquals(true, result.contains(CONTENT_TYPE_OTHER))
     }
 }

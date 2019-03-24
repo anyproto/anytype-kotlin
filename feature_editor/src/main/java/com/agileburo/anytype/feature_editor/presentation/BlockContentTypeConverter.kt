@@ -15,5 +15,5 @@ class BlockContentTypeConverterImpl : BlockContentTypeConverter {
             ContentType.P, ContentType.Code, ContentType.H1, ContentType.H2,
             ContentType.H3, ContentType.OL, ContentType.UL, ContentType.Quote,
             ContentType.Toggle, ContentType.Check, ContentType.H4
-        ).filter { it != typeInitial }.toSet()
+        )
 }

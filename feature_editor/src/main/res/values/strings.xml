@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Editor</string>
+    <string name="editor_toolbar">button</string>
 </resources>

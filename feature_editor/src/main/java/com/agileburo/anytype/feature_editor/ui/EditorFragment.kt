@@ -29,6 +29,7 @@ abstract class EditorFragment : Fragment() {
     abstract fun inject()
 
     override fun onAttach(context: Context?) {
+        inject()
         super.onAttach(context)
         viewModel.observeState()
             .subscribe { handleState(it) }

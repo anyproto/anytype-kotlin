@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="16dp">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_margin="16dp">
+
+    <ImageView
+            android:id="@+id/btnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_edit"
+            android:contentDescription="@string/editor_toolbar"
+            android:layout_centerVertical="true"/>
 
     <TextView
-        android:id="@+id/tvId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"/>
+            android:id="@+id/tvId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/btnEdit"
+            android:layout_marginStart="8dp"
+            android:textSize="14sp"/>
 
     <TextView
-        android:id="@+id/tvContent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvId"
-        android:textSize="16sp"
-        android:textColor="@android:color/black"/>
+            android:id="@+id/tvContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvId"
+            android:layout_toEndOf="@id/btnEdit"
+            android:layout_marginStart="8dp"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"/>
 
 </RelativeLayout>

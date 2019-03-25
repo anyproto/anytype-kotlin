@@ -23,5 +23,6 @@ sealed class EditBlockAction {
 
 sealed class EditorState {
     data class Result(val blocks: List<Block>) : EditorState()
+    data class Update(val block: Block): EditorState()
     object Loading : EditorState()
 }

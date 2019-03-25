@@ -7,6 +7,7 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.domain.Block
+import com.agileburo.anytype.feature_editor.domain.Content
 import com.agileburo.anytype.feature_editor.domain.ContentType
 
 class EditBlockToolbar : ConstraintLayout {
@@ -20,7 +21,7 @@ class EditBlockToolbar : ConstraintLayout {
 
     private lateinit var buttons: List<View>
 
-    private var block = Block("","",ContentType.P,"")
+    private var block = Block("","",ContentType.P,content = Content.Text("", emptyList()))
 
     constructor(context: Context) : super(context) {
         initialize(context, null)

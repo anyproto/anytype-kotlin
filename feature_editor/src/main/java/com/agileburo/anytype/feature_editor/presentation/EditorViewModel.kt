@@ -2,7 +2,7 @@ package com.agileburo.anytype.feature_editor.presentation
 
 import androidx.lifecycle.ViewModel
 import com.agileburo.anytype.feature_editor.disposedBy
-import com.agileburo.anytype.feature_editor.domain.Block
+import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.ui.EditBlockAction
 import com.agileburo.anytype.feature_editor.ui.EditorState
@@ -16,8 +16,6 @@ class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
 
     private val disposable = CompositeDisposable()
 
-    private val state: MutableList<Block> = mutableListOf()
-
     private val progress = BehaviorRelay.create<EditorState>()
 
     fun observeState() = progress
@@ -25,12 +23,16 @@ class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
     fun onBlockClicked(action: EditBlockAction) {
         when (action) {
             is EditBlockAction.TextClick -> {
+                progress.accept(EditorState.Update(action.block.copy(contentType = ContentType.P)))
             }
             is EditBlockAction.Header1Click -> {
+                progress.accept(EditorState.Update(action.block.copy(contentType = ContentType.H1)))
             }
             is EditBlockAction.Header2Click -> {
+                progress.accept(EditorState.Update(action.block.copy(contentType = ContentType.H2)))
             }
             is EditBlockAction.Header3Click -> {
+                progress.accept(EditorState.Update(action.block.copy(contentType = ContentType.H3)))
             }
             is EditBlockAction.HighLightClick -> {
             }
@@ -48,10 +50,6 @@ class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
                 { error -> Timber.d("Get blocks error : $error") }
             )
             .disposedBy(disposable)
-    }
-
-    fun persist() {
-        interactor.saveState(state)
     }
 
     override fun onCleared() {

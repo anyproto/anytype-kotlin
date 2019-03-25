@@ -2,10 +2,7 @@ package com.agileburo.anytype.feature_editor
 
 import android.content.Context
 import com.agileburo.anytype.core_utils.di.PerFeature
-import com.agileburo.anytype.feature_editor.data.BlockConverter
-import com.agileburo.anytype.feature_editor.data.BlockConverterImpl
-import com.agileburo.anytype.feature_editor.data.EditorRepo
-import com.agileburo.anytype.feature_editor.data.EditorRepoImpl
+import com.agileburo.anytype.feature_editor.data.*
 import com.agileburo.anytype.feature_editor.data.datasource.BlockDataSource
 import com.agileburo.anytype.feature_editor.data.datasource.IPFSDataSourceImpl
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
@@ -37,7 +34,8 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideBlockConverter(): BlockConverter = BlockConverterImpl()
+    fun provideBlockConverter(contentConverter: ContentConverter): BlockConverter =
+        BlockConverterImpl(contentConverter = contentConverter)
 
     @Provides
     @PerFeature
@@ -62,4 +60,9 @@ class EditorModule {
     @PerFeature
     fun provideContentTypeConverter(): BlockContentTypeConverter =
             BlockContentTypeConverterImpl()
+
+    @Provides
+    @PerFeature
+    fun provideBlockContentConverter(): ContentConverter =
+            ContentConverterImpl()
 }

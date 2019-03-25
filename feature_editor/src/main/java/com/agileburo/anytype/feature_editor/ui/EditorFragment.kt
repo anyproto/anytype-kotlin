@@ -58,10 +58,22 @@ abstract class EditorFragment : Fragment() {
             editBlockToolbar.visibility = View.VISIBLE
         }
         editBlockToolbar.setMainActions(
-            { viewModel.onBlockClicked(EditBlockAction.TextClick(it)) },
-            { viewModel.onBlockClicked(EditBlockAction.Header1Click(it)) },
-            { viewModel.onBlockClicked(EditBlockAction.Header2Click(it)) },
-            { viewModel.onBlockClicked(EditBlockAction.Header3Click(it)) },
+            {
+                viewModel.onBlockClicked(EditBlockAction.TextClick(it))
+                editBlockToolbar.visibility = View.INVISIBLE
+            },
+            {
+                viewModel.onBlockClicked(EditBlockAction.Header1Click(it))
+                editBlockToolbar.visibility = View.INVISIBLE
+            },
+            {
+                viewModel.onBlockClicked(EditBlockAction.Header2Click(it))
+                editBlockToolbar.visibility = View.INVISIBLE
+            },
+            {
+                viewModel.onBlockClicked(EditBlockAction.Header3Click(it))
+                editBlockToolbar.visibility = View.INVISIBLE
+            },
             { EditBlockAction.HighLightClick(it) },
             { EditBlockAction.BulletClick(it) })
         setHasFixedSize(true)
@@ -78,6 +90,9 @@ abstract class EditorFragment : Fragment() {
         }
         is EditorState.Result -> {
             (blockList.adapter as? EditorAdapter)?.setBlocks(state.blocks)
+        }
+        is EditorState.Update -> {
+            (blockList.adapter as? EditorAdapter)?.updateBlock(state.block)
         }
     }
 }

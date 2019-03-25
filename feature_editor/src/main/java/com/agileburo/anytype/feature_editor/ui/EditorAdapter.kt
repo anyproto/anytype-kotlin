@@ -27,6 +27,12 @@ class EditorAdapter(private val blocks: MutableList<Block>,
         notifyDataSetChanged()
     }
 
+    fun updateBlock(block: Block) {
+        val index = blocks.indexOfFirst { it.id == block.id }
+        blocks[index] = block
+        notifyItemChanged(index)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
         val inflater = LayoutInflater.from(parent.context)
@@ -107,7 +113,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
 
             fun bind(block : Block, clickListener: (Block) -> Unit) {
                 itemView.tvId.text = "id :${block.id}"
-                itemView.tvContent.text = block.content
+                itemView.tvContent.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
         }
@@ -115,7 +121,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
         class HeaderOneHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block : Block, clickListener: (Block) -> Unit) {
-                itemView.headerContentText.text = block.content
+                itemView.headerContentText.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
         }
@@ -123,7 +129,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
         class HeaderTwoHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block : Block, clickListener: (Block) -> Unit) {
-                itemView.headerTwoContentText.text = block.content
+                itemView.headerTwoContentText.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
         }
@@ -131,7 +137,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
         class HeaderThreeHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block : Block, clickListener: (Block) -> Unit) {
-                itemView.headerThreeContentText.text = block.content
+                itemView.headerThreeContentText.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
         }
@@ -139,7 +145,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
         class QuoteHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block : Block, clickListener: (Block) -> Unit) {
-                itemView.quoteContent.text = block.content
+                itemView.quoteContent.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
         }
@@ -147,7 +153,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
         class CheckBoxHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block : Block, clickListener: (Block) -> Unit) {
-                itemView.checkBoxContent.text = block.content
+                itemView.checkBoxContent.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
 
@@ -156,7 +162,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
         class CodeSnippetHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: Block, clickListener: (Block) -> Unit) {
-                itemView.codeSnippetContent.text = block.content
+                itemView.codeSnippetContent.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
 

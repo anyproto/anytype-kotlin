@@ -8,7 +8,7 @@ package com.agileburo.anytype.feature_editor.data
 data class BlockModel(
     val id: String,
     val parentId: String = "",
-    val content: String = "",
-    val contentType : Int,
+    val content: ContentModel = ContentModel(),
+    val contentType: Int,
     val children: List<BlockModel>
 )

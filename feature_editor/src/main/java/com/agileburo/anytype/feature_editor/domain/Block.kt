@@ -37,7 +37,7 @@ data class Block(
     val parentId: String,
     val contentType: ContentType,
     // TODO parse marks and other stuff
-    val content: String
+    val content: Content.Text
     // TODO add blockType
 )
 

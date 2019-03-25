@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Editor</string>
     <string name="editor_toolbar">button</string>
+
+    <string name="icon_code">Code</string>
+    <string name="icon_u">U</string>
 </resources>

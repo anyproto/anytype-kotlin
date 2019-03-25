@@ -7,7 +7,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
 import com.agileburo.anytype.feature_editor.R
-import kotlinx.android.synthetic.main.view_anytype_text_style_toolbar.view.*
+import kotlinx.android.synthetic.main.view_text_style_toolbar.view.*
 
 class TextStyleToolbar : ConstraintLayout {
 
@@ -16,20 +16,20 @@ class TextStyleToolbar : ConstraintLayout {
     private lateinit var btnStrokeThrough: ImageView
 
     constructor(context: Context) : super(context) {
-        initialize(context, null)
+        initialize(context)
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        initialize(context, attrs)
+        initialize(context)
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr) {
-        initialize(context, attrs)
+        initialize(context)
     }
 
-    private fun initialize(context: Context, attrs: AttributeSet?) {
-        View.inflate(context, R.layout.view_anytype_text_style_toolbar, this)
+    private fun initialize(context: Context) {
+        View.inflate(context, R.layout.view_text_style_toolbar, this)
 
         btnBold = findViewById(R.id.btnBold)
         btnItalic = findViewById(R.id.btnItalic)

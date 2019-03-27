@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="#393834"
         android:elevation="4dp"
@@ -12,7 +12,7 @@
             android:id="@+id/btnText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:contentDescription="@string/editor_toolbar"
             android:scaleType="fitXY"
@@ -20,7 +20,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_text_block"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/btnHeader1"/>
 
     <ImageView
             android:id="@+id/btnHeader1"
@@ -34,7 +35,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_header_1"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/btnText"/>
 
     <ImageView
             android:id="@+id/btnHeader2"
@@ -48,7 +50,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_header_2"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/btnHeader3"/>
 
     <ImageView
             android:id="@+id/btnHeader3"
@@ -62,7 +65,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_header_3"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/btnHighlighted"/>
 
     <ImageView
             android:id="@+id/btnHighlighted"
@@ -77,7 +81,8 @@
             app:srcCompat="@drawable/ic_highlighted"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/btnBulleted"/>
 
     <ImageView
             android:id="@+id/btnBulleted"
@@ -92,7 +97,8 @@
             app:srcCompat="@drawable/ic_bulleted"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/btnNumberedList"/>
 
     <ImageView
             android:layout_width="wrap_content"
@@ -106,13 +112,14 @@
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitXY" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/btnCode"/>
 
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_toggle"
-            android:id="@+id/btnToggle"
+            app:srcCompat="@drawable/ic_code"
+            android:id="@+id/btnCode"
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btnNumberedList"
@@ -120,35 +127,46 @@
             android:contentDescription="@string/editor_toolbar"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitXY" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/btnCheckbox"/>
 
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_checkbox"
-            android:id="@+id/imageView3"
+            android:id="@+id/btnCheckbox"
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btnToggle"
+            app:layout_constraintStart_toEndOf="@+id/btnCode"
             android:contentDescription="@string/editor_toolbar"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitXY" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/btnNewPage"/>
 
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_new_page"
-            android:id="@+id/imageView4"
+            android:id="@+id/btnNewPage"
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView3"
+            app:layout_constraintStart_toEndOf="@+id/btnCheckbox"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp"
-            android:contentDescription="@string/editor_toolbar"/>
+            android:contentDescription="@string/editor_toolbar"
+            app:layout_constraintHorizontal_bias="0.5"/>
+
+    <androidx.constraintlayout.widget.Group
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="btnNewPage, btnCheckbox,
+            btnNumberedList,btnBulleted,btnHighlighted,btnHeader3,
+            btnHeader2,btnHeader1,btnText"
+            android:id="@+id/types"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

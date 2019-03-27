@@ -55,8 +55,8 @@ abstract class EditorFragment : Fragment() {
         layoutManager = LinearLayoutManager(requireContext())
         adapter = EditorAdapter(mutableListOf())
         {
-            editBlockToolbar.setBlock(it)
-            editBlockToolbar.visibility = View.VISIBLE
+            editBlockToolbar.hide()
+            editBlockToolbar.show(emptyList(), it)
         }
         editBlockToolbar.setMainActions(
             {

@@ -3,25 +3,16 @@ package com.agileburo.anytype.feature_editor.ui
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.Content
 import com.agileburo.anytype.feature_editor.domain.ContentType
+import kotlinx.android.synthetic.main.view_edit_block_toolbar.view.*
 
 class EditBlockToolbar : ConstraintLayout {
 
-    private lateinit var btnText: ImageView
-    private lateinit var btnHeader1: ImageView
-    private lateinit var btnHeader2: ImageView
-    private lateinit var btnHeader3: ImageView
-    private lateinit var btnHightLight: ImageView
-    private lateinit var btnBullet: ImageView
-
-    private lateinit var buttons: List<View>
-
-    private var block = Block("","",ContentType.P,content = Content.Text("", emptyList()))
+    private var block = Block("", "", ContentType.P, content = Content.Text("", emptyList()))
 
     constructor(context: Context) : super(context) {
         initialize(context, null)
@@ -36,27 +27,13 @@ class EditBlockToolbar : ConstraintLayout {
         initialize(context, attrs)
     }
 
-    fun setBlock(block: Block) {
-        this.block = block
-        buttons.forEach { it.isSelected = false }
-        when (block.contentType) {
-            is ContentType.P -> btnText.isSelected = true
-            is ContentType.H1 -> btnHeader1.isSelected = true
-            is ContentType.H2 -> btnHeader2.isSelected = true
-            is ContentType.H3 -> btnHeader3.isSelected = true
-        }
+    fun show(typesToHide: List<ContentType>, initialBlock: Block) {
+        typesToHide.forEach { getButton(it).visibility = View.GONE }
+        getButton(initialBlock.contentType).isSelected = true
     }
 
     private fun initialize(context: Context, attrs: AttributeSet?) {
         View.inflate(context, R.layout.view_edit_block_toolbar, this)
-
-        btnText = findViewById(R.id.btnText)
-        btnHeader1 = findViewById(R.id.btnHeader1)
-        btnHeader2 = findViewById(R.id.btnHeader2)
-        btnHeader3 = findViewById(R.id.btnHeader3)
-        btnHightLight = findViewById(R.id.btnHighlighted)
-        btnBullet = findViewById(R.id.btnBulleted)
-        buttons = listOf(btnText, btnHeader1, btnHeader2, btnHeader3, btnHightLight, btnBullet)
     }
 
     fun setMainActions(
@@ -83,14 +60,34 @@ class EditBlockToolbar : ConstraintLayout {
             it.isSelected = !it.isSelected
             header3Click(block)
         }
-        btnHightLight.setOnClickListener {
+        btnHighlighted.setOnClickListener {
             it.isSelected = !it.isSelected
             hightLitedClick(block)
         }
-        btnBullet.setOnClickListener {
+        btnBulleted.setOnClickListener {
             it.isSelected = !it.isSelected
             bulledClick(block)
         }
 
     }
+
+    private fun getButton(type: ContentType) =
+        when (type) {
+            ContentType.P -> btnText
+            ContentType.H2 -> btnHeader1
+            ContentType.H3 -> btnHeader2
+            ContentType.H4 -> btnHeader3
+            ContentType.UL -> btnBulleted
+            ContentType.Toggle -> btnCode
+            ContentType.Quote -> btnHighlighted
+            ContentType.OL -> btnNumberedList
+            ContentType.Check -> btnCheckbox
+            ContentType.Code -> btnCode
+            else -> btnText
+        }
+}
+
+fun EditBlockToolbar.hide() = {
+    types.isSelected = false
+   // this.visibility = View.INVISIBLE
 }

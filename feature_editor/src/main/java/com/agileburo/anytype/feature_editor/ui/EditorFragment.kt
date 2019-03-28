@@ -15,6 +15,7 @@ import com.agileburo.anytype.feature_editor.presentation.EditorViewModel
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModelFactory
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_editor.*
+import timber.log.Timber
 import javax.inject.Inject
 
 abstract class EditorFragment : Fragment() {
@@ -46,7 +47,6 @@ abstract class EditorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initializeView()
         viewModel.getBlocks()
     }
@@ -55,28 +55,21 @@ abstract class EditorFragment : Fragment() {
         layoutManager = LinearLayoutManager(requireContext())
         adapter = EditorAdapter(mutableListOf())
         {
-            editBlockToolbar.hide()
+            Timber.d("On Block Clicked ${it.contentType}")
+            editBlockToolbar.visibility = View.VISIBLE
             editBlockToolbar.show(emptyList(), it)
         }
         editBlockToolbar.setMainActions(
-            {
-                viewModel.onBlockClicked(EditBlockAction.TextClick(it))
-                editBlockToolbar.visibility = View.INVISIBLE
-            },
-            {
-                viewModel.onBlockClicked(EditBlockAction.Header1Click(it))
-                editBlockToolbar.visibility = View.INVISIBLE
-            },
-            {
-                viewModel.onBlockClicked(EditBlockAction.Header2Click(it))
-                editBlockToolbar.visibility = View.INVISIBLE
-            },
-            {
-                viewModel.onBlockClicked(EditBlockAction.Header3Click(it))
-                editBlockToolbar.visibility = View.INVISIBLE
-            },
-            { EditBlockAction.HighLightClick(it) },
-            { EditBlockAction.BulletClick(it) })
+            textClick = { viewModel.onBlockClicked(EditBlockAction.TextClick(it)) },
+            header1Click = { viewModel.onBlockClicked(EditBlockAction.Header1Click(it)) },
+            header2Click = { viewModel.onBlockClicked(EditBlockAction.Header2Click(it)) },
+            header3Click = { viewModel.onBlockClicked(EditBlockAction.Header3Click(it)) },
+            hightLitedClick = { viewModel.onBlockClicked(EditBlockAction.HighLightClick(it)) },
+            bulletedClick = { viewModel.onBlockClicked(EditBlockAction.BulletClick(it)) },
+            numberedClick = { viewModel.onBlockClicked(EditBlockAction.NumberedClick(it)) },
+            checkBoxClick = { viewModel.onBlockClicked(EditBlockAction.CheckBoxClick(it)) },
+            codeClick = { viewModel.onBlockClicked(EditBlockAction.CodeClick(it)) }
+        )
         setHasFixedSize(true)
         addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
     }

@@ -57,8 +57,8 @@ fun Int.toContentType(): ContentType =
         else -> ContentType.H1
     }
 
-fun ContentType.toNumericalCode() : Int {
-    return when(this) {
+fun ContentType.toNumericalCode(): Int {
+    return when (this) {
         ContentType.P -> 1
         ContentType.Code -> 2
         ContentType.H1 -> 3

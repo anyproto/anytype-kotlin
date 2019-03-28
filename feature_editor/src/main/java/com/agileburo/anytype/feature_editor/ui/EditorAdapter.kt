@@ -17,8 +17,10 @@ import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import timber.log.Timber
 
-class EditorAdapter(private val blocks: MutableList<Block>,
-                    private val listener: (Block) -> Unit):
+class EditorAdapter(
+    private val blocks: MutableList<Block>,
+    private val listener: (Block) -> Unit
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setBlocks(items: List<Block>) {
@@ -29,15 +31,17 @@ class EditorAdapter(private val blocks: MutableList<Block>,
 
     fun updateBlock(block: Block) {
         val index = blocks.indexOfFirst { it.id == block.id }
-        blocks[index] = block
-        notifyItemChanged(index)
+        if (index >= 0 || index < blocks.size) {
+            blocks[index] = block
+            notifyItemChanged(index)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
         val inflater = LayoutInflater.from(parent.context)
 
-        return when(viewType) {
+        return when (viewType) {
             HOLDER_PARAGRAPH -> {
                 val view = inflater.inflate(R.layout.item_block_editable, parent, false)
                 ViewHolder.ParagraphHolder(view)
@@ -71,7 +75,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when(blocks[position].contentType) {
+        return when (blocks[position].contentType) {
             is ContentType.P -> HOLDER_PARAGRAPH
             is ContentType.H1 -> HOLDER_HEADER_ONE
             is ContentType.H2 -> HOLDER_HEADER_TWO
@@ -111,7 +115,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
 
         class ParagraphHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block, clickListener: (Block) -> Unit) {
+            fun bind(block: Block, clickListener: (Block) -> Unit) {
                 itemView.tvId.text = "id :${block.id}"
                 itemView.tvContent.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
@@ -120,7 +124,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
 
         class HeaderOneHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block, clickListener: (Block) -> Unit) {
+            fun bind(block: Block, clickListener: (Block) -> Unit) {
                 itemView.headerContentText.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
@@ -128,7 +132,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
 
         class HeaderTwoHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block, clickListener: (Block) -> Unit) {
+            fun bind(block: Block, clickListener: (Block) -> Unit) {
                 itemView.headerTwoContentText.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
@@ -136,7 +140,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
 
         class HeaderThreeHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block, clickListener: (Block) -> Unit) {
+            fun bind(block: Block, clickListener: (Block) -> Unit) {
                 itemView.headerThreeContentText.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
@@ -144,7 +148,7 @@ class EditorAdapter(private val blocks: MutableList<Block>,
 
         class QuoteHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block, clickListener: (Block) -> Unit) {
+            fun bind(block: Block, clickListener: (Block) -> Unit) {
                 itemView.quoteContent.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
@@ -152,20 +156,20 @@ class EditorAdapter(private val blocks: MutableList<Block>,
 
         class CheckBoxHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block : Block, clickListener: (Block) -> Unit) {
+            fun bind(block: Block, clickListener: (Block) -> Unit) {
                 itemView.checkBoxContent.text = block.content.text
-                itemView.setOnClickListener { clickListener(block) }
+                itemView.checkBoxContent.setOnClickListener {
+                    clickListener(block)
+                }
             }
-
         }
 
         class CodeSnippetHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: Block, clickListener: (Block) -> Unit) {
                 itemView.codeSnippetContent.text = block.content.text
-                itemView.setOnClickListener { clickListener(block) }
+                itemView.codeSnippetContent.setOnClickListener { clickListener(block) }
             }
-
         }
     }
 

@@ -28,6 +28,7 @@ class EditBlockToolbar : ConstraintLayout {
     }
 
     fun show(typesToHide: List<ContentType>, initialBlock: Block) {
+        unSelectViews()
         typesToHide.forEach { getButton(it).visibility = View.GONE }
         getButton(initialBlock.contentType).isSelected = true
     }
@@ -42,33 +43,20 @@ class EditBlockToolbar : ConstraintLayout {
         header2Click: (Block) -> Unit,
         header3Click: (Block) -> Unit,
         hightLitedClick: (Block) -> Unit,
-        bulledClick: (Block) -> Unit
+        bulletedClick: (Block) -> Unit,
+        numberedClick: (Block) -> Unit,
+        checkBoxClick: (Block) -> Unit,
+        codeClick: (Block) -> Unit
     ) {
-        btnText.setOnClickListener {
-            it.isSelected = !it.isSelected
-            textClick(block)
-        }
-        btnHeader1.setOnClickListener {
-            it.isSelected = !it.isSelected
-            header1Click(block)
-        }
-        btnHeader2.setOnClickListener {
-            it.isSelected = !it.isSelected
-            header2Click(block)
-        }
-        btnHeader3.setOnClickListener {
-            it.isSelected = !it.isSelected
-            header3Click(block)
-        }
-        btnHighlighted.setOnClickListener {
-            it.isSelected = !it.isSelected
-            hightLitedClick(block)
-        }
-        btnBulleted.setOnClickListener {
-            it.isSelected = !it.isSelected
-            bulledClick(block)
-        }
-
+        btnText.setClick(textClick, block)
+        btnHeader1.setClick(header1Click, block)
+        btnHeader2.setClick(header2Click, block)
+        btnHeader3.setClick(header3Click, block)
+        btnHighlighted.setClick(hightLitedClick, block)
+        btnBulleted.setClick(bulletedClick, block)
+        btnNumberedList.setClick(numberedClick, block)
+        btnCheckbox.setClick(checkBoxClick, block)
+        btnCode.setClick(codeClick, block)
     }
 
     private fun getButton(type: ContentType) =
@@ -78,16 +66,29 @@ class EditBlockToolbar : ConstraintLayout {
             ContentType.H3 -> btnHeader2
             ContentType.H4 -> btnHeader3
             ContentType.UL -> btnBulleted
-            ContentType.Toggle -> btnCode
             ContentType.Quote -> btnHighlighted
             ContentType.OL -> btnNumberedList
             ContentType.Check -> btnCheckbox
             ContentType.Code -> btnCode
             else -> btnText
         }
+
+    private fun unSelectViews() {
+        btnText.isSelected = false
+        btnHeader1.isSelected = false
+        btnHeader2.isSelected = false
+        btnHeader3.isSelected = false
+        btnHighlighted.isSelected = false
+        btnBulleted.isSelected = false
+        btnNumberedList.isSelected = false
+        btnCheckbox.isSelected = false
+        btnCode.isSelected = false
+    }
 }
 
-fun EditBlockToolbar.hide() = {
-    types.isSelected = false
-   // this.visibility = View.INVISIBLE
-}
+fun View.setClick(click: (Block) -> Unit, block: Block) =
+    this.setOnClickListener {
+
+        it.isSelected = !it.isSelected
+        click(block)
+    }

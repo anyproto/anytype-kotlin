@@ -56,6 +56,7 @@ abstract class EditorFragment : Fragment() {
     private fun initializeView() = with(blockList) {
         layoutManager = LinearLayoutManager(requireContext())
         adapter = EditorAdapter(mutableListOf()) { viewModel.onBlockClicked(it) }
+
         editBlockToolbar.setMainActions(
             textClick = { viewModel.onContentTypeClicked(EditBlockAction.TextClick(it)) },
             header1Click = { viewModel.onContentTypeClicked(EditBlockAction.Header1Click(it)) },
@@ -68,7 +69,9 @@ abstract class EditorFragment : Fragment() {
             checkBoxClick = { viewModel.onContentTypeClicked(EditBlockAction.CheckBoxClick(it)) },
             codeClick = { viewModel.onContentTypeClicked(EditBlockAction.CodeClick(it)) }
         )
+
         setHasFixedSize(true)
+
         addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
     }
 

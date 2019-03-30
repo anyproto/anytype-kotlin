@@ -15,9 +15,8 @@ class EditorInteractorImpl @Inject constructor(private val repo: EditorRepo) : E
 
     override fun getBlocks(): Single<List<Block>> =
         repo.getBlocks()
-            .toObservable()
-            .flatMap { Observable.fromIterable(it) }
-            .filter { it.content.text.isNotEmpty() }
+            .flattenAsObservable { blocks -> blocks }
+            .filter { block -> block.content.text.isNotEmpty() }
             .toList()
 
     override fun saveState(list: MutableList<Block>) {

@@ -26,16 +26,16 @@ class EditorViewModel(
 
     fun onContentTypeClicked(action: EditBlockAction) =
         when (action) {
-            is EditBlockAction.TextClick -> accept(block = action.block, contentType = ContentType.P)
-            is EditBlockAction.Header1Click -> accept(block = action.block, contentType = ContentType.H1)
-            is EditBlockAction.Header2Click -> accept(block = action.block, contentType = ContentType.H2)
-            is EditBlockAction.Header3Click -> accept(block = action.block, contentType = ContentType.H3)
-            is EditBlockAction.Header4Click -> accept(block = action.block, contentType = ContentType.H4)
-            is EditBlockAction.HighLightClick -> accept(block = action.block, contentType = ContentType.Quote)
-            is EditBlockAction.BulletClick -> accept(block = action.block, contentType = ContentType.UL)
-            is EditBlockAction.NumberedClick -> accept(block = action.block, contentType = ContentType.OL)
-            is EditBlockAction.CheckBoxClick -> accept(block = action.block, contentType = ContentType.Check)
-            is EditBlockAction.CodeClick -> accept(block = action.block, contentType = ContentType.Code)
+            is EditBlockAction.TextClick -> dispatchContentTypeUpdate(block = action.block, contentType = ContentType.P)
+            is EditBlockAction.Header1Click -> dispatchContentTypeUpdate(block = action.block, contentType = ContentType.H1)
+            is EditBlockAction.Header2Click -> dispatchContentTypeUpdate(block = action.block, contentType = ContentType.H2)
+            is EditBlockAction.Header3Click -> dispatchContentTypeUpdate(block = action.block, contentType = ContentType.H3)
+            is EditBlockAction.Header4Click -> dispatchContentTypeUpdate(block = action.block, contentType = ContentType.H4)
+            is EditBlockAction.HighLightClick -> dispatchContentTypeUpdate(block = action.block, contentType = ContentType.Quote)
+            is EditBlockAction.BulletClick -> dispatchContentTypeUpdate(block = action.block, contentType = ContentType.UL)
+            is EditBlockAction.NumberedClick -> dispatchContentTypeUpdate(block = action.block, contentType = ContentType.OL)
+            is EditBlockAction.CheckBoxClick -> dispatchContentTypeUpdate(block = action.block, contentType = ContentType.Check)
+            is EditBlockAction.CodeClick -> dispatchContentTypeUpdate(block = action.block, contentType = ContentType.Code)
         }.also { progress.accept(EditorState.HideToolbar) }
 
     fun onBlockClicked(block: Block) =
@@ -46,8 +46,11 @@ class EditorViewModel(
             )
         )
 
-    private fun accept(block: Block, contentType: ContentType) =
-        progress.accept(EditorState.Update(block.copy(contentType = contentType)))
+    private fun dispatchContentTypeUpdate(block: Block, contentType: ContentType) {
+        if (block.contentType != contentType)
+            progress.accept(EditorState.Update(block.copy(contentType = contentType)))
+    }
+
 
     fun getBlocks() {
         interactor.getBlocks()

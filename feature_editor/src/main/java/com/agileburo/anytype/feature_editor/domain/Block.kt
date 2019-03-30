@@ -65,6 +65,10 @@ fun ContentType.toNumericalCode(): Int {
         ContentType.H2 -> 4
         ContentType.Quote -> 8
         ContentType.Check -> 10
+        ContentType.H3 -> 5
+        ContentType.H4 -> 11
+        ContentType.UL -> 7
+        ContentType.OL -> 6
         else -> TODO()
     }
 }

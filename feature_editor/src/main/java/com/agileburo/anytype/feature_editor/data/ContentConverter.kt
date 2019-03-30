@@ -16,7 +16,11 @@ class ContentConverterImpl : ContentConverter {
 
     //TODO add marks convert!
     override fun modelToDomain(model: ContentModel) =
-        Content.Text(text = model.text, marks = emptyList())
+        Content.Text(
+            text = model.text,
+            marks = emptyList(),
+            param = Any()
+        )
 
     //TODO add marks convert!
     override fun domainToModel(domain: Content.Text) =

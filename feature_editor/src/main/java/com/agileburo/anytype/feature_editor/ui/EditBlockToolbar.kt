@@ -12,7 +12,16 @@ import kotlinx.android.synthetic.main.view_edit_block_toolbar.view.*
 
 class EditBlockToolbar : ConstraintLayout {
 
-    private var block = Block("", "", ContentType.P, content = Content.Text("", emptyList()))
+    private var block = Block(
+        id = "",
+        parentId = "",
+        contentType = ContentType.P,
+        content = Content.Text(
+            text = "",
+            marks = emptyList(),
+            param = Any()
+        )
+    )
 
     constructor(context: Context) : super(context) {
         initialize(context, null)

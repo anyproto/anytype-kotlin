@@ -70,8 +70,20 @@ class EditorViewModel(
     }
 
     private fun convertBlock(block: Block, contentType: ContentType) {
-        if (block.contentType != contentType)
-            progress.accept(EditorState.Update(contentTypeConverter.convert(block, contentType)))
+        if (block.contentType != contentType) {
+
+            if (contentType == ContentType.UL) {
+
+                //val index = blocks.indexOfFirst { it.id == block.id }
+
+                progress.accept(EditorState.Update(contentTypeConverter.convert(block, contentType)))
+
+            } else {
+                progress.accept(EditorState.Update(contentTypeConverter.convert(block, contentType)))
+            }
+
+
+        }
     }
 
     override fun onCleared() {

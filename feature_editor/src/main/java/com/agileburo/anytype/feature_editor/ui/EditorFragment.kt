@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.disposedBy
+import com.agileburo.anytype.feature_editor.domain.Block
+import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModel
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModelFactory
 import io.reactivex.disposables.CompositeDisposable
@@ -53,22 +55,18 @@ abstract class EditorFragment : Fragment() {
 
     private fun initializeView() = with(blockList) {
         layoutManager = LinearLayoutManager(requireContext())
-        adapter = EditorAdapter(mutableListOf())
-        {
-            Timber.d("On Block Clicked ${it.contentType}")
-            editBlockToolbar.visibility = View.VISIBLE
-            editBlockToolbar.show(emptyList(), it)
-        }
+        adapter = EditorAdapter(mutableListOf()) { viewModel.onBlockClicked(it) }
         editBlockToolbar.setMainActions(
-            textClick = { viewModel.onBlockClicked(EditBlockAction.TextClick(it)) },
-            header1Click = { viewModel.onBlockClicked(EditBlockAction.Header1Click(it)) },
-            header2Click = { viewModel.onBlockClicked(EditBlockAction.Header2Click(it)) },
-            header3Click = { viewModel.onBlockClicked(EditBlockAction.Header3Click(it)) },
-            hightLitedClick = { viewModel.onBlockClicked(EditBlockAction.HighLightClick(it)) },
-            bulletedClick = { viewModel.onBlockClicked(EditBlockAction.BulletClick(it)) },
-            numberedClick = { viewModel.onBlockClicked(EditBlockAction.NumberedClick(it)) },
-            checkBoxClick = { viewModel.onBlockClicked(EditBlockAction.CheckBoxClick(it)) },
-            codeClick = { viewModel.onBlockClicked(EditBlockAction.CodeClick(it)) }
+            textClick = { viewModel.onContentTypeClicked(EditBlockAction.TextClick(it)) },
+            header1Click = { viewModel.onContentTypeClicked(EditBlockAction.Header1Click(it)) },
+            header2Click = { viewModel.onContentTypeClicked(EditBlockAction.Header2Click(it)) },
+            header3Click = { viewModel.onContentTypeClicked(EditBlockAction.Header3Click(it)) },
+            header4Click = { viewModel.onContentTypeClicked(EditBlockAction.Header4Click(it)) },
+            hightLitedClick = { viewModel.onContentTypeClicked(EditBlockAction.HighLightClick(it)) },
+            bulletedClick = { viewModel.onContentTypeClicked(EditBlockAction.BulletClick(it)) },
+            numberedClick = { viewModel.onContentTypeClicked(EditBlockAction.NumberedClick(it)) },
+            checkBoxClick = { viewModel.onContentTypeClicked(EditBlockAction.CheckBoxClick(it)) },
+            codeClick = { viewModel.onContentTypeClicked(EditBlockAction.CodeClick(it)) }
         )
         setHasFixedSize(true)
         addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
@@ -82,11 +80,21 @@ abstract class EditorFragment : Fragment() {
     private fun handleState(state: EditorState) = when (state) {
         is EditorState.Loading -> {
         }
-        is EditorState.Result -> {
-            (blockList.adapter as? EditorAdapter)?.setBlocks(state.blocks)
-        }
-        is EditorState.Update -> {
-            (blockList.adapter as? EditorAdapter)?.updateBlock(state.block)
-        }
+        is EditorState.Result -> setBlocks(state.blocks)
+        is EditorState.Update -> updateBlock(state.block)
+        is EditorState.ShowToolbar -> showToolbar(block = state.block, typesToHide = state.typesToHide)
+        is EditorState.HideToolbar -> hideToolbar()
+    }
+
+    private fun setBlocks(blocks: List<Block>) = (blockList.adapter as? EditorAdapter)?.setBlocks(blocks)
+    private fun updateBlock(block: Block) = (blockList.adapter as? EditorAdapter)?.updateBlock(block)
+
+    private fun showToolbar(block: Block, typesToHide: Set<ContentType>) = with(editBlockToolbar) {
+        show(initialBlock = block, typesToHide = typesToHide)
+        visibility = View.VISIBLE
+    }
+
+    private fun hideToolbar() = with(editBlockToolbar) {
+        visibility = View.INVISIBLE
     }
 }

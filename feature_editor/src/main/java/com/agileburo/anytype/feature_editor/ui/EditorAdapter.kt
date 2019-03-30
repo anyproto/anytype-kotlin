@@ -1,5 +1,8 @@
 package com.agileburo.anytype.feature_editor.ui
 
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.BulletSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,11 +14,13 @@ import com.agileburo.anytype.feature_editor.domain.ContentType
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import kotlinx.android.synthetic.main.item_block_editable.view.*
+import kotlinx.android.synthetic.main.item_block_header_four.view.*
 import kotlinx.android.synthetic.main.item_block_header_one.view.*
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import timber.log.Timber
+import java.lang.IllegalStateException
 
 class EditorAdapter(
     private val blocks: MutableList<Block>,
@@ -31,7 +36,7 @@ class EditorAdapter(
 
     fun updateBlock(block: Block) {
         val index = blocks.indexOfFirst { it.id == block.id }
-        if (index >= 0 || index < blocks.size) {
+        if (index >= 0 && index < blocks.size) {
             blocks[index] = block
             notifyItemChanged(index)
         }
@@ -58,6 +63,10 @@ class EditorAdapter(
                 val view = inflater.inflate(R.layout.item_block_header_three, parent, false)
                 ViewHolder.HeaderThreeHolder(view)
             }
+            HOLDER_HEADER_FOUR -> {
+                val view = inflater.inflate(R.layout.item_block_header_four, parent, false)
+                ViewHolder.HeaderFourHolder(view)
+            }
             HOLDER_QUOTE -> {
                 val view = inflater.inflate(R.layout.item_block_quote, parent, false)
                 ViewHolder.QuoteHolder(view)
@@ -70,6 +79,15 @@ class EditorAdapter(
                 val view = inflater.inflate(R.layout.item_block_code_snippet, parent, false)
                 ViewHolder.CodeSnippetHolder(view)
             }
+            HOLDER_BULLET -> {
+                val view = inflater.inflate(R.layout.item_block_editable, parent, false)
+                ViewHolder.BulletHolder(view)
+            }
+            HOLDER_NUMBERED -> {
+                val view = inflater.inflate(R.layout.item_block_editable, parent, false)
+                ViewHolder.NumberedHolder(view)
+            }
+
             else -> TODO()
         }
     }
@@ -80,10 +98,13 @@ class EditorAdapter(
             is ContentType.H1 -> HOLDER_HEADER_ONE
             is ContentType.H2 -> HOLDER_HEADER_TWO
             is ContentType.H3 -> HOLDER_HEADER_THREE
+            is ContentType.H4 -> HOLDER_HEADER_FOUR
             is ContentType.Quote -> HOLDER_QUOTE
             is ContentType.Check -> HOLDER_CHECKBOX
             is ContentType.Code -> HOLDER_CODE_SNIPPET
-            else -> TODO()
+            is ContentType.OL -> HOLDER_NUMBERED
+            is ContentType.UL -> HOLDER_BULLET
+            else -> throw IllegalStateException("Implement Toggle!!!")
         }
     }
 
@@ -95,9 +116,12 @@ class EditorAdapter(
             is ViewHolder.HeaderOneHolder -> holder.bind(blocks[position], listener)
             is ViewHolder.HeaderTwoHolder -> holder.bind(blocks[position], listener)
             is ViewHolder.HeaderThreeHolder -> holder.bind(blocks[position], listener)
+            is ViewHolder.HeaderFourHolder -> holder.bind(blocks[position], listener)
             is ViewHolder.QuoteHolder -> holder.bind(blocks[position], listener)
             is ViewHolder.CheckBoxHolder -> holder.bind(blocks[position], listener)
             is ViewHolder.CodeSnippetHolder -> holder.bind(blocks[position], listener)
+            is ViewHolder.BulletHolder -> holder.bind(blocks[position], listener)
+            is ViewHolder.NumberedHolder -> holder.bind(blocks[position], listener)
         }
     }
 
@@ -116,7 +140,6 @@ class EditorAdapter(
         class ParagraphHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: Block, clickListener: (Block) -> Unit) {
-                itemView.tvId.text = "id :${block.id}"
                 itemView.tvContent.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
@@ -146,6 +169,14 @@ class EditorAdapter(
             }
         }
 
+        class HeaderFourHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(block: Block, clickListener: (Block) -> Unit) {
+                itemView.headerFourContentText.text = block.content.text
+                itemView.setOnClickListener { clickListener(block) }
+            }
+        }
+
         class QuoteHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: Block, clickListener: (Block) -> Unit) {
@@ -171,6 +202,29 @@ class EditorAdapter(
                 itemView.codeSnippetContent.setOnClickListener { clickListener(block) }
             }
         }
+
+        class BulletHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(block: Block, clickListener: (Block) -> Unit) {
+                itemView.tvContent.text = SpannableString(block.content.text).apply {
+                    setSpan(BulletSpan(40), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
+                itemView.setOnClickListener { clickListener(block) }
+            }
+        }
+
+        class NumberedHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(block: Block, clickListener: (Block) -> Unit) {
+                itemView.tvContent.text = SpannableString(block.content.text).apply {
+                    setSpan(
+                        NumberIndentSpan(leadWidth = 15, gapWidth = 15, index = 1),
+                        0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+                itemView.setOnClickListener { clickListener(block) }
+            }
+        }
     }
 
     companion object {
@@ -181,5 +235,8 @@ class EditorAdapter(
         const val HOLDER_QUOTE = 4
         const val HOLDER_CHECKBOX = 5
         const val HOLDER_CODE_SNIPPET = 6
+        const val HOLDER_NUMBERED = 7
+        const val HOLDER_HEADER_FOUR = 8
+        const val HOLDER_BULLET = 9
     }
 }

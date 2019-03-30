@@ -53,8 +53,9 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideFactory(interactor: EditorInteractor): EditorViewModelFactory =
-        EditorViewModelFactory(interactor)
+    fun provideFactory(interactor: EditorInteractor,
+                       contentTypeConverter: BlockContentTypeConverter): EditorViewModelFactory =
+        EditorViewModelFactory(interactor, contentTypeConverter)
 
     @Provides
     @PerFeature

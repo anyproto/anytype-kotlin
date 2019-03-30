@@ -2,6 +2,7 @@ package com.agileburo.anytype.feature_editor.presentation
 
 import androidx.lifecycle.ViewModel
 import com.agileburo.anytype.feature_editor.disposedBy
+import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.ui.EditBlockAction
@@ -12,7 +13,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
-class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
+class EditorViewModel(
+    private val interactor: EditorInteractor,
+    private val contentTypeConverter: BlockContentTypeConverter
+) : ViewModel() {
 
     private val disposable = CompositeDisposable()
 
@@ -20,26 +24,33 @@ class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
 
     fun observeState() = progress
 
-    fun onBlockClicked(action: EditBlockAction) {
+    fun onContentTypeClicked(action: EditBlockAction) =
         when (action) {
-            is EditBlockAction.TextClick -> {
-                progress.accept(EditorState.Update(action.block.copy(contentType = ContentType.P)))
-            }
-            is EditBlockAction.Header1Click -> {
-                progress.accept(EditorState.Update(action.block.copy(contentType = ContentType.H1)))
-            }
-            is EditBlockAction.Header2Click -> {
-                progress.accept(EditorState.Update(action.block.copy(contentType = ContentType.H2)))
-            }
-            is EditBlockAction.Header3Click -> {
-                progress.accept(EditorState.Update(action.block.copy(contentType = ContentType.H3)))
-            }
-            is EditBlockAction.HighLightClick -> {
-            }
-            is EditBlockAction.BulletClick -> {
-            }
-        }
+            is EditBlockAction.TextClick -> convertBlock(block = action.block, contentType = ContentType.P)
+            is EditBlockAction.Header1Click -> convertBlock(block = action.block, contentType = ContentType.H1)
+            is EditBlockAction.Header2Click -> convertBlock(block = action.block, contentType = ContentType.H2)
+            is EditBlockAction.Header3Click -> convertBlock(block = action.block, contentType = ContentType.H3)
+            is EditBlockAction.Header4Click -> convertBlock(block = action.block, contentType = ContentType.H4)
+            is EditBlockAction.HighLightClick -> convertBlock(block = action.block, contentType = ContentType.Quote)
+            is EditBlockAction.BulletClick -> convertBlock(block = action.block, contentType = ContentType.UL)
+            is EditBlockAction.NumberedClick -> convertBlock(block = action.block, contentType = ContentType.OL)
+            is EditBlockAction.CheckBoxClick -> convertBlock(block = action.block, contentType = ContentType.Check)
+            is EditBlockAction.CodeClick -> convertBlock(block = action.block, contentType = ContentType.Code)
+        }.also { progress.accept(EditorState.HideToolbar) }
+
+    fun onBlockClicked(block: Block) =
+        progress.accept(
+            EditorState.ShowToolbar(
+                block = block,
+                typesToHide = contentTypeConverter.getForbiddenTypes(block.contentType)
+            )
+        )
+
+    private fun convertBlock(block: Block, contentType: ContentType) {
+        if (block.contentType != contentType)
+            progress.accept(EditorState.Update(contentTypeConverter.convert(block, contentType)))
     }
+
 
     fun getBlocks() {
         interactor.getBlocks()

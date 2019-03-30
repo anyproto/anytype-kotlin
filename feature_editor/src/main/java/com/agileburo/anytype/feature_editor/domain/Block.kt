@@ -57,14 +57,18 @@ fun Int.toContentType(): ContentType =
         else -> ContentType.H1
     }
 
-fun ContentType.toNumericalCode() : Int {
-    return when(this) {
+fun ContentType.toNumericalCode(): Int {
+    return when (this) {
         ContentType.P -> 1
         ContentType.Code -> 2
         ContentType.H1 -> 3
         ContentType.H2 -> 4
         ContentType.Quote -> 8
         ContentType.Check -> 10
+        ContentType.H3 -> 5
+        ContentType.H4 -> 11
+        ContentType.UL -> 7
+        ContentType.OL -> 6
         else -> TODO()
     }
 }

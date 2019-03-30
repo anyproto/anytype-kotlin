@@ -15,6 +15,7 @@ import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModel
 import com.agileburo.anytype.feature_editor.presentation.EditorViewModelFactory
+import com.agileburo.anytype.feature_editor.presentation.mapper.BlockViewMapper
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_editor.*
 import timber.log.Timber
@@ -22,8 +23,12 @@ import javax.inject.Inject
 
 abstract class EditorFragment : Fragment() {
 
+    // TODO inject
+    private val mapper by lazy { BlockViewMapper() }
+
     @Inject
     lateinit var factory: EditorViewModelFactory
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, factory).get(EditorViewModel::class.java)
     }
@@ -50,12 +55,13 @@ abstract class EditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
-        viewModel.getBlocks()
     }
 
     private fun initializeView() = with(blockList) {
+
         layoutManager = LinearLayoutManager(requireContext())
-        adapter = EditorAdapter(mutableListOf()) { viewModel.onBlockClicked(it) }
+
+        adapter = EditorAdapter(mutableListOf()) { block -> viewModel.onBlockClicked(block.id) }
 
         editBlockToolbar.setMainActions(
             textClick = { viewModel.onContentTypeClicked(EditBlockAction.TextClick(it)) },
@@ -81,16 +87,19 @@ abstract class EditorFragment : Fragment() {
     }
 
     private fun handleState(state: EditorState) = when (state) {
-        is EditorState.Loading -> {
-        }
+        is EditorState.Loading -> {}
         is EditorState.Result -> setBlocks(state.blocks)
         is EditorState.Update -> updateBlock(state.block)
         is EditorState.ShowToolbar -> showToolbar(block = state.block, typesToHide = state.typesToHide)
         is EditorState.HideToolbar -> hideToolbar()
     }
 
-    private fun setBlocks(blocks: List<Block>) = (blockList.adapter as? EditorAdapter)?.setBlocks(blocks)
-    private fun updateBlock(block: Block) = (blockList.adapter as? EditorAdapter)?.updateBlock(block)
+    private fun setBlocks(blocks: List<Block>) {
+        (blockList.adapter as? EditorAdapter)?.setBlocks(blocks.map(mapper::mapToView))
+    }
+    private fun updateBlock(block: Block) {
+        (blockList.adapter as? EditorAdapter)?.updateBlock(mapper.mapToView(block))
+    }
 
     private fun showToolbar(block: Block, typesToHide: Set<ContentType>) = with(editBlockToolbar) {
         show(initialBlock = block, typesToHide = typesToHide)

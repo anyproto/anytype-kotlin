@@ -1,8 +1,16 @@
 package com.agileburo.anytype.feature_editor.presentation
 
+import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
 
 interface BlockContentTypeConverter {
+
+    /**
+     * @param block block to convert
+     * @param type content type for new block
+     */
+    fun convert(block : Block, type : ContentType) : Block
+
 
     fun getPermittedTypes(typeInitial: ContentType): Set<ContentType>
     fun getForbiddenTypes(typeInitial: ContentType): Set<ContentType>
@@ -25,4 +33,8 @@ class BlockContentTypeConverterImpl : BlockContentTypeConverter {
             ContentType.P -> setOf(ContentType.H1)
             else -> setOf(ContentType.H1)
         }
+
+    override fun convert(block: Block, type: ContentType): Block {
+        return block.copy(contentType = type)
+    }
 }

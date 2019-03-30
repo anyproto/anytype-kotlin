@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.item_block_header_one.view.*
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
+import kotlinx.android.synthetic.main.item_number_list_item.view.*
 import timber.log.Timber
 import java.lang.IllegalStateException
 
@@ -85,7 +86,7 @@ class EditorAdapter(
                 ViewHolder.BulletHolder(view)
             }
             HOLDER_NUMBERED -> {
-                val view = inflater.inflate(R.layout.item_block_editable, parent, false)
+                val view = inflater.inflate(R.layout.item_number_list_item, parent, false)
                 ViewHolder.NumberedHolder(view)
             }
 
@@ -217,13 +218,11 @@ class EditorAdapter(
         class NumberedHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                itemView.tvContent.text = SpannableString(block.content.text).apply {
-                    setSpan(
-                        NumberIndentSpan(leadWidth = 15, gapWidth = 15, index = 1),
-                        0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
+                with(itemView) {
+                    positionText.text = "${block.content.param.number}."
+                    contentText.text = block.content.text
+                    setOnClickListener { clickListener(block) }
                 }
-                itemView.setOnClickListener { clickListener(block) }
             }
         }
     }

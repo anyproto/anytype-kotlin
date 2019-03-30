@@ -70,17 +70,16 @@ class EditorViewModel(
     }
 
     private fun convertBlock(block: Block, contentType: ContentType) {
+
         if (block.contentType != contentType) {
 
-            if (contentType == ContentType.UL) {
+            val converted = contentTypeConverter.convert(block, contentType)
 
-                //val index = blocks.indexOfFirst { it.id == block.id }
+            val index = blocks.indexOf(block)
 
-                progress.accept(EditorState.Update(contentTypeConverter.convert(block, contentType)))
+            blocks[index] = converted
 
-            } else {
-                progress.accept(EditorState.Update(contentTypeConverter.convert(block, contentType)))
-            }
+            progress.accept(EditorState.Update(converted))
 
 
         }

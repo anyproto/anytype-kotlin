@@ -7,6 +7,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.Content
+import com.agileburo.anytype.feature_editor.domain.ContentParam
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import kotlinx.android.synthetic.main.view_edit_block_toolbar.view.*
 
@@ -19,7 +20,7 @@ class EditBlockToolbar : ConstraintLayout {
         content = Content.Text(
             text = "",
             marks = emptyList(),
-            param = Any()
+            param = ContentParam(emptyMap())
         )
     )
 

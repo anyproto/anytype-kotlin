@@ -32,7 +32,7 @@
         android:contentDescription="@string/editor_toolbar"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnText"
+        app:layout_constraintEnd_toStartOf="@+id/btnHeader2"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnText"
         app:layout_constraintTop_toTopOf="parent"
@@ -64,11 +64,27 @@
         android:contentDescription="@string/editor_toolbar"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnHighlighted"
+        app:layout_constraintEnd_toStartOf="@+id/btnHeader4"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnHeader2"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_header_3" />
+
+    <ImageView
+        android:id="@+id/btnHeader4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="@string/editor_toolbar"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnHighlighted"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnHeader3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_header4" />
 
     <ImageView
         android:id="@+id/btnHighlighted"
@@ -83,7 +99,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnBulleted"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btnHeader3"
+        app:layout_constraintStart_toEndOf="@+id/btnHeader4"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_highlighted" />
 
@@ -161,6 +177,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:contentDescription="@string/editor_toolbar"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

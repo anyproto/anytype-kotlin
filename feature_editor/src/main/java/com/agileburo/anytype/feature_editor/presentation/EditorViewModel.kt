@@ -13,7 +13,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
-class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
+class EditorViewModel(
+    private val interactor: EditorInteractor,
+    private val contentTypeConverter: BlockContentTypeConverter
+) : ViewModel() {
 
     private val disposable = CompositeDisposable()
 
@@ -21,19 +24,27 @@ class EditorViewModel(private val interactor: EditorInteractor) : ViewModel() {
 
     fun observeState() = progress
 
-    fun onBlockClicked(action: EditBlockAction) {
+    fun onContentTypeClicked(action: EditBlockAction) =
         when (action) {
             is EditBlockAction.TextClick -> accept(block = action.block, contentType = ContentType.P)
             is EditBlockAction.Header1Click -> accept(block = action.block, contentType = ContentType.H1)
             is EditBlockAction.Header2Click -> accept(block = action.block, contentType = ContentType.H2)
             is EditBlockAction.Header3Click -> accept(block = action.block, contentType = ContentType.H3)
+            is EditBlockAction.Header4Click -> accept(block = action.block, contentType = ContentType.H4)
             is EditBlockAction.HighLightClick -> accept(block = action.block, contentType = ContentType.Quote)
             is EditBlockAction.BulletClick -> accept(block = action.block, contentType = ContentType.UL)
             is EditBlockAction.NumberedClick -> accept(block = action.block, contentType = ContentType.OL)
             is EditBlockAction.CheckBoxClick -> accept(block = action.block, contentType = ContentType.Check)
             is EditBlockAction.CodeClick -> accept(block = action.block, contentType = ContentType.Code)
-        }
-    }
+        }.also { progress.accept(EditorState.HideToolbar) }
+
+    fun onBlockClicked(block: Block) =
+        progress.accept(
+            EditorState.ShowToolbar(
+                block = block,
+                typesToHide = contentTypeConverter.getForbiddenTypes(block.contentType)
+            )
+        )
 
     private fun accept(block: Block, contentType: ContentType) =
         progress.accept(EditorState.Update(block.copy(contentType = contentType)))

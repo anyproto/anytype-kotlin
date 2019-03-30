@@ -27,7 +27,8 @@ class EditBlockToolbar : ConstraintLayout {
         initialize(context, attrs)
     }
 
-    fun show(typesToHide: List<ContentType>, initialBlock: Block) {
+    fun show(initialBlock: Block, typesToHide: Set<ContentType>) {
+        this.block = initialBlock
         unSelectViews()
         typesToHide.forEach { getButton(it).visibility = View.GONE }
         getButton(initialBlock.contentType).isSelected = true
@@ -42,29 +43,39 @@ class EditBlockToolbar : ConstraintLayout {
         header1Click: (Block) -> Unit,
         header2Click: (Block) -> Unit,
         header3Click: (Block) -> Unit,
+        header4Click: (Block) -> Unit,
         hightLitedClick: (Block) -> Unit,
         bulletedClick: (Block) -> Unit,
         numberedClick: (Block) -> Unit,
         checkBoxClick: (Block) -> Unit,
         codeClick: (Block) -> Unit
     ) {
-        btnText.setClick(textClick, block)
-        btnHeader1.setClick(header1Click, block)
-        btnHeader2.setClick(header2Click, block)
-        btnHeader3.setClick(header3Click, block)
-        btnHighlighted.setClick(hightLitedClick, block)
-        btnBulleted.setClick(bulletedClick, block)
-        btnNumberedList.setClick(numberedClick, block)
-        btnCheckbox.setClick(checkBoxClick, block)
-        btnCode.setClick(codeClick, block)
+        setClick(btnText, textClick)
+        setClick(btnHeader1, header1Click)
+        setClick(btnHeader2, header2Click)
+        setClick(btnHeader3, header3Click)
+        setClick(btnHeader4, header4Click)
+        setClick(btnHighlighted, hightLitedClick)
+        setClick(btnBulleted, bulletedClick)
+        setClick(btnNumberedList, numberedClick)
+        setClick(btnCheckbox, checkBoxClick)
+        setClick(btnCode, codeClick)
+    }
+
+    private fun setClick(view: View, click: (Block) -> Unit) {
+        view.setOnClickListener {
+            it.isSelected = !it.isSelected
+            click(block)
+        }
     }
 
     private fun getButton(type: ContentType) =
         when (type) {
             ContentType.P -> btnText
-            ContentType.H2 -> btnHeader1
-            ContentType.H3 -> btnHeader2
-            ContentType.H4 -> btnHeader3
+            ContentType.H1 -> btnHeader1
+            ContentType.H2 -> btnHeader2
+            ContentType.H3 -> btnHeader3
+            ContentType.H4 -> btnHeader4
             ContentType.UL -> btnBulleted
             ContentType.Quote -> btnHighlighted
             ContentType.OL -> btnNumberedList
@@ -78,6 +89,7 @@ class EditBlockToolbar : ConstraintLayout {
         btnHeader1.isSelected = false
         btnHeader2.isSelected = false
         btnHeader3.isSelected = false
+        btnHeader4.isSelected = false
         btnHighlighted.isSelected = false
         btnBulleted.isSelected = false
         btnNumberedList.isSelected = false
@@ -85,10 +97,3 @@ class EditBlockToolbar : ConstraintLayout {
         btnCode.isSelected = false
     }
 }
-
-fun View.setClick(click: (Block) -> Unit, block: Block) =
-    this.setOnClickListener {
-
-        it.isSelected = !it.isSelected
-        click(block)
-    }

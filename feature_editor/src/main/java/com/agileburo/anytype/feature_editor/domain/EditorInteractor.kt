@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_editor.domain
 
 import com.agileburo.anytype.feature_editor.data.EditorRepo
+import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -12,7 +13,12 @@ interface EditorInteractor {
 
 class EditorInteractorImpl @Inject constructor(private val repo: EditorRepo) : EditorInteractor {
 
-    override fun getBlocks(): Single<List<Block>> = repo.getBlocks()
+    override fun getBlocks(): Single<List<Block>> =
+        repo.getBlocks()
+            .toObservable()
+            .flatMap { Observable.fromIterable(it) }
+            .filter { it.content.text.isNotEmpty() }
+            .toList()
 
     override fun saveState(list: MutableList<Block>) {
         repo.saveState(list)

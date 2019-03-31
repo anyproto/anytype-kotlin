@@ -31,6 +31,7 @@ sealed class EditorState {
     data class ShowToolbar(val block: Block, val typesToHide: Set<ContentType>) : EditorState()
     object HideToolbar : EditorState()
     data class Result(val blocks: List<Block>) : EditorState()
+    data class Updates(val blocks : List<Block>) : EditorState()
     data class Update(val block: Block) : EditorState()
     data class Archive(val id: String): EditorState()
     object Loading : EditorState()

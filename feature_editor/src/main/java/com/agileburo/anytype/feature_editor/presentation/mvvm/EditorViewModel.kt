@@ -1,10 +1,11 @@
-package com.agileburo.anytype.feature_editor.presentation
+package com.agileburo.anytype.feature_editor.presentation.mvvm
 
 import androidx.lifecycle.ViewModel
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
+import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
 import com.agileburo.anytype.feature_editor.ui.EditBlockAction
 import com.agileburo.anytype.feature_editor.ui.EditorState
 import com.jakewharton.rxrelay2.BehaviorRelay

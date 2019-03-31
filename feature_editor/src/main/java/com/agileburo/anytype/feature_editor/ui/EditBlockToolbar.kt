@@ -88,7 +88,7 @@ class EditBlockToolbar : ConstraintLayout {
             ContentType.H4 -> btnHeader4
             ContentType.UL -> btnBulleted
             ContentType.Quote -> btnHighlighted
-            ContentType.OL -> btnNumberedList
+            ContentType.NumberedList -> btnNumberedList
             ContentType.Check -> btnCheckbox
             ContentType.Code -> btnCode
             else -> btnText

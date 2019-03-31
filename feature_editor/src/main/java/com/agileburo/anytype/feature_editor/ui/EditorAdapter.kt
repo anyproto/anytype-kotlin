@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_utils.swap
 import com.agileburo.anytype.feature_editor.R
-import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
 import com.agileburo.anytype.feature_editor.presentation.util.BlockViewDiffUtil
@@ -114,7 +113,7 @@ class EditorAdapter(
             is ContentType.Quote -> HOLDER_QUOTE
             is ContentType.Check -> HOLDER_CHECKBOX
             is ContentType.Code -> HOLDER_CODE_SNIPPET
-            is ContentType.OL -> HOLDER_NUMBERED
+            is ContentType.NumberedList -> HOLDER_NUMBERED
             is ContentType.UL -> HOLDER_BULLET
             else -> throw IllegalStateException("Implement Toggle!!!")
         }

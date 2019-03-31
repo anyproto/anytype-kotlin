@@ -38,7 +38,7 @@ class EditorViewModel(
             is EditBlockAction.Header4Click -> convertBlock(block = action.block, contentType = ContentType.H4)
             is EditBlockAction.HighLightClick -> convertBlock(block = action.block, contentType = ContentType.Quote)
             is EditBlockAction.BulletClick -> convertBlock(block = action.block, contentType = ContentType.UL)
-            is EditBlockAction.NumberedClick -> convertBlock(block = action.block, contentType = ContentType.OL)
+            is EditBlockAction.NumberedClick -> convertBlock(block = action.block, contentType = ContentType.NumberedList)
             is EditBlockAction.CheckBoxClick -> convertBlock(block = action.block, contentType = ContentType.Check)
             is EditBlockAction.CodeClick -> convertBlock(block = action.block, contentType = ContentType.Code)
         }.also { progress.accept(EditorState.HideToolbar) }

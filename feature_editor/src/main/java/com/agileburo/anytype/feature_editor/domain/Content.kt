@@ -24,10 +24,20 @@ data class ContentParam(val map : Map<String, Any?>) {
 
 
     companion object {
-        fun numberedListDefaultParam(): ContentParam {
+
+        fun empty() : ContentParam {
             return ContentParam(
                 mapOf(
-                    "number" to 1,
+                    "number" to null,
+                    "checked" to null
+                )
+            )
+        }
+
+        fun numberedList(number : Int = 1): ContentParam {
+            return ContentParam(
+                mapOf(
+                    "number" to number,
                     "checked" to null
                 )
             )

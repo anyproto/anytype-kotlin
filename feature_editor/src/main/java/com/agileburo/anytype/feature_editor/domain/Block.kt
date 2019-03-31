@@ -24,7 +24,7 @@ sealed class ContentType {
     object H1 : ContentType()
     object H2 : ContentType()
     object H3 : ContentType()
-    object OL : ContentType()
+    object NumberedList : ContentType()
     object UL : ContentType()
     object Quote : ContentType()
     object Toggle : ContentType()
@@ -48,7 +48,7 @@ fun Int.toContentType(): ContentType =
         3 -> ContentType.H1
         4 -> ContentType.H2
         5 -> ContentType.H3
-        6 -> ContentType.OL
+        6 -> ContentType.NumberedList
         7 -> ContentType.UL
         8 -> ContentType.Quote
         9 -> ContentType.Toggle
@@ -68,7 +68,7 @@ fun ContentType.toNumericalCode(): Int {
         ContentType.H3 -> 5
         ContentType.H4 -> 11
         ContentType.UL -> 7
-        ContentType.OL -> 6
+        ContentType.NumberedList -> 6
         else -> TODO()
     }
 }

@@ -40,6 +40,7 @@ class EditorViewModel(
             is EditBlockAction.NumberedClick -> convertBlock(block = action.block, contentType = ContentType.OL)
             is EditBlockAction.CheckBoxClick -> convertBlock(block = action.block, contentType = ContentType.Check)
             is EditBlockAction.CodeClick -> convertBlock(block = action.block, contentType = ContentType.Code)
+            is EditBlockAction.ArchiveBlock -> {}
         }.also { progress.accept(EditorState.HideToolbar) }
 
     fun onBlockClicked(id : String) {

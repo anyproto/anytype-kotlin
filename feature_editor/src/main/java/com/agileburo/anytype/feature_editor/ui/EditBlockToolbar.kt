@@ -58,7 +58,8 @@ class EditBlockToolbar : ConstraintLayout {
         bulletedClick: (Block) -> Unit,
         numberedClick: (Block) -> Unit,
         checkBoxClick: (Block) -> Unit,
-        codeClick: (Block) -> Unit
+        codeClick: (Block) -> Unit,
+        archiveClick: (String) -> Unit
     ) {
         setClick(btnText, textClick)
         setClick(btnHeader1, header1Click)
@@ -70,12 +71,20 @@ class EditBlockToolbar : ConstraintLayout {
         setClick(btnNumberedList, numberedClick)
         setClick(btnCheckbox, checkBoxClick)
         setClick(btnCode, codeClick)
+        setArchiveClick(btnArchive, archiveClick)
     }
 
     private fun setClick(view: View, click: (Block) -> Unit) {
         view.setOnClickListener {
             it.isSelected = !it.isSelected
             click(block)
+        }
+    }
+
+    private fun setArchiveClick(view: View, click: (String) -> Unit) {
+        view.setOnClickListener {
+            it.isSelected = !it.isSelected
+            click(block.id)
         }
     }
 
@@ -105,5 +114,6 @@ class EditBlockToolbar : ConstraintLayout {
         btnNumberedList.isSelected = false
         btnCheckbox.isSelected = false
         btnCode.isSelected = false
+        btnArchive.isSelected = false
     }
 }

@@ -73,7 +73,8 @@ abstract class EditorFragment : Fragment() {
             bulletedClick = { viewModel.onContentTypeClicked(EditBlockAction.BulletClick(it)) },
             numberedClick = { viewModel.onContentTypeClicked(EditBlockAction.NumberedClick(it)) },
             checkBoxClick = { viewModel.onContentTypeClicked(EditBlockAction.CheckBoxClick(it)) },
-            codeClick = { viewModel.onContentTypeClicked(EditBlockAction.CodeClick(it)) }
+            codeClick = { viewModel.onContentTypeClicked(EditBlockAction.CodeClick(it)) },
+            archiveClick = { viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(it))}
         )
 
         setHasFixedSize(true)
@@ -92,6 +93,7 @@ abstract class EditorFragment : Fragment() {
         is EditorState.Update -> updateBlock(state.block)
         is EditorState.ShowToolbar -> showToolbar(block = state.block, typesToHide = state.typesToHide)
         is EditorState.HideToolbar -> hideToolbar()
+        is EditorState.Archive -> {}
     }
 
     private fun setBlocks(blocks: List<Block>) {

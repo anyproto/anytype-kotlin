@@ -34,5 +34,6 @@ sealed class EditorState {
     data class Updates(val blocks : List<Block>) : EditorState()
     data class Update(val block: Block) : EditorState()
     data class Archive(val id: String): EditorState()
+    data class Error(val msg: String): EditorState()
     object Loading : EditorState()
 }

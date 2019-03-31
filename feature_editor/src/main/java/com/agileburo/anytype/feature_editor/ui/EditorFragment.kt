@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.agileburo.anytype.core_utils.toast
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block
@@ -99,6 +100,7 @@ abstract class EditorFragment : Fragment() {
         is EditorState.ShowToolbar -> showToolbar(block = state.block, typesToHide = state.typesToHide)
         is EditorState.HideToolbar -> hideToolbar()
         is EditorState.Archive -> {}
+        is EditorState.Error -> onError(state.msg)
     }
 
     private fun setBlocks(blocks: List<Block>) {
@@ -120,4 +122,6 @@ abstract class EditorFragment : Fragment() {
     private fun hideToolbar() = with(editBlockToolbar) {
         visibility = View.INVISIBLE
     }
+
+    private fun onError(msg: CharSequence) = requireContext().toast(msg)
 }

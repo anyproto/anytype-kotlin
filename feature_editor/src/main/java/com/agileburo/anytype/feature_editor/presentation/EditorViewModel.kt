@@ -18,9 +18,13 @@ class EditorViewModel(
     private val contentTypeConverter: BlockContentTypeConverter
 ) : ViewModel() {
 
-    private val disposable = CompositeDisposable()
+    private val subscriptions by lazy { CompositeDisposable() }
+    private val blocks by lazy { mutableListOf<Block>() }
+    private val progress by lazy { BehaviorRelay.create<EditorState>() }
 
-    private val progress = BehaviorRelay.create<EditorState>()
+    init {
+        fetchBlocks()
+    }
 
     fun observeState() = progress
 
@@ -38,33 +42,51 @@ class EditorViewModel(
             is EditBlockAction.CodeClick -> convertBlock(block = action.block, contentType = ContentType.Code)
         }.also { progress.accept(EditorState.HideToolbar) }
 
-    fun onBlockClicked(block: Block) =
+    fun onBlockClicked(id : String) {
+
+        val block = blocks.first { block -> block.id == id }
+
         progress.accept(
             EditorState.ShowToolbar(
                 block = block,
                 typesToHide = contentTypeConverter.getForbiddenTypes(block.contentType)
             )
         )
-
-    private fun convertBlock(block: Block, contentType: ContentType) {
-        if (block.contentType != contentType)
-            progress.accept(EditorState.Update(contentTypeConverter.convert(block, contentType)))
     }
 
-
-    fun getBlocks() {
+    private fun fetchBlocks() {
         interactor.getBlocks()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe(
-                { blocks -> progress.accept(EditorState.Result(blocks)) },
-                { error -> Timber.d("Get blocks error : $error") }
-            )
-            .disposedBy(disposable)
+                { data -> onBlockReceived(data) },
+                { error -> Timber.e(error, "Error while fetching blocks") }
+            ).disposedBy(subscriptions)
+    }
+
+    private fun onBlockReceived(items : List<Block>) {
+        blocks.addAll(items)
+        progress.accept(EditorState.Result(blocks))
+    }
+
+    private fun convertBlock(block: Block, contentType: ContentType) {
+
+        if (block.contentType != contentType) {
+
+            val converted = contentTypeConverter.convert(block, contentType)
+
+            val index = blocks.indexOf(block)
+
+            blocks[index] = converted
+
+            progress.accept(EditorState.Update(converted))
+
+
+        }
     }
 
     override fun onCleared() {
-        disposable.clear()
+        subscriptions.clear()
         super.onCleared()
     }
 }

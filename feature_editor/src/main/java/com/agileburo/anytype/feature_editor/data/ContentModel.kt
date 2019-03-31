@@ -5,4 +5,9 @@ package com.agileburo.anytype.feature_editor.data
  * email :  ki@agileburo.com
  * on 25.03.2019.
  */
-data class ContentModel(val text: String = "", val marks: List<String> = emptyList())
+data class ContentModel(
+    val text: String = "",
+    val marks: List<String> = emptyList(),
+    val number : Int? = null,
+    val checked : Boolean? = null
+)

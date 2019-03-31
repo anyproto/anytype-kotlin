@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_editor.presentation
 
 import com.agileburo.anytype.feature_editor.domain.Block
+import com.agileburo.anytype.feature_editor.domain.ContentParam
 import com.agileburo.anytype.feature_editor.domain.ContentType
 
 interface BlockContentTypeConverter {
@@ -35,6 +36,21 @@ class BlockContentTypeConverterImpl : BlockContentTypeConverter {
         }
 
     override fun convert(block: Block, type: ContentType): Block {
-        return block.copy(contentType = type)
+        return when(type) {
+            ContentType.OL -> {
+                block.copy(
+                    contentType = type,
+                    content = block.content.copy(
+                        param = ContentParam.numberedListDefaultParam()
+                    )
+                )
+            }
+            else -> {
+                block.copy(
+                    contentType = type
+                )
+            }
+        }
+
     }
 }

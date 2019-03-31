@@ -11,6 +11,7 @@ import com.agileburo.anytype.core_utils.swap
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
+import com.agileburo.anytype.feature_editor.presentation.model.BlockView
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import kotlinx.android.synthetic.main.item_block_editable.view.*
@@ -19,22 +20,23 @@ import kotlinx.android.synthetic.main.item_block_header_one.view.*
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
+import kotlinx.android.synthetic.main.item_number_list_item.view.*
 import timber.log.Timber
 import java.lang.IllegalStateException
 
 class EditorAdapter(
-    private val blocks: MutableList<Block>,
-    private val listener: (Block) -> Unit
+    private val blocks: MutableList<BlockView>,
+    private val listener: (BlockView) -> Unit
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    fun setBlocks(items: List<Block>) {
+    fun setBlocks(items: List<BlockView>) {
         Timber.d("Set blocks ${items.size}")
         blocks.addAll(items)
         notifyDataSetChanged()
     }
 
-    fun updateBlock(block: Block) {
+    fun updateBlock(block: BlockView) {
         val index = blocks.indexOfFirst { it.id == block.id }
         if (index >= 0 && index < blocks.size) {
             blocks[index] = block
@@ -84,7 +86,7 @@ class EditorAdapter(
                 ViewHolder.BulletHolder(view)
             }
             HOLDER_NUMBERED -> {
-                val view = inflater.inflate(R.layout.item_block_editable, parent, false)
+                val view = inflater.inflate(R.layout.item_number_list_item, parent, false)
                 ViewHolder.NumberedHolder(view)
             }
 
@@ -139,7 +141,7 @@ class EditorAdapter(
 
         class ParagraphHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: Block, clickListener: (Block) -> Unit) {
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
                 itemView.tvContent.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
@@ -147,7 +149,7 @@ class EditorAdapter(
 
         class HeaderOneHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: Block, clickListener: (Block) -> Unit) {
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
                 itemView.headerContentText.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
@@ -155,7 +157,7 @@ class EditorAdapter(
 
         class HeaderTwoHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: Block, clickListener: (Block) -> Unit) {
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
                 itemView.headerTwoContentText.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
@@ -163,7 +165,7 @@ class EditorAdapter(
 
         class HeaderThreeHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: Block, clickListener: (Block) -> Unit) {
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
                 itemView.headerThreeContentText.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
@@ -171,7 +173,7 @@ class EditorAdapter(
 
         class HeaderFourHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: Block, clickListener: (Block) -> Unit) {
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
                 itemView.headerFourContentText.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
@@ -179,7 +181,7 @@ class EditorAdapter(
 
         class QuoteHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: Block, clickListener: (Block) -> Unit) {
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
                 itemView.quoteContent.text = block.content.text
                 itemView.setOnClickListener { clickListener(block) }
             }
@@ -187,7 +189,7 @@ class EditorAdapter(
 
         class CheckBoxHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: Block, clickListener: (Block) -> Unit) {
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
                 itemView.checkBoxContent.text = block.content.text
                 itemView.checkBoxContent.setOnClickListener {
                     clickListener(block)
@@ -197,7 +199,7 @@ class EditorAdapter(
 
         class CodeSnippetHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: Block, clickListener: (Block) -> Unit) {
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
                 itemView.codeSnippetContent.text = block.content.text
                 itemView.codeSnippetContent.setOnClickListener { clickListener(block) }
             }
@@ -205,7 +207,7 @@ class EditorAdapter(
 
         class BulletHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: Block, clickListener: (Block) -> Unit) {
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
                 itemView.tvContent.text = SpannableString(block.content.text).apply {
                     setSpan(BulletSpan(40), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
@@ -215,14 +217,12 @@ class EditorAdapter(
 
         class NumberedHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: Block, clickListener: (Block) -> Unit) {
-                itemView.tvContent.text = SpannableString(block.content.text).apply {
-                    setSpan(
-                        NumberIndentSpan(leadWidth = 15, gapWidth = 15, index = 1),
-                        0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
+                with(itemView) {
+                    positionText.text = "${block.content.param.number}."
+                    contentText.text = block.content.text
+                    setOnClickListener { clickListener(block) }
                 }
-                itemView.setOnClickListener { clickListener(block) }
             }
         }
     }

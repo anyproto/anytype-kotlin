@@ -1,6 +1,8 @@
 package com.agileburo.anytype.feature_editor.presentation
 
 import com.agileburo.anytype.feature_editor.domain.ContentType
+import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
+import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverterImpl
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

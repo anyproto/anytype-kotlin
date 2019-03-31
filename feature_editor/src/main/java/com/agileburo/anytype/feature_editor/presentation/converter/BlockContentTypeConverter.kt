@@ -1,4 +1,4 @@
-package com.agileburo.anytype.feature_editor.presentation
+package com.agileburo.anytype.feature_editor.presentation.converter
 
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentParam
@@ -12,12 +12,12 @@ interface BlockContentTypeConverter {
      */
     fun convert(block : Block, type : ContentType) : Block
 
-
     fun getPermittedTypes(typeInitial: ContentType): Set<ContentType>
     fun getForbiddenTypes(typeInitial: ContentType): Set<ContentType>
 }
 
-class BlockContentTypeConverterImpl : BlockContentTypeConverter {
+class BlockContentTypeConverterImpl :
+    BlockContentTypeConverter {
 
     override
     fun getPermittedTypes(typeInitial: ContentType): Set<ContentType> =

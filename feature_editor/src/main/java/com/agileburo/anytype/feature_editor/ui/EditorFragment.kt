@@ -13,12 +13,11 @@ import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
-import com.agileburo.anytype.feature_editor.presentation.EditorViewModel
-import com.agileburo.anytype.feature_editor.presentation.EditorViewModelFactory
+import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModel
+import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModelFactory
 import com.agileburo.anytype.feature_editor.presentation.mapper.BlockViewMapper
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_editor.*
-import timber.log.Timber
 import javax.inject.Inject
 
 abstract class EditorFragment : Fragment() {
@@ -32,7 +31,12 @@ abstract class EditorFragment : Fragment() {
     private val viewModel by lazy {
         ViewModelProviders.of(this, factory).get(EditorViewModel::class.java)
     }
-    private var disposable = CompositeDisposable()
+
+    private val disposable = CompositeDisposable()
+
+    private val blockAdapter by lazy {
+        EditorAdapter(mutableListOf()) { block -> viewModel.onBlockClicked(block.id) }
+    }
 
     abstract fun inject()
 
@@ -40,7 +44,7 @@ abstract class EditorFragment : Fragment() {
         inject()
         super.onAttach(context)
         viewModel.observeState()
-            .subscribe { handleState(it) }
+            .subscribe(this::handleState)
             .disposedBy(disposable)
     }
 
@@ -61,7 +65,7 @@ abstract class EditorFragment : Fragment() {
 
         layoutManager = LinearLayoutManager(requireContext())
 
-        adapter = EditorAdapter(mutableListOf()) { block -> viewModel.onBlockClicked(block.id) }
+        adapter = blockAdapter
 
         editBlockToolbar.setMainActions(
             textClick = { viewModel.onContentTypeClicked(EditBlockAction.TextClick(it)) },
@@ -90,6 +94,7 @@ abstract class EditorFragment : Fragment() {
         is EditorState.Loading -> {}
         is EditorState.Result -> setBlocks(state.blocks)
         is EditorState.Update -> updateBlock(state.block)
+        is EditorState.Updates -> render(state.blocks)
         is EditorState.ShowToolbar -> showToolbar(block = state.block, typesToHide = state.typesToHide)
         is EditorState.HideToolbar -> hideToolbar()
     }
@@ -99,6 +104,10 @@ abstract class EditorFragment : Fragment() {
     }
     private fun updateBlock(block: Block) {
         (blockList.adapter as? EditorAdapter)?.updateBlock(mapper.mapToView(block))
+    }
+
+    private fun render(blocks : List<Block>) {
+        blockAdapter.update(blocks.map(mapper::mapToView))
     }
 
     private fun showToolbar(block: Block, typesToHide: Set<ContentType>) = with(editBlockToolbar) {

@@ -1,8 +1,9 @@
-package com.agileburo.anytype.feature_editor.presentation
+package com.agileburo.anytype.feature_editor.presentation.mvvm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
+import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
 
 class EditorViewModelFactory(
     private val editorInteractor: EditorInteractor,
@@ -12,5 +13,8 @@ class EditorViewModelFactory(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-        EditorViewModel(interactor = editorInteractor, contentTypeConverter = contentTypeConverter) as T
+        EditorViewModel(
+            interactor = editorInteractor,
+            contentTypeConverter = contentTypeConverter
+        ) as T
 }

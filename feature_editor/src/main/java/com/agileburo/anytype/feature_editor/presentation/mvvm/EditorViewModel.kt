@@ -41,7 +41,7 @@ class EditorViewModel(
             is EditBlockAction.NumberedClick -> convertBlock(block = action.block, contentType = ContentType.OL)
             is EditBlockAction.CheckBoxClick -> convertBlock(block = action.block, contentType = ContentType.Check)
             is EditBlockAction.CodeClick -> convertBlock(block = action.block, contentType = ContentType.Code)
-            is EditBlockAction.ArchiveBlock -> {}
+            is EditBlockAction.ArchiveBlock -> removeBlock(action.id)
         }.also { progress.accept(EditorState.HideToolbar) }
 
     fun onBlockClicked(id : String) {
@@ -78,13 +78,19 @@ class EditorViewModel(
             val converted = contentTypeConverter.convert(block, contentType)
 
             val index = blocks.indexOf(block)
+            require(index > -1 && index < blocks.size)
 
             blocks[index] = converted
 
             progress.accept(EditorState.Update(converted))
-
-
         }
+    }
+
+    private fun removeBlock(id: String) {
+        val index = blocks.indexOfFirst { it.id == id }
+        require(index > -1 && index < blocks.size)
+        blocks.removeAt(index)
+        progress.accept(EditorState.Updates(blocks))
     }
 
     override fun onCleared() {

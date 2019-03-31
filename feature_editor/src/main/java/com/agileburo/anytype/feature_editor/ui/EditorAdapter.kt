@@ -6,12 +6,14 @@ import android.text.style.BulletSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_utils.swap
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
+import com.agileburo.anytype.feature_editor.presentation.util.BlockViewDiffUtil
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import kotlinx.android.synthetic.main.item_block_editable.view.*
@@ -42,6 +44,14 @@ class EditorAdapter(
             blocks[index] = block
             notifyItemChanged(index)
         }
+    }
+
+    fun update(items : List<BlockView>) {
+        val callback = BlockViewDiffUtil(old = blocks, new = items)
+        val result = DiffUtil.calculateDiff(callback)
+        blocks.clear()
+        blocks.addAll(items)
+        result.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

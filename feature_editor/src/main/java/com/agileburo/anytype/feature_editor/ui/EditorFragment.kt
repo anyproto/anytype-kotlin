@@ -60,6 +60,7 @@ abstract class EditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
+        viewModel.fetchBlocks()
     }
 
     private fun initializeView() = with(blockList) {

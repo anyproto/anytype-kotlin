@@ -47,4 +47,5 @@ dependencies {
     implementation applicationDependencies.gson
 
     testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.mockito
 }

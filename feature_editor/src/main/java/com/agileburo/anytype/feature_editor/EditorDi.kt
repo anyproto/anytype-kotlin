@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_editor
 
 import android.content.Context
+import com.agileburo.anytype.core_utils.BaseSchedulerProvider
 import com.agileburo.anytype.core_utils.di.PerFeature
 import com.agileburo.anytype.feature_editor.data.*
 import com.agileburo.anytype.feature_editor.data.datasource.BlockDataSource
@@ -54,9 +55,10 @@ class EditorModule {
     @Provides
     @PerFeature
     fun provideFactory(interactor: EditorInteractor,
-                       contentTypeConverter: BlockContentTypeConverter
+                       contentTypeConverter: BlockContentTypeConverter,
+                       baseSchedulerProvider: BaseSchedulerProvider
     ): EditorViewModelFactory =
-        EditorViewModelFactory(interactor, contentTypeConverter)
+        EditorViewModelFactory(interactor, contentTypeConverter, baseSchedulerProvider)
 
     @Provides
     @PerFeature

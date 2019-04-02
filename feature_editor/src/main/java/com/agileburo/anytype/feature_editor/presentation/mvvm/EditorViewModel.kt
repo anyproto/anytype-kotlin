@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_editor.presentation.mvvm
 
 import androidx.lifecycle.ViewModel
+import com.agileburo.anytype.core_utils.BaseSchedulerProvider
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
@@ -16,16 +17,13 @@ import timber.log.Timber
 
 class EditorViewModel(
     private val interactor: EditorInteractor,
-    private val contentTypeConverter: BlockContentTypeConverter
+    private val contentTypeConverter: BlockContentTypeConverter,
+    private val schedulerProvider: BaseSchedulerProvider
 ) : ViewModel() {
 
     private val subscriptions by lazy { CompositeDisposable() }
     private val blocks by lazy { mutableListOf<Block>() }
     private val progress by lazy { BehaviorRelay.create<EditorState>() }
-
-    init {
-        fetchBlocks()
-    }
 
     fun observeState() = progress
 
@@ -56,10 +54,10 @@ class EditorViewModel(
         )
     }
 
-    private fun fetchBlocks() {
+    fun fetchBlocks() {
         interactor.getBlocks()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
+            .observeOn(schedulerProvider.ui())
+            .subscribeOn(schedulerProvider.io())
             .subscribe(
                 { data -> onBlockReceived(data) },
                 { error -> Timber.e(error, "Error while fetching blocks") }

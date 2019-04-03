@@ -1,8 +1,12 @@
 package com.agileburo.anytype.feature_editor.ui
 
+import android.graphics.Typeface
+import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.BulletSpan
+import android.text.style.StrikethroughSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_utils.swap
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.domain.ContentType
+import com.agileburo.anytype.feature_editor.domain.Mark
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
 import com.agileburo.anytype.feature_editor.presentation.util.BlockViewDiffUtil
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -32,7 +37,9 @@ class EditorAdapter(
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setBlocks(items: List<BlockView>) {
-        Timber.d("Set blocks ${items.size}")
+        items.forEach {
+            Timber.d("Blocks : $it")
+        }
         blocks.addAll(items)
         notifyDataSetChanged()
     }
@@ -151,7 +158,7 @@ class EditorAdapter(
         class ParagraphHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                itemView.tvContent.text = block.content.text
+                checkMarks(itemView, block)
                 itemView.setOnClickListener { clickListener(block) }
             }
         }
@@ -159,7 +166,7 @@ class EditorAdapter(
         class HeaderOneHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                itemView.headerContentText.text = block.content.text
+                checkMarks(itemView, block)
                 itemView.setOnClickListener { clickListener(block) }
             }
         }
@@ -167,7 +174,7 @@ class EditorAdapter(
         class HeaderTwoHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                itemView.headerTwoContentText.text = block.content.text
+                checkMarks(itemView, block)
                 itemView.setOnClickListener { clickListener(block) }
             }
         }
@@ -175,7 +182,7 @@ class EditorAdapter(
         class HeaderThreeHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                itemView.headerThreeContentText.text = block.content.text
+                checkMarks(itemView, block)
                 itemView.setOnClickListener { clickListener(block) }
             }
         }
@@ -183,7 +190,7 @@ class EditorAdapter(
         class HeaderFourHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                itemView.headerFourContentText.text = block.content.text
+                checkMarks(itemView, block)
                 itemView.setOnClickListener { clickListener(block) }
             }
         }
@@ -191,7 +198,7 @@ class EditorAdapter(
         class QuoteHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                itemView.quoteContent.text = block.content.text
+                checkMarks(itemView, block)
                 itemView.setOnClickListener { clickListener(block) }
             }
         }
@@ -199,7 +206,7 @@ class EditorAdapter(
         class CheckBoxHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                itemView.checkBoxContent.text = block.content.text
+                checkMarks(itemView, block)
                 itemView.checkBoxContent.setOnClickListener {
                     clickListener(block)
                 }
@@ -209,7 +216,7 @@ class EditorAdapter(
         class CodeSnippetHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                itemView.codeSnippetContent.text = block.content.text
+                checkMarks(itemView, block)
                 itemView.codeSnippetContent.setOnClickListener { clickListener(block) }
             }
         }
@@ -217,6 +224,7 @@ class EditorAdapter(
         class BulletHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
+
                 itemView.tvContent.text = SpannableString(block.content.text).apply {
                     setSpan(BulletSpan(40), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
@@ -233,6 +241,31 @@ class EditorAdapter(
                     setOnClickListener { clickListener(block) }
                 }
             }
+        }
+
+        fun checkMarks(itemView: View, block: BlockView) {
+            if (block.content.marks.isNotEmpty()) {
+                itemView.tvContent.text = getSpannableText(block)
+            } else {
+                itemView.tvContent.text = block.content.text
+            }
+        }
+
+        fun getSpannableText(block: BlockView) : SpannableString {
+            val spannable = SpannableString(block.content.text)
+            block.content.marks.forEach {
+                when (it.type) {
+                    Mark.MarkType.BOLD -> spannable.setSpan(StyleSpan(Typeface.BOLD), it.start.toInt(), it.end.toInt(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    Mark.MarkType.ITALIC -> spannable.setSpan(StyleSpan(Typeface.ITALIC), it.start.toInt(), it.end.toInt(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    Mark.MarkType.STRIKE_THROUGH -> spannable.setSpan(
+                        StrikethroughSpan(), it.start.toInt(), it.end.toInt(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    else -> {}
+                }
+            }
+            return spannable
         }
     }
 

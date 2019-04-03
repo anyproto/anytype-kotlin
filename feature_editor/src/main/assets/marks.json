@@ -1,0 +1,32 @@
+{
+  "blocks": [
+    {
+      "id": "c0301f2b-b532-55e1-92ba-2b2fc4af237e",
+      "parentId": "",
+      "type": 3,
+      "contentType": 1,
+      "content": {"text":"Так говорила в июле 1805 года известная Анна Павловна Шерер, фрейлина и приближенная императрицы Марии Феодоровны, встречая важного и чиновного князя Василия, первого приехавшего на ее вечер. Анна Павловна кашляла несколько дней, у нее был грипп,как она говорила (грипп был тогда новое слово, употреблявшееся только редкими). В записочках, разосланных утрoом с красным лакеем, было написано без различия во всех:","marks":[{"type":"i","start":240,"end":246},{"type":"i","start":264,"end":269},{"type":"b","start":340,"end":374},{"type":"i","start":150,"end":157},{"type":"i","start":40,"end":59},{"type":"i","start":97,"end":113},{"type":"i","start":192,"end":205},{"type":"b","start":167,"end":178},{"type":"b","start":125,"end":130},{"type":"s","start":254,"end":259},{"type":"i","start":397,"end":402},{"type":"kbd","start":328,"end":338},{"type":"a","start":316,"end":323,"param":"ya.ru"}]},
+      "width": 0,
+      "children": []
+    },
+    {
+      "id": "222fd307-4c05-5de6-beaf-b137960223e3",
+      "parentId": "",
+      "type": 3,
+      "contentType": 1,
+      "content": {"text":"«Si vous n'avez rien de mieux à faire, Monsieur le comte (или mon prince), et si la perspective de passer la soirée chez une pauvre malade ne vous effraye pas trop, je serai charmée de vous voir chez moi entre 7 et 10 heures. Annette Scherer» ","marks":[{"type":"s","start":0,"end":242}]},
+      "width": 0,
+      "children": []
+    },
+    {
+      "id": "e8ce8ef8-c44d-5d73-b224-f8de34f92e10",
+      "parentId": "",
+      "type": 3,
+      "contentType": 1,
+      "content": {"text":"Dieu, quelle virulente sortie! — отвечал, нисколько не смутясь такою встречей, вошедший князь, в придворном, шитом мундире, в чулках, башмаках и звездах, с светлым выражением плоского лица.","marks":[{"type":"a","param":"https://ilibrary.ru/text/11/p.1/index.html#fn4","start":31,"end":30},{"type":"b","start":33,"end":40}]},
+      "width": 0,
+      "children": []
+    }
+  ]
+}
+

@@ -23,7 +23,7 @@ class IPFSDataSourceImpl @Inject constructor(
     override fun getBlocks(): Single<List<BlockModel>> {
         return Single.create<List<BlockModel>> { emitter ->
             try {
-                val json = context.assets.open("test.json").bufferedReader().use {
+                val json = context.assets.open("marks.json").bufferedReader().use {
                     it.readText()
                 }
 

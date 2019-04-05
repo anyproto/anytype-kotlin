@@ -1,12 +1,8 @@
 package com.agileburo.anytype.feature_editor.ui
 
-import android.graphics.Typeface
-import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.BulletSpan
-import android.text.style.StrikethroughSpan
-import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +25,6 @@ import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
 import timber.log.Timber
-import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 
 class EditorAdapter(
@@ -254,9 +249,9 @@ class EditorAdapter(
         class BulletHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
-                itemView.tvContent.text =
-                    getBulletContentSpannable(text = content.text, gapWidth = 40, start = 0)
-                        .addMarks(content.marks)
+                itemView.tvContent.text = SpannableString(content.text).withBulletSpan(gapWidth = 40, start = 0)
+                        .addMarks(marks = content.marks, textView = itemView.tvContent,
+                            click = {})
                 itemView.setOnClickListener { clickListener(this) }
             }
         }
@@ -266,7 +261,9 @@ class EditorAdapter(
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block.content) {
                 itemView.positionText.text = "${param.number}."
                 if (marks.isNotEmpty()) {
-                    itemView.contentText.text = SpannableString(text).addMarks(marks)
+                    itemView.contentText.text = SpannableString(text)
+                        .addMarks(marks = marks, textView = itemView.positionText,
+                            click = {})
                 } else {
                     itemView.contentText.text = text
                 }
@@ -276,13 +273,17 @@ class EditorAdapter(
 
         fun setContentMarks(tvContent: TextView, content: CharSequence, marks: List<Mark>) =
             if (marks.isNotEmpty()) {
-                tvContent.text = SpannableString(content).addMarks(marks)
+                tvContent.text = SpannableString(content)
+                    .addMarks(
+                        marks = marks,
+                        textView = tvContent,
+                        click = { Timber.d("Hey Hey I got click : $it") })
             } else {
                 tvContent.text = content
             }
 
         fun getBulletContentSpannable(text: CharSequence, gapWidth: Int, start: Int) =
-            SpannableString(text)
+            SpannableString(text).withBulletSpan(gapWidth, start)
                 .apply {
                     setSpan(BulletSpan(gapWidth), start, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
@@ -299,39 +300,5 @@ class EditorAdapter(
         const val HOLDER_NUMBERED = 7
         const val HOLDER_HEADER_FOUR = 8
         const val HOLDER_BULLET = 9
-    }
-}
-
-fun SpannableString.addMarks(marks: List<Mark>) = apply {
-    marks.forEach {
-        when (it.type) {
-            Mark.MarkType.BOLD -> setSpan(
-                StyleSpan(Typeface.BOLD),
-                it.start.toInt(),
-                it.end.toInt(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            Mark.MarkType.ITALIC -> setSpan(
-                StyleSpan(Typeface.ITALIC),
-                it.start.toInt(),
-                it.end.toInt(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            Mark.MarkType.STRIKE_THROUGH -> setSpan(
-                StrikethroughSpan(),
-                it.start.toInt(),
-                it.end.toInt(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            Mark.MarkType.CODE -> setSpan(
-                CodeBlockSpan(Typeface.DEFAULT),
-                it.start.toInt(),
-                it.end.toInt(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            Mark.MarkType.HYPERTEXT -> {//TODO IMPLEMENT
-            }
-            else -> throw IllegalArgumentException("Not supported type of marks : ${it.type}")
-        }
     }
 }

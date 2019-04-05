@@ -10,6 +10,7 @@ import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_utils.swap
@@ -28,6 +29,7 @@ import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
 import timber.log.Timber
+import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 
 class EditorAdapter(
@@ -52,7 +54,7 @@ class EditorAdapter(
         }
     }
 
-    fun update(items : List<BlockView>) {
+    fun update(items: List<BlockView>) {
         val callback = BlockViewDiffUtil(old = blocks, new = items)
         val result = DiffUtil.calculateDiff(callback)
         blocks.clear()
@@ -110,8 +112,8 @@ class EditorAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return when (blocks[position].contentType) {
+    override fun getItemViewType(position: Int) =
+        when (blocks[position].contentType) {
             is ContentType.P -> HOLDER_PARAGRAPH
             is ContentType.H1 -> HOLDER_HEADER_ONE
             is ContentType.H2 -> HOLDER_HEADER_TWO
@@ -124,7 +126,6 @@ class EditorAdapter(
             is ContentType.UL -> HOLDER_BULLET
             else -> throw IllegalStateException("Implement Toggle!!!")
         }
-    }
 
     override fun getItemCount() = blocks.size
 
@@ -149,124 +150,142 @@ class EditorAdapter(
         return true
     }
 
-    private fun swapPosition(fromPosition: Int, toPosition: Int) {
+    private fun swapPosition(fromPosition: Int, toPosition: Int) =
         blocks.swap(fromPosition, toPosition)
-    }
 
     sealed class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         class ParagraphHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                checkMarks(itemView, block)
-                itemView.setOnClickListener { clickListener(block) }
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
+                setContentMarks(
+                    tvContent = itemView.tvContent,
+                    content = content.text,
+                    marks = content.marks
+                )
+                itemView.setOnClickListener { clickListener(this) }
             }
         }
 
         class HeaderOneHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                checkMarks(itemView, block)
-                itemView.setOnClickListener { clickListener(block) }
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
+                setContentMarks(
+                    tvContent = itemView.headerContentText,
+                    content = content.text,
+                    marks = content.marks
+                )
+                itemView.setOnClickListener { clickListener(this) }
             }
         }
 
         class HeaderTwoHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                checkMarks(itemView, block)
-                itemView.setOnClickListener { clickListener(block) }
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
+                setContentMarks(
+                    tvContent = itemView.headerTwoContentText,
+                    content = content.text,
+                    marks = content.marks
+                )
+                itemView.setOnClickListener { clickListener(this) }
             }
         }
 
         class HeaderThreeHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                checkMarks(itemView, block)
-                itemView.setOnClickListener { clickListener(block) }
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
+                setContentMarks(
+                    tvContent = itemView.headerThreeContentText,
+                    content = content.text,
+                    marks = content.marks
+                )
+                itemView.setOnClickListener { clickListener(this) }
             }
         }
 
         class HeaderFourHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                checkMarks(itemView, block)
-                itemView.setOnClickListener { clickListener(block) }
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
+                setContentMarks(
+                    tvContent = itemView.headerFourContentText,
+                    content = content.text,
+                    marks = content.marks
+                )
+                itemView.setOnClickListener { clickListener(this) }
             }
         }
 
         class QuoteHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                checkMarks(itemView, block)
-                itemView.setOnClickListener { clickListener(block) }
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
+                setContentMarks(
+                    tvContent = itemView.quoteContent,
+                    content = content.text,
+                    marks = content.marks
+                )
+                itemView.setOnClickListener { clickListener(this) }
             }
         }
 
         class CheckBoxHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                checkMarks(itemView, block)
-                itemView.checkBoxContent.setOnClickListener {
-                    clickListener(block)
-                }
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
+                setContentMarks(
+                    tvContent = itemView.checkBoxContent,
+                    content = content.text,
+                    marks = content.marks
+                )
+                itemView.checkBoxContent.setOnClickListener { clickListener(this) }
             }
         }
 
         class CodeSnippetHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                checkMarks(itemView, block)
-                itemView.codeSnippetContent.setOnClickListener { clickListener(block) }
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
+                setContentMarks(
+                    tvContent = itemView.codeSnippetContent,
+                    content = content.text,
+                    marks = content.marks
+                )
+                itemView.codeSnippetContent.setOnClickListener { clickListener(this) }
             }
         }
 
         class BulletHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-
-                itemView.tvContent.text = SpannableString(block.content.text).apply {
-                    setSpan(BulletSpan(40), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                }
-                itemView.setOnClickListener { clickListener(block) }
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
+                itemView.tvContent.text =
+                    getBulletContentSpannable(text = content.text, gapWidth = 40, start = 0)
+                        .addMarks(content.marks)
+                itemView.setOnClickListener { clickListener(this) }
             }
         }
 
         class NumberedHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
-                with(itemView) {
-                    positionText.text = "${block.content.param.number}."
-                    contentText.text = block.content.text
-                    setOnClickListener { clickListener(block) }
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block.content) {
+                itemView.positionText.text = "${param.number}."
+                if (marks.isNotEmpty()) {
+                    itemView.contentText.text = SpannableString(text).addMarks(marks)
+                } else {
+                    itemView.contentText.text = text
                 }
+                itemView.setOnClickListener { clickListener(block) }
             }
         }
 
-        fun checkMarks(itemView: View, block: BlockView) {
-            if (block.content.marks.isNotEmpty()) {
-                itemView.tvContent.text = getSpannableText(block)
+        fun setContentMarks(tvContent: TextView, content: CharSequence, marks: List<Mark>) =
+            if (marks.isNotEmpty()) {
+                tvContent.text = SpannableString(content).addMarks(marks)
             } else {
-                itemView.tvContent.text = block.content.text
+                tvContent.text = content
             }
-        }
 
-        fun getSpannableText(block: BlockView) : SpannableString {
-            val spannable = SpannableString(block.content.text)
-            block.content.marks.forEach {
-                when (it.type) {
-                    Mark.MarkType.BOLD -> spannable.setSpan(StyleSpan(Typeface.BOLD), it.start.toInt(), it.end.toInt(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    Mark.MarkType.ITALIC -> spannable.setSpan(StyleSpan(Typeface.ITALIC), it.start.toInt(), it.end.toInt(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    Mark.MarkType.STRIKE_THROUGH -> spannable.setSpan(
-                        StrikethroughSpan(), it.start.toInt(), it.end.toInt(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    else -> {}
+        fun getBulletContentSpannable(text: CharSequence, gapWidth: Int, start: Int) =
+            SpannableString(text)
+                .apply {
+                    setSpan(BulletSpan(gapWidth), start, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
-            }
-            return spannable
-        }
     }
 
     companion object {
@@ -280,5 +299,39 @@ class EditorAdapter(
         const val HOLDER_NUMBERED = 7
         const val HOLDER_HEADER_FOUR = 8
         const val HOLDER_BULLET = 9
+    }
+}
+
+fun SpannableString.addMarks(marks: List<Mark>) = apply {
+    marks.forEach {
+        when (it.type) {
+            Mark.MarkType.BOLD -> setSpan(
+                StyleSpan(Typeface.BOLD),
+                it.start.toInt(),
+                it.end.toInt(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            Mark.MarkType.ITALIC -> setSpan(
+                StyleSpan(Typeface.ITALIC),
+                it.start.toInt(),
+                it.end.toInt(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            Mark.MarkType.STRIKE_THROUGH -> setSpan(
+                StrikethroughSpan(),
+                it.start.toInt(),
+                it.end.toInt(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            Mark.MarkType.CODE -> setSpan(
+                CodeBlockSpan(Typeface.DEFAULT),
+                it.start.toInt(),
+                it.end.toInt(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            Mark.MarkType.HYPERTEXT -> {//TODO IMPLEMENT
+            }
+            else -> throw IllegalArgumentException("Not supported type of marks : ${it.type}")
+        }
     }
 }

@@ -89,8 +89,13 @@ abstract class EditorFragment : Fragment() {
     }
 
     override fun onPause() {
-        disposable.clear()
+        viewModel.hideToolbar()
         super.onPause()
+    }
+
+    override fun onDestroyView() {
+        disposable.clear()
+        super.onDestroyView()
     }
 
     private fun handleState(state: EditorState) = when (state) {

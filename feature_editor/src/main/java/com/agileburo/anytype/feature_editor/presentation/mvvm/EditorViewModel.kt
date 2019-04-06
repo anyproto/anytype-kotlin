@@ -42,6 +42,8 @@ class EditorViewModel(
             is EditBlockAction.ArchiveBlock -> removeBlock(action.id)
         }.also { progress.accept(EditorState.HideToolbar) }
 
+    fun hideToolbar() = progress.accept(EditorState.HideToolbar)
+
     fun onBlockClicked(id : String) {
 
         val block = blocks.first { block -> block.id == id }

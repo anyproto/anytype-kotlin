@@ -13,13 +13,13 @@ interface ContentConverter {
     fun domainToModel(domain: Content.Text): ContentModel
 }
 
-class ContentConverterImpl : ContentConverter {
+class ContentConverterImpl(private val markConverter: MarkConverter) : ContentConverter {
 
     //TODO add marks convert!
     override fun modelToDomain(model: ContentModel) =
         Content.Text(
             text = model.text,
-            marks = emptyList(),
+            marks = model.marks.map { markConverter.modelToDomain(it) },
             param = ContentParam(
                 mutableMapOf(
                     "number" to (model.number ?: 0),
@@ -32,7 +32,7 @@ class ContentConverterImpl : ContentConverter {
     override fun domainToModel(domain: Content.Text) =
         ContentModel(
             text = domain.text.toString(),
-            marks = domain.marks.map { it.toString() },
+            marks = domain.marks.map { markConverter.domainToModel(it) },
             number = domain.param.number,
             checked = domain.param.checked
         )

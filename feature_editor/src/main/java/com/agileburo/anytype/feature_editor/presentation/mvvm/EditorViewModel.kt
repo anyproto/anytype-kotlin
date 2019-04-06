@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_editor.presentation.mvvm
 
 import androidx.lifecycle.ViewModel
+import com.agileburo.anytype.core_utils.BaseSchedulerProvider
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
@@ -16,7 +17,8 @@ import timber.log.Timber
 
 class EditorViewModel(
     private val interactor: EditorInteractor,
-    private val contentTypeConverter: BlockContentTypeConverter
+    private val contentTypeConverter: BlockContentTypeConverter,
+    private val schedulerProvider: BaseSchedulerProvider
 ) : ViewModel() {
 
     private val subscriptions by lazy { CompositeDisposable() }
@@ -41,24 +43,26 @@ class EditorViewModel(
             is EditBlockAction.NumberedClick -> convertBlock(block = action.block, contentType = ContentType.NumberedList)
             is EditBlockAction.CheckBoxClick -> convertBlock(block = action.block, contentType = ContentType.Check)
             is EditBlockAction.CodeClick -> convertBlock(block = action.block, contentType = ContentType.Code)
+            is EditBlockAction.ArchiveBlock -> removeBlock(id = action.id)
         }.also { progress.accept(EditorState.HideToolbar) }
+            .also { progress.accept(EditorState.HideLinkChip) }
 
-    fun onBlockClicked(id : String) {
+    fun hideToolbar() = progress.accept(EditorState.HideToolbar)
 
-        val block = blocks.first { block -> block.id == id }
-
+    fun onBlockClicked(id: String) = blocks.first { it.id == id }.let {
         progress.accept(
             EditorState.ShowToolbar(
-                block = block,
-                typesToHide = contentTypeConverter.getForbiddenTypes(block.contentType)
+                block = it,
+                typesToHide = contentTypeConverter.getForbiddenTypes(it.contentType)
             )
         )
+        progress.accept(EditorState.HideLinkChip)
     }
 
     private fun fetchBlocks() {
         interactor.getBlocks()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
+            .observeOn(schedulerProvider.ui())
+            .subscribeOn(schedulerProvider.io())
             .subscribe(
                 { data -> onBlockReceived(data) },
                 { error -> Timber.e(error, "Error while fetching blocks") }
@@ -87,6 +91,13 @@ class EditorViewModel(
 
 
         }
+    }
+
+    private fun removeBlock(id: String) {
+        val index = blocks.indexOfFirst { it.id == id }
+        require(index > -1 && index < blocks.size)
+        blocks.removeAt(index)
+        progress.accept(EditorState.Updates(blocks))
     }
 
     override fun onCleared() {

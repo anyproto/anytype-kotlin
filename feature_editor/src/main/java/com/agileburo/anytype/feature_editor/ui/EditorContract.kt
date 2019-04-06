@@ -24,13 +24,17 @@ sealed class EditBlockAction {
     data class NumberedClick(val block: Block) : EditBlockAction()
     data class CheckBoxClick(val block: Block) : EditBlockAction()
     data class CodeClick(val block: Block) : EditBlockAction()
+    data class ArchiveBlock(val id: String) : EditBlockAction()
 }
 
 sealed class EditorState {
     data class ShowToolbar(val block: Block, val typesToHide: Set<ContentType>) : EditorState()
     object HideToolbar : EditorState()
+    object HideLinkChip : EditorState()
     data class Result(val blocks: List<Block>) : EditorState()
     data class Updates(val blocks : List<Block>) : EditorState()
     data class Update(val block: Block) : EditorState()
+    data class Archive(val id: String): EditorState()
+    data class Error(val msg: String): EditorState()
     object Loading : EditorState()
 }

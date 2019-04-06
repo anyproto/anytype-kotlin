@@ -9,12 +9,13 @@ sealed class Content {
 }
 
 data class Mark(
-    val start : Int,
-    val end : Int,
-    val type : MarkType
+    val start : Long,
+    val end : Long,
+    val type : MarkType,
+    val param: String
 ) {
     enum class MarkType {
-        BOLD, ITALIC, UNDERLINE, STRIKE_THROUGH
+        BOLD, ITALIC, UNDERLINE, STRIKE_THROUGH, HYPERTEXT, CODE, UNDEFINED
     }
 }
 

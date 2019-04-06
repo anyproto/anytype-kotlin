@@ -7,7 +7,7 @@ package com.agileburo.anytype.feature_editor.data
  */
 data class ContentModel(
     val text: String = "",
-    val marks: List<String> = emptyList(),
+    val marks: List<MarkModel> = emptyList(),
     val number : Int? = null,
     val checked : Boolean? = null
 )

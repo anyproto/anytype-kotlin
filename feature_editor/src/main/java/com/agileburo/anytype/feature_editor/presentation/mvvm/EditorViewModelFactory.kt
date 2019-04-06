@@ -2,12 +2,14 @@ package com.agileburo.anytype.feature_editor.presentation.mvvm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.agileburo.anytype.core_utils.BaseSchedulerProvider
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
 
 class EditorViewModelFactory(
     private val editorInteractor: EditorInteractor,
-    private val contentTypeConverter: BlockContentTypeConverter
+    private val contentTypeConverter: BlockContentTypeConverter,
+    private val schedulerProvider: BaseSchedulerProvider
 
 ) : ViewModelProvider.Factory {
 
@@ -15,6 +17,7 @@ class EditorViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
         EditorViewModel(
             interactor = editorInteractor,
-            contentTypeConverter = contentTypeConverter
+            contentTypeConverter = contentTypeConverter,
+            schedulerProvider = schedulerProvider
         ) as T
 }

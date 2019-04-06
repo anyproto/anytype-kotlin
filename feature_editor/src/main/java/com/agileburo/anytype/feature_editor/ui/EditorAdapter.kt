@@ -1,8 +1,6 @@
 package com.agileburo.anytype.feature_editor.ui
 
 import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.BulletSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,24 +32,20 @@ class EditorAdapter(
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setBlocks(items: List<BlockView>) {
-        items.forEach {
-            Timber.d("Blocks : $it")
-        }
         blocks.addAll(items)
         notifyDataSetChanged()
     }
 
     fun updateBlock(block: BlockView) {
         val index = blocks.indexOfFirst { it.id == block.id }
-        if (index >= 0 && index < blocks.size) {
-            blocks[index] = block
-            notifyItemChanged(index)
-        }
+        require(index >= 0 && index < blocks.size)
+        blocks[index] = block
+        notifyItemChanged(index)
     }
 
     fun update(items: List<BlockView>) {
-        val callback = BlockViewDiffUtil(old = blocks, new = items)
-        val result = DiffUtil.calculateDiff(callback)
+        val result =
+            DiffUtil.calculateDiff(BlockViewDiffUtil(old = blocks, new = items))
         blocks.clear()
         blocks.addAll(items)
         result.dispatchUpdatesTo(this)
@@ -250,9 +244,13 @@ class EditorAdapter(
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
                 itemView.tvContent.text =
-                    SpannableString(content.text).withBulletSpan(gapWidth = 40, start = 0)
-                        .addMarks(marks = content.marks, textView = itemView.tvContent,
-                            click = {Timber.d("Hey Hey I got bullet click : $it")}, itemView = itemView
+                    SpannableString(content.text)
+                        .withBulletSpan(gapWidth = 40, start = 0)
+                        .addMarks(
+                            marks = content.marks,
+                            textView = itemView.tvContent,
+                            click = { Timber.d("Hey Hey I got bullet click : $it") },
+                            itemView = itemView
                         )
                 itemView.setOnClickListener { clickListener(this) }
             }
@@ -263,10 +261,14 @@ class EditorAdapter(
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block.content) {
                 itemView.positionText.text = "${param.number}."
                 if (marks.isNotEmpty()) {
-                    itemView.contentText.text = SpannableString(text)
-                        .addMarks(marks = marks, textView = itemView.contentText,
-                            click = {Timber.d("Hey Hey I got numbered click : $it") }, itemView = itemView
-                        )
+                    itemView.contentText.text =
+                        SpannableString(text)
+                            .addMarks(
+                                marks = marks,
+                                textView = itemView.contentText,
+                                click = { Timber.d("Hey Hey I got numbered click : $it") },
+                                itemView = itemView
+                            )
                 } else {
                     itemView.contentText.text = text
                 }
@@ -276,13 +278,14 @@ class EditorAdapter(
 
         fun setContentMarks(tvContent: TextView, content: CharSequence, marks: List<Mark>) =
             if (marks.isNotEmpty()) {
-                tvContent.text = SpannableString(content)
-                    .addMarks(
-                        marks = marks,
-                        textView = tvContent,
-                        click = { Timber.d("Hey Hey I got click : $it") },
-                        itemView = itemView
-                    )
+                tvContent.text =
+                    SpannableString(content)
+                        .addMarks(
+                            marks = marks,
+                            textView = tvContent,
+                            click = { Timber.d("Hey Hey I got click : $it") },
+                            itemView = itemView
+                        )
             } else {
                 tvContent.text = content
             }

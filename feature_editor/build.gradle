@@ -36,6 +36,7 @@ dependencies {
     implementation applicationDependencies.viewModel
     implementation applicationDependencies.viewModelExtesions
     implementation applicationDependencies.appcompat
+    implementation applicationDependencies.design
     implementation applicationDependencies.constraintLayout
     implementation applicationDependencies.recyclerView
 

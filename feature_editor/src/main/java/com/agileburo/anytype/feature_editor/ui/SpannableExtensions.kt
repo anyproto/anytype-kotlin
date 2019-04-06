@@ -1,10 +1,10 @@
 package com.agileburo.anytype.feature_editor.ui
 
+import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
-import android.text.method.LinkMovementMethod
 import android.text.style.BulletSpan
 import android.text.style.ClickableSpan
 import android.text.style.StrikethroughSpan
@@ -12,9 +12,14 @@ import android.text.style.StyleSpan
 import android.view.View
 import android.widget.TextView
 import com.agileburo.anytype.feature_editor.domain.Mark
+import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import java.lang.IllegalArgumentException
 
-fun SpannableString.addMarks(marks: List<Mark>, textView: TextView, click: (String) -> Unit) =
+@SuppressLint("ClickableViewAccessibility")
+fun SpannableString.addMarks(
+    marks: List<Mark>, textView: TextView,
+    click: (String) -> Unit, itemView: View
+) =
     apply {
         marks.forEach {
             when (it.type) {
@@ -43,7 +48,13 @@ fun SpannableString.addMarks(marks: List<Mark>, textView: TextView, click: (Stri
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
                 Mark.MarkType.HYPERTEXT -> {
-                    textView.movementMethod = LinkMovementMethod.getInstance()
+                    val method = BetterLinkMovementMethod.getInstance()
+                    textView.movementMethod = method
+                    textView.setOnTouchListener { _, event ->
+                        method.onTouchEvent(textView, textView.text as Spannable, event)
+                                || itemView.onTouchEvent(event)
+                    }
+
                     withClickableSpan(it.param, it.start.toInt(), it.end.toInt(), click)
                 }
                 else -> throw IllegalArgumentException("Not supported type of marks : ${it.type}")
@@ -57,6 +68,7 @@ fun SpannableString.withClickableSpan(
     end: Int,
     onClickListener: (String) -> Unit
 ): SpannableString {
+
     val clickableSpan = object : ClickableSpan() {
         override fun onClick(widget: View?) = onClickListener(param)
     }

@@ -45,6 +45,7 @@ dependencies {
     implementation applicationDependencies.dagger
     implementation applicationDependencies.timber
     implementation applicationDependencies.gson
+    implementation applicationDependencies.betterLinkMovement
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.mockito

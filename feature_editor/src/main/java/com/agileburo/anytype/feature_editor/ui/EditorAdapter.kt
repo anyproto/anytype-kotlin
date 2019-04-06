@@ -249,9 +249,11 @@ class EditorAdapter(
         class BulletHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(block: BlockView, clickListener: (BlockView) -> Unit) = with(block) {
-                itemView.tvContent.text = SpannableString(content.text).withBulletSpan(gapWidth = 40, start = 0)
+                itemView.tvContent.text =
+                    SpannableString(content.text).withBulletSpan(gapWidth = 40, start = 0)
                         .addMarks(marks = content.marks, textView = itemView.tvContent,
-                            click = {})
+                            click = {Timber.d("Hey Hey I got bullet click : $it")}, itemView = itemView
+                        )
                 itemView.setOnClickListener { clickListener(this) }
             }
         }
@@ -262,8 +264,9 @@ class EditorAdapter(
                 itemView.positionText.text = "${param.number}."
                 if (marks.isNotEmpty()) {
                     itemView.contentText.text = SpannableString(text)
-                        .addMarks(marks = marks, textView = itemView.positionText,
-                            click = {})
+                        .addMarks(marks = marks, textView = itemView.contentText,
+                            click = {Timber.d("Hey Hey I got numbered click : $it") }, itemView = itemView
+                        )
                 } else {
                     itemView.contentText.text = text
                 }
@@ -277,16 +280,12 @@ class EditorAdapter(
                     .addMarks(
                         marks = marks,
                         textView = tvContent,
-                        click = { Timber.d("Hey Hey I got click : $it") })
+                        click = { Timber.d("Hey Hey I got click : $it") },
+                        itemView = itemView
+                    )
             } else {
                 tvContent.text = content
             }
-
-        fun getBulletContentSpannable(text: CharSequence, gapWidth: Int, start: Int) =
-            SpannableString(text).withBulletSpan(gapWidth, start)
-                .apply {
-                    setSpan(BulletSpan(gapWidth), start, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                }
     }
 
     companion object {

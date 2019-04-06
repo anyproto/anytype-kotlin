@@ -39,19 +39,20 @@ class EditorViewModel(
             is EditBlockAction.NumberedClick -> convertBlock(block = action.block, contentType = ContentType.OL)
             is EditBlockAction.CheckBoxClick -> convertBlock(block = action.block, contentType = ContentType.Check)
             is EditBlockAction.CodeClick -> convertBlock(block = action.block, contentType = ContentType.Code)
-            is EditBlockAction.ArchiveBlock -> removeBlock(action.id)
+            is EditBlockAction.ArchiveBlock -> removeBlock(id = action.id)
         }.also { progress.accept(EditorState.HideToolbar) }
+            .also { progress.accept(EditorState.HideLinkChip) }
 
-    fun onBlockClicked(id : String) {
+    fun hideToolbar() = progress.accept(EditorState.HideToolbar)
 
-        val block = blocks.first { block -> block.id == id }
-
+    fun onBlockClicked(id: String) = blocks.first { it.id == id }.let {
         progress.accept(
             EditorState.ShowToolbar(
-                block = block,
-                typesToHide = contentTypeConverter.getForbiddenTypes(block.contentType)
+                block = it,
+                typesToHide = contentTypeConverter.getForbiddenTypes(it.contentType)
             )
         )
+        progress.accept(EditorState.HideLinkChip)
     }
 
     fun fetchBlocks() {

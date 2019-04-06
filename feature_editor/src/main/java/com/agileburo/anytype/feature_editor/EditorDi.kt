@@ -54,9 +54,10 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideFactory(interactor: EditorInteractor,
-                       contentTypeConverter: BlockContentTypeConverter,
-                       baseSchedulerProvider: BaseSchedulerProvider
+    fun provideFactory(
+        interactor: EditorInteractor,
+        contentTypeConverter: BlockContentTypeConverter,
+        baseSchedulerProvider: BaseSchedulerProvider
     ): EditorViewModelFactory =
         EditorViewModelFactory(interactor, contentTypeConverter, baseSchedulerProvider)
 
@@ -67,6 +68,10 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideBlockContentConverter(): ContentConverter =
-            ContentConverterImpl()
+    fun provideBlockContentConverter(markConverter: MarkConverter): ContentConverter =
+        ContentConverterImpl(markConverter = markConverter)
+
+    @Provides
+    @PerFeature
+    fun provideMarkConverter(): MarkConverter = MarkConverterImpl()
 }

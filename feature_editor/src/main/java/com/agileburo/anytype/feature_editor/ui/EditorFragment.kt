@@ -1,10 +1,13 @@
 package com.agileburo.anytype.feature_editor.ui
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -36,7 +39,11 @@ abstract class EditorFragment : Fragment() {
     private val disposable = CompositeDisposable()
 
     private val blockAdapter by lazy {
-        EditorAdapter(mutableListOf()) { block -> viewModel.onBlockClicked(block.id) }
+        EditorAdapter(mutableListOf(), { block -> viewModel.onBlockClicked(block.id) },
+            {
+                chipLinks.text = it
+                chipLinks.visibility = View.VISIBLE
+            })
     }
 
     abstract fun inject()
@@ -60,11 +67,19 @@ abstract class EditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
+        chipLinks.setOnClickListener {
+            activity?.let { activity ->
+                val browserIntent =
+                    Intent(Intent.ACTION_VIEW, Uri.parse((it as? TextView)?.text.toString()))
+                if (browserIntent.resolveActivity(activity.packageManager) != null) {
+                    startActivity(browserIntent)
+                }
+            }
+        }
         viewModel.fetchBlocks()
     }
 
     private fun initializeView() = with(blockList) {
-
         layoutManager = LinearLayoutManager(requireContext())
 
         adapter = blockAdapter
@@ -80,7 +95,7 @@ abstract class EditorFragment : Fragment() {
             numberedClick = { viewModel.onContentTypeClicked(EditBlockAction.NumberedClick(it)) },
             checkBoxClick = { viewModel.onContentTypeClicked(EditBlockAction.CheckBoxClick(it)) },
             codeClick = { viewModel.onContentTypeClicked(EditBlockAction.CodeClick(it)) },
-            archiveClick = { viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(it))}
+            archiveClick = { viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(it)) }
         )
 
         setHasFixedSize(true)
@@ -89,29 +104,41 @@ abstract class EditorFragment : Fragment() {
     }
 
     override fun onPause() {
-        disposable.clear()
+        viewModel.hideToolbar()
         super.onPause()
     }
 
+    override fun onDestroyView() {
+        disposable.clear()
+        super.onDestroyView()
+    }
+
     private fun handleState(state: EditorState) = when (state) {
-        is EditorState.Loading -> {}
+        is EditorState.Loading -> {
+        }
         is EditorState.Result -> setBlocks(state.blocks)
         is EditorState.Update -> updateBlock(state.block)
         is EditorState.Updates -> render(state.blocks)
-        is EditorState.ShowToolbar -> showToolbar(block = state.block, typesToHide = state.typesToHide)
+        is EditorState.ShowToolbar -> showToolbar(
+            block = state.block,
+            typesToHide = state.typesToHide
+        )
         is EditorState.HideToolbar -> hideToolbar()
-        is EditorState.Archive -> {}
+        is EditorState.Archive -> {
+        }
         is EditorState.Error -> onError(state.msg)
+        is EditorState.HideLinkChip -> chipLinks.visibility = View.GONE
     }
 
     private fun setBlocks(blocks: List<Block>) {
         (blockList.adapter as? EditorAdapter)?.setBlocks(blocks.map(mapper::mapToView))
     }
+
     private fun updateBlock(block: Block) {
         (blockList.adapter as? EditorAdapter)?.updateBlock(mapper.mapToView(block))
     }
 
-    private fun render(blocks : List<Block>) {
+    private fun render(blocks: List<Block>) {
         blockAdapter.update(blocks.map(mapper::mapToView))
     }
 

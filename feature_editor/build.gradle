@@ -36,6 +36,7 @@ dependencies {
     implementation applicationDependencies.viewModel
     implementation applicationDependencies.viewModelExtesions
     implementation applicationDependencies.appcompat
+    implementation applicationDependencies.design
     implementation applicationDependencies.constraintLayout
     implementation applicationDependencies.recyclerView
 
@@ -45,6 +46,7 @@ dependencies {
     implementation applicationDependencies.dagger
     implementation applicationDependencies.timber
     implementation applicationDependencies.gson
+    implementation applicationDependencies.betterLinkMovement
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.mockito

@@ -77,6 +77,9 @@ dependencies {
     implementation applicationDependencies.gson
     implementation applicationDependencies.rxRelay
 
+    implementation applicationDependencies.sentry
+    implementation applicationDependencies.slf4j
+
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.junit
 

@@ -94,9 +94,18 @@ class EditorViewModel(
     }
 
     private fun removeBlock(id: String) {
+
         val index = blocks.indexOfFirst { it.id == id }
+
         require(index > -1 && index < blocks.size)
+
         blocks.removeAt(index)
+
+        val converted = contentTypeConverter.normalizeNumbers(blocks)
+
+        blocks.clear()
+        blocks.addAll(converted)
+
         progress.accept(EditorState.Updates(blocks))
     }
 

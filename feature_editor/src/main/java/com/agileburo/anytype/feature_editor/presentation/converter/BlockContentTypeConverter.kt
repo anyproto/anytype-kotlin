@@ -19,6 +19,8 @@ interface BlockContentTypeConverter {
      */
     fun convert(blocks : List<Block>, target : Block, targetType : ContentType) : List<Block>
 
+    fun normalizeNumbers(blocks : List<Block>) : List<Block>
+
     fun getPermittedTypes(typeInitial: ContentType): Set<ContentType>
     fun getForbiddenTypes(typeInitial: ContentType): Set<ContentType>
 }
@@ -102,10 +104,12 @@ class BlockContentTypeConverterImpl :
             }
     }
 
-    private fun normalizeNumbers(blocks : MutableList<Block>) : List<Block> {
+    override fun normalizeNumbers(blocks : List<Block>) : List<Block> {
 
         if (blocks.isEmpty())
-            return blocks
+            return emptyList()
+
+        val result = mutableListOf<Block>()
 
         var number = 0
         var isPreviousNumbered = false
@@ -128,9 +132,11 @@ class BlockContentTypeConverterImpl :
                 isPreviousNumbered = false
             }
 
+            result.add(block)
+
         }
 
-        return blocks
+        return result
 
     }
 

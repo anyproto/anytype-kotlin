@@ -22,15 +22,12 @@ import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
-import timber.log.Timber
-import java.lang.IllegalStateException
 
 class EditorAdapter(
     private val blocks: MutableList<BlockView>,
     private val listener: (BlockView) -> Unit,
     private val linksListener: (String) -> Unit
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setBlocks(items: List<BlockView>) {
         blocks.addAll(items)
@@ -127,9 +124,9 @@ class EditorAdapter(
             is ViewHolder.HeaderOneHolder -> holder.bind(blocks[position], listener, linksListener)
             is ViewHolder.HeaderTwoHolder -> holder.bind(blocks[position], listener, linksListener)
             is ViewHolder.HeaderThreeHolder -> holder.bind(
-                blocks[position],
-                listener,
-                linksListener
+                block = blocks[position],
+                clickListener = listener,
+                linksListener = linksListener
             )
             is ViewHolder.HeaderFourHolder -> holder.bind(blocks[position], listener, linksListener)
             is ViewHolder.QuoteHolder -> holder.bind(blocks[position], listener, linksListener)
@@ -140,7 +137,7 @@ class EditorAdapter(
                 linksListener
             )
             is ViewHolder.BulletHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.NumberedHolder -> holder.bind(blocks[position], listener, linksListener)
+            is ViewHolder.NumberedHolder -> holder.bind(blocks[position], listener)
         }
     }
 

@@ -18,27 +18,27 @@ data class Mark(
     }
 }
 
-data class ContentParam(val map : Map<String, Any?>) {
-    val number : Int by map
-    val checked : Boolean by map
+data class ContentParam(val map : MutableMap<String, Any?>) {
+    var number : Int by map
+    var checked : Boolean by map
 
 
     companion object {
 
         fun empty() : ContentParam {
             return ContentParam(
-                mapOf(
-                    "number" to null,
-                    "checked" to null
+                mutableMapOf(
+                    "number" to 0,
+                    "checked" to false
                 )
             )
         }
 
         fun numberedList(number : Int = 1): ContentParam {
             return ContentParam(
-                mapOf(
+                mutableMapOf(
                     "number" to number,
-                    "checked" to null
+                    "checked" to false
                 )
             )
         }

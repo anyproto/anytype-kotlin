@@ -4,6 +4,7 @@ import com.agileburo.anytype.feature_editor.domain.ContentParam
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.factory.BlockFactory
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverterImpl
+import junit.framework.Assert.assertEquals
 import org.junit.Test
 
 class NumberedListMechanicsTest {
@@ -161,6 +162,50 @@ class NumberedListMechanicsTest {
             assert(get(1).contentType == ContentType.P)
             assert(get(2).contentType == ContentType.NumberedList)
             assert(get(2).content.param.number == 1)
+        }
+
+    }
+
+    @Test
+    fun test() {
+
+        val blocks = listOf(
+            BlockFactory.makeBlock(
+                contentType = ContentType.P
+            ),
+            BlockFactory.makeBlock(
+                contentParam = ContentParam.numberedList(1),
+                contentType = ContentType.NumberedList
+            ),
+            BlockFactory.makeBlock(
+                contentType = ContentType.P
+            ),
+            BlockFactory.makeBlock(
+                contentParam = ContentParam.numberedList(1),
+                contentType = ContentType.NumberedList
+            )
+        )
+
+        val targetType = ContentType.NumberedList
+
+        val target = blocks[2]
+
+        val result = converter.convert(
+            blocks = blocks,
+            target = target,
+            targetType = targetType
+        )
+
+        result.apply {
+            assertEquals(size, 4)
+            assertEquals(get(0).contentType, ContentType.P)
+            assertEquals(get(0).content.param.number, 0)
+            assertEquals(get(1).contentType, ContentType.NumberedList)
+            assertEquals(get(1).content.param.number, 1)
+            assertEquals(get(2).contentType, ContentType.NumberedList)
+            assertEquals(get(2).content.param.number, 2)
+            assertEquals(get(3).contentType, ContentType.NumberedList)
+            assertEquals(get(3).content.param.number, 3)
         }
 
     }

@@ -65,6 +65,74 @@ class BlockContentTypeConverterImpl :
         if (target.contentType == targetType)
             return blocks
         else
-            TODO()
+            when(targetType) {
+                
+                ContentType.NumberedList -> {
+
+                    val result = mutableListOf<Block>()
+
+                    blocks.forEach { block ->
+                        if (block.id == target.id) {
+                            val item = block.copy(
+                                contentType = targetType,
+                                content = block.content.copy(
+                                    param = ContentParam.numberedList()
+                                )
+                            )
+                            result.add(item)
+                        } else {
+                            result.add(block)
+                        }
+                    }
+                    
+                    return normalizeNumbers(result)
+                }
+                
+                else -> {
+
+                    val result = blocks.toMutableList().also { result ->
+                        val index = blocks.indexOf(target)
+                        val converted = target.copy(contentType = targetType)
+                        result[index] = converted
+                    }
+
+                    return normalizeNumbers(result)
+
+                }
+            }
     }
+
+    private fun normalizeNumbers(blocks : MutableList<Block>) : List<Block> {
+
+        if (blocks.isEmpty())
+            return blocks
+
+        var number = 0
+        var isPreviousNumbered = false
+
+        blocks.forEach { block ->
+            if (block.contentType == ContentType.NumberedList) {
+
+                if (isPreviousNumbered) {
+                    number++
+                    block.setNumber(number)
+                } else {
+                    number = 1
+                    block.setNumber(number)
+                }
+
+                isPreviousNumbered = true
+
+            } else {
+                block.setNumber(0)
+                isPreviousNumbered = false
+            }
+
+        }
+
+        return blocks
+
+    }
+
+
 }

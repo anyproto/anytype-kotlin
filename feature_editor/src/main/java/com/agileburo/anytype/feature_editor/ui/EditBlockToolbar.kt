@@ -20,7 +20,7 @@ class EditBlockToolbar : ConstraintLayout {
         content = Content.Text(
             text = "",
             marks = emptyList(),
-            param = ContentParam(emptyMap())
+            param = ContentParam.empty()
         )
     )
 

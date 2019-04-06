@@ -23,7 +23,6 @@ import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
 import timber.log.Timber
-import java.lang.IllegalStateException
 
 class EditorAdapter(
     private val blocks: MutableList<BlockView>,

@@ -21,9 +21,9 @@ class ContentConverterImpl : ContentConverter {
             text = model.text,
             marks = emptyList(),
             param = ContentParam(
-                mapOf(
-                    "number" to model.number,
-                    "checked" to model.checked
+                mutableMapOf(
+                    "number" to (model.number ?: 0),
+                    "checked" to (model.checked ?: false)
                 )
             )
         )

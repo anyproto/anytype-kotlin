@@ -74,13 +74,16 @@ class EditorViewModel(
 
         if (block.contentType != contentType) {
 
-            val converted = contentTypeConverter.convert(block, contentType)
+            val converted = contentTypeConverter.convert(
+                blocks = blocks,
+                targetType = contentType,
+                target = block
+            )
 
-            val index = blocks.indexOf(block)
+            blocks.clear()
+            blocks.addAll(converted)
 
-            blocks[index] = converted
-
-            progress.accept(EditorState.Update(converted))
+            progress.accept(EditorState.Updates(blocks))
 
 
         }

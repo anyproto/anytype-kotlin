@@ -39,7 +39,13 @@ data class Block(
     // TODO parse marks and other stuff
     val content: Content.Text
     // TODO add blockType
-)
+) {
+
+    fun setNumber(number : Int) {
+        content.param.number = number
+    }
+
+}
 
 fun Int.toContentType(): ContentType =
     when (this) {

@@ -167,7 +167,7 @@ class NumberedListMechanicsTest {
     }
 
     @Test
-    fun test() {
+    fun `should return correctly ordered numbered list`() {
 
         val blocks = listOf(
             BlockFactory.makeBlock(

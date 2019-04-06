@@ -2,11 +2,14 @@ package com.agileburo.anytype.feature_editor.presentation
 
 import com.agileburo.anytype.core_utils.TrampolineSchedulerProvider
 import com.agileburo.anytype.feature_editor.domain.*
+import com.agileburo.anytype.feature_editor.factory.BlockFactory
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverterImpl
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModel
 import com.agileburo.anytype.feature_editor.ui.EditBlockAction
 import com.agileburo.anytype.feature_editor.ui.EditorState
+import com.nhaarman.mockito_kotlin.times
+import com.nhaarman.mockito_kotlin.verify
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
@@ -21,41 +24,6 @@ import org.mockito.MockitoAnnotations
  */
 class EditorViewModelTest {
 
-    var blocks: List<Block> = listOf(
-        Block(
-            id = "1", contentType = ContentType.P,
-            content = Content.Text(
-                text = "111", marks = emptyList(),
-                param = ContentParam.numberedListDefaultParam()
-            ),
-            parentId = ""
-        ),
-        Block(
-            id = "2", contentType = ContentType.P,
-            content = Content.Text(
-                text = "222", marks = emptyList(),
-                param = ContentParam.numberedListDefaultParam()
-            ),
-            parentId = ""
-        ),
-        Block(
-            id = "3", contentType = ContentType.P,
-            content = Content.Text(
-                text = "333", marks = emptyList(),
-                param = ContentParam.numberedListDefaultParam()
-            ),
-            parentId = ""
-        ),
-        Block(
-            id = "4", contentType = ContentType.P,
-            content = Content.Text(
-                text = "444", marks = emptyList(),
-                param = ContentParam.numberedListDefaultParam()
-            ),
-            parentId = ""
-        )
-    )
-
     lateinit var viewModel: EditorViewModel
     lateinit var contentTypeConverter: BlockContentTypeConverter
 
@@ -66,52 +34,91 @@ class EditorViewModelTest {
     fun init() {
         MockitoAnnotations.initMocks(this)
         contentTypeConverter = BlockContentTypeConverterImpl()
+    }
+
+    @Test
+    fun `should start fetching blocks when view model is initialized`() {
+
+        val blocks = listOf(BlockFactory.makeBlock())
+
+        stubGetBlocks(Single.just(blocks))
+
         viewModel = EditorViewModel(
             interactor = interactor,
             contentTypeConverter = contentTypeConverter,
             schedulerProvider = TrampolineSchedulerProvider()
         )
+
+        verify(interactor, times(1)).getBlocks()
+
     }
 
     @Test
     fun `should return list of blocks`() {
 
-        Mockito.`when`(interactor.getBlocks()).thenReturn(Single.just(blocks))
+        val blocks = listOf(BlockFactory.makeBlock())
+
+        stubGetBlocks(Single.just(blocks))
+
+        viewModel = EditorViewModel(
+            interactor = interactor,
+            contentTypeConverter = contentTypeConverter,
+            schedulerProvider = TrampolineSchedulerProvider()
+        )
 
         val testObserver = viewModel.observeState().test()
 
-        viewModel.fetchBlocks()
-
-        testObserver.assertNoErrors()
-        testObserver.assertValueCount(1)
-        testObserver.assertValue(EditorState.Result(blocks = blocks))
+        testObserver
+            .assertNoErrors()
+            .assertValueCount(1)
+            .assertValue(EditorState.Result(blocks = blocks))
     }
 
     @Test
-    fun `should return list with size - 1 after remove block`() {
+    fun `should return list with size - 1 after block removal`() {
 
-        Mockito.`when`(interactor.getBlocks()).thenReturn(Single.just(blocks))
+        val blocks = listOf(BlockFactory.makeBlock(), BlockFactory.makeBlock())
+
+        stubGetBlocks(Single.just(blocks))
+
+        viewModel = EditorViewModel(
+            interactor = interactor,
+            contentTypeConverter = contentTypeConverter,
+            schedulerProvider = TrampolineSchedulerProvider()
+        )
 
         val testObserver = viewModel.observeState().test()
 
-        viewModel.fetchBlocks()
         viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(blocks[0].id))
-        testObserver.assertNoErrors()
-        testObserver.assertValueCount(3)
-        testObserver.assertValueAt(1, EditorState.Updates(blocks.subList(1, blocks.size)))
+
+        testObserver
+            .assertNoErrors()
+            .assertValueCount(4)
+            .assertValueAt(1, EditorState.Updates(listOf(blocks.last())))
     }
 
     @Test
     fun `should hide toolbar after delete block`() {
 
-        Mockito.`when`(interactor.getBlocks()).thenReturn(Single.just(blocks))
+        val blocks = listOf(BlockFactory.makeBlock())
+
+        stubGetBlocks(Single.just(blocks))
+
+        viewModel = EditorViewModel(
+            interactor = interactor,
+            contentTypeConverter = contentTypeConverter,
+            schedulerProvider = TrampolineSchedulerProvider()
+        )
 
         val testObserver = viewModel.observeState().test()
 
-        viewModel.fetchBlocks()
-        viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(blocks[1].id))
+        viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(blocks[0].id))
 
         testObserver.assertNoErrors()
         testObserver.assertValueAt(2, EditorState.HideToolbar)
+    }
+
+    private fun stubGetBlocks(single : Single<List<Block>>) {
+        Mockito.`when`(interactor.getBlocks()).thenReturn(single)
     }
 }

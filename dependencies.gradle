@@ -47,6 +47,9 @@ ext {
     //Development
     leakCanaryVersion = '1.5'
 
+    sentryVersion = '1.7.16'
+    slf4jVersion = '1.7.25'
+
     mainApplication = [
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             coroutines:                 "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version",
@@ -76,7 +79,9 @@ ext {
             timber:                     "com.jakewharton.timber:timber:$timber_version",
             rxjava2:                    "io.reactivex.rxjava2:rxjava:$rxjava2_version",
             rxAndroid:                  "io.reactivex.rxjava2:rxandroid:$rxjava2_version",
-            moshiKotlin:               "com.squareup.moshi:moshi-kotlin:$moshi_version"
+            moshiKotlin:               "com.squareup.moshi:moshi-kotlin:$moshi_version",
+            sentry:                     "io.sentry:sentry-android:$sentryVersion",
+            slf4j:                      "org.slf4j:slf4j-nop:$slf4jVersion"
     ]
 
     unitTesting = [

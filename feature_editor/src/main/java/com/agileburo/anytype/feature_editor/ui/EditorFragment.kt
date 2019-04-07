@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.core_utils.toast
 import com.agileburo.anytype.feature_editor.R
@@ -40,11 +41,17 @@ abstract class EditorFragment : Fragment() {
     private val disposable = CompositeDisposable()
 
     private val blockAdapter by lazy {
-        EditorAdapter(mutableListOf(), { block -> viewModel.onBlockClicked(block.id) },
-            {
+        EditorAdapter(
+            blocks = mutableListOf(),
+            listener = { block -> viewModel.onBlockClicked(block.id) },
+            linksListener = {
                 chipLinks.text = it
                 chipLinks.visibility = View.VISIBLE
-            })
+            }
+        ).apply {
+            val helper = ItemTouchHelper(DragAndDropBehavior(this))
+            helper.attachToRecyclerView(blockList)
+        }
     }
 
     abstract fun inject()

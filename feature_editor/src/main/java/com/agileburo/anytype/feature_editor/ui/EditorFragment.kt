@@ -22,6 +22,7 @@ import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModelFac
 import com.agileburo.anytype.feature_editor.presentation.mapper.BlockViewMapper
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_editor.*
+import timber.log.Timber
 import javax.inject.Inject
 
 abstract class EditorFragment : Fragment() {
@@ -51,9 +52,6 @@ abstract class EditorFragment : Fragment() {
     override fun onAttach(context: Context?) {
         inject()
         super.onAttach(context)
-        viewModel.observeState()
-            .subscribe(this::handleState)
-            .disposedBy(disposable)
     }
 
     override fun onCreateView(
@@ -62,6 +60,14 @@ abstract class EditorFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_editor, container, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel.observeState()
+            .doOnNext { Timber.d("New view state") }
+            .subscribe(this::handleState)
+            .disposedBy(disposable)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -76,7 +82,6 @@ abstract class EditorFragment : Fragment() {
                 }
             }
         }
-        viewModel.fetchBlocks()
     }
 
     private fun initializeView() = with(blockList) {
@@ -139,6 +144,7 @@ abstract class EditorFragment : Fragment() {
     }
 
     private fun render(blocks: List<Block>) {
+        Timber.d("Render: ${blocks.map { it.content.param }}")
         blockAdapter.update(blocks.map(mapper::mapToView))
     }
 

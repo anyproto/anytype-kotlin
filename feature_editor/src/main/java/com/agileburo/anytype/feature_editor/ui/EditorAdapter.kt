@@ -22,14 +22,12 @@ import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
-import java.lang.IllegalStateException
 
 class EditorAdapter(
     private val blocks: MutableList<BlockView>,
     private val listener: (BlockView) -> Unit,
     private val linksListener: (String) -> Unit
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setBlocks(items: List<BlockView>) {
         blocks.addAll(items)
@@ -38,14 +36,15 @@ class EditorAdapter(
 
     fun updateBlock(block: BlockView) {
         val index = blocks.indexOfFirst { it.id == block.id }
-        require(index >= 0 && index < blocks.size)
-        blocks[index] = block
-        notifyItemChanged(index)
+        if (index >= 0 && index < blocks.size) {
+            blocks[index] = block
+            notifyItemChanged(index)
+        }
     }
 
-    fun update(items: List<BlockView>) {
-        val result =
-            DiffUtil.calculateDiff(BlockViewDiffUtil(old = blocks, new = items))
+    fun update(items : List<BlockView>) {
+        val callback = BlockViewDiffUtil(old = blocks, new = items)
+        val result = DiffUtil.calculateDiff(callback)
         blocks.clear()
         blocks.addAll(items)
         result.dispatchUpdatesTo(this)
@@ -101,8 +100,8 @@ class EditorAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int) =
-        when (blocks[position].contentType) {
+    override fun getItemViewType(position: Int): Int {
+        return when (blocks[position].contentType) {
             is ContentType.P -> HOLDER_PARAGRAPH
             is ContentType.H1 -> HOLDER_HEADER_ONE
             is ContentType.H2 -> HOLDER_HEADER_TWO
@@ -111,10 +110,11 @@ class EditorAdapter(
             is ContentType.Quote -> HOLDER_QUOTE
             is ContentType.Check -> HOLDER_CHECKBOX
             is ContentType.Code -> HOLDER_CODE_SNIPPET
-            is ContentType.OL -> HOLDER_NUMBERED
+            is ContentType.NumberedList -> HOLDER_NUMBERED
             is ContentType.UL -> HOLDER_BULLET
             else -> throw IllegalStateException("Implement Toggle!!!")
         }
+    }
 
     override fun getItemCount() = blocks.size
 
@@ -124,9 +124,9 @@ class EditorAdapter(
             is ViewHolder.HeaderOneHolder -> holder.bind(blocks[position], listener, linksListener)
             is ViewHolder.HeaderTwoHolder -> holder.bind(blocks[position], listener, linksListener)
             is ViewHolder.HeaderThreeHolder -> holder.bind(
-                blocks[position],
-                listener,
-                linksListener
+                block = blocks[position],
+                clickListener = listener,
+                linksListener = linksListener
             )
             is ViewHolder.HeaderFourHolder -> holder.bind(blocks[position], listener, linksListener)
             is ViewHolder.QuoteHolder -> holder.bind(blocks[position], listener, linksListener)
@@ -137,7 +137,7 @@ class EditorAdapter(
                 linksListener
             )
             is ViewHolder.BulletHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.NumberedHolder -> holder.bind(blocks[position], listener, linksListener)
+            is ViewHolder.NumberedHolder -> holder.bind(blocks[position], listener)
         }
     }
 
@@ -310,23 +310,11 @@ class EditorAdapter(
 
         class NumberedHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(
-                block: BlockView,
-                clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
-            ) = with(block.content) {
-                itemView.positionText.text = "${param.number}."
-                if (marks.isNotEmpty()) {
-                    itemView.contentText.text =
-                        SpannableString(text)
-                            .addMarks(
-                                marks = marks,
-                                textView = itemView.contentText,
-                                click = { linksListener(it) },
-                                itemView = itemView
-                            )
-                } else {
-                    itemView.contentText.text = text
+            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
+                with(itemView) {
+                    positionText.text = "${block.content.param.number}."
+                    contentText.text = block.content.text
+                    setOnClickListener { clickListener(block) }
                 }
                 itemView.setOnClickListener { clickListener(block) }
             }

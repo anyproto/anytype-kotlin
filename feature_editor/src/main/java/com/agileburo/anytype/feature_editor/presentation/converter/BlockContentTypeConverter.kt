@@ -12,6 +12,15 @@ interface BlockContentTypeConverter {
      */
     fun convert(block : Block, type : ContentType) : Block
 
+    /**
+     * @param blocks list of blocks
+     * @param target block that we need to convert
+     * @param targetType type for a new block
+     */
+    fun convert(blocks : List<Block>, target : Block, targetType : ContentType) : List<Block>
+
+    fun normalizeNumbers(blocks : List<Block>) : List<Block>
+
     fun getPermittedTypes(typeInitial: ContentType): Set<ContentType>
     fun getForbiddenTypes(typeInitial: ContentType): Set<ContentType>
 }
@@ -23,7 +32,7 @@ class BlockContentTypeConverterImpl :
     fun getPermittedTypes(typeInitial: ContentType): Set<ContentType> =
         setOf(
             ContentType.P, ContentType.Code, ContentType.H1, ContentType.H2,
-            ContentType.H3, ContentType.OL, ContentType.UL, ContentType.Quote,
+            ContentType.H3, ContentType.NumberedList, ContentType.UL, ContentType.Quote,
             ContentType.Toggle, ContentType.Check, ContentType.H4
         )
 
@@ -37,11 +46,11 @@ class BlockContentTypeConverterImpl :
 
     override fun convert(block: Block, type: ContentType): Block {
         return when(type) {
-            ContentType.OL -> {
+            ContentType.NumberedList -> {
                 block.copy(
                     contentType = type,
                     content = block.content.copy(
-                        param = ContentParam.numberedListDefaultParam()
+                        param = ContentParam.numberedList()
                     )
                 )
             }
@@ -51,6 +60,85 @@ class BlockContentTypeConverterImpl :
                 )
             }
         }
+    }
+
+    override fun convert(blocks: List<Block>, target: Block, targetType: ContentType): List<Block> {
+
+        if (target.contentType == targetType)
+            return blocks
+        else
+            when(targetType) {
+                
+                ContentType.NumberedList -> {
+
+                    val result = mutableListOf<Block>()
+
+                    blocks.forEach { block ->
+                        if (block.id == target.id) {
+                            val item = block.copy(
+                                contentType = targetType,
+                                content = block.content.copy(
+                                    param = ContentParam.numberedList()
+                                )
+                            )
+                            result.add(item)
+                        } else {
+                            result.add(block)
+                        }
+                    }
+                    
+                    return normalizeNumbers(result)
+                }
+                
+                else -> {
+
+                    val result = blocks.toMutableList().also { result ->
+                        val index = blocks.indexOf(target)
+                        val converted = target.copy(contentType = targetType)
+                        result[index] = converted
+                    }
+
+                    return normalizeNumbers(result)
+
+                }
+            }
+    }
+
+    override fun normalizeNumbers(blocks : List<Block>) : List<Block> {
+
+        if (blocks.isEmpty())
+            return emptyList()
+
+        val result = mutableListOf<Block>()
+
+        var number = 0
+        var isPreviousNumbered = false
+
+        blocks.forEach { block ->
+            if (block.contentType == ContentType.NumberedList) {
+
+                if (isPreviousNumbered) {
+                    number++
+                    block.setNumber(number)
+                } else {
+                    number = 1
+                    block.setNumber(number)
+                }
+
+                isPreviousNumbered = true
+
+            } else {
+                block.setNumber(0)
+                isPreviousNumbered = false
+            }
+
+            result.add(block)
+
+        }
+
+        return result
 
     }
+
+
 }

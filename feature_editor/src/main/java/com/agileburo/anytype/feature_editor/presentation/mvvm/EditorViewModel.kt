@@ -25,6 +25,10 @@ class EditorViewModel(
     private val blocks by lazy { mutableListOf<Block>() }
     private val progress by lazy { BehaviorRelay.create<EditorState>() }
 
+    init {
+        fetchBlocks()
+    }
+
     fun observeState() = progress
 
     fun onContentTypeClicked(action: EditBlockAction) =
@@ -36,7 +40,7 @@ class EditorViewModel(
             is EditBlockAction.Header4Click -> convertBlock(block = action.block, contentType = ContentType.H4)
             is EditBlockAction.HighLightClick -> convertBlock(block = action.block, contentType = ContentType.Quote)
             is EditBlockAction.BulletClick -> convertBlock(block = action.block, contentType = ContentType.UL)
-            is EditBlockAction.NumberedClick -> convertBlock(block = action.block, contentType = ContentType.OL)
+            is EditBlockAction.NumberedClick -> convertBlock(block = action.block, contentType = ContentType.NumberedList)
             is EditBlockAction.CheckBoxClick -> convertBlock(block = action.block, contentType = ContentType.Check)
             is EditBlockAction.CodeClick -> convertBlock(block = action.block, contentType = ContentType.Code)
             is EditBlockAction.ArchiveBlock -> removeBlock(id = action.id)
@@ -55,7 +59,7 @@ class EditorViewModel(
         progress.accept(EditorState.HideLinkChip)
     }
 
-    fun fetchBlocks() {
+    private fun fetchBlocks() {
         interactor.getBlocks()
             .observeOn(schedulerProvider.ui())
             .subscribeOn(schedulerProvider.io())
@@ -74,21 +78,34 @@ class EditorViewModel(
 
         if (block.contentType != contentType) {
 
-            val converted = contentTypeConverter.convert(block, contentType)
+            val converted = contentTypeConverter.convert(
+                blocks = blocks,
+                targetType = contentType,
+                target = block
+            )
 
-            val index = blocks.indexOf(block)
-            require(index > -1 && index < blocks.size)
+            blocks.clear()
+            blocks.addAll(converted)
 
-            blocks[index] = converted
+            progress.accept(EditorState.Updates(blocks))
 
-            progress.accept(EditorState.Update(converted))
+
         }
     }
 
     private fun removeBlock(id: String) {
+
         val index = blocks.indexOfFirst { it.id == id }
+
         require(index > -1 && index < blocks.size)
+
         blocks.removeAt(index)
+
+        val converted = contentTypeConverter.normalizeNumbers(blocks)
+
+        blocks.clear()
+        blocks.addAll(converted)
+
         progress.accept(EditorState.Updates(blocks))
     }
 

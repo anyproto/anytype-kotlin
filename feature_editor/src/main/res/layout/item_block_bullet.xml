@@ -5,7 +5,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/btnEditable"
+        android:id="@+id/btnBullet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -13,11 +13,11 @@
         app:srcCompat="@drawable/ic_edit" />
 
     <EditText
-        android:id="@+id/textEditable"
+        android:id="@+id/textBullet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_toEndOf="@id/btnEditable"
+        android:layout_toEndOf="@id/btnBullet"
         android:textColor="@android:color/black"
         android:inputType="text"
         android:textSize="16sp" />

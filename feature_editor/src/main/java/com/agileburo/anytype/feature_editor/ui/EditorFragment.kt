@@ -43,6 +43,7 @@ abstract class EditorFragment : Fragment() {
     private val blockAdapter by lazy {
         EditorAdapter(
             blocks = mutableListOf(),
+            blockContentListener = { id, content -> viewModel.onBlockContentChanged(id, content)},
             listener = { block -> viewModel.onBlockClicked(block.id) },
             linksListener = {
                 chipLinks.text = it

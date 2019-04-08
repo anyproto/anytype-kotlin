@@ -1,5 +1,6 @@
 package com.agileburo.anytype.feature_editor.ui
 
+import android.graphics.Typeface
 import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.domain.Mark
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
 import com.agileburo.anytype.feature_editor.presentation.util.BlockViewDiffUtil
+import kotlinx.android.synthetic.main.item_block_bullet.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import kotlinx.android.synthetic.main.item_block_editable.view.*
@@ -25,6 +27,7 @@ import kotlinx.android.synthetic.main.item_number_list_item.view.*
 
 class EditorAdapter(
     private val blocks: MutableList<BlockView>,
+    private val blockContentListener: (String, CharSequence) -> Unit,
     private val listener: (BlockView) -> Unit,
     private val linksListener: (String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -42,7 +45,7 @@ class EditorAdapter(
         }
     }
 
-    fun update(items : List<BlockView>) {
+    fun update(items: List<BlockView>) {
         val callback = BlockViewDiffUtil(old = blocks, new = items)
         val result = DiffUtil.calculateDiff(callback)
         blocks.clear()
@@ -88,7 +91,7 @@ class EditorAdapter(
                 ViewHolder.CodeSnippetHolder(view)
             }
             HOLDER_BULLET -> {
-                val view = inflater.inflate(R.layout.item_block_editable, parent, false)
+                val view = inflater.inflate(R.layout.item_block_bullet, parent, false)
                 ViewHolder.BulletHolder(view)
             }
             HOLDER_NUMBERED -> {
@@ -120,23 +123,54 @@ class EditorAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ViewHolder.ParagraphHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.HeaderOneHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.HeaderTwoHolder -> holder.bind(blocks[position], listener, linksListener)
+            is ViewHolder.ParagraphHolder -> holder.bind(
+                block = blocks[position],
+                clickListener = listener,
+                linksListener = linksListener,
+                contentListener = blockContentListener
+            )
+            is ViewHolder.HeaderOneHolder -> holder.bind(
+                block = blocks[position],
+                clickListener = listener,
+                linksListener = linksListener,
+                contentListener = blockContentListener
+            )
+            is ViewHolder.HeaderTwoHolder -> holder.bind(
+                block = blocks[position],
+                clickListener = listener,
+                linksListener = linksListener,
+                contentListener = blockContentListener
+            )
             is ViewHolder.HeaderThreeHolder -> holder.bind(
                 block = blocks[position],
                 clickListener = listener,
-                linksListener = linksListener
+                linksListener = linksListener,
+                contentListener = blockContentListener
             )
-            is ViewHolder.HeaderFourHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.QuoteHolder -> holder.bind(blocks[position], listener, linksListener)
+            is ViewHolder.HeaderFourHolder -> holder.bind(
+                block = blocks[position],
+                clickListener = listener,
+                linksListener = linksListener,
+                contentListener = blockContentListener
+            )
+            is ViewHolder.QuoteHolder -> holder.bind(
+                block = blocks[position],
+                clickListener = listener,
+                linksListener = linksListener,
+                contentListener = blockContentListener
+            )
             is ViewHolder.CheckBoxHolder -> holder.bind(blocks[position], listener, linksListener)
             is ViewHolder.CodeSnippetHolder -> holder.bind(
                 blocks[position],
                 listener,
                 linksListener
             )
-            is ViewHolder.BulletHolder -> holder.bind(blocks[position], listener, linksListener)
+            is ViewHolder.BulletHolder -> holder.bind(
+                block = blocks[position],
+                clickListener = listener,
+                linksListener = linksListener,
+                contentListener = blockContentListener
+            )
             is ViewHolder.NumberedHolder -> holder.bind(blocks[position], listener)
         }
     }
@@ -157,15 +191,23 @@ class EditorAdapter(
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                contentListener: (String, CharSequence) -> Unit
             ) = with(block) {
                 setContentMarks(
-                    tvContent = itemView.tvContent,
+                    tvContent = itemView.textEditable,
                     content = content.text,
                     marks = content.marks,
                     linksListener = linksListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.textEditable.addTextChangedListener(
+                    EditorTextWatcher(
+                        this.id,
+                        contentListener,
+                        Typeface.DEFAULT
+                    )
+                )
+                itemView.btnEditable.setOnClickListener { clickListener(this) }
             }
         }
 
@@ -174,15 +216,23 @@ class EditorAdapter(
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                contentListener: (String, CharSequence) -> Unit
             ) = with(block) {
                 setContentMarks(
-                    tvContent = itemView.headerContentText,
+                    tvContent = itemView.textHeaderOne,
                     content = content.text,
                     marks = content.marks,
                     linksListener = linksListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.textHeaderOne.addTextChangedListener(
+                    EditorTextWatcher(
+                        this.id,
+                        contentListener,
+                        Typeface.DEFAULT
+                    )
+                )
+                itemView.btnHeaderOne.setOnClickListener { clickListener(this) }
             }
         }
 
@@ -191,15 +241,23 @@ class EditorAdapter(
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                contentListener: (String, CharSequence) -> Unit
             ) = with(block) {
                 setContentMarks(
-                    tvContent = itemView.headerTwoContentText,
+                    tvContent = itemView.textHeaderTwo,
                     content = content.text,
                     marks = content.marks,
                     linksListener = linksListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.textHeaderTwo.addTextChangedListener(
+                    EditorTextWatcher(
+                        this.id,
+                        contentListener,
+                        Typeface.DEFAULT
+                    )
+                )
+                itemView.btnHeaderTwo.setOnClickListener { clickListener(this) }
             }
         }
 
@@ -208,15 +266,23 @@ class EditorAdapter(
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                contentListener: (String, CharSequence) -> Unit
             ) = with(block) {
                 setContentMarks(
-                    tvContent = itemView.headerThreeContentText,
+                    tvContent = itemView.textHeaderThree,
                     content = content.text,
                     marks = content.marks,
                     linksListener = linksListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.textHeaderThree.addTextChangedListener(
+                    EditorTextWatcher(
+                        this.id,
+                        contentListener,
+                        Typeface.DEFAULT
+                    )
+                )
+                itemView.btnHeaderThree.setOnClickListener { clickListener(this) }
             }
         }
 
@@ -225,15 +291,23 @@ class EditorAdapter(
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                contentListener: (String, CharSequence) -> Unit
             ) = with(block) {
                 setContentMarks(
-                    tvContent = itemView.headerFourContentText,
+                    tvContent = itemView.textHeaderFour,
                     content = content.text,
                     marks = content.marks,
                     linksListener = linksListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.textHeaderFour.addTextChangedListener(
+                    EditorTextWatcher(
+                        this.id,
+                        contentListener,
+                        Typeface.DEFAULT
+                    )
+                )
+                itemView.btnHeaderFour.setOnClickListener { clickListener(this) }
             }
         }
 
@@ -242,15 +316,23 @@ class EditorAdapter(
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                contentListener: (String, CharSequence) -> Unit
             ) = with(block) {
                 setContentMarks(
-                    tvContent = itemView.quoteContent,
+                    tvContent = itemView.textQuote,
                     content = content.text,
                     marks = content.marks,
                     linksListener = linksListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.textQuote.addTextChangedListener(
+                    EditorTextWatcher(
+                        this.id,
+                        contentListener,
+                        Typeface.DEFAULT
+                    )
+                )
+                itemView.btnQuote.setOnClickListener { clickListener(this) }
             }
         }
 
@@ -293,18 +375,27 @@ class EditorAdapter(
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                contentListener: (String, CharSequence) -> Unit
             ) = with(block) {
-                itemView.tvContent.text =
+                itemView.textBullet.setText(
                     SpannableString(content.text)
                         .withBulletSpan(gapWidth = 40, start = 0)
                         .addMarks(
                             marks = content.marks,
-                            textView = itemView.tvContent,
+                            textView = itemView.textBullet,
                             click = { linksListener(it) },
                             itemView = itemView
-                        )
-                itemView.setOnClickListener { clickListener(this) }
+                        ), TextView.BufferType.SPANNABLE
+                )
+                itemView.textBullet.addTextChangedListener(
+                    EditorTextWatcher(
+                        this.id,
+                        contentListener,
+                        Typeface.DEFAULT
+                    )
+                )
+                itemView.btnBullet.setOnClickListener { clickListener(this) }
             }
         }
 

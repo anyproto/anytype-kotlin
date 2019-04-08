@@ -31,6 +31,13 @@ class EditorViewModel(
 
     fun observeState() = progress
 
+    fun onBlockContentChanged(id: String, content : CharSequence) {
+        blocks.indexOfFirst { it.id == id }
+        blocks.first { it.id == id }.let {
+            it.content.text = content
+        }
+    }
+
     fun onContentTypeClicked(action: EditBlockAction) =
         when (action) {
             is EditBlockAction.TextClick -> convertBlock(block = action.block, contentType = ContentType.P)

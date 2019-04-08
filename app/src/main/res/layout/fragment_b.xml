@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
 
-    <com.agileburo.anytype.feature_editor.ui.EditorToolbar
+    <com.agileburo.anytype.feature_editor.ui.TextStyleToolbar
         android:id="@+id/editorToolbar"
         android:layout_width="0dp"
         android:layout_height="56dp"

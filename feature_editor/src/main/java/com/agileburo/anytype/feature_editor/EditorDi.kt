@@ -1,16 +1,16 @@
 package com.agileburo.anytype.feature_editor
 
 import android.content.Context
+import com.agileburo.anytype.core_utils.BaseSchedulerProvider
 import com.agileburo.anytype.core_utils.di.PerFeature
-import com.agileburo.anytype.feature_editor.data.BlockConverter
-import com.agileburo.anytype.feature_editor.data.BlockConverterImpl
-import com.agileburo.anytype.feature_editor.data.EditorRepo
-import com.agileburo.anytype.feature_editor.data.EditorRepoImpl
+import com.agileburo.anytype.feature_editor.data.*
 import com.agileburo.anytype.feature_editor.data.datasource.BlockDataSource
 import com.agileburo.anytype.feature_editor.data.datasource.IPFSDataSourceImpl
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.domain.EditorInteractorImpl
-import com.agileburo.anytype.feature_editor.presentation.EditorViewModelFactory
+import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
+import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverterImpl
+import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModelFactory
 import com.agileburo.anytype.feature_editor.ui.EditorFragment
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -35,7 +35,8 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideBlockConverter(): BlockConverter = BlockConverterImpl()
+    fun provideBlockConverter(contentConverter: ContentConverter): BlockConverter =
+        BlockConverterImpl(contentConverter = contentConverter)
 
     @Provides
     @PerFeature
@@ -53,6 +54,24 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideFactory(interactor: EditorInteractor): EditorViewModelFactory =
-        EditorViewModelFactory(interactor)
+    fun provideFactory(
+        interactor: EditorInteractor,
+        contentTypeConverter: BlockContentTypeConverter,
+        baseSchedulerProvider: BaseSchedulerProvider
+    ): EditorViewModelFactory =
+        EditorViewModelFactory(interactor, contentTypeConverter, baseSchedulerProvider)
+
+    @Provides
+    @PerFeature
+    fun provideContentTypeConverter(): BlockContentTypeConverter =
+        BlockContentTypeConverterImpl()
+
+    @Provides
+    @PerFeature
+    fun provideBlockContentConverter(markConverter: MarkConverter): ContentConverter =
+        ContentConverterImpl(markConverter = markConverter)
+
+    @Provides
+    @PerFeature
+    fun provideMarkConverter(): MarkConverter = MarkConverterImpl()
 }

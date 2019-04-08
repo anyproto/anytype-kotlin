@@ -24,7 +24,7 @@ sealed class ContentType {
     object H1 : ContentType()
     object H2 : ContentType()
     object H3 : ContentType()
-    object OL : ContentType()
+    object NumberedList : ContentType()
     object UL : ContentType()
     object Quote : ContentType()
     object Toggle : ContentType()
@@ -37,9 +37,15 @@ data class Block(
     val parentId: String,
     val contentType: ContentType,
     // TODO parse marks and other stuff
-    val content: String
+    val content: Content.Text
     // TODO add blockType
-)
+) {
+
+    fun setNumber(number : Int) {
+        content.param.number = number
+    }
+
+}
 
 fun Int.toContentType(): ContentType =
     when (this) {
@@ -48,7 +54,7 @@ fun Int.toContentType(): ContentType =
         3 -> ContentType.H1
         4 -> ContentType.H2
         5 -> ContentType.H3
-        6 -> ContentType.OL
+        6 -> ContentType.NumberedList
         7 -> ContentType.UL
         8 -> ContentType.Quote
         9 -> ContentType.Toggle
@@ -57,14 +63,18 @@ fun Int.toContentType(): ContentType =
         else -> ContentType.H1
     }
 
-fun ContentType.toNumericalCode() : Int {
-    return when(this) {
+fun ContentType.toNumericalCode(): Int {
+    return when (this) {
         ContentType.P -> 1
         ContentType.Code -> 2
         ContentType.H1 -> 3
         ContentType.H2 -> 4
         ContentType.Quote -> 8
         ContentType.Check -> 10
+        ContentType.H3 -> 5
+        ContentType.H4 -> 11
+        ContentType.UL -> 7
+        ContentType.NumberedList -> 6
         else -> TODO()
     }
 }

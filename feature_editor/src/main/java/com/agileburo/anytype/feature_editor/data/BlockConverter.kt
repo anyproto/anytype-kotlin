@@ -14,18 +14,18 @@ interface BlockConverter {
     fun domainToModel(block: Block): BlockModel
 }
 
-class BlockConverterImpl : BlockConverter {
+class BlockConverterImpl(private val contentConverter: ContentConverter) : BlockConverter {
 
     override fun modelToDomain(model: BlockModel) = Block(
         id = model.id,
-        content = model.content,
+        content = contentConverter.modelToDomain(model.content),
         parentId = model.parentId,
         contentType = model.contentType.toContentType()
     )
 
     override fun domainToModel(block: Block) = BlockModel(
         id = block.id,
-        content = block.content,
+        content = contentConverter.domainToModel(block.content),
         parentId = block.parentId,
         children = mutableListOf(),
         contentType = block.contentType.toNumericalCode()

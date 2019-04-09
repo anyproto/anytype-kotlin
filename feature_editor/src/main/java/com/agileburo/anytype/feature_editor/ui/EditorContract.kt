@@ -2,6 +2,7 @@ package com.agileburo.anytype.feature_editor.ui
 
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
+import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
 
 /**
  * Created by Konstantin Ivanov
@@ -32,6 +33,7 @@ sealed class EditorState {
     object HideToolbar : EditorState()
     object HideLinkChip : EditorState()
     data class Result(val blocks: List<Block>) : EditorState()
+    data class Swap(val request: SwapRequest) : EditorState()
     data class Updates(val blocks : List<Block>) : EditorState()
     data class Update(val block: Block) : EditorState()
     data class Archive(val id: String): EditorState()

@@ -2,11 +2,13 @@ package com.agileburo.anytype.feature_editor.presentation.mvvm
 
 import androidx.lifecycle.ViewModel
 import com.agileburo.anytype.core_utils.BaseSchedulerProvider
+import com.agileburo.anytype.core_utils.swap
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
+import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
 import com.agileburo.anytype.feature_editor.ui.EditBlockAction
 import com.agileburo.anytype.feature_editor.ui.EditorState
 import com.jakewharton.rxrelay2.BehaviorRelay
@@ -59,6 +61,20 @@ class EditorViewModel(
         progress.accept(EditorState.HideLinkChip)
     }
 
+    fun onSwap(request : SwapRequest) {
+
+        blocks.swap(request.from, request.to)
+
+        //val normalized = contentTypeConverter.normalizeNumbers(blocks)
+
+        //blocks.clear()
+        //blocks.addAll(normalized)
+
+        progress.accept(EditorState.Swap(request))
+
+
+    }
+
     private fun fetchBlocks() {
         interactor.getBlocks()
             .observeOn(schedulerProvider.ui())
@@ -87,7 +103,7 @@ class EditorViewModel(
             blocks.clear()
             blocks.addAll(converted)
 
-            progress.accept(EditorState.Updates(blocks))
+            dispatchBlocksToView()
 
 
         }
@@ -106,6 +122,10 @@ class EditorViewModel(
         blocks.clear()
         blocks.addAll(converted)
 
+        dispatchBlocksToView()
+    }
+
+    private fun dispatchBlocksToView() {
         progress.accept(EditorState.Updates(blocks))
     }
 

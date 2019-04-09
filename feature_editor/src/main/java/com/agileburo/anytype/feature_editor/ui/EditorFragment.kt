@@ -28,7 +28,6 @@ import javax.inject.Inject
 
 abstract class EditorFragment : Fragment() {
 
-    // TODO inject
     private val mapper by lazy { BlockViewMapper() }
 
     @Inject
@@ -49,7 +48,12 @@ abstract class EditorFragment : Fragment() {
                 chipLinks.visibility = View.VISIBLE
             }
         ).apply {
-            val helper = ItemTouchHelper(DragAndDropBehavior(this))
+            val helper = ItemTouchHelper(
+                DragAndDropBehavior(
+                    adapter = this,
+                    onItemMoved = viewModel::onSwap
+                )
+            )
             helper.attachToRecyclerView(blockList)
         }
     }
@@ -130,7 +134,11 @@ abstract class EditorFragment : Fragment() {
         }
         is EditorState.Result -> setBlocks(state.blocks)
         is EditorState.Update -> updateBlock(state.block)
+
         is EditorState.Updates -> render(state.blocks)
+
+        is EditorState.Swap -> blockAdapter.swap(state.request)
+
         is EditorState.ShowToolbar -> showToolbar(
             block = state.block,
             typesToHide = state.typesToHide

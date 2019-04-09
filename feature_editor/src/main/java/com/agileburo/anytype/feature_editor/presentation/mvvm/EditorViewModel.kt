@@ -62,27 +62,15 @@ class EditorViewModel(
     }
 
     fun onSwap(request : SwapRequest) {
-
         blocks.swap(request.from, request.to)
-
-        //val normalized = contentTypeConverter.normalizeNumbers(blocks)
-
-        //blocks.clear()
-        //blocks.addAll(normalized)
-
         progress.accept(EditorState.Swap(request))
-
     }
 
     fun onSwapFinished() {
-
         val normalized = contentTypeConverter.normalizeNumbers(blocks)
-
         blocks.clear()
         blocks.addAll(normalized)
-
         dispatchBlocksToView()
-
     }
 
     private fun fetchBlocks() {

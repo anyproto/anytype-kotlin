@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
 
 class DragAndDropBehavior(
-    private val adapter: EditorAdapter,
-    private val onItemMoved : (SwapRequest) -> Unit
+    private val onItemMoved : (SwapRequest) -> Unit,
+    private val onFinished : () -> Unit
 ) : ItemTouchHelper.Callback() {
 
     override fun getMovementFlags(p0: RecyclerView, p1: RecyclerView.ViewHolder): Int {
@@ -20,9 +20,13 @@ class DragAndDropBehavior(
         viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
         target: androidx.recyclerview.widget.RecyclerView.ViewHolder
     ): Boolean {
-        //adapter.onItemMoved(viewHolder.adapterPosition, target.adapterPosition)
         onItemMoved(SwapRequest(viewHolder.adapterPosition, target.adapterPosition))
         return false
+    }
+
+    override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+        super.clearView(recyclerView, viewHolder)
+        onFinished()
     }
 
     override fun isLongPressDragEnabled(): Boolean {

@@ -50,7 +50,7 @@ abstract class EditorFragment : Fragment() {
         ).apply {
             val helper = ItemTouchHelper(
                 DragAndDropBehavior(
-                    adapter = this,
+                    onFinished = viewModel::onSwapFinished,
                     onItemMoved = viewModel::onSwap
                 )
             )

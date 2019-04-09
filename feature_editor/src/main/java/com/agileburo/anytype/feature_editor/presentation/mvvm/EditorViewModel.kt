@@ -72,6 +72,16 @@ class EditorViewModel(
 
         progress.accept(EditorState.Swap(request))
 
+    }
+
+    fun onSwapFinished() {
+
+        val normalized = contentTypeConverter.normalizeNumbers(blocks)
+
+        blocks.clear()
+        blocks.addAll(normalized)
+
+        dispatchBlocksToView()
 
     }
 

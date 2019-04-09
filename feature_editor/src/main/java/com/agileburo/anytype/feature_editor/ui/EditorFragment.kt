@@ -111,7 +111,7 @@ abstract class EditorFragment : Fragment() {
             archiveClick = { viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(it)) }
         )
 
-        setHasFixedSize(true)
+        //setHasFixedSize(true)
 
         addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
     }

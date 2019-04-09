@@ -19,8 +19,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_toEndOf="@id/btnHeaderTwo"
-        android:textSize="18sp"
-        android:inputType="text"
+        android:textSize="24sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:textColor="@android:color/black"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:background="@android:color/transparent"
         android:textStyle="bold" />
 
 </RelativeLayout>

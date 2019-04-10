@@ -15,6 +15,7 @@ import com.agileburo.anytype.feature_editor.domain.Mark
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
 import com.agileburo.anytype.feature_editor.presentation.util.BlockViewDiffUtil
 import kotlinx.android.synthetic.main.item_block_bullet.view.*
+import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import kotlinx.android.synthetic.main.item_block_editable.view.*
@@ -190,6 +191,11 @@ class EditorAdapter(
         swapPosition(fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
         return true
+    }
+
+    fun swap(request : SwapRequest) {
+        swapPosition(request.from, request.to)
+        notifyItemMoved(request.from, request.to)
     }
 
     private fun swapPosition(fromPosition: Int, toPosition: Int) =

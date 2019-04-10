@@ -34,10 +34,12 @@ class EditorViewModel(
     fun observeState() = progress
 
     fun onBlockContentChanged(id: String, content : CharSequence) {
-        blocks.indexOfFirst { it.id == id }
-        blocks.first { it.id == id }.let {
-            it.content.text = content
-        }
+        //TODO данная функция замысливалась как обновление контента блока если пользователь ввел чтото, но появились баги с заменой контента у других блоков, необходимо изменить реализацию
+
+//        blocks.indexOfFirst { it.id == id }
+//        blocks.first { it.id == id }.let {
+//            it.content.text = content
+//        }
     }
 
     fun onContentTypeClicked(action: EditBlockAction) =

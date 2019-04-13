@@ -12,7 +12,7 @@ buildscript {
     ext.application_id = 'com.agileburo.anytype'
     ext.version_name = '1.0'
     ext.version_code = 1
-    ext.test_runner = 'android.support.test.runner.AndroidJUnitRunner'
+    ext.test_runner = 'androidx.test.runner.AndroidJUnitRunner'
 
     repositories {
         google()

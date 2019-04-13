@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_editor.data.datasource
 
 import android.content.Context
+import com.agileburo.anytype.feature_editor.BuildConfig
 import com.agileburo.anytype.feature_editor.data.BlockModel
 import com.google.gson.Gson
 import io.reactivex.Single
@@ -23,7 +24,7 @@ class IPFSDataSourceImpl @Inject constructor(
     override fun getBlocks(): Single<List<BlockModel>> {
         return Single.create<List<BlockModel>> { emitter ->
             try {
-                val json = context.assets.open("marks.json").bufferedReader().use {
+                val json = context.assets.open(BuildConfig.TEST_JSON).bufferedReader().use {
                     it.readText()
                 }
 

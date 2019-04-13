@@ -18,6 +18,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            buildConfigField "String", "TEST_JSON", '"edit.json"'
+        }
     }
 
     sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] } }
@@ -28,6 +32,7 @@ dependencies {
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
+    def acceptenceTesting = rootProject.ext.acceptanceTesting
 
     kapt applicationDependencies.daggerCompiler
     compileOnly applicationDependencies.javaxInject
@@ -50,4 +55,8 @@ dependencies {
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.mockito
+
+    androidTestImplementation acceptenceTesting.espressoCore
+    androidTestImplementation acceptenceTesting.androidJUnit
+    androidTestImplementation acceptenceTesting.testRules
 }

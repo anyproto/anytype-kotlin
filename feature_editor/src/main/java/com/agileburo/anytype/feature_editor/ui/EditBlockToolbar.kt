@@ -61,17 +61,17 @@ class EditBlockToolbar : ConstraintLayout {
         codeClick: (Block) -> Unit,
         archiveClick: (String) -> Unit
     ) {
-        setClick(btnText, textClick)
-        setClick(btnHeader1, header1Click)
-        setClick(btnHeader2, header2Click)
-        setClick(btnHeader3, header3Click)
-        setClick(btnHeader4, header4Click)
-        setClick(btnHighlighted, hightLitedClick)
-        setClick(btnBulleted, bulletedClick)
-        setClick(btnNumberedList, numberedClick)
-        setClick(btnCheckbox, checkBoxClick)
-        setClick(btnCode, codeClick)
-        setArchiveClick(btnArchive, archiveClick)
+        setClick(btn_cont_type_toolbar_p, textClick)
+        setClick(btn_cont_type_toolbar_h1, header1Click)
+        setClick(btn_cont_type_toolbar_h2, header2Click)
+        setClick(btn_cont_type_toolbar_h3, header3Click)
+        setClick(btn_cont_type_toolbar_h4, header4Click)
+        setClick(btn_cont_type_toolbar_quote, hightLitedClick)
+        setClick(btn_cont_type_toolbar_bullet, bulletedClick)
+        setClick(btn_cont_type_toolbar_numbered, numberedClick)
+        setClick(btn_cont_type_toolbar_checkbox, checkBoxClick)
+        setClick(btn_cont_type_toolbar_code, codeClick)
+        setArchiveClick(btn_cont_type_toolbar_archive, archiveClick)
     }
 
     private fun setClick(view: View, click: (Block) -> Unit) {
@@ -90,30 +90,30 @@ class EditBlockToolbar : ConstraintLayout {
 
     private fun getButton(type: ContentType) =
         when (type) {
-            ContentType.P -> btnText
-            ContentType.H1 -> btnHeader1
-            ContentType.H2 -> btnHeader2
-            ContentType.H3 -> btnHeader3
-            ContentType.H4 -> btnHeader4
-            ContentType.UL -> btnBulleted
-            ContentType.Quote -> btnHighlighted
-            ContentType.NumberedList -> btnNumberedList
-            ContentType.Check -> btnCheckbox
-            ContentType.Code -> btnCode
-            else -> btnText
+            ContentType.P -> btn_cont_type_toolbar_p
+            ContentType.H1 -> btn_cont_type_toolbar_h1
+            ContentType.H2 -> btn_cont_type_toolbar_h2
+            ContentType.H3 -> btn_cont_type_toolbar_h3
+            ContentType.H4 -> btn_cont_type_toolbar_h4
+            ContentType.UL -> btn_cont_type_toolbar_bullet
+            ContentType.Quote -> btn_cont_type_toolbar_quote
+            ContentType.NumberedList -> btn_cont_type_toolbar_numbered
+            ContentType.Check -> btn_cont_type_toolbar_checkbox
+            ContentType.Code -> btn_cont_type_toolbar_code
+            else -> btn_cont_type_toolbar_p
         }
 
     private fun unSelectViews() {
-        btnText.isSelected = false
-        btnHeader1.isSelected = false
-        btnHeader2.isSelected = false
-        btnHeader3.isSelected = false
-        btnHeader4.isSelected = false
-        btnHighlighted.isSelected = false
-        btnBulleted.isSelected = false
-        btnNumberedList.isSelected = false
-        btnCheckbox.isSelected = false
-        btnCode.isSelected = false
-        btnArchive.isSelected = false
+        btn_cont_type_toolbar_p.isSelected = false
+        btn_cont_type_toolbar_h1.isSelected = false
+        btn_cont_type_toolbar_h2.isSelected = false
+        btn_cont_type_toolbar_h3.isSelected = false
+        btn_cont_type_toolbar_h4.isSelected = false
+        btn_cont_type_toolbar_quote.isSelected = false
+        btn_cont_type_toolbar_bullet.isSelected = false
+        btn_cont_type_toolbar_numbered.isSelected = false
+        btn_cont_type_toolbar_checkbox.isSelected = false
+        btn_cont_type_toolbar_code.isSelected = false
+        btn_cont_type_toolbar_archive.isSelected = false
     }
 }

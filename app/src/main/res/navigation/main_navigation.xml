@@ -9,5 +9,9 @@
         android:id="@+id/documentFragment"
         android:name="com.agileburo.anytype.ui.DocumentFragment"
         android:label="DocumentFragment" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.agileburo.anytype.feature_login.ui.login.LoginFragment"
+        android:label="LoginFragment" />
 
 </navigation>

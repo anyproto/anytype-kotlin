@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.agileburo.anytype.core_utils.UIExtensions
 import com.agileburo.anytype.core_utils.toast
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.disposedBy
@@ -42,12 +43,13 @@ abstract class EditorFragment : Fragment() {
     private val blockAdapter by lazy {
         EditorAdapter(
             blocks = mutableListOf(),
-            blockContentListener = { id, content -> viewModel.onBlockContentChanged(id, content)},
+            blockContentListener = { id, content -> viewModel.onBlockContentChanged(id, content) },
             listener = { block -> viewModel.onBlockClicked(block.id) },
             linksListener = {
                 chipLinks.text = it
                 chipLinks.visibility = View.VISIBLE
-            }
+            },
+            focusListener = { viewModel.onBlockFocus(it) }
         ).apply {
             val helper = ItemTouchHelper(
                 DragAndDropBehavior(
@@ -149,6 +151,14 @@ abstract class EditorFragment : Fragment() {
         }
         is EditorState.Error -> onError(state.msg)
         is EditorState.HideLinkChip -> chipLinks.visibility = View.GONE
+        is EditorState.ClearBlockFocus -> clearBlockFocus(state.position)
+        is EditorState.HideKeyboard -> UIExtensions.hideSoftKeyBoard(requireActivity(), blockList)
+    }
+
+    private fun clearBlockFocus(position: Int) {
+        blockList.layoutManager?.findViewByPosition(position)?.let {
+            it.findViewById<View>(R.id.textEditable)?.clearFocus()
+        }
     }
 
     private fun setBlocks(blocks: List<Block>) {

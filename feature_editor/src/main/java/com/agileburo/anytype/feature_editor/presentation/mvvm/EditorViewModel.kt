@@ -27,13 +27,15 @@ class EditorViewModel(
     private val blocks by lazy { mutableListOf<Block>() }
     private val progress by lazy { BehaviorRelay.create<EditorState>() }
 
+    private var positionInFocus: Int = -1
+
     init {
         fetchBlocks()
     }
 
     fun observeState() = progress
 
-    fun onBlockContentChanged(id: String, content : CharSequence) {
+    fun onBlockContentChanged(id: String, content: CharSequence) {
         //TODO данная функция замысливалась как обновление контента блока если пользователь ввел чтото, но появились баги с заменой контента у других блоков, необходимо изменить реализацию
 
 //        blocks.indexOfFirst { it.id == id }
@@ -44,16 +46,46 @@ class EditorViewModel(
 
     fun onContentTypeClicked(action: EditBlockAction) =
         when (action) {
-            is EditBlockAction.TextClick -> convertBlock(block = action.block, contentType = ContentType.P)
-            is EditBlockAction.Header1Click -> convertBlock(block = action.block, contentType = ContentType.H1)
-            is EditBlockAction.Header2Click -> convertBlock(block = action.block, contentType = ContentType.H2)
-            is EditBlockAction.Header3Click -> convertBlock(block = action.block, contentType = ContentType.H3)
-            is EditBlockAction.Header4Click -> convertBlock(block = action.block, contentType = ContentType.H4)
-            is EditBlockAction.HighLightClick -> convertBlock(block = action.block, contentType = ContentType.Quote)
-            is EditBlockAction.BulletClick -> convertBlock(block = action.block, contentType = ContentType.UL)
-            is EditBlockAction.NumberedClick -> convertBlock(block = action.block, contentType = ContentType.NumberedList)
-            is EditBlockAction.CheckBoxClick -> convertBlock(block = action.block, contentType = ContentType.Check)
-            is EditBlockAction.CodeClick -> convertBlock(block = action.block, contentType = ContentType.Code)
+            is EditBlockAction.TextClick -> convertBlock(
+                block = action.block,
+                contentType = ContentType.P
+            )
+            is EditBlockAction.Header1Click -> convertBlock(
+                block = action.block,
+                contentType = ContentType.H1
+            )
+            is EditBlockAction.Header2Click -> convertBlock(
+                block = action.block,
+                contentType = ContentType.H2
+            )
+            is EditBlockAction.Header3Click -> convertBlock(
+                block = action.block,
+                contentType = ContentType.H3
+            )
+            is EditBlockAction.Header4Click -> convertBlock(
+                block = action.block,
+                contentType = ContentType.H4
+            )
+            is EditBlockAction.HighLightClick -> convertBlock(
+                block = action.block,
+                contentType = ContentType.Quote
+            )
+            is EditBlockAction.BulletClick -> convertBlock(
+                block = action.block,
+                contentType = ContentType.UL
+            )
+            is EditBlockAction.NumberedClick -> convertBlock(
+                block = action.block,
+                contentType = ContentType.NumberedList
+            )
+            is EditBlockAction.CheckBoxClick -> convertBlock(
+                block = action.block,
+                contentType = ContentType.Check
+            )
+            is EditBlockAction.CodeClick -> convertBlock(
+                block = action.block,
+                contentType = ContentType.Code
+            )
             is EditBlockAction.ArchiveBlock -> removeBlock(id = action.id)
         }.also { progress.accept(EditorState.HideToolbar) }
             .also { progress.accept(EditorState.HideLinkChip) }
@@ -68,9 +100,15 @@ class EditorViewModel(
             )
         )
         progress.accept(EditorState.HideLinkChip)
+        progress.accept(EditorState.ClearBlockFocus(positionInFocus))
+        progress.accept(EditorState.HideKeyboard)
     }
 
-    fun onSwap(request : SwapRequest) {
+    fun onBlockFocus(position: Int) {
+        positionInFocus = position
+    }
+
+    fun onSwap(request: SwapRequest) {
         blocks.swap(request.from, request.to)
         progress.accept(EditorState.Swap(request))
     }
@@ -92,7 +130,7 @@ class EditorViewModel(
             ).disposedBy(subscriptions)
     }
 
-    private fun onBlockReceived(items : List<Block>) {
+    private fun onBlockReceived(items: List<Block>) {
         blocks.addAll(items)
         progress.accept(EditorState.Result(blocks))
     }

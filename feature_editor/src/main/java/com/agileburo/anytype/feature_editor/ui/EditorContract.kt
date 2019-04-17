@@ -12,6 +12,7 @@ import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
 sealed class EditorAction {
     object PressButton : EditorAction()
     data class PressBlock(val id: String) : EditorAction()
+    data class OnBlockFocus(val position: Int): EditorAction()
 }
 
 sealed class EditBlockAction {
@@ -29,6 +30,8 @@ sealed class EditBlockAction {
 }
 
 sealed class EditorState {
+    data class ClearBlockFocus(val position: Int) : EditorState()
+    object HideKeyboard : EditorState()
     data class ShowToolbar(val block: Block, val typesToHide: Set<ContentType>) : EditorState()
     object HideToolbar : EditorState()
     object HideLinkChip : EditorState()

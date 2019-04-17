@@ -30,7 +30,8 @@ class EditorAdapter(
     private val blocks: MutableList<BlockView>,
     private val blockContentListener: (String, CharSequence) -> Unit,
     private val listener: (BlockView) -> Unit,
-    private val linksListener: (String) -> Unit
+    private val linksListener: (String) -> Unit,
+    private val focusListener: (Int) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setBlocks(items: List<BlockView>) {
@@ -128,7 +129,8 @@ class EditorAdapter(
                 block = blocks[position],
                 clickListener = listener,
                 linksListener = linksListener,
-                contentListener = blockContentListener
+                contentListener = blockContentListener,
+                focusListener = focusListener
             )
             is ViewHolder.HeaderOneHolder -> holder.bind(
                 block = blocks[position],
@@ -193,7 +195,7 @@ class EditorAdapter(
         return true
     }
 
-    fun swap(request : SwapRequest) {
+    fun swap(request: SwapRequest) {
         swapPosition(request.from, request.to)
         notifyItemMoved(request.from, request.to)
     }
@@ -209,7 +211,8 @@ class EditorAdapter(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
                 linksListener: (String) -> Unit,
-                contentListener: (String, CharSequence) -> Unit
+                contentListener: (String, CharSequence) -> Unit,
+                focusListener: (Int) -> Unit
             ) = with(block) {
                 setContentMarks(
                     tvContent = itemView.textEditable,
@@ -224,6 +227,11 @@ class EditorAdapter(
                         Typeface.DEFAULT
                     )
                 )
+                itemView.textEditable.setOnFocusChangeListener { _, hasFocus ->
+                    if (hasFocus) {
+                        focusListener.invoke(adapterPosition)
+                    }
+                }
                 itemView.btnEditable.setOnClickListener { clickListener(this) }
             }
         }

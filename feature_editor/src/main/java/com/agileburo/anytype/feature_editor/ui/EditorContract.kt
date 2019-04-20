@@ -30,7 +30,7 @@ sealed class EditBlockAction {
 }
 
 sealed class EditorState {
-    data class ClearBlockFocus(val position: Int) : EditorState()
+    data class ClearBlockFocus(val position: Int, val contentType: ContentType) : EditorState()
     object HideKeyboard : EditorState()
     data class ShowToolbar(val block: Block, val typesToHide: Set<ContentType>) : EditorState()
     object HideToolbar : EditorState()

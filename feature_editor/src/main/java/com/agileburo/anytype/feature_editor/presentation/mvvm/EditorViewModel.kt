@@ -12,9 +12,7 @@ import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
 import com.agileburo.anytype.feature_editor.ui.EditBlockAction
 import com.agileburo.anytype.feature_editor.ui.EditorState
 import com.jakewharton.rxrelay2.BehaviorRelay
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 class EditorViewModel(
@@ -36,12 +34,7 @@ class EditorViewModel(
     fun observeState() = progress
 
     fun onBlockContentChanged(id: String, content: CharSequence) {
-        //TODO данная функция замысливалась как обновление контента блока если пользователь ввел чтото, но появились баги с заменой контента у других блоков, необходимо изменить реализацию
-
-//        blocks.indexOfFirst { it.id == id }
-//        blocks.first { it.id == id }.let {
-//            it.content.text = content
-//        }
+        blocks.first { it.id == id }.content.text = content
     }
 
     fun onContentTypeClicked(action: EditBlockAction) =
@@ -87,12 +80,18 @@ class EditorViewModel(
                 contentType = ContentType.Code
             )
             is EditBlockAction.ArchiveBlock -> removeBlock(id = action.id)
-        }.also { progress.accept(EditorState.HideToolbar) }
-            .also { progress.accept(EditorState.HideLinkChip) }
+        }.also {
+            progress.accept(EditorState.HideToolbar)
+            progress.accept(EditorState.HideLinkChip)
+        }
+
 
     fun hideToolbar() = progress.accept(EditorState.HideToolbar)
 
+    fun outsideToolbarClick() = progress.accept(EditorState.HideToolbar)
+
     fun onBlockClicked(id: String) = blocks.first { it.id == id }.let {
+        clearBlockFocus()
         progress.accept(
             EditorState.ShowToolbar(
                 block = it,
@@ -100,12 +99,12 @@ class EditorViewModel(
             )
         )
         progress.accept(EditorState.HideLinkChip)
-        progress.accept(EditorState.ClearBlockFocus(positionInFocus))
         progress.accept(EditorState.HideKeyboard)
     }
 
     fun onBlockFocus(position: Int) {
         positionInFocus = position
+        progress.accept(EditorState.HideToolbar)
     }
 
     fun onSwap(request: SwapRequest) {
@@ -119,6 +118,13 @@ class EditorViewModel(
         blocks.addAll(normalized)
         dispatchBlocksToView()
     }
+
+    private fun clearBlockFocus() =
+        blocks.getOrNull(positionInFocus)?.let {
+            progress.accept(
+                EditorState.ClearBlockFocus(positionInFocus, it.contentType)
+            )
+        }
 
     private fun fetchBlocks() {
         interactor.getBlocks()

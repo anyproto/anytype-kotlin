@@ -25,6 +25,7 @@ import com.agileburo.anytype.feature_editor.presentation.mapper.BlockViewMapper
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_editor.*
 import timber.log.Timber
+import java.lang.UnsupportedOperationException
 import javax.inject.Inject
 
 abstract class EditorFragment : Fragment() {
@@ -79,7 +80,7 @@ abstract class EditorFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.observeState()
-            .doOnNext { Timber.d("New view state") }
+            .doOnNext { Timber.d("New view state $it") }
             .subscribe(this::handleState)
             .disposedBy(disposable)
     }
@@ -100,9 +101,7 @@ abstract class EditorFragment : Fragment() {
 
     private fun initializeView() = with(blockList) {
         layoutManager = LinearLayoutManager(requireContext())
-
         adapter = blockAdapter
-
         editBlockToolbar.setMainActions(
             textClick = { viewModel.onContentTypeClicked(EditBlockAction.TextClick(it)) },
             header1Click = { viewModel.onContentTypeClicked(EditBlockAction.Header1Click(it)) },
@@ -114,11 +113,9 @@ abstract class EditorFragment : Fragment() {
             numberedClick = { viewModel.onContentTypeClicked(EditBlockAction.NumberedClick(it)) },
             checkBoxClick = { viewModel.onContentTypeClicked(EditBlockAction.CheckBoxClick(it)) },
             codeClick = { viewModel.onContentTypeClicked(EditBlockAction.CodeClick(it)) },
-            archiveClick = { viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(it)) }
+            archiveClick = { viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(it)) },
+            outsideClickListener = { viewModel.outsideToolbarClick() }
         )
-
-        //setHasFixedSize(true)
-
         addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
     }
 
@@ -151,15 +148,30 @@ abstract class EditorFragment : Fragment() {
         }
         is EditorState.Error -> onError(state.msg)
         is EditorState.HideLinkChip -> chipLinks.visibility = View.GONE
-        is EditorState.ClearBlockFocus -> clearBlockFocus(state.position)
+        is EditorState.ClearBlockFocus -> clearBlockFocus(state.position, state.contentType)
         is EditorState.HideKeyboard -> UIExtensions.hideSoftKeyBoard(requireActivity(), blockList)
     }
 
-    private fun clearBlockFocus(position: Int) {
+    private fun clearBlockFocus(position: Int, contentType: ContentType) {
         blockList.layoutManager?.findViewByPosition(position)?.let {
-            it.findViewById<View>(R.id.textEditable)?.clearFocus()
+            it.findViewById<View>(getEditTextId(contentType))?.clearFocus()
         }
     }
+
+    private fun getEditTextId(contentType: ContentType) =
+        when (contentType) {
+            is ContentType.P -> R.id.textEditable
+            is ContentType.H1 -> R.id.textHeaderOne
+            is ContentType.H2 -> R.id.textHeaderTwo
+            is ContentType.H3 -> R.id.textHeaderThree
+            is ContentType.H4 -> R.id.textHeaderFour
+            is ContentType.Quote -> R.id.textQuote
+            is ContentType.Check -> R.id.textCheckBox
+            is ContentType.Code -> R.id.textCode
+            is ContentType.UL -> R.id.textBullet
+            is ContentType.NumberedList -> R.id.contentText
+            is ContentType.Toggle -> throw UnsupportedOperationException("need implement Toggle")
+        }
 
     private fun setBlocks(blocks: List<Block>) {
         (blockList.adapter as? EditorAdapter)?.setBlocks(blocks.map(mapper::mapToView))
@@ -170,7 +182,6 @@ abstract class EditorFragment : Fragment() {
     }
 
     private fun render(blocks: List<Block>) {
-        Timber.d("Render: ${blocks.map { it.content.param }}")
         blockAdapter.update(blocks.map(mapper::mapToView))
     }
 

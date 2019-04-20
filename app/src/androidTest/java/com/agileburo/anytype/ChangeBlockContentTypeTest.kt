@@ -22,6 +22,36 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
     }
 
     @Test
+    fun testShowHideToolbar() {
+        onView(withId(R.id.blockList))
+            .perform(
+                TestUtils.actionOnItemViewAtPosition<EditorAdapter.ViewHolder.ParagraphHolder>(
+                    0,
+                    R.id.btnEditable,
+                    click()
+                )
+            )
+        onView(withId(R.id.content_type_toolbar)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_cont_type_toolbar_p)).check(matches(isSelected()))
+        onView(withId(R.id.btn_cont_type_toolbar_h1)).check(matches(not(isSelected())))
+
+        onView(withId(R.id.btn_cont_type_toolbar_bullet)).perform(click())
+        onView(withId(R.id.content_type_toolbar)).check(matches(not(isDisplayed())))
+
+        Thread.sleep(1000)
+
+        onView(withId(R.id.blockList))
+            .perform(
+                TestUtils.actionOnItemViewAtPosition<EditorAdapter.ViewHolder.BulletHolder>(
+                    0,
+                    R.id.btnBullet,
+                    click()
+                )
+            )
+        onView(withId(R.id.content_type_toolbar)).check(matches(isDisplayed()))
+    }
+
+    @Test
     fun testFirstBlockContentType() {
         onView(withId(R.id.blockList))
             .perform(

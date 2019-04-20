@@ -10,6 +10,7 @@ import com.agileburo.anytype.feature_editor.domain.Content
 import com.agileburo.anytype.feature_editor.domain.ContentParam
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import kotlinx.android.synthetic.main.view_edit_block_toolbar.view.*
+import timber.log.Timber
 
 class EditBlockToolbar : ConstraintLayout {
 
@@ -59,7 +60,8 @@ class EditBlockToolbar : ConstraintLayout {
         numberedClick: (Block) -> Unit,
         checkBoxClick: (Block) -> Unit,
         codeClick: (Block) -> Unit,
-        archiveClick: (String) -> Unit
+        archiveClick: (String) -> Unit,
+        outsideClickListener: () -> Unit
     ) {
         setClick(btn_cont_type_toolbar_p, textClick)
         setClick(btn_cont_type_toolbar_h1, header1Click)
@@ -72,6 +74,7 @@ class EditBlockToolbar : ConstraintLayout {
         setClick(btn_cont_type_toolbar_checkbox, checkBoxClick)
         setClick(btn_cont_type_toolbar_code, codeClick)
         setArchiveClick(btn_cont_type_toolbar_archive, archiveClick)
+        setOutsideListener(outsideClickListener)
     }
 
     private fun setClick(view: View, click: (Block) -> Unit) {
@@ -87,6 +90,9 @@ class EditBlockToolbar : ConstraintLayout {
             click(block.id)
         }
     }
+
+    private fun setOutsideListener(outsideClickListener: () -> Unit) =
+        outside_toolbar.setOnClickListener { outsideClickListener.invoke() }
 
     private fun getButton(type: ContentType) =
         when (type) {

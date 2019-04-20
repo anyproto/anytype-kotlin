@@ -12,6 +12,7 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.agileburo.anytype.feature_login.ui.login.LoginFragment"
+        tools:layout="@layout/login_fragment"
         android:label="LoginFragment" />
 
 </navigation>

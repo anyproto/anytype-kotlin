@@ -14,7 +14,7 @@
         app:layout_constraintStart_toEndOf="@+id/btnNumbered"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
+    <com.agileburo.anytype.feature_editor.ui.ClearFocusEditText
         android:id="@+id/contentText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

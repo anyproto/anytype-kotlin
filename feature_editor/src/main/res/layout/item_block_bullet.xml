@@ -12,11 +12,12 @@
         android:contentDescription="@string/editor_toolbar"
         app:srcCompat="@drawable/ic_edit" />
 
-    <EditText
+    <com.agileburo.anytype.feature_editor.ui.ClearFocusEditText
         android:id="@+id/textBullet"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_toEndOf="@id/btnBullet"
         android:inputType="textMultiLine|textNoSuggestions"
         android:paddingTop="16dp"

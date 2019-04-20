@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_edit" />
 
-    <EditText
+    <com.agileburo.anytype.feature_editor.ui.ClearFocusEditText
         android:id="@+id/textQuote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

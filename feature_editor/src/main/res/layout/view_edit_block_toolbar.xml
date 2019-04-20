@@ -1,162 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/content_type_toolbar"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:background="#393834" >
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/btn_cont_type_toolbar_p"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/editor_toolbar"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_h1"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_text_block" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_type_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#393834">
 
-    <ImageView
-        android:id="@+id/btn_cont_type_toolbar_h1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/editor_toolbar"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_h2"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_p"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_header_1" />
+        <ImageView
+            android:id="@+id/btn_cont_type_toolbar_p"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/editor_toolbar"
+            app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_h1"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_text_block" />
 
-    <ImageView
-        android:id="@+id/btn_cont_type_toolbar_h2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/editor_toolbar"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_h3"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_h1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_header_2" />
+        <ImageView
+            android:id="@+id/btn_cont_type_toolbar_h1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/editor_toolbar"
+            app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_h2"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_p"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_header_1" />
 
-    <ImageView
-        android:id="@+id/btn_cont_type_toolbar_h3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/editor_toolbar"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_h4"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_h2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_header_3" />
+        <ImageView
+            android:id="@+id/btn_cont_type_toolbar_h2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/editor_toolbar"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_h3"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_h1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_header_2" />
 
-    <ImageView
-        android:id="@+id/btn_cont_type_toolbar_h4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/editor_toolbar"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_quote"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_h3"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_header4" />
+        <ImageView
+            android:id="@+id/btn_cont_type_toolbar_h3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/editor_toolbar"
+            app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_h4"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_h2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_header_3" />
 
-    <ImageView
-        android:id="@+id/btn_cont_type_toolbar_quote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/editor_toolbar"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_bullet"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_h4"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_highlighted" />
+        <ImageView
+            android:id="@+id/btn_cont_type_toolbar_h4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/editor_toolbar"
+            app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_quote"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_h3"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_header4" />
 
-    <ImageView
-        android:id="@+id/btn_cont_type_toolbar_bullet"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/editor_toolbar"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_numbered"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_quote"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_bulleted" />
+        <ImageView
+            android:id="@+id/btn_cont_type_toolbar_quote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/editor_toolbar"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_bullet"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_h4"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_highlighted" />
 
-    <ImageView
-        android:id="@+id/btn_cont_type_toolbar_numbered"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/editor_toolbar"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_code"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_bullet"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_numbered" />
+        <ImageView
+            android:id="@+id/btn_cont_type_toolbar_bullet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/editor_toolbar"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_numbered"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_quote"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_bulleted" />
 
-    <ImageView
-        android:id="@+id/btn_cont_type_toolbar_code"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/editor_toolbar"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_checkbox"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_numbered"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_code" />
+        <ImageView
+            android:id="@+id/btn_cont_type_toolbar_numbered"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/editor_toolbar"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_code"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_bullet"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_numbered" />
 
-    <ImageView
-        android:id="@+id/btn_cont_type_toolbar_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/editor_toolbar"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_code"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_checkbox" />
+        <ImageView
+            android:id="@+id/btn_cont_type_toolbar_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/editor_toolbar"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toStartOf="@+id/btn_cont_type_toolbar_checkbox"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_numbered"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_code" />
 
-    <ImageView
-        android:id="@+id/btn_cont_type_toolbar_archive"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:contentDescription="@string/editor_toolbar"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_cont_type_toolbar_p"
-        app:srcCompat="@drawable/ic_trash" />
+        <ImageView
+            android:id="@+id/btn_cont_type_toolbar_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/editor_toolbar"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_cont_type_toolbar_code"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_checkbox" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/btn_cont_type_toolbar_archive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="@string/editor_toolbar"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_cont_type_toolbar_p"
+            app:srcCompat="@drawable/ic_trash" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/outside_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
+
+

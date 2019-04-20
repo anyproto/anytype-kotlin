@@ -12,7 +12,7 @@ data class BlockView(
 
     sealed class Content {
         data class Text(
-            val text : CharSequence,
+            var text : CharSequence,
             val param : ContentParam,
             val marks : List<Mark>
         ) : Content()

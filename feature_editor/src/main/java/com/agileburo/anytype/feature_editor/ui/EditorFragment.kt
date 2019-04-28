@@ -173,17 +173,14 @@ abstract class EditorFragment : Fragment() {
             is ContentType.Toggle -> throw UnsupportedOperationException("need implement Toggle")
         }
 
-    private fun setBlocks(blocks: List<Block>) {
-        (blockList.adapter as? EditorAdapter)?.setBlocks(blocks.map(mapper::mapToView))
-    }
+    private fun setBlocks(blocks: List<Block>) =
+        blockAdapter.setBlocks(blocks.map(mapper::mapToView))
 
-    private fun updateBlock(block: Block) {
-        (blockList.adapter as? EditorAdapter)?.updateBlock(mapper.mapToView(block))
-    }
+    private fun updateBlock(block: Block) =
+        blockAdapter.updateBlock(mapper.mapToView(block))
 
-    private fun render(blocks: List<Block>) {
+    private fun render(blocks: List<Block>) =
         blockAdapter.update(blocks.map(mapper::mapToView))
-    }
 
     private fun showToolbar(block: Block, typesToHide: Set<ContentType>) = with(editBlockToolbar) {
         show(initialBlock = block, typesToHide = typesToHide)

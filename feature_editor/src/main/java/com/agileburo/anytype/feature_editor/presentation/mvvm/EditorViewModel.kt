@@ -15,6 +15,8 @@ import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 
+const val useDiffUtils = false
+
 class EditorViewModel(
     private val interactor: EditorInteractor,
     private val contentTypeConverter: BlockContentTypeConverter,
@@ -141,8 +143,14 @@ class EditorViewModel(
         progress.accept(EditorState.Result(blocks))
     }
 
-    private fun convertBlock(block: Block, contentType: ContentType) {
+    private fun convertBlock(block: Block, contentType: ContentType) =
+        if (useDiffUtils)
+            convertBlockDiffUtils(
+                block, contentType
+            ) else
+            converBlockWithoutDiffUtils(block, contentType)
 
+    private fun convertBlockDiffUtils(block: Block, contentType: ContentType) {
         if (block.contentType != contentType) {
 
             val converted = contentTypeConverter.convert(
@@ -155,8 +163,14 @@ class EditorViewModel(
             blocks.addAll(converted)
 
             dispatchBlocksToView()
+        }
+    }
 
-
+    private fun converBlockWithoutDiffUtils(block: Block, contentType: ContentType) {
+        if (block.contentType != contentType) {
+            blocks.first { it.id == block.id }.contentType = contentType
+            block.contentType = contentType
+            progress.accept(EditorState.Update(block))
         }
     }
 

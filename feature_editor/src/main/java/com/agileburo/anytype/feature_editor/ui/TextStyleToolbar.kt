@@ -1,19 +1,13 @@
-
 package com.agileburo.anytype.feature_editor.ui
 
 import android.content.Context
 import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
-import android.widget.ImageView
 import com.agileburo.anytype.feature_editor.R
 import kotlinx.android.synthetic.main.view_text_style_toolbar.view.*
 
 class TextStyleToolbar : ConstraintLayout {
-
-    private lateinit var btnBold: ImageView
-    private lateinit var btnItalic: ImageView
-    private lateinit var btnStrokeThrough: ImageView
 
     constructor(context: Context) : super(context) {
         initialize(context)
@@ -28,42 +22,35 @@ class TextStyleToolbar : ConstraintLayout {
         initialize(context)
     }
 
-    private fun initialize(context: Context) {
+    private fun initialize(context: Context) =
         View.inflate(context, R.layout.view_text_style_toolbar, this)
 
-        btnBold = findViewById(R.id.btnBold)
-        btnItalic = findViewById(R.id.btnItalic)
-        btnStrokeThrough = findViewById(R.id.btnStroke)
+    fun show() {
+        unselectButtons()
     }
 
     fun setMainActions(
         boldClick: (Boolean) -> Unit,
         italicClick: (Boolean) -> Unit,
         strokeClick: (Boolean) -> Unit,
-        underlineClick : (Boolean) -> Unit,
-        codeBlockClick : (Boolean) -> Unit
+        underlineClick: (Boolean) -> Unit
     ) {
-        btnBold.setOnClickListener {
+        setClick(btnBold, boldClick)
+        setClick(btnItalic, italicClick)
+        setClick(btnStroke, strokeClick)
+        setClick(btnUnderline, underlineClick)
+    }
+
+    private fun setClick(view: View, click: (Boolean) -> Unit) =
+        view.setOnClickListener {
             it.isSelected = !it.isSelected
-            boldClick(it.isSelected)
-        }
-        btnItalic.setOnClickListener {
-            it.isSelected = !it.isSelected
-            italicClick(it.isSelected)
-        }
-        btnStrokeThrough.setOnClickListener {
-            it.isSelected = !it.isSelected
-            strokeClick(it.isSelected)
-        }
-        underline.setOnClickListener { button ->
-            button.isSelected = !button.isSelected
-            underlineClick(button.isSelected)
-        }
-        codeBlock.setOnClickListener { button ->
-            button.isSelected = !button.isSelected
-            codeBlockClick(button.isSelected)
+            click(it.isSelected)
         }
 
+    private fun unselectButtons() {
+        btnBold.isSelected = false
+        btnItalic.isSelected = false
+        btnStroke.isSelected = false
     }
 
 }

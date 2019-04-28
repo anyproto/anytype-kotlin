@@ -35,7 +35,7 @@ sealed class ContentType {
 data class Block(
     val id: String,
     val parentId: String,
-    val contentType: ContentType,
+    var contentType: ContentType,
     // TODO parse marks and other stuff
     val content: Content.Text
     // TODO add blockType

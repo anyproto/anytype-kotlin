@@ -148,7 +148,7 @@ class EditorViewModel(
             convertBlockDiffUtils(
                 block, contentType
             ) else
-            converBlockWithoutDiffUtils(block, contentType)
+            convertBlockWithoutDiffUtils(block, contentType)
 
     private fun convertBlockDiffUtils(block: Block, contentType: ContentType) {
         if (block.contentType != contentType) {
@@ -166,7 +166,7 @@ class EditorViewModel(
         }
     }
 
-    private fun converBlockWithoutDiffUtils(block: Block, contentType: ContentType) {
+    private fun convertBlockWithoutDiffUtils(block: Block, contentType: ContentType) {
         if (block.contentType != contentType) {
             blocks.first { it.id == block.id }.contentType = contentType
             block.contentType = contentType

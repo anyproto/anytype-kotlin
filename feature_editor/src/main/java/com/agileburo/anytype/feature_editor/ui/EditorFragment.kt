@@ -52,6 +52,7 @@ abstract class EditorFragment : Fragment() {
             },
             focusListener = { viewModel.onBlockFocus(it) }
         ).apply {
+            //После добавления helper ломается выдеоение текста в блоках
             val helper = ItemTouchHelper(
                 DragAndDropBehavior(
                     onFinished = viewModel::onSwapFinished,

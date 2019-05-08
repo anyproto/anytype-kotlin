@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.item_number_list_item.view.*
 
 class EditorAdapter(
     val blocks: MutableList<BlockView>,
-    private val blockContentListener: (String, CharSequence) -> Unit,
+    private val blockContentListener: (String, String) -> Unit,
     private val listener: (BlockView) -> Unit,
     private val linksListener: (String) -> Unit,
     private val focusListener: (Int) -> Unit
@@ -72,7 +72,6 @@ class EditorAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             HOLDER_PARAGRAPH -> {
@@ -590,7 +589,7 @@ class EditorAdapter(
         }
     }
 
-    inner class MyEditorTextWatcher(private val contentListener: (String, CharSequence) -> Unit) :
+    inner class MyEditorTextWatcher(private val contentListener: (String, String) -> Unit) :
         TextWatcher {
 
         var position = 0
@@ -599,8 +598,8 @@ class EditorAdapter(
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            blocks[position].content.text = s ?: ""
-            contentListener.invoke(blocks[position].id, s ?: "")
+            blocks[position].content.text = s.toString()
+            contentListener.invoke(blocks[position].id, s.toString())
         }
     }
 

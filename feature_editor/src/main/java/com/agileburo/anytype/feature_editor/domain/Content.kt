@@ -2,7 +2,7 @@ package com.agileburo.anytype.feature_editor.domain
 
 sealed class Content {
     data class Text(
-        var text : CharSequence,
+        var text : String,
         val param : ContentParam,
         val marks : List<Mark>
     ) : Content()

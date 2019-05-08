@@ -15,7 +15,7 @@ import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 
-const val useDiffUtils = false
+const val useDiffUtils = true
 
 class EditorViewModel(
     private val interactor: EditorInteractor,
@@ -35,7 +35,7 @@ class EditorViewModel(
 
     fun observeState() = progress
 
-    fun onBlockContentChanged(id: String, content: CharSequence) {
+    fun onBlockContentChanged(id: String, content: String) {
         blocks.first { it.id == id }.content.text = content
     }
 

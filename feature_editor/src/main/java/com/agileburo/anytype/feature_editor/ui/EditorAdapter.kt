@@ -285,6 +285,12 @@ class EditorAdapter(
                     focusListener = focusListener,
                     styleToolbar = null
                 )
+                itemView.toolbarStyle.setMainActions(
+                    boldClick = { editTextWatcher.isBoldActive = it },
+                    italicClick = { editTextWatcher.isItalicActive = it },
+                    strokeClick = { editTextWatcher.isStrokeThroughActive = it },
+                    underlineClick = { editTextWatcher.isUnderlineActive = it }
+                )
                 itemView.btnEditable.setOnClickListener { clickListener(block) }
             }
         }

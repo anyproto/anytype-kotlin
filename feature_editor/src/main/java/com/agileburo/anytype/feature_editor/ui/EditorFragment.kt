@@ -52,14 +52,14 @@ abstract class EditorFragment : Fragment() {
             },
             focusListener = { viewModel.onBlockFocus(it) }
         ).apply {
-            //После добавления helper ломается выдеоение текста в блоках
-            val helper = ItemTouchHelper(
-                DragAndDropBehavior(
-                    onFinished = viewModel::onSwapFinished,
-                    onItemMoved = viewModel::onSwap
-                )
-            )
-            helper.attachToRecyclerView(blockList)
+            //После добавления helper ломается выделение текста в блоках
+//            val helper = ItemTouchHelper(
+//                DragAndDropBehavior(
+//                    onFinished = viewModel::onSwapFinished,
+//                    onItemMoved = viewModel::onSwap
+//                )
+//            )
+//            helper.attachToRecyclerView(blockList)
         }
     }
 

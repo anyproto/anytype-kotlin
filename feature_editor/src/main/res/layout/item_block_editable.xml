@@ -3,20 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-
-    <com.agileburo.anytype.feature_editor.ui.TextStyleToolbar
-        android:id="@+id/toolbarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
-
-    </com.agileburo.anytype.feature_editor.ui.TextStyleToolbar>
-
+    
     <ImageView
         android:id="@+id/btnEditable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbarStyle"
-        android:layout_margin="16dp"
+        android:layout_centerVertical="true"
         android:contentDescription="@string/editor_toolbar"
         app:srcCompat="@drawable/ic_edit" />
 
@@ -29,7 +21,6 @@
         android:layout_marginEnd="16dp"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        android:layout_below="@id/toolbarStyle"
         android:layout_toEndOf="@id/btnEditable"
         android:inputType="textMultiLine|textNoSuggestions"
         android:background="@android:color/transparent"

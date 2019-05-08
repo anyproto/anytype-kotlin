@@ -1,13 +1,7 @@
 package com.agileburo.anytype.feature_editor.ui
 
-import android.graphics.Typeface
 import android.text.*
-import android.text.style.StrikethroughSpan
-import android.text.style.StyleSpan
-import android.text.style.UnderlineSpan
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -29,7 +23,6 @@ import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
-import timber.log.Timber
 
 class EditorAdapter(
     val blocks: MutableList<BlockView>,
@@ -274,6 +267,8 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
+                itemView.textEditable.customSelectionActionModeCallback =
+                    TextStyleCallback(itemView.textEditable)
                 setContentMarks(
                     tvContent = itemView.textEditable,
                     content = content.text,
@@ -284,12 +279,6 @@ class EditorAdapter(
                     editText = itemView.textEditable,
                     focusListener = focusListener,
                     styleToolbar = null
-                )
-                itemView.toolbarStyle.setMainActions(
-                    boldClick = { editTextWatcher.isBoldActive = it },
-                    italicClick = { editTextWatcher.isItalicActive = it },
-                    strokeClick = { editTextWatcher.isStrokeThroughActive = it },
-                    underlineClick = { editTextWatcher.isUnderlineActive = it }
                 )
                 itemView.btnEditable.setOnClickListener { clickListener(block) }
             }
@@ -420,6 +409,8 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
+                itemView.textQuote.customSelectionActionModeCallback =
+                    TextStyleCallback(itemView.textQuote)
                 setContentMarks(
                     tvContent = itemView.textQuote,
                     content = content.text,
@@ -448,6 +439,8 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
+                itemView.textCheckBox.customSelectionActionModeCallback =
+                    TextStyleCallback(itemView.textCheckBox)
                 setContentMarks(
                     tvContent = itemView.textCheckBox,
                     content = content.text,
@@ -504,6 +497,8 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
+                itemView.textBullet.customSelectionActionModeCallback =
+                    TextStyleCallback(itemView.textBullet)
                 itemView.textBullet.setText(
                     SpannableString(content.text)
                         .withBulletSpan(gapWidth = 40, start = 0)
@@ -537,6 +532,8 @@ class EditorAdapter(
                 focusListener: (Int) -> Unit
             ) {
                 with(itemView) {
+                    contentText.customSelectionActionModeCallback =
+                        TextStyleCallback(contentText)
                     positionText.text = "${block.content.param.number}."
                     contentText.setText(
                         SpannableString(block.content.text)
@@ -598,84 +595,12 @@ class EditorAdapter(
 
         var position = 0
 
-        private var spannableText: SpannableStringBuilder? = null
-
-        private var spanBold: StyleSpan? = null
-        private var spanItalic: StyleSpan? = null
-        private var spanStrike: StrikethroughSpan? = null
-        private var spanUnderline: UnderlineSpan? = null
-
-        var isBoldActive = false
-        var isItalicActive = false
-        var isStrokeThroughActive = false
-        var isUnderlineActive = false
-
-        override fun afterTextChanged(s: Editable?) {
-            spannableText?.let { spannable ->
-                spanBold?.let { span ->
-                    s?.setSpanWithCheck(
-                        spannable.getSpanStart(span),
-                        spannable.getSpanEnd(span),
-                        span
-                    )
-                }
-                spanItalic?.let { span ->
-                    s?.setSpanWithCheck(
-                        spannable.getSpanStart(span),
-                        spannable.getSpanEnd(span),
-                        span
-                    )
-                }
-                spanStrike?.let { span ->
-                    s?.setSpanWithCheck(
-                        spannable.getSpanStart(span),
-                        spannable.getSpanEnd(span),
-                        span
-                    )
-                }
-                spanUnderline?.let { span ->
-                    s?.setSpanWithCheck(
-                        spannable.getSpanStart(span),
-                        spannable.getSpanEnd(span),
-                        span
-                    )
-                }
-            }
-            spannableText = null
-            clearSpans()
-        }
-
-        private fun clearSpans() {
-            spanBold = null
-            spanItalic = null
-            spanStrike = null
-            spanUnderline = null
-        }
-
+        override fun afterTextChanged(s: Editable?) {}
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             blocks[position].content.text = s ?: ""
             contentListener.invoke(blocks[position].id, s ?: "")
-
-            spannableText = SpannableStringBuilder(s).apply {
-                if (isBoldActive) {
-                    spanBold = StyleSpan(Typeface.BOLD)
-                    setSpan(spanBold, start, start + count, Spanned.SPAN_COMPOSING)
-                }
-                if (isItalicActive) {
-                    spanItalic = StyleSpan(Typeface.ITALIC)
-                    setSpan(spanItalic, start, start + count, Spanned.SPAN_COMPOSING)
-                }
-                if (isStrokeThroughActive) {
-                    spanStrike = StrikethroughSpan()
-                    setSpan(spanStrike, start, start + count, Spanned.SPAN_COMPOSING)
-                }
-                if (isUnderlineActive) {
-                    spanUnderline = UnderlineSpan()
-                    setSpan(spanUnderline, start, start + count, Spanned.SPAN_COMPOSING)
-                }
-            }
         }
     }
 
@@ -692,3 +617,4 @@ class EditorAdapter(
         const val HOLDER_BULLET = 9
     }
 }
+

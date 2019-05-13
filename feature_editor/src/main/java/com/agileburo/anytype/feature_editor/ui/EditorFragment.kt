@@ -115,8 +115,6 @@ abstract class EditorFragment : Fragment() {
         )
 
         setHasFixedSize(true)
-
-        addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
     }
 
     override fun onPause() {

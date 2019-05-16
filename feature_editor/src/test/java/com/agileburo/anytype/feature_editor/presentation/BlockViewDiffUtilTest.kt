@@ -16,8 +16,7 @@ class BlockViewDiffUtilTest {
         contentType = ContentType.P,
         content = BlockView.Content.Text(
             text = "Первый и второй",
-            param = BlockView.ContentParam(map = mapOf("0" to false)),
-            marks = listOf(Mark(start = 0, end = 6, type = Mark.MarkType.STRIKE_THROUGH, param = ""))
+            param = BlockView.ContentParam(map = mapOf("0" to false))
         )
     )
 
@@ -26,8 +25,7 @@ class BlockViewDiffUtilTest {
         contentType = ContentType.P,
         content = BlockView.Content.Text(
             text = "Первый и второй",
-            param = BlockView.ContentParam(map = mapOf("0" to false)),
-            marks = listOf(Mark(start = 0, end = 6, type = Mark.MarkType.STRIKE_THROUGH, param = ""))
+            param = BlockView.ContentParam(map = mapOf("0" to false))
         )
     )
 

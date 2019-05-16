@@ -35,8 +35,11 @@ class EditorViewModel(
 
     fun observeState() = progress
 
-    fun onBlockContentChanged(id: String, content: String) {
-        blocks.first { it.id == id }.content.text = content
+    fun onBlockChanged(block: Block) {
+        val index = blocks.indexOfFirst { it.id == block.id }
+        if (index >= 0 && index < blocks.size) {
+            blocks[index] = block
+        }
     }
 
     fun onContentTypeClicked(action: EditBlockAction) =

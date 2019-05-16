@@ -19,6 +19,7 @@ import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
+import com.agileburo.anytype.feature_editor.presentation.mapper.BlockModelMapper
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModel
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModelFactory
 import com.agileburo.anytype.feature_editor.presentation.mapper.BlockViewMapper
@@ -31,6 +32,7 @@ import javax.inject.Inject
 abstract class EditorFragment : Fragment() {
 
     private val mapper by lazy { BlockViewMapper() }
+    private val viewToModelMapper by lazy { BlockModelMapper() }
 
     @Inject
     lateinit var factory: EditorViewModelFactory
@@ -44,8 +46,8 @@ abstract class EditorFragment : Fragment() {
     private val blockAdapter by lazy {
         EditorAdapter(
             blocks = mutableListOf(),
-            blockContentListener = { id, content -> viewModel.onBlockContentChanged(id, content) },
-            listener = { block -> viewModel.onBlockClicked(block.id) },
+            blockContentListener = { viewModel.onBlockChanged(viewToModelMapper.mapToModel(it)) },
+            listener = { viewModel.onBlockClicked(it.id) },
             linksListener = {
                 chipLinks.text = it
                 chipLinks.visibility = View.VISIBLE

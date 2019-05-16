@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_editor.ui
 
 import android.text.*
+import android.text.style.StyleSpan
 import android.view.*
 import android.widget.EditText
 import android.widget.TextView
@@ -23,10 +24,11 @@ import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
+import timber.log.Timber
 
 class EditorAdapter(
     val blocks: MutableList<BlockView>,
-    private val blockContentListener: (String, String) -> Unit,
+    private val blockContentListener: (BlockView) -> Unit,
     private val listener: (BlockView) -> Unit,
     private val linksListener: (String) -> Unit,
     private val focusListener: (Int) -> Unit
@@ -268,16 +270,10 @@ class EditorAdapter(
             ) = with(block) {
                 itemView.textEditable.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textEditable)
-                setContentMarks(
-                    tvContent = itemView.textEditable,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
-                )
+                itemView.textEditable.setText(content.text)
                 setFocusListener(
                     editText = itemView.textEditable,
-                    focusListener = focusListener,
-                    styleToolbar = null
+                    focusListener = focusListener
                 )
                 itemView.btnEditable.setOnClickListener { clickListener(block) }
             }
@@ -296,16 +292,10 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.textHeaderOne,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
-                )
+                itemView.textHeaderOne.setText(content.text)
                 setFocusListener(
                     editText = itemView.textHeaderOne,
-                    focusListener = focusListener,
-                    styleToolbar = null
+                    focusListener = focusListener
                 )
                 itemView.btnHeaderOne.setOnClickListener { clickListener(this) }
             }
@@ -324,16 +314,10 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.textHeaderTwo,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
-                )
+                itemView.textHeaderTwo.setText(content.text)
                 setFocusListener(
                     editText = itemView.textHeaderTwo,
-                    focusListener = focusListener,
-                    styleToolbar = null
+                    focusListener = focusListener
                 )
                 itemView.btnHeaderTwo.setOnClickListener { clickListener(this) }
             }
@@ -352,16 +336,10 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.textHeaderThree,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
-                )
+                itemView.textHeaderThree.setText(content.text)
                 setFocusListener(
                     editText = itemView.textHeaderThree,
-                    focusListener = focusListener,
-                    styleToolbar = null
+                    focusListener = focusListener
                 )
                 itemView.btnHeaderThree.setOnClickListener { clickListener(this) }
             }
@@ -380,16 +358,10 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.textHeaderFour,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
-                )
+                itemView.textHeaderFour.setText(content.text)
                 setFocusListener(
                     editText = itemView.textHeaderFour,
-                    focusListener = focusListener,
-                    styleToolbar = null
+                    focusListener = focusListener
                 )
                 itemView.btnHeaderFour.setOnClickListener { clickListener(this) }
             }
@@ -410,16 +382,10 @@ class EditorAdapter(
             ) = with(block) {
                 itemView.textQuote.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textQuote)
-                setContentMarks(
-                    tvContent = itemView.textQuote,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
-                )
+                itemView.textQuote.setText(content.text)
                 setFocusListener(
                     editText = itemView.textQuote,
-                    focusListener = focusListener,
-                    styleToolbar = null
+                    focusListener = focusListener
                 )
                 itemView.btnQuote.setOnClickListener { clickListener(this) }
             }
@@ -440,16 +406,10 @@ class EditorAdapter(
             ) = with(block) {
                 itemView.textCheckBox.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textCheckBox)
-                setContentMarks(
-                    tvContent = itemView.textCheckBox,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
-                )
+                itemView.textCheckBox.setText(content.text)
                 setFocusListener(
                     editText = itemView.textCheckBox,
-                    focusListener = focusListener,
-                    styleToolbar = null
+                    focusListener = focusListener
                 )
                 itemView.btnCheckboxBlock.setOnClickListener { clickListener(this) }
             }
@@ -468,16 +428,10 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.textCode,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
-                )
+                itemView.textCode.setText(content.text)
                 setFocusListener(
                     editText = itemView.textCode,
-                    focusListener = focusListener,
-                    styleToolbar = null
+                    focusListener = focusListener
                 )
                 itemView.btnCode.setOnClickListener { clickListener(this) }
             }
@@ -498,20 +452,15 @@ class EditorAdapter(
             ) = with(block) {
                 itemView.textBullet.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textBullet)
+
                 itemView.textBullet.setText(
                     SpannableString(content.text)
-                        .withBulletSpan(gapWidth = 40, start = 0)
-                        .addMarks(
-                            marks = content.marks,
-                            textView = itemView.textBullet,
-                            click = { linksListener(it) },
-                            itemView = itemView
-                        ), TextView.BufferType.SPANNABLE
+                        .withBulletSpan(gapWidth = 40, start = 0),
+                    TextView.BufferType.SPANNABLE
                 )
                 setFocusListener(
                     editText = itemView.textBullet,
-                    focusListener = focusListener,
-                    styleToolbar = null
+                    focusListener = focusListener
                 )
                 itemView.btnBullet.setOnClickListener { clickListener(this) }
             }
@@ -535,61 +484,30 @@ class EditorAdapter(
                         TextStyleCallback(contentText)
                     positionText.text = "${block.content.param.number}."
                     contentText.setText(
-                        SpannableString(block.content.text)
-                            .addMarks(
-                                marks = block.content.marks,
-                                textView = itemView.contentText,
-                                click = linksListener,
-                                itemView = itemView
-                            ), TextView.BufferType.SPANNABLE
+                        block.content.text
                     )
                 }
                 setFocusListener(
                     editText = itemView.contentText,
-                    focusListener = focusListener,
-                    styleToolbar = null
+                    focusListener = focusListener
                 )
                 itemView.btnNumbered.setOnClickListener { clickListener(block) }
             }
         }
 
-        fun setContentMarks(
-            tvContent: EditText,
-            content: CharSequence,
-            marks: List<Mark>,
-            linksListener: (String) -> Unit
-        ) =
-            if (marks.isNotEmpty()) {
-                tvContent.setText(
-                    SpannableString(content)
-                        .addMarks(
-                            marks = marks,
-                            textView = tvContent,
-                            click = { linksListener(it) },
-                            itemView = itemView
-                        )
-                )
-            } else {
-                tvContent.setText(content, TextView.BufferType.EDITABLE)
-            }
-
         fun setFocusListener(
             editText: EditText,
-            focusListener: (Int) -> Unit,
-            styleToolbar: View?
+            focusListener: (Int) -> Unit
         ) {
             editText.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     focusListener.invoke(adapterPosition)
-                    styleToolbar?.visibility = View.VISIBLE
-                } else {
-                    styleToolbar?.visibility = View.GONE
                 }
             }
         }
     }
 
-    inner class MyEditorTextWatcher(private val contentListener: (String, String) -> Unit) :
+    inner class MyEditorTextWatcher(private val contentListener: (BlockView) -> Unit) :
         TextWatcher {
 
         var position = 0
@@ -598,8 +516,10 @@ class EditorAdapter(
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            blocks[position].content.text = s.toString()
-            contentListener.invoke(blocks[position].id, s.toString())
+            s?.let {
+                blocks[position].content.text = s
+                contentListener.invoke(blocks[position])
+            }
         }
     }
 

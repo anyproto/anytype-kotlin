@@ -11,6 +11,7 @@ android {
     defaultConfig {
         minSdkVersion config["min_sdk"]
         targetSdkVersion config["target_sdk"]
+        testInstrumentationRunner config["test_runner"]
     }
 
     buildTypes {
@@ -20,11 +21,12 @@ android {
         }
 
         debug {
-            buildConfigField "String", "TEST_JSON", '"edit.json"'
+            buildConfigField "String", "TEST_JSON", '"marks.json"'
         }
     }
 
     sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] } }
+
 }
 
 dependencies {

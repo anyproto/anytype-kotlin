@@ -9,8 +9,8 @@ sealed class Content {
 }
 
 data class Mark(
-    val start : Long,
-    val end : Long,
+    val start : Int,
+    val end : Int,
     val type : MarkType,
     val param: String
 ) {

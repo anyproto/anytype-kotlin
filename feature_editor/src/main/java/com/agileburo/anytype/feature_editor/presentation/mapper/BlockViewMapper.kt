@@ -6,6 +6,7 @@ import android.text.SpannableString
 import android.text.style.ClickableSpan
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
+import android.text.style.URLSpan
 import android.view.View
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.Content
@@ -71,28 +72,28 @@ private fun fromMarksToSpannable(text: String, marks: List<Mark>) =
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
                 Mark.MarkType.HYPERTEXT -> {
-                    val clickableSpan = object : ClickableSpan() {
-                        override fun onClick(widget: View?) {
-                            //onClickListener.invoke()
-                            Timber.d("On link clicked !!!")
-                        }
-                    }
-                    setSpan(clickableSpan, it.start, it.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    setSpan(URLSpan(it.param), it.start, it.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+//TODO решить задачу EditText + Clickable UrlSpan
+//                    val clickableSpan = object : ClickableSpan() {
+//                        override fun onClick(widget: View?) {
+//                            //onClickListener.invoke()
+//                            Timber.d("On link clicked !!!")
+//                        }
+//                    }
+//                    setSpan(clickableSpan, it.start, it.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 //                    val method = BetterLinkMovementMethod.getInstance()
 //                    textView.movementMethod = method
 //                    textView.setOnTouchListener { _, event ->
 //                        method.onTouchEvent(textView, textView.text as Spannable, event)
 //                                || itemView.onTouchEvent(event)
 //                    }
-
 //                        withClickableSpan(it.param, it.start.toInt(), it.end.toInt(), click)
                 }
                 else -> throw IllegalArgumentException("Not supported type of marks : ${it.type}")
             }
         }
     }
-
-}
 
 fun SpannableString.withClickableSpan(clickablePart: String, onClickListener: () -> Unit): SpannableString {
     val clickableSpan = object : ClickableSpan() {

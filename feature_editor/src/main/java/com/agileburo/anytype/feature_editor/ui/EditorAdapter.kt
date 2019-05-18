@@ -1,7 +1,6 @@
 package com.agileburo.anytype.feature_editor.ui
 
 import android.text.*
-import android.text.style.StyleSpan
 import android.view.*
 import android.widget.EditText
 import android.widget.TextView
@@ -10,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_utils.swap
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.domain.ContentType
-import com.agileburo.anytype.feature_editor.domain.Mark
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
 import com.agileburo.anytype.feature_editor.presentation.util.BlockViewDiffUtil
 import kotlinx.android.synthetic.main.item_block_bullet.view.*
@@ -24,7 +22,6 @@ import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
-import timber.log.Timber
 
 class EditorAdapter(
     val blocks: MutableList<BlockView>,

@@ -3,7 +3,6 @@ package com.agileburo.anytype.feature_editor.presentation.mapper
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.SpannableStringBuilder
 import android.text.style.ClickableSpan
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
@@ -43,8 +42,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
     }
 }
 
-private fun fromMarksToSpannable(text: String, marks: List<Mark>): SpannableStringBuilder {
-    return SpannableStringBuilder(text).apply {
+private fun fromMarksToSpannable(text: String, marks: List<Mark>) =
+    SpannableString(text).apply {
         marks.forEach {
             when (it.type) {
                 Mark.MarkType.BOLD -> setSpan(

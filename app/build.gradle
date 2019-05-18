@@ -42,6 +42,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            debuggable true
+        }
     }
 }
 
@@ -56,6 +60,7 @@ dependencies {
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
+    def acceptenceTesting = rootProject.ext.acceptanceTesting
 
     //Compile time dependencies
     kapt applicationDependencies.daggerCompiler
@@ -84,4 +89,7 @@ dependencies {
     testImplementation unitTestDependencies.junit
 
     //Acceptance tests dependencies
+    androidTestImplementation acceptenceTesting.espressoCore
+    androidTestImplementation acceptenceTesting.androidJUnit
+    androidTestImplementation acceptenceTesting.testRules
 }

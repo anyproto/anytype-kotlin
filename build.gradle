@@ -12,7 +12,7 @@ buildscript {
     ext.application_id = 'com.agileburo.anytype'
     ext.version_name = '1.0'
     ext.version_code = 1
-    ext.test_runner = 'android.support.test.runner.AndroidJUnitRunner'
+    ext.test_runner = 'androidx.test.runner.AndroidJUnitRunner'
 
     repositories {
         google()
@@ -20,7 +20,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:3.4.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }

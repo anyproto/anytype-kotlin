@@ -13,22 +13,26 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.agileburo.anytype.core_utils.UIExtensions
 import com.agileburo.anytype.core_utils.toast
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
+import com.agileburo.anytype.feature_editor.presentation.mapper.BlockModelMapper
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModel
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModelFactory
 import com.agileburo.anytype.feature_editor.presentation.mapper.BlockViewMapper
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_editor.*
 import timber.log.Timber
+import java.lang.UnsupportedOperationException
 import javax.inject.Inject
 
 abstract class EditorFragment : Fragment() {
 
     private val mapper by lazy { BlockViewMapper() }
+    private val viewToModelMapper by lazy { BlockModelMapper() }
 
     @Inject
     lateinit var factory: EditorViewModelFactory
@@ -42,19 +46,22 @@ abstract class EditorFragment : Fragment() {
     private val blockAdapter by lazy {
         EditorAdapter(
             blocks = mutableListOf(),
-            listener = { block -> viewModel.onBlockClicked(block.id) },
+            blockContentListener = { viewModel.onBlockChanged(viewToModelMapper.mapToModel(it)) },
+            listener = { viewModel.onBlockClicked(it.id) },
             linksListener = {
                 chipLinks.text = it
                 chipLinks.visibility = View.VISIBLE
-            }
+            },
+            focusListener = { viewModel.onBlockFocus(it) }
         ).apply {
-            val helper = ItemTouchHelper(
-                DragAndDropBehavior(
-                    onFinished = viewModel::onSwapFinished,
-                    onItemMoved = viewModel::onSwap
-                )
-            )
-            helper.attachToRecyclerView(blockList)
+            //После добавления helper ломается выделение текста в блоках
+//            val helper = ItemTouchHelper(
+//                DragAndDropBehavior(
+//                    onFinished = viewModel::onSwapFinished,
+//                    onItemMoved = viewModel::onSwap
+//                )
+//            )
+//            helper.attachToRecyclerView(blockList)
         }
     }
 
@@ -76,7 +83,7 @@ abstract class EditorFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.observeState()
-            .doOnNext { Timber.d("New view state") }
+            .doOnNext { Timber.d("New view state $it") }
             .subscribe(this::handleState)
             .disposedBy(disposable)
     }
@@ -97,9 +104,7 @@ abstract class EditorFragment : Fragment() {
 
     private fun initializeView() = with(blockList) {
         layoutManager = LinearLayoutManager(requireContext())
-
         adapter = blockAdapter
-
         editBlockToolbar.setMainActions(
             textClick = { viewModel.onContentTypeClicked(EditBlockAction.TextClick(it)) },
             header1Click = { viewModel.onContentTypeClicked(EditBlockAction.Header1Click(it)) },
@@ -111,10 +116,10 @@ abstract class EditorFragment : Fragment() {
             numberedClick = { viewModel.onContentTypeClicked(EditBlockAction.NumberedClick(it)) },
             checkBoxClick = { viewModel.onContentTypeClicked(EditBlockAction.CheckBoxClick(it)) },
             codeClick = { viewModel.onContentTypeClicked(EditBlockAction.CodeClick(it)) },
-            archiveClick = { viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(it)) }
+            archiveClick = { viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(it)) },
+            outsideClickListener = { viewModel.outsideToolbarClick() }
         )
-
-        setHasFixedSize(true)
+        addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
     }
 
     override fun onPause() {
@@ -146,20 +151,39 @@ abstract class EditorFragment : Fragment() {
         }
         is EditorState.Error -> onError(state.msg)
         is EditorState.HideLinkChip -> chipLinks.visibility = View.GONE
+        is EditorState.ClearBlockFocus -> clearBlockFocus(state.position, state.contentType)
+        is EditorState.HideKeyboard -> UIExtensions.hideSoftKeyBoard(requireActivity(), blockList)
     }
 
-    private fun setBlocks(blocks: List<Block>) {
-        (blockList.adapter as? EditorAdapter)?.setBlocks(blocks.map(mapper::mapToView))
+    private fun clearBlockFocus(position: Int, contentType: ContentType) {
+        blockList.layoutManager?.findViewByPosition(position)?.let {
+            it.findViewById<View>(getEditTextId(contentType))?.clearFocus()
+        }
     }
 
-    private fun updateBlock(block: Block) {
-        (blockList.adapter as? EditorAdapter)?.updateBlock(mapper.mapToView(block))
-    }
+    private fun getEditTextId(contentType: ContentType) =
+        when (contentType) {
+            is ContentType.P -> R.id.textEditable
+            is ContentType.H1 -> R.id.textHeaderOne
+            is ContentType.H2 -> R.id.textHeaderTwo
+            is ContentType.H3 -> R.id.textHeaderThree
+            is ContentType.H4 -> R.id.textHeaderFour
+            is ContentType.Quote -> R.id.textQuote
+            is ContentType.Check -> R.id.textCheckBox
+            is ContentType.Code -> R.id.textCode
+            is ContentType.UL -> R.id.textBullet
+            is ContentType.NumberedList -> R.id.contentText
+            is ContentType.Toggle -> throw UnsupportedOperationException("need implement Toggle")
+        }
 
-    private fun render(blocks: List<Block>) {
-        Timber.d("Render: ${blocks.map { it.content.param }}")
+    private fun setBlocks(blocks: List<Block>) =
+        blockAdapter.setBlocks(blocks.map(mapper::mapToView))
+
+    private fun updateBlock(block: Block) =
+        blockAdapter.updateBlock(mapper.mapToView(block))
+
+    private fun render(blocks: List<Block>) =
         blockAdapter.update(blocks.map(mapper::mapToView))
-    }
 
     private fun showToolbar(block: Block, typesToHide: Set<ContentType>) = with(editBlockToolbar) {
         show(initialBlock = block, typesToHide = typesToHide)

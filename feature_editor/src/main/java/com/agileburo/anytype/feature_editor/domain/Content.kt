@@ -2,15 +2,15 @@ package com.agileburo.anytype.feature_editor.domain
 
 sealed class Content {
     data class Text(
-        val text : CharSequence,
+        var text : String,
         val param : ContentParam,
         val marks : List<Mark>
     ) : Content()
 }
 
 data class Mark(
-    val start : Long,
-    val end : Long,
+    val start : Int,
+    val end : Int,
     val type : MarkType,
     val param: String
 ) {

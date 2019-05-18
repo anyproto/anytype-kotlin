@@ -8,7 +8,9 @@ import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
 
 class EditorTextWatcher(
-    private val codeBlockTypeface : Typeface
+    private val id: String,
+    val listener: (String, CharSequence) -> Unit,
+    private val codeBlockTypeface: Typeface
 ) : TextWatcher {
 
     private var spannableText: SpannableStringBuilder? = null
@@ -16,8 +18,8 @@ class EditorTextWatcher(
     private var spanBold: StyleSpan? = null
     private var spanItalic: StyleSpan? = null
     private var spanStrike: StrikethroughSpan? = null
-    private var spanUnderline : UnderlineSpan? = null
-    private var spanCodeBlock : CodeBlockSpan? = null
+    private var spanUnderline: UnderlineSpan? = null
+    private var spanCodeBlock: CodeBlockSpan? = null
 
     var isBoldActive = false
     var isItalicActive = false
@@ -27,27 +29,27 @@ class EditorTextWatcher(
 
     override fun afterTextChanged(s: Editable?) {
 
-        spannableText?.let { spannable ->
-            spanBold?.let { span ->
-                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
-            }
-            spanItalic?.let { span ->
-                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
-            }
-            spanStrike?.let { span ->
-                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
-            }
-            spanUnderline?.let { span ->
-                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
-            }
-            spanCodeBlock?.let { span ->
-                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
-            }
-        }
-
-        spannableText = null
-
-        clearSpans()
+//        spannableText?.let { spannable ->
+//            spanBold?.let { span ->
+//                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
+//            }
+//            spanItalic?.let { span ->
+//                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
+//            }
+//            spanStrike?.let { span ->
+//                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
+//            }
+//            spanUnderline?.let { span ->
+//                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
+//            }
+//            spanCodeBlock?.let { span ->
+//                s?.setSpanWithCheck(spannable.getSpanStart(span), spannable.getSpanEnd(span), span)
+//            }
+//        }
+//
+//        spannableText = null
+//
+//        clearSpans()
     }
 
     private fun clearSpans() {
@@ -61,28 +63,29 @@ class EditorTextWatcher(
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        spannableText = SpannableStringBuilder(s).apply {
-            if (isBoldActive) {
-                spanBold = StyleSpan(Typeface.BOLD)
-                setSpan(spanBold, start, start + count, Spanned.SPAN_COMPOSING)
-            }
-            if (isItalicActive) {
-                spanItalic = StyleSpan(Typeface.ITALIC)
-                setSpan(spanItalic, start, start + count, Spanned.SPAN_COMPOSING)
-            }
-            if (isStrokeThroughActive) {
-                spanStrike = StrikethroughSpan()
-                setSpan(spanStrike, start, start + count, Spanned.SPAN_COMPOSING)
-            }
-            if (isUnderlineActive) {
-                spanUnderline = UnderlineSpan()
-                setSpan(spanUnderline, start, start + count, Spanned.SPAN_COMPOSING)
-            }
-            if (isCodeBlockActive) {
-                spanCodeBlock = CodeBlockSpan(codeBlockTypeface)
-                setSpan(spanCodeBlock, start, start + count, Spanned.SPAN_COMPOSING)
-            }
-        }
+        listener(id, s ?: "")
+//        spannableText = SpannableStringBuilder(s).apply {
+//            if (isBoldActive) {
+//                spanBold = StyleSpan(Typeface.BOLD)
+//                setSpan(spanBold, start, start + count, Spanned.SPAN_COMPOSING)
+//            }
+//            if (isItalicActive) {
+//                spanItalic = StyleSpan(Typeface.ITALIC)
+//                setSpan(spanItalic, start, start + count, Spanned.SPAN_COMPOSING)
+//            }
+//            if (isStrokeThroughActive) {
+//                spanStrike = StrikethroughSpan()
+//                setSpan(spanStrike, start, start + count, Spanned.SPAN_COMPOSING)
+//            }
+//            if (isUnderlineActive) {
+//                spanUnderline = UnderlineSpan()
+//                setSpan(spanUnderline, start, start + count, Spanned.SPAN_COMPOSING)
+//            }
+//            if (isCodeBlockActive) {
+//                spanCodeBlock = CodeBlockSpan(codeBlockTypeface)
+//                setSpan(spanCodeBlock, start, start + count, Spanned.SPAN_COMPOSING)
+//            }
+//        }
     }
 }
 

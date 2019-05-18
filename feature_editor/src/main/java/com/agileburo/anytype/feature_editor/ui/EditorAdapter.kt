@@ -1,18 +1,17 @@
 package com.agileburo.anytype.feature_editor.ui
 
-import android.text.SpannableString
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.text.*
+import android.view.*
+import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_utils.swap
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.domain.ContentType
-import com.agileburo.anytype.feature_editor.domain.Mark
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
 import com.agileburo.anytype.feature_editor.presentation.util.BlockViewDiffUtil
+import kotlinx.android.synthetic.main.item_block_bullet.view.*
 import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
@@ -25,9 +24,11 @@ import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
 
 class EditorAdapter(
-    private val blocks: MutableList<BlockView>,
+    val blocks: MutableList<BlockView>,
+    private val blockContentListener: (BlockView) -> Unit,
     private val listener: (BlockView) -> Unit,
-    private val linksListener: (String) -> Unit
+    private val linksListener: (String) -> Unit,
+    private val focusListener: (Int) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setBlocks(items: List<BlockView>) {
@@ -43,7 +44,7 @@ class EditorAdapter(
         }
     }
 
-    fun update(items : List<BlockView>) {
+    fun update(items: List<BlockView>) {
         val callback = BlockViewDiffUtil(old = blocks, new = items)
         val result = DiffUtil.calculateDiff(callback)
         blocks.clear()
@@ -51,50 +52,66 @@ class EditorAdapter(
         result.dispatchUpdatesTo(this)
     }
 
+    // Bug workaround for losing text selection ability, see:
+    // https://code.google.com/p/android/issues/detail?id=208169
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        when (holder) {
+            is ViewHolder.ParagraphHolder -> setIsEnabled(holder.itemView.textEditable)
+            is ViewHolder.HeaderOneHolder -> setIsEnabled(holder.itemView.textHeaderOne)
+            is ViewHolder.HeaderTwoHolder -> setIsEnabled(holder.itemView.textHeaderTwo)
+            is ViewHolder.HeaderThreeHolder -> setIsEnabled(holder.itemView.textHeaderThree)
+            is ViewHolder.HeaderFourHolder -> setIsEnabled(holder.itemView.textHeaderFour)
+            is ViewHolder.QuoteHolder -> setIsEnabled(holder.itemView.textQuote)
+            is ViewHolder.CheckBoxHolder -> setIsEnabled(holder.itemView.textCheckBox)
+            is ViewHolder.CodeSnippetHolder -> setIsEnabled(holder.itemView.textCode)
+            is ViewHolder.BulletHolder -> setIsEnabled(holder.itemView.textBullet)
+            is ViewHolder.NumberedHolder -> setIsEnabled(holder.itemView.contentText)
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
         val inflater = LayoutInflater.from(parent.context)
-
         return when (viewType) {
             HOLDER_PARAGRAPH -> {
                 val view = inflater.inflate(R.layout.item_block_editable, parent, false)
-                ViewHolder.ParagraphHolder(view)
+                ViewHolder.ParagraphHolder(view, MyEditorTextWatcher(blockContentListener))
             }
             HOLDER_HEADER_ONE -> {
                 val view = inflater.inflate(R.layout.item_block_header_one, parent, false)
-                ViewHolder.HeaderOneHolder(view)
+                ViewHolder.HeaderOneHolder(view, MyEditorTextWatcher(blockContentListener))
             }
             HOLDER_HEADER_TWO -> {
                 val view = inflater.inflate(R.layout.item_block_header_two, parent, false)
-                ViewHolder.HeaderTwoHolder(view)
+                ViewHolder.HeaderTwoHolder(view, MyEditorTextWatcher(blockContentListener))
             }
             HOLDER_HEADER_THREE -> {
                 val view = inflater.inflate(R.layout.item_block_header_three, parent, false)
-                ViewHolder.HeaderThreeHolder(view)
+                ViewHolder.HeaderThreeHolder(view, MyEditorTextWatcher(blockContentListener))
             }
             HOLDER_HEADER_FOUR -> {
                 val view = inflater.inflate(R.layout.item_block_header_four, parent, false)
-                ViewHolder.HeaderFourHolder(view)
+                ViewHolder.HeaderFourHolder(view, MyEditorTextWatcher(blockContentListener))
             }
             HOLDER_QUOTE -> {
                 val view = inflater.inflate(R.layout.item_block_quote, parent, false)
-                ViewHolder.QuoteHolder(view)
+                ViewHolder.QuoteHolder(view, MyEditorTextWatcher(blockContentListener))
             }
             HOLDER_CHECKBOX -> {
                 val view = inflater.inflate(R.layout.item_block_checkbox, parent, false)
-                ViewHolder.CheckBoxHolder(view)
+                ViewHolder.CheckBoxHolder(view, MyEditorTextWatcher(blockContentListener))
             }
             HOLDER_CODE_SNIPPET -> {
                 val view = inflater.inflate(R.layout.item_block_code_snippet, parent, false)
-                ViewHolder.CodeSnippetHolder(view)
+                ViewHolder.CodeSnippetHolder(view, MyEditorTextWatcher(blockContentListener))
             }
             HOLDER_BULLET -> {
-                val view = inflater.inflate(R.layout.item_block_editable, parent, false)
-                ViewHolder.BulletHolder(view)
+                val view = inflater.inflate(R.layout.item_block_bullet, parent, false)
+                ViewHolder.BulletHolder(view, MyEditorTextWatcher(blockContentListener))
             }
             HOLDER_NUMBERED -> {
                 val view = inflater.inflate(R.layout.item_number_list_item, parent, false)
-                ViewHolder.NumberedHolder(view)
+                ViewHolder.NumberedHolder(view, MyEditorTextWatcher(blockContentListener))
             }
 
             else -> TODO()
@@ -121,24 +138,96 @@ class EditorAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ViewHolder.ParagraphHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.HeaderOneHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.HeaderTwoHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.HeaderThreeHolder -> holder.bind(
-                block = blocks[position],
-                clickListener = listener,
-                linksListener = linksListener
-            )
-            is ViewHolder.HeaderFourHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.QuoteHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.CheckBoxHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.CodeSnippetHolder -> holder.bind(
-                blocks[position],
-                listener,
-                linksListener
-            )
-            is ViewHolder.BulletHolder -> holder.bind(blocks[position], listener, linksListener)
-            is ViewHolder.NumberedHolder -> holder.bind(blocks[position], listener)
+            is ViewHolder.ParagraphHolder -> {
+                holder.editTextWatcher.position = holder.adapterPosition
+                holder.bind(
+                    block = blocks[position],
+                    clickListener = listener,
+                    linksListener = linksListener,
+                    focusListener = focusListener
+                )
+            }
+            is ViewHolder.HeaderOneHolder -> {
+                holder.editTextWatcher.position = holder.adapterPosition
+                holder.bind(
+                    block = blocks[position],
+                    clickListener = listener,
+                    linksListener = linksListener,
+                    focusListener = focusListener
+                )
+            }
+            is ViewHolder.HeaderTwoHolder -> {
+                holder.editTextWatcher.position = holder.adapterPosition
+                holder.bind(
+                    block = blocks[position],
+                    clickListener = listener,
+                    linksListener = linksListener,
+                    focusListener = focusListener
+                )
+            }
+            is ViewHolder.HeaderThreeHolder -> {
+                holder.editTextWatcher.position = holder.adapterPosition
+                holder.bind(
+                    block = blocks[position],
+                    clickListener = listener,
+                    linksListener = linksListener,
+                    focusListener = focusListener
+                )
+            }
+            is ViewHolder.HeaderFourHolder -> {
+                holder.editTextWatcher.position = holder.adapterPosition
+                holder.bind(
+                    block = blocks[position],
+                    clickListener = listener,
+                    linksListener = linksListener,
+                    focusListener = focusListener
+                )
+            }
+            is ViewHolder.QuoteHolder -> {
+                holder.editTextWatcher.position = holder.adapterPosition
+                holder.bind(
+                    block = blocks[position],
+                    clickListener = listener,
+                    linksListener = linksListener,
+                    focusListener = focusListener
+                )
+            }
+            is ViewHolder.CheckBoxHolder -> {
+                holder.editTextWatcher.position = holder.adapterPosition
+                holder.bind(
+                    block = blocks[position],
+                    clickListener = listener,
+                    linksListener = linksListener,
+                    focusListener = focusListener
+                )
+            }
+            is ViewHolder.CodeSnippetHolder -> {
+                holder.editTextWatcher.position = holder.adapterPosition
+                holder.bind(
+                    block = blocks[position],
+                    clickListener = listener,
+                    linksListener = linksListener,
+                    focusListener = focusListener
+                )
+            }
+            is ViewHolder.BulletHolder -> {
+                holder.editTextWatcher.position = holder.adapterPosition
+                holder.bind(
+                    block = blocks[position],
+                    clickListener = listener,
+                    linksListener = linksListener,
+                    focusListener = focusListener
+                )
+            }
+            is ViewHolder.NumberedHolder -> {
+                holder.editTextWatcher.position = holder.adapterPosition
+                holder.bind(
+                    block = blocks[position],
+                    clickListener = listener,
+                    linksListener = linksListener,
+                    focusListener = focusListener
+                )
+            }
         }
     }
 
@@ -148,7 +237,7 @@ class EditorAdapter(
         return true
     }
 
-    fun swap(request : SwapRequest) {
+    fun swap(request: SwapRequest) {
         swapPosition(request.from, request.to)
         notifyItemMoved(request.from, request.to)
     }
@@ -156,194 +245,279 @@ class EditorAdapter(
     private fun swapPosition(fromPosition: Int, toPosition: Int) =
         blocks.swap(fromPosition, toPosition)
 
+    private fun setIsEnabled(editText: EditText) {
+        editText.isEnabled = false
+        editText.isEnabled = true
+    }
+
     sealed class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        class ParagraphHolder(itemView: View) : ViewHolder(itemView) {
+        class ParagraphHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
+            ViewHolder(itemView) {
+
+            init {
+                itemView.textEditable.addTextChangedListener(editTextWatcher)
+            }
 
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.tvContent,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
+                itemView.textEditable.customSelectionActionModeCallback =
+                    TextStyleCallback(itemView.textEditable)
+                itemView.textEditable.setText(content.text)
+                setFocusListener(
+                    editText = itemView.textEditable,
+                    focusListener = focusListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.btnEditable.setOnClickListener { clickListener(block) }
             }
         }
 
-        class HeaderOneHolder(itemView: View) : ViewHolder(itemView) {
+        class HeaderOneHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
+            ViewHolder(itemView) {
+
+            init {
+                itemView.textHeaderOne.addTextChangedListener(editTextWatcher)
+            }
 
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.headerContentText,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
+                itemView.textHeaderOne.setText(content.text)
+                setFocusListener(
+                    editText = itemView.textHeaderOne,
+                    focusListener = focusListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.btnHeaderOne.setOnClickListener { clickListener(this) }
             }
         }
 
-        class HeaderTwoHolder(itemView: View) : ViewHolder(itemView) {
+        class HeaderTwoHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
+            ViewHolder(itemView) {
+
+            init {
+                itemView.textHeaderTwo.addTextChangedListener(editTextWatcher)
+            }
 
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.headerTwoContentText,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
+                itemView.textHeaderTwo.setText(content.text)
+                setFocusListener(
+                    editText = itemView.textHeaderTwo,
+                    focusListener = focusListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.btnHeaderTwo.setOnClickListener { clickListener(this) }
             }
         }
 
-        class HeaderThreeHolder(itemView: View) : ViewHolder(itemView) {
+        class HeaderThreeHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
+            ViewHolder(itemView) {
+
+            init {
+                itemView.textHeaderThree.addTextChangedListener(editTextWatcher)
+            }
 
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.headerThreeContentText,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
+                itemView.textHeaderThree.setText(content.text)
+                setFocusListener(
+                    editText = itemView.textHeaderThree,
+                    focusListener = focusListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.btnHeaderThree.setOnClickListener { clickListener(this) }
             }
         }
 
-        class HeaderFourHolder(itemView: View) : ViewHolder(itemView) {
+        class HeaderFourHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
+            ViewHolder(itemView) {
+
+            init {
+                itemView.textHeaderFour.addTextChangedListener(editTextWatcher)
+            }
 
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.headerFourContentText,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
+                itemView.textHeaderFour.setText(content.text)
+                setFocusListener(
+                    editText = itemView.textHeaderFour,
+                    focusListener = focusListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.btnHeaderFour.setOnClickListener { clickListener(this) }
             }
         }
 
-        class QuoteHolder(itemView: View) : ViewHolder(itemView) {
+        class QuoteHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
+            ViewHolder(itemView) {
+
+            init {
+                itemView.textQuote.addTextChangedListener(editTextWatcher)
+            }
 
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.quoteContent,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
+                itemView.textQuote.customSelectionActionModeCallback =
+                    TextStyleCallback(itemView.textQuote)
+                itemView.textQuote.setText(content.text)
+                setFocusListener(
+                    editText = itemView.textQuote,
+                    focusListener = focusListener
                 )
-                itemView.setOnClickListener { clickListener(this) }
+                itemView.btnQuote.setOnClickListener { clickListener(this) }
             }
         }
 
-        class CheckBoxHolder(itemView: View) : ViewHolder(itemView) {
+        class CheckBoxHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
+            ViewHolder(itemView) {
+
+            init {
+                itemView.textCheckBox.addTextChangedListener(editTextWatcher)
+            }
 
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.checkBoxContent,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
+                itemView.textCheckBox.customSelectionActionModeCallback =
+                    TextStyleCallback(itemView.textCheckBox)
+                itemView.textCheckBox.setText(content.text)
+                setFocusListener(
+                    editText = itemView.textCheckBox,
+                    focusListener = focusListener
                 )
-                itemView.checkBoxContent.setOnClickListener { clickListener(this) }
+                itemView.btnCheckboxBlock.setOnClickListener { clickListener(this) }
             }
         }
 
-        class CodeSnippetHolder(itemView: View) : ViewHolder(itemView) {
+        class CodeSnippetHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
+            ViewHolder(itemView) {
+
+            init {
+                itemView.textCode.addTextChangedListener(editTextWatcher)
+            }
 
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                focusListener: (Int) -> Unit
             ) = with(block) {
-                setContentMarks(
-                    tvContent = itemView.codeSnippetContent,
-                    content = content.text,
-                    marks = content.marks,
-                    linksListener = linksListener
+                itemView.textCode.setText(content.text)
+                setFocusListener(
+                    editText = itemView.textCode,
+                    focusListener = focusListener
                 )
-                itemView.codeSnippetContent.setOnClickListener { clickListener(this) }
+                itemView.btnCode.setOnClickListener { clickListener(this) }
             }
         }
 
-        class BulletHolder(itemView: View) : ViewHolder(itemView) {
+        class BulletHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
+            ViewHolder(itemView) {
+
+            init {
+                itemView.textBullet.addTextChangedListener(editTextWatcher)
+            }
 
             fun bind(
                 block: BlockView,
                 clickListener: (BlockView) -> Unit,
-                linksListener: (String) -> Unit
+                linksListener: (String) -> Unit,
+                focusListener: (Int) -> Unit
             ) = with(block) {
-                itemView.tvContent.text =
+                itemView.textBullet.customSelectionActionModeCallback =
+                    TextStyleCallback(itemView.textBullet)
+
+                itemView.textBullet.setText(
                     SpannableString(content.text)
-                        .withBulletSpan(gapWidth = 40, start = 0)
-                        .addMarks(
-                            marks = content.marks,
-                            textView = itemView.tvContent,
-                            click = { linksListener(it) },
-                            itemView = itemView
-                        )
-                itemView.setOnClickListener { clickListener(this) }
+                        .withBulletSpan(gapWidth = 40, start = 0),
+                    TextView.BufferType.SPANNABLE
+                )
+                setFocusListener(
+                    editText = itemView.textBullet,
+                    focusListener = focusListener
+                )
+                itemView.btnBullet.setOnClickListener { clickListener(this) }
             }
         }
 
-        class NumberedHolder(itemView: View) : ViewHolder(itemView) {
+        class NumberedHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
+            ViewHolder(itemView) {
 
-            fun bind(block: BlockView, clickListener: (BlockView) -> Unit) {
+            init {
+                itemView.contentText.addTextChangedListener(editTextWatcher)
+            }
+
+            fun bind(
+                block: BlockView,
+                clickListener: (BlockView) -> Unit,
+                linksListener: (String) -> Unit,
+                focusListener: (Int) -> Unit
+            ) {
                 with(itemView) {
+                    contentText.customSelectionActionModeCallback =
+                        TextStyleCallback(contentText)
                     positionText.text = "${block.content.param.number}."
-                    contentText.text = block.content.text
-                    setOnClickListener { clickListener(block) }
+                    contentText.setText(
+                        block.content.text
+                    )
                 }
-                itemView.setOnClickListener { clickListener(block) }
+                setFocusListener(
+                    editText = itemView.contentText,
+                    focusListener = focusListener
+                )
+                itemView.btnNumbered.setOnClickListener { clickListener(block) }
             }
         }
 
-        fun setContentMarks(
-            tvContent: TextView,
-            content: CharSequence,
-            marks: List<Mark>,
-            linksListener: (String) -> Unit
-        ) =
-            if (marks.isNotEmpty()) {
-                tvContent.text =
-                    SpannableString(content)
-                        .addMarks(
-                            marks = marks,
-                            textView = tvContent,
-                            click = { linksListener(it) },
-                            itemView = itemView
-                        )
-            } else {
-                tvContent.text = content
+        fun setFocusListener(
+            editText: EditText,
+            focusListener: (Int) -> Unit
+        ) {
+            editText.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    focusListener.invoke(adapterPosition)
+                }
             }
+        }
+    }
+
+    inner class MyEditorTextWatcher(private val contentListener: (BlockView) -> Unit) :
+        TextWatcher {
+
+        var position = 0
+
+        override fun afterTextChanged(s: Editable?) {}
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            s?.let {
+                blocks[position].content.text = s
+                contentListener.invoke(blocks[position])
+            }
+        }
     }
 
     companion object {
@@ -359,3 +533,4 @@ class EditorAdapter(
         const val HOLDER_BULLET = 9
     }
 }
+

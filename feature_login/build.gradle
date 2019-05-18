@@ -7,15 +7,24 @@ android {
     compileSdkVersion config["compile_sdk"]
 
     defaultConfig {
+        minSdkVersion config["min_sdk"]
+        targetSdkVersion config["target_sdk"]
         testInstrumentationRunner config["test_runner"]
     }
 }
 
 dependencies {
+
+    def applicationDependencies = rootProject.ext.mainApplication
+
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0-beta01'
+
+    implementation applicationDependencies.timber
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'

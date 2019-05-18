@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:background="@color/white"
-                android:layout_height="wrap_content">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    
     <ImageView
-            android:id="@+id/btnEdit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:contentDescription="@string/editor_toolbar"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_edit"/>
+        android:id="@+id/btnEditable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/editor_toolbar"
+        app:srcCompat="@drawable/ic_edit" />
 
-    <TextView
-            android:id="@+id/tvContent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_toEndOf="@id/btnEdit"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"/>
+    <com.agileburo.anytype.feature_editor.ui.ClearFocusEditText
+        android:id="@+id/textEditable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:layout_toEndOf="@id/btnEditable"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:background="@android:color/transparent"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
 
 </RelativeLayout>

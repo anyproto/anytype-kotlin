@@ -82,7 +82,7 @@
           "content": {
             "text": "Дети бегали по всему дому, как потерянные; англичанка поссорилась с экономкой и написала записку приятельнице, прося приискать ей новое место; повар ушел вчера со двора, во время самого обеда; черная кухарка и кучер просили расчета.",
             "marks": [],
-            "number" : 1
+            "number": 1
           },
           "children": []
         }
@@ -119,6 +119,42 @@
         "text": "«Да, да, как это было? — думал он, вспоминая сон.",
         "marks": []
       },
+      "children": []
+    },
+    {
+      "id": "c0301f2b-b532-55e1-92ba-2b2fc4af237e",
+      "parentId": "",
+      "type": 3,
+      "contentType": 1,
+      "content": {
+        "text": "Первый",
+        "marks": []
+      },
+      "width": 0,
+      "children": []
+    },
+    {
+      "id": "fdresaf2b-b532-5345-92ba-2b2fc4af237e",
+      "parentId": "",
+      "type": 3,
+      "contentType": 1,
+      "content": {
+        "text": "Третий",
+        "marks": []
+      },
+      "width": 0,
+      "children": []
+    },
+    {
+      "id": "ytewty6q-b532-5345-92ba-2b2fc4af237e",
+      "parentId": "",
+      "type": 3,
+      "contentType": 11,
+      "content": {
+        "text": "Пятый",
+        "marks": []
+      },
+      "width": 0,
       "children": []
     }
   ]

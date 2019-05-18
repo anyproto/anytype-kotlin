@@ -6,6 +6,6 @@ package com.agileburo.anytype.feature_editor.data
  * on 03.04.2019.
  */
 data class MarkModel(val type: String = "",
-                     val start: Long = 0,
-                     val end: Long = 0,
+                     val start: Int = 0,
+                     val end: Int = 0,
                      val param: String = "")

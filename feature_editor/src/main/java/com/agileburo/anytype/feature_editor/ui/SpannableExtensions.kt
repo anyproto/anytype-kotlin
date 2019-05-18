@@ -48,12 +48,12 @@ fun SpannableString.addMarks(
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
                 Mark.MarkType.HYPERTEXT -> {
-                    val method = BetterLinkMovementMethod.getInstance()
-                    textView.movementMethod = method
-                    textView.setOnTouchListener { _, event ->
-                        method.onTouchEvent(textView, textView.text as Spannable, event)
-                                || itemView.onTouchEvent(event)
-                    }
+//                    val method = BetterLinkMovementMethod.getInstance()
+//                    textView.movementMethod = method
+//                    textView.setOnTouchListener { _, event ->
+//                        method.onTouchEvent(textView, textView.text as Spannable, event)
+//                                || itemView.onTouchEvent(event)
+//                    }
 
                     withClickableSpan(it.param, it.start.toInt(), it.end.toInt(), click)
                 }

@@ -6,6 +6,7 @@ import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
 import com.agileburo.anytype.feature_editor.domain.*
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
+import com.agileburo.anytype.feature_editor.presentation.model.BlockView.HeaderView.*
 
 /**
  * Created by Konstantin Ivanov
@@ -20,16 +21,115 @@ interface ModelMapper<in V, out D> {
 class BlockModelMapper : ModelMapper<BlockView, Block> {
 
     override fun mapToModel(view: BlockView): Block {
-        //todo Разобраться с parentId и param
-        return Block(
-            id = view.id, parentId = "",
-            content = Content.Text(
-                text = view.content.text.toString(),
-                param = ContentParam.empty(),
-                marks = fromSpannableToMarks(view.content.text)
-            ),
-            contentType = view.contentType
-        )
+        //todo Разобраться с parentId
+
+        return when (view) {
+            is BlockView.ParagraphView -> {
+                Block(
+                    id = view.id,
+                    parentId = "",
+                    contentType = ContentType.P,
+                    content = Content.Text(
+                        text = view.text.toString(),
+                        marks = fromSpannableToMarks(view.text),
+                        param = ContentParam.empty()
+                    ),
+                    blockType = BlockType.Editable
+                )
+            }
+            is BlockView.QuoteView -> {
+                Block(
+                    id = view.id,
+                    parentId = "",
+                    contentType = ContentType.Quote,
+                    content = Content.Text(
+                        text = view.text.toString(),
+                        marks = fromSpannableToMarks(view.text),
+                        param = ContentParam.empty()
+                    ),
+                    blockType = BlockType.Editable
+                )
+            }
+            is BlockView.CodeSnippetView -> {
+                Block(
+                    id = view.id,
+                    parentId = "",
+                    contentType = ContentType.Code,
+                    content = Content.Text(
+                        text = view.text.toString(),
+                        marks = fromSpannableToMarks(view.text),
+                        param = ContentParam.empty()
+                    ),
+                    blockType = BlockType.Editable
+                )
+            }
+            is BlockView.CheckboxView -> {
+                Block(
+                    id = view.id,
+                    parentId = "",
+                    contentType = ContentType.Check,
+                    content = Content.Text(
+                        text = view.text.toString(),
+                        marks = fromSpannableToMarks(view.text),
+                        param = ContentParam.checkbox(view.isChecked)
+                    ),
+                    blockType = BlockType.Editable
+                )
+            }
+            is BlockView.HeaderView -> {
+
+                val contentType = when(view.type) {
+                    HeaderType.ONE -> ContentType.H1
+                    HeaderType.TWO -> ContentType.H2
+                    HeaderType.THREE -> ContentType.H3
+                    HeaderType.FOUR -> ContentType.H4
+                }
+
+                Block(
+                    id = view.id,
+                    parentId = "",
+                    contentType = contentType,
+                    content = Content.Text(
+                        text = view.text.toString(),
+                        marks = fromSpannableToMarks(view.text),
+                        param = ContentParam.empty()
+                    ),
+                    blockType = BlockType.Editable
+                )
+            }
+
+            is BlockView.BulletView -> {
+                Block(
+                    id = view.id,
+                    parentId = "",
+                    contentType = ContentType.UL,
+                    content = Content.Text(
+                        text = view.text.toString(),
+                        marks = fromSpannableToMarks(view.text),
+                        param = ContentParam.empty()
+                    ),
+                    blockType = BlockType.Editable
+                )
+            }
+            is BlockView.NumberListItemView -> {
+                Block(
+                    id = view.id,
+                    parentId = "",
+                    contentType = ContentType.NumberedList,
+                    content = Content.Text(
+                        text = view.text.toString(),
+                        marks = fromSpannableToMarks(view.text),
+                        param = ContentParam.numberedList(view.number)
+                    ),
+                    blockType = BlockType.Editable
+                )
+            }
+
+            else -> TODO()
+
+        }
+
+
     }
 
     private fun fromSpannableToMarks(content: CharSequence): List<Mark> {

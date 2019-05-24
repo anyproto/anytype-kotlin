@@ -1,18 +1,24 @@
 package com.agileburo.anytype.feature_editor.ui
 
-import android.text.*
-import android.view.*
+import android.text.Editable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_utils.swap
 import com.agileburo.anytype.feature_editor.R
-import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
+import com.agileburo.anytype.feature_editor.presentation.model.BlockView.*
+import com.agileburo.anytype.feature_editor.presentation.model.BlockView.HeaderView.HeaderType
 import com.agileburo.anytype.feature_editor.presentation.util.BlockViewDiffUtil
-import kotlinx.android.synthetic.main.item_block_bullet.view.*
 import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
+import kotlinx.android.synthetic.main.item_block_bullet.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import kotlinx.android.synthetic.main.item_block_editable.view.*
@@ -119,19 +125,31 @@ class EditorAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (blocks[position].contentType) {
-            is ContentType.P -> HOLDER_PARAGRAPH
-            is ContentType.H1 -> HOLDER_HEADER_ONE
-            is ContentType.H2 -> HOLDER_HEADER_TWO
-            is ContentType.H3 -> HOLDER_HEADER_THREE
-            is ContentType.H4 -> HOLDER_HEADER_FOUR
-            is ContentType.Quote -> HOLDER_QUOTE
-            is ContentType.Check -> HOLDER_CHECKBOX
-            is ContentType.Code -> HOLDER_CODE_SNIPPET
-            is ContentType.NumberedList -> HOLDER_NUMBERED
-            is ContentType.UL -> HOLDER_BULLET
-            else -> throw IllegalStateException("Implement Toggle!!!")
+
+        val block = blocks[position]
+
+
+        return when (block) {
+            is BookmarkView -> HOLDER_BOOKMARK
+            is LinkToPageView -> HOLDER_PAGE
+            is ParagraphView -> HOLDER_PARAGRAPH
+            is QuoteView -> HOLDER_QUOTE
+            is CodeSnippetView -> HOLDER_CODE_SNIPPET
+            is CheckboxView -> HOLDER_CHECKBOX
+            is NumberListItemView -> HOLDER_NUMBERED
+            is BulletView -> HOLDER_BULLET
+            is HeaderView -> {
+                when (block.type) {
+                    HeaderType.ONE -> HOLDER_HEADER_ONE
+                    HeaderType.TWO -> HOLDER_HEADER_TWO
+                    HeaderType.THREE -> HOLDER_HEADER_THREE
+                    HeaderType.FOUR -> HOLDER_HEADER_FOUR
+                }
+            }
+            is DividerView -> HOLDER_DIVIDER
+            is PictureView -> HOLDER_PICTURE
         }
+
     }
 
     override fun getItemCount() = blocks.size
@@ -265,9 +283,11 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                itemView.textEditable.customSelectionActionModeCallback =
-                    TextStyleCallback(itemView.textEditable)
-                itemView.textEditable.setText(content.text)
+                itemView.textEditable.customSelectionActionModeCallback = TextStyleCallback(itemView.textEditable)
+
+                if (block is BlockView.Editable)
+                    itemView.textEditable.setText(block.text)
+
                 setFocusListener(
                     editText = itemView.textEditable,
                     focusListener = focusListener
@@ -289,7 +309,10 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                itemView.textHeaderOne.setText(content.text)
+
+                if (block is BlockView.Editable)
+                    itemView.textHeaderOne.setText(block.text)
+
                 setFocusListener(
                     editText = itemView.textHeaderOne,
                     focusListener = focusListener
@@ -311,7 +334,10 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                itemView.textHeaderTwo.setText(content.text)
+
+                if (block is BlockView.Editable)
+                    itemView.textHeaderTwo.setText(block.text)
+
                 setFocusListener(
                     editText = itemView.textHeaderTwo,
                     focusListener = focusListener
@@ -333,7 +359,10 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                itemView.textHeaderThree.setText(content.text)
+
+                if (block is BlockView.Editable)
+                    itemView.textHeaderThree.setText(block.text)
+
                 setFocusListener(
                     editText = itemView.textHeaderThree,
                     focusListener = focusListener
@@ -355,11 +384,15 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                itemView.textHeaderFour.setText(content.text)
+
+                if (block is BlockView.Editable)
+                    itemView.textHeaderFour.setText(block.text)
+
                 setFocusListener(
                     editText = itemView.textHeaderFour,
                     focusListener = focusListener
                 )
+
                 itemView.btnHeaderFour.setOnClickListener { clickListener(this) }
             }
         }
@@ -377,9 +410,13 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                itemView.textQuote.customSelectionActionModeCallback =
-                    TextStyleCallback(itemView.textQuote)
-                itemView.textQuote.setText(content.text)
+
+                itemView.textQuote.customSelectionActionModeCallback = TextStyleCallback(itemView.textQuote)
+
+                if (block is BlockView.Editable) {
+                    itemView.textQuote.setText(block.text)
+                }
+
                 setFocusListener(
                     editText = itemView.textQuote,
                     focusListener = focusListener
@@ -403,7 +440,10 @@ class EditorAdapter(
             ) = with(block) {
                 itemView.textCheckBox.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textCheckBox)
-                itemView.textCheckBox.setText(content.text)
+
+                if (block is BlockView.Editable)
+                    itemView.textCheckBox.setText(block.text)
+
                 setFocusListener(
                     editText = itemView.textCheckBox,
                     focusListener = focusListener
@@ -425,7 +465,10 @@ class EditorAdapter(
                 linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
-                itemView.textCode.setText(content.text)
+
+                if (block is BlockView.Editable)
+                    itemView.textCode.setText(block.text)
+
                 setFocusListener(
                     editText = itemView.textCode,
                     focusListener = focusListener
@@ -450,11 +493,10 @@ class EditorAdapter(
                 itemView.textBullet.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textBullet)
 
-                itemView.textBullet.setText(
-                    SpannableString(content.text)
-                        .withBulletSpan(gapWidth = 40, start = 0),
-                    TextView.BufferType.SPANNABLE
-                )
+                if (block is BlockView.Editable) itemView.textBullet.setText(
+                    SpannableString(block.text)
+                        .withBulletSpan(gapWidth = 40, start = 0), TextView.BufferType.SPANNABLE)
+
                 setFocusListener(
                     editText = itemView.textBullet,
                     focusListener = focusListener
@@ -477,17 +519,21 @@ class EditorAdapter(
                 focusListener: (Int) -> Unit
             ) {
                 with(itemView) {
-                    contentText.customSelectionActionModeCallback =
-                        TextStyleCallback(contentText)
-                    positionText.text = "${block.content.param.number}."
-                    contentText.setText(
-                        block.content.text
-                    )
+
+                    contentText.customSelectionActionModeCallback = TextStyleCallback(contentText)
+
+                    if (block is BlockView.NumberListItemView)
+                        positionText.text = "${block.number}."
+
+                    if (block is BlockView.Editable)
+                        contentText.setText(block.text)
                 }
+
                 setFocusListener(
                     editText = itemView.contentText,
                     focusListener = focusListener
                 )
+
                 itemView.btnNumbered.setOnClickListener { clickListener(block) }
             }
         }
@@ -513,9 +559,12 @@ class EditorAdapter(
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            s?.let {
-                blocks[position].content.text = s
-                contentListener.invoke(blocks[position])
+            s?.let { chars ->
+                val block = blocks[position]
+                if (block is BlockView.Editable && chars is SpannableStringBuilder) {
+                    block.text = SpannableString.valueOf(chars)
+                    contentListener.invoke(block)
+                }
             }
         }
     }
@@ -531,6 +580,11 @@ class EditorAdapter(
         const val HOLDER_NUMBERED = 7
         const val HOLDER_HEADER_FOUR = 8
         const val HOLDER_BULLET = 9
+        const val HOLDER_PAGE = 10
+        const val HOLDER_BOOKMARK = 11
+        const val HOLDER_DIVIDER = 12
+        const val HOLDER_PICTURE = 13
+
     }
 }
 

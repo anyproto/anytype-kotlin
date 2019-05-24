@@ -45,4 +45,6 @@ assembleDebug:
 debugTests:
   stage: test
   script:
-    - ./gradlew -Pci --console=plain :app:testDebug
+    - ./gradlew test
+
+

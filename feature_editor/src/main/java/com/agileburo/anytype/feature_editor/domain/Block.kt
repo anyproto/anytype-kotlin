@@ -9,8 +9,8 @@ sealed class BlockType {
     object HrGrid : BlockType()
     object VrGrid : BlockType()
     object Editable : BlockType()
-    object Div : BlockType()
-    object YouTube : BlockType()
+    object Divider : BlockType()
+    object Video : BlockType()
     object Image : BlockType()
     object Page : BlockType()
     object NewPage : BlockType()
@@ -36,9 +36,8 @@ data class Block(
     val id: String,
     val parentId: String,
     var contentType: ContentType,
-    // TODO parse marks and other stuff
+    val blockType: BlockType,
     val content: Content.Text
-    // TODO add blockType
 ) {
 
     fun setNumber(number : Int) {
@@ -84,8 +83,8 @@ fun Int.toBlockType(): BlockType =
         1 -> BlockType.HrGrid
         2 -> BlockType.VrGrid
         3 -> BlockType.Editable
-        4 -> BlockType.Div
-        5 -> BlockType.YouTube
+        4 -> BlockType.Divider
+        5 -> BlockType.Video
         6 -> BlockType.Image
         7 -> BlockType.Page
         8 -> BlockType.NewPage

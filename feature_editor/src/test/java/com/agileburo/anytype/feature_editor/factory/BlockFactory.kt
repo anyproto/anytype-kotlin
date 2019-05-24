@@ -7,6 +7,7 @@ object BlockFactory {
     fun makeBlock(
         contentType: ContentType = ContentType.P,
         contentParam: ContentParam = ContentParam.empty(),
+        blockType: BlockType = BlockType.Editable,
         marks : List<Mark> = emptyList()
     ) : Block {
         return Block(
@@ -17,7 +18,8 @@ object BlockFactory {
                 text = DataFactory.randomString(),
                 param = contentParam,
                 marks = marks
-            )
+            ),
+            blockType = blockType
         )
     }
 

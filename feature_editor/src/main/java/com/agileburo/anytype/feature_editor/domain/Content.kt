@@ -2,7 +2,7 @@ package com.agileburo.anytype.feature_editor.domain
 
 sealed class Content {
     data class Text(
-        var text : String,
+        val text : String,
         val param : ContentParam,
         val marks : List<Mark>
     ) : Content()
@@ -25,6 +25,15 @@ data class ContentParam(val map : MutableMap<String, Any?>) {
 
 
     companion object {
+
+        fun checkbox(checked : Boolean) : ContentParam {
+            return ContentParam(
+                mutableMapOf(
+                    "number" to 0,
+                    "checked" to checked
+                )
+            )
+        }
 
         fun empty() : ContentParam {
             return ContentParam(

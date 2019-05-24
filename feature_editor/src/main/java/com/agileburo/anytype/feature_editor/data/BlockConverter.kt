@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_editor.data
 
 import com.agileburo.anytype.feature_editor.domain.Block
+import com.agileburo.anytype.feature_editor.domain.BlockType
 import com.agileburo.anytype.feature_editor.domain.toContentType
 import com.agileburo.anytype.feature_editor.domain.toNumericalCode
 
@@ -20,7 +21,9 @@ class BlockConverterImpl(private val contentConverter: ContentConverter) : Block
         id = model.id,
         content = contentConverter.modelToDomain(model.content),
         parentId = model.parentId,
-        contentType = model.contentType.toContentType()
+        contentType = model.contentType.toContentType(),
+        // TODO refactor
+        blockType = BlockType.Editable
     )
 
     override fun domainToModel(block: Block) = BlockModel(

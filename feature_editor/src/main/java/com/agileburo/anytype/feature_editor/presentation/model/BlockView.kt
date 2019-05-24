@@ -1,23 +1,74 @@
 package com.agileburo.anytype.feature_editor.presentation.model
 
-import com.agileburo.anytype.feature_editor.domain.ContentType
+import android.text.SpannableString
 
-data class BlockView(
-    val id: String,
-    val contentType: ContentType,
-    val content: Content.Text,
-    val needClearFocus: Boolean = false
-) {
+sealed class BlockView {
 
-    sealed class Content {
-        data class Text(
-            var text: CharSequence,
-            val param: ContentParam
-        ) : Content()
+    abstract val id : String
+
+    data class ParagraphView(
+        override val id : String,
+        override var text : SpannableString
+    ) : BlockView(), Editable
+
+    data class HeaderView(
+        override val id : String,
+        override var text : SpannableString,
+        val type : HeaderType
+    ) : BlockView(), Editable {
+        enum class HeaderType { ONE, TWO, THREE, FOUR }
     }
 
-    data class ContentParam(val map: Map<String, Any?>) {
-        val number: Int by map
-        val checked: Boolean by map
+    data class QuoteView(
+        override val id : String,
+        override var text : SpannableString
+    ) : BlockView(), Editable
+
+    data class CheckboxView(
+        override val id : String,
+        override var text : SpannableString,
+        val isChecked : Boolean
+    ) : BlockView(), Editable
+
+    data class CodeSnippetView(
+        override val id : String,
+        override var text : SpannableString
+    ) : BlockView(), Editable
+
+    data class NumberListItemView(
+        override val id : String,
+        override var text: SpannableString,
+        val number : Int
+    ) : BlockView(), Editable
+
+    data class BulletView(
+        override val id : String,
+        override var text: SpannableString
+    ) : BlockView(), Editable
+
+    data class LinkToPageView(
+        override val id : String,
+        val title : String
+    ) : BlockView()
+
+    data class BookmarkView(
+        override val id : String,
+        val title : String,
+        val description : String,
+        val url : String,
+        val image : String
+    ) : BlockView()
+
+    data class DividerView(
+        override val id : String
+    ) : BlockView()
+
+    data class PictureView (
+        override val id : String,
+        val url : String
+    ) : BlockView()
+
+    interface Editable {
+        var text : SpannableString
     }
 }

@@ -6,7 +6,7 @@ import com.agileburo.anytype.feature_editor.factory.BlockFactory
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverterImpl
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModel
-import com.agileburo.anytype.feature_editor.ui.EditBlockAction
+import com.agileburo.anytype.feature_editor.ui.BlockMenuAction
 import com.agileburo.anytype.feature_editor.ui.EditorState
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
@@ -77,9 +77,10 @@ class EditorViewModelTest {
     @Test
     fun `should return list with size - 1 after block removal`() {
 
-        val blocks = listOf(BlockFactory.makeBlock(), BlockFactory.makeBlock())
+        val block1 = BlockFactory.makeBlock()
+        val block2 = BlockFactory.makeBlock()
 
-        stubGetBlocks(Single.just(blocks))
+        stubGetBlocks(Single.just(listOf(block1, block2)))
 
         viewModel = EditorViewModel(
             interactor = interactor,
@@ -89,36 +90,15 @@ class EditorViewModelTest {
 
         val testObserver = viewModel.observeState().test()
 
-        viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(blocks[0].id))
+        viewModel.onBlockMenuAction(BlockMenuAction.ArchiveAction(block1.id))
 
         testObserver
             .assertNoErrors()
-            .assertValueCount(4)
-            .assertValueAt(1, EditorState.Updates(listOf(blocks.last())))
+            .assertValueCount(2)
+            .assertValueAt(1, EditorState.Updates(listOf(block2)))
     }
 
-    @Test
-    fun `should hide toolbar after delete block`() {
-
-        val blocks = listOf(BlockFactory.makeBlock())
-
-        stubGetBlocks(Single.just(blocks))
-
-        viewModel = EditorViewModel(
-            interactor = interactor,
-            contentTypeConverter = contentTypeConverter,
-            schedulerProvider = TrampolineSchedulerProvider()
-        )
-
-        val testObserver = viewModel.observeState().test()
-
-        viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(blocks[0].id))
-
-        testObserver.assertNoErrors()
-        testObserver.assertValueAt(2, EditorState.HideToolbar)
-    }
-
-    private fun stubGetBlocks(single : Single<List<Block>>) {
+    private fun stubGetBlocks(single: Single<List<Block>>) {
         Mockito.`when`(interactor.getBlocks()).thenReturn(single)
     }
 }

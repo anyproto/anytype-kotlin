@@ -32,24 +32,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/document_title" />
 
-    <com.agileburo.anytype.feature_editor.ui.EditBlockToolbar
-        android:id="@+id/editBlockToolbar"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <com.google.android.material.chip.Chip
         android:id="@+id/chipLinks"
         style="@style/Widget.MaterialComponents.Chip.Action"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:clickable="true"
         android:focusable="true"
@@ -57,8 +45,8 @@
         android:textColor="@android:color/white"
         android:visibility="gone"
         app:chipBackgroundColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/blockList"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editBlockToolbar" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

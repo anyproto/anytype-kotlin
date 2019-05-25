@@ -171,8 +171,6 @@ class EditorAdapter(
                 holder.editTextWatcher.position = holder.adapterPosition
                 holder.bind(
                     block = blocks[position],
-                    menuListener = menuListener,
-                    linksListener = linksListener,
                     focusListener = focusListener
                 )
             }
@@ -315,8 +313,6 @@ class EditorAdapter(
 
             fun bind(
                 block: BlockView,
-                menuListener: (BlockMenuAction) -> Unit,
-                linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
@@ -327,14 +323,6 @@ class EditorAdapter(
                     editText = itemView.textHeaderOne,
                     focusListener = focusListener
                 )
-                itemView.btnHeaderOne.setOnClickListener {
-                    showBlockMenu(
-                        context = itemView.context,
-                        block = block,
-                        menuListener = menuListener,
-                        parent = it
-                    )
-                }
             }
         }
 

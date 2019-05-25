@@ -4,4 +4,6 @@
 
     <string name="icon_code">Code</string>
     <string name="icon_u">U</string>
+
+    <string name="cont_desc_doc_icon">Document Icon</string>
 </resources>

@@ -9,7 +9,7 @@ import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
 import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
-import com.agileburo.anytype.feature_editor.ui.EditBlockAction
+import com.agileburo.anytype.feature_editor.ui.BlockMenuAction
 import com.agileburo.anytype.feature_editor.ui.EditorState
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.disposables.CompositeDisposable
@@ -42,74 +42,25 @@ class EditorViewModel(
         }
     }
 
-    fun onContentTypeClicked(action: EditBlockAction) =
+    fun onBlockMenuAction(action: BlockMenuAction) {
         when (action) {
-            is EditBlockAction.TextClick -> convertBlock(
-                block = action.block,
-                contentType = ContentType.P
-            )
-            is EditBlockAction.Header1Click -> convertBlock(
-                block = action.block,
-                contentType = ContentType.H1
-            )
-            is EditBlockAction.Header2Click -> convertBlock(
-                block = action.block,
-                contentType = ContentType.H2
-            )
-            is EditBlockAction.Header3Click -> convertBlock(
-                block = action.block,
-                contentType = ContentType.H3
-            )
-            is EditBlockAction.Header4Click -> convertBlock(
-                block = action.block,
-                contentType = ContentType.H4
-            )
-            is EditBlockAction.HighLightClick -> convertBlock(
-                block = action.block,
-                contentType = ContentType.Quote
-            )
-            is EditBlockAction.BulletClick -> convertBlock(
-                block = action.block,
-                contentType = ContentType.UL
-            )
-            is EditBlockAction.NumberedClick -> convertBlock(
-                block = action.block,
-                contentType = ContentType.NumberedList
-            )
-            is EditBlockAction.CheckBoxClick -> convertBlock(
-                block = action.block,
-                contentType = ContentType.Check
-            )
-            is EditBlockAction.CodeClick -> convertBlock(
-                block = action.block,
-                contentType = ContentType.Code
-            )
-            is EditBlockAction.ArchiveBlock -> removeBlock(id = action.id)
-        }.also {
-            progress.accept(EditorState.HideToolbar)
-            progress.accept(EditorState.HideLinkChip)
+            is BlockMenuAction.ContentTypeAction -> {
+                convertBlock(
+                    block = blocks.first { it.id == action.id },
+                    contentType = action.newType
+                )
+            }
+            is BlockMenuAction.ArchiveAction -> {
+                removeBlock(action.id)
+            }
+            is BlockMenuAction.DuplicateAction -> {
+                throw NotImplementedError()
+            }
         }
-
-
-    fun hideToolbar() = progress.accept(EditorState.HideToolbar)
-
-    fun outsideToolbarClick() = progress.accept(EditorState.HideToolbar)
-
-    fun onBlockClicked(id: String) = blocks.first { it.id == id }.let {
-        clearBlockFocus()
-        progress.accept(
-            EditorState.ShowToolbar(
-                block = it,
-                typesToHide = contentTypeConverter.getForbiddenTypes(it.contentType)
-            )
-        )
-        progress.accept(EditorState.HideLinkChip)
-        progress.accept(EditorState.HideKeyboard)
     }
 
     fun onBlockFocus(position: Int) {
         positionInFocus = position
-        progress.accept(EditorState.HideToolbar)
     }
 
     fun onSwap(request: SwapRequest) {

@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.core_utils.UIExtensions
 import com.agileburo.anytype.core_utils.toast
@@ -47,7 +46,7 @@ abstract class EditorFragment : Fragment() {
         EditorAdapter(
             blocks = mutableListOf(),
             blockContentListener = { viewModel.onBlockChanged(viewToModelMapper.mapToModel(it)) },
-            listener = { viewModel.onBlockClicked(it.id) },
+            menuListener = { viewModel.onBlockMenuAction(it) },
             linksListener = {
                 chipLinks.text = it
                 chipLinks.visibility = View.VISIBLE
@@ -105,28 +104,9 @@ abstract class EditorFragment : Fragment() {
     private fun initializeView() = with(blockList) {
         layoutManager = LinearLayoutManager(requireContext())
         adapter = blockAdapter
-        editBlockToolbar.setMainActions(
-            textClick = { viewModel.onContentTypeClicked(EditBlockAction.TextClick(it)) },
-            header1Click = { viewModel.onContentTypeClicked(EditBlockAction.Header1Click(it)) },
-            header2Click = { viewModel.onContentTypeClicked(EditBlockAction.Header2Click(it)) },
-            header3Click = { viewModel.onContentTypeClicked(EditBlockAction.Header3Click(it)) },
-            header4Click = { viewModel.onContentTypeClicked(EditBlockAction.Header4Click(it)) },
-            hightLitedClick = { viewModel.onContentTypeClicked(EditBlockAction.HighLightClick(it)) },
-            bulletedClick = { viewModel.onContentTypeClicked(EditBlockAction.BulletClick(it)) },
-            numberedClick = { viewModel.onContentTypeClicked(EditBlockAction.NumberedClick(it)) },
-            checkBoxClick = { viewModel.onContentTypeClicked(EditBlockAction.CheckBoxClick(it)) },
-            codeClick = { viewModel.onContentTypeClicked(EditBlockAction.CodeClick(it)) },
-            archiveClick = { viewModel.onContentTypeClicked(EditBlockAction.ArchiveBlock(it)) },
-            outsideClickListener = { viewModel.outsideToolbarClick() }
-        )
         addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
     }
-
-    override fun onPause() {
-        viewModel.hideToolbar()
-        super.onPause()
-    }
-
+    
     override fun onDestroyView() {
         disposable.clear()
         super.onDestroyView()
@@ -142,11 +122,6 @@ abstract class EditorFragment : Fragment() {
 
         is EditorState.Swap -> blockAdapter.swap(state.request)
 
-        is EditorState.ShowToolbar -> showToolbar(
-            block = state.block,
-            typesToHide = state.typesToHide
-        )
-        is EditorState.HideToolbar -> hideToolbar()
         is EditorState.Archive -> {
         }
         is EditorState.Error -> onError(state.msg)
@@ -184,15 +159,6 @@ abstract class EditorFragment : Fragment() {
 
     private fun render(blocks: List<Block>) =
         blockAdapter.update(blocks.map(mapper::mapToView))
-
-    private fun showToolbar(block: Block, typesToHide: Set<ContentType>) = with(editBlockToolbar) {
-        show(initialBlock = block, typesToHide = typesToHide)
-        visibility = View.VISIBLE
-    }
-
-    private fun hideToolbar() = with(editBlockToolbar) {
-        visibility = View.INVISIBLE
-    }
 
     private fun onError(msg: CharSequence) = requireContext().toast(msg)
 }

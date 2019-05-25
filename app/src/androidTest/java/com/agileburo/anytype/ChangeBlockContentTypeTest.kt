@@ -3,6 +3,7 @@ package com.agileburo.anytype
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.agileburo.anytype.CustomMatchers.Companion.withItemCount
 import com.agileburo.anytype.TestUtils.withRecyclerView
@@ -31,12 +32,11 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
                     click()
                 )
             )
-        onView(withId(R.id.content_type_toolbar)).check(matches(isDisplayed()))
-        onView(withId(R.id.btn_cont_type_toolbar_p)).check(matches(isSelected()))
-        onView(withId(R.id.btn_cont_type_toolbar_h1)).check(matches(not(isSelected())))
+        onView(withContentDescription("blockMenu")).inRoot(RootMatchers.isPlatformPopup()).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_menu_p)).inRoot(RootMatchers.isPlatformPopup()).check(matches(isSelected()))
+        onView(withId(R.id.btn_menu_h1)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
 
-        onView(withId(R.id.btn_cont_type_toolbar_bullet)).perform(click())
-        onView(withId(R.id.content_type_toolbar)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.btn_menu_bullet)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
 
         Thread.sleep(1000)
 
@@ -48,7 +48,7 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
                     click()
                 )
             )
-        onView(withId(R.id.content_type_toolbar)).check(matches(isDisplayed()))
+        onView(withContentDescription("blockMenu")).inRoot(RootMatchers.isPlatformPopup()).check(matches(isDisplayed()))
     }
 
     @Test
@@ -61,9 +61,9 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
                     click()
                 )
             )
-        onView(withId(R.id.content_type_toolbar)).check(matches(isDisplayed()))
-        onView(withId(R.id.btn_cont_type_toolbar_p)).check(matches(isSelected()))
-        onView(withId(R.id.btn_cont_type_toolbar_h1)).check(matches(not(isSelected())))
+        onView(withContentDescription("blockMenu")).inRoot(RootMatchers.isPlatformPopup()).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_menu_p)).inRoot(RootMatchers.isPlatformPopup()).check(matches(isSelected()))
+        onView(withId(R.id.btn_menu_h1)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
     }
 
     @Test
@@ -76,9 +76,9 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
                     click()
                 )
             )
-        onView(withId(R.id.content_type_toolbar)).check(matches(isDisplayed()))
-        onView(withId(R.id.btn_cont_type_toolbar_h4)).check(matches(isSelected()))
-        onView(withId(R.id.btn_cont_type_toolbar_h1)).check(matches(not(isSelected())))
+        onView(withContentDescription("blockMenu")).inRoot(RootMatchers.isPlatformPopup()).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_menu_h4)).inRoot(RootMatchers.isPlatformPopup()).check(matches(isSelected()))
+        onView(withId(R.id.btn_menu_h1)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
     }
 
     @Test
@@ -110,12 +110,11 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
                     click()
                 )
             )
-        onView(withId(R.id.content_type_toolbar)).check(matches(isDisplayed()))
-        onView(withId(R.id.btn_cont_type_toolbar_p)).check(matches(isSelected()))
-        onView(withId(R.id.btn_cont_type_toolbar_numbered)).check(matches(not(isSelected())))
+        onView(withContentDescription("blockMenu")).inRoot(RootMatchers.isPlatformPopup()).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_menu_p)).inRoot(RootMatchers.isPlatformPopup()).check(matches(isSelected()))
+        onView(withId(R.id.btn_menu_numbered)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
 
-        onView(withId(R.id.btn_cont_type_toolbar_numbered)).perform(click())
-        onView(withId(R.id.content_type_toolbar)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.btn_menu_numbered)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
 
         //{N, P, H4}
         onView(withRecyclerView(R.id.blockList).atPositionOnView(0, R.id.contentText))
@@ -138,13 +137,12 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
             )
 
         // Numbered is selected
-        onView(withId(R.id.content_type_toolbar)).check(matches(isDisplayed()))
-        onView(withId(R.id.btn_cont_type_toolbar_numbered)).check(matches(isSelected()))
-        onView(withId(R.id.btn_cont_type_toolbar_h3)).check(matches(not(isSelected())))
+        onView(withContentDescription("blockMenu")).inRoot(RootMatchers.isPlatformPopup()).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_menu_numbered)).inRoot(RootMatchers.isPlatformPopup()).check(matches(isSelected()))
+        onView(withId(R.id.btn_menu_h3)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
 
         // Click on H3
-        onView(withId(R.id.btn_cont_type_toolbar_h3)).perform(click())
-        onView(withId(R.id.content_type_toolbar)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.btn_menu_h3)).perform(click())
 
         // Check blocks content
         onView(withRecyclerView(R.id.blockList).atPositionOnView(0, R.id.textHeaderThree))
@@ -166,13 +164,12 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
             )
 
         // P is selected
-        onView(withId(R.id.content_type_toolbar)).check(matches(isDisplayed()))
-        onView(withId(R.id.btn_cont_type_toolbar_p)).check(matches(isSelected()))
-        onView(withId(R.id.btn_cont_type_toolbar_numbered)).check(matches(not(isSelected())))
+        onView(withContentDescription("blockMenu")).inRoot(RootMatchers.isPlatformPopup()).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_menu_p)).inRoot(RootMatchers.isPlatformPopup()).check(matches(isSelected()))
+        onView(withId(R.id.btn_menu_numbered)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
 
         // Click on N
-        onView(withId(R.id.btn_cont_type_toolbar_numbered)).perform(click())
-        onView(withId(R.id.content_type_toolbar)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.btn_menu_numbered)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
 
         // Check blocks content
         onView(withRecyclerView(R.id.blockList).atPositionOnView(0, R.id.textHeaderThree))
@@ -194,13 +191,12 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
             )
 
         // H4 is selected
-        onView(withId(R.id.content_type_toolbar)).check(matches(isDisplayed()))
-        onView(withId(R.id.btn_cont_type_toolbar_h4)).check(matches(isSelected()))
-        onView(withId(R.id.btn_cont_type_toolbar_p)).check(matches(not(isSelected())))
+        onView(withContentDescription("blockMenu")).inRoot(RootMatchers.isPlatformPopup()).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_menu_h4)).inRoot(RootMatchers.isPlatformPopup()).check(matches(isSelected()))
+        onView(withId(R.id.btn_menu_p)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
 
         // Click on P
-        onView(withId(R.id.btn_cont_type_toolbar_p)).perform(click())
-        onView(withId(R.id.content_type_toolbar)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.btn_menu_p)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
 
         // Check blocks content
         onView(withRecyclerView(R.id.blockList).atPositionOnView(0, R.id.textHeaderThree))

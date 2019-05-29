@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.core_utils.UIExtensions
 import com.agileburo.anytype.core_utils.toast
@@ -104,7 +103,6 @@ abstract class EditorFragment : Fragment() {
     private fun initializeView() = with(blockList) {
         layoutManager = LinearLayoutManager(requireContext())
         adapter = blockAdapter
-        addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
     }
     
     override fun onDestroyView() {

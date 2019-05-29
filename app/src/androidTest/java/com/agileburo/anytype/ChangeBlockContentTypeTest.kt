@@ -34,7 +34,7 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
             )
         onView(withContentDescription("blockMenu")).inRoot(RootMatchers.isPlatformPopup()).check(matches(isDisplayed()))
         onView(withId(R.id.btn_menu_p)).inRoot(RootMatchers.isPlatformPopup()).check(matches(isSelected()))
-        onView(withId(R.id.btn_menu_h1)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
+        onView(withId(R.id.btn_menu_h2)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
 
         onView(withId(R.id.btn_menu_bullet)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
 
@@ -63,7 +63,7 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
             )
         onView(withContentDescription("blockMenu")).inRoot(RootMatchers.isPlatformPopup()).check(matches(isDisplayed()))
         onView(withId(R.id.btn_menu_p)).inRoot(RootMatchers.isPlatformPopup()).check(matches(isSelected()))
-        onView(withId(R.id.btn_menu_h1)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
+        onView(withId(R.id.btn_menu_h2)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
     }
 
     @Test
@@ -78,7 +78,7 @@ class ChangeBlockContentTypeTest : BaseNavigationTest() {
             )
         onView(withContentDescription("blockMenu")).inRoot(RootMatchers.isPlatformPopup()).check(matches(isDisplayed()))
         onView(withId(R.id.btn_menu_h4)).inRoot(RootMatchers.isPlatformPopup()).check(matches(isSelected()))
-        onView(withId(R.id.btn_menu_h1)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
+        onView(withId(R.id.btn_menu_h2)).inRoot(RootMatchers.isPlatformPopup()).check(matches(not(isSelected())))
     }
 
     @Test

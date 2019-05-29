@@ -1,6 +1,15 @@
 {
   "blocks": [
     {
+      "id": "7a5eff62-b326-5720-bc20-14aae174cde7",
+      "parentId": "",
+      "type": 3,
+      "contentType": 3,
+      "content": {"text":"Разработка AnyType","marks":[]},
+      "width": 0,
+      "children": []
+    },
+    {
       "id": "b532-55e1-92ba-2b2fc4afgdf237e",
       "parentId": "",
       "type": 3,

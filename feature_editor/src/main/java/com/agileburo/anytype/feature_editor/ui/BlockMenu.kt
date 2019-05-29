@@ -22,6 +22,8 @@ sealed class BlockMenuAction{
     data class DuplicateAction(val id: String): BlockMenuAction()
 }
 
+const val UNDEFINED_BUTTON = -1
+
 class BlockMenu(
     private val context: Context,
     private val block: BlockView,
@@ -44,10 +46,6 @@ class BlockMenu(
     private fun setClicks() {
         contentView.findViewById<View>(R.id.btn_menu_p)?.setOnClickListener {
             menuItemClick.invoke(BlockMenuAction.ContentTypeAction(block.id, ContentType.P))
-            dismiss()
-        }
-        contentView.findViewById<View>(R.id.btn_menu_h1)?.setOnClickListener {
-            menuItemClick.invoke(BlockMenuAction.ContentTypeAction(block.id, ContentType.H1))
             dismiss()
         }
         contentView.findViewById<View>(R.id.btn_menu_h2)?.setOnClickListener {
@@ -103,7 +101,7 @@ class BlockMenu(
             is BlockView.ParagraphView -> R.id.btn_menu_p
             is BlockView.HeaderView -> {
                 when (block.type) {
-                    BlockView.HeaderView.HeaderType.ONE -> R.id.btn_menu_h1
+                    BlockView.HeaderView.HeaderType.ONE -> UNDEFINED_BUTTON
                     BlockView.HeaderView.HeaderType.TWO -> R.id.btn_menu_h2
                     BlockView.HeaderView.HeaderType.THREE -> R.id.btn_menu_h3
                     BlockView.HeaderView.HeaderType.FOUR -> R.id.btn_menu_h4

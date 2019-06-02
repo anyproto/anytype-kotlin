@@ -1,5 +1,6 @@
 package com.agileburo.anytype.feature_editor
 
+import com.agileburo.anytype.feature_editor.domain.Content
 import com.agileburo.anytype.feature_editor.domain.ContentParam
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.factory.BlockFactory
@@ -56,7 +57,7 @@ class NumberedListMechanicsTest {
             assert(size == 2)
             assert(first() == blocks.first())
             assert(last().contentType == ContentType.NumberedList)
-            assert(last().content.param.number == 1)
+            assert((last().content as Content.Text).param.number == 1)
         }
 
     }
@@ -86,7 +87,7 @@ class NumberedListMechanicsTest {
             assert(size == 2)
             assert(first() == blocks.first())
             assert(last().contentType == ContentType.NumberedList)
-            assert(last().content.param.number == 2)
+            assert((last().content as Content.Text).param.number == 2)
         }
 
     }
@@ -119,11 +120,11 @@ class NumberedListMechanicsTest {
         result.apply {
             assert(size == 3)
             assert(get(0).contentType == ContentType.NumberedList)
-            assert(get(0).content.param.number == 1)
+            assert((get(0).content as Content.Text).param.number == 1)
             assert(get(1).contentType == ContentType.NumberedList)
-            assert(get(1).content.param.number == 2)
+            assert((get(1).content as Content.Text).param.number == 2)
             assert(get(2).contentType == ContentType.NumberedList)
-            assert(get(2).content.param.number == 3)
+            assert((get(2).content as Content.Text).param.number == 3)
         }
     }
 
@@ -158,10 +159,10 @@ class NumberedListMechanicsTest {
         result.apply {
             assert(size == 3)
             assert(get(0).contentType == ContentType.NumberedList)
-            assert(get(0).content.param.number == 1)
+            assert((get(0).content as Content.Text).param.number == 1)
             assert(get(1).contentType == ContentType.P)
             assert(get(2).contentType == ContentType.NumberedList)
-            assert(get(2).content.param.number == 1)
+            assert((get(2).content as Content.Text).param.number == 1)
         }
 
     }
@@ -199,13 +200,13 @@ class NumberedListMechanicsTest {
         result.apply {
             assertEquals(size, 4)
             assertEquals(get(0).contentType, ContentType.P)
-            assertEquals(get(0).content.param.number, 0)
+            assertEquals((get(0).content as Content.Text).param.number, 0)
             assertEquals(get(1).contentType, ContentType.NumberedList)
-            assertEquals(get(1).content.param.number, 1)
+            assertEquals((get(1).content as Content.Text).param.number, 1)
             assertEquals(get(2).contentType, ContentType.NumberedList)
-            assertEquals(get(2).content.param.number, 2)
+            assertEquals((get(2).content as Content.Text).param.number, 2)
             assertEquals(get(3).contentType, ContentType.NumberedList)
-            assertEquals(get(3).content.param.number, 3)
+            assertEquals((get(3).content as Content.Text).param.number, 3)
         }
 
     }

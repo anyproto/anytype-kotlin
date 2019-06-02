@@ -56,6 +56,10 @@ dependencies {
     implementation applicationDependencies.gson
     implementation applicationDependencies.betterLinkMovement
 
+    implementation applicationDependencies.glide
+
+    kapt applicationDependencies.glideCompiler
+
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.mockito
 

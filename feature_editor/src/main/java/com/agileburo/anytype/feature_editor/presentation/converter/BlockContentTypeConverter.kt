@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_editor.presentation.converter
 
 import com.agileburo.anytype.feature_editor.domain.Block
+import com.agileburo.anytype.feature_editor.domain.Content
 import com.agileburo.anytype.feature_editor.domain.ContentParam
 import com.agileburo.anytype.feature_editor.domain.ContentType
 
@@ -33,7 +34,7 @@ class BlockContentTypeConverterImpl :
         setOf(
             ContentType.P, ContentType.Code, ContentType.H1, ContentType.H2,
             ContentType.H3, ContentType.NumberedList, ContentType.UL, ContentType.Quote,
-            ContentType.Toggle, ContentType.Check, ContentType.H4
+            ContentType.Toggle, ContentType.Check, ContentType.H4, ContentType.None
         )
 
     //Если вдруг появятся недопустимые варианты для конвертации, добавлять можно здесь
@@ -45,19 +46,15 @@ class BlockContentTypeConverterImpl :
         }
 
     override fun convert(block: Block, type: ContentType): Block {
-        return when(type) {
+        return when (type) {
             ContentType.NumberedList -> {
                 block.copy(
                     contentType = type,
-                    content = block.content.copy(
-                        param = ContentParam.numberedList()
-                    )
+                    content = (block.content as Content.Text).copy(param = ContentParam.numberedList())
                 )
             }
             else -> {
-                block.copy(
-                    contentType = type
-                )
+                block.copy(contentType = type)
             }
         }
     }
@@ -67,8 +64,8 @@ class BlockContentTypeConverterImpl :
         if (target.contentType == targetType)
             return blocks
         else
-            when(targetType) {
-                
+            when (targetType) {
+
                 ContentType.NumberedList -> {
 
                     val result = mutableListOf<Block>()
@@ -77,7 +74,7 @@ class BlockContentTypeConverterImpl :
                         if (block.id == target.id) {
                             val item = block.copy(
                                 contentType = targetType,
-                                content = block.content.copy(
+                                content = (block.content as Content.Text).copy(
                                     param = ContentParam.numberedList()
                                 )
                             )
@@ -86,10 +83,10 @@ class BlockContentTypeConverterImpl :
                             result.add(block)
                         }
                     }
-                    
+
                     return normalizeNumbers(result)
                 }
-                
+
                 else -> {
 
                     val result = blocks.toMutableList().also { result ->
@@ -104,7 +101,7 @@ class BlockContentTypeConverterImpl :
             }
     }
 
-    override fun normalizeNumbers(blocks : List<Block>) : List<Block> {
+    override fun normalizeNumbers(blocks: List<Block>): List<Block> {
 
         if (blocks.isEmpty())
             return emptyList()
@@ -139,6 +136,5 @@ class BlockContentTypeConverterImpl :
         return result
 
     }
-
 
 }

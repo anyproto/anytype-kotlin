@@ -1,5 +1,7 @@
 package com.agileburo.anytype.feature_editor.data
 
+import com.google.gson.JsonElement
+
 /**
  * Created by Konstantin Ivanov
  * email :  ki@agileburo.com
@@ -8,7 +10,8 @@ package com.agileburo.anytype.feature_editor.data
 data class BlockModel(
     val id: String,
     val parentId: String = "",
-    val content: ContentModel = ContentModel(),
+    val content: JsonElement,
     val contentType: Int,
+    val type: Int,
     val children: List<BlockModel>
 )

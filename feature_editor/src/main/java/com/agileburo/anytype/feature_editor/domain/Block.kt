@@ -19,6 +19,7 @@ sealed class BlockType {
 }
 
 sealed class ContentType {
+    object None : ContentType()
     object P : ContentType()
     object Code : ContentType()
     object H1 : ContentType()
@@ -37,58 +38,15 @@ data class Block(
     val parentId: String,
     var contentType: ContentType,
     val blockType: BlockType,
-    val content: Content.Text
+    val content: Content
 ) {
 
-    fun setNumber(number : Int) {
-        content.param.number = number
+    fun setNumber(number: Int) {
+        if (content is Content.Text)
+            content.param.number = number
+        else
+            throw IllegalStateException("Could not set number because content was of type: ${content.javaClass.simpleName}")
     }
+
 
 }
-
-fun Int.toContentType(): ContentType =
-    when (this) {
-        1 -> ContentType.P
-        2 -> ContentType.Code
-        3 -> ContentType.H1
-        4 -> ContentType.H2
-        5 -> ContentType.H3
-        6 -> ContentType.NumberedList
-        7 -> ContentType.UL
-        8 -> ContentType.Quote
-        9 -> ContentType.Toggle
-        10 -> ContentType.Check
-        11 -> ContentType.H4
-        else -> ContentType.H1
-    }
-
-fun ContentType.toNumericalCode(): Int {
-    return when (this) {
-        ContentType.P -> 1
-        ContentType.Code -> 2
-        ContentType.H1 -> 3
-        ContentType.H2 -> 4
-        ContentType.Quote -> 8
-        ContentType.Check -> 10
-        ContentType.H3 -> 5
-        ContentType.H4 -> 11
-        ContentType.UL -> 7
-        ContentType.NumberedList -> 6
-        else -> TODO()
-    }
-}
-
-fun Int.toBlockType(): BlockType =
-    when (this) {
-        1 -> BlockType.HrGrid
-        2 -> BlockType.VrGrid
-        3 -> BlockType.Editable
-        4 -> BlockType.Divider
-        5 -> BlockType.Video
-        6 -> BlockType.Image
-        7 -> BlockType.Page
-        8 -> BlockType.NewPage
-        9 -> BlockType.BookMark
-        10 -> BlockType.File
-        else -> BlockType.Editable
-    }

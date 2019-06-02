@@ -47,16 +47,17 @@ class BlockModelMapperTest {
     @Test
     fun testShouldBeTheSameMarks() {
         val block = blockMapper.mapToModel(blockView)
+        val content = block.content as Content.Text
 
-        assertEquals(4, block.content.marks.size)
-        assertEquals(3, block.content.marks[0].end)
-        assertEquals(BOLD, block.content.marks[0].type.name)
-        assertEquals(24, block.content.marks[1].end)
-        assertEquals(BOLD, block.content.marks[1].type.name)
-        assertEquals(12, block.content.marks[2].start)
-        assertEquals(ITALIC, block.content.marks[2].type.name)
-        assertEquals(33, block.content.marks[3].end)
-        assertEquals(STRIKE, block.content.marks[3].type.name)
+        assertEquals(4, content.marks.size)
+        assertEquals(3, content.marks[0].end)
+        assertEquals(BOLD, content.marks[0].type.name)
+        assertEquals(24, content.marks[1].end)
+        assertEquals(BOLD, content.marks[1].type.name)
+        assertEquals(12, content.marks[2].start)
+        assertEquals(ITALIC, content.marks[2].type.name)
+        assertEquals(33, content.marks[3].end)
+        assertEquals(STRIKE, content.marks[3].type.name)
     }
 
     @Test
@@ -68,8 +69,9 @@ class BlockModelMapperTest {
         )
 
         val block = blockMapper.mapToModel(view)
+        val content = block.content as Content.Text
 
-        assertEquals(view.text.toString(), block.content.text)
+        assertEquals(view.text.toString(), content.text)
         assertEquals(view.id, view.id)
         assertEquals(block.blockType, BlockType.Editable)
         assertEquals(block.contentType, ContentType.P)
@@ -84,8 +86,9 @@ class BlockModelMapperTest {
         )
 
         val block = blockMapper.mapToModel(view)
+        val content = block.content as Content.Text
 
-        assertEquals(view.text.toString(), block.content.text)
+        assertEquals(view.text.toString(), content.text)
         assertEquals(view.id, view.id)
         assertEquals(block.blockType, BlockType.Editable)
         assertEquals(block.contentType, ContentType.UL)
@@ -100,8 +103,9 @@ class BlockModelMapperTest {
         )
 
         val block = blockMapper.mapToModel(view)
+        val content = block.content as Content.Text
 
-        assertEquals(view.text.toString(), block.content.text)
+        assertEquals(view.text.toString(), content.text)
         assertEquals(view.id, view.id)
         assertEquals(block.blockType, BlockType.Editable)
         assertEquals(block.contentType, ContentType.Quote)
@@ -117,12 +121,13 @@ class BlockModelMapperTest {
         )
 
         val block = blockMapper.mapToModel(view)
+        val content = block.content as Content.Text
 
-        assertEquals(view.text.toString(), block.content.text)
+        assertEquals(view.text.toString(), content.text)
         assertEquals(view.id, view.id)
         assertEquals(block.blockType, BlockType.Editable)
         assertEquals(block.contentType, ContentType.Check)
-        assertEquals(block.content.param.checked, view.isChecked)
+        assertEquals(content.param.checked, view.isChecked)
     }
 
     @Test
@@ -135,12 +140,13 @@ class BlockModelMapperTest {
         )
 
         val block = blockMapper.mapToModel(view)
+        val content = block.content as Content.Text
 
-        assertEquals(view.text.toString(), block.content.text)
+        assertEquals(view.text.toString(), content.text)
         assertEquals(view.id, view.id)
         assertEquals(block.blockType, BlockType.Editable)
         assertEquals(block.contentType, ContentType.NumberedList)
-        assertEquals(block.content.param.number, view.number)
+        assertEquals(content.param.number, view.number)
     }
 
     @Test
@@ -152,8 +158,9 @@ class BlockModelMapperTest {
         )
 
         val block = blockMapper.mapToModel(view)
+        val content = block.content as Content.Text
 
-        assertEquals(view.text.toString(), block.content.text)
+        assertEquals(view.text.toString(), content.text)
         assertEquals(view.id, view.id)
         assertEquals(block.blockType, BlockType.Editable)
         assertEquals(block.contentType, ContentType.Code)
@@ -168,9 +175,12 @@ class BlockModelMapperTest {
             type = BlockView.HeaderView.HeaderType.ONE
         )
 
-        val headerOneBlock = blockMapper.mapToModel(headerOneView)
 
-        assertEquals(headerOneView.text.toString(), headerOneBlock.content.text)
+        val headerOneBlock = blockMapper.mapToModel(headerOneView)
+        val content = headerOneBlock.content as Content.Text
+
+
+        assertEquals(headerOneView.text.toString(), content.text)
         assertEquals(headerOneView.id, headerOneView.id)
         assertEquals(headerOneBlock.blockType, BlockType.Editable)
         assertEquals(headerOneBlock.contentType, ContentType.H1)
@@ -187,8 +197,10 @@ class BlockModelMapperTest {
         )
 
         val headerTwoBlock = blockMapper.mapToModel(headerTwoView)
+        val content = headerTwoBlock.content as Content.Text
 
-        assertEquals(headerTwoView.text.toString(), headerTwoBlock.content.text)
+
+        assertEquals(headerTwoView.text.toString(), content.text)
         assertEquals(headerTwoView.id, headerTwoView.id)
         assertEquals(headerTwoBlock.blockType, BlockType.Editable)
         assertEquals(headerTwoBlock.contentType, ContentType.H2)
@@ -205,8 +217,10 @@ class BlockModelMapperTest {
         )
 
         val headerThreeBlock = blockMapper.mapToModel(headerThreeView)
+        val content = headerThreeBlock.content as Content.Text
 
-        assertEquals(headerThreeView.text.toString(), headerThreeBlock.content.text)
+
+        assertEquals(headerThreeView.text.toString(), content.text)
         assertEquals(headerThreeView.id, headerThreeView.id)
         assertEquals(headerThreeBlock.blockType, BlockType.Editable)
         assertEquals(headerThreeBlock.contentType, ContentType.H3)
@@ -223,8 +237,10 @@ class BlockModelMapperTest {
         )
 
         val headerFourBlock = blockMapper.mapToModel(headerFourView)
+        val content = headerFourBlock.content as Content.Text
 
-        assertEquals(headerFourView.text.toString(), headerFourBlock.content.text)
+
+        assertEquals(headerFourView.text.toString(), content.text)
         assertEquals(headerFourView.id, headerFourView.id)
         assertEquals(headerFourBlock.blockType, BlockType.Editable)
         assertEquals(headerFourBlock.contentType, ContentType.H4)

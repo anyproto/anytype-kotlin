@@ -25,19 +25,21 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
             is BlockType.Editable -> {
                 when (model.contentType) {
                     is ContentType.P -> {
+
                         BlockView.ParagraphView(
                             id = model.id,
                             text = fromMarksToSpannable(
-                                marks = model.content.marks,
-                                text = model.content.text
+                                marks = (model.content as Content.Text).marks,
+                                text = (model.content as Content.Text).text
                             )
                         )
+
                     }
                     is ContentType.H1 -> {
                         BlockView.HeaderView(
                             id = model.id,
                             text = fromMarksToSpannable(
-                                marks = model.content.marks,
+                                marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
                             type = BlockView.HeaderView.HeaderType.ONE
@@ -47,7 +49,7 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                         BlockView.HeaderView(
                             id = model.id,
                             text = fromMarksToSpannable(
-                                marks = model.content.marks,
+                                marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
                             type = BlockView.HeaderView.HeaderType.TWO
@@ -57,7 +59,7 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                         BlockView.HeaderView(
                             id = model.id,
                             text = fromMarksToSpannable(
-                                marks = model.content.marks,
+                                marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
                             type = BlockView.HeaderView.HeaderType.THREE
@@ -67,7 +69,7 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                         BlockView.HeaderView(
                             id = model.id,
                             text = fromMarksToSpannable(
-                                marks = model.content.marks,
+                                marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
                             type = BlockView.HeaderView.HeaderType.FOUR
@@ -77,7 +79,7 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                         BlockView.QuoteView(
                             id = model.id,
                             text = fromMarksToSpannable(
-                                marks = model.content.marks,
+                                marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             )
                         )
@@ -86,7 +88,7 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                         BlockView.CodeSnippetView(
                             id = model.id,
                             text = fromMarksToSpannable(
-                                marks = model.content.marks,
+                                marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             )
                         )
@@ -95,7 +97,7 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                         BlockView.CheckboxView(
                             id = model.id,
                             text = fromMarksToSpannable(
-                                marks = model.content.marks,
+                                marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
                             isChecked = model.content.param.checked
@@ -105,7 +107,7 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                         BlockView.NumberListItemView(
                             id = model.id,
                             text = fromMarksToSpannable(
-                                marks = model.content.marks,
+                                marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
                             number = model.content.param.number
@@ -116,7 +118,7 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                         BlockView.BulletView(
                             id = model.id,
                             text = fromMarksToSpannable(
-                                marks = model.content.marks,
+                                marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             )
                         )
@@ -127,8 +129,6 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                     }
                 }
             }
-
-            /*
 
             is BlockType.Page -> {
                 BlockView.LinkToPageView(
@@ -156,7 +156,6 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                     url = (model.content as Content.Picture).url
                 )
             }
-            */
 
             else -> TODO()
         }

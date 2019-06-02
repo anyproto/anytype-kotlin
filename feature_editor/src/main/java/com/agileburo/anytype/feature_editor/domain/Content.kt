@@ -1,22 +1,42 @@
 package com.agileburo.anytype.feature_editor.domain
 
 sealed class Content {
+
     data class Text(
         val text : String,
         val param : ContentParam,
         val marks : List<Mark>
     ) : Content()
-}
 
-data class Mark(
-    val start : Int,
-    val end : Int,
-    val type : MarkType,
-    val param: String
-) {
-    enum class MarkType {
-        BOLD, ITALIC, UNDERLINE, STRIKE_THROUGH, HYPERTEXT, CODE, UNDEFINED
+    data class Page(
+        val id : String
+    ) : Content()
+
+    data class Bookmark(
+        val type : String,
+        val url : String,
+        val title : String,
+        val description : String,
+        val site : String,
+        val icon : String,
+        val images : List<Image>
+    ) : Content() {
+
+        data class Image(val url : String)
+
     }
+
+    @Deprecated("Picture will be downloaded from device or in some other way")
+    data class Picture(
+        val url : String,
+        val type : Type
+    ) : Content() {
+        enum class Type { ORIGINAL, THUMBNAIL }
+    }
+
+    object Empty : Content()
+
+
 }
 
 data class ContentParam(val map : MutableMap<String, Any?>) {
@@ -52,5 +72,16 @@ data class ContentParam(val map : MutableMap<String, Any?>) {
                 )
             )
         }
+    }
+}
+
+data class Mark(
+    val start : Int,
+    val end : Int,
+    val type : MarkType,
+    val param: String
+) {
+    enum class MarkType {
+        BOLD, ITALIC, UNDERLINE, STRIKE_THROUGH, HYPERTEXT, CODE, UNDEFINED
     }
 }

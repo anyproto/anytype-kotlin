@@ -6,6 +6,7 @@ import com.agileburo.anytype.core_utils.di.PerFeature
 import com.agileburo.anytype.feature_editor.data.*
 import com.agileburo.anytype.feature_editor.data.datasource.BlockDataSource
 import com.agileburo.anytype.feature_editor.data.datasource.IPFSDataSourceImpl
+import com.agileburo.anytype.feature_editor.data.parser.ContentModelParser
 import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.domain.EditorInteractorImpl
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
@@ -35,8 +36,11 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideBlockConverter(contentConverter: ContentConverter): BlockConverter =
-        BlockConverterImpl(contentConverter = contentConverter)
+    fun provideBlockConverter(
+        contentConverter: ContentConverter,
+        contentModelParser : ContentModelParser
+    ): BlockConverter =
+        BlockConverterImpl(contentConverter = contentConverter, contentModelParser = contentModelParser)
 
     @Provides
     @PerFeature
@@ -63,15 +67,23 @@ class EditorModule {
 
     @Provides
     @PerFeature
-    fun provideContentTypeConverter(): BlockContentTypeConverter =
-        BlockContentTypeConverterImpl()
-
-    @Provides
-    @PerFeature
     fun provideBlockContentConverter(markConverter: MarkConverter): ContentConverter =
         ContentConverterImpl(markConverter = markConverter)
 
     @Provides
     @PerFeature
     fun provideMarkConverter(): MarkConverter = MarkConverterImpl()
+
+    @Provides
+    @PerFeature
+    fun provideContentModelParser(gson : Gson) : ContentModelParser {
+        return ContentModelParser(gson)
+    }
+
+    @Provides
+    @PerFeature
+    fun provideContentTypeConverter(): BlockContentTypeConverter =
+        BlockContentTypeConverterImpl()
+
+
 }

@@ -146,6 +146,7 @@ abstract class EditorFragment : Fragment() {
             is ContentType.Code -> R.id.textCode
             is ContentType.UL -> R.id.textBullet
             is ContentType.NumberedList -> R.id.contentText
+            is ContentType.None -> throw IllegalStateException()
             is ContentType.Toggle -> throw UnsupportedOperationException("need implement Toggle")
         }
 

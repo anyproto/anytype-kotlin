@@ -20,6 +20,7 @@ import com.agileburo.anytype.feature_editor.presentation.model.BlockView.*
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView.HeaderView.HeaderType
 import com.agileburo.anytype.feature_editor.presentation.util.BlockViewDiffUtil
 import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
+import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bullet.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
@@ -28,8 +29,11 @@ import kotlinx.android.synthetic.main.item_block_header_four.view.*
 import kotlinx.android.synthetic.main.item_block_header_one.view.*
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
+import kotlinx.android.synthetic.main.item_block_image.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
+import com.bumptech.glide.Glide
+
 
 class EditorAdapter(
     val blocks: MutableList<BlockView>,
@@ -121,8 +125,23 @@ class EditorAdapter(
                 val view = inflater.inflate(R.layout.item_number_list_item, parent, false)
                 ViewHolder.NumberedHolder(view, MyEditorTextWatcher(blockContentListener))
             }
-
-            else -> TODO()
+            HOLDER_PAGE -> {
+                val view = inflater.inflate(R.layout.item_block_link_to_page, parent, false)
+                ViewHolder.LinkToPageHolder(view)
+            }
+            HOLDER_BOOKMARK -> {
+                val view = inflater.inflate(R.layout.item_block_bookmark, parent, false)
+                ViewHolder.BookmarkHolder(view)
+            }
+            HOLDER_DIVIDER -> {
+                val view = inflater.inflate(R.layout.item_block_divider, parent, false)
+                ViewHolder.DividerHolder(view)
+            }
+            HOLDER_PICTURE -> {
+                val view = inflater.inflate(R.layout.item_block_image, parent, false)
+                ViewHolder.PictureHolder(view)
+            }
+            else -> throw IllegalStateException("Unknown view type: $viewType")
         }
     }
 
@@ -246,6 +265,13 @@ class EditorAdapter(
                     focusListener = focusListener
                 )
             }
+            is ViewHolder.BookmarkHolder -> {
+                holder.bind(blocks[position] as BookmarkView)
+            }
+            is ViewHolder.PictureHolder -> {
+                holder.bind(blocks[position] as PictureView)
+            }
+
         }
     }
 
@@ -599,6 +625,40 @@ class EditorAdapter(
                     )
                 }
             }
+        }
+
+        class LinkToPageHolder(itemView: View) : ViewHolder(itemView)
+
+        class DividerHolder(itemView: View) : ViewHolder(itemView)
+
+        class PictureHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(view : PictureView) {
+                Glide.with(itemView)
+                    .load(view.url)
+                    .centerCrop()
+                    .into(itemView.picture)
+            }
+
+        }
+
+        class BookmarkHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(
+                view : BookmarkView
+            ) {
+                with(itemView) {
+                    title.text = view.title
+                    description.text = view.description
+                    url.text = view.url
+
+                    Glide.with(itemView)
+                        .load(view.image)
+                        .centerCrop()
+                        .into(image)
+                }
+            }
+
         }
 
         fun showBlockMenu(

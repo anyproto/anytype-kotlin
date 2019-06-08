@@ -1,16 +1,21 @@
 package com.agileburo.anytype.feature_editor.ui
 
 import android.graphics.Typeface
+import android.text.Editable
 import android.text.SpannableStringBuilder
-import android.text.style.ClickableSpan
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
+import android.text.style.URLSpan
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
 import com.agileburo.anytype.feature_editor.R
 
-class TextStyleCallback(private val editText: ClearFocusEditText) : ActionMode.Callback {
+class TextStyleCallback(
+    private val editText: ClearFocusEditText,
+    private val linkClick: (EditText, Int, Int) -> Unit
+) : ActionMode.Callback {
 
     override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
         val start = editText.selectionStart
@@ -58,6 +63,18 @@ class TextStyleCallback(private val editText: ClearFocusEditText) : ActionMode.C
                 }
                 return true
             }
+            R.id.linkInactive -> {
+                linkClick.invoke(editText, start, end)
+                return true
+            }
+            R.id.linkActive -> {
+                removeUrlSpanFromSubstring(
+                    start = start, end = end, spannable = ssb
+                )?.let {
+                    editText.text = it
+                }
+                return true
+            }
         }
         return false
     }
@@ -94,11 +111,13 @@ class TextStyleCallback(private val editText: ClearFocusEditText) : ActionMode.C
                     )
                 }
 
-                if (span is ClickableSpan) {
-                    //TODO add link span logic
+                if (span is URLSpan) {
+                    changeMenuItemsVisibility(
+                        menu = menu,
+                        inactiveId = R.id.linkInactive,
+                        activeId = R.id.linkActive
+                    )
                 }
-
-
             }
             return true
         }
@@ -164,4 +183,24 @@ class TextStyleCallback(private val editText: ClearFocusEditText) : ActionMode.C
         return null
     }
 
+    private fun removeUrlSpanFromSubstring(
+        start: Int,
+        end: Int, spannable: SpannableStringBuilder
+    ): SpannableStringBuilder? {
+        spannable.getSpans(start, end, URLSpan::class.java)?.forEach { span ->
+            return SpannableStringBuilder().apply {
+                if (start > 0) append(spannable.subSequence(0, start))
+
+                append(
+                    SpannableStringBuilder(spannable, start, end)
+                        .apply { removeSpan(span) }
+                )
+
+                if (end < spannable.length) {
+                    append(spannable.subSequence(end, spannable.length))
+                }
+            }
+        }
+        return null
+    }
 }

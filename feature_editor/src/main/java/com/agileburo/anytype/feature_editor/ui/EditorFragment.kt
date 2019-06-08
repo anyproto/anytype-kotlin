@@ -1,13 +1,10 @@
 package com.agileburo.anytype.feature_editor.ui
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +20,6 @@ import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModelFac
 import com.agileburo.anytype.feature_editor.presentation.mapper.BlockViewMapper
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_editor.*
-import timber.log.Timber
 import java.lang.UnsupportedOperationException
 import javax.inject.Inject
 
@@ -46,10 +42,6 @@ abstract class EditorFragment : Fragment() {
             blocks = mutableListOf(),
             blockContentListener = { viewModel.onBlockChanged(viewToModelMapper.mapToModel(it)) },
             menuListener = { viewModel.onBlockMenuAction(it) },
-            linksListener = {
-                chipLinks.text = it
-                chipLinks.visibility = View.VISIBLE
-            },
             focusListener = { viewModel.onBlockFocus(it) }
         ).apply {
             //После добавления helper ломается выделение текста в блоках
@@ -81,7 +73,6 @@ abstract class EditorFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.observeState()
-            .doOnNext { Timber.d("New view state $it") }
             .subscribe(this::handleState)
             .disposedBy(disposable)
     }
@@ -89,15 +80,6 @@ abstract class EditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
-        chipLinks.setOnClickListener {
-            activity?.let { activity ->
-                val browserIntent =
-                    Intent(Intent.ACTION_VIEW, Uri.parse((it as? TextView)?.text.toString()))
-                if (browserIntent.resolveActivity(activity.packageManager) != null) {
-                    startActivity(browserIntent)
-                }
-            }
-        }
     }
 
     private fun initializeView() = with(blockList) {
@@ -123,7 +105,6 @@ abstract class EditorFragment : Fragment() {
         is EditorState.Archive -> {
         }
         is EditorState.Error -> onError(state.msg)
-        is EditorState.HideLinkChip -> chipLinks.visibility = View.GONE
         is EditorState.ClearBlockFocus -> clearBlockFocus(state.position, state.contentType)
         is EditorState.HideKeyboard -> UIExtensions.hideSoftKeyBoard(requireActivity(), blockList)
     }

@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
+import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +40,6 @@ class EditorAdapter(
     val blocks: MutableList<BlockView>,
     private val blockContentListener: (BlockView) -> Unit,
     private val menuListener: (BlockMenuAction) -> Unit,
-    private val linksListener: (String) -> Unit,
     private val focusListener: (Int) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -182,7 +182,6 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    linksListener = linksListener,
                     focusListener = focusListener
                 )
             }
@@ -190,6 +189,7 @@ class EditorAdapter(
                 holder.editTextWatcher.position = holder.adapterPosition
                 holder.bind(
                     block = blocks[position],
+                    menuListener = menuListener,
                     focusListener = focusListener
                 )
             }
@@ -198,7 +198,6 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    linksListener = linksListener,
                     focusListener = focusListener
                 )
             }
@@ -207,7 +206,6 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    linksListener = linksListener,
                     focusListener = focusListener
                 )
             }
@@ -216,7 +214,6 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    linksListener = linksListener,
                     focusListener = focusListener
                 )
             }
@@ -225,7 +222,6 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    linksListener = linksListener,
                     focusListener = focusListener
                 )
             }
@@ -234,7 +230,6 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    linksListener = linksListener,
                     focusListener = focusListener
                 )
             }
@@ -243,7 +238,6 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    linksListener = linksListener,
                     focusListener = focusListener
                 )
             }
@@ -252,7 +246,6 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    linksListener = linksListener,
                     focusListener = focusListener
                 )
             }
@@ -261,7 +254,6 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    linksListener = linksListener,
                     focusListener = focusListener
                 )
             }
@@ -300,17 +292,27 @@ class EditorAdapter(
             ViewHolder(itemView) {
 
             init {
-                itemView.textEditable.addTextChangedListener(editTextWatcher)
+                itemView.textEditable.apply {
+                    addTextChangedListener(editTextWatcher)
+                    movementMethod = LinkMovementMethod.getInstance()
+                }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
                 itemView.textEditable.customSelectionActionModeCallback =
-                    TextStyleCallback(itemView.textEditable)
+                    TextStyleCallback(itemView.textEditable) { editText, start, end ->
+                        showHyperlinkMenu(
+                            context = itemView.context,
+                            parent = itemView.textEditable,
+                            editText = editText,
+                            start = start,
+                            end = end
+                        )
+                    }
 
                 if (block is BlockView.Editable)
                     itemView.textEditable.setText(block.text)
@@ -334,11 +336,14 @@ class EditorAdapter(
             ViewHolder(itemView) {
 
             init {
-                itemView.textHeaderOne.addTextChangedListener(editTextWatcher)
+                itemView.textHeaderOne.apply {
+                    addTextChangedListener(editTextWatcher)
+                }
             }
 
             fun bind(
                 block: BlockView,
+                menuListener: (BlockMenuAction) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
@@ -356,13 +361,14 @@ class EditorAdapter(
             ViewHolder(itemView) {
 
             init {
-                itemView.textHeaderTwo.addTextChangedListener(editTextWatcher)
+                itemView.textHeaderTwo.apply {
+                    addTextChangedListener(editTextWatcher)
+                }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
@@ -388,13 +394,14 @@ class EditorAdapter(
             ViewHolder(itemView) {
 
             init {
-                itemView.textHeaderThree.addTextChangedListener(editTextWatcher)
+                itemView.textHeaderThree.apply {
+                    addTextChangedListener(editTextWatcher)
+                }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
@@ -420,13 +427,14 @@ class EditorAdapter(
             ViewHolder(itemView) {
 
             init {
-                itemView.textHeaderFour.addTextChangedListener(editTextWatcher)
+                itemView.textHeaderFour.apply {
+                    addTextChangedListener(editTextWatcher)
+                }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
@@ -453,18 +461,29 @@ class EditorAdapter(
             ViewHolder(itemView) {
 
             init {
-                itemView.textQuote.addTextChangedListener(editTextWatcher)
+                itemView.textQuote.apply {
+                    addTextChangedListener(editTextWatcher)
+                    movementMethod = LinkMovementMethod.getInstance()
+                }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
                 itemView.textQuote.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textQuote)
+                    { editText, start, end ->
+                        showHyperlinkMenu(
+                            context = itemView.context,
+                            editText = editText,
+                            start = start,
+                            end = end,
+                            parent = itemView.textEditable
+                        )
+                    }
 
                 if (block is BlockView.Editable) {
                     itemView.textQuote.setText(block.text)
@@ -489,17 +508,28 @@ class EditorAdapter(
             ViewHolder(itemView) {
 
             init {
-                itemView.textCheckBox.addTextChangedListener(editTextWatcher)
+                itemView.textCheckBox.apply {
+                    addTextChangedListener(editTextWatcher)
+                    movementMethod = LinkMovementMethod.getInstance()
+                }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
                 itemView.textCheckBox.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textCheckBox)
+                    { editText, start, end ->
+                        showHyperlinkMenu(
+                            context = itemView.context,
+                            editText = editText,
+                            start = start,
+                            end = end,
+                            parent = itemView.textEditable
+                        )
+                    }
 
                 if (block is BlockView.Editable)
                     itemView.textCheckBox.setText(block.text)
@@ -523,13 +553,14 @@ class EditorAdapter(
             ViewHolder(itemView) {
 
             init {
-                itemView.textCode.addTextChangedListener(editTextWatcher)
+                itemView.textCode.apply {
+                    addTextChangedListener(editTextWatcher)
+                }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
@@ -555,17 +586,28 @@ class EditorAdapter(
             ViewHolder(itemView) {
 
             init {
-                itemView.textBullet.addTextChangedListener(editTextWatcher)
+                itemView.textBullet.apply {
+                    addTextChangedListener(editTextWatcher)
+                    movementMethod = LinkMovementMethod.getInstance()
+                }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
                 itemView.textBullet.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textBullet)
+                    { editText, start, end ->
+                        showHyperlinkMenu(
+                            context = itemView.context,
+                            editText = editText,
+                            start = start,
+                            end = end,
+                            parent = itemView.textEditable
+                        )
+                    }
 
                 if (block is BlockView.Editable) itemView.textBullet.setText(
                     SpannableString(block.text)
@@ -591,18 +633,29 @@ class EditorAdapter(
             ViewHolder(itemView) {
 
             init {
-                itemView.contentText.addTextChangedListener(editTextWatcher)
+                itemView.contentText.apply {
+                    addTextChangedListener(editTextWatcher)
+                    movementMethod = LinkMovementMethod.getInstance()
+                }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                linksListener: (String) -> Unit,
                 focusListener: (Int) -> Unit
             ) {
                 with(itemView) {
 
                     contentText.customSelectionActionModeCallback = TextStyleCallback(contentText)
+                    { editText, start, end ->
+                        showHyperlinkMenu(
+                            context = itemView.context,
+                            editText = editText,
+                            start = start,
+                            end = end,
+                            parent = itemView.textEditable
+                        )
+                    }
 
                     if (block is BlockView.NumberListItemView)
                         positionText.text = "${block.number}."
@@ -659,6 +712,20 @@ class EditorAdapter(
                 }
             }
 
+        }
+
+        fun showHyperlinkMenu(
+            context: Context,
+            parent: View,
+            editText: EditText,
+            start: Int,
+            end: Int
+        ) {
+            val menu = HyperLinkMenu(
+                context = context, editText = editText,
+                start = start, end = end
+            )
+            menu.showAtLocation(parent, Gravity.BOTTOM, 0, 0)
         }
 
         fun showBlockMenu(

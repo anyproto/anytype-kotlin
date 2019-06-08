@@ -4,6 +4,7 @@ import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
+import android.text.style.URLSpan
 import com.agileburo.anytype.feature_editor.domain.*
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView.HeaderView.*
@@ -147,6 +148,13 @@ class BlockModelMapper : ModelMapper<BlockView, Block> {
             val end = text.getSpanEnd(it)
             if (start <= end) {
                 marks.add(Mark(start = start, end = end, param = "", type = Mark.MarkType.STRIKE_THROUGH))
+            }
+        }
+        text.getSpans(0, text.length, URLSpan::class.java).forEach {
+            val start = text.getSpanStart(it)
+            val end = text.getSpanEnd(it)
+            if (start <= end) {
+                marks.add(Mark(start = start, end = end, param = it.url, type = Mark.MarkType.HYPERTEXT))
             }
         }
         return marks

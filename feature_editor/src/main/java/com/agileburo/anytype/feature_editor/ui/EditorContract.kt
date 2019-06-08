@@ -32,7 +32,6 @@ sealed class EditBlockAction {
 sealed class EditorState {
     data class ClearBlockFocus(val position: Int, val contentType: ContentType) : EditorState()
     object HideKeyboard : EditorState()
-    object HideLinkChip : EditorState()
     data class Result(val blocks: List<Block>) : EditorState()
     data class Swap(val request: SwapRequest) : EditorState()
     data class Updates(val blocks : List<Block>) : EditorState()

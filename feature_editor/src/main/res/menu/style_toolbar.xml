@@ -39,6 +39,19 @@
         android:icon="@drawable/ic_strike_active"
         android:title=""
         android:visible="false"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/linkActive"
+        android:icon="@drawable/ic_link_active"
+        android:title=""
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/linkInactive"
+        android:icon="@drawable/ic_link_inactive"
+        android:title=""
+        app:showAsAction="ifRoom" />
 
 </menu>

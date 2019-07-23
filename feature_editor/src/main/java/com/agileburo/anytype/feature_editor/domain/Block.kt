@@ -44,8 +44,6 @@ data class Block(
     fun setNumber(number: Int) {
         if (content is Content.Text)
             content.param.number = number
-        else
-            throw IllegalStateException("Could not set number because content was of type: ${content.javaClass.simpleName}")
     }
 
 

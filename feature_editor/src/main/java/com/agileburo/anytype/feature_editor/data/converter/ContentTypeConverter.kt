@@ -1,36 +1,37 @@
 package com.agileburo.anytype.feature_editor.data.converter
 
 import com.agileburo.anytype.feature_editor.domain.ContentType
+import com.agileburo.anytype.feature_editor.domain.ContentTypes
 
 fun Int.toContentType(): ContentType =
     when (this) {
-        0 -> ContentType.None
-        1 -> ContentType.P
-        2 -> ContentType.Code
-        3 -> ContentType.H1
-        4 -> ContentType.H2
-        5 -> ContentType.H3
-        6 -> ContentType.NumberedList
-        7 -> ContentType.UL
-        8 -> ContentType.Quote
-        9 -> ContentType.Toggle
-        10 -> ContentType.Check
-        11 -> ContentType.H4
+        ContentTypes.UNDEFINED -> ContentType.None
+        ContentTypes.PARAGRAPH -> ContentType.P
+        ContentTypes.CODE_SNIPPET -> ContentType.Code
+        ContentTypes.HEADER_ONE -> ContentType.H1
+        ContentTypes.HEADER_TWO -> ContentType.H2
+        ContentTypes.HEADER_THREE -> ContentType.H3
+        ContentTypes.NUMBERED_LIST -> ContentType.NumberedList
+        ContentTypes.BULLET_LIST_ITEM -> ContentType.UL
+        ContentTypes.QUOTE -> ContentType.Quote
+        ContentTypes.TOGGLE -> ContentType.Toggle
+        ContentTypes.CHECKBOX -> ContentType.Check
+        ContentTypes.HEADER_FOUR -> ContentType.H4
         else -> throw IllegalStateException("Unexpected content type code: $this")
     }
 
 fun ContentType.toNumericalCode(): Int =
     when (this) {
-        ContentType.None -> 0
-        ContentType.P -> 1
-        ContentType.Code -> 2
-        ContentType.H1 -> 3
-        ContentType.H2 -> 4
-        ContentType.H3 -> 5
-        ContentType.NumberedList -> 6
-        ContentType.UL -> 7
-        ContentType.Quote -> 8
-        ContentType.Toggle -> 9
-        ContentType.Check -> 10
-        ContentType.H4 -> 11
+        ContentType.None -> ContentTypes.UNDEFINED
+        ContentType.P -> ContentTypes.PARAGRAPH
+        ContentType.Code -> ContentTypes.CODE_SNIPPET
+        ContentType.H1 -> ContentTypes.HEADER_ONE
+        ContentType.H2 -> ContentTypes.HEADER_TWO
+        ContentType.H3 -> ContentTypes.HEADER_THREE
+        ContentType.NumberedList -> ContentTypes.NUMBERED_LIST
+        ContentType.UL -> ContentTypes.BULLET_LIST_ITEM
+        ContentType.Quote -> ContentTypes.QUOTE
+        ContentType.Toggle -> ContentTypes.TOGGLE
+        ContentType.Check -> ContentTypes.CHECKBOX
+        ContentType.H4 -> ContentTypes.HEADER_FOUR
     }

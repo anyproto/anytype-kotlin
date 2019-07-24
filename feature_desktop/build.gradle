@@ -18,52 +18,46 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "TEST_JSON", '"marks.json"'
-        }
-
-        debug {
-            buildConfigField "String", "TEST_JSON", '"marks.json"'
         }
     }
-
-    sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] } }
 
 }
 
 dependencies {
-    implementation project(':core_utils')
-
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
-    def acceptenceTesting = rootProject.ext.acceptanceTesting
+    def acceptanceTesting = rootProject.ext.acceptanceTesting
 
-    kapt applicationDependencies.daggerCompiler
-    compileOnly applicationDependencies.javaxInject
+    implementation project(':core_utils')
+
 
     implementation applicationDependencies.kotlin
+    implementation applicationDependencies.appcompat
+
     implementation applicationDependencies.viewModel
     implementation applicationDependencies.viewModelExtensions
-    implementation applicationDependencies.appcompat
-    implementation applicationDependencies.design
+
     implementation applicationDependencies.constraintLayout
     implementation applicationDependencies.recyclerView
+    implementation applicationDependencies.design
 
     implementation applicationDependencies.rxjava2
     implementation applicationDependencies.rxRelay
     implementation applicationDependencies.rxAndroid
+
     implementation applicationDependencies.dagger
+
     implementation applicationDependencies.timber
-    implementation applicationDependencies.gson
-    implementation applicationDependencies.betterLinkMovement
 
     implementation applicationDependencies.glide
-
     kapt applicationDependencies.glideCompiler
 
+
     testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.mockito
 
-    androidTestImplementation acceptenceTesting.espressoCore
-    androidTestImplementation acceptenceTesting.androidJUnit
-    androidTestImplementation acceptenceTesting.testRules
+
+    androidTestImplementation acceptanceTesting.espressoCore
+    androidTestImplementation acceptanceTesting.testRunner
 }

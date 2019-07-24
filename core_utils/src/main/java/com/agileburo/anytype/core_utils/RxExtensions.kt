@@ -2,6 +2,8 @@ package com.agileburo.anytype.core_utils
 
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
 
@@ -32,4 +34,9 @@ class TestSchedulerProvider(private val scheduler: TestScheduler) : BaseSchedule
     override fun computation() = scheduler
     override fun ui() = scheduler
     override fun io() = scheduler
+}
+
+
+fun Disposable.disposedBy(subscriptions: CompositeDisposable) {
+    subscriptions.add(this)
 }

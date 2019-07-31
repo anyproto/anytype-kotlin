@@ -14,6 +14,7 @@ import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
+import com.agileburo.anytype.feature_editor.domain.toView
 import com.agileburo.anytype.feature_editor.presentation.mapper.BlockModelMapper
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModel
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModelFactory
@@ -40,9 +41,10 @@ abstract class EditorFragment : Fragment() {
     private val blockAdapter by lazy {
         EditorAdapter(
             blocks = mutableListOf(),
-            blockContentListener = { viewModel.onBlockChanged(viewToModelMapper.mapToModel(it)) },
-            menuListener = { viewModel.onBlockMenuAction(it) },
-            focusListener = { viewModel.onBlockFocus(it) }
+            blockContentListener = { viewModel.onBlockContentChanged(viewToModelMapper.mapToModel(it)) },
+            menuListener = viewModel::onBlockMenuAction,
+            focusListener = viewModel::onBlockFocus,
+            onExpandClick = viewModel::onExpandClicked
         ).apply {
             //После добавления helper ломается выделение текста в блоках
 //            val helper = ItemTouchHelper(
@@ -132,13 +134,13 @@ abstract class EditorFragment : Fragment() {
         }
 
     private fun setBlocks(blocks: List<Block>) =
-        blockAdapter.setBlocks(blocks.map(mapper::mapToView))
+        blockAdapter.setBlocks(blocks.toMutableList().toView())
 
     private fun updateBlock(block: Block) =
         blockAdapter.updateBlock(mapper.mapToView(block))
 
     private fun render(blocks: List<Block>) =
-        blockAdapter.update(blocks.map(mapper::mapToView))
+        blockAdapter.update(blocks.toMutableList().toView())
 
     private fun onError(msg: CharSequence) = requireContext().toast(msg)
 }

@@ -17,7 +17,7 @@ class EditorRepoImpl @Inject constructor(
 ) : EditorRepo {
 
     override fun getBlocks(): Single<List<Block>> {
-        return dataSource.getBlocks().map(this::unwrap)
+        return dataSource.getBlocks().map { it.map(blockConverter::modelTreeToDomainTree) }
     }
 
     override fun saveState(list: List<Block>) {

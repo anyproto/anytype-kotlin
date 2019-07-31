@@ -1,165 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:contentDescription="@string/menu_block">
+                      xmlns:app="http://schemas.android.com/apk/res-auto"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:contentDescription="@string/menu_block">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:orientation="horizontal"
-        android:padding="8dp">
-
-        <ImageView
-            android:id="@+id/btn_menu_p"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/editor_toolbar"
-            android:padding="8dp"
-            app:srcCompat="@drawable/ic_text_block" />
+            android:fitsSystemWindows="true"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+        <ImageView
+                android:id="@+id/btn_menu_p"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/editor_toolbar"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_text_block"/>
 
         <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/button_not_active" />
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/button_not_active"/>
 
         <ImageView
-            android:id="@+id/btn_menu_h2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/editor_toolbar"
-            android:padding="8dp"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/ic_header_2" />
+                android:id="@+id/btn_menu_h2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/editor_toolbar"
+                android:padding="8dp"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/ic_header_2"/>
 
         <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/button_not_active" />
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/button_not_active"/>
 
         <ImageView
-            android:id="@+id/btn_menu_h3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/editor_toolbar"
-            android:padding="8dp"
-            app:srcCompat="@drawable/ic_header_3" />
+                android:id="@+id/btn_menu_h3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/editor_toolbar"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_header_3"/>
 
         <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/button_not_active" />
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/button_not_active"/>
 
         <ImageView
-            android:id="@+id/btn_menu_h4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/editor_toolbar"
-            android:padding="8dp"
-            app:srcCompat="@drawable/ic_header4" />
+                android:id="@+id/btn_menu_h4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/editor_toolbar"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_header4"/>
 
         <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/button_not_active" />
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/button_not_active"/>
 
         <ImageView
-            android:id="@+id/btn_menu_quote"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/editor_toolbar"
-            android:padding="8dp"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/ic_highlighted" />
+                android:id="@+id/btn_menu_quote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/editor_toolbar"
+                android:padding="8dp"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/ic_highlighted"/>
 
         <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/button_not_active" />
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/button_not_active"/>
 
         <ImageView
-            android:id="@+id/btn_menu_bullet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/editor_toolbar"
-            android:padding="8dp"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/ic_bulleted" />
+                android:id="@+id/btn_menu_bullet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/editor_toolbar"
+                android:padding="8dp"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/ic_bulleted"/>
 
         <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/button_not_active" />
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/button_not_active"/>
 
         <ImageView
-            android:id="@+id/btn_menu_numbered"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/editor_toolbar"
-            android:padding="8dp"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/ic_numbered" />
+                android:id="@+id/btn_menu_numbered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/editor_toolbar"
+                android:padding="8dp"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/ic_numbered"/>
 
         <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/button_not_active" />
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/button_not_active"/>
 
         <ImageView
-            android:id="@+id/btn_menu_code"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/editor_toolbar"
-            android:padding="8dp"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/ic_code" />
+                android:padding="8dp"
+                android:scaleType="fitXY"
+                android:contentDescription="@string/editor_toolbar"
+                app:srcCompat="@drawable/ic_toggle"
+                android:id="@+id/btn_menu_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
         <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/button_not_active" />
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/button_not_active"/>
 
         <ImageView
-            android:id="@+id/btn_menu_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/editor_toolbar"
-            android:padding="8dp"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/ic_checkbox" />
+                android:id="@+id/btn_menu_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/editor_toolbar"
+                android:padding="8dp"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/ic_code"/>
 
         <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/button_not_active" />
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/button_not_active"/>
 
         <ImageView
-            android:id="@+id/btn_menu_duplicate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/editor_toolbar"
-            android:padding="8dp"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/ic_dublicate" />
+                android:id="@+id/btn_menu_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/editor_toolbar"
+                android:padding="8dp"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/ic_checkbox"/>
 
         <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/button_not_active" />
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/button_not_active"/>
 
         <ImageView
-            android:id="@+id/btn_menu_archive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/editor_toolbar"
-            android:padding="8dp"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/ic_trash" />
+                android:id="@+id/btn_menu_duplicate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/editor_toolbar"
+                android:padding="8dp"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/ic_dublicate"/>
+
+        <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/button_not_active"/>
+
+        <ImageView
+                android:id="@+id/btn_menu_archive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/editor_toolbar"
+                android:padding="8dp"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/ic_trash"/>
+
     </LinearLayout>
 
 </HorizontalScrollView>

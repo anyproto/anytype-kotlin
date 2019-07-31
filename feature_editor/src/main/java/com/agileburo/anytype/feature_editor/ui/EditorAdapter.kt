@@ -25,7 +25,6 @@ import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bullet.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
-import kotlinx.android.synthetic.main.item_block_editable.view.*
 import kotlinx.android.synthetic.main.item_block_header_four.view.*
 import kotlinx.android.synthetic.main.item_block_header_one.view.*
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
@@ -34,13 +33,18 @@ import kotlinx.android.synthetic.main.item_block_image.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.item_block_editable.view.btnEditable
+import kotlinx.android.synthetic.main.item_block_editable.view.textEditable
+import kotlinx.android.synthetic.main.item_block_toggle.view.*
+import kotlin.contracts.contract
 
 
 class EditorAdapter(
     val blocks: MutableList<BlockView>,
     private val blockContentListener: (BlockView) -> Unit,
     private val menuListener: (BlockMenuAction) -> Unit,
-    private val focusListener: (Int) -> Unit
+    private val focusListener: (Int) -> Unit,
+    private val onExpandClick : (BlockView) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setBlocks(items: List<BlockView>) {
@@ -141,7 +145,14 @@ class EditorAdapter(
                 val view = inflater.inflate(R.layout.item_block_image, parent, false)
                 ViewHolder.PictureHolder(view)
             }
-            else -> throw IllegalStateException("Unknown view type: $viewType")
+            HOLDER_TOGGLE -> {
+                val view = inflater.inflate(R.layout.item_block_toggle, parent, false)
+                ViewHolder.ToggleHolder(
+                    itemView = view,
+                    editTextWatcher = MyEditorTextWatcher(blockContentListener)
+                )
+            }
+            else -> throw IllegalStateException("Unknown toView type: $viewType")
         }
     }
 
@@ -169,6 +180,7 @@ class EditorAdapter(
             }
             is DividerView -> HOLDER_DIVIDER
             is PictureView -> HOLDER_PICTURE
+            is ToggleView -> HOLDER_TOGGLE
         }
 
     }
@@ -263,6 +275,14 @@ class EditorAdapter(
             is ViewHolder.PictureHolder -> {
                 holder.bind(blocks[position] as PictureView)
             }
+            is ViewHolder.ToggleHolder -> {
+                holder.editTextWatcher.position = holder.adapterPosition
+                holder.bind(
+                    view = blocks[position],
+                    onExpandClick = onExpandClick,
+                    menuListener = menuListener
+                )
+            }
 
         }
     }
@@ -288,8 +308,25 @@ class EditorAdapter(
 
     sealed class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        class ParagraphHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
-            ViewHolder(itemView) {
+        open class IndentableViewHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun applyIndent(indent : Int = 0) {
+                (itemView.layoutParams as RecyclerView.LayoutParams).apply {
+                    setMargins(
+                        (indent * itemView.context.resources.getDimension(R.dimen.indent).toInt()),
+                        this.topMargin,
+                        this.rightMargin,
+                        this.bottomMargin
+                    )
+                }
+            }
+
+        }
+
+        class ParagraphHolder(
+            itemView: View,
+            val editTextWatcher: MyEditorTextWatcher
+        ) : IndentableViewHolder(itemView) {
 
             init {
                 itemView.textEditable.apply {
@@ -303,6 +340,9 @@ class EditorAdapter(
                 menuListener: (BlockMenuAction) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
+
+                check(block is ParagraphView)
+
                 itemView.textEditable.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textEditable) { editText, start, end ->
                         showHyperlinkMenu(
@@ -314,13 +354,15 @@ class EditorAdapter(
                         )
                     }
 
-                if (block is BlockView.Editable)
-                    itemView.textEditable.setText(block.text)
+                itemView.textEditable.setText(block.text)
+
+                applyIndent(block.indent)
 
                 setFocusListener(
                     editText = itemView.textEditable,
                     focusListener = focusListener
                 )
+
                 itemView.btnEditable.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
@@ -332,8 +374,10 @@ class EditorAdapter(
             }
         }
 
-        class HeaderOneHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
-            ViewHolder(itemView) {
+        class HeaderOneHolder(
+            itemView: View,
+            val editTextWatcher: MyEditorTextWatcher
+        ) : IndentableViewHolder(itemView) {
 
             init {
                 itemView.textHeaderOne.apply {
@@ -347,8 +391,11 @@ class EditorAdapter(
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
-                if (block is BlockView.Editable)
-                    itemView.textHeaderOne.setText(block.text)
+                check(block is HeaderView)
+
+                applyIndent(block.indent)
+
+                itemView.textHeaderOne.setText(block.text)
 
                 setFocusListener(
                     editText = itemView.textHeaderOne,
@@ -357,8 +404,10 @@ class EditorAdapter(
             }
         }
 
-        class HeaderTwoHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
-            ViewHolder(itemView) {
+        class HeaderTwoHolder(
+            itemView: View,
+            val editTextWatcher: MyEditorTextWatcher
+        ) : IndentableViewHolder(itemView) {
 
             init {
                 itemView.textHeaderTwo.apply {
@@ -372,8 +421,11 @@ class EditorAdapter(
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
-                if (block is BlockView.Editable)
-                    itemView.textHeaderTwo.setText(block.text)
+                check(block is HeaderView)
+
+                applyIndent(block.indent)
+
+                itemView.textHeaderTwo.setText(block.text)
 
                 setFocusListener(
                     editText = itemView.textHeaderTwo,
@@ -390,8 +442,10 @@ class EditorAdapter(
             }
         }
 
-        class HeaderThreeHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
-            ViewHolder(itemView) {
+        class HeaderThreeHolder(
+            itemView: View,
+            val editTextWatcher: MyEditorTextWatcher
+        ) : IndentableViewHolder(itemView) {
 
             init {
                 itemView.textHeaderThree.apply {
@@ -405,13 +459,15 @@ class EditorAdapter(
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
-                if (block is BlockView.Editable)
-                    itemView.textHeaderThree.setText(block.text)
+                check(block is HeaderView)
+
+                itemView.textHeaderThree.setText(block.text)
 
                 setFocusListener(
                     editText = itemView.textHeaderThree,
                     focusListener = focusListener
                 )
+
                 itemView.btnHeaderThree.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
@@ -423,8 +479,10 @@ class EditorAdapter(
             }
         }
 
-        class HeaderFourHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
-            ViewHolder(itemView) {
+        class HeaderFourHolder(
+            itemView: View,
+            val editTextWatcher: MyEditorTextWatcher
+        ) : IndentableViewHolder(itemView) {
 
             init {
                 itemView.textHeaderFour.apply {
@@ -438,8 +496,11 @@ class EditorAdapter(
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
-                if (block is BlockView.Editable)
-                    itemView.textHeaderFour.setText(block.text)
+                check(block is HeaderView)
+
+                itemView.textHeaderFour.setText(block.text)
+
+                applyIndent(block.indent)
 
                 setFocusListener(
                     editText = itemView.textHeaderFour,
@@ -457,8 +518,10 @@ class EditorAdapter(
             }
         }
 
-        class QuoteHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
-            ViewHolder(itemView) {
+        class QuoteHolder(
+            itemView: View,
+            val editTextWatcher: MyEditorTextWatcher
+        ) : IndentableViewHolder(itemView) {
 
             init {
                 itemView.textQuote.apply {
@@ -473,6 +536,10 @@ class EditorAdapter(
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
+                check(block is QuoteView)
+
+                applyIndent(indent = block.indent)
+
                 itemView.textQuote.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textQuote)
                     { editText, start, end ->
@@ -485,9 +552,7 @@ class EditorAdapter(
                         )
                     }
 
-                if (block is BlockView.Editable) {
-                    itemView.textQuote.setText(block.text)
-                }
+                itemView.textQuote.setText(block.text)
 
                 setFocusListener(
                     editText = itemView.textQuote,
@@ -504,8 +569,10 @@ class EditorAdapter(
             }
         }
 
-        class CheckBoxHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
-            ViewHolder(itemView) {
+        class CheckBoxHolder(
+            itemView: View,
+            val editTextWatcher: MyEditorTextWatcher
+        ) : IndentableViewHolder(itemView) {
 
             init {
                 itemView.textCheckBox.apply {
@@ -519,6 +586,11 @@ class EditorAdapter(
                 menuListener: (BlockMenuAction) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
+
+                check(block is CheckboxView)
+
+                applyIndent(block.indent)
+
                 itemView.textCheckBox.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textCheckBox)
                     { editText, start, end ->
@@ -531,13 +603,13 @@ class EditorAdapter(
                         )
                     }
 
-                if (block is BlockView.Editable)
-                    itemView.textCheckBox.setText(block.text)
+                itemView.textCheckBox.setText(block.text)
 
                 setFocusListener(
                     editText = itemView.textCheckBox,
                     focusListener = focusListener
                 )
+
                 itemView.btnCheckboxBlock.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
@@ -549,8 +621,10 @@ class EditorAdapter(
             }
         }
 
-        class CodeSnippetHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
-            ViewHolder(itemView) {
+        class CodeSnippetHolder(
+            itemView: View,
+            val editTextWatcher: MyEditorTextWatcher
+        ) : IndentableViewHolder(itemView) {
 
             init {
                 itemView.textCode.apply {
@@ -564,13 +638,17 @@ class EditorAdapter(
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
-                if (block is BlockView.Editable)
-                    itemView.textCode.setText(block.text)
+                check(block is CodeSnippetView)
+
+                applyIndent(block.indent)
+
+                itemView.textCode.setText(block.text)
 
                 setFocusListener(
                     editText = itemView.textCode,
                     focusListener = focusListener
                 )
+
                 itemView.btnCode.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
@@ -582,8 +660,10 @@ class EditorAdapter(
             }
         }
 
-        class BulletHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
-            ViewHolder(itemView) {
+        class BulletHolder(
+            itemView: View,
+            val editTextWatcher: MyEditorTextWatcher
+        ) : IndentableViewHolder(itemView) {
 
             init {
                 itemView.textBullet.apply {
@@ -597,6 +677,9 @@ class EditorAdapter(
                 menuListener: (BlockMenuAction) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
+
+                check(block is BulletView)
+
                 itemView.textBullet.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textBullet)
                     { editText, start, end ->
@@ -609,7 +692,9 @@ class EditorAdapter(
                         )
                     }
 
-                if (block is BlockView.Editable) itemView.textBullet.setText(
+                applyIndent(block.indent)
+
+                itemView.textBullet.setText(
                     SpannableString(block.text)
                         .withBulletSpan(gapWidth = 40, start = 0), TextView.BufferType.SPANNABLE
                 )
@@ -629,8 +714,10 @@ class EditorAdapter(
             }
         }
 
-        class NumberedHolder(itemView: View, val editTextWatcher: MyEditorTextWatcher) :
-            ViewHolder(itemView) {
+        class NumberedHolder(
+            itemView: View,
+            val editTextWatcher: MyEditorTextWatcher
+        ) : IndentableViewHolder(itemView) {
 
             init {
                 itemView.contentText.apply {
@@ -644,6 +731,11 @@ class EditorAdapter(
                 menuListener: (BlockMenuAction) -> Unit,
                 focusListener: (Int) -> Unit
             ) {
+
+                check(block is NumberListItemView)
+
+                applyIndent(block.indent)
+
                 with(itemView) {
 
                     contentText.customSelectionActionModeCallback = TextStyleCallback(contentText)
@@ -657,11 +749,8 @@ class EditorAdapter(
                         )
                     }
 
-                    if (block is BlockView.NumberListItemView)
-                        positionText.text = "${block.number}."
-
-                    if (block is BlockView.Editable)
-                        contentText.setText(block.text)
+                    positionText.text = "${block.number}."
+                    contentText.setText(block.text)
                 }
 
                 setFocusListener(
@@ -676,6 +765,47 @@ class EditorAdapter(
                         menuListener = menuListener,
                         parent = it
                     )
+                }
+            }
+        }
+
+        class ToggleHolder(
+            val editTextWatcher: MyEditorTextWatcher,
+            itemView: View
+        ) : IndentableViewHolder(itemView) {
+
+            init {
+                itemView.textEditable.apply {
+                    addTextChangedListener(editTextWatcher)
+                }
+            }
+
+            fun bind(
+                view : BlockView,
+                onExpandClick: (BlockView) -> Unit,
+                menuListener: (BlockMenuAction) -> Unit
+            ) {
+
+                check(view is ToggleView)
+
+                applyIndent(view.indent)
+
+                itemView.blockMenuButton.setOnClickListener {
+                    showBlockMenu(
+                        context = itemView.context,
+                        block = view,
+                        menuListener = menuListener,
+                        parent = it
+                    )
+                }
+
+                itemView.apply {
+
+                    textEditable.setText(view.text)
+
+                    toggleArrow.rotation = if (view.expanded) 90f else 0f
+
+                    arrowContainer.setOnClickListener { onExpandClick(view) }
                 }
             }
         }
@@ -734,8 +864,9 @@ class EditorAdapter(
             block: BlockView,
             menuListener: (BlockMenuAction) -> Unit
         ) {
-            val menu = BlockMenu(context, block) { menuListener.invoke(it) }
-            menu.showAtLocation(parent, Gravity.BOTTOM, 0, 0)
+            BlockMenu(context, block) { menuListener.invoke(it) }.apply {
+                showAtLocation(parent, Gravity.BOTTOM, 0, 0)
+            }
         }
 
         fun setFocusListener(
@@ -784,7 +915,7 @@ class EditorAdapter(
         const val HOLDER_BOOKMARK = 11
         const val HOLDER_DIVIDER = 12
         const val HOLDER_PICTURE = 13
-
+        const val HOLDER_TOGGLE = 14
     }
 }
 

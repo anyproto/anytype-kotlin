@@ -8,67 +8,89 @@ sealed class BlockView {
 
     data class ParagraphView(
         override val id : String,
+        override val indent : Int = 0,
         override var text : SpannableString
-    ) : BlockView(), Editable
+    ) : BlockView(), Editable, Indentable
 
     data class HeaderView(
         override val id : String,
         override var text : SpannableString,
-        val type : HeaderType
-    ) : BlockView(), Editable {
+        val type : HeaderType,
+        override val indent: Int = 0
+    ) : BlockView(), Editable, Indentable {
         enum class HeaderType { ONE, TWO, THREE, FOUR }
     }
 
     data class QuoteView(
         override val id : String,
-        override var text : SpannableString
-    ) : BlockView(), Editable
+        override var text : SpannableString,
+        override val indent : Int = 0
+    ) : BlockView(), Editable, Indentable
 
     data class CheckboxView(
         override val id : String,
         override var text : SpannableString,
+        override val indent: Int = 0,
         val isChecked : Boolean
-    ) : BlockView(), Editable
+    ) : BlockView(), Editable, Indentable
 
     data class CodeSnippetView(
         override val id : String,
-        override var text : SpannableString
-    ) : BlockView(), Editable
+        override var text : SpannableString,
+        override val indent : Int = 0
+    ) : BlockView(), Editable, Indentable
 
     data class NumberListItemView(
         override val id : String,
         override var text: SpannableString,
+        override val indent : Int = 0,
         val number : Int
-    ) : BlockView(), Editable
+    ) : BlockView(), Editable, Indentable
 
     data class BulletView(
         override val id : String,
-        override var text: SpannableString
-    ) : BlockView(), Editable
+        override var text: SpannableString,
+        override val indent : Int = 0
+    ) : BlockView(), Editable, Indentable
 
     data class LinkToPageView(
         override val id : String,
-        val title : String
-    ) : BlockView()
+        val title : String,
+        override val indent : Int = 0
+    ) : BlockView(), Indentable
 
     data class BookmarkView(
         override val id : String,
         val title : String,
         val description : String,
         val url : String,
-        val image : String
-    ) : BlockView()
+        val image : String,
+        override val indent : Int = 0
+    ) : BlockView(), Indentable
 
     data class DividerView(
-        override val id : String
-    ) : BlockView()
+        override val id : String,
+        override val indent : Int = 0
+        ) : BlockView(), Indentable
 
     data class PictureView (
         override val id : String,
-        val url : String
-    ) : BlockView()
+        val url : String,
+        override val indent : Int = 0
+    ) : BlockView(), Indentable
+
+    data class ToggleView(
+        override val id : String,
+        override val indent : Int = 0,
+        override var text : SpannableString,
+        val expanded : Boolean = false
+    ) : BlockView(), Editable, Indentable
 
     interface Editable {
         var text : SpannableString
+    }
+
+    interface Indentable {
+        val indent : Int
     }
 }

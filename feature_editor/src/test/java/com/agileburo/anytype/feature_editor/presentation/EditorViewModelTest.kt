@@ -77,8 +77,8 @@ class EditorViewModelTest {
     @Test
     fun `should return list with size - 1 after block removal`() {
 
-        val block1 = BlockFactory.makeBlock()
-        val block2 = BlockFactory.makeBlock()
+        val block1 = BlockFactory.makeBlock(parentId = "")
+        val block2 = BlockFactory.makeBlock(parentId = "")
 
         stubGetBlocks(Single.just(listOf(block1, block2)))
 

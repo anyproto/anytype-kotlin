@@ -28,7 +28,7 @@ class BlockModelMapper : ModelMapper<BlockView, Block> {
             is BlockView.ParagraphView -> {
                 Block(
                     id = view.id,
-                    parentId = "",
+                    parentId = "test",
                     contentType = ContentType.P,
                     content = Content.Text(
                         text = view.text.toString(),
@@ -121,6 +121,20 @@ class BlockModelMapper : ModelMapper<BlockView, Block> {
                         text = view.text.toString(),
                         marks = fromSpannableToMarks(view.text),
                         param = ContentParam.numberedList(view.number)
+                    ),
+                    blockType = BlockType.Editable
+                )
+            }
+
+            is BlockView.ToggleView -> {
+                Block(
+                    id = view.id,
+                    parentId = "lost",
+                    contentType = ContentType.Toggle,
+                    content = Content.Text(
+                        text = view.text.toString(),
+                        marks = fromSpannableToMarks(view.text),
+                        param = ContentParam.empty()
                     ),
                     blockType = BlockType.Editable
                 )

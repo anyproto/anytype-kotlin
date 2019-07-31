@@ -15,25 +15,24 @@ import timber.log.Timber
 import java.lang.IllegalArgumentException
 
 interface ViewMapper<in D, out V> {
-    fun mapToView(model: D): V
+    fun mapToView(model: D, indent : Int = 0): V
 }
 
 class BlockViewMapper : ViewMapper<Block, BlockView> {
 
-    override fun mapToView(model: Block): BlockView {
+    override fun mapToView(model: Block, indent : Int): BlockView {
         return when (model.blockType) {
             is BlockType.Editable -> {
                 when (model.contentType) {
                     is ContentType.P -> {
-
                         BlockView.ParagraphView(
+                            indent = indent,
                             id = model.id,
                             text = fromMarksToSpannable(
                                 marks = (model.content as Content.Text).marks,
-                                text = (model.content as Content.Text).text
+                                text = model.content.text
                             )
                         )
-
                     }
                     is ContentType.H1 -> {
                         BlockView.HeaderView(
@@ -42,7 +41,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
-                            type = BlockView.HeaderView.HeaderType.ONE
+                            type = BlockView.HeaderView.HeaderType.ONE,
+                            indent = indent
                         )
                     }
                     is ContentType.H2 -> {
@@ -52,7 +52,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
-                            type = BlockView.HeaderView.HeaderType.TWO
+                            type = BlockView.HeaderView.HeaderType.TWO,
+                            indent = indent
                         )
                     }
                     is ContentType.H3 -> {
@@ -62,7 +63,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
-                            type = BlockView.HeaderView.HeaderType.THREE
+                            type = BlockView.HeaderView.HeaderType.THREE,
+                            indent = indent
                         )
                     }
                     is ContentType.H4 -> {
@@ -72,7 +74,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
-                            type = BlockView.HeaderView.HeaderType.FOUR
+                            type = BlockView.HeaderView.HeaderType.FOUR,
+                            indent = indent
                         )
                     }
                     is ContentType.Quote -> {
@@ -81,7 +84,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                             text = fromMarksToSpannable(
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
-                            )
+                            ),
+                            indent = indent
                         )
                     }
                     is ContentType.Code -> {
@@ -90,7 +94,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                             text = fromMarksToSpannable(
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
-                            )
+                            ),
+                            indent = indent
                         )
                     }
                     is ContentType.Check -> {
@@ -100,7 +105,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
-                            isChecked = model.content.param.checked
+                            isChecked = model.content.param.checked,
+                            indent = indent
                         )
                     }
                     is ContentType.NumberedList -> {
@@ -110,26 +116,36 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
-                            number = model.content.param.number
+                            number = model.content.param.number,
+                            indent = indent
                         )
                     }
-
                     is ContentType.UL -> {
                         BlockView.BulletView(
                             id = model.id,
                             text = fromMarksToSpannable(
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
-                            )
+                            ),
+                            indent = indent
                         )
                     }
-
+                    is ContentType.Toggle -> {
+                        BlockView.ToggleView(
+                            id = model.id,
+                            text = fromMarksToSpannable(
+                                marks = (model.content as Content.Text).marks,
+                                text = model.content.text
+                            ),
+                            indent = indent,
+                            expanded = model.state.expanded
+                        )
+                    }
                     else -> {
                         throw NotImplementedError("${model.contentType} is not supported")
                     }
                 }
             }
-
             is BlockType.Page -> {
                 BlockView.LinkToPageView(
                     id = model.id,
@@ -142,21 +158,23 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                     title = (model.content as Content.Bookmark).title,
                     description = model.content.description,
                     url = model.content.url,
-                    image = model.content.images.first().url
+                    image = model.content.images.first().url,
+                    indent = indent
                 )
             }
             is BlockType.Divider -> {
                 BlockView.DividerView(
-                    id = model.id
+                    id = model.id,
+                    indent = indent
                 )
             }
             is BlockType.Image -> {
                 BlockView.PictureView(
                     id = model.id,
-                    url = (model.content as Content.Picture).url
+                    url = (model.content as Content.Picture).url,
+                    indent = indent
                 )
             }
-
             else -> TODO()
         }
     }

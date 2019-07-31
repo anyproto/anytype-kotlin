@@ -1,7 +1,7 @@
 {
   "blocks": [
     {
-      "id": "7a5eff62-b326-5720-bc20-14aae174cde7",
+      "id": "1",
       "parentId": "",
       "type": 3,
       "contentType": 3,
@@ -10,26 +10,82 @@
       "children": []
     },
     {
-      "id": "b532-55e1-92ba-2b2fc4afgdf237e",
-      "parentId": "",
+      "id":"2",
+      "parentId":"",
       "type": 3,
-      "contentType": 1,
-      "content": {
-        "text": "Пример",
-        "marks": [
-          {
-            "type": "a",
-            "start": 0,
-            "end": 5,
-            "param": "https://rateyourmusic.com/~frankie_t"
-          }
-        ]
-      },
+      "contentType": 9,
+      "content":{"text":"First toggle","marks":[]},
       "width": 0,
-      "children": []
+      "children":[
+        {
+          "id":"3",
+          "parentId":"2",
+          "type": 3,
+          "contentType": 1,
+          "content":{"text":"First toggle first paragraph","marks":[]},
+          "width": 0,
+          "children": []
+        },
+        {
+          "id":"4",
+          "parentId":"2",
+          "type": 3,
+          "contentType": 9,
+          "content":{"text":"Second toggle","marks":[]},
+          "width": 0,
+          "children": [
+            {
+              "id":"5",
+              "parentId":"4",
+              "type": 3,
+              "contentType": 1,
+              "content":{"text":"Second toggle first paragraph","marks":[]},
+              "width": 0,
+              "children": []
+            },
+            {
+              "id":"6",
+              "parentId":"4",
+              "type": 3,
+              "contentType": 1,
+              "content":{"text":"Second toggle second paragraph","marks":[]},
+              "width": 0,
+              "children": []
+            },
+            {
+              "id":"7",
+              "parentId":"4",
+              "type": 3,
+              "contentType": 9,
+              "content":{"text":"Third toggle","marks":[]},
+              "width": 0,
+              "children": [
+                {
+                  "id":"8",
+                  "parentId":"7",
+                  "type": 3,
+                  "contentType": 1,
+                  "content":{"text":"Third toggle first paragraph","marks":[]},
+                  "width": 0,
+                  "children": []
+                },
+                {
+                  "id":"9",
+                  "parentId":"7",
+                  "type": 3,
+                  "contentType": 1,
+                  "content":{"text":"Third toggle second paragraph","marks":[]},
+                  "width": 0,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
-      "id": "c03gf01f2b-b532-55e1-92ba-2b2fc4adfsf237e",
+      "id": "10",
       "parentId": "",
       "type": 3,
       "contentType": 1,
@@ -108,7 +164,7 @@
       "children": []
     },
     {
-      "id": "222FDfd307-4c05-5de6-beaf-b137960223e3",
+      "id": "11",
       "parentId": "",
       "type": 3,
       "contentType": 1,
@@ -126,7 +182,7 @@
       "children": []
     },
     {
-      "id": "e8ceDS8ef8-c44d-5d73-b224-f8de34f92e10",
+      "id": "12",
       "parentId": "",
       "type": 3,
       "contentType": 1,
@@ -150,7 +206,7 @@
       "children": []
     },
     {
-      "id": "1162s71cc-c6e3-5c58-8598-9342567b9a66",
+      "id": "13",
       "parentId": "",
       "type": 3,
       "contentType": 1,
@@ -161,7 +217,7 @@
       "children": []
     },
     {
-      "id": "21fe093a-5f74-58da3b-9c17-ee798e1bfc7e",
+      "id": "14",
       "parentId": "",
       "type": 3,
       "contentType": 10,
@@ -172,7 +228,7 @@
       "children": []
     },
     {
-      "id": "f0c40441-2a3f-5150-bdsad3-e0d43c72a997",
+      "id": "15",
       "parentId": "",
       "type": 3,
       "contentType": 2,
@@ -183,7 +239,7 @@
       "children": []
     },
     {
-      "id": "01f2asa219-94ba-5bd6-a48e-5b9af61e1a10",
+      "id": "16",
       "parentId": "",
       "type": 3,
       "contentType": 1,
@@ -194,7 +250,7 @@
       "children": []
     },
     {
-      "id": "c0301ffd2b-b532-55e1-92ba-2b2fc4af237e",
+      "id": "17",
       "parentId": "",
       "type": 3,
       "contentType": 1,
@@ -206,7 +262,7 @@
       "children": []
     },
     {
-      "id": "fdresfdaf2b-b532-5345-92ba-2b2fc4af237e",
+      "id": "18",
       "parentId": "",
       "type": 3,
       "contentType": 1,
@@ -218,7 +274,7 @@
       "children": []
     },
     {
-      "id": "ytewtfdy6q-b532-5345-92ba-2b2fc4af237e",
+      "id": "19",
       "parentId": "",
       "type": 3,
       "contentType": 11,
@@ -230,7 +286,7 @@
       "children": []
     },
     {
-      "id": "1fbb2375-8c54-5d19-9b6e-165cb267a6d5",
+      "id": "20",
       "parentId": "",
       "type": 7,
       "contentType": 0,
@@ -241,7 +297,7 @@
       "children": []
     },
     {
-      "id":"cd856329-f8c4-56ab-b94c4dd44cf9b8b4",
+      "id":"21",
       "parentId":"",
       "type":4,
       "contentType":0,
@@ -252,7 +308,7 @@
       ]
     },
     {
-      "id":"4c105bfb-3529-5fe4-a67ea7a14157cb14",
+      "id":"22",
       "parentId":"",
       "type":6,
       "contentType":0,
@@ -276,7 +332,7 @@
       ]
     },
     {
-      "id": "29e4e4a5-722e-5b36-9e95-451ea41786fd",
+      "id": "23",
       "parentId": "",
       "type": 9,
       "contentType": 0,

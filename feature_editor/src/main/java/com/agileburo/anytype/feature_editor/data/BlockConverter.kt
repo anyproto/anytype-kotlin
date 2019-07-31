@@ -16,6 +16,7 @@ import com.agileburo.anytype.feature_editor.domain.ContentType
  */
 interface BlockConverter {
     fun modelToDomain(model: BlockModel): Block
+    fun modelTreeToDomainTree(model: BlockModel): Block
 }
 
 class BlockConverterImpl(
@@ -23,7 +24,96 @@ class BlockConverterImpl(
     private val contentModelParser: ContentModelParser
 ) : BlockConverter {
 
-    override fun modelToDomain(model: BlockModel) : Block {
+    override fun modelTreeToDomainTree(model: BlockModel): Block {
+
+        val type = model.type.toBlockType()
+
+        when (type) {
+            is BlockType.Editable -> {
+
+                val parsed = contentModelParser.parse(model.content, type)
+
+                val content = contentConverter.modelToDomain(parsed as ContentModel.Text)
+
+                return Block(
+                    id = model.id,
+                    content = content,
+                    parentId = model.parentId,
+                    contentType = model.contentType.toContentType(),
+                    blockType = model.type.toBlockType(),
+                    children = model.children.map { modelTreeToDomainTree(it) }.toMutableList()
+                )
+
+            }
+            is BlockType.Page -> {
+
+                val parsed = contentModelParser.parse(model.content, type)
+
+                val content = contentConverter.modelToDomain(parsed as ContentModel.Page)
+
+                return Block(
+                    id = model.id,
+                    content = content,
+                    parentId = model.parentId,
+                    contentType = model.contentType.toContentType(),
+                    blockType = model.type.toBlockType(),
+                    children = model.children.map { modelTreeToDomainTree(it) }.toMutableList()
+                )
+
+            }
+
+            is BlockType.BookMark -> {
+
+                val parsed = contentModelParser.parse(model.content, type)
+
+                val content = contentConverter.modelToDomain(parsed as ContentModel.Bookmark)
+
+                return Block(
+                    id = model.id,
+                    content = content,
+                    parentId = model.parentId,
+                    contentType = model.contentType.toContentType(),
+                    blockType = model.type.toBlockType(),
+                    children = model.children.map { modelTreeToDomainTree(it) }.toMutableList()
+                )
+
+            }
+
+            is BlockType.Divider -> {
+
+                return Block(
+                    id = model.id,
+                    parentId = model.parentId,
+                    contentType = ContentType.None,
+                    content = Content.Empty,
+                    blockType = BlockType.Divider,
+                    children = model.children.map { modelTreeToDomainTree(it) }.toMutableList()
+                )
+
+            }
+
+            is BlockType.Image -> {
+
+                val parsed = contentModelParser.parse(model.content, type) as ContentModel.Image
+                val content = contentConverter.modelToDomain(parsed)
+
+                return Block(
+                    id = model.id,
+                    parentId = model.parentId,
+                    content = content,
+                    contentType = ContentType.None,
+                    blockType = BlockType.Image,
+                    children = model.children.map { modelTreeToDomainTree(it) }.toMutableList()
+                )
+            }
+
+            else -> TODO()
+
+        }
+
+    }
+
+    override fun modelToDomain(model: BlockModel): Block {
 
         val type = model.type.toBlockType()
 

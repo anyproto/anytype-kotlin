@@ -12,7 +12,7 @@ class CodeBlockSpan(
 ) : FontSpan(font) {
 
     // Since we're only changing the background color, it will not affect the measure state, so
-    // just override the update draw state.
+    // just override the updateContent draw state.
     override fun updateDrawState(textPaint: TextPaint) {
         super.updateDrawState(textPaint)
         textPaint.bgColor = backgroundColor

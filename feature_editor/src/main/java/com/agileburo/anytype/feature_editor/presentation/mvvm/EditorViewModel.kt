@@ -4,18 +4,15 @@ import androidx.lifecycle.ViewModel
 import com.agileburo.anytype.core_utils.BaseSchedulerProvider
 import com.agileburo.anytype.core_utils.swap
 import com.agileburo.anytype.feature_editor.disposedBy
-import com.agileburo.anytype.feature_editor.domain.Block
-import com.agileburo.anytype.feature_editor.domain.ContentType
-import com.agileburo.anytype.feature_editor.domain.EditorInteractor
+import com.agileburo.anytype.feature_editor.domain.*
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
+import com.agileburo.anytype.feature_editor.presentation.model.BlockView
 import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
 import com.agileburo.anytype.feature_editor.ui.BlockMenuAction
 import com.agileburo.anytype.feature_editor.ui.EditorState
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
-
-const val useDiffUtils = true
 
 class EditorViewModel(
     private val interactor: EditorInteractor,
@@ -24,7 +21,7 @@ class EditorViewModel(
 ) : ViewModel() {
 
     private val subscriptions by lazy { CompositeDisposable() }
-    private val blocks by lazy { mutableListOf<Block>() }
+    private val document : Document by lazy { mutableListOf<Block>() }
     private val progress by lazy { BehaviorRelay.create<EditorState>() }
 
     private var positionInFocus: Int = -1
@@ -35,26 +32,34 @@ class EditorViewModel(
 
     fun observeState() = progress
 
-    fun onBlockChanged(block: Block) {
-        val index = blocks.indexOfFirst { it.id == block.id }
-        if (index >= 0 && index < blocks.size) {
-            blocks[index] = block
+    fun onBlockContentChanged(block: Block) {
+        document.updateContent(
+            targetId = block.id,
+            targetContentUpdate = block.content
+        )
+    }
+
+    fun onExpandClicked(view : BlockView) {
+        check(view is BlockView.ToggleView)
+
+        document.flatSearch(view.id)?.let { block ->
+            block.state.expanded = !view.expanded
+            dispatchBlocksToView()
         }
     }
 
     fun onBlockMenuAction(action: BlockMenuAction) {
         when (action) {
             is BlockMenuAction.ContentTypeAction -> {
-                convertBlock(
-                    block = blocks.first { it.id == action.id },
-                    contentType = action.newType
-                )
+                document.changeContentType(targetId = action.id, targetType = action.newType)
+                document.fixNumberOrder()
+                dispatchBlocksToView()
             }
             is BlockMenuAction.ArchiveAction -> {
                 removeBlock(action.id)
             }
             is BlockMenuAction.DuplicateAction -> {
-                throw NotImplementedError()
+                TODO()
             }
         }
     }
@@ -64,19 +69,19 @@ class EditorViewModel(
     }
 
     fun onSwap(request: SwapRequest) {
-        blocks.swap(request.from, request.to)
+        document.swap(request.from, request.to)
         progress.accept(EditorState.Swap(request))
     }
 
     fun onSwapFinished() {
-        val normalized = contentTypeConverter.normalizeNumbers(blocks)
-        blocks.clear()
-        blocks.addAll(normalized)
+        val normalized = contentTypeConverter.normalizeNumbers(document)
+        document.clear()
+        document.addAll(normalized)
         dispatchBlocksToView()
     }
 
     private fun clearBlockFocus() =
-        blocks.getOrNull(positionInFocus)?.let {
+        document.getOrNull(positionInFocus)?.let {
             progress.accept(
                 EditorState.ClearBlockFocus(positionInFocus, it.contentType)
             )
@@ -88,64 +93,25 @@ class EditorViewModel(
             .subscribeOn(schedulerProvider.io())
             .subscribe(
                 { data -> onBlockReceived(data) },
-                { error -> Timber.e(error, "Error while fetching blocks") }
+                { error -> Timber.e(error, "Error while fetching document") }
             ).disposedBy(subscriptions)
     }
 
     private fun onBlockReceived(items: List<Block>) {
-        blocks.addAll(items)
-        progress.accept(EditorState.Result(blocks))
-    }
-
-    private fun convertBlock(block: Block, contentType: ContentType) =
-        if (useDiffUtils)
-            convertBlockDiffUtils(
-                block, contentType
-            ) else
-            convertBlockWithoutDiffUtils(block, contentType)
-
-    private fun convertBlockDiffUtils(block: Block, contentType: ContentType) {
-        if (block.contentType != contentType) {
-
-            val converted = contentTypeConverter.convert(
-                blocks = blocks,
-                targetType = contentType,
-                target = block
-            )
-
-            blocks.clear()
-            blocks.addAll(converted)
-
-            dispatchBlocksToView()
-        }
-    }
-
-    private fun convertBlockWithoutDiffUtils(block: Block, contentType: ContentType) {
-        if (block.contentType != contentType) {
-            blocks.first { it.id == block.id }.contentType = contentType
-            block.contentType = contentType
-            progress.accept(EditorState.Update(block))
-        }
+        document.addAll(items)
+        progress.accept(EditorState.Result(document))
     }
 
     private fun removeBlock(id: String) {
-
-        val index = blocks.indexOfFirst { it.id == id }
-
-        require(index > -1 && index < blocks.size)
-
-        blocks.removeAt(index)
-
-        val converted = contentTypeConverter.normalizeNumbers(blocks)
-
-        blocks.clear()
-        blocks.addAll(converted)
-
+        document.apply {
+            delete(id)
+            fixNumberOrder()
+        }
         dispatchBlocksToView()
     }
 
     private fun dispatchBlocksToView() {
-        progress.accept(EditorState.Updates(blocks))
+        progress.accept(EditorState.Updates(document))
     }
 
     override fun onCleared() {

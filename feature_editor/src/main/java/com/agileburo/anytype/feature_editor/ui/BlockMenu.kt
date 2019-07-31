@@ -88,6 +88,10 @@ class BlockMenu(
             menuItemClick.invoke(BlockMenuAction.DuplicateAction(block.id))
             dismiss()
         }
+        contentView.findViewById<View>(R.id.btn_menu_toggle)?.setOnClickListener {
+            menuItemClick.invoke(BlockMenuAction.ContentTypeAction(block.id, ContentType.Toggle))
+            dismiss()
+        }
     }
 
     private fun getLayout(block: BlockView): Int =
@@ -112,6 +116,7 @@ class BlockMenu(
             is BlockView.NumberListItemView -> R.id.btn_menu_numbered
             is BlockView.CheckboxView -> R.id.btn_menu_checkbox
             is BlockView.CodeSnippetView -> R.id.btn_menu_code
+            is BlockView.ToggleView -> R.id.btn_menu_toggle
 
             //Todo implement!
             is BlockView.LinkToPageView -> throw NotImplementedError()

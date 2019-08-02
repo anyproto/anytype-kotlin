@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 
+apply from: "$rootDir/versioning.gradle"
 
 android {
     def config = rootProject.extensions.getByName("ext")
@@ -15,8 +16,8 @@ android {
         applicationId config["application_id"]
         minSdkVersion config["min_sdk"]
         targetSdkVersion config["target_sdk"]
-        versionCode config["version_code"]
-        versionName config["version_name"]
+        versionCode getBuildVersionCode()
+        versionName getBuildVersionName()
         testInstrumentationRunner config["test_runner"]
     }
 

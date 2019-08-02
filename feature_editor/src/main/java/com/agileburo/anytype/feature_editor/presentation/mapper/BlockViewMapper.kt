@@ -233,7 +233,7 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
 
     fun SpannableString.withClickableSpan(clickablePart: String, onClickListener: () -> Unit): SpannableString {
         val clickableSpan = object : ClickableSpan() {
-            override fun onClick(widget: View?) = onClickListener.invoke()
+            override fun onClick(widget: View) = onClickListener.invoke()
         }
         val clickablePartStart = indexOf(clickablePart)
         setSpan(

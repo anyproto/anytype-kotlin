@@ -2,29 +2,44 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-                                                   android:background="@color/white"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <View
+        android:id="@+id/borderTopCode"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/design_default_color_primary"
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/btnCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:padding="8dp"
         android:contentDescription="@string/editor_toolbar"
+        android:padding="8dp"
         app:srcCompat="@drawable/ic_edit" />
 
     <com.agileburo.anytype.feature_editor.ui.ClearFocusEditText
         android:id="@+id/textCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/btnCode"
         android:background="@drawable/rounded_rectangle_gray"
-        android:padding="16dp"
         android:inputType="textMultiLine|textNoSuggestions"
+        android:padding="16dp"
         android:textColor="#FFFF"
         android:textSize="16sp"
-        android:typeface="monospace"
-        android:layout_toEndOf="@id/btnCode"
-         />
+        android:typeface="monospace" />
+
+    <View
+        android:id="@+id/borderBottomCode"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@id/textCode"
+        android:background="@color/design_default_color_primary"
+        android:visibility="invisible" />
 
 </RelativeLayout>

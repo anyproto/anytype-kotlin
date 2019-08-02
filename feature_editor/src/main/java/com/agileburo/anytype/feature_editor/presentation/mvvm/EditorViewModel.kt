@@ -2,12 +2,12 @@ package com.agileburo.anytype.feature_editor.presentation.mvvm
 
 import androidx.lifecycle.ViewModel
 import com.agileburo.anytype.core_utils.BaseSchedulerProvider
-import com.agileburo.anytype.core_utils.swap
+import com.agileburo.anytype.core_utils.shift
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.*
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
-import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
+import com.agileburo.anytype.feature_editor.presentation.util.DragDropAction
 import com.agileburo.anytype.feature_editor.ui.BlockMenuAction
 import com.agileburo.anytype.feature_editor.ui.EditorState
 import com.jakewharton.rxrelay2.BehaviorRelay
@@ -64,16 +64,37 @@ class EditorViewModel(
         }
     }
 
+    fun onBlockDragAndDropAction(action: DragDropAction) = when (action) {
+        is DragDropAction.Shift -> onShiftAction(from = action.from, to = action.to)
+        is DragDropAction.Consume -> onConsumeAction(target = action.target, consumer = action.consumer)
+    }
+
+    private fun onShiftAction(from: Int, to: Int) {
+        val newBlocks = document.shift(from, to)
+        document.clear()
+        document.addAll(newBlocks)
+        dispatchBlocksToView()
+        normalizeBlocks()
+    }
+
+    //Todo Update with proper consume action
+    private fun onConsumeAction(target: Int, consumer: Int) {
+        document.removeAt(target)
+        progress.accept(EditorState.Remove(target))
+        normalizeBlocks()
+    }
+
     fun onBlockFocus(position: Int) {
+        if (position == -1) {
+            positionInFocus = position
+            clearBlockFocus()
+            return
+        }
+        progress.accept(EditorState.DragDropOff)
         positionInFocus = position
     }
 
-    fun onSwap(request: SwapRequest) {
-        document.swap(request.from, request.to)
-        progress.accept(EditorState.Swap(request))
-    }
-
-    fun onSwapFinished() {
+    private fun normalizeBlocks() {
         val normalized = contentTypeConverter.normalizeNumbers(document)
         document.clear()
         document.addAll(normalized)
@@ -82,6 +103,7 @@ class EditorViewModel(
 
     private fun clearBlockFocus() =
         document.getOrNull(positionInFocus)?.let {
+            progress.accept(EditorState.DragDropOn)
             progress.accept(
                 EditorState.ClearBlockFocus(positionInFocus, it.contentType)
             )

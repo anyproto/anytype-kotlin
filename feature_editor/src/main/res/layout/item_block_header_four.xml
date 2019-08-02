@@ -1,34 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:background="@color/white"
-                android:layout_height="wrap_content">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <View
+        android:id="@+id/borderTopHeaderFour"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/design_default_color_primary"
+        android:visibility="invisible" />
 
     <ImageView
-            android:id="@+id/btnHeaderFour"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:padding="8dp"
-            android:contentDescription="@string/editor_toolbar"
-            app:srcCompat="@drawable/ic_edit"/>
+        android:id="@+id/btnHeaderFour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/editor_toolbar"
+        android:padding="8dp"
+        app:srcCompat="@drawable/ic_edit" />
 
 
     <com.agileburo.anytype.feature_editor.ui.ClearFocusEditText
-            android:fontFamily="monospace"
-            android:id="@+id/textHeaderFour"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_toEndOf="@id/btnHeaderFour"
-            android:textSize="18sp"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:textColor="@android:color/black"
-            android:inputType="textMultiLine|textNoSuggestions"
-            android:background="@android:color/transparent"
-            android:textStyle="bold"/>
+        android:id="@+id/textHeaderFour"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_toEndOf="@id/btnHeaderFour"
+        android:background="@android:color/transparent"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:fontFamily="monospace"
+        android:layout_centerVertical="true"
+        tools:text="Here are some quick tips for a first-time organization member."
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <View
+        android:id="@+id/borderBottomHeaderFour"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@id/textHeaderFour"
+        android:background="@color/design_default_color_primary"
+        android:visibility="invisible" />
+
 
 </RelativeLayout>

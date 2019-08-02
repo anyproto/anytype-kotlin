@@ -5,6 +5,17 @@
                                                    android:layout_width="match_parent"
                                                    android:layout_height="wrap_content">
 
+    <View
+        android:id="@+id/borderTopNumbered"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/design_default_color_primary"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
             android:fontFamily="monospace"
             android:id="@+id/positionText"
@@ -18,21 +29,22 @@
             app:layout_constraintTop_toTopOf="parent"/>
 
     <com.agileburo.anytype.feature_editor.ui.ClearFocusEditText
-            android:fontFamily="monospace"
-            android:id="@+id/contentText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:inputType="textMultiLine|textNoSuggestions"
-            android:textColor="@android:color/black"
-            android:background="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/positionText"
-            app:layout_constraintTop_toTopOf="parent"/>
+        android:id="@+id/contentText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="monospace"
+        android:background="@android:color/transparent"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/positionText"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Here are some quick tips for a first-time organization member." />
 
     <ImageView
             android:id="@+id/btnNumbered"
@@ -44,5 +56,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_edit"/>
+
+    <View
+        android:id="@+id/borderBottomNumbered"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@id/contentText"
+        android:background="@color/design_default_color_primary"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

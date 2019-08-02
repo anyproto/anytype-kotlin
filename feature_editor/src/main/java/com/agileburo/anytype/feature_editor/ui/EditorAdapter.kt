@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_editor.ui
 
 import android.content.Context
+import android.graphics.Color
 import android.text.Editable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -33,11 +34,10 @@ import kotlinx.android.synthetic.main.item_block_image.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.item_block_editable.view.btnEditable
+import kotlinx.android.synthetic.main.item_block_editable.view.*
 import kotlinx.android.synthetic.main.item_block_editable.view.textEditable
+import timber.log.Timber
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
-import kotlin.contracts.contract
-
 
 class EditorAdapter(
     val blocks: MutableList<BlockView>,
@@ -49,6 +49,11 @@ class EditorAdapter(
 
     fun setBlocks(items: List<BlockView>) {
         blocks.addAll(items)
+        notifyDataSetChanged()
+    }
+
+    fun clearSelected() {
+        blocks.forEach { it.isSelected = false }
         notifyDataSetChanged()
     }
 
@@ -298,6 +303,11 @@ class EditorAdapter(
         notifyItemMoved(request.from, request.to)
     }
 
+    fun remove(position: Int) {
+        blocks.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     private fun swapPosition(fromPosition: Int, toPosition: Int) =
         blocks.swap(fromPosition, toPosition)
 
@@ -326,7 +336,7 @@ class EditorAdapter(
         class ParagraphHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView) {
+        ) : IndentableViewHolder(itemView), Consumer, ItemTouchHelperViewHolder {
 
             init {
                 itemView.textEditable.apply {
@@ -340,6 +350,7 @@ class EditorAdapter(
                 menuListener: (BlockMenuAction) -> Unit,
                 focusListener: (Int) -> Unit
             ) = with(block) {
+                itemView.textEditable.isLongClickable = false
 
                 check(block is ParagraphView)
 
@@ -371,6 +382,26 @@ class EditorAdapter(
                         parent = it
                     )
                 }
+
+                if (isSelected) {
+                    itemView.setBackgroundColor(Color.LTGRAY)
+                } else {
+                    itemView.setBackgroundColor(0)
+                }
+            }
+
+            override fun targetView() {
+                itemView.border_top.visibility = View.VISIBLE
+            }
+
+            override fun targetViewBottom() {
+                itemView.border_bottom.visibility = View.VISIBLE
+            }
+
+            override fun clearTargetView() {
+                Timber.d("Clear Target View!!!")
+                itemView.border_top.visibility = View.INVISIBLE
+                itemView.border_bottom.visibility = View.INVISIBLE
             }
         }
 
@@ -396,6 +427,10 @@ class EditorAdapter(
                 applyIndent(block.indent)
 
                 itemView.textHeaderOne.setText(block.text)
+                itemView.textHeaderOne.isLongClickable = false
+
+                if (block is BlockView.Editable)
+                    itemView.textHeaderOne.setText(block.text)
 
                 setFocusListener(
                     editText = itemView.textHeaderOne,
@@ -407,7 +442,7 @@ class EditorAdapter(
         class HeaderTwoHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView) {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
             init {
                 itemView.textHeaderTwo.apply {
@@ -426,6 +461,10 @@ class EditorAdapter(
                 applyIndent(block.indent)
 
                 itemView.textHeaderTwo.setText(block.text)
+                itemView.textHeaderTwo.isLongClickable = false
+
+                if (block is BlockView.Editable)
+                    itemView.textHeaderTwo.setText(block.text)
 
                 setFocusListener(
                     editText = itemView.textHeaderTwo,
@@ -440,12 +479,25 @@ class EditorAdapter(
                     )
                 }
             }
+
+            override fun targetView() {
+                itemView.borderTopHeaderTwo.visibility = View.VISIBLE
+            }
+
+            override fun targetViewBottom() {
+                itemView.borderBottomHeaderTwo.visibility = View.VISIBLE
+            }
+
+            override fun clearTargetView() {
+                itemView.borderTopHeaderTwo.visibility = View.INVISIBLE
+                itemView.borderBottomHeaderTwo.visibility = View.INVISIBLE
+            }
         }
 
         class HeaderThreeHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView) {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
             init {
                 itemView.textHeaderThree.apply {
@@ -459,6 +511,10 @@ class EditorAdapter(
                 focusListener: (Int) -> Unit
             ) = with(block) {
 
+                itemView.textHeaderThree.isLongClickable = false
+
+                if (block is BlockView.Editable)
+                    itemView.textHeaderThree.setText(block.text)
                 check(block is HeaderView)
 
                 itemView.textHeaderThree.setText(block.text)
@@ -477,12 +533,25 @@ class EditorAdapter(
                     )
                 }
             }
+
+            override fun targetView() {
+                itemView.borderTopHeaderThree.visibility = View.VISIBLE
+            }
+
+            override fun targetViewBottom() {
+                itemView.borderBottomHeaderThree.visibility = View.VISIBLE
+            }
+
+            override fun clearTargetView() {
+                itemView.borderTopHeaderThree.visibility = View.INVISIBLE
+                itemView.borderBottomHeaderThree.visibility = View.INVISIBLE
+            }
         }
 
         class HeaderFourHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView) {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
             init {
                 itemView.textHeaderFour.apply {
@@ -499,6 +568,10 @@ class EditorAdapter(
                 check(block is HeaderView)
 
                 itemView.textHeaderFour.setText(block.text)
+                itemView.textHeaderFour.isLongClickable = false
+
+                if (block is BlockView.Editable)
+                    itemView.textHeaderFour.setText(block.text)
 
                 applyIndent(block.indent)
 
@@ -516,12 +589,25 @@ class EditorAdapter(
                     )
                 }
             }
+
+            override fun targetView() {
+                itemView.borderTopHeaderFour.visibility = View.VISIBLE
+            }
+
+            override fun targetViewBottom() {
+                itemView.borderBottomHeaderFour.visibility = View.VISIBLE
+            }
+
+            override fun clearTargetView() {
+                itemView.borderTopHeaderFour.visibility = View.INVISIBLE
+                itemView.borderBottomHeaderFour.visibility = View.INVISIBLE
+            }
         }
 
         class QuoteHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView) {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
             init {
                 itemView.textQuote.apply {
@@ -539,6 +625,8 @@ class EditorAdapter(
                 check(block is QuoteView)
 
                 applyIndent(indent = block.indent)
+
+                itemView.textQuote.isLongClickable = false
 
                 itemView.textQuote.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textQuote)
@@ -567,12 +655,25 @@ class EditorAdapter(
                     )
                 }
             }
+
+            override fun targetView() {
+                itemView.borderTopQuote.visibility = View.VISIBLE
+            }
+
+            override fun targetViewBottom() {
+                itemView.borderBottomQuote.visibility = View.VISIBLE
+            }
+
+            override fun clearTargetView() {
+                itemView.borderTopQuote.visibility = View.INVISIBLE
+                itemView.borderBottomQuote.visibility = View.INVISIBLE
+            }
         }
 
         class CheckBoxHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView) {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
             init {
                 itemView.textCheckBox.apply {
@@ -590,6 +691,9 @@ class EditorAdapter(
                 check(block is CheckboxView)
 
                 applyIndent(block.indent)
+
+
+                itemView.textCheckBox.isLongClickable = false
 
                 itemView.textCheckBox.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textCheckBox)
@@ -619,12 +723,25 @@ class EditorAdapter(
                     )
                 }
             }
+
+            override fun targetView() {
+                itemView.borderTopCheckBox.visibility = View.VISIBLE
+            }
+
+            override fun targetViewBottom() {
+                itemView.borderBottomCheckBox.visibility = View.VISIBLE
+            }
+
+            override fun clearTargetView() {
+                itemView.borderTopCheckBox.visibility = View.INVISIBLE
+                itemView.borderBottomCheckBox.visibility = View.INVISIBLE
+            }
         }
 
         class CodeSnippetHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView) {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
             init {
                 itemView.textCode.apply {
@@ -643,6 +760,10 @@ class EditorAdapter(
                 applyIndent(block.indent)
 
                 itemView.textCode.setText(block.text)
+                itemView.textCode.isLongClickable = false
+
+                if (block is BlockView.Editable)
+                    itemView.textCode.setText(block.text)
 
                 setFocusListener(
                     editText = itemView.textCode,
@@ -658,12 +779,25 @@ class EditorAdapter(
                     )
                 }
             }
+
+            override fun targetView() {
+                itemView.borderTopCode.visibility = View.VISIBLE
+            }
+
+            override fun targetViewBottom() {
+                itemView.borderBottomCode.visibility = View.VISIBLE
+            }
+
+            override fun clearTargetView() {
+                itemView.borderTopCode.visibility = View.INVISIBLE
+                itemView.borderBottomCode.visibility = View.INVISIBLE
+            }
         }
 
         class BulletHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView) {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
             init {
                 itemView.textBullet.apply {
@@ -679,6 +813,9 @@ class EditorAdapter(
             ) = with(block) {
 
                 check(block is BulletView)
+
+
+                itemView.textBullet.isLongClickable = false
 
                 itemView.textBullet.customSelectionActionModeCallback =
                     TextStyleCallback(itemView.textBullet)
@@ -712,12 +849,25 @@ class EditorAdapter(
                     )
                 }
             }
+
+            override fun targetView() {
+                itemView.borderTopBullet.visibility = View.VISIBLE
+            }
+
+            override fun targetViewBottom() {
+                itemView.borderBottomBullet.visibility = View.VISIBLE
+            }
+
+            override fun clearTargetView() {
+                itemView.borderTopBullet.visibility = View.INVISIBLE
+                itemView.borderBottomBullet.visibility = View.INVISIBLE
+            }
         }
 
         class NumberedHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView) {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
             init {
                 itemView.contentText.apply {
@@ -738,6 +888,8 @@ class EditorAdapter(
 
                 with(itemView) {
 
+                    contentText.isLongClickable = false
+
                     contentText.customSelectionActionModeCallback = TextStyleCallback(contentText)
                     { editText, start, end ->
                         showHyperlinkMenu(
@@ -749,6 +901,11 @@ class EditorAdapter(
                         )
                     }
 
+                    if (block is NumberListItemView)
+                        positionText.text = "${block.number}."
+
+                    if (block is BlockView.Editable)
+                        contentText.setText(block.text)
                     positionText.text = "${block.number}."
                     contentText.setText(block.text)
                 }
@@ -767,7 +924,22 @@ class EditorAdapter(
                     )
                 }
             }
+
+            override fun targetView() {
+                itemView.borderTopNumbered.visibility = View.VISIBLE
+            }
+
+            override fun targetViewBottom() {
+                itemView.borderBottomNumbered.visibility = View.VISIBLE
+            }
+
+            override fun clearTargetView() {
+                itemView.borderTopNumbered.visibility = View.INVISIBLE
+                itemView.borderBottomNumbered.visibility = View.INVISIBLE
+            }
         }
+
+        class LinkToPageHolder(itemView: View) : ViewHolder(itemView)
 
         class ToggleHolder(
             val editTextWatcher: MyEditorTextWatcher,
@@ -810,8 +982,6 @@ class EditorAdapter(
             }
         }
 
-        class LinkToPageHolder(itemView: View) : ViewHolder(itemView)
-
         class DividerHolder(itemView: View) : ViewHolder(itemView)
 
         class PictureHolder(itemView: View) : ViewHolder(itemView) {
@@ -822,7 +992,6 @@ class EditorAdapter(
                     .centerCrop()
                     .into(itemView.picture)
             }
-
         }
 
         class BookmarkHolder(itemView: View) : ViewHolder(itemView) {
@@ -841,7 +1010,6 @@ class EditorAdapter(
                         .into(image)
                 }
             }
-
         }
 
         fun showHyperlinkMenu(
@@ -873,9 +1041,13 @@ class EditorAdapter(
             editText: EditText,
             focusListener: (Int) -> Unit
         ) {
-            editText.setOnFocusChangeListener { _, hasFocus ->
+            editText.setOnFocusChangeListener { view, hasFocus ->
                 if (hasFocus) {
+                    view.isLongClickable = true
                     focusListener.invoke(adapterPosition)
+                } else {
+                    view.isLongClickable = false
+                    focusListener.invoke(-1)
                 }
             }
         }

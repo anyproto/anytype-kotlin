@@ -12,7 +12,7 @@ import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
 sealed class EditorAction {
     object PressButton : EditorAction()
     data class PressBlock(val id: String) : EditorAction()
-    data class OnBlockFocus(val position: Int): EditorAction()
+    data class OnBlockFocus(val position: Int) : EditorAction()
 }
 
 sealed class EditBlockAction {
@@ -34,9 +34,12 @@ sealed class EditorState {
     object HideKeyboard : EditorState()
     data class Result(val blocks: List<Block>) : EditorState()
     data class Swap(val request: SwapRequest) : EditorState()
-    data class Updates(val blocks : List<Block>) : EditorState()
+    data class Remove(val position: Int) : EditorState()
+    data class Updates(val blocks: List<Block>) : EditorState()
     data class Update(val block: Block) : EditorState()
-    data class Archive(val id: String): EditorState()
-    data class Error(val msg: String): EditorState()
+    data class Archive(val id: String) : EditorState()
+    data class Error(val msg: String) : EditorState()
+    object DragDropOn : EditorState()
+    object DragDropOff : EditorState()
     object Loading : EditorState()
 }

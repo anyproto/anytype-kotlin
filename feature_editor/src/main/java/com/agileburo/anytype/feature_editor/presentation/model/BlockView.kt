@@ -5,6 +5,7 @@ import android.text.SpannableString
 sealed class BlockView {
 
     abstract val id : String
+    var isSelected: Boolean = false
 
     data class ParagraphView(
         override val id : String,
@@ -93,4 +94,6 @@ sealed class BlockView {
     interface Indentable {
         val indent : Int
     }
+
+    interface Consumer
 }

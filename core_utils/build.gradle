@@ -27,6 +27,7 @@ android {
 
 dependencies {
     def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
 
     //Compile time dependencies
     kapt applicationDependencies.daggerCompiler
@@ -37,5 +38,8 @@ dependencies {
 
     implementation applicationDependencies.rxjava2
     implementation applicationDependencies.rxAndroid
+
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.mockito
 
 }

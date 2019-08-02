@@ -70,7 +70,7 @@ fun SpannableString.withClickableSpan(
 ): SpannableString {
 
     val clickableSpan = object : ClickableSpan() {
-        override fun onClick(widget: View?) = onClickListener(param)
+        override fun onClick(widget: View) = onClickListener(param)
     }
     require(start <= end) { "Marks start should be <= end!" }
     setSpan(

@@ -1,52 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                   android:layout_width="match_parent"
-                                                   android:layout_height="wrap_content">
-
-    <ImageView
-            android:id="@+id/btnQuote"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:contentDescription="@string/editor_toolbar"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_edit"/>
-
-    <com.agileburo.anytype.feature_editor.ui.ClearFocusEditText
-            android:fontFamily="monospace"
-            android:id="@+id/textQuote"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_toEndOf="@id/btnQuote"
-            android:background="@android:color/transparent"
-            android:inputType="textMultiLine|textNoSuggestions"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/view2"
-            app:layout_constraintTop_toTopOf="parent"/>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <View
-            android:id="@+id/view2"
-            android:layout_width="1dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_toStartOf="@id/textQuote"
-            android:background="#ffc107"
-            app:layout_constraintBottom_toBottomOf="@+id/textQuote"
-            app:layout_constraintStart_toEndOf="@+id/btnQuote"
-            app:layout_constraintTop_toTopOf="@+id/textQuote"/>
+        android:id="@+id/borderTopQuote"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/design_default_color_primary"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/btnQuote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="@string/editor_toolbar"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_edit" />
+
+    <com.agileburo.anytype.feature_editor.ui.ClearFocusEditText
+        android:id="@+id/textQuote"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_toEndOf="@id/btnQuote"
+        android:background="@android:color/transparent"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/view2"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Here are some quick tips for a first-time organization member." />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_toStartOf="@id/textQuote"
+        android:background="#ffc107"
+        app:layout_constraintBottom_toBottomOf="@+id/textQuote"
+        app:layout_constraintStart_toEndOf="@+id/btnQuote"
+        app:layout_constraintTop_toTopOf="@+id/textQuote" />
+
+    <View
+        android:id="@+id/borderBottomQuote"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@id/textQuote"
+        android:background="@color/design_default_color_primary"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

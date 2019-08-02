@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.core_utils.UIExtensions
 import com.agileburo.anytype.core_utils.toast
@@ -16,12 +17,12 @@ import com.agileburo.anytype.feature_editor.domain.Block
 import com.agileburo.anytype.feature_editor.domain.ContentType
 import com.agileburo.anytype.feature_editor.domain.toView
 import com.agileburo.anytype.feature_editor.presentation.mapper.BlockModelMapper
+import com.agileburo.anytype.feature_editor.presentation.mapper.BlockViewMapper
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModel
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModelFactory
-import com.agileburo.anytype.feature_editor.presentation.mapper.BlockViewMapper
+import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_editor.*
-import java.lang.UnsupportedOperationException
 import javax.inject.Inject
 
 abstract class EditorFragment : Fragment() {
@@ -38,6 +39,16 @@ abstract class EditorFragment : Fragment() {
 
     private val disposable = CompositeDisposable()
 
+    private val helper by lazy {
+        ItemTouchHelper(dragAndDropBehavior)
+    }
+
+    private val dragAndDropBehavior by lazy {
+        DragAndDropBehavior(
+            onDragDropAction = viewModel::onBlockDragAndDropAction
+        )
+    }
+
     private val blockAdapter by lazy {
         EditorAdapter(
             blocks = mutableListOf(),
@@ -46,14 +57,7 @@ abstract class EditorFragment : Fragment() {
             focusListener = viewModel::onBlockFocus,
             onExpandClick = viewModel::onExpandClicked
         ).apply {
-            //После добавления helper ломается выделение текста в блоках
-//            val helper = ItemTouchHelper(
-//                DragAndDropBehavior(
-//                    onFinished = viewModel::onSwapFinished,
-//                    onItemMoved = viewModel::onSwap
-//                )
-//            )
-//            helper.attachToRecyclerView(blockList)
+            helper.attachToRecyclerView(blockList)
         }
     }
 
@@ -82,14 +86,17 @@ abstract class EditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
+        dragAndDropBehavior.init()
     }
 
     private fun initializeView() = with(blockList) {
         layoutManager = LinearLayoutManager(requireContext())
+        addItemDecoration(SpaceItemDecoration(space = 48, addSpaceBelowLastItem = true))
         adapter = blockAdapter
     }
-    
+
     override fun onDestroyView() {
+        dragAndDropBehavior.destroy()
         disposable.clear()
         super.onDestroyView()
     }
@@ -102,13 +109,17 @@ abstract class EditorFragment : Fragment() {
 
         is EditorState.Updates -> render(state.blocks)
 
-        is EditorState.Swap -> blockAdapter.swap(state.request)
+        is EditorState.Swap -> swap(state.request)
+
+        is EditorState.Remove -> remove(state.position)
 
         is EditorState.Archive -> {
         }
         is EditorState.Error -> onError(state.msg)
         is EditorState.ClearBlockFocus -> clearBlockFocus(state.position, state.contentType)
         is EditorState.HideKeyboard -> UIExtensions.hideSoftKeyBoard(requireActivity(), blockList)
+        is EditorState.DragDropOn -> helper.attachToRecyclerView(blockList)
+        is EditorState.DragDropOff -> helper.attachToRecyclerView(null)
     }
 
     private fun clearBlockFocus(position: Int, contentType: ContentType) {
@@ -136,11 +147,13 @@ abstract class EditorFragment : Fragment() {
     private fun setBlocks(blocks: List<Block>) =
         blockAdapter.setBlocks(blocks.toMutableList().toView())
 
-    private fun updateBlock(block: Block) =
-        blockAdapter.updateBlock(mapper.mapToView(block))
+    private fun updateBlock(block: Block) = blockAdapter.updateBlock(mapper.mapToView(block))
 
-    private fun render(blocks: List<Block>) =
-        blockAdapter.update(blocks.toMutableList().toView())
+    private fun render(blocks: List<Block>) = blockAdapter.update(blocks.toMutableList().toView())
+
+    private fun swap(request: SwapRequest) = blockAdapter.swap(request)
+
+    private fun remove(position: Int) = blockAdapter.remove(position)
 
     private fun onError(msg: CharSequence) = requireContext().toast(msg)
 }

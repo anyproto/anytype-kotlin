@@ -132,8 +132,8 @@ class TextStyleCallback(
     }
 
     private fun changeMenuItemsVisibility(menu: Menu?, inactiveId: Int, activeId: Int) {
-        menu?.findItem(inactiveId)?.setVisible(false)
-        menu?.findItem(activeId)?.setVisible(true)
+        menu?.findItem(inactiveId)?.isVisible = false
+        menu?.findItem(activeId)?.isVisible = true
     }
 
     private fun removeStyleSpanFromSubstring(

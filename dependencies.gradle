@@ -6,10 +6,10 @@ allprojects {
 }
 
 ext {
-    //Kotlin
+    // Kotlin
     kotlin_coroutines_version = '1.1.1'
 
-    //AndroidX
+    // AndroidX
     androidx_core_version = '1.0.0'
     appcompat_version = '1.0.0'
     constraintLayout_version = '2.0.0-beta1'
@@ -17,40 +17,43 @@ ext {
     cardview_version = '1.0.0'
     material_version = '1.0.0-rc01'
 
-    //Architecture Components
+    // Architecture Components
     lifecycle_version = '2.0.0'
     navigation_version = '1.0.0-beta02'
 
-    //Third party libraries
+    // Third party libraries
     glide_version = '4.9.0'
     dagger_version = '2.11'
     javaxAnnotations_version = '1.0'
     javaxInject_version = '1'
     retrofit_version = '2.3.0'
     okhttp_logging_interceptor_version = '3.8.1'
-    timber_version = '4.7.1'
     rxjava2_version = '2.1.1'
     moshi_version = '1.8.0'
     gson_version = '2.8.5'
     rxrelay_version = '2.1.0'
     better_link_method_version = '2.2.0'
 
-    //Unit Testing
+    // Unit Testing
     robolectric_version = '3.8'
     junit_version = '4.12'
     mockito_version = '1.4.0'
     kluent_version = '1.14'
 
-    //Acceptance Testing
+    // Acceptance Testing
     runner_version = '1.1.0'
     espresso_version = '3.1.0'
     android_junit_version = '1.1.0'
 
-    //Development
+    // Development
     leakCanaryVersion = '1.5'
 
-    sentryVersion = '1.7.16'
-    slf4jVersion = '1.7.25'
+    // Logging, Analytics & Crash reporting
+
+    timber_version = '4.7.1'
+    crashlytics_version = '2.10.1'
+    firebase_core_version = '17.0.1'
+
 
     mainApplication = [
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
@@ -82,9 +85,10 @@ ext {
             timber:                     "com.jakewharton.timber:timber:$timber_version",
             rxjava2:                    "io.reactivex.rxjava2:rxjava:$rxjava2_version",
             rxAndroid:                  "io.reactivex.rxjava2:rxandroid:$rxjava2_version",
-            moshiKotlin:               "com.squareup.moshi:moshi-kotlin:$moshi_version",
-            sentry:                     "io.sentry:sentry-android:$sentryVersion",
-            slf4j:                      "org.slf4j:slf4j-nop:$slf4jVersion"
+            moshiKotlin:                "com.squareup.moshi:moshi-kotlin:$moshi_version",
+
+            crashlytics:                "com.crashlytics.sdk.android:crashlytics:$crashlytics_version",
+            firebaseCore:              "com.google.firebase:firebase-core:$firebase_core_version"
     ]
 
     unitTesting = [

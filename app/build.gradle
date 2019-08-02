@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'io.fabric'
+
 
 android {
     def config = rootProject.extensions.getByName("ext")
@@ -82,8 +84,8 @@ dependencies {
     implementation applicationDependencies.gson
     implementation applicationDependencies.rxRelay
 
-    implementation applicationDependencies.sentry
-    implementation applicationDependencies.slf4j
+    implementation applicationDependencies.crashlytics
+    implementation applicationDependencies.firebaseCore
 
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.junit
@@ -93,3 +95,5 @@ dependencies {
     androidTestImplementation acceptenceTesting.androidJUnit
     androidTestImplementation acceptenceTesting.testRules
 }
+
+apply plugin: 'com.google.gms.google-services'

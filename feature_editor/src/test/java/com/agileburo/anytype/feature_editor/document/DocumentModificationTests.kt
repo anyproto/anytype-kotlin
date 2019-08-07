@@ -2276,4 +2276,600 @@ class DocumentModificationTests {
         assertEquals("2", document[1].children[1].parentId)
         assertEquals("2", document[1].children[2].parentId)
     }
+
+    @Test(expected = IllegalStateException::class)
+    fun `we cannot insert block if we cannot find previous block by id`() {
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            )
+        )
+
+        document.insertNewBlockAfter(DataFactory.randomString())
+    }
+
+    @Test
+    fun insertBlockAtRootLevelWithGeneratedIdAndCorrectParentIdTest() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(1, document.size)
+
+        document.insertNewBlockAfter("1")
+
+        assertEquals(2, document.size)
+
+        assertTrue { document.first().id == "1" }
+        assertTrue { document.first().parentId.isEmpty() }
+        assertTrue { document.last().id.isNotEmpty() }
+        assertTrue { document.last().id != document.first().id }
+        assertTrue { document.last().parentId.isEmpty() }
+        assertTrue { document.last().contentType == ContentType.P }
+    }
+
+    @Test
+    fun shouldInsertParagraphBlockInTheMiddleTest() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(2, document.size)
+
+        document.insertNewBlockAfter("1")
+
+        assertEquals(3, document.size)
+
+        assertTrue { document.first().id == "1" }
+        assertTrue { document.first().parentId.isEmpty() }
+        assertTrue { document[1].id.isNotEmpty() }
+        assertTrue { document[1].parentId.isEmpty() }
+        assertTrue { document[1].contentType == ContentType.P }
+        assertTrue { document.last().id == "2" }
+        assertTrue { document.last().parentId.isEmpty() }
+
+    }
+
+    @Test
+    fun shouldInsertBlockWithCorrectContentTypeAfterNumberedListAtRootLevel() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.NumberedList,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(1, document.size)
+
+        document.insertNewBlockAfter("1")
+
+        assertEquals(2, document.size)
+
+        assertTrue { document.first().id == "1" }
+        assertTrue { document.first().parentId.isEmpty() }
+        assertTrue { document.last().id.isNotEmpty() }
+        assertTrue { document.last().id != document.first().id }
+        assertTrue { document.last().parentId.isEmpty() }
+        assertTrue { document.last().contentType == document.first().contentType }
+        assertTrue { document.last().contentType == ContentType.NumberedList }
+    }
+
+    @Test
+    fun shouldInsertBlockWithCorrectContentTypeAfterCheckboxAtRootLevel() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Check,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(1, document.size)
+
+        document.insertNewBlockAfter("1")
+
+        assertEquals(2, document.size)
+
+        assertTrue { document.first().id == "1" }
+        assertTrue { document.first().parentId.isEmpty() }
+        assertTrue { document.last().id.isNotEmpty() }
+        assertTrue { document.last().id != document.first().id }
+        assertTrue { document.last().parentId.isEmpty() }
+        assertTrue { document.last().contentType == document.first().contentType }
+        assertTrue { document.last().contentType == ContentType.Check }
+    }
+
+    @Test
+    fun shouldInsertBlockWithCorrectContentTypeAfterBulletListAtRootLevel() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.UL,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(1, document.size)
+
+        document.insertNewBlockAfter("1")
+
+        assertEquals(2, document.size)
+
+        assertTrue { document.first().id == "1" }
+        assertTrue { document.first().parentId.isEmpty() }
+        assertTrue { document.last().id.isNotEmpty() }
+        assertTrue { document.last().id != document.first().id }
+        assertTrue { document.last().parentId.isEmpty() }
+        assertTrue { document.last().contentType == document.first().contentType }
+        assertTrue { document.last().contentType == ContentType.UL }
+    }
+
+    @Test
+    fun shouldInsertCheckboxBlockInTheMiddleTest() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Check,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(2, document.size)
+
+        document.insertNewBlockAfter("1")
+
+        assertEquals(3, document.size)
+
+        assertTrue { document.first().id == "1" }
+        assertTrue { document.first().contentType == ContentType.Check }
+        assertTrue { document.first().parentId.isEmpty() }
+        assertTrue { document[1].id.isNotEmpty() }
+        assertTrue { document[1].parentId.isEmpty() }
+        assertTrue { document[1].contentType == ContentType.Check }
+        assertTrue { document.last().id == "2" }
+        assertTrue { document.last().parentId.isEmpty() }
+        assertTrue { document.last().contentType == ContentType.P }
+    }
+
+    @Test
+    fun shouldInsertNumberedListBlockInTheMiddleTest() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.NumberedList,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(2, document.size)
+
+        document.insertNewBlockAfter("1")
+
+        assertEquals(3, document.size)
+
+        assertTrue { document.first().id == "1" }
+        assertTrue { document.first().contentType == ContentType.NumberedList }
+        assertTrue { document.first().parentId.isEmpty() }
+        assertTrue { document[1].id.isNotEmpty() }
+        assertTrue { document[1].parentId.isEmpty() }
+        assertTrue { document[1].contentType == ContentType.NumberedList }
+        assertTrue { document.last().id == "2" }
+        assertTrue { document.last().parentId.isEmpty() }
+        assertTrue { document.last().contentType == ContentType.P }
+    }
+
+    @Test
+    fun shouldInsertBulletListBlockInTheMiddleTest() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.UL,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Empty,
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(2, document.size)
+
+        document.insertNewBlockAfter("1")
+
+        assertEquals(3, document.size)
+
+        assertTrue { document.first().id == "1" }
+        assertTrue { document.first().contentType == ContentType.UL }
+        assertTrue { document.first().parentId.isEmpty() }
+        assertTrue { document[1].id.isNotEmpty() }
+        assertTrue { document[1].parentId.isEmpty() }
+        assertTrue { document[1].contentType == ContentType.UL }
+        assertTrue { document.last().id == "2" }
+        assertTrue { document.last().parentId.isEmpty() }
+        assertTrue { document.last().contentType == ContentType.P }
+    }
+
+    @Test
+    fun `should insert a new block with correct parent id and content type after previous block at children level`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Empty,
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "2",
+                        parentId = "1",
+                        contentType = ContentType.P,
+                        content = Content.Empty,
+                        blockType = BlockType.Editable
+                    )
+                )
+            )
+        )
+
+        assertEquals(1, document.size)
+        assertEquals(1, document.first().children.size)
+
+        document.insertNewBlockAfter("2")
+
+        assertEquals(1, document.size)
+        assertEquals(2, document.first().children.size)
+
+        document.first().children.apply {
+            assertTrue { first().id == "2" }
+            assertTrue { first().contentType == ContentType.P }
+            assertTrue { first().parentId == "1" }
+            assertTrue { last().parentId == "1" }
+            assertTrue { last().id.isNotEmpty() }
+            assertTrue { last().contentType == ContentType.P }
+        }
+    }
+
+    @Test
+    fun `should insert a new block with correct parent id and content type after numbered-list-item block at children level`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Empty,
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "2",
+                        parentId = "1",
+                        contentType = ContentType.NumberedList,
+                        content = Content.Empty,
+                        blockType = BlockType.Editable
+                    )
+                )
+            )
+        )
+
+        assertEquals(1, document.size)
+        assertEquals(1, document.first().children.size)
+
+        document.insertNewBlockAfter("2")
+
+        assertEquals(1, document.size)
+        assertEquals(2, document.first().children.size)
+
+        document.first().children.apply {
+            assertTrue { first().id == "2" }
+            assertTrue { first().contentType == ContentType.NumberedList }
+            assertTrue { first().parentId == "1" }
+            assertTrue { last().parentId == "1" }
+            assertTrue { last().id.isNotEmpty() }
+            assertTrue { last().contentType == ContentType.NumberedList }
+        }
+    }
+
+    @Test
+    fun `should insert a new block with correct parent id and content type after checkbox block at children level`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Empty,
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "2",
+                        parentId = "1",
+                        contentType = ContentType.Check,
+                        content = Content.Empty,
+                        blockType = BlockType.Editable
+                    )
+                )
+            )
+        )
+
+        assertEquals(1, document.size)
+        assertEquals(1, document.first().children.size)
+
+        document.insertNewBlockAfter("2")
+
+        assertEquals(1, document.size)
+        assertEquals(2, document.first().children.size)
+
+        document.first().children.apply {
+            assertTrue { first().id == "2" }
+            assertTrue { first().contentType == ContentType.Check }
+            assertTrue { first().parentId == "1" }
+            assertTrue { last().parentId == "1" }
+            assertTrue { last().id.isNotEmpty() }
+            assertTrue { last().contentType == ContentType.Check }
+        }
+    }
+
+    @Test
+    fun `should insert a new block with correct parent id and content type after bullet block at children level`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Empty,
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "2",
+                        parentId = "1",
+                        contentType = ContentType.UL,
+                        content = Content.Empty,
+                        blockType = BlockType.Editable
+                    )
+                )
+            )
+        )
+
+        assertEquals(1, document.size)
+        assertEquals(1, document.first().children.size)
+
+        document.insertNewBlockAfter("2")
+
+        assertEquals(1, document.size)
+        assertEquals(2, document.first().children.size)
+
+        document.first().children.apply {
+            assertTrue { first().id == "2" }
+            assertTrue { first().contentType == ContentType.UL }
+            assertTrue { first().parentId == "1" }
+            assertTrue { last().parentId == "1" }
+            assertTrue { last().id.isNotEmpty() }
+            assertTrue { last().contentType == ContentType.UL }
+        }
+    }
+
+    @Test
+    fun `should insert a new block in the middle with correct parent id and content type after previous block at children level`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Empty,
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "2",
+                        parentId = "1",
+                        contentType = ContentType.P,
+                        content = Content.Empty,
+                        blockType = BlockType.Editable
+                    ),
+                    Block(
+                        id = "3",
+                        parentId = "1",
+                        contentType = ContentType.P,
+                        content = Content.Empty,
+                        blockType = BlockType.Editable
+                    )
+                )
+            )
+        )
+
+        assertEquals(1, document.size)
+        assertEquals(2, document.first().children.size)
+
+        document.insertNewBlockAfter("2")
+
+        assertEquals(1, document.size)
+        assertEquals(3, document.first().children.size)
+
+        document.first().children.apply {
+            assertTrue { first().id == "2" }
+            assertTrue { first().contentType == ContentType.P }
+            assertTrue { first().parentId == "1" }
+            assertTrue { get(1).id.isNotEmpty() }
+            assertTrue { get(1).contentType == ContentType.P }
+            assertTrue { get(1).parentId == "1" }
+            assertTrue { last().parentId == "1" }
+            assertTrue { last().id == "3" }
+            assertTrue { last().contentType == ContentType.P }
+        }
+    }
+
+    @Test
+    fun `should insert a new block in the middle with correct parent id and content type after checkbox block at children level`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Empty,
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "2",
+                        parentId = "1",
+                        contentType = ContentType.Check,
+                        content = Content.Empty,
+                        blockType = BlockType.Editable
+                    ),
+                    Block(
+                        id = "3",
+                        parentId = "1",
+                        contentType = ContentType.P,
+                        content = Content.Empty,
+                        blockType = BlockType.Editable
+                    )
+                )
+            )
+        )
+
+        assertEquals(1, document.size)
+        assertEquals(2, document.first().children.size)
+
+        document.insertNewBlockAfter("2")
+
+        assertEquals(1, document.size)
+        assertEquals(3, document.first().children.size)
+
+        document.first().children.apply {
+            assertTrue { first().id == "2" }
+            assertTrue { first().contentType == ContentType.Check }
+            assertTrue { first().parentId == "1" }
+            assertTrue { get(1).id.isNotEmpty() }
+            assertTrue { get(1).contentType == ContentType.Check }
+            assertTrue { get(1).parentId == "1" }
+            assertTrue { last().parentId == "1" }
+            assertTrue { last().id == "3" }
+            assertTrue { last().contentType == ContentType.P }
+        }
+    }
+
+    @Test
+    fun shouldModifyBlockState() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Empty,
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "2",
+                        parentId = "1",
+                        contentType = ContentType.Toggle,
+                        content = Content.Empty,
+                        blockType = BlockType.Editable,
+                        children = mutableListOf(
+                            Block(
+                                id = "3",
+                                parentId = "2",
+                                contentType = ContentType.Toggle,
+                                content = Content.Empty,
+                                blockType = BlockType.Editable
+                            )
+                        )
+                    )
+                )
+            )
+        )
+
+        assertFalse { document.first().state.focused }
+        assertFalse { document.first().state.expanded }
+
+        assertFalse { document.first().children.first().state.focused }
+        assertFalse { document.first().children.first().state.expanded }
+
+        assertFalse { document.first().children.first().children.first().state.focused }
+        assertFalse { document.first().children.first().children.first().state.expanded }
+
+        document.applyToAll { block -> block.state.focused = true }
+
+        assertTrue { document.first().state.focused }
+        assertFalse { document.first().state.expanded }
+
+        assertTrue { document.first().children.first().state.focused }
+        assertFalse { document.first().children.first().state.expanded }
+
+        assertTrue { document.first().children.first().children.first().state.focused }
+        assertFalse { document.first().children.first().children.first().state.expanded }
+
+        document.applyToAll { block -> block.state.expanded = true }
+
+        assertTrue { document.first().state.focused }
+        assertTrue { document.first().state.expanded }
+
+        assertTrue { document.first().children.first().state.focused }
+        assertTrue { document.first().children.first().state.expanded }
+
+        assertTrue { document.first().children.first().children.first().state.focused }
+        assertTrue { document.first().children.first().children.first().state.expanded }
+    }
 }

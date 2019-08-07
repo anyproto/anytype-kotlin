@@ -2,6 +2,7 @@ package com.agileburo.anytype.feature_editor.domain
 
 import com.agileburo.anytype.feature_editor.presentation.mapper.BlockViewMapper
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
+import java.util.*
 
 /**
  * Created by Konstantin Ivanov
@@ -68,15 +69,37 @@ data class Block(
         }
     }
 
+    fun isCheckbox() = contentType == ContentType.Check
+
     fun isToggle() = contentType == ContentType.Toggle
 
     data class State(val map : MutableMap<String, Any> = mutableMapOf()) {
         var expanded : Boolean by map
+        var focused : Boolean by map
 
         companion object {
-            fun expanded(expanded : Boolean = false) = State(mutableMapOf("expanded" to expanded))
+            fun expanded(expanded : Boolean = false) = State(mutableMapOf("expanded" to expanded, "focused" to false))
+            fun focused(focused : Boolean = false) = State(mutableMapOf("focused" to focused))
         }
     }
+
+    companion object {
+        fun new(parentId: String, contentType : ContentType) : Block {
+            return Block(
+                id = UUID.randomUUID().toString(),
+                parentId = parentId,
+                content = Content.Text(
+                    marks = emptyList(),
+                    text = "",
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                contentType = contentType,
+                state = State.focused(true)
+            )
+        }
+    }
+
 }
 
 /**
@@ -408,4 +431,66 @@ fun Document.moveAfter(previousId : String, targetId : String) {
         } ?: throw IllegalStateException("Could not find target block with id: $targetId")
 
     } ?: throw IllegalStateException("Could not find previous block with id: $previousId")
+}
+
+/**
+ * Inserts a new block after given block according to block hierarchy.
+ * @param previousBlockId id of the previous block (new block is inserted after this block)
+ */
+fun Document.insertNewBlockAfter(previousBlockId : String) {
+
+    search(previousBlockId)?.let { previous ->
+
+        val newContentType = if (previous.isCheckbox() || previous.isList()) previous.contentType else ContentType.P
+
+        val newBlock = Block.new(
+            parentId = previous.parentId,
+            contentType = newContentType
+        )
+
+        if (previous.parentId.isNotEmpty()) {
+
+            search(previous.parentId)?.let { parent ->
+
+                val result = mutableListOf<Block>()
+
+                parent.children.forEach { block ->
+                    result.add(block)
+                    if (block.id == previousBlockId) result.add(newBlock)
+                }
+
+                parent.children.apply {
+                    clear()
+                    addAll(result)
+                }
+
+            } ?: throw IllegalStateException("Could not found parent for previous item with parent id: ${previous.parentId}")
+
+        } else {
+
+            val result = mutableListOf<Block>()
+
+            forEach { block ->
+                result.add(block)
+                if (block.id == previousBlockId) result.add(newBlock)
+            }
+
+            this.clear()
+            this.addAll(result)
+        }
+
+
+    } ?: throw IllegalStateException("Could not found previous block with id: $previousBlockId")
+}
+
+/**
+ * Applies given action on every block of this document.
+ * Only a variable field of a block can be modified by this method.
+ * @param action action on block instance.
+ */
+fun Document.applyToAll(action : (Block) -> Unit) {
+    forEach { block ->
+        action(block)
+        block.children.applyToAll(action)
+    }
 }

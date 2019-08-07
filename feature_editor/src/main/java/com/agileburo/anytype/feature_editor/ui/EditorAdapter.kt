@@ -2,19 +2,15 @@ package com.agileburo.anytype.feature_editor.ui
 
 import android.content.Context
 import android.graphics.Color
+import android.text.*
 import android.text.Editable
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import android.text.TextWatcher
-import android.text.method.LinkMovementMethod
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.agileburo.anytype.core_utils.showKeyboard
 import com.agileburo.anytype.core_utils.swap
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
@@ -44,7 +40,8 @@ class EditorAdapter(
     private val blockContentListener: (BlockView) -> Unit,
     private val menuListener: (BlockMenuAction) -> Unit,
     private val focusListener: (Int) -> Unit,
-    private val onExpandClick : (BlockView) -> Unit
+    private val onExpandClick: (BlockView) -> Unit,
+    private val onEnterPressed: (String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setBlocks(items: List<BlockView>) {
@@ -199,7 +196,8 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    focusListener = focusListener
+                    focusListener = focusListener,
+                    onEnterPressed = onEnterPressed
                 )
             }
             is ViewHolder.HeaderOneHolder -> {
@@ -207,7 +205,8 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    focusListener = focusListener
+                    focusListener = focusListener,
+                    onEnterPressed = onEnterPressed
                 )
             }
             is ViewHolder.HeaderTwoHolder -> {
@@ -215,7 +214,8 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    focusListener = focusListener
+                    focusListener = focusListener,
+                    onEnterPressed = onEnterPressed
                 )
             }
             is ViewHolder.HeaderThreeHolder -> {
@@ -223,7 +223,8 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    focusListener = focusListener
+                    focusListener = focusListener,
+                    onEnterPressed = onEnterPressed
                 )
             }
             is ViewHolder.HeaderFourHolder -> {
@@ -231,7 +232,8 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    focusListener = focusListener
+                    focusListener = focusListener,
+                    onEnterPressed = onEnterPressed
                 )
             }
             is ViewHolder.QuoteHolder -> {
@@ -239,7 +241,8 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    focusListener = focusListener
+                    focusListener = focusListener,
+                    onEnterPressed = onEnterPressed
                 )
             }
             is ViewHolder.CheckBoxHolder -> {
@@ -247,7 +250,8 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    focusListener = focusListener
+                    focusListener = focusListener,
+                    onEnterPressed = onEnterPressed
                 )
             }
             is ViewHolder.CodeSnippetHolder -> {
@@ -255,7 +259,8 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    focusListener = focusListener
+                    focusListener = focusListener,
+                    onEnterPressed = onEnterPressed
                 )
             }
             is ViewHolder.BulletHolder -> {
@@ -263,7 +268,8 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    focusListener = focusListener
+                    focusListener = focusListener,
+                    onEnterPressed = onEnterPressed
                 )
             }
             is ViewHolder.NumberedHolder -> {
@@ -271,7 +277,8 @@ class EditorAdapter(
                 holder.bind(
                     block = blocks[position],
                     menuListener = menuListener,
-                    focusListener = focusListener
+                    focusListener = focusListener,
+                    onEnterPressed = onEnterPressed
                 )
             }
             is ViewHolder.BookmarkHolder -> {
@@ -285,7 +292,8 @@ class EditorAdapter(
                 holder.bind(
                     view = blocks[position],
                     onExpandClick = onExpandClick,
-                    menuListener = menuListener
+                    menuListener = menuListener,
+                    onEnterPressed = onEnterPressed
                 )
             }
 
@@ -318,9 +326,28 @@ class EditorAdapter(
 
     sealed class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+        fun select(selected: Boolean) {
+            if (selected) {
+                itemView.setBackgroundColor(Color.LTGRAY)
+            } else {
+                itemView.setBackgroundColor(0)
+            }
+        }
+
+        fun focus(editText: EditText) {
+            editText.apply {
+                postDelayed(
+                    {
+                        requestFocus()
+                        showKeyboard()
+                    }, 300
+                )
+            }
+        }
+
         open class IndentableViewHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun applyIndent(indent : Int = 0) {
+            fun applyIndent(indent: Int = 0) {
                 (itemView.layoutParams as RecyclerView.LayoutParams).apply {
                     setMargins(
                         (indent * itemView.context.resources.getDimension(R.dimen.indent).toInt()),
@@ -331,6 +358,26 @@ class EditorAdapter(
                 }
             }
 
+            fun watchEnter(
+                editText: EditText,
+                onEnterPressed: (String) -> Unit,
+                block: BlockView
+            ) {
+
+                editText.setOnEditorActionListener(null)
+
+                editText.setOnEditorActionListener { _, id, event ->
+                    if (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) {
+                        onEnterPressed(block.id)
+                        true
+                    } else if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_ACTION_NEXT) {
+                        onEnterPressed(block.id)
+                        false
+                    } else
+                        false
+                }
+            }
+
         }
 
         class ParagraphHolder(
@@ -338,43 +385,56 @@ class EditorAdapter(
             val editTextWatcher: MyEditorTextWatcher
         ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
+            private val inputField = itemView.textEditable
+            private val editButton = itemView.btnEditable
+
             init {
-                itemView.textEditable.apply {
+                inputField.textEditable.apply {
                     addTextChangedListener(editTextWatcher)
-                    movementMethod = LinkMovementMethod.getInstance()
+                    //movementMethod = LinkMovementMethod.getInstance()
+                    imeOptions = EditorInfo.IME_ACTION_NEXT
+                    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
                 }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                focusListener: (Int) -> Unit
+                focusListener: (Int) -> Unit,
+                onEnterPressed: (String) -> Unit
             ) = with(block) {
-                itemView.textEditable.isLongClickable = false
 
                 check(block is ParagraphView)
 
-                itemView.textEditable.customSelectionActionModeCallback =
-                    TextStyleCallback(itemView.textEditable) { editText, start, end ->
+                applyIndent(block.indent)
+
+                inputField.apply {
+
+                    isLongClickable = false
+
+                    customSelectionActionModeCallback = TextStyleCallback(this) { editText, start, end ->
                         showHyperlinkMenu(
                             context = itemView.context,
-                            parent = itemView.textEditable,
+                            parent = this,
                             editText = editText,
                             start = start,
                             end = end
                         )
                     }
 
-                itemView.textEditable.setText(block.text)
+                    setText(block.text)
 
-                applyIndent(block.indent)
+                    if (block.focused) focus(this)
 
-                setFocusListener(
-                    editText = itemView.textEditable,
-                    focusListener = focusListener
-                )
+                    watchEnter(this, onEnterPressed, block)
 
-                itemView.btnEditable.setOnClickListener {
+                    setFocusListener(
+                        editText = this,
+                        focusListener = focusListener
+                    )
+                }
+
+                editButton.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
                         block = block,
@@ -383,11 +443,7 @@ class EditorAdapter(
                     )
                 }
 
-                if (isSelected) {
-                    itemView.setBackgroundColor(Color.LTGRAY)
-                } else {
-                    itemView.setBackgroundColor(0)
-                }
+                select(isSelected)
             }
 
             override fun targetView() {
@@ -399,7 +455,6 @@ class EditorAdapter(
             }
 
             override fun clearTargetView() {
-                Timber.d("Clear Target View!!!")
                 itemView.border_top.visibility = View.INVISIBLE
                 itemView.border_bottom.visibility = View.INVISIBLE
             }
@@ -410,32 +465,41 @@ class EditorAdapter(
             val editTextWatcher: MyEditorTextWatcher
         ) : IndentableViewHolder(itemView) {
 
+            private val inputField = itemView.textHeaderOne
+
             init {
-                itemView.textHeaderOne.apply {
+                inputField.apply {
                     addTextChangedListener(editTextWatcher)
+                    imeOptions = EditorInfo.IME_ACTION_NEXT
+                    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
                 }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                focusListener: (Int) -> Unit
+                focusListener: (Int) -> Unit,
+                onEnterPressed: (String) -> Unit
             ) = with(block) {
 
                 check(block is HeaderView)
 
                 applyIndent(block.indent)
 
-                itemView.textHeaderOne.setText(block.text)
-                itemView.textHeaderOne.isLongClickable = false
+                inputField.apply {
 
-                if (block is BlockView.Editable)
-                    itemView.textHeaderOne.setText(block.text)
+                    isLongClickable = false
 
-                setFocusListener(
-                    editText = itemView.textHeaderOne,
-                    focusListener = focusListener
-                )
+                    setText(block.text)
+
+                    watchEnter(this, onEnterPressed, block)
+                    if (block.focused) focus(this)
+
+                    setFocusListener(
+                        editText = this,
+                        focusListener = focusListener
+                    )
+                }
             }
         }
 
@@ -444,33 +508,43 @@ class EditorAdapter(
             val editTextWatcher: MyEditorTextWatcher
         ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
+            private val inputField = itemView.textHeaderTwo
+            private val editButton = itemView.btnHeaderTwo
+
             init {
-                itemView.textHeaderTwo.apply {
+                inputField.apply {
                     addTextChangedListener(editTextWatcher)
+                    imeOptions = EditorInfo.IME_ACTION_NEXT
+                    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
                 }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                focusListener: (Int) -> Unit
+                focusListener: (Int) -> Unit,
+                onEnterPressed: (String) -> Unit
             ) = with(block) {
 
                 check(block is HeaderView)
 
                 applyIndent(block.indent)
 
-                itemView.textHeaderTwo.setText(block.text)
-                itemView.textHeaderTwo.isLongClickable = false
+                inputField.apply {
 
-                if (block is BlockView.Editable)
-                    itemView.textHeaderTwo.setText(block.text)
+                    setText(block.text)
+                    isLongClickable = false
 
-                setFocusListener(
-                    editText = itemView.textHeaderTwo,
-                    focusListener = focusListener
-                )
-                itemView.btnHeaderTwo.setOnClickListener {
+                    watchEnter(this, onEnterPressed, block)
+                    if (block.focused) focus(this)
+
+                    setFocusListener(
+                        editText = this,
+                        focusListener = focusListener
+                    )
+                }
+
+                editButton.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
                         block = block,
@@ -499,32 +573,44 @@ class EditorAdapter(
             val editTextWatcher: MyEditorTextWatcher
         ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
+            private val inputField = itemView.textHeaderThree
+            private val editButton = itemView.btnHeaderThree
+
             init {
-                itemView.textHeaderThree.apply {
+                inputField.apply {
                     addTextChangedListener(editTextWatcher)
+                    imeOptions = EditorInfo.IME_ACTION_NEXT
+                    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
                 }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                focusListener: (Int) -> Unit
+                focusListener: (Int) -> Unit,
+                onEnterPressed: (String) -> Unit
             ) = with(block) {
 
-                itemView.textHeaderThree.isLongClickable = false
-
-                if (block is BlockView.Editable)
-                    itemView.textHeaderThree.setText(block.text)
                 check(block is HeaderView)
 
-                itemView.textHeaderThree.setText(block.text)
+                applyIndent(block.indent)
 
-                setFocusListener(
-                    editText = itemView.textHeaderThree,
-                    focusListener = focusListener
-                )
+                inputField.apply {
 
-                itemView.btnHeaderThree.setOnClickListener {
+                    isLongClickable = false
+                    setText(block.text)
+
+                    watchEnter(this, onEnterPressed, block)
+                    if (block.focused) focus(this)
+
+                    setFocusListener(
+                        editText = this,
+                        focusListener = focusListener
+                    )
+
+                }
+
+                editButton.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
                         block = block,
@@ -553,34 +639,44 @@ class EditorAdapter(
             val editTextWatcher: MyEditorTextWatcher
         ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
+            private val inputField = itemView.textHeaderFour
+            private val editButton = itemView.btnHeaderFour
+
             init {
-                itemView.textHeaderFour.apply {
+                inputField.apply {
                     addTextChangedListener(editTextWatcher)
+                    imeOptions = EditorInfo.IME_ACTION_NEXT
+                    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
                 }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                focusListener: (Int) -> Unit
+                focusListener: (Int) -> Unit,
+                onEnterPressed: (String) -> Unit
             ) = with(block) {
 
                 check(block is HeaderView)
 
-                itemView.textHeaderFour.setText(block.text)
-                itemView.textHeaderFour.isLongClickable = false
-
-                if (block is BlockView.Editable)
-                    itemView.textHeaderFour.setText(block.text)
-
                 applyIndent(block.indent)
 
-                setFocusListener(
-                    editText = itemView.textHeaderFour,
-                    focusListener = focusListener
-                )
+                inputField.apply {
 
-                itemView.btnHeaderFour.setOnClickListener {
+                    isLongClickable = false
+
+                    setText(block.text)
+
+                    watchEnter(this, onEnterPressed, block)
+                    if (block.focused) focus(this)
+
+                    setFocusListener(
+                        editText = this,
+                        focusListener = focusListener
+                    )
+                }
+
+                editButton.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
                         block = block,
@@ -609,44 +705,59 @@ class EditorAdapter(
             val editTextWatcher: MyEditorTextWatcher
         ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
+            private val inputField = itemView.textQuote
+            private val editButton = itemView.btnQuote
+
             init {
-                itemView.textQuote.apply {
+                inputField.apply {
                     addTextChangedListener(editTextWatcher)
-                    movementMethod = LinkMovementMethod.getInstance()
+                    //movementMethod = LinkMovementMethod.getInstance()
+                    imeOptions = EditorInfo.IME_ACTION_NEXT
+                    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
                 }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                focusListener: (Int) -> Unit
+                focusListener: (Int) -> Unit,
+                onEnterPressed: (String) -> Unit
             ) = with(block) {
 
                 check(block is QuoteView)
 
                 applyIndent(indent = block.indent)
 
-                itemView.textQuote.isLongClickable = false
+                inputField.apply {
 
-                itemView.textQuote.customSelectionActionModeCallback =
-                    TextStyleCallback(itemView.textQuote)
-                    { editText, start, end ->
-                        showHyperlinkMenu(
-                            context = itemView.context,
-                            editText = editText,
-                            start = start,
-                            end = end,
-                            parent = itemView.textEditable
-                        )
-                    }
+                    customSelectionActionModeCallback =
+                        TextStyleCallback(this)
+                        { editText, start, end ->
+                            showHyperlinkMenu(
+                                context = itemView.context,
+                                editText = editText,
+                                start = start,
+                                end = end,
+                                parent = this
+                            )
+                        }
 
-                itemView.textQuote.setText(block.text)
+                    isLongClickable = false
 
-                setFocusListener(
-                    editText = itemView.textQuote,
-                    focusListener = focusListener
-                )
-                itemView.btnQuote.setOnClickListener {
+                    setText(block.text)
+
+                    watchEnter(this, onEnterPressed, block)
+
+                    if (block.focused) focus(this)
+
+                    setFocusListener(
+                        editText = this,
+                        focusListener = focusListener
+                    )
+
+                }
+
+                editButton.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
                         block = block,
@@ -675,46 +786,54 @@ class EditorAdapter(
             val editTextWatcher: MyEditorTextWatcher
         ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder, Consumer {
 
+            private val inputField = itemView.textCheckBox
+            private val editButton = itemView.btnCheckboxBlock
+
             init {
-                itemView.textCheckBox.apply {
+                inputField.apply {
                     addTextChangedListener(editTextWatcher)
-                    movementMethod = LinkMovementMethod.getInstance()
+                    //movementMethod = LinkMovementMethod.getInstance()
+                    imeOptions = EditorInfo.IME_ACTION_NEXT
+                    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
                 }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                focusListener: (Int) -> Unit
+                focusListener: (Int) -> Unit,
+                onEnterPressed: (String) -> Unit
             ) = with(block) {
 
                 check(block is CheckboxView)
 
                 applyIndent(block.indent)
 
+                inputField.apply {
+                    setText(block.text)
 
-                itemView.textCheckBox.isLongClickable = false
+                    isLongClickable = false
 
-                itemView.textCheckBox.customSelectionActionModeCallback =
-                    TextStyleCallback(itemView.textCheckBox)
-                    { editText, start, end ->
+                    customSelectionActionModeCallback = TextStyleCallback(this) { editText, start, end ->
                         showHyperlinkMenu(
                             context = itemView.context,
                             editText = editText,
                             start = start,
                             end = end,
-                            parent = itemView.textEditable
+                            parent = this
                         )
                     }
 
-                itemView.textCheckBox.setText(block.text)
+                    watchEnter(this, onEnterPressed, block)
+                    if (block.focused) focus(this)
 
-                setFocusListener(
-                    editText = itemView.textCheckBox,
-                    focusListener = focusListener
-                )
+                    setFocusListener(
+                        editText = this,
+                        focusListener = focusListener
+                    )
+                }
 
-                itemView.btnCheckboxBlock.setOnClickListener {
+                editButton.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
                         block = block,
@@ -743,34 +862,42 @@ class EditorAdapter(
             val editTextWatcher: MyEditorTextWatcher
         ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
+            private val inputField = itemView.textCode
+            private val editButton = itemView.btnCode
+
             init {
-                itemView.textCode.apply {
+                inputField.apply {
                     addTextChangedListener(editTextWatcher)
+                    imeOptions = EditorInfo.IME_ACTION_NEXT
+                    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
                 }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                focusListener: (Int) -> Unit
+                focusListener: (Int) -> Unit,
+                onEnterPressed: (String) -> Unit
             ) = with(block) {
 
                 check(block is CodeSnippetView)
 
                 applyIndent(block.indent)
 
-                itemView.textCode.setText(block.text)
-                itemView.textCode.isLongClickable = false
+                inputField.apply {
+                    setText(block.text)
+                    isLongClickable = false
 
-                if (block is BlockView.Editable)
-                    itemView.textCode.setText(block.text)
+                    watchEnter(this, onEnterPressed, block)
+                    if (block.focused) focus(this)
 
-                setFocusListener(
-                    editText = itemView.textCode,
-                    focusListener = focusListener
-                )
+                    setFocusListener(
+                        editText = this,
+                        focusListener = focusListener
+                    )
+                }
 
-                itemView.btnCode.setOnClickListener {
+                editButton.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
                         block = block,
@@ -799,48 +926,57 @@ class EditorAdapter(
             val editTextWatcher: MyEditorTextWatcher
         ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder, Consumer {
 
+            private val inputField = itemView.textBullet
+            private val editButton = itemView.btnBullet
+
             init {
-                itemView.textBullet.apply {
+                inputField.apply {
                     addTextChangedListener(editTextWatcher)
-                    movementMethod = LinkMovementMethod.getInstance()
+                    //movementMethod = LinkMovementMethod.getInstance()
+                    imeOptions = EditorInfo.IME_ACTION_NEXT
+                    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
                 }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                focusListener: (Int) -> Unit
+                focusListener: (Int) -> Unit,
+                onEnterPressed: (String) -> Unit
             ) = with(block) {
 
                 check(block is BulletView)
 
+                applyIndent(block.indent)
 
-                itemView.textBullet.isLongClickable = false
+                inputField.apply {
+                    isLongClickable = false
 
-                itemView.textBullet.customSelectionActionModeCallback =
-                    TextStyleCallback(itemView.textBullet)
-                    { editText, start, end ->
+                    setText(
+                        SpannableString(block.text)
+                            .withBulletSpan(gapWidth = 40, start = 0), TextView.BufferType.SPANNABLE
+                    )
+
+                    watchEnter(this, onEnterPressed, block)
+                    if (block.focused) focus(this)
+
+                    setFocusListener(
+                        editText = this,
+                        focusListener = focusListener
+                    )
+
+                    customSelectionActionModeCallback = TextStyleCallback(this) { editText, start, end ->
                         showHyperlinkMenu(
                             context = itemView.context,
                             editText = editText,
                             start = start,
                             end = end,
-                            parent = itemView.textEditable
+                            parent = this
                         )
                     }
+                }
 
-                applyIndent(block.indent)
-
-                itemView.textBullet.setText(
-                    SpannableString(block.text)
-                        .withBulletSpan(gapWidth = 40, start = 0), TextView.BufferType.SPANNABLE
-                )
-
-                setFocusListener(
-                    editText = itemView.textBullet,
-                    focusListener = focusListener
-                )
-                itemView.btnBullet.setOnClickListener {
+                editButton.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
                         block = block,
@@ -869,53 +1005,58 @@ class EditorAdapter(
             val editTextWatcher: MyEditorTextWatcher
         ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder, Consumer {
 
+            private val inputField = itemView.contentText
+            private val editButton = itemView.editContentButton
+
             init {
                 itemView.contentText.apply {
                     addTextChangedListener(editTextWatcher)
-                    movementMethod = LinkMovementMethod.getInstance()
+                    //movementMethod = LinkMovementMethod.getInstance()
+                    imeOptions = EditorInfo.IME_ACTION_NEXT
+                    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
                 }
             }
 
             fun bind(
                 block: BlockView,
                 menuListener: (BlockMenuAction) -> Unit,
-                focusListener: (Int) -> Unit
+                focusListener: (Int) -> Unit,
+                onEnterPressed: (String) -> Unit
             ) {
 
                 check(block is NumberListItemView)
 
                 applyIndent(block.indent)
 
-                with(itemView) {
+                inputField.apply {
 
-                    contentText.isLongClickable = false
+                    isLongClickable = false
 
-                    contentText.customSelectionActionModeCallback = TextStyleCallback(contentText)
-                    { editText, start, end ->
+                    setText(block.text)
+
+                    customSelectionActionModeCallback = TextStyleCallback(this) { editText, start, end ->
                         showHyperlinkMenu(
                             context = itemView.context,
                             editText = editText,
                             start = start,
                             end = end,
-                            parent = itemView.textEditable
+                            parent = this
                         )
                     }
 
-                    if (block is NumberListItemView)
-                        positionText.text = "${block.number}."
+                    watchEnter(inputField, onEnterPressed, block)
+                    if (block.focused) focus(inputField)
 
-                    if (block is BlockView.Editable)
-                        contentText.setText(block.text)
-                    positionText.text = "${block.number}."
-                    contentText.setText(block.text)
+                    setFocusListener(
+                        editText = this,
+                        focusListener = focusListener
+                    )
+
                 }
 
-                setFocusListener(
-                    editText = itemView.contentText,
-                    focusListener = focusListener
-                )
+                itemView.positionText.text = "${block.number}."
 
-                itemView.btnNumbered.setOnClickListener {
+                editButton.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
                         block = block,
@@ -946,23 +1087,42 @@ class EditorAdapter(
             itemView: View
         ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder, Consumer {
 
+            private val inputField = itemView.textEditable
+            private val editButton = itemView.blockMenuButton
+
             init {
                 itemView.textEditable.apply {
                     addTextChangedListener(editTextWatcher)
+                    imeOptions = EditorInfo.IME_ACTION_NEXT
+                    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
                 }
             }
 
             fun bind(
-                view : BlockView,
+                view: BlockView,
                 onExpandClick: (BlockView) -> Unit,
-                menuListener: (BlockMenuAction) -> Unit
+                menuListener: (BlockMenuAction) -> Unit,
+                onEnterPressed: (String) -> Unit
             ) {
 
                 check(view is ToggleView)
 
                 applyIndent(view.indent)
 
-                itemView.blockMenuButton.setOnClickListener {
+                inputField.apply {
+
+                    isLongClickable = false
+
+                    setText(view.text)
+
+                    watchEnter(this, onEnterPressed, view)
+                    if (view.focused) focus(this)
+
+                    // TODO add focus listener?
+
+                }
+
+                editButton.setOnClickListener {
                     showBlockMenu(
                         context = itemView.context,
                         block = view,
@@ -972,19 +1132,11 @@ class EditorAdapter(
                 }
 
                 itemView.apply {
-
-                    textEditable.setText(view.text)
-
                     toggleArrow.rotation = if (view.expanded) 90f else 0f
-
                     arrowContainer.setOnClickListener { onExpandClick(view) }
                 }
 
-                if (itemView.isSelected) {
-                    itemView.setBackgroundColor(Color.LTGRAY)
-                } else {
-                    itemView.setBackgroundColor(0)
-                }
+                select(itemView.isSelected)
             }
 
             override fun targetView() {
@@ -1005,7 +1157,7 @@ class EditorAdapter(
 
         class PictureHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(view : PictureView) {
+            fun bind(view: PictureView) {
                 Glide.with(itemView)
                     .load(view.url)
                     .fitCenter()
@@ -1016,7 +1168,7 @@ class EditorAdapter(
         class BookmarkHolder(itemView: View) : ViewHolder(itemView) {
 
             fun bind(
-                view : BookmarkView
+                view: BookmarkView
             ) {
                 with(itemView) {
                     title.text = view.title

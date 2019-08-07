@@ -10,49 +10,56 @@ sealed class BlockView {
     data class ParagraphView(
         override val id : String,
         override val indent : Int = 0,
-        override var text : SpannableString
-    ) : BlockView(), Editable, Indentable
+        override var text : SpannableString,
+        override val focused: Boolean
+    ) : BlockView(), Editable, Indentable, Focusable
 
     data class HeaderView(
         override val id : String,
         override var text : SpannableString,
         val type : HeaderType,
-        override val indent: Int = 0
-    ) : BlockView(), Editable, Indentable {
+        override val indent: Int = 0,
+        override val focused: Boolean
+    ) : BlockView(), Editable, Indentable, Focusable {
         enum class HeaderType { ONE, TWO, THREE, FOUR }
     }
 
     data class QuoteView(
         override val id : String,
         override var text : SpannableString,
-        override val indent : Int = 0
-    ) : BlockView(), Editable, Indentable
+        override val indent : Int = 0,
+        override val focused: Boolean
+    ) : BlockView(), Editable, Indentable, Focusable
 
     data class CheckboxView(
         override val id : String,
         override var text : SpannableString,
         override val indent: Int = 0,
+        override val focused: Boolean,
         val isChecked : Boolean
-    ) : BlockView(), Editable, Indentable
+    ) : BlockView(), Editable, Indentable, Focusable
 
     data class CodeSnippetView(
         override val id : String,
         override var text : SpannableString,
-        override val indent : Int = 0
-    ) : BlockView(), Editable, Indentable
+        override val indent : Int = 0,
+        override val focused: Boolean
+    ) : BlockView(), Editable, Indentable, Focusable
 
     data class NumberListItemView(
         override val id : String,
         override var text: SpannableString,
         override val indent : Int = 0,
+        override val focused: Boolean,
         val number : Int
-    ) : BlockView(), Editable, Indentable
+    ) : BlockView(), Editable, Indentable, Focusable
 
     data class BulletView(
         override val id : String,
         override var text: SpannableString,
-        override val indent : Int = 0
-    ) : BlockView(), Editable, Indentable
+        override val indent : Int = 0,
+        override val focused: Boolean
+    ) : BlockView(), Editable, Indentable, Focusable
 
     data class LinkToPageView(
         override val id : String,
@@ -84,8 +91,9 @@ sealed class BlockView {
         override val id : String,
         override val indent : Int = 0,
         override var text : SpannableString,
-        val expanded : Boolean = false
-    ) : BlockView(), Editable, Indentable
+        val expanded : Boolean = false,
+        override val focused: Boolean
+    ) : BlockView(), Editable, Indentable, Focusable
 
     interface Editable {
         var text : SpannableString
@@ -93,6 +101,10 @@ sealed class BlockView {
 
     interface Indentable {
         val indent : Int
+    }
+
+    interface Focusable {
+        val focused : Boolean
     }
 
     interface Consumer

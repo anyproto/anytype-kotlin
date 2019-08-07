@@ -73,7 +73,8 @@ abstract class EditorFragment : Fragment() {
             blockContentListener = { viewModel.onBlockContentChanged(viewToModelMapper.mapToModel(it)) },
             menuListener = viewModel::onBlockMenuAction,
             focusListener = viewModel::onBlockFocus,
-            onExpandClick = viewModel::onExpandClicked
+            onExpandClick = viewModel::onExpandClicked,
+            onEnterPressed = viewModel::onEnterClicked
         ).also {
             helper.attachToRecyclerView(blockList)
         }

@@ -11,8 +11,6 @@ import android.view.View
 import com.agileburo.anytype.feature_editor.domain.*
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
 import com.agileburo.anytype.feature_editor.ui.CodeBlockSpan
-import timber.log.Timber
-import java.lang.IllegalArgumentException
 
 interface ViewMapper<in D, out V> {
     fun mapToView(model: D, indent : Int = 0): V
@@ -31,7 +29,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                             text = fromMarksToSpannable(
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
-                            )
+                            ),
+                            focused = model.state.focused
                         )
                     }
                     is ContentType.H1 -> {
@@ -42,7 +41,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 text = model.content.text
                             ),
                             type = BlockView.HeaderView.HeaderType.ONE,
-                            indent = indent
+                            indent = indent,
+                            focused = model.state.focused
                         )
                     }
                     is ContentType.H2 -> {
@@ -53,7 +53,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 text = model.content.text
                             ),
                             type = BlockView.HeaderView.HeaderType.TWO,
-                            indent = indent
+                            indent = indent,
+                            focused = model.state.focused
                         )
                     }
                     is ContentType.H3 -> {
@@ -64,7 +65,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 text = model.content.text
                             ),
                             type = BlockView.HeaderView.HeaderType.THREE,
-                            indent = indent
+                            indent = indent,
+                            focused = model.state.focused
                         )
                     }
                     is ContentType.H4 -> {
@@ -75,7 +77,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 text = model.content.text
                             ),
                             type = BlockView.HeaderView.HeaderType.FOUR,
-                            indent = indent
+                            indent = indent,
+                            focused = model.state.focused
                         )
                     }
                     is ContentType.Quote -> {
@@ -85,7 +88,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
-                            indent = indent
+                            indent = indent,
+                            focused = model.state.focused
                         )
                     }
                     is ContentType.Code -> {
@@ -95,7 +99,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
-                            indent = indent
+                            indent = indent,
+                            focused = model.state.focused
                         )
                     }
                     is ContentType.Check -> {
@@ -106,7 +111,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 text = model.content.text
                             ),
                             isChecked = model.content.param.checked,
-                            indent = indent
+                            indent = indent,
+                            focused = model.state.focused
                         )
                     }
                     is ContentType.NumberedList -> {
@@ -117,7 +123,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 text = model.content.text
                             ),
                             number = model.content.param.number,
-                            indent = indent
+                            indent = indent,
+                            focused = model.state.focused
                         )
                     }
                     is ContentType.UL -> {
@@ -127,7 +134,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 marks = (model.content as Content.Text).marks,
                                 text = model.content.text
                             ),
-                            indent = indent
+                            indent = indent,
+                            focused = model.state.focused
                         )
                     }
                     is ContentType.Toggle -> {
@@ -138,7 +146,8 @@ class BlockViewMapper : ViewMapper<Block, BlockView> {
                                 text = model.content.text
                             ),
                             indent = indent,
-                            expanded = model.state.expanded
+                            expanded = model.state.expanded,
+                            focused = model.state.focused
                         )
                     }
                     else -> {

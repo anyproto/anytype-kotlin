@@ -110,6 +110,19 @@ class EditorViewModel(
         positionInFocus = position
     }
 
+    fun onEnterClicked(id : String) {
+
+        Timber.d("On enter clicked with id: $id")
+
+        document.apply {
+            applyToAll { it.state.focused = false }
+            insertNewBlockAfter(previousBlockId = id)
+            fixNumberOrder()
+        }
+        dispatchBlocksToView()
+    }
+
+
     private fun normalizeBlocks() {
         val normalized = contentTypeConverter.normalizeNumbers(document)
         document.clear()

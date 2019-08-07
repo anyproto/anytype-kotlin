@@ -84,6 +84,22 @@ class EditorViewModel(
         normalizeBlocks()
     }
 
+    fun onConsumeRequested(consumerId : String, consumableId : String) {
+        document.apply {
+            consume(consumerId = consumerId, consumableId = consumableId)
+            fixNumberOrder()
+        }
+        dispatchBlocksToView()
+    }
+
+    fun onMoveAfter(previousId : String, targetId : String) {
+        document.apply {
+            moveAfter(previousId, targetId)
+            fixNumberOrder()
+        }
+        dispatchBlocksToView()
+    }
+
     fun onBlockFocus(position: Int) {
         if (position == -1) {
             positionInFocus = position

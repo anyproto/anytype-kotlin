@@ -233,7 +233,7 @@ class DragAndDropBehavior(
             if (child != this) {
                 val consumeCenter = (child.top + child.bottom).div(2)
                 val interval = child.height.div(CONSUME_INTERVAL)
-                if (viewHolder is BlockView.Consumer && isDraggedItemCanBeConsumeByCenterOfDragged(
+                if (isDraggedItemCanBeConsumeByCenterOfDragged(
                         consumerCenter = consumeCenter,
                         interval = interval,
                         baselineY = getDraggedItemBaseline(this, dY).toInt()
@@ -241,10 +241,8 @@ class DragAndDropBehavior(
                 ) {
                     subject.accept(DragState.DeleteShiftRequest)
                     val consume = recyclerView.findContainingViewHolder(child)
-                    if (consume is BlockView.Consumer) {
-                        subject.accept(DragState.ConsumeRequest(viewHolder.adapterPosition, consume))
-                        break
-                    }
+                    subject.accept(DragState.ConsumeRequest(viewHolder.adapterPosition, consume))
+                    break
                 } else {
                     if (consumerPosition > POSITION_NONE) {
                         recyclerView.findViewHolderForAdapterPosition(consumerPosition)?.itemView?.setBackgroundColor(0)
@@ -286,10 +284,11 @@ class DragAndDropBehavior(
 
         is DragState.ConsumeRequest -> {
             subject.accept(DragState.DeleteShiftRequest)
-
-            (state.consumerViewHolder as? EditorAdapter.ViewHolder.ParagraphHolder)?.let {
-                it.itemView.setBackgroundColor(Color.GRAY)
-                consumerPosition = it.adapterPosition
+            state.consumerViewHolder?.let { holder ->
+                if (holder is BlockView.Consumer) {
+                    holder.itemView.setBackgroundColor(Color.GRAY)
+                    consumerPosition = holder.adapterPosition
+                }
             }
         }
 

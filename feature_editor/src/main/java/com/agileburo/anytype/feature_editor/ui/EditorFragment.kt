@@ -20,6 +20,7 @@ import com.agileburo.anytype.feature_editor.presentation.mapper.BlockModelMapper
 import com.agileburo.anytype.feature_editor.presentation.mapper.BlockViewMapper
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModel
 import com.agileburo.anytype.feature_editor.presentation.mvvm.EditorViewModelFactory
+import com.agileburo.anytype.feature_editor.presentation.util.DragDropAction
 import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_editor.*
@@ -39,13 +40,30 @@ abstract class EditorFragment : Fragment() {
 
     private val disposable = CompositeDisposable()
 
-    private val helper by lazy {
+    private val helper : ItemTouchHelper by lazy {
         ItemTouchHelper(dragAndDropBehavior)
     }
 
     private val dragAndDropBehavior by lazy {
         DragAndDropBehavior(
-            onDragDropAction = viewModel::onBlockDragAndDropAction
+            onDragDropAction = { action ->
+                if (action is DragDropAction.Consume)
+                    viewModel.onConsumeRequested(
+                        consumerId = blockAdapter.blocks[action.consumer].id,
+                        consumableId = blockAdapter.blocks[action.target].id
+                    )
+                else if (action is DragDropAction.Shift) {
+                    if (action.from < action.to)
+                        viewModel.onMoveAfter(
+                        previousId = blockAdapter.blocks[action.to].id,
+                        targetId = blockAdapter.blocks[action.from].id
+                    ) else
+                        viewModel.onMoveAfter(
+                            previousId = blockAdapter.blocks[action.to - 1].id,
+                            targetId = blockAdapter.blocks[action.from].id
+                        )
+                }
+            }
         )
     }
 
@@ -56,7 +74,7 @@ abstract class EditorFragment : Fragment() {
             menuListener = viewModel::onBlockMenuAction,
             focusListener = viewModel::onBlockFocus,
             onExpandClick = viewModel::onExpandClicked
-        ).apply {
+        ).also {
             helper.attachToRecyclerView(blockList)
         }
     }

@@ -54,6 +54,22 @@ data class Block(
         if (content is Content.Text) content.param.number = number
     }
 
+    fun isConsumer(): Boolean = when (contentType) {
+        ContentType.Toggle, ContentType.Check, ContentType.NumberedList, ContentType.UL -> true
+        else -> false
+    }
+
+    fun hasParent() = parentId.isNotEmpty()
+
+    fun isList() : Boolean {
+        return when(contentType) {
+            ContentType.NumberedList, ContentType.UL, ContentType.Check -> true
+            else -> false
+        }
+    }
+
+    fun isToggle() = contentType == ContentType.Toggle
+
     data class State(val map : MutableMap<String, Any> = mutableMapOf()) {
         var expanded : Boolean by map
 
@@ -279,8 +295,12 @@ fun Document.toView(indent : Int = 0) : List<BlockView> {
 
         result.add(mapper.mapToView(model = block, indent = indent))
 
-        if (block.contentType == ContentType.Toggle) {
+        if (block.isToggle()) {
             if (block.children.isNotEmpty() && block.state.expanded) {
+                result.addAll(block.children.toView(indent.inc()))
+            }
+        } else if (block.isList()) {
+            if (block.children.isNotEmpty()) {
                 result.addAll(block.children.toView(indent.inc()))
             }
         } else {
@@ -288,8 +308,104 @@ fun Document.toView(indent : Int = 0) : List<BlockView> {
                 result.addAll(block.children.toView(indent))
             }
         }
-
     }
 
     return result
+}
+
+@Throws(IllegalStateException::class)
+fun Document.consume(consumerId : String, consumableId : String) {
+    search(consumerId)?.let { consumer ->
+        if (consumer.isConsumer())
+            search(consumableId)?.let { consumable ->
+                val parent = search(consumable.parentId)
+                if (parent != null) {
+                    val index = parent.children.indexOf(consumable)
+                    parent.children.removeAt(index)
+                    consumer.children.add(consumable.copy(parentId = consumer.id))
+                } else {
+                    val index = indexOf(consumable)
+                    removeAt(index)
+                    consumer.children.add(consumable.copy(parentId = consumer.id))
+                }
+            } ?: throw IllegalStateException("Could not find consumable with id: $consumableId")
+
+    } ?: throw IllegalStateException("Could not find consumer with id: $consumerId")
+
+}
+
+fun Document.moveAfter(previousId : String, targetId : String) {
+
+    search(previousId)?.let { previous ->
+
+        search(targetId)?.let { target ->
+
+            if (previous.hasParent()) {
+
+                search(previous.parentId)?.let { parent ->
+
+                    if (target.hasParent() && target.parentId != parent.id) {
+                        search(target.parentId)?.let { targetParent ->
+                            targetParent.children.removeIf { child -> child.id == targetId }
+                        } ?: throw IllegalStateException("Could not found parent for target id: $targetId")
+                    } else {
+                        removeIf { block -> block.id == target.id }
+                    }
+
+                    val result = mutableListOf<Block>()
+
+                    parent.children.forEach { child ->
+                        if (child.id != targetId)
+                            result.add(child)
+                        if (child.id == previousId)
+                            result.add(target.copy(parentId = parent.id))
+                    }
+
+                    parent.children.apply {
+                        clear()
+                        addAll(result)
+                    }
+
+                } ?: throw IllegalStateException("Could not find parent for previous block by parent id: ${previous.parentId}")
+
+            } else {
+
+                if (target.hasParent()) {
+
+                    if (target.parentId != previous.parentId) {
+                        search(target.parentId)?.let { targetParent ->
+                            targetParent.children.removeIf { child -> child.id == targetId }
+                        } ?: throw IllegalStateException("Could not found parent for target id: $targetId")
+                    }
+
+                    val result = mutableListOf<Block>()
+
+                    forEach { child ->
+                        result.add(child)
+                        if (child.id == previousId)
+                            result.add(target.copy(parentId = previous.parentId))
+                    }
+
+                    clear()
+                    addAll(result)
+
+                } else {
+
+                    val result = mutableListOf<Block>()
+
+                    forEach { child ->
+                        if (child.id != targetId)
+                            result.add(child)
+                        if (child.id == previousId)
+                            result.add(target.copy(parentId = previous.parentId))
+                    }
+
+                    clear()
+                    addAll(result)
+                }
+            }
+
+        } ?: throw IllegalStateException("Could not find target block with id: $targetId")
+
+    } ?: throw IllegalStateException("Could not find previous block with id: $previousId")
 }

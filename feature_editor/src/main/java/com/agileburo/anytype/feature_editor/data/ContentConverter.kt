@@ -58,7 +58,7 @@ class ContentConverterImpl(private val markConverter: MarkConverter) : ContentCo
     override fun modelToDomain(model: ContentModel.Image): Content.Picture {
         // TODO remove hard-coded
         return Content.Picture(
-            url = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Francesco_Salviati_005.jpg/1280px-Francesco_Salviati_005.jpg",
+            url = "https://c.wallhere.com/photos/6c/31/vintage_typewriters_books_glasses_wood_paper_pine_cones-727921.jpg!d",
             type = Content.Picture.Type.ORIGINAL
         )
     }

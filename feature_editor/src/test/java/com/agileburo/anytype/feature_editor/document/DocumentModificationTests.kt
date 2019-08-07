@@ -6,7 +6,6 @@ import com.agileburo.anytype.feature_editor.factory.DataFactory
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class DocumentModificationTests {
@@ -1108,5 +1107,1173 @@ class DocumentModificationTests {
         assertEquals("2", document.first().children.first().id)
         assertEquals("4", document.first().children.last().id)
         assertFalse { document.first().children.any { block -> block.id == "3" } }
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `if consumer is missing, we get an exception`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "2",
+                        parentId = "1",
+                        contentType = ContentType.P,
+                        content = Content.Text(
+                            text = DataFactory.randomString(),
+                            marks = emptyList(),
+                            param = ContentParam.empty()
+                        ),
+                        blockType = BlockType.Editable,
+                        children = mutableListOf()
+                    )
+                )
+            )
+        )
+
+        document.consume(
+            consumerId = "3",
+            consumableId = "1"
+        )
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `if consumable is not found, we get an exception`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "2",
+                        parentId = "1",
+                        contentType = ContentType.P,
+                        content = Content.Text(
+                            text = DataFactory.randomString(),
+                            marks = emptyList(),
+                            param = ContentParam.empty()
+                        ),
+                        blockType = BlockType.Editable,
+                        children = mutableListOf()
+                    )
+                )
+            )
+        )
+
+        document.consume(
+            consumerId = "1",
+            consumableId = "3"
+        )
+    }
+
+    @Test
+    fun `toggle block can consume a block even if it is not empty`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "2",
+                        parentId = "1",
+                        contentType = ContentType.P,
+                        content = Content.Text(
+                            text = DataFactory.randomString(),
+                            marks = emptyList(),
+                            param = ContentParam.empty()
+                        ),
+                        blockType = BlockType.Editable,
+                        children = mutableListOf()
+                    )
+                )
+            ),
+            Block(
+                id = "3",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 1,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+
+            assertEquals(expected = 2, actual = children.size)
+
+            children.first().apply {
+                assertEquals(expected = "2", actual = id)
+                assertEquals(expected = "1", actual = parentId)
+            }
+
+            children.last().apply {
+                assertEquals(expected = "3", actual = id)
+                assertEquals(expected = "1", actual = parentId)
+            }
+        }
+    }
+
+    @Test
+    fun `toggle block can consume a block even it is empty`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 1,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+
+            assertEquals(expected = 1, actual = children.size)
+
+            children.first().apply {
+                assertEquals(expected = "2", actual = id)
+                assertEquals(expected = "1", actual = parentId)
+            }
+        }
+    }
+
+    @Test
+    fun `if consumer is a numbered list, it can consume given consumable`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.NumberedList,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 1,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+
+            assertEquals(expected = 1, actual = children.size)
+
+            children.first().apply {
+                assertEquals(expected = "2", actual = id)
+                assertEquals(expected = "1", actual = parentId)
+            }
+        }
+    }
+
+    @Test
+    fun `if consumer is a bullet list, it can consume given consumable`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.UL,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 1,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+
+            assertEquals(expected = 1, actual = children.size)
+
+            children.first().apply {
+                assertEquals(expected = "2", actual = id)
+                assertEquals(expected = "1", actual = parentId)
+            }
+        }
+    }
+
+    @Test
+    fun `if consumer is a checkbox block, it can consume given consumable`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Check,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 1,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+
+            assertEquals(expected = 1, actual = children.size)
+
+            children.first().apply {
+                assertEquals(expected = "2", actual = id)
+                assertEquals(expected = "1", actual = parentId)
+            }
+        }
+    }
+
+    @Test
+    fun `document structure does not change when consumer is a paragraph block`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+
+        document.last().apply {
+            assertEquals(expected = "2", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+    }
+
+    @Test
+    fun `document structure does not change, when consumer is a header-one block`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.H1,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+
+        document.last().apply {
+            assertEquals(expected = "2", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+    }
+
+    @Test
+    fun `document structure does not change, when consumer is a header-two block`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.H2,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+
+        document.last().apply {
+            assertEquals(expected = "2", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+    }
+
+    @Test
+    fun `document structure does not change, when consumer is a header-three block`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.H3,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+
+        document.last().apply {
+            assertEquals(expected = "2", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+    }
+
+    @Test
+    fun `document structure does not change, when consumer is a header-four block`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.H4,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+
+        document.last().apply {
+            assertEquals(expected = "2", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+    }
+
+    @Test
+    fun `document structure does not change, when consumer is a code snippet block`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Code,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+
+        document.last().apply {
+            assertEquals(expected = "2", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+    }
+
+    @Test
+    fun `document structure does not change, when consumer is a quote block`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Quote,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().id
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.first().apply {
+            assertEquals(expected = "1", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+
+        document.last().apply {
+            assertEquals(expected = "2", actual = id)
+            assertTrue { parentId.isEmpty() }
+            assertTrue { children.isEmpty() }
+        }
+    }
+
+    @Test
+    fun `toggle block should consume a child of other toggle block`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "3",
+                        parentId = "1",
+                        contentType = ContentType.P,
+                        content = Content.Text(
+                            text = DataFactory.randomString(),
+                            marks = emptyList(),
+                            param = ContentParam.empty()
+                        ),
+                        blockType = BlockType.Editable
+                    )
+                )
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "4",
+                        parentId = "2",
+                        contentType = ContentType.P,
+                        content = Content.Text(
+                            text = DataFactory.randomString(),
+                            marks = emptyList(),
+                            param = ContentParam.empty()
+                        ),
+                        blockType = BlockType.Editable
+                    )
+                )
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        document.consume(
+            consumerId = document.first().id,
+            consumableId = document.last().children.first().id
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.size
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = document.last().children.size
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = document.first().children.size
+        )
+
+        assertEquals(
+            expected = "3",
+            actual = document.first().children.first().id
+        )
+
+        assertEquals(
+            expected = "4",
+            actual = document.first().children.last().id
+        )
+
+        assertEquals(
+            expected = "1",
+            actual = document.first().children.first().parentId
+        )
+
+        assertEquals(
+            expected = "1",
+            actual = document.first().children.last().parentId
+        )
+    }
+
+    @Test
+    fun `should move block at third position at root level to second position at root level`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf()
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            ),
+            Block(
+                id = "3",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        document.moveAfter(
+            previousId = "1",
+            targetId = "3"
+        )
+
+        assertEquals(3, document.size)
+
+        document.first().apply {
+            assertEquals("1", id)
+            assertTrue { parentId.isEmpty() }
+        }
+
+        document[1].apply {
+            assertEquals("3", id)
+            assertTrue { parentId.isEmpty() }
+        }
+
+        document.last().apply {
+            assertEquals("2", id)
+            assertTrue { parentId.isEmpty() }
+        }
+    }
+
+    @Test
+    fun `should move toggle child after another child`() {
+
+        val document : Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "2",
+                        parentId = "1",
+                        contentType = ContentType.P,
+                        content = Content.Text(
+                            text = DataFactory.randomString(),
+                            marks = emptyList(),
+                            param = ContentParam.empty()
+                        ),
+                        blockType = BlockType.Editable
+                    ),
+                    Block(
+                        id = "3",
+                        parentId = "1",
+                        contentType = ContentType.P,
+                        content = Content.Text(
+                            text = DataFactory.randomString(),
+                            marks = emptyList(),
+                            param = ContentParam.empty()
+                        ),
+                        blockType = BlockType.Editable
+                    ),
+                    Block(
+                        id = "4",
+                        parentId = "1",
+                        contentType = ContentType.P,
+                        content = Content.Text(
+                            text = DataFactory.randomString(),
+                            marks = emptyList(),
+                            param = ContentParam.empty()
+                        ),
+                        blockType = BlockType.Editable
+                    )
+                )
+            )
+        )
+
+        assertEquals(1, document.size)
+
+        document.moveAfter(
+            previousId = "2",
+            targetId = "4"
+        )
+
+        assertEquals(1, document.size)
+
+        assertEquals(3, document.first().children.size)
+        assertEquals("2", document.first().children[0].id)
+        assertEquals("4", document.first().children[1].id)
+        assertEquals("3", document.first().children[2].id)
+        assertTrue { document.first().children[0].parentId == "1" }
+        assertTrue { document.first().children[1].parentId == "1" }
+        assertTrue { document.first().children[2].parentId == "1" }
+    }
+
+    @Test
+    fun `should move block at children level to root level`() {
+
+        val document: Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "3",
+                        parentId = "2",
+                        contentType = ContentType.P,
+                        content = Content.Text(
+                            text = DataFactory.randomString(),
+                            marks = emptyList(),
+                            param = ContentParam.empty()
+                        ),
+                        blockType = BlockType.Editable
+                    )
+                )
+            )
+        )
+
+        assertEquals(2, document.size)
+        assertTrue { document.last().children.first().parentId == "2" }
+
+        document.moveAfter(
+            previousId = "1",
+            targetId = "3"
+        )
+
+        assertEquals(3, document.size)
+
+        assertEquals("1", document[0].id)
+        assertEquals("3", document[1].id)
+        assertEquals("2", document[2].id)
+        assertTrue { document[2].children.isEmpty() }
+
+        assertTrue { document[0].parentId.isEmpty() }
+        assertTrue { document[1].parentId.isEmpty() }
+        assertTrue { document[2].parentId.isEmpty() }
+    }
+
+    @Test
+    fun `should move block from root level inside toggle`() {
+
+        val document: Document = mutableListOf(
+            Block(
+                id = "1",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            ),
+            Block(
+                id = "2",
+                parentId = "",
+                contentType = ContentType.Toggle,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable,
+                children = mutableListOf(
+                    Block(
+                        id = "3",
+                        parentId = "2",
+                        contentType = ContentType.P,
+                        content = Content.Text(
+                            text = DataFactory.randomString(),
+                            marks = emptyList(),
+                            param = ContentParam.empty()
+                        ),
+                        blockType = BlockType.Editable
+                    ),
+                    Block(
+                        id = "4",
+                        parentId = "2",
+                        contentType = ContentType.P,
+                        content = Content.Text(
+                            text = DataFactory.randomString(),
+                            marks = emptyList(),
+                            param = ContentParam.empty()
+                        ),
+                        blockType = BlockType.Editable
+                    )
+                )
+            ),
+            Block(
+                id = "5",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            ),
+            Block(
+                id = "6",
+                parentId = "",
+                contentType = ContentType.P,
+                content = Content.Text(
+                    text = DataFactory.randomString(),
+                    marks = emptyList(),
+                    param = ContentParam.empty()
+                ),
+                blockType = BlockType.Editable
+            )
+        )
+
+        assertEquals(4, document.size)
+
+        document.moveAfter(
+            previousId = "3",
+            targetId = "6"
+        )
+
+        assertEquals(3, document.size)
+
+        assertEquals("1", document[0].id)
+        assertEquals("2", document[1].id)
+        assertEquals("5", document[2].id)
+
+        assertEquals(3, document[1].children.size)
+
+        assertEquals("3", document[1].children[0].id)
+        assertEquals("6", document[1].children[1].id)
+        assertEquals("4", document[1].children[2].id)
+
+        assertEquals("2", document[1].children[0].parentId)
+        assertEquals("2", document[1].children[1].parentId)
+        assertEquals("2", document[1].children[2].parentId)
     }
 }

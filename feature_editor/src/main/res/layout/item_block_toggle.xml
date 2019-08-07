@@ -4,6 +4,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+    <View
+            android:id="@+id/topBorder"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/design_default_color_primary"
+            android:visibility="invisible"/>
+
     <ImageView
             android:id="@+id/blockMenuButton"
             android:layout_width="wrap_content"
@@ -44,5 +52,13 @@
             android:background="@android:color/transparent"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
+
+    <View
+            android:id="@+id/bottomBorder"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_below="@id/textEditable"
+            android:background="@color/design_default_color_primary"
+            android:visibility="invisible" />
 
 </RelativeLayout>

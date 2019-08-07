@@ -22,22 +22,22 @@ import com.agileburo.anytype.feature_editor.presentation.model.BlockView.*
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView.HeaderView.HeaderType
 import com.agileburo.anytype.feature_editor.presentation.util.BlockViewDiffUtil
 import com.agileburo.anytype.feature_editor.presentation.util.SwapRequest
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bullet.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
+import kotlinx.android.synthetic.main.item_block_editable.view.*
+import kotlinx.android.synthetic.main.item_block_editable.view.textEditable
 import kotlinx.android.synthetic.main.item_block_header_four.view.*
 import kotlinx.android.synthetic.main.item_block_header_one.view.*
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_image.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
-import kotlinx.android.synthetic.main.item_number_list_item.view.*
-import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.item_block_editable.view.*
-import kotlinx.android.synthetic.main.item_block_editable.view.textEditable
-import timber.log.Timber
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
+import kotlinx.android.synthetic.main.item_number_list_item.view.*
+import timber.log.Timber
 
 class EditorAdapter(
     val blocks: MutableList<BlockView>,
@@ -336,7 +336,7 @@ class EditorAdapter(
         class ParagraphHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView), Consumer, ItemTouchHelperViewHolder {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
 
             init {
                 itemView.textEditable.apply {
@@ -673,7 +673,7 @@ class EditorAdapter(
         class CheckBoxHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder, Consumer {
 
             init {
                 itemView.textCheckBox.apply {
@@ -797,7 +797,7 @@ class EditorAdapter(
         class BulletHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder, Consumer {
 
             init {
                 itemView.textBullet.apply {
@@ -867,7 +867,7 @@ class EditorAdapter(
         class NumberedHolder(
             itemView: View,
             val editTextWatcher: MyEditorTextWatcher
-        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder, Consumer {
 
             init {
                 itemView.contentText.apply {
@@ -944,7 +944,7 @@ class EditorAdapter(
         class ToggleHolder(
             val editTextWatcher: MyEditorTextWatcher,
             itemView: View
-        ) : IndentableViewHolder(itemView) {
+        ) : IndentableViewHolder(itemView), ItemTouchHelperViewHolder, Consumer {
 
             init {
                 itemView.textEditable.apply {
@@ -979,6 +979,25 @@ class EditorAdapter(
 
                     arrowContainer.setOnClickListener { onExpandClick(view) }
                 }
+
+                if (itemView.isSelected) {
+                    itemView.setBackgroundColor(Color.LTGRAY)
+                } else {
+                    itemView.setBackgroundColor(0)
+                }
+            }
+
+            override fun targetView() {
+                itemView.topBorder.visibility = View.VISIBLE
+            }
+
+            override fun targetViewBottom() {
+                itemView.bottomBorder.visibility = View.VISIBLE
+            }
+
+            override fun clearTargetView() {
+                itemView.bottomBorder.visibility = View.INVISIBLE
+                itemView.topBorder.visibility = View.INVISIBLE
             }
         }
 
@@ -989,7 +1008,7 @@ class EditorAdapter(
             fun bind(view : PictureView) {
                 Glide.with(itemView)
                     .load(view.url)
-                    .centerCrop()
+                    .fitCenter()
                     .into(itemView.picture)
             }
         }

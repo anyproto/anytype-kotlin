@@ -4,13 +4,10 @@
              android:layout_height="wrap_content">
 
     <ImageView
-            android:background="@color/dark_gray"
-            android:minWidth="300dp"
-            android:minHeight="300dp"
             android:layout_margin="16dp"
             android:layout_gravity="center"
             android:id="@+id/picture"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
 </FrameLayout>

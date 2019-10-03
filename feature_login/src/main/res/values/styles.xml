@@ -1,2 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <style name="DefaultButtonStyle">
+        <item name="android:clickable">true</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/button_text_size</item>
+        <item name="android:gravity">center</item>
+        <item name="android:stateListAnimator">@animator/scale_shrink</item>
+        <item name="android:background">@drawable/rectangle_default_button</item>
+    </style>
+
+    <style name="HeaderStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="PinCodeKeyboardNumber">
+        <item name="android:stateListAnimator">@animator/scale_shrink</item>
+        <item name="android:clickable">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/selector_pin_code_keyboard</item>
+    </style>
+
 </resources>

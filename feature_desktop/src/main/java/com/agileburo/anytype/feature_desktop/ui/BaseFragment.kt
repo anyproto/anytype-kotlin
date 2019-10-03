@@ -2,6 +2,7 @@ package com.agileburo.anytype.feature_desktop.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.agileburo.anytype.feature_desktop.navigation.DesktopNavigationProvider
 import io.reactivex.disposables.CompositeDisposable
 
 abstract class BaseFragment(
@@ -18,8 +19,15 @@ abstract class BaseFragment(
         injectDependencies()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        subscriptions.clear()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         if (fragmentScope) releaseDependencies()
     }
+
+    private fun navigationProvider() = (requireActivity() as DesktopNavigationProvider)
 }

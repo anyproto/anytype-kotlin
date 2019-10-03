@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
 
 android {
     def config = rootProject.extensions.getByName("ext")
@@ -15,17 +17,42 @@ android {
 
 dependencies {
 
+    implementation project(':core_utils')
+
     def applicationDependencies = rootProject.ext.mainApplication
+    def acceptanceTesting = rootProject.ext.acceptanceTesting
+    def unitTestDependencies = rootProject.ext.unitTesting
 
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutines
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0-beta01'
+    implementation applicationDependencies.viewModelExtensions
+
+    implementation applicationDependencies.appcompat
+    implementation applicationDependencies.constraintLayout
+    implementation applicationDependencies.recyclerView
+    implementation applicationDependencies.design
+
+    implementation applicationDependencies.navigation
+    implementation applicationDependencies.navigationUi
 
     implementation applicationDependencies.timber
+    implementation applicationDependencies.design
 
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+    implementation applicationDependencies.rxjava2
+    implementation applicationDependencies.rxRelay
+    implementation applicationDependencies.rxAndroid
+
+    implementation applicationDependencies.dagger
+    kapt applicationDependencies.daggerCompiler
+
+    implementation applicationDependencies.viewModel
+    implementation applicationDependencies.viewModelExtensions
+
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.mockito
+
+    androidTestImplementation acceptanceTesting.espressoCore
+    androidTestImplementation acceptanceTesting.testRunner
 }

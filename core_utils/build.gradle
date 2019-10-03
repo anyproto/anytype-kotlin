@@ -29,15 +29,16 @@ dependencies {
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
 
-    //Compile time dependencies
     kapt applicationDependencies.daggerCompiler
 
-    //Application dependencies
     implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutines
     implementation applicationDependencies.dagger
 
     implementation applicationDependencies.timber
     implementation applicationDependencies.crashlytics
+
+    implementation applicationDependencies.constraintLayout
 
     implementation applicationDependencies.rxjava2
     implementation applicationDependencies.rxAndroid
@@ -45,4 +46,6 @@ dependencies {
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.mockito
 
+    implementation applicationDependencies.navigation
+    implementation applicationDependencies.navigationUi
 }

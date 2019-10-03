@@ -1,3 +1,34 @@
 <resources>
     <string name="app_name">Login</string>
+    <string name="start_login_text">Secure, private \nand free \ncommunication \nplatform</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign up</string>
+    <string name="type_your_keychain">Type your keychain phrase</string>
+    <string name="login_with_keychain">Login with keychain</string>
+    <string name="or_scan_qr_code">or Scan QR code</string>
+    <string name="choose_pin_code">Choose pin code</string>
+    <string name="congratulations">Congratulations</string>
+    <string name="let_us_start">Let\'s start</string>
+    <string name="you_ve_created_your_first_profile">You\'ve created your first profile!</string>
+    <string name="it_s_stored_on_your_device_and_nobody_will_know_about_it_until_you_share_it">It\'s stored on your device and nobody will know about it until you share it!</string>
+    <string name="choose_profile">Choose profile</string>
+    <string name="logout">Logout</string>
+    <string name="add_profile">Add profile</string>
+    <string name="add_name_and_profile_picture">Add your name \nand profile picture</string>
+    <string name="type_your_name">Type your name</string>
+    <string name="create_profile">Create profile</string>
+    <string name="t">T</string>
+    <string name="_1">1</string>
+    <string name="_2">2</string>
+    <string name="_3">3</string>
+    <string name="_4">4</string>
+    <string name="_5">5</string>
+    <string name="_6">6</string>
+    <string name="_7">7</string>
+    <string name="_8">8</string>
+    <string name="_9">9</string>
+    <string name="_0">0</string>
+    <string name="do_it_later">Do it later</string>
+    <string name="enter_pin_code">Enter pin code</string>
+    <string name="confirm_pin_code">Confirm pin code</string>
 </resources>

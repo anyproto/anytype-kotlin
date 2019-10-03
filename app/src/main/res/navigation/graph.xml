@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/startLoginScreen">
+
+    <fragment
+        android:id="@+id/documentScreen"
+        android:name="com.agileburo.anytype.ui.DocumentFragment"
+        android:label="DocumentScreen"
+        tools:layout="@layout/fragment_editor" />
+    <fragment
+        android:id="@+id/desktopScreen"
+        android:name="com.agileburo.anytype.feature_desktop.ui.DesktopFragment"
+        android:label="DesktopFragment"
+        tools:layout="@layout/fragment_desktop" />
+
+    <fragment
+        android:id="@+id/startLoginScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.start.StartLoginFragment"
+        android:label="StartLoginFragment"
+        tools:layout="@layout/fragment_start_login" />
+
+    <fragment
+        android:id="@+id/createProfileScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.CreateProfileFragment"
+        android:label="StartLoginFragment"
+        tools:layout="@layout/fragment_create_profile" />
+
+    <fragment
+        android:id="@+id/choosePinCodeScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.pin.ChoosePinCodeFragment"
+        android:label="StartLoginFragment"
+        tools:layout="@layout/fragment_choose_pin_code" />
+
+    <fragment
+        android:id="@+id/confirmPinCodeScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.pin.ConfirmPinCodeFragment"
+        android:label="StartLoginFragment"
+        tools:layout="@layout/fragment_confirm_pin_code" />
+
+    <fragment
+        android:id="@+id/congratulationScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.congratulation.CongratulationFragment"
+        android:label="StartLoginFragment"
+        tools:layout="@layout/fragment_congratulation" />
+
+    <fragment
+        android:id="@+id/keychainLoginScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.keychain.KeychainLoginFragment"
+        android:label="KeychainLogin"
+        tools:layout="@layout/fragment_keychain_login" />
+
+    <fragment
+        android:id="@+id/chooseProfileScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.ChooseProfileFragment"
+        android:label="ChooseProfileScreen"
+        tools:layout="@layout/fragment_choose_profile" />
+
+    <fragment
+        android:id="@+id/setupNewAccountScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.setup.SetupNewAccountFragment"
+        android:label="SetupAccount"
+        tools:layout="@layout/fragment_setup_new_account" />
+
+    <fragment
+        android:id="@+id/setupSelectedAccountScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.setup.SetupSelectedAccountFragment"
+        android:label="SetupAccount"
+        tools:layout="@layout/fragment_setup_selected_account" />
+
+</navigation>

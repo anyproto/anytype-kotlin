@@ -11,6 +11,7 @@
         android:id="@+id/bottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:itemIconTint="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -18,15 +19,47 @@
         app:menu="@menu/bottom_navigation" />
 
     <fragment
-            android:id="@+id/fragment"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:defaultNavHost="true"
-            app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:navGraph="@navigation/main_navigation"
-            app:layout_constraintTop_toTopOf="parent"/>
+        android:id="@+id/fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:defaultNavHost="true"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/graph" />
+
+    <!--
+    <fragment
+        android:id="@+id/keychain"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.keychain.KeychainLoginFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <fragment
+        android:id="@+id/create"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.CreateProfileFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <fragment
+        android:id="@+id/choose"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.ChooseProfileFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <fragment
+        android:id="@+id/pin"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.pin.ChoosePinCodeFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <fragment
+        android:id="@+id/start"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.start.StartLoginFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />-->
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

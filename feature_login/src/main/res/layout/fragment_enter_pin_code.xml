@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/HeaderStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/enter_pin_code"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/dotRecycler"
+        android:layout_width="0dp"
+        android:layout_height="12dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="@+id/title"
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        tools:listitem="@layout/item_dot" />
+
+    <TextView
+        android:id="@+id/first"
+        style="@style/PinCodeKeyboardNumber"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/_1"
+        app:layout_constraintEnd_toStartOf="@+id/second"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dotRecycler"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/second"
+        style="@style/PinCodeKeyboardNumber"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/_2"
+        app:layout_constraintEnd_toStartOf="@+id/third"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/first"
+        app:layout_constraintTop_toBottomOf="@+id/dotRecycler"
+        tools:text="2" />
+
+    <TextView
+        android:id="@+id/third"
+        style="@style/PinCodeKeyboardNumber"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/_3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/second"
+        app:layout_constraintTop_toBottomOf="@+id/dotRecycler"
+        tools:text="3" />
+
+    <TextView
+        android:id="@+id/fourth"
+        style="@style/PinCodeKeyboardNumber"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/_4"
+        app:layout_constraintEnd_toStartOf="@+id/fifth"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/first"
+        tools:text="4" />
+
+    <TextView
+        android:id="@+id/fifth"
+        style="@style/PinCodeKeyboardNumber"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/_5"
+        app:layout_constraintEnd_toStartOf="@+id/sixth"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/fourth"
+        app:layout_constraintTop_toBottomOf="@+id/second"
+        tools:text="5" />
+
+    <TextView
+        android:id="@+id/sixth"
+        style="@style/PinCodeKeyboardNumber"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/_6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/fifth"
+        app:layout_constraintTop_toBottomOf="@+id/third"
+        tools:text="6" />
+
+    <TextView
+        android:id="@+id/seventh"
+        style="@style/PinCodeKeyboardNumber"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/_7"
+        app:layout_constraintEnd_toStartOf="@+id/eighth"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fourth"
+        tools:text="7" />
+
+    <TextView
+        android:id="@+id/eighth"
+        style="@style/PinCodeKeyboardNumber"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/_8"
+        app:layout_constraintEnd_toStartOf="@+id/ninth"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/seventh"
+        app:layout_constraintTop_toBottomOf="@+id/fifth"
+        tools:text="8" />
+
+    <TextView
+        android:id="@+id/ninth"
+        style="@style/PinCodeKeyboardNumber"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/_9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/eighth"
+        app:layout_constraintTop_toBottomOf="@+id/sixth"
+        tools:text="9" />
+
+    <TextView
+        android:id="@+id/zero"
+        style="@style/PinCodeKeyboardNumber"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/_0"
+        app:layout_constraintEnd_toEndOf="@+id/eighth"
+        app:layout_constraintStart_toStartOf="@+id/eighth"
+        app:layout_constraintTop_toBottomOf="@+id/eighth"
+        tools:text="0" />
+
+    <TextView
+        android:id="@+id/removeButton"
+        style="@style/PinCodeKeyboardNumber"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="16dp"
+        android:text="x"
+        app:layout_constraintEnd_toEndOf="@+id/ninth"
+        app:layout_constraintStart_toStartOf="@+id/ninth"
+        app:layout_constraintTop_toBottomOf="@+id/ninth" />
+
+    <TextView
+        android:id="@+id/doItLaterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:alpha="0.5"
+        android:text="@string/do_it_later"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/pad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="sixth,seventh,ninth,eighth,fifth,second,fourth,zero,third,first" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

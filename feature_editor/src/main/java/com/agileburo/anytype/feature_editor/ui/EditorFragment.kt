@@ -82,7 +82,7 @@ abstract class EditorFragment : Fragment() {
 
     abstract fun inject()
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         inject()
         super.onAttach(context)
     }

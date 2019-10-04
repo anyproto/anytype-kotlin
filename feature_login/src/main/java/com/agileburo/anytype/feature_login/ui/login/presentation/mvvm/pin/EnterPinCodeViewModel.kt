@@ -1,6 +1,6 @@
 package com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.pin
 
-import com.agileburo.anytype.core_utils.disposedBy
+import com.agileburo.anytype.core_utils.ext.disposedBy
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.congratulation.ViewState
 import com.agileburo.anytype.feature_login.ui.login.presentation.ui.common.ViewStateViewModel
 import com.jakewharton.rxrelay2.PublishRelay

@@ -1,6 +1,6 @@
 package com.agileburo.anytype.feature_login
 
-import com.agileburo.anytype.core_utils.Either
+import com.agileburo.anytype.core_utils.common.Either
 import com.agileburo.anytype.feature_login.ui.login.domain.common.PathProvider
 import com.agileburo.anytype.feature_login.ui.login.domain.interactor.SetupWallet
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.start.StartLoginViewModel

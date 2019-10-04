@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
-import com.agileburo.anytype.core_utils.disposedBy
+import com.agileburo.anytype.core_utils.ext.disposedBy
 import com.agileburo.anytype.feature_desktop.R
 import com.agileburo.anytype.feature_desktop.mvvm.DesktopViewModel
 import com.agileburo.anytype.feature_desktop.navigation.DesktopNavigationProvider

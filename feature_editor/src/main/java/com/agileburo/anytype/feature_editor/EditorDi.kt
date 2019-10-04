@@ -1,8 +1,8 @@
 package com.agileburo.anytype.feature_editor
 
 import android.content.Context
-import com.agileburo.anytype.core_utils.BaseSchedulerProvider
-import com.agileburo.anytype.core_utils.di.PerFeature
+import com.agileburo.anytype.core_utils.di.scope.PerFeature
+import com.agileburo.anytype.core_utils.ext.BaseSchedulerProvider
 import com.agileburo.anytype.feature_editor.data.*
 import com.agileburo.anytype.feature_editor.data.datasource.BlockDataSource
 import com.agileburo.anytype.feature_editor.data.datasource.IPFSDataSourceImpl

@@ -1,7 +1,8 @@
 package com.agileburo.anytype.feature_editor.presentation
 
-import com.agileburo.anytype.core_utils.TrampolineSchedulerProvider
-import com.agileburo.anytype.feature_editor.domain.*
+import com.agileburo.anytype.core_utils.ext.TrampolineSchedulerProvider
+import com.agileburo.anytype.feature_editor.domain.Block
+import com.agileburo.anytype.feature_editor.domain.EditorInteractor
 import com.agileburo.anytype.feature_editor.factory.BlockFactory
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverterImpl

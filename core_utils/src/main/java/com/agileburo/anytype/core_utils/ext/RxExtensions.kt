@@ -1,4 +1,4 @@
-package com.agileburo.anytype.core_utils
+package com.agileburo.anytype.core_utils.ext
 
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -30,7 +30,8 @@ class TrampolineSchedulerProvider : BaseSchedulerProvider {
     override fun io() = Schedulers.trampoline()
 }
 
-class TestSchedulerProvider(private val scheduler: TestScheduler) : BaseSchedulerProvider {
+class TestSchedulerProvider(private val scheduler: TestScheduler) :
+    BaseSchedulerProvider {
     override fun computation() = scheduler
     override fun ui() = scheduler
     override fun io() = scheduler

@@ -1,7 +1,7 @@
 package com.agileburo.anytype
 
-import com.agileburo.anytype.core_utils.shift
-import com.agileburo.anytype.core_utils.swap
+import com.agileburo.anytype.core_utils.ext.shift
+import com.agileburo.anytype.core_utils.ext.swap
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

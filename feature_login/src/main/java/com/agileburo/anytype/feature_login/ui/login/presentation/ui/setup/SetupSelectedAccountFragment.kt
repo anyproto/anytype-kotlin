@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.lifecycle.ViewModelProviders
-import com.agileburo.anytype.core_utils.disposedBy
+import com.agileburo.anytype.core_utils.di.CoreComponentProvider
+import com.agileburo.anytype.core_utils.ext.disposedBy
 import com.agileburo.anytype.feature_login.R
 import com.agileburo.anytype.feature_login.ui.login.di.SetupSelectedAccountSubComponent
 import com.agileburo.anytype.feature_login.ui.login.presentation.common.Keys
@@ -53,7 +54,11 @@ class SetupSelectedAccountFragment : BaseFragment() {
     }
 
     override fun injectDependencies() {
-        SetupSelectedAccountSubComponent.get().inject(this)
+        (activity as? CoreComponentProvider)?.let { provider ->
+            SetupSelectedAccountSubComponent
+                .get(provider.provideCoreComponent())
+                .inject(this)
+        }
     }
 
     override fun releaseDependencies() {

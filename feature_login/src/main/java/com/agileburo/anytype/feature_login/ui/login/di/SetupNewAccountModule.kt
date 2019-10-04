@@ -1,6 +1,6 @@
 package com.agileburo.anytype.feature_login.ui.login.di
 
-import com.agileburo.anytype.core_utils.di.PerScreen
+import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.feature_login.ui.login.domain.common.Session
 import com.agileburo.anytype.feature_login.ui.login.domain.interactor.CreateAccount
 import com.agileburo.anytype.feature_login.ui.login.domain.repository.UserRepository

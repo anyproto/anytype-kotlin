@@ -2,7 +2,7 @@ package com.agileburo.anytype.feature_login.ui.login.presentation.ui.pin
 
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.agileburo.anytype.core_utils.dimen
+import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.feature_login.R
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.pin.PinCodeState
 import com.agileburo.anytype.feature_login.ui.login.presentation.ui.common.BaseFragment

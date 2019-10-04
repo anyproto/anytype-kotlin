@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
-import com.agileburo.anytype.core_utils.disposedBy
+import com.agileburo.anytype.core_utils.di.CoreComponentProvider
+import com.agileburo.anytype.core_utils.ext.disposedBy
 import com.agileburo.anytype.feature_login.R
 import com.agileburo.anytype.feature_login.ui.login.di.ConfirmPinCodeSubComponent
 import com.agileburo.anytype.feature_login.ui.login.presentation.common.Keys
@@ -64,7 +65,11 @@ class ConfirmPinCodeFragment : PinCodeFragment() {
     }
 
     override fun injectDependencies() {
-        ConfirmPinCodeSubComponent.get().inject(this)
+        (activity as? CoreComponentProvider)?.let { provider ->
+            ConfirmPinCodeSubComponent
+                .get(provider.provideCoreComponent())
+                .inject(this)
+        }
     }
 
     override fun releaseDependencies() {

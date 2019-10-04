@@ -10,8 +10,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.agileburo.anytype.core_utils.showKeyboard
-import com.agileburo.anytype.core_utils.swap
+import com.agileburo.anytype.core_utils.ext.showKeyboard
+import com.agileburo.anytype.core_utils.ext.swap
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView
 import com.agileburo.anytype.feature_editor.presentation.model.BlockView.*
@@ -33,7 +33,6 @@ import kotlinx.android.synthetic.main.item_block_image.view.*
 import kotlinx.android.synthetic.main.item_block_quote.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import kotlinx.android.synthetic.main.item_number_list_item.view.*
-import timber.log.Timber
 
 class EditorAdapter(
     val blocks: MutableList<BlockView>,

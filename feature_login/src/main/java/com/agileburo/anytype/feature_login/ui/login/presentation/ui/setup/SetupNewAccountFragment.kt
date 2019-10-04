@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.lifecycle.ViewModelProviders
-import com.agileburo.anytype.core_utils.disposedBy
+import com.agileburo.anytype.core_utils.di.CoreComponentProvider
+import com.agileburo.anytype.core_utils.ext.disposedBy
 import com.agileburo.anytype.feature_login.R
 import com.agileburo.anytype.feature_login.ui.login.di.SetupNewAccountSubComponent
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.setup.SetupNewAccountViewModel
@@ -47,7 +48,11 @@ class SetupNewAccountFragment : BaseFragment() {
     }
 
     override fun injectDependencies() {
-        SetupNewAccountSubComponent.get().inject(this)
+        (activity as? CoreComponentProvider)?.let { provider ->
+            SetupNewAccountSubComponent
+                .get(provider.provideCoreComponent())
+                .inject(this)
+        }
     }
 
     override fun releaseDependencies() {

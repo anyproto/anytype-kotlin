@@ -5,8 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
-import com.agileburo.anytype.core_utils.disposedBy
-import com.agileburo.anytype.core_utils.hideKeyboard
+import com.agileburo.anytype.core_utils.di.CoreComponentProvider
+import com.agileburo.anytype.core_utils.ext.disposedBy
+import com.agileburo.anytype.core_utils.ext.hideKeyboard
 import com.agileburo.anytype.feature_login.R
 import com.agileburo.anytype.feature_login.ui.login.di.CreateProfileSubComponent
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile.CreateProfileViewModel
@@ -54,7 +55,11 @@ class CreateProfileFragment : BaseFragment() {
     }
 
     override fun injectDependencies() {
-        CreateProfileSubComponent.get().inject(this)
+        (activity as? CoreComponentProvider)?.let { provider ->
+            CreateProfileSubComponent
+                .get(provider.provideCoreComponent())
+                .inject(this)
+        }
     }
 
     override fun releaseDependencies() {

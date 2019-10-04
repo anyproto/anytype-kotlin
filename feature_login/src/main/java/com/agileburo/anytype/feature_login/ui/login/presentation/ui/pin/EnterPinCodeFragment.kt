@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
-import com.agileburo.anytype.core_utils.dimen
-import com.agileburo.anytype.core_utils.disposedBy
-import com.agileburo.anytype.core_utils.setOnClickListeners
+import com.agileburo.anytype.core_utils.di.CoreComponentProvider
+import com.agileburo.anytype.core_utils.ext.dimen
+import com.agileburo.anytype.core_utils.ext.disposedBy
+import com.agileburo.anytype.core_utils.ext.setOnClickListeners
 import com.agileburo.anytype.feature_login.R
 import com.agileburo.anytype.feature_login.ui.login.di.EnterPinCodeSubComponent
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.pin.EnterPinCodeViewModel
@@ -108,7 +109,11 @@ class EnterPinCodeFragment : BaseFragment() {
     }
 
     override fun injectDependencies() {
-        EnterPinCodeSubComponent.get().inject(this)
+        (activity as? CoreComponentProvider)?.let { provider ->
+            EnterPinCodeSubComponent
+                .get(provider.provideCoreComponent())
+                .inject(this)
+        }
     }
 
     override fun releaseDependencies() {

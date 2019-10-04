@@ -5,7 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
-import com.agileburo.anytype.core_utils.disposedBy
+import com.agileburo.anytype.core_utils.di.CoreComponentProvider
+import com.agileburo.anytype.core_utils.ext.disposedBy
 import com.agileburo.anytype.feature_login.R
 import com.agileburo.anytype.feature_login.ui.login.di.StartLoginSubComponent
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.start.StartLoginViewModel
@@ -51,7 +52,11 @@ class StartLoginFragment : BaseFragment() {
     }
 
     override fun injectDependencies() {
-        StartLoginSubComponent.get().inject(this)
+        (activity as? CoreComponentProvider)?.let { provider ->
+            StartLoginSubComponent
+                .get(provider.provideCoreComponent())
+                .inject(this)
+        }
     }
 
     override fun releaseDependencies() {

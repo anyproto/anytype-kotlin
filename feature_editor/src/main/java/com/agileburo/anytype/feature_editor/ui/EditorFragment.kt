@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.agileburo.anytype.core_utils.UIExtensions
-import com.agileburo.anytype.core_utils.toast
+import com.agileburo.anytype.core_utils.ext.UIExtensions
+import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.feature_editor.R
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.Block

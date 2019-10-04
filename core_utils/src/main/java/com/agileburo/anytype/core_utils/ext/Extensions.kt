@@ -1,4 +1,4 @@
-package com.agileburo.anytype.core_utils
+package com.agileburo.anytype.core_utils.ext
 
 import android.content.Context
 import android.view.View

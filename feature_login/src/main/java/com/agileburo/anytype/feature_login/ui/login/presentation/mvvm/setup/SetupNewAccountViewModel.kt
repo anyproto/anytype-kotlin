@@ -10,8 +10,8 @@ import com.jakewharton.rxrelay2.PublishRelay
 import timber.log.Timber
 
 class SetupNewAccountViewModel(
-    session: Session,
-    createAccount: CreateAccount
+    private val session: Session,
+    private val createAccount: CreateAccount
 ) : ViewModel(), SupportNavigation {
 
     private val navigation by lazy {
@@ -21,6 +21,10 @@ class SetupNewAccountViewModel(
     override fun observeNavigation() = navigation
 
     init {
+        proceedWithCreatingAccount()
+    }
+
+    fun proceedWithCreatingAccount() {
         createAccount.invoke(
             scope = viewModelScope,
             params = CreateAccount.Params(

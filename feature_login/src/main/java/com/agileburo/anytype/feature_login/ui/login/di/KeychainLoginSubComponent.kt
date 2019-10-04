@@ -1,7 +1,8 @@
 package com.agileburo.anytype.feature_login.ui.login.di
 
-import com.agileburo.anytype.core_utils.di.PerScreen
-import com.agileburo.anytype.core_utils.di.Provider
+import com.agileburo.anytype.core_utils.common.ParametrizedProvider
+import com.agileburo.anytype.core_utils.di.CoreComponent
+import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.feature_login.ui.login.presentation.ui.keychain.KeychainLoginFragment
 import dagger.Subcomponent
 
@@ -9,8 +10,8 @@ import dagger.Subcomponent
 @PerScreen
 abstract class KeychainLoginSubComponent {
 
-    companion object : Provider<KeychainLoginSubComponent>() {
-        override fun create() = LoginFeatureComponent.get().plus(KeychainLoginModule())
+    companion object : ParametrizedProvider<CoreComponent, KeychainLoginSubComponent>() {
+        override fun create(param: CoreComponent) = LoginFeatureComponent.get(param).plus(KeychainLoginModule())
     }
 
     abstract fun inject(fragment: KeychainLoginFragment)

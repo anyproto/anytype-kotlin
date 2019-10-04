@@ -1,7 +1,7 @@
 package com.agileburo.anytype.di.app
 
-import com.agileburo.anytype.core_utils.BaseSchedulerProvider
-import com.agileburo.anytype.core_utils.SchedulerProvider
+import com.agileburo.anytype.core_utils.ext.BaseSchedulerProvider
+import com.agileburo.anytype.core_utils.ext.SchedulerProvider
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -16,5 +16,6 @@ class RxJavaModule {
 
     @Singleton
     @Provides
-    fun provideSchedulerProvider(): BaseSchedulerProvider = SchedulerProvider()
+    fun provideSchedulerProvider(): BaseSchedulerProvider =
+        SchedulerProvider()
 }

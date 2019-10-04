@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.agileburo.anytype.core_utils.dimen
-import com.agileburo.anytype.core_utils.disposedBy
+import com.agileburo.anytype.core_utils.ext.dimen
+import com.agileburo.anytype.core_utils.ext.disposedBy
 import com.agileburo.anytype.feature_login.R
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile.ChooseProfileViewModel
 import com.agileburo.anytype.feature_login.ui.login.presentation.ui.common.BaseFragment

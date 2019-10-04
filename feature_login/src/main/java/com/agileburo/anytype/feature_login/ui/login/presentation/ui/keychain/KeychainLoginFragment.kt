@@ -6,9 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.agileburo.anytype.core_utils.disposedBy
-import com.agileburo.anytype.core_utils.hideKeyboard
-import com.agileburo.anytype.core_utils.toast
+import com.agileburo.anytype.core_utils.di.CoreComponentProvider
+import com.agileburo.anytype.core_utils.ext.disposedBy
+import com.agileburo.anytype.core_utils.ext.hideKeyboard
+import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.feature_login.R
 import com.agileburo.anytype.feature_login.ui.login.di.KeychainLoginSubComponent
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.congratulation.ViewState
@@ -92,7 +93,11 @@ class KeychainLoginFragment : BaseFragment() {
     }
 
     override fun injectDependencies() {
-        KeychainLoginSubComponent.get().inject(this)
+        (activity as? CoreComponentProvider)?.let { provider ->
+            KeychainLoginSubComponent
+                .get(provider.provideCoreComponent())
+                .inject(this)
+        }
     }
 
     override fun releaseDependencies() {

@@ -1,9 +1,11 @@
-package com.agileburo.anytype.core_utils
+package com.agileburo.anytype.core_utils.ext
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.Group
+import com.agileburo.anytype.core_utils.di.CoreComponentProvider
 
 fun Context.dimen(res: Int): Float {
     return resources
@@ -26,3 +28,7 @@ fun hideKeyboard(view: View?) {
         inputMethodManager.hideSoftInputFromWindow(it.windowToken, InputMethodManager.RESULT_UNCHANGED_SHOWN)
     }
 }
+
+fun Activity.coreComponent() =
+    (applicationContext as? CoreComponentProvider)?.provideCoreComponent()
+        ?: throw IllegalStateException("CoreComponentProvider not implemented: $applicationContext")

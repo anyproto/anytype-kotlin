@@ -1,8 +1,8 @@
 package com.agileburo.anytype.feature_editor.presentation.mvvm
 
 import androidx.lifecycle.ViewModel
-import com.agileburo.anytype.core_utils.BaseSchedulerProvider
-import com.agileburo.anytype.core_utils.shift
+import com.agileburo.anytype.core_utils.ext.BaseSchedulerProvider
+import com.agileburo.anytype.core_utils.ext.shift
 import com.agileburo.anytype.feature_editor.disposedBy
 import com.agileburo.anytype.feature_editor.domain.*
 import com.agileburo.anytype.feature_editor.presentation.converter.BlockContentTypeConverter

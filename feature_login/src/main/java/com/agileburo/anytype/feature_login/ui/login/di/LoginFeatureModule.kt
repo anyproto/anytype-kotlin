@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_login.ui.login.di
 
-import com.agileburo.anytype.core_utils.di.PerFeature
+import android.content.Context
+import com.agileburo.anytype.core_utils.di.scope.PerFeature
 import com.agileburo.anytype.feature_login.ui.login.data.AuthCacheDataStore
 import com.agileburo.anytype.feature_login.ui.login.data.AuthCacheImpl
 import com.agileburo.anytype.feature_login.ui.login.data.AuthDataRepository
@@ -40,8 +41,8 @@ class LoginFeatureModule {
 
     @PerFeature
     @Provides
-    fun providePathProvider(): PathProvider {
-        return DefaultPathProvider()
+    fun providePathProvider(context: Context): PathProvider {
+        return DefaultPathProvider(context)
     }
 
 }

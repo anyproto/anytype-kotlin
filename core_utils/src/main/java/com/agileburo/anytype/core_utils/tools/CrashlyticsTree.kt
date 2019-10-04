@@ -1,4 +1,4 @@
-package com.agileburo.anytype.core_utils
+package com.agileburo.anytype.core_utils.tools
 
 import android.util.Log
 import com.crashlytics.android.Crashlytics

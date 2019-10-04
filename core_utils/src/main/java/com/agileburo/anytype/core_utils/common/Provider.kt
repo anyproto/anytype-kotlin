@@ -1,6 +1,6 @@
-package com.agileburo.anytype.core_utils.di
+package com.agileburo.anytype.core_utils.common
 
-abstract class Provider<T> {
+abstract class Provider<out T> {
     private var original: T? = null
 
     abstract fun create(): T

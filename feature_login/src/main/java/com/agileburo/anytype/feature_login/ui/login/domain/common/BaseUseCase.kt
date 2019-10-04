@@ -1,6 +1,6 @@
 package com.agileburo.anytype.feature_login.ui.login.domain.common
 
-import com.agileburo.anytype.core_utils.Either
+import com.agileburo.anytype.core_utils.common.Either
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch

@@ -1,20 +1,23 @@
 package com.agileburo.anytype.feature_login.ui.login.di
 
-import com.agileburo.anytype.core_utils.di.PerFeature
-import com.agileburo.anytype.core_utils.di.Provider
+import com.agileburo.anytype.core_utils.common.ParametrizedProvider
+import com.agileburo.anytype.core_utils.di.CoreComponent
+import com.agileburo.anytype.core_utils.di.scope.PerFeature
 import dagger.Component
 
-@Component(modules = [LoginFeatureModule::class])
+@Component(modules = [LoginFeatureModule::class], dependencies = [CoreComponent::class])
 @PerFeature
 abstract class LoginFeatureComponent {
 
-    companion object : Provider<LoginFeatureComponent>() {
-        override fun create(): LoginFeatureComponent {
+    companion object : ParametrizedProvider<CoreComponent, LoginFeatureComponent>() {
+        override fun create(param: CoreComponent): LoginFeatureComponent {
             return DaggerLoginFeatureComponent
                 .builder()
+                .coreComponent(param)
                 .loginFeatureModule(LoginFeatureModule())
                 .build()
         }
+
     }
 
     abstract fun plus(module: StartLoginModule): StartLoginSubComponent

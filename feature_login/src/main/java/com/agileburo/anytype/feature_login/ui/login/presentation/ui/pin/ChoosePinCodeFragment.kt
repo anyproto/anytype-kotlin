@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
-import com.agileburo.anytype.core_utils.disposedBy
+import com.agileburo.anytype.core_utils.di.CoreComponentProvider
+import com.agileburo.anytype.core_utils.ext.disposedBy
 import com.agileburo.anytype.feature_login.R
 import com.agileburo.anytype.feature_login.ui.login.di.ChoosePinCodeSubComponent
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.pin.ChoosePinCodeViewModel
@@ -59,7 +60,11 @@ class ChoosePinCodeFragment : PinCodeFragment() {
     }
 
     override fun injectDependencies() {
-        ChoosePinCodeSubComponent.get().inject(this)
+        (activity as? CoreComponentProvider)?.let { provider ->
+            ChoosePinCodeSubComponent
+                .get(provider.provideCoreComponent())
+                .inject(this)
+        }
     }
 
     override fun releaseDependencies() {

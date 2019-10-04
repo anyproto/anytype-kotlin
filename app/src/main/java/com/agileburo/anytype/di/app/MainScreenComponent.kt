@@ -1,7 +1,7 @@
 package com.agileburo.anytype.di.app
 
 import com.agileburo.anytype.MainActivity
-import com.agileburo.anytype.core_utils.di.PerScreen
+import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import dagger.Subcomponent
 
 @PerScreen

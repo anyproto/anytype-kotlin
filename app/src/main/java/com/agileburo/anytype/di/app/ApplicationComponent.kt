@@ -2,7 +2,7 @@ package com.agileburo.anytype.di.app
 
 import android.content.Context
 import com.agileburo.anytype.AndroidApplication
-import com.agileburo.anytype.core_utils.BaseSchedulerProvider
+import com.agileburo.anytype.core_utils.ext.BaseSchedulerProvider
 import com.agileburo.anytype.feature_editor.EditorComponent
 import dagger.Component
 import javax.inject.Singleton

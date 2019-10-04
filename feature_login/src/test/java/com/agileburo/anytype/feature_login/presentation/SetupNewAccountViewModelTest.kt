@@ -1,6 +1,6 @@
 package com.agileburo.anytype.feature_login.presentation
 
-import com.agileburo.anytype.core_utils.Either
+import com.agileburo.anytype.core_utils.common.Either
 import com.agileburo.anytype.feature_login.common.CoroutineTestRule
 import com.agileburo.anytype.feature_login.common.DataFactory
 import com.agileburo.anytype.feature_login.ui.login.domain.common.Session

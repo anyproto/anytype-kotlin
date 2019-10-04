@@ -4,14 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.core_utils.disposedBy
 import com.agileburo.anytype.core_utils.hideKeyboard
-import com.agileburo.anytype.core_utils.toast
 import com.agileburo.anytype.feature_login.R
 import com.agileburo.anytype.feature_login.ui.login.di.CreateProfileSubComponent
-import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.congratulation.ViewState
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile.CreateProfileViewModel
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile.CreateProfileViewModelFactory
 import com.agileburo.anytype.feature_login.ui.login.presentation.ui.common.BaseFragment
@@ -50,21 +47,6 @@ class CreateProfileFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupNavigation()
-
-
-        vm.state.observe(this, Observer { state ->
-            when (state) {
-                is ViewState.Loading -> {
-                    requireActivity().toast("Загрузка")
-                }
-                is ViewState.Error -> {
-                    requireActivity().toast("Ошибка")
-                }
-                is ViewState.Success -> {
-                    requireActivity().toast("Успех")
-                }
-            }
-        })
     }
 
     private fun setupNavigation() {

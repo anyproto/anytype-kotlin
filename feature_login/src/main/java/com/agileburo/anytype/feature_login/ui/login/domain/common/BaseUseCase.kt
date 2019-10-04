@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 
 abstract class BaseUseCase<out Type, in Params> where Type : Any {
 
-    protected abstract suspend fun run(params: Params): Either<Throwable, Type>
+    abstract suspend fun run(params: Params): Either<Throwable, Type>
 
     open operator fun invoke(
         scope: CoroutineScope,

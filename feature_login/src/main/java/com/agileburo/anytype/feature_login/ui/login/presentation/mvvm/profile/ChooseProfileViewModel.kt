@@ -2,7 +2,6 @@ package com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.agileburo.anytype.feature_login.ui.login.domain.common.BaseUseCase
 import com.agileburo.anytype.feature_login.ui.login.domain.interactor.ObserveAccounts
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.common.BaseViewModel
 import com.agileburo.anytype.feature_login.ui.login.presentation.navigation.NavigationCommand
@@ -27,7 +26,7 @@ class ChooseProfileViewModel : BaseViewModel(), SupportNavigation {
     init {
         viewModelScope.launch {
             observeAccounts
-                .stream(params = BaseUseCase.None)
+                .observe()
                 .map { profiles ->
                     profiles.map { profile ->
                         ChooseProfileView.ProfileView(

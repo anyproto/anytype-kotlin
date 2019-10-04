@@ -1,14 +1,13 @@
 package com.agileburo.anytype.feature_login.ui.login.domain.interactor
 
-import com.agileburo.anytype.feature_login.ui.login.domain.common.BaseUseCase
-import com.agileburo.anytype.feature_login.ui.login.domain.common.FlowUseCase
 import com.agileburo.anytype.feature_login.ui.login.domain.model.Account
 import com.agileburo.anytype.feature_login.ui.login.domain.model.Image
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class ObserveAccounts : FlowUseCase<List<Account>, BaseUseCase.None>() {
-    override fun stream(params: BaseUseCase.None) = flow {
+class ObserveAccounts {
+    fun observe(): Flow<List<Account>> = flow {
         delay(1000)
         val first = Account(
             id = "1",

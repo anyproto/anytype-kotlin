@@ -4,7 +4,7 @@ import com.agileburo.anytype.core_utils.Either
 import com.agileburo.anytype.feature_login.ui.login.domain.common.BaseUseCase
 import com.agileburo.anytype.feature_login.ui.login.domain.repository.AuthRepository
 
-class SetupWallet(
+open class SetupWallet(
     private val repository: AuthRepository
 ) : BaseUseCase<Unit, SetupWallet.Params>() {
 

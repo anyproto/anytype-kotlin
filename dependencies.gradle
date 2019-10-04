@@ -54,6 +54,10 @@ ext {
     crashlytics_version = '2.10.1'
     firebase_core_version = '17.0.1'
 
+    // Protobuf
+
+    protobuf_java_version = '3.9.2'
+    protoc_version = '3.9.0'
 
     mainApplication = [
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
@@ -112,5 +116,10 @@ ext {
     development = [
             leakCanary:         "com.squareup.leakcanary:leakcanary-android:${leakCanaryVersion}",
             leakCanaryNoop:     "com.squareup.leakcanary:leakcanary-android-no-op:${leakCanaryVersion}",
+    ]
+
+    protobuf = [
+            protobufJava:       "com.google.protobuf:protobuf-java:$protobuf_java_version",
+            protoc:             "com.google.protobuf:protoc:$protoc_version"
     ]
 }

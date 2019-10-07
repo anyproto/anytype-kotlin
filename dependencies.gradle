@@ -47,6 +47,7 @@ ext {
 
     // Development
     leakCanaryVersion = '1.5'
+    stethoVersion = '1.5.1'
 
     // Logging, Analytics & Crash reporting
 
@@ -116,6 +117,7 @@ ext {
     development = [
             leakCanary:         "com.squareup.leakcanary:leakcanary-android:${leakCanaryVersion}",
             leakCanaryNoop:     "com.squareup.leakcanary:leakcanary-android-no-op:${leakCanaryVersion}",
+            stetho:             "com.facebook.stetho:stetho:${stethoVersion}"
     ]
 
     protobuf = [

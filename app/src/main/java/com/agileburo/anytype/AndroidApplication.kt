@@ -9,6 +9,7 @@ import com.agileburo.anytype.core_utils.tools.CrashlyticsTree
 import com.agileburo.anytype.di.app.AppModule
 import com.agileburo.anytype.di.app.ApplicationComponent
 import com.agileburo.anytype.di.app.DaggerApplicationComponent
+import com.facebook.stetho.Stetho
 import timber.log.Timber
 
 class AndroidApplication : Application(), CoreComponentProvider {
@@ -30,6 +31,7 @@ class AndroidApplication : Application(), CoreComponentProvider {
         super.onCreate()
         injectMembers()
         setupTimber()
+        setupStetho()
     }
 
     private fun setupTimber() {
@@ -37,6 +39,11 @@ class AndroidApplication : Application(), CoreComponentProvider {
             Timber.plant(Timber.DebugTree())
         else
             Timber.plant(CrashlyticsTree())
+    }
+
+    private fun setupStetho() {
+        if (BuildConfig.DEBUG)
+            Stetho.initializeWithDefaults(this)
     }
 
     private fun injectMembers() = applicationComponent.inject(this)

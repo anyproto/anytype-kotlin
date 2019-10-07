@@ -63,7 +63,8 @@ dependencies {
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
-    def acceptenceTesting = rootProject.ext.acceptanceTesting
+    def acceptanceTesting = rootProject.ext.acceptanceTesting
+    def devDependencies = rootProject.ext.development
 
     //Compile time dependencies
     kapt applicationDependencies.daggerCompiler
@@ -88,13 +89,17 @@ dependencies {
     implementation applicationDependencies.crashlytics
     implementation applicationDependencies.firebaseCore
 
+    implementation devDependencies.stetho
+
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.junit
 
     //Acceptance tests dependencies
-    androidTestImplementation acceptenceTesting.espressoCore
-    androidTestImplementation acceptenceTesting.androidJUnit
-    androidTestImplementation acceptenceTesting.testRules
+    androidTestImplementation acceptanceTesting.espressoCore
+    androidTestImplementation acceptanceTesting.androidJUnit
+    androidTestImplementation acceptanceTesting.testRules
+
+
 }
 
 apply plugin: 'com.google.gms.google-services'

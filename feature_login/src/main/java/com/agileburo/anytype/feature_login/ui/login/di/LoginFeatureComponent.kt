@@ -27,6 +27,7 @@ abstract class LoginFeatureComponent {
     abstract fun plus(module: EnterPinCodeModule): EnterPinCodeSubComponent
     abstract fun plus(module: CongratulationModule): CongratulationSubComponent
     abstract fun plus(module: SetupNewAccountModule): SetupNewAccountSubComponent
+    abstract fun plus(module: SelectProfileModule): SelectProfileSubComponent
     abstract fun plus(module: SetupSelectedAccountModule): SetupSelectedAccountSubComponent
     abstract fun plus(module: KeychainLoginModule): KeychainLoginSubComponent
 }

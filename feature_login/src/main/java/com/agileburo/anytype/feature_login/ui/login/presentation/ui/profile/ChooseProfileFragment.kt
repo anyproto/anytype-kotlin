@@ -7,15 +7,22 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.agileburo.anytype.core_utils.di.CoreComponentProvider
 import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ext.disposedBy
 import com.agileburo.anytype.feature_login.R
+import com.agileburo.anytype.feature_login.ui.login.di.SelectProfileSubComponent
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile.ChooseProfileViewModel
+import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile.ChooseProfileViewModelFactory
 import com.agileburo.anytype.feature_login.ui.login.presentation.ui.common.BaseFragment
 import com.agileburo.anytype.feature_login.ui.login.presentation.ui.common.SpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_choose_profile.*
+import javax.inject.Inject
 
 class ChooseProfileFragment : BaseFragment() {
+
+    @Inject
+    lateinit var factory: ChooseProfileViewModelFactory
 
     private val vm by lazy {
         ViewModelProviders
@@ -63,10 +70,14 @@ class ChooseProfileFragment : BaseFragment() {
     }
 
     override fun injectDependencies() {
-
+        (activity as? CoreComponentProvider)?.let { provider ->
+            SelectProfileSubComponent
+                .get(provider.provideCoreComponent())
+                .inject(this)
+        }
     }
 
     override fun releaseDependencies() {
-
+        SelectProfileSubComponent.clear()
     }
 }

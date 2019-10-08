@@ -263,6 +263,7 @@ class DragAndDropBehavior(
                     DragDropAction.Shift(from = state.from.adapterPosition, to = it.adapterPosition)
                 )
             }
+            shiftView = null
         }
 
         is DragState.ShiftRequest -> {

@@ -138,7 +138,10 @@ abstract class EditorFragment : Fragment() {
         is EditorState.ClearBlockFocus -> clearBlockFocus(state.position, state.contentType)
         is EditorState.HideKeyboard -> UIExtensions.hideSoftKeyBoard(requireActivity(), blockList)
         is EditorState.DragDropOn -> helper.attachToRecyclerView(blockList)
-        is EditorState.DragDropOff -> helper.attachToRecyclerView(null)
+        is EditorState.DragDropOff -> {
+            //Todo Потенциально опасное место, см. https://issuetracker.google.com/issues/140447176
+            helper.attachToRecyclerView(null)
+        }
     }
 
     private fun clearBlockFocus(position: Int, contentType: ContentType) {

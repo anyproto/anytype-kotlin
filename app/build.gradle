@@ -59,6 +59,7 @@ dependencies {
     implementation project(':feature_login')
     implementation project(':feature_editor')
     implementation project(':feature_desktop')
+    implementation project(':feature_profile')
     implementation project(':core_utils')
 
     def applicationDependencies = rootProject.ext.mainApplication

@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Profile</string>
+    <string name="switch_profile">Switch profile</string>
+    <string name="description_profile_picture">Profile picture</string>
+    <string name="description_arrow_icon">Arrow icon</string>
+    <string name="keychain_phrase">Keychain phrase</string>
+    <string name="pin_code">Pin code</string>
+    <string name="updates">Updates</string>
+    <string name="log_out">Log out</string>
+    <string name="add_profile">Add profile</string>
+    <string name="keychain_phrase_text">Your Keychain phrase protects your account. You need it to sign in if you don\'t have access to your devices. Keep it in a safe place.</string>
+    <string name="back_up_your_keychain_phrase">Back up your keychain \nphrase</string>
+    <string name="i_ve_written_it_down">i\'ve written it down</string>
+    <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
 </resources>

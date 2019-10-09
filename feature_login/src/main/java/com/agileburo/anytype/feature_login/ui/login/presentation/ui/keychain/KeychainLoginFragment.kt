@@ -64,6 +64,7 @@ class KeychainLoginFragment : BaseFragment() {
                 }
                 is ViewState.Error -> {
                     loginButton.isEnabled = true
+                    progress.visibility = View.INVISIBLE
                     requireActivity().toast(state.error)
                 }
                 is ViewState.Success -> {

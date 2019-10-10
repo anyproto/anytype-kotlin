@@ -1,38 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:orientation="vertical"
-              android:layout_margin="4dp"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
-    
-    <androidx.cardview.widget.CardView
-            android:stateListAnimator="@animator/scale_shrink"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="4dp"
-            android:layout_margin="4dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="12dp">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <ImageView
-                android:background="@drawable/circle_blue"
-                android:id="@+id/icon"
-                android:layout_marginBottom="32dp"
-                android:layout_marginTop="32dp"
+        <FrameLayout
+            android:id="@+id/icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/circle_default">
+
+            <TextView
                 android:layout_gravity="center"
-                android:layout_width="48dp" android:layout_height="48dp"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📽" />
 
-    </androidx.cardview.widget.CardView>
+        </FrameLayout>
 
-    <TextView
-            android:fontFamily="monospace"
-            android:layout_margin="8dp"
-            android:text="Document"
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="14dp"
             android:id="@+id/title"
-            android:textSize="14sp"
-            android:layout_marginTop="12dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_marginBottom="12dp"
+            android:text="Movies"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
-</LinearLayout>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -5,19 +5,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.agileburo.anytype.feature_desktop.mvvm.DesktopView
 import com.agileburo.anytype.feature_desktop.R
+import com.agileburo.anytype.feature_desktop.mvvm.DesktopView
 import com.agileburo.anytype.feature_desktop.utils.DesktopDiffUtil
 
 class DesktopAdapter(
     private val data : MutableList<DesktopView>,
-    private val onAddNewDocumentClicked : () -> Unit,
     private val onDocumentClicked : (DesktopView.Document) -> Unit
 ) : RecyclerView.Adapter<DesktopAdapter.ViewHolder>() {
 
     companion object {
         const val VIEW_TYPE_DOCUMENT = 0
-        const val VIEW_TYPE_NEW_DOCUMENT = 1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -28,11 +26,6 @@ class DesktopAdapter(
                     ViewHolder.DocumentHolder(it)
                 }
             }
-            VIEW_TYPE_NEW_DOCUMENT -> {
-                inflater.inflate(R.layout.item_desktop_new_document, parent, false).let {
-                    ViewHolder.NewDocumentHolder(it)
-                }
-            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -40,7 +33,7 @@ class DesktopAdapter(
     override fun getItemViewType(position: Int): Int {
         return when (data[position]) {
             is DesktopView.Document -> VIEW_TYPE_DOCUMENT
-            is DesktopView.NewDocument -> VIEW_TYPE_NEW_DOCUMENT
+            else -> throw IllegalStateException("Unexpected type")
         }
     }
 
@@ -54,11 +47,6 @@ class DesktopAdapter(
                     onClick = onDocumentClicked
                 )
             }
-            is ViewHolder.NewDocumentHolder -> {
-                holder.bind(
-                    onClick = onAddNewDocumentClicked
-                )
-            }
         }
     }
 
@@ -68,13 +56,6 @@ class DesktopAdapter(
 
             fun bind(doc : DesktopView.Document, onClick: (DesktopView.Document) -> Unit) {
                 itemView.setOnClickListener { onClick(doc) }
-            }
-        }
-
-        class NewDocumentHolder(itemView: View) : ViewHolder(itemView) {
-
-            fun bind(onClick: () -> Unit) {
-                itemView.setOnClickListener { onClick() }
             }
         }
     }

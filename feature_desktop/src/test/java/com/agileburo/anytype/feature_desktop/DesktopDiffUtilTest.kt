@@ -8,29 +8,6 @@ import kotlin.test.assertEquals
 class DesktopDiffUtilTest {
 
     @Test
-    fun placeholderItemsAndContentsAreTheSame() {
-
-        val old = listOf(DesktopView.NewDocument)
-        val new = listOf(DesktopView.NewDocument)
-
-        val util = DesktopDiffUtil(old, new)
-
-        val firstResult = util.areItemsTheSame(0, 0)
-
-        assertEquals(
-            expected = true,
-            actual = firstResult
-        )
-
-        val secondResult = util.areContentsTheSame(0, 0)
-
-        assertEquals(
-            expected = true,
-            actual = secondResult
-        )
-    }
-
-    @Test
     fun itemsAndContentsAreTheSame() {
 
         val id = DataFactory.randomUuid()
@@ -64,28 +41,6 @@ class DesktopDiffUtilTest {
         assertEquals(
             expected = true,
             actual = secondResult
-        )
-    }
-
-    @Test
-    fun itemsAreNotTheSame() {
-
-        val old = listOf(DesktopView.NewDocument)
-
-        val new = listOf(
-            DesktopView.Document(
-                id = DataFactory.randomUuid(),
-                title = DataFactory.randomString()
-            )
-        )
-
-        val util = DesktopDiffUtil(old, new)
-
-        val firstResult = util.areItemsTheSame(0, 0)
-
-        assertEquals(
-            expected = false,
-            actual = firstResult
         )
     }
 

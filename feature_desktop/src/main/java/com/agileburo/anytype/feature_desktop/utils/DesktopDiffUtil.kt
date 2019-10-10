@@ -13,20 +13,10 @@ class DesktopDiffUtil(
         val oldItem = old[oldItemPosition]
         val newItem = new[newItemPosition]
 
-        if (oldItem is DesktopView.NewDocument && newItem is DesktopView.NewDocument)
-            return true
-        else {
-            if (oldItem is DesktopView.Document && newItem is DesktopView.Document) {
-                return oldItem.id == newItem.id
-            } else {
-                if (oldItem is DesktopView.NewDocument && newItem is DesktopView.Document)
-                    return false
-                if (oldItem is DesktopView.Document && newItem is DesktopView.NewDocument)
-                    return false
-                else
-                    throw IllegalStateException("Unexpected state")
-            }
-        }
+        if (oldItem is DesktopView.Document && newItem is DesktopView.Document)
+            return oldItem.id == newItem.id
+        else
+            throw IllegalStateException("Unexpected state")
     }
 
     override fun getOldListSize(): Int = old.size
@@ -36,10 +26,6 @@ class DesktopDiffUtil(
         val oldItem = old[oldItemPosition]
         val newItem = new[newItemPosition]
 
-        return if (oldItem is DesktopView.NewDocument) {
-            true
-        } else {
-            (oldItem as DesktopView.Document) == (newItem as DesktopView.Document)
-        }
+        return (oldItem as DesktopView.Document) == (newItem as DesktopView.Document)
     }
 }

@@ -1,49 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        app:layoutDescription="@xml/collapsing_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_desktop"
+    app:layoutDescription="@xml/collapsing_toolbar">
+
+    <View
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="300dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar"
-            android:id="@+id/desktopRecycler"/>
+        android:id="@+id/desktopRecycler"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        tools:listitem="@layout/item_desktop_page" />
 
-    <FrameLayout
-            android:background="@color/design_default_color_primary"
-            android:id="@+id/toolbar"
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+    <ImageView
+        android:id="@+id/profileImage"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/circle_blue"
+        android:backgroundTint="@color/orange"
+        app:layout_constraintBottom_toBottomOf="@+id/desktopTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/desktopTitle" />
 
-        <ImageView
-                android:layout_gravity="end|center_vertical"
-                android:background="@drawable/circle_dark"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_margin="16dp"
-                android:id="@+id/profileImage"/>
+    <TextView
+        android:id="@+id/desktopTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="48dp"
+        android:text="Hi, Konstantin"
+        android:textColor="@color/white"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-                android:textColor="@color/white"
-                android:layout_gravity="center_vertical"
-                android:textSize="16dp"
-                android:fontFamily="monospace"
-                android:textStyle="bold"
-                android:text="DESKTOP"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/desktopTitle"
-                android:layout_marginStart="16dp"/>
-
-    </FrameLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        app:backgroundTint="@color/orange"
+        android:src="@drawable/ic_add_doc"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

@@ -21,7 +21,6 @@ class DesktopFragment : BaseFragment() {
     private val desktopAdapter by lazy {
         DesktopAdapter(
             data = mutableListOf(),
-            onAddNewDocumentClicked = { vm.onAddNewDocumentClicked() },
             onDocumentClicked = {
                 (requireActivity() as? DesktopNavigationProvider)
                     ?.provideDesktopNavigation()
@@ -46,6 +45,8 @@ class DesktopFragment : BaseFragment() {
             layoutManager = GridLayoutManager(context, 2)
             adapter = desktopAdapter
         }
+
+        fab.setOnClickListener { vm.onAddNewDocumentClicked() }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

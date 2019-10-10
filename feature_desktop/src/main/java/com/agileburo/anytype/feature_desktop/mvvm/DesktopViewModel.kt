@@ -7,7 +7,14 @@ import io.reactivex.Observable
 class DesktopViewModel : ViewModel() {
 
     private val docs by lazy {
-        BehaviorRelay.createDefault<List<DesktopView>>(listOf(DesktopView.NewDocument))
+        BehaviorRelay.createDefault<List<DesktopView>>(
+            listOf(
+                DesktopView.Document(
+                    id = "1",
+                    title = "Document"
+                )
+            )
+        )
     }
 
     fun observeDesktop() : Observable<List<DesktopView>> = docs
@@ -18,12 +25,12 @@ class DesktopViewModel : ViewModel() {
             when(items.size) {
                 1 -> {
                     val doc = DesktopView.Document(
-                        id = "1",
+                        id = "2",
                         title = "Document"
                     )
                     val result = mutableListOf<DesktopView>().apply {
+                        addAll(items)
                         add(doc)
-                        add(items.last())
                     }
 
                     docs.accept(result)
@@ -31,18 +38,13 @@ class DesktopViewModel : ViewModel() {
                 else -> {
                     val result = mutableListOf<DesktopView>().apply {
 
-                        val documents = items.filter { it !is DesktopView.NewDocument }
-
-                        addAll(documents)
-
                         val new = DesktopView.Document(
-                            id = ((documents.last() as DesktopView.Document).id.toInt() + 1).toString(),
+                            id = ((items.last() as DesktopView.Document).id.toInt() + 1).toString(),
                             title = "Document"
                         )
 
+                        addAll(items)
                         add(new)
-
-                        add(DesktopView.NewDocument)
                     }
 
                     docs.accept(result)
@@ -53,8 +55,4 @@ class DesktopViewModel : ViewModel() {
 
     fun onDocumentClicked() {}
 
-    override fun onCleared() {
-        super.onCleared()
-        // TODO
-    }
 }

@@ -10,13 +10,19 @@ class SelectAccount(
 
     override suspend fun run(params: Params) = try {
         userRepository.selectAccount(
-            id = params.id
-        ).let {
+            id = params.id,
+            path = params.path
+        ).let { account ->
+            userRepository.saveAccount(account)
+        }.let {
             Either.Right(it)
         }
     } catch (e: Throwable) {
         Either.Left(e)
     }
 
-    class Params(val id: String)
+    class Params(
+        val id: String,
+        val path: String
+    )
 }

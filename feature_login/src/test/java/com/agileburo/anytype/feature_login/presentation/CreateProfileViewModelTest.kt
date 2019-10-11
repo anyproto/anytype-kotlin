@@ -2,7 +2,7 @@ package com.agileburo.anytype.feature_login.presentation
 
 import com.agileburo.anytype.feature_login.common.DataFactory
 import com.agileburo.anytype.feature_login.ui.login.domain.common.Session
-import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile.CreateProfileViewModel
+import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile.CreateAccountViewModel
 import com.agileburo.anytype.feature_login.ui.login.presentation.navigation.NavigationCommand
 import org.junit.Before
 import org.junit.Test
@@ -10,13 +10,13 @@ import kotlin.test.assertNotEquals
 
 class CreateProfileViewModelTest {
 
-    lateinit var vm: CreateProfileViewModel
+    lateinit var vm: CreateAccountViewModel
 
     private val session = Session()
 
     @Before
     fun setup() {
-        vm = CreateProfileViewModel(session)
+        vm = CreateAccountViewModel(session)
     }
 
     @Test

@@ -7,7 +7,7 @@ class AuthCacheDataStore(
     override suspend fun isSignedIn() = authCache.isSignedIn()
 
     override suspend fun saveMnemonic(mnemonic: String) {
-        return authCache.saveMnemonic(mnemonic)
+        authCache.saveMnemonic(mnemonic)
     }
 
     override suspend fun getMnemonic() = authCache.getMnemonic()

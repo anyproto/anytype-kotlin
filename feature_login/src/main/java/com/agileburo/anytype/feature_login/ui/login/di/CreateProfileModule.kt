@@ -2,7 +2,7 @@ package com.agileburo.anytype.feature_login.ui.login.di
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.feature_login.ui.login.domain.common.Session
-import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile.CreateProfileViewModelFactory
+import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile.CreateAccountViewModelFactory
 import dagger.Module
 import dagger.Provides
 
@@ -13,8 +13,8 @@ class CreateProfileModule {
     @Provides
     fun provideCreateProfileViewModelFactory(
         session: Session
-    ): CreateProfileViewModelFactory {
-        return CreateProfileViewModelFactory(
+    ): CreateAccountViewModelFactory {
+        return CreateAccountViewModelFactory(
             session = session
         )
     }

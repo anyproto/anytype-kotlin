@@ -1,10 +1,7 @@
 package com.agileburo.anytype
 
 import android.app.Application
-import com.agileburo.anytype.core_utils.di.ContextModule
-import com.agileburo.anytype.core_utils.di.CoreComponent
-import com.agileburo.anytype.core_utils.di.CoreComponentProvider
-import com.agileburo.anytype.core_utils.di.DaggerCoreComponent
+import com.agileburo.anytype.core_utils.di.*
 import com.agileburo.anytype.core_utils.tools.CrashlyticsTree
 import com.agileburo.anytype.di.app.AppModule
 import com.agileburo.anytype.di.app.ApplicationComponent
@@ -24,6 +21,7 @@ class AndroidApplication : Application(), CoreComponentProvider {
         DaggerCoreComponent
             .builder()
             .contextModule(ContextModule(this))
+            .dataModule(DataModule())
             .build()
     }
 

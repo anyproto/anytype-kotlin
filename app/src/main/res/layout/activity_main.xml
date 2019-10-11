@@ -39,13 +39,13 @@
 
     <fragment
         android:id="@+id/create"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.CreateProfileFragment"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.CreateAccountFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <fragment
         android:id="@+id/choose"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.ChooseProfileFragment"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.SelectAccountFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

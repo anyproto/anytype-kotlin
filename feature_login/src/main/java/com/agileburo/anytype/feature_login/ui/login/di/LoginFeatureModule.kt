@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_login.ui.login.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.agileburo.anytype.core_utils.di.scope.PerFeature
 import com.agileburo.anytype.feature_login.ui.login.data.AuthCacheDataStore
 import com.agileburo.anytype.feature_login.ui.login.data.AuthCacheImpl
@@ -11,6 +12,9 @@ import com.agileburo.anytype.feature_login.ui.login.domain.common.PathProvider
 import com.agileburo.anytype.feature_login.ui.login.domain.common.Session
 import com.agileburo.anytype.feature_login.ui.login.domain.repository.AuthRepository
 import com.agileburo.anytype.feature_login.ui.login.domain.repository.UserRepository
+import com.agileburo.anytype.middleware.EventProxy
+import com.agileburo.anytype.middleware.interactor.Handler
+import com.agileburo.anytype.middleware.interactor.Middleware
 import dagger.Module
 import dagger.Provides
 
@@ -19,18 +23,28 @@ class LoginFeatureModule {
 
     @PerFeature
     @Provides
-    fun provideAuthRepository(): AuthRepository {
+    fun provideAuthRepository(
+        prefs: SharedPreferences,
+        middleware: Middleware
+    ): AuthRepository {
         return AuthDataRepository(
             cache = AuthCacheDataStore(
-                authCache = AuthCacheImpl()
-            )
+                authCache = AuthCacheImpl(prefs)
+            ),
+            middleware = middleware
         )
     }
 
     @PerFeature
     @Provides
-    fun provideUserRepository(): UserRepository {
-        return UserDataRepository()
+    fun provideUserRepository(
+        middleware: Middleware,
+        proxy: EventProxy
+    ): UserRepository {
+        return UserDataRepository(
+            middleware = middleware,
+            proxy = proxy
+        )
     }
 
     @PerFeature
@@ -43,6 +57,18 @@ class LoginFeatureModule {
     @Provides
     fun providePathProvider(context: Context): PathProvider {
         return DefaultPathProvider(context)
+    }
+
+    @PerFeature
+    @Provides
+    fun provideMiddleware(): Middleware {
+        return Middleware()
+    }
+
+    @PerFeature
+    @Provides
+    fun provideEventProxy(): EventProxy {
+        return Handler()
     }
 
 }

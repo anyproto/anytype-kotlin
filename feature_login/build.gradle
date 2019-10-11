@@ -18,6 +18,7 @@ android {
 dependencies {
 
     implementation project(':core_utils')
+    implementation project(':middleware')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def acceptanceTesting = rootProject.ext.acceptanceTesting

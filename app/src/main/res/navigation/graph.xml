@@ -24,7 +24,7 @@
 
     <fragment
         android:id="@+id/createProfileScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.CreateProfileFragment"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.CreateAccountFragment"
         android:label="StartLoginFragment"
         tools:layout="@layout/fragment_create_profile" />
 
@@ -54,7 +54,7 @@
 
     <fragment
         android:id="@+id/chooseProfileScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.ChooseProfileFragment"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.SelectAccountFragment"
         android:label="ChooseProfileScreen"
         tools:layout="@layout/fragment_choose_profile" />
 

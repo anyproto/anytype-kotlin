@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_login.ui.login.di
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
+import com.agileburo.anytype.feature_login.ui.login.domain.common.PathProvider
 import com.agileburo.anytype.feature_login.ui.login.domain.interactor.SelectAccount
 import com.agileburo.anytype.feature_login.ui.login.domain.repository.UserRepository
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.setup.SetupSelectedAccountViewModelFactory
@@ -13,10 +14,12 @@ class SetupSelectedAccountModule {
     @Provides
     @PerScreen
     fun provideSetupSelectedAccountViewModelFactory(
-        selectAccount: SelectAccount
+        selectAccount: SelectAccount,
+        pathProvider: PathProvider
     ): SetupSelectedAccountViewModelFactory {
         return SetupSelectedAccountViewModelFactory(
-            selectAccount = selectAccount
+            selectAccount = selectAccount,
+            pathProvider = pathProvider
         )
     }
 

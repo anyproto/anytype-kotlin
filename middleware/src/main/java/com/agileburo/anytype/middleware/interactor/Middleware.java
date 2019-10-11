@@ -1,6 +1,7 @@
 package com.agileburo.anytype.middleware.interactor;
 
 import anytype.Commands.*;
+import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
 import com.agileburo.anytype.middleware.model.SelectAccountResponse;
 import lib.Lib;
@@ -25,7 +26,7 @@ public class Middleware {
         }
     }
 
-    public void createAccount(String name) throws Exception {
+    public CreateAccountResponse createAccount(String name) throws Exception {
 
         AccountCreateRequest request = AccountCreateRequest
                 .newBuilder()
@@ -36,14 +37,15 @@ public class Middleware {
 
         byte[] encodedResponse = Lib.accountCreate(encodedRequest);
 
-        // TODO remove.
-        if (encodedResponse == null)
-            return;
-
         AccountCreateResponse response = AccountCreateResponse.parseFrom(encodedResponse);
 
         if (response.getError() != null && response.getError().getCode() != AccountCreateResponse.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
+        } else {
+            return new CreateAccountResponse(
+                    response.getAccount().getId(),
+                    response.getAccount().getName()
+            );
         }
     }
 

@@ -38,8 +38,13 @@ class UserDataRepository(
             }
     }
 
-    override suspend fun createAccount(name: String) {
-        middleware.createAccount(name)
+    override suspend fun createAccount(name: String): Account {
+        return middleware.createAccount(name).let { response ->
+            Account(
+                id = response.id,
+                name = response.name
+            )
+        }
     }
 
     override suspend fun recoverAccount() {

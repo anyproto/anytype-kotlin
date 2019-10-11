@@ -24,14 +24,20 @@ android {
 }
 
 dependencies {
-
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
+    def databaseDependencies = rootProject.ext.db
 
     implementation applicationDependencies.kotlin
-    implementation applicationDependencies.appcompat
+    implementation applicationDependencies.coroutines
+
+    implementation databaseDependencies.room
+    implementation databaseDependencies.roomKtx
+    kapt databaseDependencies.annotations
 
     implementation applicationDependencies.timber
+
+    testImplementation databaseDependencies.roomTesting
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

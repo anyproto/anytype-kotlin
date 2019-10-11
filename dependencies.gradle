@@ -60,6 +60,10 @@ ext {
     protobuf_java_version = '3.9.2'
     protoc_version = '3.9.0'
 
+    // DB
+
+    room_version = '2.2.0'
+
     mainApplication = [
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             coroutines:                 "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version",
@@ -123,5 +127,12 @@ ext {
     protobuf = [
             protobufJava:       "com.google.protobuf:protobuf-java:$protobuf_java_version",
             protoc:             "com.google.protobuf:protoc:$protoc_version"
+    ]
+
+    db = [
+            room:               "androidx.room:room-runtime:$room_version",
+            roomKtx:            "androidx.room:room-ktx:$room_version",
+            annotations:        "androidx.room:room-compiler:$room_version",
+            roomTesting:        "androidx.room:room-testing:$room_version"
     ]
 }

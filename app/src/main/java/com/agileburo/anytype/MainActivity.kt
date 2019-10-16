@@ -12,11 +12,14 @@ import com.agileburo.anytype.di.app.MainScreenComponent
 import com.agileburo.anytype.feature_desktop.navigation.DesktopNavigationProvider
 import com.agileburo.anytype.feature_login.ui.login.presentation.navigation.AuthNavigation
 import com.agileburo.anytype.feature_login.ui.login.presentation.navigation.AuthNavigationProvider
+import com.agileburo.anytype.feature_profile.navigation.ProfileNavigation
+import com.agileburo.anytype.feature_profile.navigation.ProfileNavigationProvider
 import com.agileburo.anytype.navigation.Navigator
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), AuthNavigationProvider, DesktopNavigationProvider, CoreComponentProvider {
+class MainActivity : AppCompatActivity(), AuthNavigationProvider, DesktopNavigationProvider, ProfileNavigationProvider,
+    CoreComponentProvider {
 
     private val navigator by lazy { Navigator() }
 
@@ -53,5 +56,7 @@ class MainActivity : AppCompatActivity(), AuthNavigationProvider, DesktopNavigat
 
     override fun provideNavigation(): AuthNavigation = navigator
     override fun provideDesktopNavigation() = navigator
+    override fun provide(): ProfileNavigation = navigator
+
     override fun provideCoreComponent() = coreComponent()
 }

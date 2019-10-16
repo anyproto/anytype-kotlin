@@ -1,6 +1,7 @@
 package com.agileburo.anytype.feature_profile.presentation.mvvm
 
 import androidx.lifecycle.MutableLiveData
+import com.agileburo.anytype.core_utils.common.Event
 import com.agileburo.anytype.core_utils.navigation.SupportNavigation
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
@@ -10,10 +11,9 @@ import com.agileburo.anytype.feature_profile.presentation.model.ProfileView
 
 class ProfileViewModel(
     private val updateProfileSettings: UpdateProfileSettings
-) : ViewStateViewModel<ViewState<ProfileView>>(), SupportNavigation<ProfileNavigation.Command> {
+) : ViewStateViewModel<ViewState<ProfileView>>(), SupportNavigation<Event<ProfileNavigation.Command>> {
 
-    override val navigation: MutableLiveData<ProfileNavigation.Command>
-        get() = MutableLiveData()
+    override val navigation: MutableLiveData<Event<ProfileNavigation.Command>> = MutableLiveData()
 
     fun onViewCreated() {
         stateData.postValue(ViewState.Init)
@@ -28,11 +28,11 @@ class ProfileViewModel(
     }
 
     fun onKeyChainPhraseClicked() {
-        navigation.value = ProfileNavigation.Command.OpenKeychainScreen
+        navigation.postValue(Event(ProfileNavigation.Command.OpenKeychainScreen))
     }
 
     fun onPinCodeClicked() {
-        navigation.value = ProfileNavigation.Command.OpenPinCodeScreen
+        navigation.postValue(Event(ProfileNavigation.Command.OpenPinCodeScreen))
     }
 
     fun onUpdateToggled(value: Boolean) {

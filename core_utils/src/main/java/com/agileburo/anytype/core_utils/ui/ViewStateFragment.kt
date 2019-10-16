@@ -9,5 +9,6 @@ abstract class ViewStateFragment<VS>(
     override fun onChanged(state: VS) {
         render(state)
     }
+
     abstract fun render(state: VS)
 }

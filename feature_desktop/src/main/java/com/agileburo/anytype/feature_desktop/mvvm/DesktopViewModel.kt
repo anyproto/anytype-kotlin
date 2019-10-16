@@ -1,62 +1,40 @@
 package com.agileburo.anytype.feature_desktop.mvvm
 
-import androidx.lifecycle.ViewModel
-import com.jakewharton.rxrelay2.BehaviorRelay
-import io.reactivex.Observable
+import androidx.lifecycle.MutableLiveData
+import com.agileburo.anytype.core_utils.common.Event
+import com.agileburo.anytype.core_utils.navigation.SupportNavigation
+import com.agileburo.anytype.core_utils.ui.ViewState
+import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
+import com.agileburo.anytype.feature_desktop.navigation.DesktopNavigation
 
-class DesktopViewModel : ViewModel() {
+class DesktopViewModel : ViewStateViewModel<ViewState<List<DesktopView>>>(),
+    SupportNavigation<Event<DesktopNavigation.Command>> {
 
-    private val docs by lazy {
-        BehaviorRelay.createDefault<List<DesktopView>>(
-            listOf(
-                DesktopView.Document(
-                    id = "1",
-                    title = "Document"
+    override val navigation = MutableLiveData<Event<DesktopNavigation.Command>>()
+
+    fun onViewCreated() {
+        stateData.postValue(ViewState.Init)
+    }
+
+    fun onAddNewDocumentClicked() {
+        stateData.postValue(
+            ViewState.Success(
+                listOf(
+                    DesktopView.Document(
+                        id = "1",
+                        title = "Document"
+                    )
                 )
             )
         )
     }
 
-    fun observeDesktop() : Observable<List<DesktopView>> = docs
-
-    fun onAddNewDocumentClicked() {
-        docs.value?.let { items ->
-
-            when(items.size) {
-                1 -> {
-                    val doc = DesktopView.Document(
-                        id = "2",
-                        title = "Document"
-                    )
-                    val result = mutableListOf<DesktopView>().apply {
-                        addAll(items)
-                        add(doc)
-                    }
-
-                    docs.accept(result)
-                }
-                else -> {
-                    val result = mutableListOf<DesktopView>().apply {
-
-                        val new = DesktopView.Document(
-                            id = ((items.last() as DesktopView.Document).id.toInt() + 1).toString(),
-                            title = "Document"
-                        )
-
-                        addAll(items)
-                        add(new)
-                    }
-
-                    docs.accept(result)
-                }
-            }
-        }
+    fun onDocumentClicked() {
+        navigation.postValue(Event(DesktopNavigation.Command.OpenDocument("")))
     }
 
-    fun onDocumentClicked() {}
-
     fun onProfileClicked() {
-
+        navigation.postValue(Event(DesktopNavigation.Command.OpenProfile))
     }
 
 }

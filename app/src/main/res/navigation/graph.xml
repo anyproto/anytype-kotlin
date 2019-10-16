@@ -6,27 +6,103 @@
     app:startDestination="@id/startLoginScreen">
 
     <fragment
-        android:id="@+id/documentScreen"
-        android:name="com.agileburo.anytype.feature_profile.presentation.ui.DocumentFragment"
-        android:label="DocumentScreen"
-        tools:layout="@layout/fragment_editor" />
-    <fragment
-        android:id="@+id/desktopScreen"
-        android:name="com.agileburo.anytype.feature_desktop.ui.DesktopFragment"
-        android:label="DesktopFragment"
-        tools:layout="@layout/fragment_desktop" />
-
-    <fragment
         android:id="@+id/startLoginScreen"
         android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.start.StartLoginFragment"
         android:label="StartLoginFragment"
-        tools:layout="@layout/fragment_start_login" />
+        tools:layout="@layout/fragment_start_login">
+        <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            android:id="@+id/action_open_sign_in"
+            app:destination="@id/keychainLoginScreen" />
+        <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            android:id="@+id/action_open_sign_up"
+            app:destination="@id/createAccountScreen" />
+    </fragment>
 
     <fragment
-        android:id="@+id/createProfileScreen"
+        android:id="@+id/createAccountScreen"
         android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.CreateAccountFragment"
         android:label="StartLoginFragment"
-        tools:layout="@layout/fragment_create_profile" />
+        tools:layout="@layout/fragment_create_profile">
+        <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            android:id="@+id/action_setup_new_account"
+            app:destination="@id/setupNewAccountScreen" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/setupNewAccountScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.setup.SetupNewAccountFragment"
+        android:label="SetupAccount"
+        tools:layout="@layout/fragment_setup_new_account">
+        <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            android:id="@+id/action_open_congratulation_screen"
+            app:destination="@id/congratulationScreen" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/keychainLoginScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.keychain.KeychainLoginFragment"
+        android:label="KeychainLogin"
+        tools:layout="@layout/fragment_keychain_login">
+        <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            android:id="@+id/action_select_account"
+            app:destination="@id/selectAccountScreen" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/selectAccountScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.SelectAccountFragment"
+        android:label="ChooseProfileScreen"
+        tools:layout="@layout/fragment_choose_profile">
+        <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            android:id="@+id/action_setup_selected_account"
+            app:destination="@id/setupSelectedAccountScreen" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/setupSelectedAccountScreen"
+        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.setup.SetupSelectedAccountFragment"
+        android:label="SetupAccount"
+        tools:layout="@layout/fragment_setup_selected_account">
+        <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            android:id="@+id/action_open_congratulation_screen"
+            app:destination="@id/congratulationScreen" />
+        <argument
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            android:name="selected_account_id"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
 
     <fragment
         android:id="@+id/choosePinCodeScreen"
@@ -44,36 +120,43 @@
         android:id="@+id/congratulationScreen"
         android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.congratulation.CongratulationFragment"
         android:label="StartLoginFragment"
-        tools:layout="@layout/fragment_congratulation" />
+        tools:layout="@layout/fragment_congratulation">
+        <action
+            android:id="@+id/action_open_desktop_screen"
+            app:destination="@id/desktopScreen" />
+    </fragment>
 
     <fragment
-        android:id="@+id/keychainLoginScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.keychain.KeychainLoginFragment"
-        android:label="KeychainLogin"
-        tools:layout="@layout/fragment_keychain_login" />
-
-    <fragment
-        android:id="@+id/chooseProfileScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.SelectAccountFragment"
-        android:label="ChooseProfileScreen"
-        tools:layout="@layout/fragment_choose_profile" />
-
-    <fragment
-        android:id="@+id/setupNewAccountScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.setup.SetupNewAccountFragment"
-        android:label="SetupAccount"
-        tools:layout="@layout/fragment_setup_new_account" />
-
-    <fragment
-        android:id="@+id/setupSelectedAccountScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.setup.SetupSelectedAccountFragment"
-        android:label="SetupAccount"
-        tools:layout="@layout/fragment_setup_selected_account" />
+        android:id="@+id/desktopScreen"
+        android:name="com.agileburo.anytype.feature_desktop.ui.DesktopFragment"
+        android:label="DesktopFragment"
+        tools:layout="@layout/fragment_desktop">
+        <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            android:id="@+id/action_open_profile"
+            app:destination="@id/profileScreen" />
+        <action
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"
+            android:id="@+id/action_open_document"
+            app:destination="@id/documentScreen" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileScreen"
         android:name="com.agileburo.anytype.feature_profile.presentation.ui.ProfileFragment"
         android:label="ProfileScreen"
         tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/documentScreen"
+        android:name="com.agileburo.anytype.feature_profile.presentation.ui.DocumentFragment"
+        android:label="DocumentScreen"
+        tools:layout="@layout/fragment_editor" />
 
 </navigation>

@@ -6,21 +6,54 @@ import com.agileburo.anytype.R
 import com.agileburo.anytype.feature_desktop.navigation.DesktopNavigation
 import com.agileburo.anytype.feature_login.ui.login.presentation.common.Keys
 import com.agileburo.anytype.feature_login.ui.login.presentation.navigation.AuthNavigation
+import com.agileburo.anytype.feature_profile.navigation.ProfileNavigation
+import timber.log.Timber
 
-class Navigator : AuthNavigation, DesktopNavigation {
+class Navigator : AuthNavigation, DesktopNavigation, ProfileNavigation {
 
     private var navController: NavController? = null
 
     override fun createProfile() {
-        navController?.navigate(R.id.createProfileScreen)
+        navController?.navigate(R.id.action_open_sign_up)
+    }
+
+    override fun setupNewAccount() {
+        navController?.navigate(R.id.action_setup_new_account)
     }
 
     override fun enterKeychain() {
-        navController?.navigate(R.id.keychainLoginScreen)
+        navController?.navigate(R.id.action_open_sign_in)
+    }
+
+    override fun congratulation() {
+        navController?.navigate(R.id.action_open_congratulation_screen)
+    }
+
+    override fun chooseProfile() {
+        navController?.navigate(R.id.action_select_account)
+    }
+
+    override fun workspace() {
+        navController?.navigate(R.id.action_open_desktop_screen)
+    }
+
+    override fun openDocument(id: String) {
+        navController?.navigate(R.id.action_open_document)
+    }
+
+    override fun setupSelectedAccount(id: String) {
+        navController?.navigate(
+            R.id.action_setup_selected_account,
+            Bundle().apply { putString(Keys.SELECTED_ACCOUNT_ID_KEY, id) }
+        )
     }
 
     override fun choosePinCode() {
         navController?.navigate(R.id.choosePinCodeScreen)
+    }
+
+    override fun openProfile() {
+        navController?.navigate(R.id.action_open_profile)
     }
 
     override fun confirmPinCode(pin: String) {
@@ -30,35 +63,12 @@ class Navigator : AuthNavigation, DesktopNavigation {
         )
     }
 
-    override fun congratulation() {
-        navController?.navigate(R.id.congratulationScreen)
+    override fun openPinCodeScreen() {
+        Timber.d("OpenPinCodeScreen called")
     }
 
-    override fun chooseProfile() {
-        navController?.navigate(R.id.chooseProfileScreen)
-    }
-
-    override fun workspace() {
-        navController?.navigate(R.id.desktopScreen)
-    }
-
-    override fun openDocument(id: String) {
-        navController?.navigate(R.id.documentScreen)
-    }
-
-    override fun setupNewAccount() {
-        navController?.navigate(R.id.setupNewAccountScreen)
-    }
-
-    override fun setupSelectedAccount(id: String) {
-        navController?.navigate(
-            R.id.setupSelectedAccountScreen,
-            Bundle().apply { putString(Keys.SELECTED_ACCOUNT_ID_KEY, id) }
-        )
-    }
-
-    override fun openProfile() {
-        navController?.navigate(R.id.profileScreen)
+    override fun openKeychainScreen() {
+        Timber.d("OpenKeychainScreen called")
     }
 
     fun bind(navController: NavController) {

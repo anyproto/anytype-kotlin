@@ -2,6 +2,7 @@ package com.agileburo.anytype.feature_profile.presentation.ui.base
 
 import androidx.annotation.LayoutRes
 import androidx.lifecycle.Observer
+import com.agileburo.anytype.core_utils.common.Event
 import com.agileburo.anytype.core_utils.ui.ViewStateFragment
 import com.agileburo.anytype.feature_profile.navigation.ProfileNavigation
 import com.agileburo.anytype.feature_profile.navigation.ProfileNavigationProvider
@@ -10,7 +11,9 @@ abstract class FeatureBaseFragment<VS>(
     @LayoutRes private val layout: Int
 ) : ViewStateFragment<VS>(layout) {
 
-    val navObserver = Observer<ProfileNavigation.Command>(::navigate)
+    val navObserver = Observer<Event<ProfileNavigation.Command>> { event ->
+        event.getContentIfNotHandled()?.let { navigate(it) }
+    }
 
     private fun navigate(command: ProfileNavigation.Command) {
         when (command) {

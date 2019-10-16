@@ -57,6 +57,10 @@ class Navigator : AuthNavigation, DesktopNavigation {
         )
     }
 
+    override fun openProfile() {
+        navController?.navigate(R.id.profileScreen)
+    }
+
     fun bind(navController: NavController) {
         this.navController = navController
     }

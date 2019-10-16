@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/documentScreen"
-        android:name="com.agileburo.anytype.ui.DocumentFragment"
+        android:name="com.agileburo.anytype.feature_profile.presentation.ui.DocumentFragment"
         android:label="DocumentScreen"
         tools:layout="@layout/fragment_editor" />
     <fragment
@@ -69,5 +69,11 @@
         android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.setup.SetupSelectedAccountFragment"
         android:label="SetupAccount"
         tools:layout="@layout/fragment_setup_selected_account" />
+
+    <fragment
+        android:id="@+id/profileScreen"
+        android:name="com.agileburo.anytype.feature_profile.presentation.ui.ProfileFragment"
+        android:label="ProfileScreen"
+        tools:layout="@layout/fragment_profile" />
 
 </navigation>

@@ -47,6 +47,11 @@ class DesktopFragment : BaseFragment() {
         }
 
         fab.setOnClickListener { vm.onAddNewDocumentClicked() }
+        profileImage.setOnClickListener {
+            (activity as? DesktopNavigationProvider)?.let { provider ->
+                provider.provideDesktopNavigation().openProfile()
+            }
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

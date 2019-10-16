@@ -31,6 +31,8 @@ dependencies {
 
     kapt applicationDependencies.daggerCompiler
 
+    implementation applicationDependencies.appcompat
+
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines
     implementation applicationDependencies.dagger

@@ -55,4 +55,8 @@ class DesktopViewModel : ViewModel() {
 
     fun onDocumentClicked() {}
 
+    fun onProfileClicked() {
+
+    }
+
 }

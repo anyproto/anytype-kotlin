@@ -1,4 +1,4 @@
-package com.agileburo.anytype.ui
+package com.agileburo.anytype.feature_profile.presentation.ui
 
 import com.agileburo.anytype.AndroidApplication
 import com.agileburo.anytype.feature_editor.ui.EditorFragment

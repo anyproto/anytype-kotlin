@@ -1,4 +1,4 @@
-package com.agileburo.anytype.ui
+package com.agileburo.anytype.feature_profile.presentation.ui
 
 import android.view.LayoutInflater
 import android.view.View

@@ -3,7 +3,7 @@ package com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.profile
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.feature_login.ui.login.domain.interactor.ObserveAccounts
-import com.agileburo.anytype.feature_login.ui.login.domain.interactor.RecoverAccount
+import com.agileburo.anytype.feature_login.ui.login.domain.interactor.StartLoadingAccounts
 import com.agileburo.anytype.feature_login.ui.login.presentation.mvvm.common.BaseViewModel
 import com.agileburo.anytype.feature_login.ui.login.presentation.navigation.NavigationCommand
 import com.agileburo.anytype.feature_login.ui.login.presentation.navigation.SupportNavigation
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SelectAccountViewModel(
-    private val recoverAccount: RecoverAccount,
+    private val startLoadingAccounts: StartLoadingAccounts,
     private val observeAccounts: ObserveAccounts
 ) : BaseViewModel(), SupportNavigation {
 
@@ -31,7 +31,7 @@ class SelectAccountViewModel(
     }
 
     private fun startRecoveringAccounts() {
-        recoverAccount.invoke(viewModelScope, RecoverAccount.Params()) {
+        startLoadingAccounts.invoke(viewModelScope, StartLoadingAccounts.Params()) {
             Timber.d(it.toString())
         }
     }

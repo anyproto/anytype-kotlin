@@ -45,6 +45,7 @@ dependencies {
     implementation applicationDependencies.rxAndroid
 
     implementation applicationDependencies.dagger
+    kapt applicationDependencies.daggerCompiler
 
     implementation applicationDependencies.timber
 

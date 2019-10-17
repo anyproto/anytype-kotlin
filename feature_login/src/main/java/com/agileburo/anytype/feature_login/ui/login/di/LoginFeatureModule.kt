@@ -2,6 +2,7 @@ package com.agileburo.anytype.feature_login.ui.login.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.agileburo.anytype.core_utils.data.UserCache
 import com.agileburo.anytype.core_utils.di.scope.PerFeature
 import com.agileburo.anytype.feature_login.ui.login.data.AuthCacheDataStore
 import com.agileburo.anytype.feature_login.ui.login.data.AuthCacheImpl
@@ -39,11 +40,13 @@ class LoginFeatureModule {
     @Provides
     fun provideUserRepository(
         middleware: Middleware,
-        proxy: EventProxy
+        proxy: EventProxy,
+        cache: UserCache
     ): UserRepository {
         return UserDataRepository(
             middleware = middleware,
-            proxy = proxy
+            proxy = proxy,
+            cache = cache
         )
     }
 

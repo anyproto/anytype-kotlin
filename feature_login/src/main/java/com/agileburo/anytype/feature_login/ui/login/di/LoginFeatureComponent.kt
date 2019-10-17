@@ -5,7 +5,10 @@ import com.agileburo.anytype.core_utils.di.CoreComponent
 import com.agileburo.anytype.core_utils.di.scope.PerFeature
 import dagger.Component
 
-@Component(modules = [LoginFeatureModule::class], dependencies = [CoreComponent::class])
+@Component(
+    modules = [LoginFeatureModule::class],
+    dependencies = [CoreComponent::class]
+)
 @PerFeature
 abstract class LoginFeatureComponent {
 

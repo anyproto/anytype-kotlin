@@ -1,5 +1,7 @@
 package com.agileburo.anytype.feature_login.ui.login.data
 
+import com.agileburo.anytype.core_utils.data.UserCache
+import com.agileburo.anytype.core_utils.model.AccountEntity
 import com.agileburo.anytype.feature_login.ui.login.domain.model.Account
 import com.agileburo.anytype.feature_login.ui.login.domain.model.Image
 import com.agileburo.anytype.feature_login.ui.login.domain.repository.UserRepository
@@ -12,6 +14,7 @@ import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
 class UserDataRepository(
+    private val cache: UserCache,
     private val middleware: Middleware,
     private val proxy: EventProxy
 ) : UserRepository {
@@ -61,6 +64,11 @@ class UserDataRepository(
     }
 
     override suspend fun saveAccount(account: Account) {
-        // TODO
+        cache.saveAccount(
+            AccountEntity(
+                id = account.id,
+                name = account.name
+            )
+        )
     }
 }

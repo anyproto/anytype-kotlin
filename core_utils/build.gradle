@@ -26,8 +26,12 @@ android {
 }
 
 dependencies {
+
+    implementation project(':core_db')
+
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
+    def databaseDependencies = rootProject.ext.db
 
     kapt applicationDependencies.daggerCompiler
 
@@ -39,6 +43,8 @@ dependencies {
 
     implementation applicationDependencies.timber
     implementation applicationDependencies.crashlytics
+
+    implementation databaseDependencies.room
 
     implementation applicationDependencies.constraintLayout
 

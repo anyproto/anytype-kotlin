@@ -4,6 +4,7 @@ import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import com.agileburo.anytype.ui.main.MainActivity
 import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith

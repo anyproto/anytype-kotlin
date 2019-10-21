@@ -28,7 +28,7 @@ dependencies {
     def unitTestDependencies = rootProject.ext.unitTesting
     def acceptanceTesting = rootProject.ext.acceptanceTesting
 
-    implementation project(':core_utils')
+    implementation project(':core-utils')
 
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.appcompat

@@ -31,7 +31,7 @@ android {
 }
 
 dependencies {
-    implementation project(':core_utils')
+    implementation project(':core-utils')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting

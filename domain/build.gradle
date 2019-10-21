@@ -1,0 +1,15 @@
+apply plugin: 'kotlin'
+
+dependencies {
+    def applicationDependencies = rootProject.ext.mainApplication
+
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutines
+
+    def unitTestDependencies = rootProject.ext.unitTesting
+
+    testImplementation unitTestDependencies.kotlinTest
+
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.2'
+}

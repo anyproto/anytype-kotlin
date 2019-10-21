@@ -1,1 +1,1 @@
-include ':app', ':core_utils', ':feature_editor', ':feature_desktop', ':feature_login', ':lib-middleware', ':middleware', ':protobuf', ':feature_profile', ':core_db'
+include ':app', ':core-utils', ':lib-middleware', ':middleware', ':protobuf', ':persistence', ':domain', ':data', ':presentation'

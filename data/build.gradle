@@ -1,0 +1,10 @@
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation project(':domain')
+
+    def applicationDependencies = rootProject.ext.mainApplication
+
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutines
+}

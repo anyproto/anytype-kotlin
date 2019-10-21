@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/startLoginScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.start.StartLoginFragment"
+        android:name="com.agileburo.anytype.ui.auth.StartLoginFragment"
         android:label="StartLoginFragment"
         tools:layout="@layout/fragment_start_login">
         <action
@@ -28,9 +28,9 @@
 
     <fragment
         android:id="@+id/createAccountScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.CreateAccountFragment"
+        android:name="com.agileburo.anytype.ui.auth.account.CreateAccountFragment"
         android:label="StartLoginFragment"
-        tools:layout="@layout/fragment_create_profile">
+        tools:layout="@layout/fragment_create_account">
         <action
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
@@ -42,7 +42,7 @@
 
     <fragment
         android:id="@+id/setupNewAccountScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.setup.SetupNewAccountFragment"
+        android:name="com.agileburo.anytype.ui.auth.account.SetupNewAccountFragment"
         android:label="SetupAccount"
         tools:layout="@layout/fragment_setup_new_account">
         <action
@@ -56,7 +56,7 @@
 
     <fragment
         android:id="@+id/keychainLoginScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.keychain.KeychainLoginFragment"
+        android:name="com.agileburo.anytype.ui.auth.KeychainLoginFragment"
         android:label="KeychainLogin"
         tools:layout="@layout/fragment_keychain_login">
         <action
@@ -70,9 +70,9 @@
 
     <fragment
         android:id="@+id/selectAccountScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.profile.SelectAccountFragment"
+        android:name="com.agileburo.anytype.ui.auth.account.SelectAccountFragment"
         android:label="ChooseProfileScreen"
-        tools:layout="@layout/fragment_choose_profile">
+        tools:layout="@layout/fragment_select_account">
         <action
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
@@ -84,7 +84,7 @@
 
     <fragment
         android:id="@+id/setupSelectedAccountScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.setup.SetupSelectedAccountFragment"
+        android:name="com.agileburo.anytype.ui.auth.account.SetupSelectedAccountFragment"
         android:label="SetupAccount"
         tools:layout="@layout/fragment_setup_selected_account">
         <action
@@ -118,7 +118,7 @@
 
     <fragment
         android:id="@+id/congratulationScreen"
-        android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.congratulation.CongratulationFragment"
+        android:name="com.agileburo.anytype.ui.auth.CongratulationFragment"
         android:label="StartLoginFragment"
         tools:layout="@layout/fragment_congratulation">
         <action
@@ -128,7 +128,7 @@
 
     <fragment
         android:id="@+id/desktopScreen"
-        android:name="com.agileburo.anytype.feature_desktop.ui.DesktopFragment"
+        android:name="com.agileburo.anytype.ui.desktop.DesktopFragment"
         android:label="DesktopFragment"
         tools:layout="@layout/fragment_desktop">
         <action
@@ -138,25 +138,18 @@
             app:popExitAnim="@anim/slide_out_right"
             android:id="@+id/action_open_profile"
             app:destination="@id/profileScreen" />
-        <action
-            app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out"
-            android:id="@+id/action_open_document"
-            app:destination="@id/documentScreen" />
     </fragment>
 
     <fragment
         android:id="@+id/profileScreen"
-        android:name="com.agileburo.anytype.feature_profile.presentation.ui.ProfileFragment"
+        android:name="com.agileburo.anytype.ui.profile.ProfileFragment"
         android:label="ProfileScreen"
-        tools:layout="@layout/fragment_profile" />
-
-    <fragment
-        android:id="@+id/documentScreen"
-        android:name="com.agileburo.anytype.feature_profile.presentation.ui.DocumentFragment"
-        android:label="DocumentScreen"
-        tools:layout="@layout/fragment_editor" />
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_open_start_login"
+            app:destination="@id/startLoginScreen"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out" />
+    </fragment>
 
 </navigation>

@@ -56,16 +56,20 @@ ext {
 }
 
 dependencies {
-    implementation project(':feature_login')
-    implementation project(':feature_editor')
-    implementation project(':feature_desktop')
-    implementation project(':feature_profile')
-    implementation project(':core_utils')
+
+    implementation project(':domain')
+    implementation project(':data')
+    implementation project(':persistence')
+    implementation project(':middleware')
+    implementation project(':presentation')
+    implementation project(':core-utils')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
     def acceptanceTesting = rootProject.ext.acceptanceTesting
     def devDependencies = rootProject.ext.development
+    def databaseDependencies = rootProject.ext.db
+
 
     //Compile time dependencies
     kapt applicationDependencies.daggerCompiler
@@ -87,6 +91,11 @@ dependencies {
     implementation applicationDependencies.gson
     implementation applicationDependencies.rxRelay
 
+    implementation applicationDependencies.viewModel
+    implementation applicationDependencies.viewModelExtensions
+
+    implementation databaseDependencies.room
+
     implementation applicationDependencies.crashlytics
     implementation applicationDependencies.firebaseCore
 
@@ -99,8 +108,6 @@ dependencies {
     androidTestImplementation acceptanceTesting.espressoCore
     androidTestImplementation acceptanceTesting.androidJUnit
     androidTestImplementation acceptanceTesting.testRules
-
-
 }
 
 apply plugin: 'com.google.gms.google-services'

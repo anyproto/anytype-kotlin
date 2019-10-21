@@ -1,0 +1,20 @@
+package com.agileburo.anytype.presentation.auth.start
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.agileburo.anytype.domain.auth.interactor.SetupWallet
+import com.agileburo.anytype.domain.auth.repo.PathProvider
+
+class StartLoginViewModelFactory(
+    private val setupWallet: SetupWallet,
+    private val pathProvider: PathProvider
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return StartLoginViewModel(
+            setupWallet = setupWallet,
+            pathProvider = pathProvider
+        ) as T
+    }
+}

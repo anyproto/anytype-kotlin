@@ -24,8 +24,10 @@ android {
 }
 
 dependencies {
+
     implementation project(':lib-middleware')
     implementation project(':protobuf')
+    implementation project(':data')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting

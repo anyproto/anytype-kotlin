@@ -3,15 +3,16 @@ package com.agileburo.anytype.navigation
 import android.os.Bundle
 import androidx.navigation.NavController
 import com.agileburo.anytype.R
-import com.agileburo.anytype.feature_desktop.navigation.DesktopNavigation
-import com.agileburo.anytype.feature_login.ui.login.presentation.common.Keys
-import com.agileburo.anytype.feature_login.ui.login.presentation.navigation.AuthNavigation
-import com.agileburo.anytype.feature_profile.navigation.ProfileNavigation
-import timber.log.Timber
+import com.agileburo.anytype.presentation.navigation.AppNavigation
+import com.agileburo.anytype.ui.auth.Keys
 
-class Navigator : AuthNavigation, DesktopNavigation, ProfileNavigation {
+class Navigator : AppNavigation {
 
     private var navController: NavController? = null
+
+    override fun startLogin() {
+        navController?.navigate(R.id.action_open_start_login)
+    }
 
     override fun createProfile() {
         navController?.navigate(R.id.action_open_sign_up)
@@ -37,8 +38,12 @@ class Navigator : AuthNavigation, DesktopNavigation, ProfileNavigation {
         navController?.navigate(R.id.action_open_desktop_screen)
     }
 
+    override fun openProfile() {
+        navController?.navigate(R.id.action_open_profile)
+    }
+
     override fun openDocument(id: String) {
-        navController?.navigate(R.id.action_open_document)
+        // TODO
     }
 
     override fun setupSelectedAccount(id: String) {
@@ -52,23 +57,13 @@ class Navigator : AuthNavigation, DesktopNavigation, ProfileNavigation {
         navController?.navigate(R.id.choosePinCodeScreen)
     }
 
-    override fun openProfile() {
-        navController?.navigate(R.id.action_open_profile)
-    }
-
     override fun confirmPinCode(pin: String) {
+        /*
         navController?.navigate(
             R.id.confirmPinCodeScreen,
             Bundle().apply { putString(Keys.PIN_CODE_KEY, pin) }
         )
-    }
-
-    override fun openPinCodeScreen() {
-        Timber.d("OpenPinCodeScreen called")
-    }
-
-    override fun openKeychainScreen() {
-        Timber.d("OpenKeychainScreen called")
+        */
     }
 
     fun bind(navController: NavController) {

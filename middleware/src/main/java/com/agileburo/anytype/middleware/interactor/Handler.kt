@@ -15,10 +15,7 @@ import timber.log.Timber
 class Handler : EventProxy {
 
     init {
-        Timber.d("Subscribing to events")
-        Lib.setEventHandlerMobile { bytes ->
-            handle(bytes)
-        }
+        Lib.setEventHandlerMobile { bytes -> handle(bytes) }
     }
 
     private val channel = Channel<Events.Event>()

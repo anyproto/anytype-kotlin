@@ -45,6 +45,7 @@
         app:layout_constraintTop_toBottomOf="@+id/title" />
 
     <TextView
+        android:textIsSelectable="true"
         android:id="@+id/keychain"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -57,7 +58,6 @@
         android:paddingTop="12dp"
         android:paddingEnd="20dp"
         android:paddingBottom="12dp"
-        android:text="@string/keychain_mock"
         android:textColor="@color/black"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"

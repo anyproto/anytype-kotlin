@@ -46,6 +46,10 @@ class Navigator : AppNavigation {
         // TODO
     }
 
+    override fun openKeychainScreen() {
+        navController?.navigate(R.id.action_open_keychain)
+    }
+
     override fun setupSelectedAccount(id: String) {
         navController?.navigate(
             R.id.action_setup_selected_account,

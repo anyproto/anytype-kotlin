@@ -13,6 +13,7 @@ interface AppNavigation {
     fun workspace()
     fun openProfile()
     fun openDocument(id: String)
+    fun openKeychainScreen()
 
     sealed class Command {
         object OpenStartLoginScreen : Command()

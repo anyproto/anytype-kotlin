@@ -32,6 +32,7 @@ abstract class NavigationFragment(
             is Command.ConfirmPinCodeScreen -> navigation.confirmPinCode(command.code)
             is Command.OpenProfile -> navigation.openProfile()
             is Command.OpenDocument -> navigation.openDocument(command.id)
+            is Command.OpenKeychainScreen -> navigation.openKeychainScreen()
         }
     }
 

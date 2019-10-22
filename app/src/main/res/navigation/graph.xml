@@ -11,19 +11,19 @@
         android:label="StartLoginFragment"
         tools:layout="@layout/fragment_start_login">
         <action
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
             android:id="@+id/action_open_sign_in"
-            app:destination="@id/keychainLoginScreen" />
-        <action
+            app:destination="@id/keychainLoginScreen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
             android:id="@+id/action_open_sign_up"
-            app:destination="@id/createAccountScreen" />
+            app:destination="@id/createAccountScreen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -32,12 +32,12 @@
         android:label="StartLoginFragment"
         tools:layout="@layout/fragment_create_account">
         <action
+            android:id="@+id/action_setup_new_account"
+            app:destination="@id/setupNewAccountScreen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            android:id="@+id/action_setup_new_account"
-            app:destination="@id/setupNewAccountScreen" />
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -46,12 +46,12 @@
         android:label="SetupAccount"
         tools:layout="@layout/fragment_setup_new_account">
         <action
+            android:id="@+id/action_open_congratulation_screen"
+            app:destination="@id/congratulationScreen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            android:id="@+id/action_open_congratulation_screen"
-            app:destination="@id/congratulationScreen" />
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -60,12 +60,12 @@
         android:label="KeychainLogin"
         tools:layout="@layout/fragment_keychain_login">
         <action
+            android:id="@+id/action_select_account"
+            app:destination="@id/selectAccountScreen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            android:id="@+id/action_select_account"
-            app:destination="@id/selectAccountScreen" />
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -74,12 +74,12 @@
         android:label="ChooseProfileScreen"
         tools:layout="@layout/fragment_select_account">
         <action
+            android:id="@+id/action_setup_selected_account"
+            app:destination="@id/setupSelectedAccountScreen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            android:id="@+id/action_setup_selected_account"
-            app:destination="@id/setupSelectedAccountScreen" />
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -88,20 +88,20 @@
         android:label="SetupAccount"
         tools:layout="@layout/fragment_setup_selected_account">
         <action
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
             android:id="@+id/action_open_congratulation_screen"
-            app:destination="@id/congratulationScreen" />
-        <argument
+            app:destination="@id/congratulationScreen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
             android:name="selected_account_id"
             android:defaultValue="0"
-            app:argType="integer" />
+            app:argType="integer"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -132,12 +132,12 @@
         android:label="DesktopFragment"
         tools:layout="@layout/fragment_desktop">
         <action
+            android:id="@+id/action_open_profile"
+            app:destination="@id/profileScreen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            android:id="@+id/action_open_profile"
-            app:destination="@id/profileScreen" />
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -150,6 +150,14 @@
             app:destination="@id/startLoginScreen"
             app:enterAnim="@anim/fade_in"
             app:exitAnim="@anim/fade_out" />
+        <action
+            android:id="@+id/action_open_keychain"
+            app:destination="@id/keychainDialog" />
     </fragment>
+
+    <dialog
+        android:id="@+id/keychainDialog"
+        android:name="com.agileburo.anytype.ui.profile.KeychainPhraseDialog"
+        tools:layout="@layout/dialog_keychain_phrase" />
 
 </navigation>

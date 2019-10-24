@@ -12,6 +12,8 @@ android {
         targetSdkVersion config["target_sdk"]
         testInstrumentationRunner config["test_runner"]
     }
+
+    testOptions.unitTests.includeAndroidResources = true
 }
 
 dependencies {
@@ -38,4 +40,7 @@ dependencies {
     testImplementation unitTestDependencies.coroutineTesting
     testImplementation unitTestDependencies.liveDataTesting
     testImplementation unitTestDependencies.archCoreTesting
+
+    androidTestImplementation 'androidx.test:core:1.2.0'
+
 }

@@ -6,5 +6,6 @@ interface AuthCache {
     suspend fun saveAccount(account: AccountEntity)
     suspend fun saveMnemonic(mnemonic: String)
     suspend fun getMnemonic(): String
+    suspend fun getAccount(): AccountEntity
     suspend fun logout()
 }

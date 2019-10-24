@@ -47,4 +47,6 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
     override suspend fun logout() {
         cache.logout()
     }
+
+    override suspend fun getAccount() = cache.getAccount()
 }

@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import com.agileburo.anytype.data.auth.model.AccountEntity
 import com.agileburo.anytype.data.auth.repo.AuthCache
 import com.agileburo.anytype.db.AnytypeDatabase
+import com.agileburo.anytype.mapper.toEntity
 import com.agileburo.anytype.model.AccountTable
 import timber.log.Timber
 
@@ -16,9 +17,17 @@ class DefaultAuthCache(
         db.accountDao().insert(
             AccountTable(
                 id = account.id,
-                name = account.name
+                name = account.name,
+                timestamp = System.currentTimeMillis()
             )
         )
+    }
+
+    override suspend fun getAccount() = db.accountDao().lastAccount().let { list ->
+        if (list.isEmpty())
+            throw IllegalStateException("Could not found user account")
+        else
+            list.first().toEntity()
     }
 
     override suspend fun saveMnemonic(mnemonic: String) {

@@ -41,6 +41,8 @@ class AuthDataRepository(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override suspend fun getAccount() = factory.cache.getAccount().toDomain()
+
     override suspend fun saveMnemonic(
         mnemonic: String
     ) = factory.cache.saveMnemonic(mnemonic)

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthDataStore {
     suspend fun selectAccount(id: String, path: String): AccountEntity
-    suspend fun createAccount(name: String): AccountEntity
+    suspend fun createAccount(name: String, avatarPath: String?): AccountEntity
     suspend fun recoverAccount()
     suspend fun saveAccount(account: AccountEntity)
     fun observeAccounts(): Flow<AccountEntity>

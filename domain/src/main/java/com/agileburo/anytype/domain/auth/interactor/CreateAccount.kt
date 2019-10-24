@@ -13,7 +13,8 @@ open class CreateAccount(
 
     override suspend fun run(params: Params) = try {
         repository.createAccount(
-            name = params.name
+            name = params.name,
+            avatarPath = params.avatarPath
         ).let { account ->
             repository.saveAccount(account)
         }.let {
@@ -23,5 +24,8 @@ open class CreateAccount(
         Either.Left(e)
     }
 
-    class Params(val name: String)
+    class Params(
+        val name: String,
+        val avatarPath: String? = null
+    )
 }

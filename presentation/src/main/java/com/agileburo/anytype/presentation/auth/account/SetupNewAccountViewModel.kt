@@ -1,9 +1,11 @@
 package com.agileburo.anytype.presentation.auth.account
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_utils.common.Event
+import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.domain.auth.interactor.CreateAccount
 import com.agileburo.anytype.presentation.auth.model.Session
 import com.agileburo.anytype.presentation.navigation.AppNavigation
@@ -17,7 +19,12 @@ class SetupNewAccountViewModel(
 
     override val navigation: MutableLiveData<Event<AppNavigation.Command>> = MutableLiveData()
 
+    private val _state = MutableLiveData<ViewState<Any>>()
+    val state: LiveData<ViewState<Any>>
+        get() = _state
+
     init {
+        _state.postValue(ViewState.Loading)
         proceedWithCreatingAccount()
     }
 
@@ -29,8 +36,12 @@ class SetupNewAccountViewModel(
             )
         ) { result ->
             result.either(
-                fnL = { Timber.e(it, "Error while creating account") },
+                fnL = {
+                    _state.postValue(ViewState.Error("Error while creating account"))
+                    Timber.e(it, "Error while creating account")
+                },
                 fnR = {
+                    _state.postValue(ViewState.Success(Any()))
                     navigation.postValue(Event(AppNavigation.Command.CongratulationScreen))
                 }
             )

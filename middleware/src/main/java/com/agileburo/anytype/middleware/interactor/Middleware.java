@@ -1,9 +1,19 @@
 package com.agileburo.anytype.middleware.interactor;
 
-import anytype.Commands.*;
 import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
 import com.agileburo.anytype.middleware.model.SelectAccountResponse;
+
+import anytype.Commands.AccountCreateRequest;
+import anytype.Commands.AccountCreateResponse;
+import anytype.Commands.AccountRecoverRequest;
+import anytype.Commands.AccountRecoverResponse;
+import anytype.Commands.AccountSelectRequest;
+import anytype.Commands.AccountSelectResponse;
+import anytype.Commands.WalletCreateRequest;
+import anytype.Commands.WalletCreateResponse;
+import anytype.Commands.WalletRecoverRequest;
+import anytype.Commands.WalletRecoverResponse;
 import lib.Lib;
 
 public class Middleware {
@@ -26,12 +36,22 @@ public class Middleware {
         }
     }
 
-    public CreateAccountResponse createAccount(String name) throws Exception {
+    public CreateAccountResponse createAccount(String name, String path) throws Exception {
 
-        AccountCreateRequest request = AccountCreateRequest
-                .newBuilder()
-                .setUsername(name)
-                .build();
+        AccountCreateRequest request;
+
+        if (path != null) {
+            request = AccountCreateRequest
+                    .newBuilder()
+                    .setUsername(name)
+                    .setAvatarLocalPath(path)
+                    .build();
+        } else {
+            request = AccountCreateRequest
+                    .newBuilder()
+                    .setUsername(name)
+                    .build();
+        }
 
         byte[] encodedRequest = request.toByteArray();
 

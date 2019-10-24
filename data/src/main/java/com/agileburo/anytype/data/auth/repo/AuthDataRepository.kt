@@ -16,8 +16,9 @@ class AuthDataRepository(
     ): Account = factory.remote.selectAccount(id, path).toDomain()
 
     override suspend fun createAccount(
-        name: String
-    ): Account = factory.remote.createAccount(name).toDomain()
+        name: String,
+        avatarPath: String?
+    ): Account = factory.remote.createAccount(name, avatarPath).toDomain()
 
     override suspend fun recoverAccount() {
         factory.remote.recoverAccount()

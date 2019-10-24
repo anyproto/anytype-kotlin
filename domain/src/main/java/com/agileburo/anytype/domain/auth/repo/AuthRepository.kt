@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     suspend fun selectAccount(id: String, path: String): Account
-    suspend fun createAccount(name: String): Account
+    suspend fun createAccount(name: String, avatarPath: String?): Account
     suspend fun recoverAccount()
     suspend fun saveAccount(account: Account)
     fun observeAccounts(): Flow<Account>

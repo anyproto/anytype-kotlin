@@ -24,8 +24,9 @@ class AuthMiddleware(
     }
 
     override suspend fun createAccount(
-        name: String
-    ) = middleware.createAccount(name).let { response ->
+        name: String,
+        avatarPath: String?
+    ) = middleware.createAccount(name, avatarPath).let { response ->
         AccountEntity(
             id = response.id,
             name = response.name

@@ -6,6 +6,7 @@ import com.agileburo.anytype.core_utils.common.Event
 import com.agileburo.anytype.presentation.auth.model.Session
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
+import timber.log.Timber
 
 class CreateAccountViewModel(
     val session: Session
@@ -16,5 +17,10 @@ class CreateAccountViewModel(
     fun onCreateProfileClicked(input: String) {
         session.name = input
         navigation.postValue(Event(AppNavigation.Command.SetupNewAccountScreen))
+    }
+
+    fun onAvatarSet(path: String) {
+        session.avatarPath = path
+        Timber.d("Path set: $path")
     }
 }

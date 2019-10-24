@@ -1,12 +1,12 @@
 package com.agileburo.anytype.ui.auth.account
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_utils.ext.showSnackbar
+import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.auth.account.SetupNewAccountViewModel
 import com.agileburo.anytype.presentation.auth.account.SetupNewAccountViewModelFactory
@@ -14,7 +14,8 @@ import com.agileburo.anytype.ui.base.NavigationFragment
 import kotlinx.android.synthetic.main.fragment_setup_new_account.*
 import javax.inject.Inject
 
-class SetupNewAccountFragment : NavigationFragment(R.layout.fragment_setup_new_account) {
+class SetupNewAccountFragment : NavigationFragment(R.layout.fragment_setup_new_account),
+    Observer<ViewState<Any>> {
 
     @Inject
     lateinit var factory: SetupNewAccountViewModelFactory
@@ -25,24 +26,33 @@ class SetupNewAccountFragment : NavigationFragment(R.layout.fragment_setup_new_a
             .get(SetupNewAccountViewModel::class.java)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_setup_new_account, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        icon.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.rotation))
+    private val animation by lazy {
+        AnimationUtils.loadAnimation(requireContext(), R.anim.rotation)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupNavigation()
+        vm.state.observe(this, this)
     }
 
     private fun setupNavigation() {
         vm.observeNavigation().observe(this, navObserver)
+    }
+
+    override fun onChanged(state: ViewState<Any>) {
+        when (state) {
+            is ViewState.Loading -> {
+                icon.startAnimation(animation)
+            }
+            is ViewState.Success -> {
+                animation.cancel()
+            }
+            is ViewState.Error -> {
+                animation.cancel()
+                root.showSnackbar(state.error)
+            }
+        }
     }
 
     override fun injectDependencies() {

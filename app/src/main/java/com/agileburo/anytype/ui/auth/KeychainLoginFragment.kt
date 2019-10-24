@@ -67,7 +67,7 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
 
     override fun onDestroyView() {
         super.onDestroyView()
-        hideKeyboard(activity?.currentFocus)
+        activity?.currentFocus?.hideKeyboard()
     }
 
     private fun setupNavigation() {

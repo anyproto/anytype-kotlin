@@ -1,28 +1,33 @@
 package com.agileburo.anytype.core_utils.ext
 
 import android.content.Context
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import androidx.constraintlayout.widget.Group
+import android.net.Uri
+import android.provider.MediaStore
 
 fun Context.dimen(res: Int): Float {
     return resources
         .getDimension(res)
 }
 
-fun Group.setOnClickListeners(listener: View.OnClickListener?) {
-    referencedIds.forEach { id ->
-        rootView.findViewById<View>(id).setOnClickListener(listener)
-    }
-}
+fun Uri.parsePath(context: Context): String {
 
-fun hideKeyboard(view: View?) {
-    view?.also {
-        val inputMethodManager = it.context
-            .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        if (!inputMethodManager.isActive) {
-            return
-        }
-        inputMethodManager.hideSoftInputFromWindow(it.windowToken, InputMethodManager.RESULT_UNCHANGED_SHOWN)
+    val result: String?
+
+    val cursor = context.contentResolver.query(
+        this,
+        null,
+        null,
+        null, null
+    )
+
+    if (cursor == null) {
+        result = this.path
+    } else {
+        cursor.moveToFirst()
+        val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+        result = cursor.getString(idx)
+        cursor.close()
     }
+
+    return result ?: throw IllegalStateException("Cold not get real path")
 }

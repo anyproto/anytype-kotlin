@@ -16,8 +16,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <ImageView
         android:id="@+id/profileIcon"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+        android:id="@+id/profileIconPlaceholder"
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_marginStart="24dp"
@@ -45,7 +56,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileIcon" />
+        app:layout_constraintTop_toBottomOf="@+id/profileIconPlaceholder" />
 
     <TextView
         android:id="@+id/createProfileButton"
@@ -66,7 +77,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_add_photo"
-        app:layout_constraintStart_toEndOf="@+id/profileIcon"
-        app:layout_constraintTop_toTopOf="@+id/profileIcon" />
+        app:layout_constraintStart_toEndOf="@+id/profileIconPlaceholder"
+        app:layout_constraintTop_toTopOf="@+id/profileIconPlaceholder" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

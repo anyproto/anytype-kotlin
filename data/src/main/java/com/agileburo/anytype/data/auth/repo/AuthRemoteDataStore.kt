@@ -48,4 +48,8 @@ class AuthRemoteDataStore(
     override suspend fun logout() {
         throw UnsupportedOperationException()
     }
+
+    override suspend fun getAccount(): AccountEntity {
+        throw UnsupportedOperationException()
+    }
 }

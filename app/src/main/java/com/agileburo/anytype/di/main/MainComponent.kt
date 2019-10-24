@@ -1,6 +1,7 @@
 package com.agileburo.anytype.di.main
 
 import com.agileburo.anytype.di.feature.AuthSubComponent
+import com.agileburo.anytype.di.feature.DesktopSubComponent
 import com.agileburo.anytype.di.feature.KeychainPhraseSubComponent
 import com.agileburo.anytype.di.feature.ProfileSubComponent
 import dagger.Component
@@ -17,4 +18,5 @@ interface MainComponent {
     fun authComponentBuilder(): AuthSubComponent.Builder
     fun profileComponentBuilder(): ProfileSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
+    fun desktopComponentBuilder(): DesktopSubComponent.Builder
 }

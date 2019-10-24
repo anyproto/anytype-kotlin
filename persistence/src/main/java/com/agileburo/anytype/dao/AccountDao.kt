@@ -11,4 +11,6 @@ abstract class AccountDao : BaseDao<AccountTable> {
     @Query(Config.CLEAR_ACCOUNT_TABLE)
     abstract suspend fun clear()
 
+    @Query(Config.QUERY_LAST_ACCOUNT)
+    abstract suspend fun lastAccount(): List<AccountTable>
 }

@@ -11,6 +11,8 @@ interface AuthDataStore {
     suspend fun saveAccount(account: AccountEntity)
     fun observeAccounts(): Flow<AccountEntity>
 
+    suspend fun getAccount(): AccountEntity
+
     suspend fun createWallet(path: String): WalletEntity
     suspend fun recoverWallet(path: String, mnemonic: String)
     suspend fun isSignedIn(): Boolean

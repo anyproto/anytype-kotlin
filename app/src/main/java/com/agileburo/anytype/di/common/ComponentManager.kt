@@ -71,6 +71,13 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val desktopComponent = Component {
+        main
+            .desktopComponentBuilder()
+            .desktopModule(DesktopModule())
+            .build()
+    }
+
     class Component<T>(private val builder: () -> T) {
 
         private var instance: T? = null

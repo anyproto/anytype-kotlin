@@ -35,7 +35,7 @@ ext {
     better_link_method_version = '2.2.0'
 
     // Unit Testing
-    robolectric_version = '3.8'
+    robolectric_version = '4.3.1'
     junit_version = '4.12'
     mockito_version = '1.4.0'
     kluent_version = '1.14'

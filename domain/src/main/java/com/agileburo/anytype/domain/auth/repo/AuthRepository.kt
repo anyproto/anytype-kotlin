@@ -11,6 +11,8 @@ interface AuthRepository {
     suspend fun saveAccount(account: Account)
     fun observeAccounts(): Flow<Account>
 
+    suspend fun getAccount(): Account
+
     suspend fun createWallet(path: String): Wallet
     suspend fun recoverWallet(path: String, mnemonic: String)
     suspend fun isSignedIn(): Boolean

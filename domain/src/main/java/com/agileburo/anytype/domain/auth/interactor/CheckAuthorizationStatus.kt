@@ -6,9 +6,9 @@ import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
 
 /**
- * Created by Konstantin Ivanov
- * email :  ki@agileburo.com
- * on 2019-10-21.
+ * Use case for checking authorisation status.
+ * User can be either authorized or unauthorized based on number of available accounts.
+ * @param repository repository containing information about available accounts
  */
 class CheckAuthorizationStatus(
     private val repository: AuthRepository

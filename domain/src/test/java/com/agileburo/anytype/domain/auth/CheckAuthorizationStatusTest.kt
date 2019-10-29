@@ -1,0 +1,73 @@
+package com.agileburo.anytype.domain.auth
+
+import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.agileburo.anytype.domain.auth.model.Account
+import com.agileburo.anytype.domain.auth.model.AuthStatus
+import com.agileburo.anytype.domain.auth.repo.AuthRepository
+import com.agileburo.anytype.domain.base.Either
+import com.agileburo.anytype.domain.common.CoroutineTestRule
+import com.agileburo.anytype.domain.common.DataFactory
+import com.nhaarman.mockitokotlin2.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
+import kotlin.test.assertTrue
+
+class CheckAuthorizationStatusTest {
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var rule = CoroutineTestRule()
+
+    @Mock
+    lateinit var repo: AuthRepository
+
+    lateinit var checkAuthorizationStatus: CheckAuthorizationStatus
+
+    @Before
+    fun setup() {
+        MockitoAnnotations.initMocks(this)
+        checkAuthorizationStatus = CheckAuthorizationStatus(repo)
+    }
+
+    @Test
+    fun `should return unauthorized status if account list is empty`() = runBlocking {
+
+        repo.stub {
+            onBlocking { getAvailableAccounts() } doReturn emptyList()
+        }
+
+        val result = checkAuthorizationStatus.run(params = Unit)
+
+        assertTrue { result == Either.Right(AuthStatus.UNAUTHORIZED) }
+
+        verify(repo, times(1)).getAvailableAccounts()
+        verifyNoMoreInteractions(repo)
+    }
+
+    @Test
+    fun `should return authorized status if account list is not empty`() = runBlocking {
+
+        val account = Account(
+            name = DataFactory.randomString(),
+            id = DataFactory.randomString(),
+            avatar = null
+        )
+
+        repo.stub {
+            onBlocking { getAvailableAccounts() } doReturn listOf(account)
+        }
+
+        val result = checkAuthorizationStatus.run(params = Unit)
+
+        assertTrue { result == Either.Right(AuthStatus.AUTHORIZED) }
+
+        verify(repo, times(1)).getAvailableAccounts()
+        verifyNoMoreInteractions(repo)
+    }
+
+}

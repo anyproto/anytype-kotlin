@@ -4,6 +4,9 @@ import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
 
+/**
+ * Use case for creating new wallet.
+ */
 open class SetupWallet(
     private val repository: AuthRepository
 ) : BaseUseCase<Unit, SetupWallet.Params>() {
@@ -19,5 +22,8 @@ open class SetupWallet(
         Either.Left(e)
     }
 
+    /**
+     * @property path repository path.
+     */
     class Params(val path: String)
 }

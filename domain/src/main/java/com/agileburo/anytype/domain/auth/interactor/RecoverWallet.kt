@@ -4,6 +4,9 @@ import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
 
+/**
+ * Use case for recovering wallet via keychain phrase (mnemonic).
+ */
 class RecoverWallet(
     private val repository: AuthRepository
 ) : BaseUseCase<Unit, RecoverWallet.Params>() {

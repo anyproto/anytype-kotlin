@@ -4,6 +4,9 @@ import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
 
+/**
+ * Use case for saving current user's mnemonic.
+ */
 class SaveMnemonic(
     private val repository: AuthRepository
 ) : BaseUseCase<Unit, SaveMnemonic.Params>() {

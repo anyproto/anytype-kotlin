@@ -24,6 +24,10 @@ open class CreateAccount(
         Either.Left(e)
     }
 
+    /**
+     * @property avatarPath optional avatar image file path
+     * @property name username
+     */
     class Params(
         val name: String,
         val avatarPath: String? = null

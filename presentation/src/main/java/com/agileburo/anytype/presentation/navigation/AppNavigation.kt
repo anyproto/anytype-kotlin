@@ -13,6 +13,9 @@ interface AppNavigation {
     fun workspace()
     fun openProfile()
     fun openDocument(id: String)
+    fun startDesktopFromSplash()
+    fun startDesktopFromLogin()
+    fun startSplashFromDesktop()
     fun openKeychainScreen()
 
     sealed class Command {
@@ -30,6 +33,9 @@ interface AppNavigation {
         object OpenProfile : Command()
         object OpenKeychainScreen : Command()
         object OpenPinCodeScreen : Command()
+        object StartDesktopFromSplash : Command()
+        object StartDesktopFromLogin : Command()
+        object StartSplashFromDesktop : Command()
     }
 
     interface Provider {

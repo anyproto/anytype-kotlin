@@ -20,4 +20,5 @@ interface AuthDataStore {
     suspend fun getMnemonic(): String
 
     suspend fun logout()
+    suspend fun getStoredAccounts(): List<AccountEntity>
 }

@@ -45,6 +45,11 @@ class DefaultAuthCache(
         prefs.edit().putString(MNEMONIC_KEY, null).apply()
     }
 
+    override suspend fun getAccounts(): List<AccountEntity> =
+        db.accountDao()
+            .getAccounts()
+            .map { it.toEntity() }
+
     companion object {
         const val MNEMONIC_KEY = "mnemonic"
     }

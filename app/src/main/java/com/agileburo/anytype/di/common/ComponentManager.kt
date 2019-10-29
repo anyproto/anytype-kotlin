@@ -64,6 +64,13 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val splashLoginComponent = Component {
+        main
+            .splashComponentBuilder()
+            .module(SplashModule())
+            .build()
+    }
+
     val keychainPhraseComponent = Component {
         main
             .keychainPhraseComponentBuilder()

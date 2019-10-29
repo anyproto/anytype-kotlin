@@ -11,6 +11,6 @@ class CongratulationViewModel : ViewModel(), SupportNavigation<Event<AppNavigati
     override val navigation: MutableLiveData<Event<AppNavigation.Command>> = MutableLiveData()
 
     fun onStartClicked() {
-        navigation.postValue(Event(AppNavigation.Command.WorkspaceScreen))
+        navigation.postValue(Event(AppNavigation.Command.StartDesktopFromLogin))
     }
 }

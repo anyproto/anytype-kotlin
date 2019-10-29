@@ -10,8 +10,20 @@ class Navigator : AppNavigation {
 
     private var navController: NavController? = null
 
+    override fun startSplashFromDesktop() {
+        navController?.navigate(R.id.action_profileScreen_to_splashFragment)
+    }
+
+    override fun startDesktopFromSplash() {
+        navController?.navigate(R.id.action_splashScreen_to_desktopScreen)
+    }
+
+    override fun startDesktopFromLogin() {
+        navController?.navigate(R.id.action_global_desktopScreen)
+    }
+
     override fun startLogin() {
-        navController?.navigate(R.id.action_open_start_login)
+        navController?.navigate(R.id.action_splashFragment_to_login_nav)
     }
 
     override fun createProfile() {
@@ -34,9 +46,7 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.action_select_account)
     }
 
-    override fun workspace() {
-        navController?.navigate(R.id.action_open_desktop_screen)
-    }
+    override fun workspace() {}
 
     override fun openProfile() {
         navController?.navigate(R.id.action_open_profile)
@@ -47,7 +57,8 @@ class Navigator : AppNavigation {
     }
 
     override fun openKeychainScreen() {
-        navController?.navigate(R.id.action_open_keychain)
+        //todo Добавить переход на этот экран в nav_graph
+        //navController?.navigate(R.id.action_open_keychain)
     }
 
     override fun setupSelectedAccount(id: String) {

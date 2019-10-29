@@ -20,4 +20,6 @@ interface AuthRepository {
     suspend fun getMnemonic(): String
 
     suspend fun logout()
+
+    suspend fun getAvailableAccounts(): List<Account>
 }

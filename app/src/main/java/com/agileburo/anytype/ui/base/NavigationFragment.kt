@@ -20,6 +20,10 @@ abstract class NavigationFragment(
         val navigation = (requireActivity() as AppNavigation.Provider).nav()
 
         when (command) {
+
+            is Command.StartSplashFromDesktop -> navigation.startSplashFromDesktop()
+            is Command.StartDesktopFromLogin -> navigation.startDesktopFromLogin()
+            is Command.StartDesktopFromSplash -> navigation.startDesktopFromSplash()
             is Command.OpenStartLoginScreen -> navigation.startLogin()
             is Command.OpenCreateProfile -> navigation.createProfile()
             is Command.ChoosePinCodeScreen -> navigation.choosePinCode()

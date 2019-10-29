@@ -32,7 +32,7 @@ class ProfileViewModel(
                     Timber.e(e, "Error while logging out")
                 },
                 fnR = {
-                    navigation.postValue(Event(AppNavigation.Command.OpenStartLoginScreen))
+                    navigation.postValue(Event(AppNavigation.Command.StartSplashFromDesktop))
                 }
             )
         }

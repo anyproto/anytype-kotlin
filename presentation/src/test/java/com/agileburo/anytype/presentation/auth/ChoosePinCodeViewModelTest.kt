@@ -1,5 +1,6 @@
 package com.agileburo.anytype.presentation.auth
 
+@Deprecated("Refactoring needed")
 class ChoosePinCodeViewModelTest {
 
     /*

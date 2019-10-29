@@ -7,11 +7,13 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI
 import android.view.View
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.R
-import com.agileburo.anytype.core_utils.ext.*
+import com.agileburo.anytype.core_utils.ext.hideKeyboard
+import com.agileburo.anytype.core_utils.ext.invisible
+import com.agileburo.anytype.core_utils.ext.parsePath
+import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.auth.account.CreateAccountViewModel
 import com.agileburo.anytype.presentation.auth.account.CreateAccountViewModelFactory
@@ -38,8 +40,7 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
         createProfileButton.setOnClickListener {
             vm.onCreateProfileClicked(nameInputField.text.toString())
         }
-        profileIconPlaceholder.setOnClickListener { openGallery() }
-
+        profileIconPlaceholder.setOnClickListener { proceedWithImagePick() }
     }
 
     override fun onDestroyView() {
@@ -56,39 +57,32 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK && requestCode == SELECT_IMAGE_CODE) {
-
             data?.data?.let { uri ->
 
                 profileIcon.apply {
                     visible()
                     Glide
-                        .with(profileIcon)
+                        .with(this)
                         .load(uri)
                         .circleCrop()
-                        .into(profileIcon)
+                        .into(this)
                 }
 
                 profileIconPlaceholder.invisible()
 
-                val writeExternalStoragePermission = ContextCompat.checkSelfPermission(
-                    requireActivity(),
-                    WRITE_EXTERNAL_STORAGE
-                )
-
-                if (writeExternalStoragePermission != PackageManager.PERMISSION_GRANTED) {
-
-                    profileIcon.showSnackbar("Do not have permission")
-
-                    ActivityCompat.requestPermissions(
-                        requireActivity(),
-                        arrayOf(WRITE_EXTERNAL_STORAGE),
-                        REQUEST_PERMISSION_CODE
-                    )
-                }
-
                 vm.onAvatarSet(uri.parsePath(requireContext()))
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == REQUEST_PERMISSION_CODE)
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED))
+                openGallery()
     }
 
     private fun setupNavigation() {
@@ -103,6 +97,25 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
             startActivityForResult(intent, SELECT_IMAGE_CODE)
         }
     }
+
+    private fun proceedWithImagePick() {
+        if (!hasExternalStoragePermission())
+            requestExternalStoragePermission()
+        else
+            openGallery()
+    }
+
+    private fun requestExternalStoragePermission() {
+        requestPermissions(
+            arrayOf(WRITE_EXTERNAL_STORAGE),
+            REQUEST_PERMISSION_CODE
+        )
+    }
+
+    private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
+        requireActivity(),
+        WRITE_EXTERNAL_STORAGE
+    ).let { result -> result == PackageManager.PERMISSION_GRANTED }
 
     override fun injectDependencies() {
         componentManager().createAccountComponent.get().inject(this)

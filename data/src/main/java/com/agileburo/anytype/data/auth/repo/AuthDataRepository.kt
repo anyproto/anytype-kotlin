@@ -53,4 +53,7 @@ class AuthDataRepository(
     override suspend fun logout() {
         factory.cache.logout()
     }
+
+    override suspend fun getAvailableAccounts(): List<Account> =
+        factory.cache.getStoredAccounts().map { it.toDomain() }
 }

@@ -3,6 +3,7 @@ package com.agileburo.anytype.core_utils.ext
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
+import timber.log.Timber
 
 fun Context.dimen(res: Int): Float {
     return resources
@@ -31,3 +32,5 @@ fun Uri.parsePath(context: Context): String {
 
     return result ?: throw IllegalStateException("Cold not get real path")
 }
+
+fun Throwable.timber() = Timber.e("Get error : ${this.message}")

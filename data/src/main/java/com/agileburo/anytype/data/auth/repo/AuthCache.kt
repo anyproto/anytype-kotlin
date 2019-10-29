@@ -8,4 +8,5 @@ interface AuthCache {
     suspend fun getMnemonic(): String
     suspend fun getAccount(): AccountEntity
     suspend fun logout()
+    suspend fun getAccounts(): List<AccountEntity>
 }

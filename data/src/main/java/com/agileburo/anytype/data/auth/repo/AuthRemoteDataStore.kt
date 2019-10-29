@@ -50,6 +50,10 @@ class AuthRemoteDataStore(
         throw UnsupportedOperationException()
     }
 
+    override suspend fun getStoredAccounts(): List<AccountEntity> {
+        throw UnsupportedOperationException("not implemented")
+    }
+
     override suspend fun getAccount(): AccountEntity {
         throw UnsupportedOperationException()
     }

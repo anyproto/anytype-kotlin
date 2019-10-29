@@ -6,14 +6,17 @@ import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_utils.common.Event
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
+import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.desktop.interactor.GetAccount
+import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
 import com.agileburo.anytype.presentation.profile.ProfileView
 import timber.log.Timber
 
 class DesktopViewModel(
+    private val loadImage: LoadImage,
     private val getAccount: GetAccount
 ) : ViewStateViewModel<ViewState<List<DesktopView>>>(),
     SupportNavigation<Event<AppNavigation.Command>> {
@@ -22,9 +25,10 @@ class DesktopViewModel(
     val profile: LiveData<ProfileView>
         get() = _profile
 
-    init {
-        proceedWithGettingAccount()
-    }
+
+    private val _image = MutableLiveData<ByteArray>()
+    val image: LiveData<ByteArray>
+        get() = _image
 
     override val navigation = MutableLiveData<Event<AppNavigation.Command>>()
 
@@ -32,13 +36,33 @@ class DesktopViewModel(
         getAccount.invoke(viewModelScope, BaseUseCase.None) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while getting account") },
-                fnR = { account -> _profile.postValue(ProfileView(name = account.name)) }
+                fnR = { account ->
+                    _profile.postValue(ProfileView(name = account.name))
+                    loadAvatarImage(account)
+                }
             )
         }
     }
 
+    private fun loadAvatarImage(account: Account) {
+        account.avatar?.let { image ->
+            loadImage.invoke(
+                scope = viewModelScope,
+                params = LoadImage.Param(
+                    id = image.id
+                )
+            ) { result ->
+                result.either(
+                    fnL = { e -> Timber.e(e, "Error while loading image") },
+                    fnR = { blob -> _image.postValue(blob) }
+                )
+            }
+        } ?: Timber.d("Avatar not loaded: null value")
+    }
+
     fun onViewCreated() {
         stateData.postValue(ViewState.Init)
+        proceedWithGettingAccount()
     }
 
     fun onAddNewDocumentClicked() {

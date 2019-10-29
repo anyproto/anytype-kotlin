@@ -32,6 +32,7 @@ dependencies {
 
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines
+    implementation applicationDependencies.gson
 
     implementation databaseDependencies.room
     implementation databaseDependencies.roomKtx

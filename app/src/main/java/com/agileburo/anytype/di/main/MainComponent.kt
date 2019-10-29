@@ -1,10 +1,6 @@
 package com.agileburo.anytype.di.main
 
-import com.agileburo.anytype.di.feature.AuthSubComponent
-import com.agileburo.anytype.di.feature.DesktopSubComponent
-import com.agileburo.anytype.di.feature.KeychainPhraseSubComponent
-import com.agileburo.anytype.di.feature.ProfileSubComponent
-import com.agileburo.anytype.di.feature.SplashSubComponent
+import com.agileburo.anytype.di.feature.*
 import dagger.Component
 import javax.inject.Singleton
 
@@ -12,7 +8,8 @@ import javax.inject.Singleton
 @Component(
     modules = [
         ContextModule::class,
-        DataModule::class
+        DataModule::class,
+        ImageModule::class
     ]
 )
 interface MainComponent {

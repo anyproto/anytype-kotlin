@@ -5,6 +5,7 @@ import com.agileburo.anytype.data.auth.model.AccountEntity
 import com.agileburo.anytype.data.auth.repo.AuthCache
 import com.agileburo.anytype.db.AnytypeDatabase
 import com.agileburo.anytype.mapper.toEntity
+import com.agileburo.anytype.mapper.toTable
 import com.agileburo.anytype.model.AccountTable
 import timber.log.Timber
 
@@ -18,7 +19,13 @@ class DefaultAuthCache(
             AccountTable(
                 id = account.id,
                 name = account.name,
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                avatar = account.avatar?.let { avatar ->
+                    AccountTable.Avatar(
+                        avatarId = avatar.id,
+                        sizes = avatar.sizes.map { it.toTable() }
+                    )
+                }
             )
         )
     }

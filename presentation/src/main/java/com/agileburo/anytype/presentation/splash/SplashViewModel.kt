@@ -14,7 +14,8 @@ import timber.log.Timber
  * email :  ki@agileburo.com
  * on 2019-10-21.
  */
-class SplashViewModel(private val checkAuthorizationStatus: CheckAuthorizationStatus) : ViewModel() {
+class SplashViewModel(private val checkAuthorizationStatus: CheckAuthorizationStatus) :
+    ViewModel() {
 
     val navigation: MutableLiveData<Event<AppNavigation.Command>> = MutableLiveData()
 

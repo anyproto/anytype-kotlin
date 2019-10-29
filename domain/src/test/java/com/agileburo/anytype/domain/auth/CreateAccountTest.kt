@@ -36,20 +36,26 @@ class CreateAccountTest {
 
         val name = DataFactory.randomString()
 
+        val path = null
+
         val account = Account(
             id = DataFactory.randomUuid(),
-            name = DataFactory.randomString()
+            name = DataFactory.randomString(),
+            avatar = null
         )
 
-        val param = CreateAccount.Params(name)
+        val param = CreateAccount.Params(
+            name = name,
+            avatarPath = path
+        )
 
         repo.stub {
-            onBlocking { createAccount(name) } doReturn account
+            onBlocking { createAccount(name, path) } doReturn account
         }
 
         createAccount.run(param)
 
-        verify(repo, times(1)).createAccount(name)
+        verify(repo, times(1)).createAccount(name, path)
         verify(repo, times(1)).saveAccount(any())
         verifyNoMoreInteractions(repo)
     }

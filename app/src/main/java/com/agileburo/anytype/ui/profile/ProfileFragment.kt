@@ -1,7 +1,9 @@
 package com.agileburo.anytype.ui.profile
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_utils.ui.ViewState
@@ -10,7 +12,9 @@ import com.agileburo.anytype.presentation.profile.ProfileView
 import com.agileburo.anytype.presentation.profile.ProfileViewModel
 import com.agileburo.anytype.presentation.profile.ProfileViewModelFactory
 import com.agileburo.anytype.ui.base.ViewStateFragment
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_profile.*
+import java.io.ByteArrayInputStream
 import javax.inject.Inject
 
 class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragment_profile) {
@@ -29,6 +33,21 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
         vm.state.observe(this, this)
         vm.navigation.observe(this, navObserver)
         vm.onViewCreated()
+
+        vm.image.observe(this, Observer { blob ->
+
+            val stream = ByteArrayInputStream(blob)
+
+            Glide
+                .with(this)
+                .load(BitmapFactory.decodeStream(stream))
+                .centerInside()
+                .circleCrop()
+                .into(pic)
+
+            stream.close()
+        })
+
     }
 
     override fun render(state: ViewState<ProfileView>) {

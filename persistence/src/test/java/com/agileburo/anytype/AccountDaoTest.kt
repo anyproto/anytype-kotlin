@@ -65,4 +65,25 @@ class AccountDaoTest {
         assertTrue { result.size == 1 }
         assertTrue { result.first() == secondAccount }
     }
+
+    @Test
+    fun `should save account with its avatar`() = runBlocking {
+
+        val account = AccountTable(
+            id = MockDataFactory.randomString(),
+            name = MockDataFactory.randomString(),
+            timestamp = System.currentTimeMillis(),
+            avatar = AccountTable.Avatar(
+                avatarId = MockDataFactory.randomString(),
+                sizes = listOf(AccountTable.Size.LARGE, AccountTable.Size.SMALL)
+            )
+        )
+
+        database.accountDao().insert(account)
+
+        val result = database.accountDao().lastAccount()
+
+        assertTrue { result.size == 1 }
+        assertTrue { result.first() == account }
+    }
 }

@@ -1,16 +1,17 @@
 package com.agileburo.anytype.ui.auth.account
 
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI
 import android.view.View
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.R
-import com.agileburo.anytype.core_utils.ext.hideKeyboard
-import com.agileburo.anytype.core_utils.ext.invisible
-import com.agileburo.anytype.core_utils.ext.parsePath
-import com.agileburo.anytype.core_utils.ext.visible
+import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.auth.account.CreateAccountViewModel
 import com.agileburo.anytype.presentation.auth.account.CreateAccountViewModelFactory
@@ -69,6 +70,22 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
 
                 profileIconPlaceholder.invisible()
 
+                val writeExternalStoragePermission = ContextCompat.checkSelfPermission(
+                    requireActivity(),
+                    WRITE_EXTERNAL_STORAGE
+                )
+
+                if (writeExternalStoragePermission != PackageManager.PERMISSION_GRANTED) {
+
+                    profileIcon.showSnackbar("Do not have permission")
+
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
+                        arrayOf(WRITE_EXTERNAL_STORAGE),
+                        REQUEST_PERMISSION_CODE
+                    )
+                }
+
                 vm.onAvatarSet(uri.parsePath(requireContext()))
             }
         }
@@ -97,5 +114,6 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
 
     companion object {
         const val SELECT_IMAGE_CODE = 1
+        const val REQUEST_PERMISSION_CODE = 2
     }
 }

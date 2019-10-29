@@ -6,8 +6,11 @@ import com.agileburo.anytype.data.auth.repo.AuthRemote
 import com.agileburo.anytype.middleware.Event
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.interactor.Middleware
+import com.agileburo.anytype.middleware.toEntity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 class AuthMiddleware(
     private val middleware: Middleware,
@@ -19,18 +22,23 @@ class AuthMiddleware(
     ) = middleware.selectAccount(id, path).let { response ->
         AccountEntity(
             id = response.id,
-            name = response.name
+            name = response.name,
+            avatar = null
         )
     }
 
     override suspend fun createAccount(
         name: String,
         avatarPath: String?
-    ) = middleware.createAccount(name, avatarPath).let { response ->
-        AccountEntity(
-            id = response.id,
-            name = response.name
-        )
+    ) = withContext(Dispatchers.IO) {
+        middleware.createAccount(name, avatarPath).let { response ->
+            AccountEntity(
+                id = response.id,
+                name = response.name,
+                avatar = response.avatar.toEntity()
+            )
+        }
+
     }
 
     override suspend fun recoverAccount() {
@@ -44,7 +52,8 @@ class AuthMiddleware(
         .map { event ->
             AccountEntity(
                 id = event.id,
-                name = event.name
+                name = event.name,
+                avatar = null
             )
         }
 

@@ -14,9 +14,9 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
             android:id="@+id/action_open_profile"
-            app:destination="@id/profileScreen" />
+            app:destination="@id/profileScreen"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -56,7 +56,7 @@
     </fragment>
     <navigation
         android:id="@+id/login_nav"
-        app:startDestination="@id/startLoginScreen" >
+        app:startDestination="@id/startLoginScreen">
         <fragment
             android:id="@+id/selectAccountScreen"
             android:name="com.agileburo.anytype.ui.auth.account.SelectAccountFragment"
@@ -119,7 +119,7 @@
             android:id="@+id/congratulationScreen"
             android:name="com.agileburo.anytype.ui.auth.CongratulationFragment"
             android:label="StartLoginFragment"
-            tools:layout="@layout/fragment_congratulation"/>
+            tools:layout="@layout/fragment_congratulation" />
         <fragment
             android:id="@+id/setupSelectedAccountScreen"
             android:name="com.agileburo.anytype.ui.auth.account.SetupSelectedAccountFragment"

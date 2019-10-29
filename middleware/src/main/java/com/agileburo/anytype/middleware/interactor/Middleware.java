@@ -10,10 +10,13 @@ import anytype.Commands.AccountRecoverRequest;
 import anytype.Commands.AccountRecoverResponse;
 import anytype.Commands.AccountSelectRequest;
 import anytype.Commands.AccountSelectResponse;
+import anytype.Commands.ImageGetBlobRequest;
+import anytype.Commands.ImageGetBlobResponse;
 import anytype.Commands.WalletCreateRequest;
 import anytype.Commands.WalletCreateResponse;
 import anytype.Commands.WalletRecoverRequest;
 import anytype.Commands.WalletRecoverResponse;
+import anytype.Models;
 import lib.Lib;
 
 public class Middleware {
@@ -64,7 +67,8 @@ public class Middleware {
         } else {
             return new CreateAccountResponse(
                     response.getAccount().getId(),
-                    response.getAccount().getName()
+                    response.getAccount().getName(),
+                    response.getAccount().getAvatar()
             );
         }
     }
@@ -134,6 +138,27 @@ public class Middleware {
                     response.getAccount().getId(),
                     response.getAccount().getName()
             );
+        }
+    }
+
+    public byte[] loadImage(String id, Models.ImageSize size) throws Exception {
+
+        ImageGetBlobRequest request = ImageGetBlobRequest
+                .newBuilder()
+                .setId(id)
+                .setSize(size)
+                .build();
+
+        byte[] encodedRequest = request.toByteArray();
+
+        byte[] encodedResponse = Lib.imageGetBlob(encodedRequest);
+
+        ImageGetBlobResponse response = ImageGetBlobResponse.parseFrom(encodedResponse);
+
+        if (response.getError() != null && response.getError().getCode() != ImageGetBlobResponse.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response.getBlob().toByteArray();
         }
     }
 }

@@ -4,16 +4,19 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room.databaseBuilder
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.agileburo.anytype.common.Config
 import com.agileburo.anytype.common.Provider
 import com.agileburo.anytype.dao.AccountDao
 import com.agileburo.anytype.model.AccountTable
+import com.agileburo.anytype.util.Converters
 
 @Database(
     entities = [AccountTable::class],
     exportSchema = false,
     version = 1
 )
+@TypeConverters(Converters::class)
 abstract class AnytypeDatabase : RoomDatabase() {
 
     abstract fun accountDao(): AccountDao

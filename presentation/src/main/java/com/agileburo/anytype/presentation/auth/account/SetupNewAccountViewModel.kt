@@ -29,10 +29,14 @@ class SetupNewAccountViewModel(
     }
 
     private fun proceedWithCreatingAccount() {
+
+        Timber.d("Starting setting up new account")
+
         createAccount.invoke(
             scope = viewModelScope,
             params = CreateAccount.Params(
-                name = session.name ?: throw IllegalStateException("Name not set")
+                name = session.name ?: throw IllegalStateException("Name not set"),
+                avatarPath = session.avatarPath
             )
         ) { result ->
             result.either(

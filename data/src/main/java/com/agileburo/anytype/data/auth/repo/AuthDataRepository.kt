@@ -38,10 +38,6 @@ class AuthDataRepository(
         factory.remote.recoverWallet(path, mnemonic)
     }
 
-    override suspend fun isSignedIn(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override suspend fun getAccount() = factory.cache.getAccount().toDomain()
 
     override suspend fun saveMnemonic(

@@ -34,10 +34,6 @@ class AuthRemoteDataStore(
         authRemote.recoverWallet(path, mnemonic)
     }
 
-    override suspend fun isSignedIn(): Boolean {
-        throw UnsupportedOperationException()
-    }
-
     override suspend fun saveMnemonic(mnemonic: String) {
         throw UnsupportedOperationException()
     }
@@ -51,7 +47,7 @@ class AuthRemoteDataStore(
     }
 
     override suspend fun getStoredAccounts(): List<AccountEntity> {
-        throw UnsupportedOperationException("not implemented")
+        throw UnsupportedOperationException()
     }
 
     override suspend fun getAccount(): AccountEntity {

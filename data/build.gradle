@@ -4,7 +4,13 @@ dependencies {
     implementation project(':domain')
 
     def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
 
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines
+
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation unitTestDependencies.coroutineTesting
 }

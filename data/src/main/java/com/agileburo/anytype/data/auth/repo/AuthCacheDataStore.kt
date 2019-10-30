@@ -34,10 +34,6 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
         throw UnsupportedOperationException()
     }
 
-    override suspend fun isSignedIn(): Boolean {
-        throw UnsupportedOperationException()
-    }
-
     override suspend fun saveMnemonic(mnemonic: String) {
         cache.saveMnemonic(mnemonic)
     }

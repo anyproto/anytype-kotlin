@@ -15,7 +15,6 @@ interface AuthDataStore {
 
     suspend fun createWallet(path: String): WalletEntity
     suspend fun recoverWallet(path: String, mnemonic: String)
-    suspend fun isSignedIn(): Boolean
     suspend fun saveMnemonic(mnemonic: String)
     suspend fun getMnemonic(): String
 

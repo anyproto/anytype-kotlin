@@ -5,7 +5,7 @@ import com.agileburo.anytype.data.auth.model.WalletEntity
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRemote {
-    suspend fun selectAccount(id: String, path: String): AccountEntity
+    suspend fun startAccount(id: String, path: String): AccountEntity
     suspend fun createAccount(name: String, avatarPath: String?): AccountEntity
     suspend fun recoverAccount()
     fun observeAccounts(): Flow<AccountEntity>

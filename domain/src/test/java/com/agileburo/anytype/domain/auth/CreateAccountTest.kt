@@ -32,7 +32,7 @@ class CreateAccountTest {
     }
 
     @Test
-    fun `should create account and save it by calling repository method`() = runBlocking {
+    fun `should create account and save it and set as current user account`() = runBlocking {
 
         val name = DataFactory.randomString()
 
@@ -56,7 +56,8 @@ class CreateAccountTest {
         createAccount.run(param)
 
         verify(repo, times(1)).createAccount(name, path)
-        verify(repo, times(1)).saveAccount(any())
+        verify(repo, times(1)).saveAccount(account)
+        verify(repo, times(1)).setCurrentAccount(account.id)
         verifyNoMoreInteractions(repo)
     }
 }

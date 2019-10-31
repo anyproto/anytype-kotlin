@@ -11,21 +11,25 @@ class AuthDataRepository(
     private val factory: AuthDataStoreFactory
 ) : AuthRepository {
 
-    override suspend fun selectAccount(
+    override suspend fun startAccount(
         id: String, path: String
-    ): Account = factory.remote.selectAccount(id, path).toDomain()
+    ): Account = factory.remote.startAccount(id, path).toDomain()
 
     override suspend fun createAccount(
         name: String,
         avatarPath: String?
     ): Account = factory.remote.createAccount(name, avatarPath).toDomain()
 
-    override suspend fun recoverAccount() {
+    override suspend fun startLoadingAccounts() {
         factory.remote.recoverAccount()
     }
 
     override suspend fun saveAccount(account: Account) {
         factory.cache.saveAccount(account.toEntity())
+    }
+
+    override suspend fun updateAccount(account: Account) {
+        factory.cache.updateAccount(account.toEntity())
     }
 
     override fun observeAccounts() = factory.remote.observeAccounts().map { it.toDomain() }
@@ -38,7 +42,9 @@ class AuthDataRepository(
         factory.remote.recoverWallet(path, mnemonic)
     }
 
-    override suspend fun getAccount() = factory.cache.getAccount().toDomain()
+    override suspend fun getCurrentAccount() = factory.cache.getCurrentAccount().toDomain()
+
+    override suspend fun getCurrentAccountId() = factory.cache.getCurrentAccountId()
 
     override suspend fun saveMnemonic(
         mnemonic: String
@@ -50,6 +56,9 @@ class AuthDataRepository(
         factory.cache.logout()
     }
 
-    override suspend fun getAvailableAccounts(): List<Account> =
-        factory.cache.getStoredAccounts().map { it.toDomain() }
+    override suspend fun getAccounts() = factory.cache.getAccounts().map { it.toDomain() }
+
+    override suspend fun setCurrentAccount(id: String) {
+        factory.cache.setCurrentAccount(id)
+    }
 }

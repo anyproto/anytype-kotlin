@@ -5,13 +5,21 @@ import com.agileburo.anytype.data.auth.model.WalletEntity
 import kotlinx.coroutines.flow.Flow
 
 interface AuthDataStore {
-    suspend fun selectAccount(id: String, path: String): AccountEntity
+
+    suspend fun startAccount(id: String, path: String): AccountEntity
+
     suspend fun createAccount(name: String, avatarPath: String?): AccountEntity
+
     suspend fun recoverAccount()
+
     suspend fun saveAccount(account: AccountEntity)
+
+    suspend fun updateAccount(account: AccountEntity)
+
     fun observeAccounts(): Flow<AccountEntity>
 
-    suspend fun getAccount(): AccountEntity
+    suspend fun getCurrentAccount(): AccountEntity
+    suspend fun getCurrentAccountId(): String
 
     suspend fun createWallet(path: String): WalletEntity
     suspend fun recoverWallet(path: String, mnemonic: String)
@@ -19,5 +27,6 @@ interface AuthDataStore {
     suspend fun getMnemonic(): String
 
     suspend fun logout()
-    suspend fun getStoredAccounts(): List<AccountEntity>
+    suspend fun getAccounts(): List<AccountEntity>
+    suspend fun setCurrentAccount(id: String)
 }

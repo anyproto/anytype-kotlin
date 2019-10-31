@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
 
-    override suspend fun selectAccount(id: String, path: String): AccountEntity {
+    override suspend fun startAccount(id: String, path: String): AccountEntity {
         throw UnsupportedOperationException()
     }
 
@@ -20,6 +20,10 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
 
     override suspend fun saveAccount(account: AccountEntity) {
         cache.saveAccount(account)
+    }
+
+    override suspend fun updateAccount(account: AccountEntity) {
+        cache.updateAccount(account)
     }
 
     override fun observeAccounts(): Flow<AccountEntity> {
@@ -44,8 +48,13 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
         cache.logout()
     }
 
-    override suspend fun getStoredAccounts(): List<AccountEntity> =
-        cache.getAccounts()
+    override suspend fun getAccounts() = cache.getAccounts()
 
-    override suspend fun getAccount() = cache.getAccount()
+    override suspend fun getCurrentAccount() = cache.getCurrentAccount()
+
+    override suspend fun getCurrentAccountId() = cache.getCurrentAccountId()
+
+    override suspend fun setCurrentAccount(id: String) {
+        cache.setCurrentAccount(id)
+    }
 }

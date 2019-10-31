@@ -8,12 +8,12 @@ import com.agileburo.anytype.domain.base.Either
 /** Use case for getting currently selected user account.
  * @property repository repository containing user account
  */
-class GetAccount(
+class GetCurrentAccount(
     private val repository: AuthRepository
 ) : BaseUseCase<Account, BaseUseCase.None>() {
 
     override suspend fun run(params: None) = try {
-        repository.getAccount().let {
+        repository.getCurrentAccount().let {
             Either.Right(it)
         }
     } catch (t: Throwable) {

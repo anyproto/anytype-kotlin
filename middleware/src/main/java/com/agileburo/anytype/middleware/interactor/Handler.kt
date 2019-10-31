@@ -1,14 +1,11 @@
 package com.agileburo.anytype.middleware.interactor
 
 import anytype.Events
-import com.agileburo.anytype.middleware.Event
 import com.agileburo.anytype.middleware.EventProxy
 import com.google.protobuf.InvalidProtocolBufferException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import lib.Lib
 import timber.log.Timber
 
@@ -31,16 +28,7 @@ class Handler : EventProxy {
         }
     }
 
-    private fun events(): Flow<Event> = channel
-        .consumeAsFlow()
-        .onEach { Timber.d(it.toString()) }
-        .map { event ->
-            Event.AccountAdd(
-                id = event.accountAdd.account.id,
-                name = event.accountAdd.account.name,
-                index = event.accountAdd.index.toInt()
-            )
-        }
+    private fun events(): Flow<Events.Event> = channel.consumeAsFlow()
 
-    override fun flow(): Flow<Event> = events()
+    override fun flow(): Flow<Events.Event> = events()
 }

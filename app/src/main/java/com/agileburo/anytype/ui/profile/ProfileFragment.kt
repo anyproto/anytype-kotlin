@@ -63,6 +63,7 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
                 pinCodeText.setOnClickListener { vm.onPinCodeClicked() }
                 keychainPhrase.setOnClickListener { vm.onKeyChainPhraseClicked() }
                 backButton.setOnClickListener { vm.onBackButtonClicked() }
+                switchProfileButton.setOnClickListener { vm.onAddProfileClicked() }
             }
             is ViewState.Success -> {
                 name.text = state.data.name

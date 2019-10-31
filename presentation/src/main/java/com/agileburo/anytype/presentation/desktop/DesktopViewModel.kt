@@ -8,7 +8,7 @@ import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.base.BaseUseCase
-import com.agileburo.anytype.domain.desktop.interactor.GetAccount
+import com.agileburo.anytype.domain.desktop.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
@@ -17,7 +17,7 @@ import timber.log.Timber
 
 class DesktopViewModel(
     private val loadImage: LoadImage,
-    private val getAccount: GetAccount
+    private val getCurrentAccount: GetCurrentAccount
 ) : ViewStateViewModel<ViewState<List<DesktopView>>>(),
     SupportNavigation<Event<AppNavigation.Command>> {
 
@@ -33,7 +33,7 @@ class DesktopViewModel(
     override val navigation = MutableLiveData<Event<AppNavigation.Command>>()
 
     private fun proceedWithGettingAccount() {
-        getAccount.invoke(viewModelScope, BaseUseCase.None) { result ->
+        getCurrentAccount.invoke(viewModelScope, BaseUseCase.None) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while getting account") },
                 fnR = { account ->

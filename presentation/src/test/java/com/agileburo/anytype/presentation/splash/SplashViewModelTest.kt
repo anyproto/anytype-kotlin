@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.agileburo.anytype.domain.auth.model.AuthStatus
 import com.agileburo.anytype.domain.base.Either
+import com.agileburo.anytype.domain.launch.LaunchAccount
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.*
@@ -22,13 +23,19 @@ class SplashViewModelTest {
     @Mock
     lateinit var checkAuthorizationStatus: CheckAuthorizationStatus
 
+    @Mock
+    lateinit var launchAccount: LaunchAccount
+
     lateinit var vm: SplashViewModel
 
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        vm = SplashViewModel(checkAuthorizationStatus)
+        vm = SplashViewModel(
+            checkAuthorizationStatus = checkAuthorizationStatus,
+            launchAccount = launchAccount
+        )
     }
 
     @Test
@@ -44,7 +51,7 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun `should emit appropriate navigation command if user is authorized`() {
+    fun `should start launching account if user is authorized`() {
 
         val status = AuthStatus.AUTHORIZED
 
@@ -53,6 +60,30 @@ class SplashViewModelTest {
         checkAuthorizationStatus.stub {
             on { invoke(any(), any(), any()) } doAnswer { answer ->
                 answer.getArgument<(Either<Throwable, AuthStatus>) -> Unit>(2)(response)
+            }
+        }
+
+        vm.onViewCreated()
+
+        verify(launchAccount, times(1)).invoke(any(), any(), any())
+    }
+
+    @Test
+    fun `should emit appropriate navigation command if account is launched`() {
+
+        val status = AuthStatus.AUTHORIZED
+
+        val response = Either.Right(status)
+
+        checkAuthorizationStatus.stub {
+            on { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, AuthStatus>) -> Unit>(2)(response)
+            }
+        }
+
+        launchAccount.stub {
+            on { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
             }
         }
 

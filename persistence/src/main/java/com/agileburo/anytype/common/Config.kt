@@ -12,4 +12,6 @@ object Config {
 
     const val QUERY_LAST_ACCOUNT =
         "SELECT * FROM $ACCOUNT_TABLE_NAME ORDER BY timestamp DESC LIMIT 1"
+
+    const val QUERY_ACCOUNT_BY_ID = "SELECT * FROM $ACCOUNT_TABLE_NAME WHERE id = :id"
 }

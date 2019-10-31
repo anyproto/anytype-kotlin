@@ -6,7 +6,6 @@ import com.agileburo.anytype.data.auth.repo.AuthCache
 import com.agileburo.anytype.db.AnytypeDatabase
 import com.agileburo.anytype.mapper.toEntity
 import com.agileburo.anytype.mapper.toTable
-import com.agileburo.anytype.model.AccountTable
 import timber.log.Timber
 
 class DefaultAuthCache(
@@ -15,26 +14,21 @@ class DefaultAuthCache(
 ) : AuthCache {
 
     override suspend fun saveAccount(account: AccountEntity) {
-        db.accountDao().insert(
-            AccountTable(
-                id = account.id,
-                name = account.name,
-                timestamp = System.currentTimeMillis(),
-                avatar = account.avatar?.let { avatar ->
-                    AccountTable.Avatar(
-                        avatarId = avatar.id,
-                        sizes = avatar.sizes.map { it.toTable() }
-                    )
-                }
-            )
-        )
+        db.accountDao().insert(account.toTable())
     }
 
-    override suspend fun getAccount() = db.accountDao().lastAccount().let { list ->
-        if (list.isEmpty())
-            throw IllegalStateException("Could not found user account")
-        else
-            list.first().toEntity()
+    override suspend fun updateAccount(account: AccountEntity) {
+        db.accountDao().update(account.toTable())
+    }
+
+    override suspend fun getCurrentAccount() = getCurrentAccountId().let { id ->
+        db.accountDao().getAccount(id)?.toEntity()
+            ?: throw IllegalStateException("Account with the following id not found: $id")
+    }
+
+    override suspend fun getCurrentAccountId(): String {
+        val id: String? = prefs.getString(CURRENT_ACCOUNT_ID_KEY, null)
+        return id ?: throw IllegalStateException("Current account not set")
     }
 
     override suspend fun saveMnemonic(mnemonic: String) {
@@ -52,12 +46,15 @@ class DefaultAuthCache(
         prefs.edit().putString(MNEMONIC_KEY, null).apply()
     }
 
-    override suspend fun getAccounts(): List<AccountEntity> =
-        db.accountDao()
-            .getAccounts()
-            .map { it.toEntity() }
+    override suspend fun getAccounts() = db.accountDao().getAccounts().map { it.toEntity() }
+
+
+    override suspend fun setCurrentAccount(id: String) {
+        prefs.edit().putString(CURRENT_ACCOUNT_ID_KEY, id).apply()
+    }
 
     companion object {
         const val MNEMONIC_KEY = "mnemonic"
+        const val CURRENT_ACCOUNT_ID_KEY = "current_account"
     }
 }

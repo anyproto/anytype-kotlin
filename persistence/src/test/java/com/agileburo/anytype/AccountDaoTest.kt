@@ -13,6 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
@@ -85,5 +86,25 @@ class AccountDaoTest {
 
         assertTrue { result.size == 1 }
         assertTrue { result.first() == account }
+    }
+
+    @Test
+    fun `should return expected account when queried using account id`() = runBlocking {
+
+        val account = AccountTable(
+            id = MockDataFactory.randomString(),
+            name = MockDataFactory.randomString(),
+            timestamp = System.currentTimeMillis(),
+            avatar = AccountTable.Avatar(
+                avatarId = MockDataFactory.randomString(),
+                sizes = listOf(AccountTable.Size.LARGE, AccountTable.Size.SMALL)
+            )
+        )
+
+        database.accountDao().insert(account)
+
+        val result = database.accountDao().getAccount(account.id)
+
+        assertEquals(account, result)
     }
 }

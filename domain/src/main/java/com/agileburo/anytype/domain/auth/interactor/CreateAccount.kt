@@ -5,7 +5,7 @@ import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
 
 /**
- * Creates an account, then stores it.
+ * Creates an account, then stores it and sets as current user account.
  */
 open class CreateAccount(
     private val repository: AuthRepository
@@ -16,7 +16,10 @@ open class CreateAccount(
             name = params.name,
             avatarPath = params.avatarPath
         ).let { account ->
-            repository.saveAccount(account)
+            with(repository) {
+                saveAccount(account)
+                setCurrentAccount(account.id)
+            }
         }.let {
             Either.Right(it)
         }

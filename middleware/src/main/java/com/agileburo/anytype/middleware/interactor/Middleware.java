@@ -136,7 +136,8 @@ public class Middleware {
         } else {
             return new SelectAccountResponse(
                     response.getAccount().getId(),
-                    response.getAccount().getName()
+                    response.getAccount().getName(),
+                    response.getAccount().getAvatar()
             );
         }
     }

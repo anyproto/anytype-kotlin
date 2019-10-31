@@ -9,14 +9,14 @@ import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.auth.interactor.Logout
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.base.BaseUseCase
-import com.agileburo.anytype.domain.desktop.interactor.GetAccount
+import com.agileburo.anytype.domain.desktop.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
 import timber.log.Timber
 
 class ProfileViewModel(
-    private val getAccount: GetAccount,
+    private val getCurrentAccount: GetCurrentAccount,
     private val loadImage: LoadImage,
     private val logout: Logout
 ) : ViewStateViewModel<ViewState<ProfileView>>(), SupportNavigation<Event<AppNavigation.Command>> {
@@ -36,8 +36,12 @@ class ProfileViewModel(
         // TODO dispatch navigation command
     }
 
+    fun onAddProfileClicked() {
+        navigation.postValue(Event(AppNavigation.Command.OpenCreateAccount))
+    }
+
     private fun proceedWithGettingAccount() {
-        getAccount.invoke(viewModelScope, BaseUseCase.None) { result ->
+        getCurrentAccount.invoke(viewModelScope, BaseUseCase.None) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while getting account") },
                 fnR = { account ->

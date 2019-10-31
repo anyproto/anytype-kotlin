@@ -7,16 +7,19 @@ import com.agileburo.anytype.domain.base.Either
 /**
  * Use case for selecting user account.
  */
-class SelectAccount(
+class StartAccount(
     private val repository: AuthRepository
-) : BaseUseCase<Unit, SelectAccount.Params>() {
+) : BaseUseCase<Unit, StartAccount.Params>() {
 
     override suspend fun run(params: Params) = try {
-        repository.selectAccount(
+        repository.startAccount(
             id = params.id,
             path = params.path
         ).let { account ->
-            repository.saveAccount(account)
+            with(repository) {
+                saveAccount(account)
+                setCurrentAccount(account.id)
+            }
         }.let {
             Either.Right(it)
         }

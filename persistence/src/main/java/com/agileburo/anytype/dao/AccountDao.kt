@@ -14,6 +14,9 @@ abstract class AccountDao : BaseDao<AccountTable> {
     @Query(Config.QUERY_LAST_ACCOUNT)
     abstract suspend fun lastAccount(): List<AccountTable>
 
+    @Query(Config.QUERY_ACCOUNT_BY_ID)
+    abstract suspend fun getAccount(id: String): AccountTable?
+
     @Query(Config.GET_ACCOUNTS)
     abstract suspend fun getAccounts(): List<AccountTable>
 }

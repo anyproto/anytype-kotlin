@@ -11,11 +11,11 @@
         android:label="DesktopFragment"
         tools:layout="@layout/fragment_desktop">
         <action
+            android:id="@+id/action_open_profile"
+            app:destination="@id/profileScreen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            android:id="@+id/action_open_profile"
-            app:destination="@id/profileScreen"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
@@ -28,6 +28,41 @@
             android:id="@+id/action_profileScreen_to_splashFragment"
             app:destination="@+id/main_navigation"
             app:popUpTo="@+id/main_navigation"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_create_profile"
+            app:destination="@id/createAccountScreen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/createAccountScreen"
+        android:name="com.agileburo.anytype.ui.auth.account.CreateAccountFragment"
+        android:label="StartLoginFragment"
+        tools:layout="@layout/fragment_create_account">
+        <action
+            android:id="@+id/action_setup_new_account"
+            app:destination="@id/setupNewAccountScreen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/startLoginScreen"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/setupNewAccountScreen"
+        android:name="com.agileburo.anytype.ui.auth.account.SetupNewAccountFragment"
+        android:label="SetupAccount"
+        tools:layout="@layout/fragment_setup_new_account">
+        <action
+            android:id="@+id/action_open_congratulation_screen"
+            app:destination="@id/congratulationScreen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popUpTo="@+id/startLoginScreen"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
@@ -54,6 +89,11 @@
             app:popUpTo="@+id/splashScreen"
             app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/congratulationScreen"
+        android:name="com.agileburo.anytype.ui.auth.CongratulationFragment"
+        android:label="StartLoginFragment"
+        tools:layout="@layout/fragment_congratulation" />
     <navigation
         android:id="@+id/login_nav"
         app:startDestination="@id/startLoginScreen">
@@ -157,7 +197,7 @@
                 app:popExitAnim="@anim/slide_out_right"
                 app:popUpToInclusive="false" />
             <action
-                android:id="@+id/action_open_sign_up"
+                android:id="@+id/action_create_profile"
                 app:destination="@id/createAccountScreen"
                 app:enterAnim="@anim/slide_in_right"
                 app:exitAnim="@anim/slide_out_left"

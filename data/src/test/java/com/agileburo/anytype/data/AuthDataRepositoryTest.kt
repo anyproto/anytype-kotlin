@@ -50,17 +50,17 @@ class AuthDataRepositoryTest {
         )
 
         authRemote.stub {
-            onBlocking { selectAccount(id = id, path = path) } doReturn account
+            onBlocking { startAccount(id = id, path = path) } doReturn account
         }
 
-        repo.selectAccount(
+        repo.startAccount(
             id = id,
             path = path
         )
 
         verifyZeroInteractions(authCache)
 
-        verify(authRemote, times(1)).selectAccount(
+        verify(authRemote, times(1)).startAccount(
             id = id,
             path = path
         )
@@ -107,7 +107,7 @@ class AuthDataRepositoryTest {
             onBlocking { recoverAccount() } doReturn Unit
         }
 
-        repo.recoverAccount()
+        repo.startLoadingAccounts()
 
         verifyZeroInteractions(authCache)
         verify(authRemote, times(1)).recoverAccount()
@@ -164,13 +164,13 @@ class AuthDataRepositoryTest {
         )
 
         authCache.stub {
-            onBlocking { getAccount() } doReturn account
+            onBlocking { getCurrentAccount() } doReturn account
         }
 
-        repo.getAccount()
+        repo.getCurrentAccount()
 
         verifyZeroInteractions(authRemote)
-        verify(authCache, times(1)).getAccount()
+        verify(authCache, times(1)).getCurrentAccount()
         verifyNoMoreInteractions(authCache)
     }
 
@@ -235,7 +235,7 @@ class AuthDataRepositoryTest {
             onBlocking { getAccounts() } doReturn accounts
         }
 
-        repo.getAvailableAccounts()
+        repo.getAccounts()
 
         verifyZeroInteractions(authRemote)
         verify(authCache, times(1)).getAccounts()

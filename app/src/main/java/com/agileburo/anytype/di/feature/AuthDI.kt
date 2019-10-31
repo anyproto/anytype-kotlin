@@ -200,11 +200,11 @@ class SetupSelectedAccountModule {
     @Provides
     @PerScreen
     fun provideSetupSelectedAccountViewModelFactory(
-        selectAccount: SelectAccount,
+        startAccount: StartAccount,
         pathProvider: PathProvider
     ): SetupSelectedAccountViewModelFactory {
         return SetupSelectedAccountViewModelFactory(
-            selectAccount = selectAccount,
+            startAccount = startAccount,
             pathProvider = pathProvider
         )
     }
@@ -213,8 +213,8 @@ class SetupSelectedAccountModule {
     @PerScreen
     fun provideSelectAccountUseCase(
         repository: AuthRepository
-    ): SelectAccount {
-        return SelectAccount(
+    ): StartAccount {
+        return StartAccount(
             repository = repository
         )
     }

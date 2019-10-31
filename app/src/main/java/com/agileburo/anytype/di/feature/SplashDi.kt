@@ -3,6 +3,8 @@ package com.agileburo.anytype.di.feature
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
+import com.agileburo.anytype.domain.auth.repo.PathProvider
+import com.agileburo.anytype.domain.launch.LaunchAccount
 import com.agileburo.anytype.presentation.splash.SplashViewModelFactory
 import com.agileburo.anytype.ui.splash.SplashFragment
 import dagger.Module
@@ -33,11 +35,30 @@ class SplashModule {
 
     @PerScreen
     @Provides
-    fun provideSplashViewModelFactory(checkAuthorizationStatus: CheckAuthorizationStatus) =
-        SplashViewModelFactory(checkAuthorizationStatus)
+    fun provideSplashViewModelFactory(
+        checkAuthorizationStatus: CheckAuthorizationStatus,
+        launchAccount: LaunchAccount
+    ): SplashViewModelFactory = SplashViewModelFactory(
+        checkAuthorizationStatus = checkAuthorizationStatus,
+        launchAccount = launchAccount
+    )
+
 
     @PerScreen
     @Provides
-    fun provideCheckAuthorizationStatus(authRepository: AuthRepository) =
-        CheckAuthorizationStatus(authRepository)
+    fun provideCheckAuthorizationStatusUseCase(
+        authRepository: AuthRepository
+    ): CheckAuthorizationStatus = CheckAuthorizationStatus(
+        repository = authRepository
+    )
+
+    @PerScreen
+    @Provides
+    fun provideLaunchAccountUseCase(
+        authRepository: AuthRepository,
+        pathProvider: PathProvider
+    ): LaunchAccount = LaunchAccount(
+        repository = authRepository,
+        pathProvider = pathProvider
+    )
 }

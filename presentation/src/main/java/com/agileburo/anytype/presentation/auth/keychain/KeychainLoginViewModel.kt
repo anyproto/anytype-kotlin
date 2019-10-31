@@ -60,7 +60,7 @@ class KeychainLoginViewModel(
         ) { result ->
             result.either(
                 fnR = {
-                    navigation.postValue(Event(AppNavigation.Command.ChooseProfileScreen))
+                    navigation.postValue(Event(AppNavigation.Command.ChooseAccountScreen))
                 },
                 fnL = { Timber.e(it, "Error while saving mnemonic: $mnemonic") }
             )

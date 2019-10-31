@@ -47,7 +47,7 @@ class StartLoginViewModelTest {
 
         vm.onSignUpClicked()
 
-        testObserver.assertValue(NavigationCommand.OpenCreateProfile)
+        testObserver.assertValue(NavigationCommand.OpenCreateAccount)
     }
 
     @Test

@@ -7,9 +7,9 @@ class AuthRemoteDataStore(
     private val authRemote: AuthRemote
 ) : AuthDataStore {
 
-    override suspend fun selectAccount(
+    override suspend fun startAccount(
         id: String, path: String
-    ) = authRemote.selectAccount(id, path)
+    ) = authRemote.startAccount(id, path)
 
     override suspend fun createAccount(
         name: String,
@@ -46,11 +46,23 @@ class AuthRemoteDataStore(
         throw UnsupportedOperationException()
     }
 
-    override suspend fun getStoredAccounts(): List<AccountEntity> {
+    override suspend fun getAccounts(): List<AccountEntity> {
         throw UnsupportedOperationException()
     }
 
-    override suspend fun getAccount(): AccountEntity {
+    override suspend fun getCurrentAccount(): AccountEntity {
+        throw UnsupportedOperationException()
+    }
+
+    override suspend fun setCurrentAccount(id: String) {
+        throw UnsupportedOperationException()
+    }
+
+    override suspend fun getCurrentAccountId(): String {
+        throw UnsupportedOperationException()
+    }
+
+    override suspend fun updateAccount(account: AccountEntity) {
         throw UnsupportedOperationException()
     }
 }

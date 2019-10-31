@@ -1,6 +1,6 @@
 package com.agileburo.anytype.domain.auth
 
-import com.agileburo.anytype.domain.auth.interactor.SelectAccount
+import com.agileburo.anytype.domain.auth.interactor.StartAccount
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.base.Either
@@ -16,7 +16,7 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertTrue
 
-class SelectAccountTest {
+class StartAccountTest {
 
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -25,21 +25,21 @@ class SelectAccountTest {
     @Mock
     lateinit var repo: AuthRepository
 
-    lateinit var selectAccount: SelectAccount
+    lateinit var startAccount: StartAccount
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        selectAccount = SelectAccount(repo)
+        startAccount = StartAccount(repo)
     }
 
     @Test
-    fun `should select account and save it`() = runBlocking {
+    fun `should select account, set it as current user account and save it`() = runBlocking {
 
         val id = DataFactory.randomString()
         val path = DataFactory.randomString()
 
-        val params = SelectAccount.Params(
+        val params = StartAccount.Params(
             id = id,
             path = path
         )
@@ -52,21 +52,23 @@ class SelectAccountTest {
 
         repo.stub {
             onBlocking {
-                selectAccount(
+                startAccount(
                     id = id,
                     path = path
                 )
             } doReturn account
         }
 
-        selectAccount.run(params)
+        startAccount.run(params)
 
-        verify(repo, times(1)).selectAccount(
+        verify(repo, times(1)).startAccount(
             id = id,
             path = path
         )
 
         verify(repo, times(1)).saveAccount(account)
+
+        verify(repo, times(1)).setCurrentAccount(account.id)
 
         verifyNoMoreInteractions(repo)
     }
@@ -77,7 +79,7 @@ class SelectAccountTest {
         val id = DataFactory.randomString()
         val path = DataFactory.randomString()
 
-        val params = SelectAccount.Params(
+        val params = StartAccount.Params(
             id = id,
             path = path
         )
@@ -90,14 +92,14 @@ class SelectAccountTest {
 
         repo.stub {
             onBlocking {
-                selectAccount(
+                startAccount(
                     id = id,
                     path = path
                 )
             } doReturn account
         }
 
-        val result = selectAccount.run(params)
+        val result = startAccount.run(params)
 
         assertTrue { result == Either.Right(Unit) }
     }

@@ -2,7 +2,7 @@ package com.agileburo.anytype.di.feature
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
-import com.agileburo.anytype.domain.desktop.interactor.GetAccount
+import com.agileburo.anytype.domain.desktop.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.image.ImageLoader
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.presentation.desktop.DesktopViewModelFactory
@@ -33,10 +33,10 @@ class DesktopModule {
     @Provides
     @PerScreen
     fun provideDesktopViewModelFactory(
-        getAccount: GetAccount,
+        getCurrentAccount: GetCurrentAccount,
         loadImage: LoadImage
     ): DesktopViewModelFactory = DesktopViewModelFactory(
-        getAccount = getAccount,
+        getCurrentAccount = getCurrentAccount,
         loadImage = loadImage
     )
 
@@ -44,7 +44,7 @@ class DesktopModule {
     @PerScreen
     fun provideGetAccountUseCase(
         repository: AuthRepository
-    ): GetAccount = GetAccount(
+    ): GetCurrentAccount = GetCurrentAccount(
         repository = repository
     )
 

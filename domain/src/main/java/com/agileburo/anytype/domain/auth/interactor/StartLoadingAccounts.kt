@@ -12,7 +12,7 @@ class StartLoadingAccounts(
 ) : BaseUseCase<Unit, StartLoadingAccounts.Params>() {
 
     override suspend fun run(params: Params) = try {
-        repository.recoverAccount().let {
+        repository.startLoadingAccounts().let {
             Either.Right(it)
         }
     } catch (e: Throwable) {

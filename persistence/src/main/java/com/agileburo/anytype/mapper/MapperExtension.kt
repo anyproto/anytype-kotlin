@@ -17,6 +17,20 @@ fun AccountTable.toEntity(): AccountEntity {
     )
 }
 
+fun AccountEntity.toTable(): AccountTable {
+    return AccountTable(
+        id = id,
+        name = name,
+        timestamp = System.currentTimeMillis(),
+        avatar = avatar?.let { avatar ->
+            AccountTable.Avatar(
+                avatarId = avatar.id,
+                sizes = avatar.sizes.map { it.toTable() }
+            )
+        }
+    )
+}
+
 fun ImageEntity.Size.toTable(): AccountTable.Size = when (this) {
     ImageEntity.Size.SMALL -> AccountTable.Size.SMALL
     ImageEntity.Size.THUMB -> AccountTable.Size.THUMB

@@ -38,14 +38,14 @@ class CheckAuthorizationStatusTest {
     fun `should return unauthorized status if account list is empty`() = runBlocking {
 
         repo.stub {
-            onBlocking { getAvailableAccounts() } doReturn emptyList()
+            onBlocking { getAccounts() } doReturn emptyList()
         }
 
         val result = checkAuthorizationStatus.run(params = Unit)
 
         assertTrue { result == Either.Right(AuthStatus.UNAUTHORIZED) }
 
-        verify(repo, times(1)).getAvailableAccounts()
+        verify(repo, times(1)).getAccounts()
         verifyNoMoreInteractions(repo)
     }
 
@@ -59,14 +59,14 @@ class CheckAuthorizationStatusTest {
         )
 
         repo.stub {
-            onBlocking { getAvailableAccounts() } doReturn listOf(account)
+            onBlocking { getAccounts() } doReturn listOf(account)
         }
 
         val result = checkAuthorizationStatus.run(params = Unit)
 
         assertTrue { result == Either.Right(AuthStatus.AUTHORIZED) }
 
-        verify(repo, times(1)).getAvailableAccounts()
+        verify(repo, times(1)).getAccounts()
         verifyNoMoreInteractions(repo)
     }
 

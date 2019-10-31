@@ -15,7 +15,7 @@ class CheckAuthorizationStatus(
 ) : BaseUseCase<AuthStatus, Unit>() {
 
     override suspend fun run(params: Unit) = try {
-        repository.getAvailableAccounts().let { accounts ->
+        repository.getAccounts().let { accounts ->
             if (accounts.isNotEmpty())
                 Either.Right(AuthStatus.AUTHORIZED)
             else

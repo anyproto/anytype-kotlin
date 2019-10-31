@@ -5,20 +5,43 @@ import com.agileburo.anytype.domain.auth.model.Wallet
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
-    suspend fun selectAccount(id: String, path: String): Account
+
+    /**
+     * Launches an account.
+     * @param id user account id
+     * @param path wallet repository path
+     */
+    suspend fun startAccount(id: String, path: String): Account
+
     suspend fun createAccount(name: String, avatarPath: String?): Account
-    suspend fun recoverAccount()
+
+    suspend fun startLoadingAccounts()
+
     suspend fun saveAccount(account: Account)
+
+    suspend fun updateAccount(account: Account)
+
     fun observeAccounts(): Flow<Account>
 
-    suspend fun getAccount(): Account
+    suspend fun getCurrentAccount(): Account
+
+    suspend fun getCurrentAccountId(): String
 
     suspend fun createWallet(path: String): Wallet
+
     suspend fun recoverWallet(path: String, mnemonic: String)
+
     suspend fun saveMnemonic(mnemonic: String)
+
     suspend fun getMnemonic(): String
 
     suspend fun logout()
 
-    suspend fun getAvailableAccounts(): List<Account>
+    suspend fun getAccounts(): List<Account>
+
+    /**
+     * Sets currently selected user account
+     * @param id account's id
+     */
+    suspend fun setCurrentAccount(id: String)
 }

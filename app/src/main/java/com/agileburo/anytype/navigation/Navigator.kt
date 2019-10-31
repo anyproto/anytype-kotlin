@@ -27,7 +27,7 @@ class Navigator : AppNavigation {
     }
 
     override fun createProfile() {
-        navController?.navigate(R.id.action_open_sign_up)
+        navController?.navigate(R.id.action_create_profile)
     }
 
     override fun setupNewAccount() {
@@ -42,7 +42,7 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.action_open_congratulation_screen)
     }
 
-    override fun chooseProfile() {
+    override fun chooseAccount() {
         navController?.navigate(R.id.action_select_account)
     }
 

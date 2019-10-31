@@ -6,20 +6,18 @@ import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
 
 /**
- * Sets current account for current application session.
+ * Sets current wallet for current application session.
  */
-class LaunchAccount(
+class LaunchWallet(
     private val repository: AuthRepository,
     private val pathProvider: PathProvider
 ) : BaseUseCase<Unit, BaseUseCase.None>() {
 
     override suspend fun run(params: None) = try {
-        repository.startAccount(
-            id = repository.getCurrentAccountId(),
+        repository.recoverWallet(
+            mnemonic = repository.getMnemonic(),
             path = pathProvider.providePath()
-        ).let { account ->
-            repository.updateAccount(account)
-        }.let {
+        ).let {
             Either.Right(it)
         }
     } catch (e: Throwable) {

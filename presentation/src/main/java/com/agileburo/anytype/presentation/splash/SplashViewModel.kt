@@ -8,6 +8,7 @@ import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.agileburo.anytype.domain.auth.model.AuthStatus
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.launch.LaunchAccount
+import com.agileburo.anytype.domain.launch.LaunchWallet
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import timber.log.Timber
 
@@ -18,6 +19,7 @@ import timber.log.Timber
  */
 class SplashViewModel(
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
+    private val launchWallet: LaunchWallet,
     private val launchAccount: LaunchAccount
 ) : ViewModel() {
 
@@ -31,8 +33,17 @@ class SplashViewModel(
                     if (status == AuthStatus.UNAUTHORIZED)
                         navigation.postValue(Event(AppNavigation.Command.OpenStartLoginScreen))
                     else
-                        proceedWithLaunchingAccount()
+                        proceedWithLaunchingWallet()
                 }
+            )
+        }
+    }
+
+    private fun proceedWithLaunchingWallet() {
+        launchWallet.invoke(viewModelScope, BaseUseCase.None) { result ->
+            result.either(
+                fnL = { e -> Timber.e(e, "Error while launching wallet") },
+                fnR = { proceedWithLaunchingAccount() }
             )
         }
     }

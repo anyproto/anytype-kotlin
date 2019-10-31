@@ -5,6 +5,7 @@ import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.auth.repo.PathProvider
 import com.agileburo.anytype.domain.launch.LaunchAccount
+import com.agileburo.anytype.domain.launch.LaunchWallet
 import com.agileburo.anytype.presentation.splash.SplashViewModelFactory
 import com.agileburo.anytype.ui.splash.SplashFragment
 import dagger.Module
@@ -37,10 +38,12 @@ class SplashModule {
     @Provides
     fun provideSplashViewModelFactory(
         checkAuthorizationStatus: CheckAuthorizationStatus,
-        launchAccount: LaunchAccount
+        launchAccount: LaunchAccount,
+        launchWallet: LaunchWallet
     ): SplashViewModelFactory = SplashViewModelFactory(
         checkAuthorizationStatus = checkAuthorizationStatus,
-        launchAccount = launchAccount
+        launchAccount = launchAccount,
+        launchWallet = launchWallet
     )
 
 
@@ -58,6 +61,16 @@ class SplashModule {
         authRepository: AuthRepository,
         pathProvider: PathProvider
     ): LaunchAccount = LaunchAccount(
+        repository = authRepository,
+        pathProvider = pathProvider
+    )
+
+    @PerScreen
+    @Provides
+    fun provideLaunchWalletUseCase(
+        authRepository: AuthRepository,
+        pathProvider: PathProvider
+    ): LaunchWallet = LaunchWallet(
         repository = authRepository,
         pathProvider = pathProvider
     )

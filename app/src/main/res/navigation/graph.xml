@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
     app:startDestination="@id/splashScreen">
-
     <fragment
         android:id="@+id/desktopScreen"
         android:name="com.agileburo.anytype.ui.desktop.DesktopFragment"
@@ -93,7 +92,17 @@
         android:id="@+id/congratulationScreen"
         android:name="com.agileburo.anytype.ui.auth.CongratulationFragment"
         android:label="StartLoginFragment"
-        tools:layout="@layout/fragment_congratulation" />
+        tools:layout="@layout/fragment_congratulation">
+        <action
+            android:id="@+id/action_global_desktopScreen"
+            app:destination="@+id/desktopScreen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/login_nav"
+            app:popUpToInclusive="true" />
+    </fragment>
     <navigation
         android:id="@+id/login_nav"
         app:startDestination="@id/startLoginScreen">

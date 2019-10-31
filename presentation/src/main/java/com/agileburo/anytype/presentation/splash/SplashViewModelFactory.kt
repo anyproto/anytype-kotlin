@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.agileburo.anytype.domain.launch.LaunchAccount
+import com.agileburo.anytype.domain.launch.LaunchWallet
 
 /**
  * Created by Konstantin Ivanov
@@ -12,13 +13,15 @@ import com.agileburo.anytype.domain.launch.LaunchAccount
  */
 class SplashViewModelFactory(
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
-    private val launchAccount: LaunchAccount
+    private val launchAccount: LaunchAccount,
+    private val launchWallet: LaunchWallet
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
         SplashViewModel(
             checkAuthorizationStatus = checkAuthorizationStatus,
-            launchAccount = launchAccount
+            launchAccount = launchAccount,
+            launchWallet = launchWallet
         ) as T
 }

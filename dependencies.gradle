@@ -33,6 +33,7 @@ ext {
     gson_version = '2.8.6'
     rxrelay_version = '2.1.0'
     better_link_method_version = '2.2.0'
+    table_view_version = '0.8.8'
 
     // Unit Testing
     robolectric_version = '4.3.1'
@@ -98,6 +99,7 @@ ext {
             rxjava2:                    "io.reactivex.rxjava2:rxjava:$rxjava2_version",
             rxAndroid:                  "io.reactivex.rxjava2:rxandroid:$rxjava2_version",
             moshiKotlin:                "com.squareup.moshi:moshi-kotlin:$moshi_version",
+            tableView:                  "com.evrencoskun.library:tableview:$table_view_version",
 
             crashlytics:                "com.crashlytics.sdk.android:crashlytics:$crashlytics_version",
             firebaseCore:              "com.google.firebase:firebase-core:$firebase_core_version"

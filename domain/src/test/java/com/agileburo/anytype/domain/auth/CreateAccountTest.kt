@@ -4,7 +4,7 @@ import com.agileburo.anytype.domain.auth.interactor.CreateAccount
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.common.CoroutineTestRule
-import com.agileburo.anytype.domain.common.DataFactory
+import com.agileburo.anytype.domain.common.MockDataFactory
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -34,13 +34,13 @@ class CreateAccountTest {
     @Test
     fun `should create account and save it and set as current user account`() = runBlocking {
 
-        val name = DataFactory.randomString()
+        val name = MockDataFactory.randomString()
 
         val path = null
 
         val account = Account(
-            id = DataFactory.randomUuid(),
-            name = DataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
             avatar = null
         )
 

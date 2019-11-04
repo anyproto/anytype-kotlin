@@ -33,7 +33,7 @@ class SetupNewAccountViewModelTest {
     @Test
     fun `should start creating account when view model is initialized`() {
 
-        session.name = DataFactory.randomString()
+        session.name = MockDataFactory.randomString()
 
         vm = SetupNewAccountViewModel(
             session = session,
@@ -47,7 +47,7 @@ class SetupNewAccountViewModelTest {
     @Test
     fun `should navigate to next screen if account has been successfully created`() {
 
-        session.name = DataFactory.randomString()
+        session.name = MockDataFactory.randomString()
 
         createAccount.stub {
             on { invoke(any(), any(), any()) } doAnswer { answer ->

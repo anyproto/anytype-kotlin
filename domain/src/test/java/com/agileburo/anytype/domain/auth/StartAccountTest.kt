@@ -5,7 +5,7 @@ import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.common.CoroutineTestRule
-import com.agileburo.anytype.domain.common.DataFactory
+import com.agileburo.anytype.domain.common.MockDataFactory
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -36,8 +36,8 @@ class StartAccountTest {
     @Test
     fun `should select account, set it as current user account and save it`() = runBlocking {
 
-        val id = DataFactory.randomString()
-        val path = DataFactory.randomString()
+        val id = MockDataFactory.randomString()
+        val path = MockDataFactory.randomString()
 
         val params = StartAccount.Params(
             id = id,
@@ -46,7 +46,7 @@ class StartAccountTest {
 
         val account = Account(
             id = id,
-            name = DataFactory.randomString(),
+            name = MockDataFactory.randomString(),
             avatar = null
         )
 
@@ -76,8 +76,8 @@ class StartAccountTest {
     @Test
     fun `should return unit when use case is successfully completed`() = runBlocking {
 
-        val id = DataFactory.randomString()
-        val path = DataFactory.randomString()
+        val id = MockDataFactory.randomString()
+        val path = MockDataFactory.randomString()
 
         val params = StartAccount.Params(
             id = id,
@@ -86,7 +86,7 @@ class StartAccountTest {
 
         val account = Account(
             id = id,
-            name = DataFactory.randomString(),
+            name = MockDataFactory.randomString(),
             avatar = null
         )
 

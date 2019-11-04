@@ -22,7 +22,7 @@ class CreateProfileViewModelTest {
 
         val name = session.name
 
-        val input = DataFactory.randomString()
+        val input = MockDataFactory.randomString()
 
         vm.onCreateProfileClicked(input)
 

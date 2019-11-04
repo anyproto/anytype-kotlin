@@ -11,10 +11,6 @@ sealed class ChooseProfileView : ViewType {
         override fun getViewType(): Int = PROFILE
     }
 
-    object AddNewProfile : ChooseProfileView(), ViewType {
-        override fun getViewType(): Int = ADD_NEW_PROFILE
-    }
-
     companion object {
         const val PROFILE = 0
         const val ADD_NEW_PROFILE = 1

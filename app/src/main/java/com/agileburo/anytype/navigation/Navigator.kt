@@ -57,8 +57,7 @@ class Navigator : AppNavigation {
     }
 
     override fun openKeychainScreen() {
-        //todo Добавить переход на этот экран в nav_graph
-        //navController?.navigate(R.id.action_open_keychain)
+        navController?.navigate(R.id.action_open_keychain)
     }
 
     override fun setupSelectedAccount(id: String) {

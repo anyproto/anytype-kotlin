@@ -16,4 +16,6 @@
 
     <color name="divider">#ACA996</color>
 
+    <color name="auth_divider">#DFDDD0</color>
+
 </resources>

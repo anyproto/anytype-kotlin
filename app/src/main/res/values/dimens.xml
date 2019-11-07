@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <dimen name="default_button_text_size">15sp</dimen>
+
     <dimen name="button_text_size">18sp</dimen>
     <dimen name="profile_adapter_margin_top">12dp</dimen>
     <dimen name="dot_spacing">20dp</dimen>
     <dimen name="num_pad_vertical_spacing">16dp</dimen>
+
+    <dimen name="auth_default_card_margin">20dp</dimen>
+    <dimen name="auth_default_card_corner_radius">12dp</dimen>
+    <dimen name="auth_default_margin_start">20dp</dimen>
+    <dimen name="auth_default_margin_end">20dp</dimen>
+    <dimen name="auth_default_margin_bottom">20dp</dimen>
+    <dimen name="auth_default_button_height">48dp</dimen>
+    <dimen name="auth_default_icon_circle_diameter">64dp</dimen>
+    <dimen name="auth_default_button_text_size">15sp</dimen>
+
 </resources>

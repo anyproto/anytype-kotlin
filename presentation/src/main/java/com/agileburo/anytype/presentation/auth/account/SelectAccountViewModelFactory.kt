@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.auth.interactor.ObserveAccounts
 import com.agileburo.anytype.domain.auth.interactor.StartLoadingAccounts
-import com.agileburo.anytype.domain.image.LoadAccountImages
+import com.agileburo.anytype.domain.image.LoadImage
 
 class SelectAccountViewModelFactory(
     private val startLoadingAccounts: StartLoadingAccounts,
     private val observeAccounts: ObserveAccounts,
-    private val loadAccountImages: LoadAccountImages
+    private val loadImage: LoadImage
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -17,7 +17,7 @@ class SelectAccountViewModelFactory(
         return SelectAccountViewModel(
             startLoadingAccounts = startLoadingAccounts,
             observeAccounts = observeAccounts,
-            loadAccountImages = loadAccountImages
+            loadImage = loadImage
         ) as T
     }
 }

@@ -6,7 +6,7 @@ import com.agileburo.anytype.domain.auth.interactor.*
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.auth.repo.PathProvider
 import com.agileburo.anytype.domain.image.ImageLoader
-import com.agileburo.anytype.domain.image.LoadAccountImages
+import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.presentation.auth.account.CreateAccountViewModelFactory
 import com.agileburo.anytype.presentation.auth.account.SelectAccountViewModelFactory
 import com.agileburo.anytype.presentation.auth.account.SetupNewAccountViewModelFactory
@@ -230,12 +230,12 @@ class SelectAccountModule {
     fun provideSelectAccountViewModelFactory(
         startLoadingAccounts: StartLoadingAccounts,
         observeAccounts: ObserveAccounts,
-        loadAccountImages: LoadAccountImages
+        loadImage: LoadImage
     ): SelectAccountViewModelFactory {
         return SelectAccountViewModelFactory(
             startLoadingAccounts = startLoadingAccounts,
             observeAccounts = observeAccounts,
-            loadAccountImages = loadAccountImages
+            loadImage = loadImage
         )
     }
 
@@ -259,9 +259,9 @@ class SelectAccountModule {
 
     @Provides
     @PerScreen
-    fun provideLoadAccountImagesUseCase(
+    fun provideLoadImageUseCase(
         loader: ImageLoader
-    ): LoadAccountImages = LoadAccountImages(loader = loader)
+    ): LoadImage = LoadImage(loader = loader)
 }
 
 @Module

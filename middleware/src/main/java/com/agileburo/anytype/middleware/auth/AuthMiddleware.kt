@@ -6,6 +6,7 @@ import com.agileburo.anytype.data.auth.model.WalletEntity
 import com.agileburo.anytype.data.auth.repo.AuthRemote
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.interactor.Middleware
+import com.agileburo.anytype.middleware.toAccountEntity
 import com.agileburo.anytype.middleware.toEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
@@ -38,24 +39,16 @@ class AuthMiddleware(
                 avatar = response.avatar.toEntity()
             )
         }
-
     }
 
-    override suspend fun recoverAccount() {
+    override suspend fun recoverAccount() = withContext(Dispatchers.IO) {
         middleware.recoverAccount()
     }
 
     override fun observeAccounts() = events
         .flow()
         .filter { event -> event.messageCase == Events.Event.MessageCase.ACCOUNTADD }
-        .map { event ->
-
-            AccountEntity(
-                id = event.accountAdd.account.id,
-                name = event.accountAdd.account.name,
-                avatar = event.accountAdd.account.avatar.toEntity()
-            )
-        }
+        .map { event -> event.accountAdd.toAccountEntity() }
 
     override suspend fun createWallet(
         path: String

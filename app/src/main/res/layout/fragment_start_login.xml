@@ -71,8 +71,8 @@
                 app:layout_constraintStart_toEndOf="@+id/signUpButton" />
 
             <TextView
-                style="@style/DefaultStrokeButtonStyle"
                 android:id="@+id/signUpButton"
+                style="@style/DefaultStrokeButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/auth_default_button_height"
                 android:layout_marginStart="@dimen/auth_default_margin_start"

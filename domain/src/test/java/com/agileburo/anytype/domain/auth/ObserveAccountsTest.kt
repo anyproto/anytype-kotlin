@@ -52,11 +52,11 @@ class ObserveAccountsTest {
 
         val result = observeAccounts.build().single()
 
-        assertTrue { result == listOf(account) }
+        assertTrue { result == account }
     }
 
     @Test
-    fun `should collect one account, then two accounts, emitting accumulated results`() =
+    fun `should collect accounts sequentially`() =
         runBlocking {
 
             val accounts = listOf(
@@ -78,8 +78,8 @@ class ObserveAccountsTest {
 
             observeAccounts.build().collectIndexed { index, value ->
                 when (index) {
-                    0 -> assertEquals(listOf(accounts.first()), value)
-                    1 -> assertEquals(accounts, value)
+                    0 -> assertEquals(accounts.first(), value)
+                    1 -> assertEquals(accounts.last(), value)
                 }
             }
         }

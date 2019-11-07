@@ -30,6 +30,10 @@ class KeychainLoginViewModel(
         proceedWithRecoveringWallet(chain)
     }
 
+    fun onBackButtonPressed() {
+        navigation.postValue(Event(AppNavigation.Command.Exit))
+    }
+
     private fun proceedWithRecoveringWallet(chain: String) {
 
         state.postValue(ViewState.Loading)

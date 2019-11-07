@@ -18,8 +18,12 @@ interface AppNavigation {
     fun startDesktopFromLogin()
     fun startSplashFromDesktop()
     fun openKeychainScreen()
+    fun exit()
 
     sealed class Command {
+
+        object Exit : Command()
+
         object OpenStartLoginScreen : Command()
         object OpenCreateAccount : Command()
         object ChoosePinCodeScreen : Command()

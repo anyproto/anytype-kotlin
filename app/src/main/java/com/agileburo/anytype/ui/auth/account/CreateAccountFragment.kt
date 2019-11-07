@@ -41,6 +41,7 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
             vm.onCreateProfileClicked(nameInputField.text.toString())
         }
         profileIconPlaceholder.setOnClickListener { proceedWithImagePick() }
+        backButton.setOnClickListener { vm.onBackButtonClicked() }
     }
 
     override fun onDestroyView() {

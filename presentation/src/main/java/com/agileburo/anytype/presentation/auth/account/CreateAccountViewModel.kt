@@ -23,4 +23,8 @@ class CreateAccountViewModel(
         session.avatarPath = path
         Timber.d("Path set: $path")
     }
+
+    fun onBackButtonClicked() {
+        navigation.postValue(Event(AppNavigation.Command.Exit))
+    }
 }

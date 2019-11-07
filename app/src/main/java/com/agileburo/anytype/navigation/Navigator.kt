@@ -80,6 +80,10 @@ class Navigator : AppNavigation {
         */
     }
 
+    override fun exit() {
+        navController?.popBackStack()
+    }
+
     fun bind(navController: NavController) {
         this.navController = navController
     }

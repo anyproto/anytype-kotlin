@@ -20,7 +20,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
         <Constraint
-            android:id="@id/desktopTitle"
+            android:id="@id/greeting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -30,15 +30,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
         <Constraint
-            android:id="@id/profileImage"
+            android:id="@id/avatar"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginEnd="20dp"
             android:scaleX="1.0"
             android:scaleY="1.0"
-            app:layout_constraintBottom_toBottomOf="@+id/desktopTitle"
+            app:layout_constraintBottom_toBottomOf="@+id/greeting"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/desktopTitle" />
+            app:layout_constraintTop_toTopOf="@+id/greeting" />
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/collapsed">
@@ -50,25 +50,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
         <Constraint
-            android:id="@id/desktopTitle"
+            android:id="@id/greeting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="0dp"
             android:scaleX="0.3"
             android:scaleY="0.3"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/greeting"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/greeting" />
         <Constraint
-            android:id="@id/profileImage"
+            android:id="@id/avatar"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginEnd="20dp"
             android:scaleX="0.0"
             android:scaleY="0.0"
-            app:layout_constraintBottom_toBottomOf="@+id/desktopTitle"
+            app:layout_constraintBottom_toBottomOf="@+id/greeting"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/desktopTitle" />
+            app:layout_constraintTop_toTopOf="@+id/greeting" />
     </ConstraintSet>
 
 </MotionScene>

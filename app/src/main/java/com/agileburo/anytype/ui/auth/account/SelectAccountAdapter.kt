@@ -1,19 +1,14 @@
 package com.agileburo.anytype.ui.auth.account
 
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.R
-import com.agileburo.anytype.core_utils.ext.invisible
-import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.presentation.auth.model.SelectAccountView
 import com.agileburo.anytype.presentation.auth.model.SelectAccountView.Companion.ADD_NEW_PROFILE
 import com.agileburo.anytype.presentation.auth.model.SelectAccountView.Companion.PROFILE
-import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_choose_profile_profile.view.*
-import java.io.ByteArrayInputStream
 
 class SelectAccountAdapter(
     private val views: MutableList<SelectAccountView>,
@@ -73,7 +68,6 @@ class SelectAccountAdapter(
         class ProfileHolder(view: View) : ViewHolder(view) {
 
             private val name = itemView.name
-            private val placeholder = itemView.avatarPlaceholder
             private val avatar = itemView.avatar
 
             fun bind(
@@ -83,29 +77,13 @@ class SelectAccountAdapter(
                 name.text = model.name
                 itemView.setOnClickListener { onProfileClicked(model) }
 
-                if (model.image != null) {
-                    placeholder.invisible()
-
-                    val stream = ByteArrayInputStream(model.image)
-                    val bitmap = BitmapFactory.decodeStream(stream)
-
-                    Glide
-                        .with(avatar)
-                        .load(bitmap)
-                        .centerInside()
-                        .circleCrop()
-                        .into(avatar)
-
-                    stream.close()
-
-                } else {
-                    avatar.invisible()
-                    placeholder.apply {
-                        visible()
-                        text = model.name.first().toUpperCase().toString()
-                    }
-                }
-
+                model.image?.let { blob ->
+                    avatar.bind(
+                        blob = blob
+                    )
+                } ?: avatar.bind(
+                    name = model.name
+                )
             }
         }
 

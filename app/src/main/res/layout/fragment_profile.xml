@@ -27,16 +27,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/pic"
+            <com.agileburo.anytype.core_ui.widgets.AvatarWidget
+                android:id="@+id/avatar"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
+                android:background="@drawable/circle_solid_default"
+                android:contentDescription="@string/description_profile_picture"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:contentDescription="@string/description_profile_picture"
-                android:src="@drawable/circle_red"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:text_size="@dimen/default_avatar_text_size" />
 
             <TextView
                 android:id="@+id/name"
@@ -50,7 +51,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/pic"
+                app:layout_constraintTop_toBottomOf="@+id/avatar"
                 tools:text="Anton Pronkin" />
 
             <TextView

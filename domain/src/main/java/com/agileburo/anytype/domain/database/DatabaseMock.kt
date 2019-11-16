@@ -1,19 +1,22 @@
 package com.agileburo.anytype.domain.database
 
 import com.agileburo.anytype.domain.database.model.*
-import com.agileburo.anytype.domain.database.model.Number
 
 object DatabaseMock {
 
     fun getDatabaseView(id: String): DatabaseView {
 
         val properties = listOf(
-            Number(id = "1", name = "Id"),
-            Title(id = "2", name = "Name"),
-            Email(id = "4", name = "E-mail"),
-            Date(id = "5", name = "Date"),
-            Select(id = "6", name = "Select", select = setOf("select1", "select2", "select3")),
-            Multiple(
+            Property.Number(id = "1", name = "Id"),
+            Property.Title(id = "2", name = "Name"),
+            Property.Email(id = "4", name = "E-mail"),
+            Property.Date(id = "5", name = "Date"),
+            Property.Select(
+                id = "6",
+                name = "Select",
+                select = setOf("select1", "select2", "select3")
+            ),
+            Property.Multiple(
                 id = "7",
                 name = "Multiple",
                 multiSelect = setOf(
@@ -24,7 +27,7 @@ object DatabaseMock {
                     "multiple5"
                 )
             ),
-            Account(
+            Property.Account(
                 id = "8",
                 name = "Account",
                 accounts = setOf(
@@ -32,11 +35,10 @@ object DatabaseMock {
                     Value(name = "Eduard Streltsov")
                 )
             ),
-            File(id = "9", name = "File"),
-            Bool(id = "10", name = "Bool"),
-            Link(id = "11", name = "Link"),
-            Phone(id = "12", name = "Phone")
-
+            Property.File(id = "9", name = "File"),
+            Property.Bool(id = "10", name = "Bool"),
+            Property.Link(id = "11", name = "Link"),
+            Property.Phone(id = "12", name = "Phone")
         )
 
         val data1: HashMap<String, Any> = hashMapOf(
@@ -91,7 +93,10 @@ object DatabaseMock {
 
         val views = listOf(
             View(
-                id = "1", type = ViewType.GRID, name = "Table", filters = listOf(
+                id = "1",
+                type = ViewType.GRID,
+                name = "Table",
+                filters = listOf(
                     Filter(
                         propertyId = "1",
                         value = "",
@@ -113,8 +118,6 @@ object DatabaseMock {
             views = views
         )
 
-        val databaseView = DatabaseView(content = contentDatabaseView)
-
-        return databaseView
+        return DatabaseView(content = contentDatabaseView)
     }
 }

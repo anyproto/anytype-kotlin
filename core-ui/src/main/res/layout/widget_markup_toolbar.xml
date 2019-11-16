@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/markup"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/default_toolbar_height">
+
+    <ImageView
+        android:id="@+id/bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/content_description_bold_text"
+        android:src="@drawable/ic_toolbar_markup_bold"
+        android:stateListAnimator="@animator/scale_shrink"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/content_description_italic_text"
+        android:src="@drawable/ic_toolbar_markup_italic"
+        android:stateListAnimator="@animator/scale_shrink"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bold"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/strike"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/content_description_strike_through_text"
+        android:src="@drawable/ic_toolbar_markup_strike_through"
+        android:stateListAnimator="@animator/scale_shrink"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/italic"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/content_description_link"
+        android:src="@drawable/ic_toolbar_markup_link"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/strike"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/content_description_code"
+        android:src="@drawable/ic_toolbar_markup_code"
+        android:stateListAnimator="@animator/scale_shrink"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/link"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/content_description_show_colors"
+        android:src="@drawable/ic_toolbar_color"
+        android:stateListAnimator="@animator/scale_shrink"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/keyboard"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/keyboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/content_description_hide_keyboard_button"
+        android:src="@drawable/ic_toolbar_keyboard"
+        android:stateListAnimator="@animator/scale_shrink"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</merge>

@@ -3,4 +3,7 @@
     <declare-styleable name="AvatarWidget">
         <attr name="text_size" format="dimension" />
     </declare-styleable>
+    <declare-styleable name="ToolbarSectionWidget">
+        <attr name="active_background_color" format="color" />
+    </declare-styleable>
 </resources>

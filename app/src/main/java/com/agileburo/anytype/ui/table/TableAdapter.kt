@@ -5,10 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.agileburo.anytype.R
-import com.agileburo.anytype.presentation.table.CellView
-import com.agileburo.anytype.presentation.table.ColumnHeaderView
-import com.agileburo.anytype.presentation.table.RowHeaderView
-import com.agileburo.anytype.ui.table.holder.CellDateViewHolder
+import com.agileburo.anytype.presentation.databaseview.models.Cell
+import com.agileburo.anytype.presentation.databaseview.models.Column
+import com.agileburo.anytype.presentation.databaseview.models.Row
 import com.agileburo.anytype.ui.table.holder.CellNameViewHolder
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
@@ -18,7 +17,37 @@ private const val DATE_CELL_TYPE = 2
 
 
 class TableAdapter(context: Context) :
-    AbstractTableAdapter<ColumnHeaderView, RowHeaderView, CellView>(context) {
+    AbstractTableAdapter<Column, Row, Cell>(context) {
+
+    // -------------- Cell --------------------
+
+    override fun getCellItemViewType(position: Int): Int = 0
+
+    override fun onCreateCellViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder =
+        LayoutInflater.from(parent.context).run {
+            CellNameViewHolder(this.inflate(R.layout.item_table_name_cell, parent, false))
+//            when (viewType) {
+//                NAME_CELL_TYPE ->
+//                DATE_CELL_TYPE -> CellDateViewHolder(
+//                    itemView = this.inflate(R.layout.item_table_date_cell, parent, false)
+//                )
+//                else -> throw RuntimeException("Unknown cell type")
+//            }
+        }
+
+    override fun onBindCellViewHolder(
+        holder: AbstractViewHolder?,
+        cellItemModel: Any?,
+        columnPosition: Int,
+        rowPosition: Int
+    ) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+
+    // -------------- Column --------------------
+
+    override fun getColumnHeaderItemViewType(position: Int): Int = 0
 
     override fun onCreateColumnHeaderViewHolder(
         parent: ViewGroup?,
@@ -35,6 +64,10 @@ class TableAdapter(context: Context) :
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    // -------------- Row --------------------
+
+    override fun getRowHeaderItemViewType(position: Int): Int = 0
+
     override fun onBindRowHeaderViewHolder(
         holder: AbstractViewHolder?,
         rowHeaderItemModel: Any?,
@@ -50,41 +83,16 @@ class TableAdapter(context: Context) :
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getCellItemViewType(position: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
-    override fun onCreateCellViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder =
-        LayoutInflater.from(parent.context).run {
-            when (viewType) {
-                NAME_CELL_TYPE -> CellNameViewHolder(
-                    itemView = this.inflate(R.layout.item_table_name_cell, parent, false)
-                )
-                DATE_CELL_TYPE -> CellDateViewHolder(
-                    itemView = this.inflate(R.layout.item_table_date_cell, parent, false)
-                )
-                else -> throw RuntimeException("Unknown cell type")
-            }
-        }
+
+
 
     override fun onCreateCornerView(): View {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onBindCellViewHolder(
-        holder: AbstractViewHolder?,
-        cellItemModel: Any?,
-        columnPosition: Int,
-        rowPosition: Int
-    ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
-    override fun getColumnHeaderItemViewType(position: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
-    override fun getRowHeaderItemViewType(position: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+
+
 }

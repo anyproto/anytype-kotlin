@@ -3,16 +3,11 @@ package com.agileburo.anytype.ui.table.viewholder.columns
 import android.view.View
 import com.agileburo.anytype.presentation.databaseview.models.Column
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
+import kotlinx.android.synthetic.main.item_table_column_text.view.*
 
-/**
- * Created by Konstantin Ivanov
- * email :  ki@agileburo.com
- * on 2019-11-18.
- */
-class ColumnNumberViewHolder(itemView: View) : AbstractViewHolder(itemView) {
+class ColumnTextViewHolder(itemView: View) : AbstractViewHolder(itemView) {
 
-    fun bind(column: Column.Number) {
-
+    fun bind(column: Column.Text) {
+        itemView.title.text = column.name
     }
-
 }

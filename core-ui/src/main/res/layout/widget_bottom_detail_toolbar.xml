@@ -23,12 +23,12 @@
         android:layout_marginTop="19dp" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginBottom="28dp"
-        tools:itemCount="3"
-        tools:listitem="@layout/item_bottom_detail_toolbar_option"
         android:id="@+id/optionRecycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp" />
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="28dp"
+        tools:itemCount="3"
+        tools:listitem="@layout/item_bottom_detail_toolbar_option" />
 
 </merge>

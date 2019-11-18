@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/taskIcon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="7dp"
+        android:contentDescription="@string/content_description_checkbox_pic"
+        android:src="@drawable/selector_block_checkbox" />
+
+    <TextView
+        android:id="@+id/checkboxContent"
+        style="@style/BlockCheckboxContentStyle"
+        android:layout_marginStart="28dp"
+        tools:text="New front-end based on design" />
+
+</FrameLayout>

@@ -27,6 +27,7 @@ android {
 
 dependencies {
     def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
 
     implementation applicationDependencies.appcompat
     implementation applicationDependencies.kotlin
@@ -35,4 +36,7 @@ dependencies {
     implementation applicationDependencies.recyclerView
     implementation applicationDependencies.constraintLayout
     implementation applicationDependencies.glide
+
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
 }

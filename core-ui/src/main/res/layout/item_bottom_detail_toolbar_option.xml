@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/default_toolbar_option_width"
-    android:clickable="true"
-    android:stateListAnimator="@animator/scale_shrink"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:clickable="true"
+    android:orientation="vertical"
+    android:stateListAnimator="@animator/scale_shrink">
 
     <FrameLayout
         android:layout_width="@dimen/default_toolbar_option_width"

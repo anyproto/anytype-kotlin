@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">core-ui</string>
 
+    <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
+
     <string name="content_description_add_block">Add block button</string>
     <string name="content_description_hide_keyboard_button">Hide keyboard button</string>
     <string name="content_description_show_actions">Show actions</string>
@@ -12,6 +15,12 @@
     <string name="content_description_code">Code</string>
     <string name="content_description_option_picture">Option picture</string>
     <string name="content_description_action_picture">Action picture</string>
+    <string name="content_description_checkbox_pic">Checkbox pic</string>
+    <string name="content_description_page_icon">Page icon</string>
+    <string name="content_description_more_button">More button</string>
+    <string name="content_description_avatar_image">Avatar image</string>
+    <string name="content_description_bookmark_image">Bookmark image</string>
+    <string name="content_description_toggle_icon">Toggle icon</string>
 
     <string name="option_text_text">Text</string>
     <string name="option_text_header_one">Header 1</string>
@@ -56,5 +65,6 @@
     <string name="toolbar_text_color_placeholder">Aa</string>
     <string name="text_color">Text color</string>
     <string name="background_color">Background color</string>
+    <string name="content_description_bookmark_logo">Bookmark logo</string>
 
 </resources>

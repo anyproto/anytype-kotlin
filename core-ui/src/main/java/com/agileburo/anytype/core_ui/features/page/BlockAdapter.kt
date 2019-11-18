@@ -196,6 +196,8 @@ class BlockAdapter(
         }
     }
 
+    override fun getItemViewType(position: Int) = blocks[position].getViewType()
+
     override fun getItemCount(): Int = blocks.size
 
     override fun onBindViewHolder(holder: BlockViewHolder, position: Int) {

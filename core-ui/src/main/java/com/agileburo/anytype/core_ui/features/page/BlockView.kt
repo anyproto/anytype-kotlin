@@ -1,9 +1,28 @@
 package com.agileburo.anytype.core_ui.features.page
 
+import com.agileburo.anytype.core_ui.common.ViewType
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BULLET
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CHECKBOX
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CODE_SNIPPET
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CONTACT
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_ONE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_THREE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_TWO
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_NUMBERED
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TASK
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TEXT
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
+
 /**
  * UI-models for different types of blocks.
  */
-sealed class BlockView {
+sealed class BlockView : ViewType {
 
     /**
      * Each block view has a corresponding block id.
@@ -18,7 +37,9 @@ sealed class BlockView {
     data class Text(
         override val id: String,
         val text: String
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_TEXT
+    }
 
     /**
      * UI-model for a title block.
@@ -28,7 +49,9 @@ sealed class BlockView {
     data class Title(
         override val id: String,
         val text: String
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_TITLE
+    }
 
     /**
      * UI-model for a header block.
@@ -38,7 +61,9 @@ sealed class BlockView {
     data class HeaderOne(
         override val id: String,
         val text: String
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_HEADER_ONE
+    }
 
     /**
      * UI-model for a header block.
@@ -48,7 +73,9 @@ sealed class BlockView {
     data class HeaderTwo(
         override val id: String,
         val text: String
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_HEADER_TWO
+    }
 
     /**
      * UI-model for a header block.
@@ -58,7 +85,9 @@ sealed class BlockView {
     data class HeaderThree(
         override val id: String,
         val text: String
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_HEADER_THREE
+    }
 
     /**
      * UI-model for a code-snippet block.
@@ -68,7 +97,9 @@ sealed class BlockView {
     data class Code(
         override val id: String,
         val snippet: String
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_CODE_SNIPPET
+    }
 
     /**
      * UI-model for checkbox blocks.
@@ -80,7 +111,9 @@ sealed class BlockView {
         override val id: String,
         val text: String,
         val checked: Boolean = false
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_CHECKBOX
+    }
 
     /**
      * UI-model for task blocks.
@@ -92,7 +125,9 @@ sealed class BlockView {
         override val id: String,
         val text: String,
         val checked: Boolean = false
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_TASK
+    }
 
     /**
      * UI-model for items of a bulleted list.
@@ -104,7 +139,9 @@ sealed class BlockView {
         override val id: String,
         val text: String,
         val indent: Int
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_BULLET
+    }
 
     /**
      * UI-model for items of a numbered list.
@@ -118,7 +155,9 @@ sealed class BlockView {
         val text: String,
         val number: String,
         val indent: Int
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_NUMBERED
+    }
 
     /**
      * UI-model for a toggle block.
@@ -132,7 +171,9 @@ sealed class BlockView {
         val text: String,
         val indent: Int,
         val toggled: Boolean = false
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_TOGGLE
+    }
 
     /**
      * UI-model for a contact block.
@@ -144,7 +185,9 @@ sealed class BlockView {
         override val id: String,
         val name: String,
         val avatar: String
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_CONTACT
+    }
 
     /**
      * UI-model for blocks containing files.
@@ -156,7 +199,9 @@ sealed class BlockView {
         override val id: String,
         val size: String,
         val filename: String
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_FILE
+    }
 
     /**
      * UI-model for blocks containing page links.
@@ -172,7 +217,9 @@ sealed class BlockView {
         val emoji: String?,
         val isEmpty: Boolean = false,
         val isArchived: Boolean = false
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_PAGE
+    }
 
     /**
      * UI-model for a divider block.
@@ -180,7 +227,9 @@ sealed class BlockView {
      */
     data class Divider(
         override val id: String
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_DIVIDER
+    }
 
     /**
      * UI-model for a bookmark block
@@ -198,7 +247,9 @@ sealed class BlockView {
         val url: String,
         val logoUrl: String,
         val imageUrl: String
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_BOOKMARK
+    }
 
     /**
      * UI-model for a picture block
@@ -206,5 +257,7 @@ sealed class BlockView {
      */
     data class Picture(
         override val id: String
-    ) : BlockView()
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_PICTURE
+    }
 }

@@ -14,18 +14,24 @@ class DatabaseViewModel(
     private val getDatabase: GetDatabase
 ) : ViewStateViewModel<ViewState<Table>>() {
 
+    fun onViewCreated() {
+        stateData.postValue(ViewState.Init)
+    }
+
     fun getDatabaseView(id: String) {
         getDatabase.invoke(viewModelScope, GetDatabase.Params(id)) { result ->
             result.either(
                 fnL = { e -> Timber.e("Error while getting database for id=$id ${e.message}") },
                 fnR = {
-                    stateData.postValue(ViewState.Success(it.toPresentation())) }
+                    stateData.postValue(ViewState.Success(it.toPresentation()))
+                }
             )
         }
     }
 }
 
 
+@Suppress("UNCHECKED_CAST")
 class DatabaseViewModelFactory(
     private val getDatabase: GetDatabase
 ) : ViewModelProvider.Factory {

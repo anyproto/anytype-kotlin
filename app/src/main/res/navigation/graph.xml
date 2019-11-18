@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
-    app:startDestination="@id/splashScreen">
+    app:startDestination="@id/databaseViewFragment">
     <fragment
         android:id="@+id/desktopScreen"
         android:name="com.agileburo.anytype.ui.desktop.DesktopFragment"
@@ -16,6 +16,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_desktopScreen_to_databaseViewFragment"
+            app:destination="@id/databaseViewFragment" />
     </fragment>
 
     <fragment
@@ -237,5 +240,9 @@
             android:name="com.agileburo.anytype.ui.profile.KeychainPhraseDialog"
             tools:layout="@layout/dialog_keychain_phrase" />
     </navigation>
+    <fragment
+        android:id="@+id/databaseViewFragment"
+        android:name="com.agileburo.anytype.ui.table.DatabaseViewFragment"
+        android:label="DatabaseViewFragment" />
 
 </navigation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <dimen name="default_toast_top_gravity_offset">16dp</dimen>
     <dimen name="default_container_height">24dp</dimen>
     <dimen name="default_container_width">24dp</dimen>
 

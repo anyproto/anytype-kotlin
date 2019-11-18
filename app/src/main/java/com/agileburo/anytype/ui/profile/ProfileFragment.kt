@@ -35,6 +35,7 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
             avatar.bind(blob = blob)
         })
 
+        backButtonContainer.setOnClickListener { vm.onBackButtonClicked() }
     }
 
     override fun render(state: ViewState<ProfileView>) {

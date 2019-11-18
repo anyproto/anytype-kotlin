@@ -86,5 +86,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="back">Back</string>
     <string name="create_a_new_profile">Create a new profile</string>
     <string name="no_peers">No peers</string>
+    <string name="content_description_back_button_icon">Back button icon</string>
 
 </resources>

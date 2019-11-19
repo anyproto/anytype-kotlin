@@ -16,6 +16,7 @@
     <string name="content_description_option_picture">Option picture</string>
     <string name="content_description_action_picture">Action picture</string>
     <string name="content_description_checkbox_pic">Checkbox pic</string>
+    <string name="content_description_task_pic">Task pic</string>
     <string name="content_description_page_icon">Page icon</string>
     <string name="content_description_more_button">More button</string>
     <string name="content_description_avatar_image">Avatar image</string>
@@ -66,5 +67,6 @@
     <string name="text_color">Text color</string>
     <string name="background_color">Background color</string>
     <string name="content_description_bookmark_logo">Bookmark logo</string>
+    <string name="content_description_file_icon">File icon</string>
 
 </resources>

@@ -53,7 +53,7 @@ class Navigator : AppNavigation {
     }
 
     override fun openDocument(id: String) {
-        // TODO
+        navController?.navigate(R.id.pageScreen)
     }
 
     override fun openKeychainScreen() {

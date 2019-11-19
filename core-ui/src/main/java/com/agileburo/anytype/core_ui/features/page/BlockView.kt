@@ -11,6 +11,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_ONE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_THREE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_TWO
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HIGHLIGHT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_NUMBERED
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE
@@ -45,10 +46,12 @@ sealed class BlockView : ViewType {
      * UI-model for a title block.
      * @property id block's id
      * @property text text content (i.e. title text)
+     * @property emoji emoji as a page's logo (if present)
      */
     data class Title(
         override val id: String,
-        val text: String
+        val text: String,
+        val emoji: String? = null
     ) : BlockView() {
         override fun getViewType() = HOLDER_TITLE
     }
@@ -87,6 +90,18 @@ sealed class BlockView : ViewType {
         val text: String
     ) : BlockView() {
         override fun getViewType() = HOLDER_HEADER_THREE
+    }
+
+    /**
+     * UI-model for a highlight block (analogue of quote block)
+     * @property id block's id
+     * @property text block's content
+     */
+    data class Highlight(
+        override val id: String,
+        val text: String
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_HIGHLIGHT
     }
 
     /**

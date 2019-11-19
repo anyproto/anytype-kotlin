@@ -15,6 +15,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_ONE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_THREE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_TWO
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HIGHLIGHT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_NUMBERED
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE
@@ -192,6 +193,15 @@ class BlockAdapter(
                     )
                 )
             }
+            HOLDER_HIGHLIGHT -> {
+                BlockViewHolder.Highlight(
+                    view = inflater.inflate(
+                        R.layout.item_block_highlight,
+                        parent,
+                        false
+                    )
+                )
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -282,7 +292,10 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Picture
                 )
             }
-            is BlockViewHolder.Divider -> {
+            is BlockViewHolder.Highlight -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Highlight
+                )
             }
         }
     }

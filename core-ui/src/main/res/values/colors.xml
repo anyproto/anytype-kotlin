@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="debug">#F44336</color>
     <color name="orange">#FFBB2C</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#2C2B27</color>
@@ -14,6 +15,7 @@
     <color name="toolbar_section_tool">#2AA7EE</color>
     <color name="toolbar_section_media">#F55522</color>
     <color name="toolbar_section_other">#A646C9</color>
+    <color name="block_higlight_divider">#FFB522</color>
 
     <array name="toolbar_color_text_colors">
         <item>#2C2B27</item>

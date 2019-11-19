@@ -4,6 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
     app:startDestination="@id/splashScreen">
+
+    <fragment
+        android:id="@+id/pageScreen"
+        android:name="com.agileburo.anytype.ui.page.PageFragment"
+        android:label="Page screen"
+        tools:layout="@layout/fragment_page" />
+
     <fragment
         android:id="@+id/desktopScreen"
         android:name="com.agileburo.anytype.ui.desktop.DesktopFragment"

@@ -2,6 +2,7 @@ package com.agileburo.anytype.core_ui.features.page
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.agileburo.anytype.core_ui.R
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -11,6 +12,7 @@ import kotlinx.android.synthetic.main.item_block_file.view.*
 import kotlinx.android.synthetic.main.item_block_header_one.view.*
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
+import kotlinx.android.synthetic.main.item_block_highlight.view.*
 import kotlinx.android.synthetic.main.item_block_numbered.view.*
 import kotlinx.android.synthetic.main.item_block_page.view.*
 import kotlinx.android.synthetic.main.item_block_task.view.*
@@ -150,7 +152,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(item: BlockView.Contact) {
             name.text = item.name
-            // TODO set contact avatar
+            avatar.bind(item.name)
         }
     }
 
@@ -174,7 +176,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(item: BlockView.Page) {
             title.text = item.text
-            // TODO set page icon
+            if (item.isEmpty)
+                icon.setImageResource(R.drawable.ic_block_empty_page)
+            else if (item.emoji == null)
+                icon.setBackgroundResource(R.drawable.ic_block_page_without_emoji)
         }
 
     }
@@ -206,6 +211,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Divider(view: View) : BlockViewHolder(view)
 
+    class Highlight(view: View) : BlockViewHolder(view) {
+
+        private val content = itemView.highlightContent
+
+        fun bind(item: BlockView.Highlight) {
+            content.text = item.text
+        }
+
+    }
+
     companion object {
         const val HOLDER_TEXT = 0
         const val HOLDER_TITLE = 1
@@ -224,5 +239,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_BOOKMARK = 14
         const val HOLDER_PICTURE = 15
         const val HOLDER_DIVIDER = 16
+        const val HOLDER_HIGHLIGHT = 17
     }
 }

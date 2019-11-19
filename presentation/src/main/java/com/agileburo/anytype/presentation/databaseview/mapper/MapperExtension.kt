@@ -2,7 +2,7 @@ package com.agileburo.anytype.presentation.databaseview.mapper
 
 import com.agileburo.anytype.domain.database.model.DatabaseView
 import com.agileburo.anytype.domain.database.model.Property
-import com.agileburo.anytype.domain.database.model.View
+import com.agileburo.anytype.domain.database.model.DisplayView
 import com.agileburo.anytype.domain.database.model.ViewType
 import com.agileburo.anytype.presentation.databaseview.models.*
 
@@ -38,7 +38,7 @@ fun ViewType.toPresentation(): TableType =
         ViewType.LIST -> TableType.LIST
     }
 
-fun View.toPresentation(): Representation {
+fun DisplayView.toPresentation(): Representation {
     return Representation(
         id = this.id,
         name = this.name,
@@ -50,7 +50,7 @@ fun DatabaseView.toPresentation(): Table =
     Table(
         id = this.content.view,
         column = this.content.properties.map { it.toPresentation() },
-        representations = this.content.views.map { it.toPresentation() },
+        representations = this.content.displayViews.map { it.toPresentation() },
         cell = this.content.data.map { hashMap: HashMap<String, Any> ->
             findTypeOfData(
                 map = hashMap,

@@ -17,7 +17,7 @@ data class Filter(
     val value: Any
 )
 
-data class View(
+data class DisplayView(
     val id: String,
     val name: String,
     val type: ViewType,
@@ -28,7 +28,7 @@ data class View(
 data class ContentDatabaseView(
     val view: String,
     val properties: List<Property>,
-    val views: List<View>,
+    val displayViews: List<DisplayView>,
     val data: List<HashMap<String, Any>>
 )
 

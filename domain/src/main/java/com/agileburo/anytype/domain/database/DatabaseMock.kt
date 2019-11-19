@@ -92,7 +92,7 @@ object DatabaseMock {
         val data = listOf(data1, data2, data3, data4, data5)
 
         val views = listOf(
-            View(
+            DisplayView(
                 id = "1",
                 type = ViewType.GRID,
                 name = "Table",
@@ -115,7 +115,7 @@ object DatabaseMock {
             data = data,
             properties = properties,
             view = "452088",
-            views = views
+            displayViews = views
         )
 
         return DatabaseView(content = contentDatabaseView)

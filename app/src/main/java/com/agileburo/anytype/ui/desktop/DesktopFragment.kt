@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_utils.ui.ViewState
@@ -72,10 +71,7 @@ class DesktopFragment : ViewStateFragment<ViewState<List<DesktopView>>>(R.layout
                     layoutManager = GridLayoutManager(context, 2)
                     adapter = desktopAdapter
                 }
-                fab.setOnClickListener {
-                    findNavController().navigate(R.id.action_desktopScreen_to_databaseViewFragment)
-                    //vm.onAddNewDocumentClicked()
-                }
+                fab.setOnClickListener { vm.onAddNewDocumentClicked() }
                 profileImage.setOnClickListener { vm.onProfileClicked() }
             }
             is ViewState.Success -> {

@@ -15,7 +15,6 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 class TableAdapter(context: Context) :
     AbstractTableAdapter<Column, Row, Cell>(context) {
 
-
     // -------------- Cell --------------------
 
     override fun getCellItemViewType(position: Int): Int = 0
@@ -81,8 +80,7 @@ class TableAdapter(context: Context) :
         columnPosition: Int,
         rowPosition: Int
     ) {}
-
-
+    
     // -------------- Column --------------------
 
     override fun getColumnHeaderItemViewType(position: Int): Int =

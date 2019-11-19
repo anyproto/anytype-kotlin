@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="debug">#F44336</color>
+    <color name="orange">#FFBB2C</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#2C2B27</color>
+
+    <color name="default_bottom_detail_toolbar_background_color">#F3F2EC</color>
+    <color name="chapter_default">#FFFFFF</color>
+    <color name="chapter_yellow">#ECD91B</color>
+    <color name="default_toolbar_option_stroke_color">#DFDDD0</color>
+
+    <color name="toolbar_section_text">#ECD91B</color>
+    <color name="toolbar_section_list">#FFB522</color>
+    <color name="toolbar_section_tool">#2AA7EE</color>
+    <color name="toolbar_section_media">#F55522</color>
+    <color name="toolbar_section_other">#A646C9</color>
+    <color name="block_higlight_divider">#FFB522</color>
+
+    <array name="toolbar_color_text_colors">
+        <item>#2C2B27</item>
+        <item>#ACA996</item>
+        <item>#ECD91B</item>
+        <item>#FFB522</item>
+        <item>#F55522</item>
+        <item>#E51CA0</item>
+        <item>#AB50CC</item>
+        <item>#3E58EB</item>
+        <item>#2AA7EE</item>
+        <item>#83CF36</item>
+    </array>
+
+    <array name="toolbar_color_background_colours">
+        <item>@android:color/transparent</item>
+        <item>#F3F2EC</item>
+        <item>#FEF9CC</item>
+        <item>#FEF3C5</item>
+        <item>#FFEBE5</item>
+        <item>#FEE3F5</item>
+        <item>#F4E3FA</item>
+        <item>#E4E7FC</item>
+        <item>#D6EFFD</item>
+        <item>#D6F5F3</item>
+        <item>#E3F7D0</item>
+    </array>
+
+</resources>

@@ -3,7 +3,7 @@ package com.agileburo.anytype.domain.common
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
-object DataFactory {
+object MockDataFactory {
 
     fun randomUuid(): String {
         return UUID.randomUUID().toString()

@@ -1,6 +1,5 @@
 package com.agileburo.anytype.ui.desktop
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -14,16 +13,15 @@ import com.agileburo.anytype.presentation.desktop.DesktopViewModel
 import com.agileburo.anytype.presentation.desktop.DesktopViewModelFactory
 import com.agileburo.anytype.presentation.profile.ProfileView
 import com.agileburo.anytype.ui.base.ViewStateFragment
-import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_desktop.*
-import java.io.ByteArrayInputStream
 import javax.inject.Inject
 
 
 class DesktopFragment : ViewStateFragment<ViewState<List<DesktopView>>>(R.layout.fragment_desktop) {
 
     private val profileObserver = Observer<ProfileView> { profile ->
-        desktopTitle.text = getString(R.string.greet, profile.name)
+        greeting.text = getString(R.string.greet, profile.name)
+        avatar.bind(name = profile.name)
     }
 
     private val vm by lazy {
@@ -49,19 +47,7 @@ class DesktopFragment : ViewStateFragment<ViewState<List<DesktopView>>>(R.layout
         vm.profile.observe(this, profileObserver)
         vm.onViewCreated()
 
-        vm.image.observe(this, Observer { blob ->
-
-            val stream = ByteArrayInputStream(blob)
-
-            Glide
-                .with(this)
-                .load(BitmapFactory.decodeStream(stream))
-                .centerInside()
-                .circleCrop()
-                .into(profileImage)
-
-            stream.close()
-        })
+        vm.image.observe(this, Observer { blob -> avatar.bind(blob) })
     }
 
     override fun render(state: ViewState<List<DesktopView>>) {
@@ -72,7 +58,7 @@ class DesktopFragment : ViewStateFragment<ViewState<List<DesktopView>>>(R.layout
                     adapter = desktopAdapter
                 }
                 fab.setOnClickListener { vm.onAddNewDocumentClicked() }
-                profileImage.setOnClickListener { vm.onProfileClicked() }
+                avatar.setOnClickListener { vm.onProfileClicked() }
             }
             is ViewState.Success -> {
                 desktopAdapter.update(state.data)

@@ -45,22 +45,22 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="editor_toolbar">button</string>
 
 
-    <string name="start_login_text">Secure, private \nand free \ncommunication \nplatform</string>
+    <string name="start_login_text">With Anytype you can write notes and documents, manage tasks, share files and save important content from the web.</string>
     <string name="login">Login</string>
     <string name="sign_up">Sign up</string>
-    <string name="type_your_keychain">Type your keychain phrase</string>
+    <string name="type_your_keychain">or Type your keychain phrase</string>
     <string name="login_with_keychain">Login with keychain</string>
     <string name="or_scan_qr_code">or Scan QR code</string>
     <string name="choose_pin_code">Choose pin code</string>
     <string name="congratulations">Congratulations</string>
-    <string name="let_us_start">Let\'s start</string>
+    <string name="let_us_start">Let\'s start!</string>
     <string name="you_ve_created_your_first_profile">You\'ve created your first profile!</string>
     <string name="it_s_stored_on_your_device_and_nobody_will_know_about_it_until_you_share_it">It\'s stored on your device and nobody will know about it until you share it!</string>
     <string name="choose_profile">Choose profile</string>
     <string name="logout">Logout</string>
     <string name="add_profile">Add profile</string>
     <string name="add_name_and_profile_picture">Add your name \nand profile picture</string>
-    <string name="type_your_name">Type your name</string>
+    <string name="type_your_name">Enter your name</string>
     <string name="create_profile">Create profile</string>
     <string name="t">T</string>
     <string name="do_it_later">Do it later</string>
@@ -80,5 +80,12 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
 
     <string name="greet">Hi, %1$s!</string>
+    <string name="organize_everything">Organize everything</string>
+    <string name="setting_up_the_wallet">Setting up the wallet...</string>
+    <string name="sign_clock">⏳</string>
+    <string name="back">Back</string>
+    <string name="create_a_new_profile">Create a new profile</string>
+    <string name="no_peers">No peers</string>
+    <string name="content_description_back_button_icon">Back button icon</string>
 
 </resources>

@@ -30,6 +30,10 @@ class KeychainLoginViewModel(
         proceedWithRecoveringWallet(chain)
     }
 
+    fun onBackButtonPressed() {
+        navigation.postValue(Event(AppNavigation.Command.Exit))
+    }
+
     private fun proceedWithRecoveringWallet(chain: String) {
 
         state.postValue(ViewState.Loading)
@@ -60,7 +64,7 @@ class KeychainLoginViewModel(
         ) { result ->
             result.either(
                 fnR = {
-                    navigation.postValue(Event(AppNavigation.Command.ChooseAccountScreen))
+                    navigation.postValue(Event(AppNavigation.Command.SelectAccountScreen))
                 },
                 fnL = { Timber.e(it, "Error while saving mnemonic: $mnemonic") }
             )

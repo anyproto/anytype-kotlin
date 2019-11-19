@@ -6,7 +6,7 @@ import com.agileburo.anytype.domain.auth.model.AuthStatus
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.common.CoroutineTestRule
-import com.agileburo.anytype.domain.common.DataFactory
+import com.agileburo.anytype.domain.common.MockDataFactory
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -53,8 +53,8 @@ class CheckAuthorizationStatusTest {
     fun `should return authorized status if account list is not empty`() = runBlocking {
 
         val account = Account(
-            name = DataFactory.randomString(),
-            id = DataFactory.randomString(),
+            name = MockDataFactory.randomString(),
+            id = MockDataFactory.randomString(),
             avatar = null
         )
 

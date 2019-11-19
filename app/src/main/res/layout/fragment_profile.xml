@@ -7,13 +7,22 @@
     android:background="@drawable/gradient_rectangle"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
-        android:src="@drawable/ic_profile_back" />
+    <FrameLayout
+        android:id="@+id/backButtonContainer"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="12dp">
+
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/content_description_back_button_icon"
+            android:src="@drawable/ic_profile_back" />
+
+    </FrameLayout>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -27,16 +36,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/pic"
+            <com.agileburo.anytype.core_ui.widgets.AvatarWidget
+                android:id="@+id/avatar"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
+                android:background="@drawable/circle_solid_default"
+                android:contentDescription="@string/description_profile_picture"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:contentDescription="@string/description_profile_picture"
-                android:src="@drawable/circle_red"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:text_size="@dimen/default_avatar_text_size" />
 
             <TextView
                 android:id="@+id/name"
@@ -50,7 +60,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/pic"
+                app:layout_constraintTop_toBottomOf="@+id/avatar"
                 tools:text="Anton Pronkin" />
 
             <TextView

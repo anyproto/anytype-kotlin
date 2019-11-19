@@ -6,10 +6,14 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI
+import android.view.Gravity
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.extensions.toast
 import com.agileburo.anytype.core_utils.ext.hideKeyboard
 import com.agileburo.anytype.core_utils.ext.invisible
 import com.agileburo.anytype.core_utils.ext.parsePath
@@ -41,6 +45,7 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
             vm.onCreateProfileClicked(nameInputField.text.toString())
         }
         profileIconPlaceholder.setOnClickListener { proceedWithImagePick() }
+        backButton.setOnClickListener { vm.onBackButtonClicked() }
     }
 
     override fun onDestroyView() {
@@ -51,6 +56,15 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupNavigation()
+        vm.error.observe(this, Observer(this::showError))
+    }
+
+    private fun showError(error: String) {
+        requireActivity().toast(
+            msg = error,
+            gravity = Gravity.TOP,
+            duration = Toast.LENGTH_SHORT
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

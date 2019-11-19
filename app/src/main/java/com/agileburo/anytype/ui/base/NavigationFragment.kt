@@ -29,7 +29,7 @@ abstract class NavigationFragment(
             is Command.ChoosePinCodeScreen -> navigation.choosePinCode()
             is Command.CongratulationScreen -> navigation.congratulation()
             is Command.EnterKeyChainScreen -> navigation.enterKeychain()
-            is Command.ChooseAccountScreen -> navigation.chooseAccount()
+            is Command.SelectAccountScreen -> navigation.chooseAccount()
             is Command.WorkspaceScreen -> navigation.workspace()
             is Command.SetupNewAccountScreen -> navigation.setupNewAccount()
             is Command.SetupSelectedAccountScreen -> navigation.setupSelectedAccount(command.id)
@@ -37,6 +37,7 @@ abstract class NavigationFragment(
             is Command.OpenProfile -> navigation.openProfile()
             is Command.OpenDocument -> navigation.openDocument(command.id)
             is Command.OpenKeychainScreen -> navigation.openKeychainScreen()
+            is Command.Exit -> navigation.exit()
         }
     }
 

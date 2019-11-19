@@ -35,8 +35,7 @@ inline fun <reified T> MutableList<T>.shiftDown(srcIndex: Int, dstIndex: Int) =
         }
     }
 
-fun Context.toast(msg: CharSequence) =
-    Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+fun Context.toast(msg: CharSequence) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
 
 fun View.showKeyboard() {
     val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

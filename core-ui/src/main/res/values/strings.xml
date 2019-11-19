@@ -1,0 +1,72 @@
+<resources>
+    <string name="app_name">core-ui</string>
+
+    <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
+
+    <string name="content_description_add_block">Add block button</string>
+    <string name="content_description_hide_keyboard_button">Hide keyboard button</string>
+    <string name="content_description_show_actions">Show actions</string>
+    <string name="content_description_show_colors">Show colors</string>
+    <string name="content_description_bold_text">Bold text</string>
+    <string name="content_description_italic_text">Italic text</string>
+    <string name="content_description_strike_through_text">Strike-through text</string>
+    <string name="content_description_link">Link</string>
+    <string name="content_description_code">Code</string>
+    <string name="content_description_option_picture">Option picture</string>
+    <string name="content_description_action_picture">Action picture</string>
+    <string name="content_description_checkbox_pic">Checkbox pic</string>
+    <string name="content_description_task_pic">Task pic</string>
+    <string name="content_description_page_icon">Page icon</string>
+    <string name="content_description_more_button">More button</string>
+    <string name="content_description_avatar_image">Avatar image</string>
+    <string name="content_description_bookmark_image">Bookmark image</string>
+    <string name="content_description_toggle_icon">Toggle icon</string>
+
+    <string name="option_text_text">Text</string>
+    <string name="option_text_header_one">Header 1</string>
+    <string name="option_text_header_two">Header 2</string>
+    <string name="option_text_header_three">Header 3</string>
+    <string name="option_text_highlighted">Highlighted</string>
+
+    <string name="option_list_checkbox">Checkbox</string>
+    <string name="option_list_bulleted_list">Bulleted list</string>
+    <string name="option_list_numbered_list">Numbered list</string>
+    <string name="option_list_toggle_list">Toggle list</string>
+
+    <string name="option_tool_task">Task</string>
+    <string name="option_tool_page">Page</string>
+    <string name="option_tool_database">Database</string>
+    <string name="option_tool_set">Set</string>
+    <string name="option_tool_contact">Contact</string>
+    <string name="option_tool_existing_tool">Existing Tool</string>
+
+    <string name="option_media_file">File</string>
+    <string name="option_media_picture">Picture</string>
+    <string name="option_media_video">Video</string>
+    <string name="option_media_bookmark">Bookmark</string>
+    <string name="option_media_code">Code</string>
+
+    <string name="option_other_divider">Divider</string>
+
+    <string name="toolbar_section_text">Text</string>
+    <string name="toolbar_section_list">List</string>
+    <string name="toolbar_section_other">Other</string>
+    <string name="toolbar_section_tool">Tool</string>
+    <string name="toolbar_section_media">Media</string>
+
+    <string name="toolbar_action_delete">Delete</string>
+    <string name="toolbar_action_duplicate">Duplicate</string>
+    <string name="toolbar_action_mention">Mention</string>
+    <string name="toolbar_action_share">Share</string>
+    <string name="toolbar_action_undo">Undo</string>
+    <string name="toolbar_action_redo">Redo</string>
+
+    <string name="actions">Actions</string>
+    <string name="toolbar_text_color_placeholder">Aa</string>
+    <string name="text_color">Text color</string>
+    <string name="background_color">Background color</string>
+    <string name="content_description_bookmark_logo">Bookmark logo</string>
+    <string name="content_description_file_icon">File icon</string>
+
+</resources>

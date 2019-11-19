@@ -36,7 +36,6 @@ class SelectAccountFragment : NavigationFragment(R.layout.fragment_select_accoun
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logoutButton.setOnClickListener { vm.onLogoutClicked() }
 
         profileRecycler.apply {
             layoutManager = LinearLayoutManager(requireContext())

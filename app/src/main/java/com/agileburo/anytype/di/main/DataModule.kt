@@ -9,7 +9,7 @@ import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.auth.repo.PathProvider
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.auth.AuthMiddleware
-import com.agileburo.anytype.middleware.interactor.Handler
+import com.agileburo.anytype.middleware.interactor.EventHandler
 import com.agileburo.anytype.middleware.interactor.Middleware
 import com.agileburo.anytype.repo.DefaultAuthCache
 import dagger.Module
@@ -105,7 +105,7 @@ class DataModule {
     @Provides
     @Singleton
     fun provideEventProxy(): EventProxy {
-        return Handler()
+        return EventHandler()
     }
 
     @Provides

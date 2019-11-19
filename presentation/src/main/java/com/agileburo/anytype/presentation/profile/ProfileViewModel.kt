@@ -22,8 +22,7 @@ class ProfileViewModel(
 ) : ViewStateViewModel<ViewState<ProfileView>>(), SupportNavigation<Event<AppNavigation.Command>> {
 
     private val _image = MutableLiveData<ByteArray>()
-    val image: LiveData<ByteArray>
-        get() = _image
+    val image: LiveData<ByteArray> = _image
 
     override val navigation: MutableLiveData<Event<AppNavigation.Command>> = MutableLiveData()
 
@@ -33,7 +32,7 @@ class ProfileViewModel(
     }
 
     fun onBackButtonClicked() {
-        // TODO dispatch navigation command
+        navigation.postValue(Event(AppNavigation.Command.Exit))
     }
 
     fun onAddProfileClicked() {

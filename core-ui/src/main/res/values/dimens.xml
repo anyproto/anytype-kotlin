@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="default_toast_top_gravity_offset">16dp</dimen>
+    <dimen name="default_container_height">24dp</dimen>
+    <dimen name="default_container_width">24dp</dimen>
+
+    <dimen name="default_avatar_text_size">21sp</dimen>
+
+    <dimen name="default_toolbar_height">48dp</dimen>
+
+    <dimen name="default_toolbar_section_radius">16dp</dimen>
+    <dimen name="default_toolbar_section_height">24dp</dimen>
+    <dimen name="default_toolbar_section_text_size">13sp</dimen>
+    <dimen name="default_toolbar_section_padding_top">2dp</dimen>
+    <dimen name="default_toolbar_section_padding_bottom">2dp</dimen>
+    <dimen name="default_toolbar_section_padding_start">16dp</dimen>
+    <dimen name="default_toolbar_section_padding_end">16dp</dimen>
+
+    <dimen name="default_toolbar_option_height">64dp</dimen>
+    <dimen name="default_toolbar_option_width">64dp</dimen>
+    <dimen name="default_toolbar_option_corner_radius">10dp</dimen>
+
+    <dimen name="default_toolbar_action_height">64dp</dimen>
+    <dimen name="default_toolbar_action_width">64dp</dimen>
+    <dimen name="default_toolbar_action_corner_radius">10dp</dimen>
+    <dimen name="default_toolbar_action_text_size">11sp</dimen>
+
+    <dimen name="default_bottom_toolbar_option_text_size">11sp</dimen>
+    <dimen name="default_bottom_toolbar_option_item_spacing">8dp</dimen>
+    <dimen name="default_bottom_toolbar_option_item_spacing_first">16dp</dimen>
+    <dimen name="default_bottom_toolbar_option_item_spacing_last">16dp</dimen>
+
+    <dimen name="default_toolbar_section_item_spacing">8dp</dimen>
+    <dimen name="default_toolbar_section_item_spacing_first">16dp</dimen>
+    <dimen name="default_toolbar_section_item_spacing_last">16dp</dimen>
+
+    <dimen name="default_toolbar_action_item_spacing">8dp</dimen>
+    <dimen name="default_toolbar_action_item_spacing_first">16dp</dimen>
+    <dimen name="default_toolbar_action_item_spacing_last">16dp</dimen>
+
+    <dimen name="default_toolbar_text_color_item_height">48dp</dimen>
+    <dimen name="default_toolbar_text_color_item_width">64dp</dimen>
+    <dimen name="default_toolbar_color_item_spacing_first">16dp</dimen>
+    <dimen name="default_toolbar_color_item_spacing_last">16dp</dimen>
+    <dimen name="default_toolbar_background_color_item_height">48dp</dimen>
+    <dimen name="default_toolbar_background_color_item_width">64dp</dimen>
+    <dimen name="default_toolbar_background_color_content_radius">2dp</dimen>
+    <dimen name="default_toolbar_background_color_container_radius">10dp</dimen>
+    <dimen name="default_toolbar_color_item_divider_width">1dp</dimen>
+    <dimen name="default_toolbar_color_placeholder_text_size">22sp</dimen>
+
+</resources>

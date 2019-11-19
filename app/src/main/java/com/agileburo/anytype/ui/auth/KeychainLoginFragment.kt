@@ -80,7 +80,8 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
                 chain = keychainInputField.text.toString()
             )
         }
-        qrCodeButton.setOnClickListener { vm.onScanQrCodeClicked() }
+        qrLoginButton.setOnClickListener { vm.onScanQrCodeClicked() }
+        backButton.setOnClickListener { vm.onBackButtonPressed() }
     }
 
     override fun injectDependencies() {

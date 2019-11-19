@@ -3,7 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
-    app:startDestination="@id/databaseViewFragment">
+    app:startDestination="@id/splashScreen">
+
+    <fragment
+        android:id="@+id/pageScreen"
+        android:name="com.agileburo.anytype.ui.page.PageFragment"
+        android:label="Page screen"
+        tools:layout="@layout/fragment_page" />
+
     <fragment
         android:id="@+id/desktopScreen"
         android:name="com.agileburo.anytype.ui.desktop.DesktopFragment"
@@ -38,6 +45,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_open_keychain"
+            app:destination="@id/keychainDialog" />
     </fragment>
     <fragment
         android:id="@+id/createAccountScreen"
@@ -106,6 +116,12 @@
             app:popUpTo="@+id/login_nav"
             app:popUpToInclusive="true" />
     </fragment>
+
+    <dialog
+        android:id="@+id/keychainDialog"
+        android:name="com.agileburo.anytype.ui.profile.KeychainPhraseDialog"
+        tools:layout="@layout/dialog_keychain_phrase" />
+
     <navigation
         android:id="@+id/login_nav"
         app:startDestination="@id/startLoginScreen">
@@ -235,10 +251,6 @@
             android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.pin.ConfirmPinCodeFragment"
             android:label="StartLoginFragment"
             tools:layout="@layout/fragment_confirm_pin_code" />
-        <dialog
-            android:id="@+id/keychainDialog"
-            android:name="com.agileburo.anytype.ui.profile.KeychainPhraseDialog"
-            tools:layout="@layout/dialog_keychain_phrase" />
     </navigation>
     <fragment
         android:id="@+id/databaseViewFragment"

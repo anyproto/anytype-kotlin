@@ -22,14 +22,11 @@ class DatabaseViewModel(
         getDatabase.invoke(viewModelScope, GetDatabase.Params(id)) { result ->
             result.either(
                 fnL = { e -> Timber.e("Error while getting database for id=$id ${e.message}") },
-                fnR = {
-                    stateData.postValue(ViewState.Success(it.toPresentation()))
-                }
+                fnR = { stateData.postValue(ViewState.Success(it.toPresentation())) }
             )
         }
     }
 }
-
 
 @Suppress("UNCHECKED_CAST")
 class DatabaseViewModelFactory(

@@ -8,7 +8,6 @@ import com.agileburo.anytype.R
 import com.agileburo.anytype.presentation.databaseview.models.Cell
 import com.agileburo.anytype.presentation.databaseview.models.Column
 import com.agileburo.anytype.presentation.databaseview.models.Row
-import com.agileburo.anytype.ui.table.viewholder.cells.CellTitleViewHolder
 import com.agileburo.anytype.ui.table.viewholder.columns.*
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
@@ -23,12 +22,57 @@ class TableAdapter(context: Context) :
 
     override fun onCreateCellViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder =
         LayoutInflater.from(parent.context).run {
-            CellTitleViewHolder(
-                itemView = this.toView(
-                    R.layout.item_table_name_cell,
-                    parent
-                )
-            )
+            when (viewType) {
+                VIEW_TYPE_TITLE ->
+                    ColumnTitleViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_title, parent)
+                    )
+                VIEW_TYPE_TEXT ->
+                    ColumnTextViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_text, parent)
+                    )
+                VIEW_TYPE_NUMBER ->
+                    ColumnNumberViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_number, parent)
+                    )
+                VIEW_TYPE_DATE ->
+                    ColumnDateViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_date, parent)
+                    )
+                VIEW_TYPE_ACCOUNT ->
+                    ColumnAccountViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_account, parent)
+                    )
+                VIEW_TYPE_SELECT ->
+                    ColumnSelectViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_select, parent)
+                    )
+                VIEW_TYPE_MULTIPLE ->
+                    ColumnMultipleViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_multiple, parent)
+                    )
+                VIEW_TYPE_LINK ->
+                    ColumnLinkViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_link, parent)
+                    )
+                VIEW_TYPE_PHONE ->
+                    ColumnPhoneViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_phone, parent)
+                    )
+                VIEW_TYPE_EMAIL ->
+                    ColumnEmailViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_email, parent)
+                    )
+                VIEW_TYPE_BOOL ->
+                    ColumnBoolViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_bool, parent)
+                    )
+                VIEW_TYPE_FILE ->
+                    ColumnFileViewHolder(
+                        itemView = this.toView(R.layout.item_table_cell_file, parent)
+                    )
+                else -> throw RuntimeException(Throwable("Unknown view type!"))
+            }
         }
 
     override fun onBindCellViewHolder(
@@ -36,9 +80,7 @@ class TableAdapter(context: Context) :
         cellItemModel: Any?,
         columnPosition: Int,
         rowPosition: Int
-    ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    ) {}
 
 
     // -------------- Column --------------------
@@ -120,11 +162,7 @@ class TableAdapter(context: Context) :
         holder: AbstractViewHolder?,
         columnHeaderItemModel: Any?,
         columnPosition: Int
-    ) {
-        when (holder) {
-
-        }
-    }
+    ) {}
 
     // -------------- Row --------------------
 

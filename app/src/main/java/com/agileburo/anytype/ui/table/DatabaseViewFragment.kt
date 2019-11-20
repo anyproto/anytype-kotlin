@@ -20,9 +20,6 @@ class DatabaseViewFragment : ViewStateFragment<ViewState<Table>>(R.layout.fragme
     @Inject
     lateinit var factory: DatabaseViewModelFactory
 
-    @Inject
-    lateinit var adapter: TableAdapter
-
     private val vm by lazy {
         ViewModelProviders
             .of(this, factory)
@@ -38,13 +35,13 @@ class DatabaseViewFragment : ViewStateFragment<ViewState<Table>>(R.layout.fragme
     override fun render(state: ViewState<Table>) {
         when (state) {
             is ViewState.Init -> {
-                tableView.adapter = this.adapter
+                tableView.adapter = TableAdapter(requireContext())
                 vm.getDatabaseView(id = TEST_ID)
             }
 
             is ViewState.Success -> {
-                adapter.setColumnHeaderItems(state.data.column)
-                adapter.setCellItems(state.data.cell)
+                tableView.adapter.setColumnHeaderItems(state.data.column)
+                tableView.adapter.setCellItems(state.data.cell)
             }
         }
     }

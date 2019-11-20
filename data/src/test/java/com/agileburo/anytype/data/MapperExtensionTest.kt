@@ -89,13 +89,15 @@ class MapperExtensionTest {
             avatar = Image(
                 id = MockDataFactory.randomUuid(),
                 sizes = listOf(Image.Size.SMALL, Image.Size.LARGE)
-            )
+            ),
+            color = MockDataFactory.randomString()
         )
 
         account.toEntity().let { result ->
             assertTrue { result.id == account.id }
             assertTrue { result.name == account.name }
             assertTrue { result.avatar != null }
+            assertTrue { result.color == account.color }
 
             result.avatar?.let { avatar ->
                 assertTrue { avatar.sizes.size == 2 }
@@ -114,13 +116,15 @@ class MapperExtensionTest {
             avatar = ImageEntity(
                 id = MockDataFactory.randomUuid(),
                 sizes = listOf(ImageEntity.Size.SMALL, ImageEntity.Size.LARGE)
-            )
+            ),
+            color = MockDataFactory.randomString()
         )
 
         account.toDomain().let { result ->
             assertTrue { result.id == account.id }
             assertTrue { result.name == account.name }
             assertTrue { result.avatar != null }
+            assertTrue { result.color == account.color }
 
             result.avatar?.let { avatar ->
                 assertTrue { avatar.sizes.size == 2 }

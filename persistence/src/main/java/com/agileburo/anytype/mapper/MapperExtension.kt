@@ -13,7 +13,8 @@ fun AccountTable.toEntity(): AccountEntity {
                 id = cached.avatarId,
                 sizes = cached.sizes.map { it.toEntity() }
             )
-        }
+        },
+        color = color
     )
 }
 

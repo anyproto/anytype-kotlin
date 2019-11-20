@@ -1,113 +1,264 @@
 syntax = "proto3";
-package anytype;
-option go_package = "pb";
+package anytype.model;
+option go_package = "github.com/anytypeio/go-anytype-library/pb/model";
 
-message Account {
+import "google/protobuf/struct.proto";
+
+message Block {
     string id = 1;
-    string name = 2;
-    Image avatar = 3;
+    google.protobuf.Struct fields = 2;
+    Permissions permissions = 3;
+    repeated string childrenIds = 4;
+
+    message Permissions {
+        bool read = 1;
+        bool edit = 2;
+        bool remove = 3;
+        bool drag = 4;
+        bool dropOn = 5;
+    }
+
+    enum Position {
+        Before = 0;
+        After = 1;
+    }
+
+    oneof content {
+        Content.Dashboard dashboard = 11;
+        Content.Page page = 12;
+        Content.Dataview dataview = 13;
+
+        Content.Text text = 14;
+        Content.Video video = 15;
+        Content.Image image = 16;
+        Content.File file = 17;
+        Content.Layout layout = 18;
+        Content.Div div = 19;
+        Content.Bookmark bookmark = 20;
+        Content.Icon icon = 21;
+    }
+
+    message Content {
+        /*
+     * Layout have no visual representation, but affects on blocks, that it contains.
+     * Row/Column layout blocks creates only automatically, after some of a D&D operations, for example
+    */
+        message Layout {
+            Style style = 1;
+
+            enum Style {
+                Row = 0;
+                Column = 1;
+            }
+        }
+
+        /*
+     * Divider: block, that contains only one horizontal thin line
+    */
+        message Div {
+        }
+
+        /*
+     * Bookmark is to keep a web-link and to preview a content.
+    */
+        message Bookmark {
+            // Model.Link.Preview preview = 1;
+        }
+
+        message Icon {
+            string name = 1;
+        }
+
+        /*
+     * Block type to organize pages on the main screen (main purpose)
+     * It also can be mounted on a page.
+    */
+        message Dashboard {
+            enum Style {
+                MainScreen = 0;
+                Archive = 1;
+            }
+
+            Style style = 1;
+        }
+
+        message Dataview {
+            // ...
+        }
+
+        message Text {
+            string text = 1;
+            Style style = 2;
+            repeated Mark marks = 3; // list of marks to apply to the text
+
+            bool toggleable = 4; // can be toggled or not
+            Marker marker = 5; // if no – it's not a list. If number/bullet – it should be a list with its list-siblings.
+
+            bool checkable = 6; // can be checked or not
+            bool checked = 7;
+
+            message Marks {
+                repeated Mark marks = 1;
+            }
+
+            message Mark {
+                Range range = 1; // range of symbols to apply this mark. From(symbol) To(symbol)
+                Type type = 2;
+                string param = 3; // link, color, etc
+
+                enum Type {
+                    Strikethrough = 0;
+                    Keyboard = 1;
+                    Italic = 2;
+                    Bold = 3;
+                    U = 4;
+                }
+            }
+
+            enum Style {
+                P = 0;
+                H1 = 1;
+                H2 = 2;
+                H3 = 3;
+                U = 4;
+                Quote = 5;
+                Code = 6;
+                Title = 7;
+            }
+
+            enum Marker {
+                None = 0;
+                Number = 1;
+                Bullet = 2;
+            }
+        }
+
+        message Video {
+            string localFilePath = 1;
+            State state = 2;
+            Preview preview = 3;
+
+            message Preview {
+                string name = 1;
+                string icon = 2;
+                int32 width = 3;
+            }
+
+            enum State {
+                Empty = 0; // There is no video and preview, it's an empty block, that waits videos.
+                Uploading = 1; // There is stil no video/preview, but video already uploading
+                PreviewDownloaded = 2; // Video exists, preview downloaded, but video – not.
+                Downloading = 3; // Video exists, preview downloaded, but video downloading
+                Done = 4; // Video and preview downloaded
+            }
+        }
+
+        message Image {
+            string localFilePath = 1;
+            State state = 2;
+            Preview preview = 3;
+
+            message Preview {
+                string name = 1;
+                string icon = 2;
+                int32 width = 3;
+            }
+
+            enum State {
+                Empty = 0; // There is no image and preview, it's an empty block, that waits image.
+                Uploading = 1; // There is stil no image/preview, but image already uploading
+                PreviewDownloaded = 2; // Image exists, preview downloaded, but image – not.
+                Downloading = 3; // Image exists, preview downloaded, but image downloading
+                Done = 4; // Image and preview downloaded
+            }
+        }
+
+        message File {
+            string localFilePath = 1; // Path to the file on a local machine
+            State state = 2;
+            Preview preview = 3; // Content to show before the main content downloaded
+
+            message Preview {
+                string name = 1;
+                string icon = 2;
+            }
+
+            enum State {
+                Empty = 0; // There is no file and preview, it's an empty block, that waits files.
+                Uploading = 1; // There is still no file/preview, but file already uploading
+                PreviewDownloaded = 2; // File exists, preview downloaded, but file is not.
+                Downloading = 3; // File exists, preview downloaded, but file downloading
+                Done = 4; // File and preview downloaded
+            }
+        }
+
+        message Page {
+            enum Style {
+                Empty = 0; // Ordinary page, without additional fields
+                Task = 1; // Page with a task fields
+                Set = 2; // Page, that organize a set of blocks by a specific criterio
+                // ...
+            }
+
+            Style style = 1;
+        }
+    }
 }
 
-message IpfsLink {
-    string cid = 1;
-    string name = 2;
-    uint64 size = 3;
+/*
+* General purpose structure, uses in Mark.
+*/
+message Range {
+    int32 from = 1;
+    int32 to = 2;
 }
 
-enum ImageSize {
-    LARGE = 0;
-    SMALL = 1;
-    THUMB = 2;
+/**
+* Contains basic information about a user account
+*/
+message Account {
+    string id = 1; // User's thread id
+    string name = 2; // User name, that associated with this account
+    Avatar avatar = 3; // Avatar of a user's account
+
+    /**
+* Avatar of a user's account. It could be an image or color
+*/
+    message Avatar {
+        oneof avatar {
+            Image image = 1; // Image of the avatar. Contains hash and size
+            string color = 2; // Color of the avatar, if no image
+        }
+    }
 }
 
 message Image {
     string id = 1;
-    repeated ImageSize sizes = 2;
-}
+    repeated Size sizes = 2;
+    Style style = 3;
 
-message IpfsLinks {
-    repeated IpfsLink links = 1;
-}
+    enum Size {
+        Large = 0;
+        Small = 1;
+        Thumb = 2;
+    }
 
-message Accounts {
-    repeated Account accounts = 1;
-}
-
-message State {
-    repeated DocumentHeader documentHeaders = 1;
-    string currentDocumentId = 2;
-}
-
-message DocumentHeader {
-    string id = 1;
-    string name = 2;
-    string version = 3;
-    string icon = 4;
-}
-
-message Document {
-    DocumentHeader header = 1;
-    repeated Block blocks = 2;
-}
-
-message Text {
-    string content = 1;
-    repeated Mark marks = 2;
-    ContentType contentType = 3;
-}
-
-message Mark {
-    MarkType type = 1;
-}
-
-message Block {
-    string id = 1;
-    oneof content {
-        Text text = 11;
-        // ...
+    enum Style {
+        Picture = 0;
+        File = 1;
     }
 }
 
-enum StatusType {
-    SUCCESS = 0;
-    FAILURE = 1;
-    WRONG_MNEMONIC = 2;
-    NOT_FOUND = 3;
-    // ...
-}
+message Video {
+    string id = 1;
+    repeated Size sizes = 2;
 
-enum MarkType {
-    B = 0;
-    I = 1;
-    S = 2;
-    KBD = 3;
-    A = 4;
-}
-
-enum ContentType {
-    P = 0;
-    CODE = 1;
-    H_1 = 2;
-    H_2 = 3;
-    H_3 = 4;
-    H_4 = 5;
-    OL = 6;
-    UL = 7;
-    QUOTE = 8;
-    TOGGLE = 9;
-    CHECK = 10;
-}
-
-enum BlockType {
-    H_GRID = 0;
-    V_GRID = 1;
-    EDITABLE = 2;
-    DIV = 3;
-    VIDEO = 4;
-    IMAGE = 5;
-    PAGE = 6;
-    NEW_PAGE = 7;
-    BOOK_MARK = 8;
-    FILE = 9;
-    DATA_VIEW = 10;
+    enum Size {
+        SD360p = 0;
+        SD480p = 1;
+        HD720p = 2;
+        HD1080p = 3;
+        UHD1440p = 4;
+        UHD2160p = 5;
+    }
 }

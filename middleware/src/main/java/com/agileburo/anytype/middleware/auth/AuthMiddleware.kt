@@ -1,6 +1,7 @@
 package com.agileburo.anytype.middleware.auth
 
 import anytype.Events
+import anytype.model.Models
 import com.agileburo.anytype.data.auth.model.AccountEntity
 import com.agileburo.anytype.data.auth.model.WalletEntity
 import com.agileburo.anytype.data.auth.repo.AuthRemote
@@ -24,7 +25,10 @@ class AuthMiddleware(
         AccountEntity(
             id = response.id,
             name = response.name,
-            avatar = response.avatar?.toEntity()
+            avatar = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.IMAGE)
+                response.avatar.image.toEntity() else null,
+            color = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.COLOR)
+                response.avatar.color else null
         )
     }
 
@@ -36,7 +40,10 @@ class AuthMiddleware(
             AccountEntity(
                 id = response.id,
                 name = response.name,
-                avatar = response.avatar.toEntity()
+                avatar = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.IMAGE)
+                    response.avatar.image.toEntity() else null,
+                color = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.COLOR)
+                    response.avatar.color else null
             )
         }
     }
@@ -47,8 +54,8 @@ class AuthMiddleware(
 
     override fun observeAccounts() = events
         .flow()
-        .filter { event -> event.messageCase == Events.Event.MessageCase.ACCOUNTADD }
-        .map { event -> event.accountAdd.toAccountEntity() }
+        .filter { event -> event.messageCase == Events.Event.MessageCase.ACCOUNTSHOW }
+        .map { event -> event.accountShow.toAccountEntity() }
 
     override suspend fun createWallet(
         path: String

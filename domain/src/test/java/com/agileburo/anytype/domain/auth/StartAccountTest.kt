@@ -47,7 +47,8 @@ class StartAccountTest {
         val account = Account(
             id = id,
             name = MockDataFactory.randomString(),
-            avatar = null
+            avatar = null,
+            color = null
         )
 
         repo.stub {
@@ -87,7 +88,8 @@ class StartAccountTest {
         val account = Account(
             id = id,
             name = MockDataFactory.randomString(),
-            avatar = null
+            avatar = null,
+            color = null
         )
 
         repo.stub {

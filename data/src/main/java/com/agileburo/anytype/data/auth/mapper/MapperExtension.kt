@@ -11,7 +11,8 @@ fun AccountEntity.toDomain(): Account {
     return Account(
         id = id,
         name = name,
-        avatar = avatar?.toDomain()
+        avatar = avatar?.toDomain(),
+        color = color
     )
 }
 
@@ -19,7 +20,8 @@ fun Account.toEntity(): AccountEntity {
     return AccountEntity(
         id = id,
         name = name,
-        avatar = avatar?.toEntity()
+        avatar = avatar?.toEntity(),
+        color = color
     )
 }
 

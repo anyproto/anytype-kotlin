@@ -1,0 +1,113 @@
+syntax = "proto3";
+package anytype;
+option go_package = "pb";
+import "models.proto";
+import "google/protobuf/struct.proto";
+
+/*
+ * Change contains single block change or list of block changes.
+*/
+message Change {
+    /*
+    * Change.Block contains only one, single change for one block.
+    */
+    message Block {
+        message Fields {
+            google.protobuf.Struct fields = 1;
+        }
+
+        message Permissions {
+            anytype.model.Block.Permissions permissions = 1;
+        }
+
+        message ChildrenIds {
+            repeated string childrenIds = 1;
+        }
+
+        message Content {
+            message Page {
+                oneof change {
+                    anytype.model.Block.Content.Page.Style style = 1;
+                    anytype.model.Block block = 2;
+                }
+            }
+
+            message Dashboard {
+                oneof change {
+                    anytype.model.Block.Content.Dashboard.Style style = 1;
+                    anytype.model.Block block = 2;
+                }
+            }
+
+            message File {
+                oneof change {
+                    string content = 1;
+                    anytype.model.Block.Content.File.State state = 2;
+                    anytype.model.Block.Content.File.Preview preview = 3;
+                }
+            }
+
+            message Image {
+                oneof change {
+                    string content = 1;
+                    anytype.model.Block.Content.Image.State state = 2;
+                    anytype.model.Block.Content.Image.Preview preview = 3;
+                }
+            }
+
+            message Video {
+                oneof change {
+                    string content = 1;
+                    anytype.model.Block.Content.Video.State state = 2;
+                    anytype.model.Block.Content.Video.Preview preview = 3;
+                }
+            }
+
+            message Text {
+                oneof change {
+                    string text = 1;
+                    anytype.model.Block.Content.Text.Style style = 2;
+                    anytype.model.Block.Content.Text.Marks marks = 3;
+
+                    bool toggleable = 4;
+                    anytype.model.Block.Content.Text.Marker marker = 5;
+
+                    bool checkable = 6;
+                    bool checked = 7;
+                }
+            }
+        }
+    }
+
+    /*
+    * Change.Single contains only one, single change, but for a list of blocks.
+    */
+    message Single {
+        message BlocksList {
+            repeated string id = 1;
+            anytype.model.Account author = 2;
+            oneof change {
+                Block.Content.Text text = 3;
+                Block.Fields fields = 4;
+                Block.Permissions premissions = 5;
+                Block.ChildrenIds childrenIds = 6;
+                Block.Content.Page page = 7;
+                Block.Content.Dashboard dashboard = 8;
+                Block.Content.Video video = 9;
+                Block.Content.Image image = 10;
+                Block.Content.File file = 11;
+            }
+        }
+    }
+
+    /*
+    * Change.Multiple contains array of changes, for a list of blocks each.
+    */
+    message Multiple {
+        message BlocksList {
+            anytype.model.Account author = 1;
+            repeated Single.BlocksList changes = 2;
+        }
+    }
+
+}

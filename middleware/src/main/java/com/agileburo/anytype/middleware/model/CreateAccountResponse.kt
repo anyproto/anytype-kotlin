@@ -1,9 +1,9 @@
 package com.agileburo.anytype.middleware.model
 
-import anytype.Models
+import anytype.model.Models.Account.Avatar
 
 class CreateAccountResponse(
     val id: String,
     val name: String,
-    val avatar: Models.Image
+    val avatar: Avatar
 )

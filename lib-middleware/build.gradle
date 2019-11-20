@@ -1,2 +1,12 @@
 configurations.maybeCreate("default")
 artifacts.add("default", file('lib.aar'))
+
+ext {
+    middleware_library_version = '0.0.8-rc2'
+}
+
+task version {
+    doLast {
+        println "Middleware library : " + middleware_library_version
+    }
+}

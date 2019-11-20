@@ -43,7 +43,8 @@ class ObserveAccountsTest {
         val account = Account(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
-            avatar = null
+            avatar = null,
+            color = null
         )
 
         repo.stub {
@@ -63,12 +64,14 @@ class ObserveAccountsTest {
                 Account(
                     id = MockDataFactory.randomUuid(),
                     name = MockDataFactory.randomString(),
-                    avatar = null
+                    avatar = null,
+                    color = null
                 ),
                 Account(
                     id = MockDataFactory.randomUuid(),
                     name = MockDataFactory.randomString(),
-                    avatar = null
+                    avatar = null,
+                    color = null
                 )
             )
 

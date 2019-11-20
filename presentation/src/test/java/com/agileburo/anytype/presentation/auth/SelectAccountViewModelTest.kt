@@ -70,7 +70,8 @@ class SelectAccountViewModelTest {
             avatar = Image(
                 id = MockDataFactory.randomUuid(),
                 sizes = listOf(Image.Size.SMALL)
-            )
+            ),
+            color = null
         )
 
         val accounts = listOf(account).asFlow()
@@ -113,7 +114,8 @@ class SelectAccountViewModelTest {
             avatar = Image(
                 id = MockDataFactory.randomUuid(),
                 sizes = listOf(Image.Size.SMALL)
-            )
+            ),
+            color = null
         )
 
         val secondAccount = Account(
@@ -122,7 +124,8 @@ class SelectAccountViewModelTest {
             avatar = Image(
                 id = MockDataFactory.randomUuid(),
                 sizes = listOf(Image.Size.SMALL)
-            )
+            ),
+            color = null
         )
 
         val accounts = flow {
@@ -174,7 +177,8 @@ class SelectAccountViewModelTest {
             avatar = Image(
                 id = MockDataFactory.randomUuid(),
                 sizes = listOf(Image.Size.SMALL)
-            )
+            ),
+            color = null
         )
 
         val secondAccount = Account(
@@ -183,7 +187,8 @@ class SelectAccountViewModelTest {
             avatar = Image(
                 id = MockDataFactory.randomUuid(),
                 sizes = listOf(Image.Size.SMALL)
-            )
+            ),
+            color = null
         )
 
         val accounts = flow {

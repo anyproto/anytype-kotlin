@@ -41,7 +41,8 @@ class CreateAccountTest {
         val account = Account(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
-            avatar = null
+            avatar = null,
+            color = null
         )
 
         val param = CreateAccount.Params(

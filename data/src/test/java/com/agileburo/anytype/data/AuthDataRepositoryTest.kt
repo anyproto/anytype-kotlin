@@ -46,7 +46,8 @@ class AuthDataRepositoryTest {
         val account = AccountEntity(
             id = id,
             name = MockDataFactory.randomString(),
-            avatar = null
+            avatar = null,
+            color = null
         )
 
         authRemote.stub {
@@ -78,7 +79,8 @@ class AuthDataRepositoryTest {
         val account = AccountEntity(
             id = name,
             name = MockDataFactory.randomString(),
-            avatar = null
+            avatar = null,
+            color = null
         )
 
         authRemote.stub {
@@ -120,7 +122,8 @@ class AuthDataRepositoryTest {
         val account = Account(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
-            avatar = null
+            avatar = null,
+            color = null
         )
 
         authCache.stub {
@@ -160,7 +163,8 @@ class AuthDataRepositoryTest {
         val account = AccountEntity(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
-            avatar = null
+            avatar = null,
+            color = null
         )
 
         authCache.stub {
@@ -226,7 +230,8 @@ class AuthDataRepositoryTest {
         val account = AccountEntity(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
-            avatar = null
+            avatar = null,
+            color = null
         )
 
         val accounts = listOf(account)

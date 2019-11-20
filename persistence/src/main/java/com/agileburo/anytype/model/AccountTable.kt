@@ -12,6 +12,7 @@ data class AccountTable(
     @PrimaryKey val id: String,
     val name: String,
     val timestamp: Long,
+    val color: String? = null,
     @Embedded val avatar: Avatar? = null
 ) {
 

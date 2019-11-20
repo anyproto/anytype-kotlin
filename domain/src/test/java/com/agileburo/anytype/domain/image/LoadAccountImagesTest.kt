@@ -31,7 +31,8 @@ class LoadAccountImagesTest {
         val account = Account(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomUuid(),
-            avatar = null
+            avatar = null,
+            color = null
         )
 
         val blob = ByteArray(0)
@@ -67,7 +68,8 @@ class LoadAccountImagesTest {
             avatar = Image(
                 id = MockDataFactory.randomUuid(),
                 sizes = listOf(Image.Size.SMALL)
-            )
+            ),
+            color = null
         )
 
         val blob = ByteArray(0)
@@ -103,7 +105,8 @@ class LoadAccountImagesTest {
             avatar = Image(
                 id = MockDataFactory.randomUuid(),
                 sizes = listOf(Image.Size.SMALL)
-            )
+            ),
+            color = null
         )
 
         val secondAccount = Account(
@@ -112,7 +115,8 @@ class LoadAccountImagesTest {
             avatar = Image(
                 id = MockDataFactory.randomUuid(),
                 sizes = listOf(Image.Size.SMALL)
-            )
+            ),
+            color = null
         )
 
         val blob = ByteArray(0)
@@ -150,7 +154,8 @@ class LoadAccountImagesTest {
             avatar = Image(
                 id = MockDataFactory.randomUuid(),
                 sizes = sizes
-            )
+            ),
+            color = null
         )
 
         val params = LoadAccountImages.Params(
@@ -175,7 +180,8 @@ class LoadAccountImagesTest {
             avatar = Image(
                 id = MockDataFactory.randomUuid(),
                 sizes = listOf(Image.Size.SMALL)
-            )
+            ),
+            color = null
         )
 
         val params = LoadAccountImages.Params(

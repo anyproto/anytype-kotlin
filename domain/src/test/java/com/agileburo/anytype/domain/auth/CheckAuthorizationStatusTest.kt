@@ -55,7 +55,8 @@ class CheckAuthorizationStatusTest {
         val account = Account(
             name = MockDataFactory.randomString(),
             id = MockDataFactory.randomString(),
-            avatar = null
+            avatar = null,
+            color = null
         )
 
         repo.stub {

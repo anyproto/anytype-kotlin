@@ -4,35 +4,26 @@ import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
 import com.agileburo.anytype.middleware.model.SelectAccountResponse;
 
-import anytype.Commands.AccountCreateRequest;
-import anytype.Commands.AccountCreateResponse;
-import anytype.Commands.AccountRecoverRequest;
-import anytype.Commands.AccountRecoverResponse;
-import anytype.Commands.AccountSelectRequest;
-import anytype.Commands.AccountSelectResponse;
-import anytype.Commands.ImageGetBlobRequest;
-import anytype.Commands.ImageGetBlobResponse;
-import anytype.Commands.WalletCreateRequest;
-import anytype.Commands.WalletCreateResponse;
-import anytype.Commands.WalletRecoverRequest;
-import anytype.Commands.WalletRecoverResponse;
-import anytype.Models;
+import anytype.Commands.Rpc.Account;
+import anytype.Commands.Rpc.Ipfs.Image;
+import anytype.Commands.Rpc.Wallet;
+import anytype.model.Models;
 import lib.Lib;
 
 public class Middleware {
 
     public CreateWalletResponse createWallet(String path) throws Exception {
 
-        WalletCreateRequest request = WalletCreateRequest
+        Wallet.Create.Request request = Wallet.Create.Request
                 .newBuilder()
                 .setRootPath(path)
                 .build();
 
         byte[] encodedResponse = Lib.walletCreate(request.toByteArray());
 
-        WalletCreateResponse response = WalletCreateResponse.parseFrom(encodedResponse);
+        Wallet.Create.Response response = Wallet.Create.Response.parseFrom(encodedResponse);
 
-        if (response.getError() != null && response.getError().getCode() != WalletCreateResponse.Error.Code.NULL) {
+        if (response.getError() != null && response.getError().getCode() != Wallet.Create.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return new CreateWalletResponse(response.getMnemonic());
@@ -41,18 +32,18 @@ public class Middleware {
 
     public CreateAccountResponse createAccount(String name, String path) throws Exception {
 
-        AccountCreateRequest request;
+        Account.Create.Request request;
 
         if (path != null) {
-            request = AccountCreateRequest
+            request = Account.Create.Request
                     .newBuilder()
-                    .setUsername(name)
+                    .setName(name)
                     .setAvatarLocalPath(path)
                     .build();
         } else {
-            request = AccountCreateRequest
+            request = Account.Create.Request
                     .newBuilder()
-                    .setUsername(name)
+                    .setName(name)
                     .build();
         }
 
@@ -60,9 +51,9 @@ public class Middleware {
 
         byte[] encodedResponse = Lib.accountCreate(encodedRequest);
 
-        AccountCreateResponse response = AccountCreateResponse.parseFrom(encodedResponse);
+        Account.Create.Response response = Account.Create.Response.parseFrom(encodedResponse);
 
-        if (response.getError() != null && response.getError().getCode() != AccountCreateResponse.Error.Code.NULL) {
+        if (response.getError() != null && response.getError().getCode() != Account.Create.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return new CreateAccountResponse(
@@ -75,7 +66,7 @@ public class Middleware {
 
     public void recoverWallet(String path, String mnemonic) throws Exception {
 
-        WalletRecoverRequest request = WalletRecoverRequest
+        Wallet.Recover.Request request = Wallet.Recover.Request
                 .newBuilder()
                 .setMnemonic(mnemonic)
                 .setRootPath(path)
@@ -89,16 +80,16 @@ public class Middleware {
         if (encodedResponse == null)
             return;
 
-        WalletRecoverResponse response = WalletRecoverResponse.parseFrom(encodedResponse);
+        Wallet.Recover.Response response = Wallet.Recover.Response.parseFrom(encodedResponse);
 
-        if (response.getError() != null && response.getError().getCode() != WalletRecoverResponse.Error.Code.NULL) {
+        if (response.getError() != null && response.getError().getCode() != Wallet.Recover.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         }
     }
 
     public void recoverAccount() throws Exception {
 
-        AccountRecoverRequest request = AccountRecoverRequest
+        Account.Recover.Request request = Account.Recover.Request
                 .newBuilder()
                 .build();
 
@@ -110,16 +101,16 @@ public class Middleware {
         if (encodedResponse == null)
             return;
 
-        AccountRecoverResponse response = AccountRecoverResponse.parseFrom(encodedResponse);
+        Account.Recover.Response response = Account.Recover.Response.parseFrom(encodedResponse);
 
-        if (response.getError() != null && response.getError().getCode() != AccountRecoverResponse.Error.Code.NULL) {
+        if (response.getError() != null && response.getError().getCode() != Account.Recover.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         }
     }
 
     public SelectAccountResponse selectAccount(String id, String path) throws Exception {
 
-        AccountSelectRequest request = AccountSelectRequest
+        Account.Select.Request request = Account.Select.Request
                 .newBuilder()
                 .setId(id)
                 .setRootPath(path)
@@ -129,9 +120,9 @@ public class Middleware {
 
         byte[] encodedResponse = Lib.accountSelect(encodedRequest);
 
-        AccountSelectResponse response = AccountSelectResponse.parseFrom(encodedResponse);
+        Account.Select.Response response = Account.Select.Response.parseFrom(encodedResponse);
 
-        if (response.getError() != null && response.getError().getCode() != AccountSelectResponse.Error.Code.NULL) {
+        if (response.getError() != null && response.getError().getCode() != Account.Select.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return new SelectAccountResponse(
@@ -142,9 +133,9 @@ public class Middleware {
         }
     }
 
-    public byte[] loadImage(String id, Models.ImageSize size) throws Exception {
+    public byte[] loadImage(String id, Models.Image.Size size) throws Exception {
 
-        ImageGetBlobRequest request = ImageGetBlobRequest
+        Image.Get.Blob.Request request = Image.Get.Blob.Request
                 .newBuilder()
                 .setId(id)
                 .setSize(size)
@@ -154,9 +145,9 @@ public class Middleware {
 
         byte[] encodedResponse = Lib.imageGetBlob(encodedRequest);
 
-        ImageGetBlobResponse response = ImageGetBlobResponse.parseFrom(encodedResponse);
+        Image.Get.Blob.Response response = Image.Get.Blob.Response.parseFrom(encodedResponse);
 
-        if (response.getError() != null && response.getError().getCode() != ImageGetBlobResponse.Error.Code.NULL) {
+        if (response.getError() != null && response.getError().getCode() != Image.Get.Blob.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return response.getBlob().toByteArray();

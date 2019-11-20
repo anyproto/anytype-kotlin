@@ -1,7 +1,7 @@
 package com.agileburo.anytype.ui.table.viewholder.columns
 
 import android.view.View
-import com.agileburo.anytype.presentation.databaseview.models.Column
+import com.agileburo.anytype.presentation.databaseview.models.ColumnView
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 
 /**
@@ -11,7 +11,7 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
  */
 class ColumnEmailViewHolder(itemView: View) : AbstractViewHolder(itemView) {
 
-    fun bind(column: Column.Email) {
+    fun bind(column: ColumnView.Email) {
 
     }
 }

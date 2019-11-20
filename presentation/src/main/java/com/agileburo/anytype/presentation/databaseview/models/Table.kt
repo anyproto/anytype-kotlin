@@ -4,8 +4,8 @@ enum class TableType { GRID, BOARD, GALLERY, LIST }
 
 data class Table(
     val id: String,
-    val column: List<Column>,
-    val cell: List<List<Cell>>,
+    val column: List<ColumnView>,
+    val cell: List<List<CellView>>,
     val representations: List<Representation>
 )
 

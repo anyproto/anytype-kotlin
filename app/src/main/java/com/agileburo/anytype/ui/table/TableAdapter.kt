@@ -5,19 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.agileburo.anytype.R
-import com.agileburo.anytype.presentation.databaseview.models.Cell
-import com.agileburo.anytype.presentation.databaseview.models.Column
-import com.agileburo.anytype.presentation.databaseview.models.Row
+import com.agileburo.anytype.presentation.databaseview.models.CellView
+import com.agileburo.anytype.presentation.databaseview.models.ColumnView
+import com.agileburo.anytype.presentation.databaseview.models.RowView
 import com.agileburo.anytype.ui.table.viewholder.columns.*
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 
+const val VIEW_TYPE_DEFAULT = 0
+
 class TableAdapter(context: Context) :
-    AbstractTableAdapter<Column, Row, Cell>(context) {
+    AbstractTableAdapter<ColumnView, RowView, CellView>(context) {
 
     // -------------- Cell --------------------
 
-    override fun getCellItemViewType(position: Int): Int = 0
+    override fun getCellItemViewType(position: Int): Int = VIEW_TYPE_DEFAULT
 
     override fun onCreateCellViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder =
         LayoutInflater.from(parent.context).run {
@@ -85,18 +87,18 @@ class TableAdapter(context: Context) :
 
     override fun getColumnHeaderItemViewType(position: Int): Int =
         when (mColumnHeaderItems[position]) {
-            is Column.Title -> VIEW_TYPE_TITLE
-            is Column.Text -> VIEW_TYPE_TEXT
-            is Column.Number -> VIEW_TYPE_NUMBER
-            is Column.Date -> VIEW_TYPE_DATE
-            is Column.Select -> VIEW_TYPE_SELECT
-            is Column.Multiple -> VIEW_TYPE_MULTIPLE
-            is Column.Account -> VIEW_TYPE_ACCOUNT
-            is Column.File -> VIEW_TYPE_FILE
-            is Column.Bool -> VIEW_TYPE_BOOL
-            is Column.Link -> VIEW_TYPE_LINK
-            is Column.Email -> VIEW_TYPE_EMAIL
-            is Column.Phone -> VIEW_TYPE_PHONE
+            is ColumnView.Title -> VIEW_TYPE_TITLE
+            is ColumnView.Text -> VIEW_TYPE_TEXT
+            is ColumnView.Number -> VIEW_TYPE_NUMBER
+            is ColumnView.Date -> VIEW_TYPE_DATE
+            is ColumnView.Select -> VIEW_TYPE_SELECT
+            is ColumnView.Multiple -> VIEW_TYPE_MULTIPLE
+            is ColumnView.Account -> VIEW_TYPE_ACCOUNT
+            is ColumnView.File -> VIEW_TYPE_FILE
+            is ColumnView.Bool -> VIEW_TYPE_BOOL
+            is ColumnView.Link -> VIEW_TYPE_LINK
+            is ColumnView.Email -> VIEW_TYPE_EMAIL
+            is ColumnView.Phone -> VIEW_TYPE_PHONE
         }
 
     override fun onCreateColumnHeaderViewHolder(
@@ -164,7 +166,7 @@ class TableAdapter(context: Context) :
 
     // -------------- Row --------------------
 
-    override fun getRowHeaderItemViewType(position: Int): Int = 0
+    override fun getRowHeaderItemViewType(position: Int): Int = VIEW_TYPE_DEFAULT
 
     override fun onBindRowHeaderViewHolder(
         holder: AbstractViewHolder?,

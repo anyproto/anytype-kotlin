@@ -6,28 +6,28 @@ import com.agileburo.anytype.domain.database.model.DisplayView
 import com.agileburo.anytype.domain.database.model.ViewType
 import com.agileburo.anytype.presentation.databaseview.models.*
 
-fun Property.toPresentation(): Column =
+fun Property.toPresentation(): ColumnView =
     when (this) {
-        is Property.Title -> Column.Title(id = this.id, name = this.name)
-        is Property.Number -> Column.Number(id = this.id, name = this.name)
-        is Property.Text -> Column.Text(id = this.id, name = this.name)
-        is Property.Date -> Column.Date(id = this.id, name = this.name)
-        is Property.Select -> Column.Select(id = this.id, name = this.name, select = this.select)
-        is Property.Multiple -> Column.Multiple(
+        is Property.Title -> ColumnView.Title(id = this.id, name = this.name)
+        is Property.Number -> ColumnView.Number(id = this.id, name = this.name)
+        is Property.Text -> ColumnView.Text(id = this.id, name = this.name)
+        is Property.Date -> ColumnView.Date(id = this.id, name = this.name)
+        is Property.Select -> ColumnView.Select(id = this.id, name = this.name, select = this.select)
+        is Property.Multiple -> ColumnView.Multiple(
             id = this.id,
             name = this.name,
             multiSelect = this.multiSelect
         )
-        is Property.Account -> Column.Account(
+        is Property.Account -> ColumnView.Account(
             id = this.id,
             name = this.name,
             accounts = this.accounts
         )
-        is Property.File -> Column.File(id = this.id, name = this.name)
-        is Property.Bool -> Column.Bool(id = this.id, name = this.name)
-        is Property.Link -> Column.Link(id = this.id, name = this.name)
-        is Property.Email -> Column.Email(id = this.id, name = this.name)
-        is Property.Phone -> Column.Phone(id = this.id, name = this.name)
+        is Property.File -> ColumnView.File(id = this.id, name = this.name)
+        is Property.Bool -> ColumnView.Bool(id = this.id, name = this.name)
+        is Property.Link -> ColumnView.Link(id = this.id, name = this.name)
+        is Property.Email -> ColumnView.Email(id = this.id, name = this.name)
+        is Property.Phone -> ColumnView.Phone(id = this.id, name = this.name)
     }
 
 fun ViewType.toPresentation(): TableType =
@@ -59,26 +59,26 @@ fun DatabaseView.toPresentation(): Table =
         }
     )
 
-fun findTypeOfData(map: HashMap<String, Any>, properties: List<Property>): List<Cell> {
-    val cells = mutableListOf<Cell>()
+fun findTypeOfData(map: HashMap<String, Any>, properties: List<Property>): List<CellView> {
+    val cells = mutableListOf<CellView>()
     map.keys.forEach { key: String ->
         properties.firstOrNull { it.id == key }?.let { property ->
             cells.add(
                 when (property) {
-                    is Property.Title -> Cell.Title(title = (map[key] as String))
-                    is Property.Text -> Cell.Text(text = (map[key] as String))
-                    is Property.Number -> Cell.Number(number = (map[key] as String))
-                    is Property.Date -> Cell.Date(date = (map[key] as Int))
-                    is Property.Select -> Cell.Select(select = (map[key] as String))
+                    is Property.Title -> CellView.Title(title = (map[key] as String))
+                    is Property.Text -> CellView.Text(text = (map[key] as String))
+                    is Property.Number -> CellView.Number(number = (map[key] as String))
+                    is Property.Date -> CellView.Date(date = (map[key] as Int))
+                    is Property.Select -> CellView.Select(select = (map[key] as String))
                     //todo add proper casting
-                    is Property.Multiple -> Cell.Multiple(multiple = (map[key] as Array<String>))
+                    is Property.Multiple -> CellView.Multiple(multiple = (map[key] as Array<String>))
                     //todo add cast to HashMap
-                    is Property.Account -> Cell.Account(accounts = hashMapOf())
-                    is Property.File -> Cell.File(file = (map[key] as String))
-                    is Property.Bool -> Cell.Checked(isChecked = (map[key] as Boolean))
-                    is Property.Link -> Cell.Link(link = (map[key] as String))
-                    is Property.Email -> Cell.Email(email = (map[key] as String))
-                    is Property.Phone -> Cell.Phone(phone = (map[key] as String))
+                    is Property.Account -> CellView.Account(accounts = hashMapOf())
+                    is Property.File -> CellView.File(file = (map[key] as String))
+                    is Property.Bool -> CellView.Checked(isChecked = (map[key] as Boolean))
+                    is Property.Link -> CellView.Link(link = (map[key] as String))
+                    is Property.Email -> CellView.Email(email = (map[key] as String))
+                    is Property.Phone -> CellView.Phone(phone = (map[key] as String))
                 }
             )
         }

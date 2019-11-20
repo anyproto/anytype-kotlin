@@ -50,6 +50,11 @@ android {
             debuggable true
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 ext {
@@ -92,6 +97,7 @@ dependencies {
     implementation applicationDependencies.timber
     implementation applicationDependencies.gson
     implementation applicationDependencies.rxRelay
+    implementation applicationDependencies.tableView
 
     implementation applicationDependencies.viewModel
     implementation applicationDependencies.viewModelExtensions

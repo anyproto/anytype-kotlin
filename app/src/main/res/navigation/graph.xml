@@ -23,6 +23,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_desktopScreen_to_databaseViewFragment"
+            app:destination="@id/databaseViewFragment" />
     </fragment>
 
     <fragment
@@ -249,5 +252,9 @@
             android:label="StartLoginFragment"
             tools:layout="@layout/fragment_confirm_pin_code" />
     </navigation>
+    <fragment
+        android:id="@+id/databaseViewFragment"
+        android:name="com.agileburo.anytype.ui.table.DatabaseViewFragment"
+        android:label="DatabaseViewFragment" />
 
 </navigation>

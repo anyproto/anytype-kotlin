@@ -17,4 +17,8 @@
     <dimen name="auth_default_icon_circle_diameter">64dp</dimen>
     <dimen name="auth_default_button_text_size">15sp</dimen>
 
+
+    <dimen name="table_column_header_height">16dp</dimen>
+    <dimen name="table_row_header_width">16dp</dimen>
+
 </resources>

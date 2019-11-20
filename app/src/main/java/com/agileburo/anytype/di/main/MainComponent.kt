@@ -18,4 +18,5 @@ interface MainComponent {
     fun splashComponentBuilder(): SplashSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
     fun desktopComponentBuilder(): DesktopSubComponent.Builder
+    fun databaseViewComponentBuilder(): DatabaseViewSubComponent.Builder
 }

@@ -85,6 +85,13 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val databaseViewComponent = Component {
+        main
+            .databaseViewComponentBuilder()
+            .databaseViewModule(DatabaseViewModule())
+            .build()
+    }
+
     class Component<T>(private val builder: () -> T) {
 
         private var instance: T? = null

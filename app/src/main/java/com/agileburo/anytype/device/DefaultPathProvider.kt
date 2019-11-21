@@ -1,7 +1,7 @@
 package com.agileburo.anytype.device
 
 import android.content.Context
-import com.agileburo.anytype.domain.auth.repo.PathProvider
+import com.agileburo.anytype.domain.device.PathProvider
 
 class DefaultPathProvider(
     private val context: Context

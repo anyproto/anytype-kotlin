@@ -1,11 +1,11 @@
 package com.agileburo.anytype.feature_desktop.utils
 
 import androidx.recyclerview.widget.DiffUtil
-import com.agileburo.anytype.presentation.desktop.DesktopView
+import com.agileburo.anytype.presentation.desktop.DashboardView
 
 class DesktopDiffUtil(
-    private val old: List<DesktopView>,
-    private val new: List<DesktopView>
+    private val old: List<DashboardView>,
+    private val new: List<DashboardView>
 ) : DiffUtil.Callback() {
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -13,7 +13,7 @@ class DesktopDiffUtil(
         val oldItem = old[oldItemPosition]
         val newItem = new[newItemPosition]
 
-        if (oldItem is DesktopView.Document && newItem is DesktopView.Document)
+        if (oldItem is DashboardView.Document && newItem is DashboardView.Document)
             return oldItem.id == newItem.id
         else
             throw IllegalStateException("Unexpected state")
@@ -26,6 +26,6 @@ class DesktopDiffUtil(
         val oldItem = old[oldItemPosition]
         val newItem = new[newItemPosition]
 
-        return (oldItem as DesktopView.Document) == (newItem as DesktopView.Document)
+        return (oldItem as DashboardView.Document) == (newItem as DashboardView.Document)
     }
 }

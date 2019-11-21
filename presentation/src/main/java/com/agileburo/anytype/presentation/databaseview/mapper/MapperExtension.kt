@@ -1,8 +1,8 @@
 package com.agileburo.anytype.presentation.databaseview.mapper
 
 import com.agileburo.anytype.domain.database.model.DatabaseView
-import com.agileburo.anytype.domain.database.model.Property
 import com.agileburo.anytype.domain.database.model.DisplayView
+import com.agileburo.anytype.domain.database.model.Property
 import com.agileburo.anytype.domain.database.model.ViewType
 import com.agileburo.anytype.presentation.databaseview.models.*
 
@@ -12,7 +12,11 @@ fun Property.toPresentation(): ColumnView =
         is Property.Number -> ColumnView.Number(id = this.id, name = this.name)
         is Property.Text -> ColumnView.Text(id = this.id, name = this.name)
         is Property.Date -> ColumnView.Date(id = this.id, name = this.name)
-        is Property.Select -> ColumnView.Select(id = this.id, name = this.name, select = this.select)
+        is Property.Select -> ColumnView.Select(
+            id = this.id,
+            name = this.name,
+            select = this.select
+        )
         is Property.Multiple -> ColumnView.Multiple(
             id = this.id,
             name = this.name,

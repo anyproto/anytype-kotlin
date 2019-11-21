@@ -1,11 +1,13 @@
 package com.agileburo.anytype.data.auth.mapper
 
 import com.agileburo.anytype.data.auth.model.AccountEntity
+import com.agileburo.anytype.data.auth.model.BlockEntity
 import com.agileburo.anytype.data.auth.model.ImageEntity
 import com.agileburo.anytype.data.auth.model.WalletEntity
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.model.Image
 import com.agileburo.anytype.domain.auth.model.Wallet
+import com.agileburo.anytype.domain.block.model.Block
 
 fun AccountEntity.toDomain(): Account {
     return Account(
@@ -59,4 +61,12 @@ fun Image.Size.toEntity(): ImageEntity.Size {
         Image.Size.SMALL -> ImageEntity.Size.SMALL
         Image.Size.LARGE -> ImageEntity.Size.LARGE
     }
+}
+
+fun BlockEntity.toDomain(): Block {
+    return Block(
+        id = id,
+        children = children,
+        fields = Block.Fields(map = fields.map.toMap())
+    )
 }

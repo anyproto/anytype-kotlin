@@ -3,7 +3,7 @@ package com.agileburo.anytype.presentation.auth.account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.auth.interactor.StartAccount
-import com.agileburo.anytype.domain.auth.repo.PathProvider
+import com.agileburo.anytype.domain.device.PathProvider
 
 class SetupSelectedAccountViewModelFactory(
     private val startAccount: StartAccount,

@@ -9,9 +9,9 @@ import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.model.Image
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.image.LoadImage
-import com.agileburo.anytype.presentation.CoroutinesTestRule
 import com.agileburo.anytype.presentation.auth.account.SelectAccountViewModel
 import com.agileburo.anytype.presentation.auth.model.SelectAccountView
+import com.agileburo.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doAnswer

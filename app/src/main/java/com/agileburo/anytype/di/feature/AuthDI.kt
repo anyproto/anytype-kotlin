@@ -4,7 +4,7 @@ import com.agileburo.anytype.core_utils.di.scope.PerFeature
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.*
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
-import com.agileburo.anytype.domain.auth.repo.PathProvider
+import com.agileburo.anytype.domain.device.PathProvider
 import com.agileburo.anytype.domain.image.ImageLoader
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.presentation.auth.account.CreateAccountViewModelFactory

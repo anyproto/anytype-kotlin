@@ -24,14 +24,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:ems="10"
-        android:textSize="21sp"
-        android:textColor="@color/black"
-        android:inputType="textPersonName"
         android:background="@android:color/transparent"
-        tools:text="Table name"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:textColor="@color/black"
+        android:textSize="21sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Table name" />
 
     <TextView
         android:id="@+id/tvViewType"

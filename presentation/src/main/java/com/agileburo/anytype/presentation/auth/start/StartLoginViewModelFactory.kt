@@ -3,7 +3,7 @@ package com.agileburo.anytype.presentation.auth.start
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.auth.interactor.SetupWallet
-import com.agileburo.anytype.domain.auth.repo.PathProvider
+import com.agileburo.anytype.domain.device.PathProvider
 
 class StartLoginViewModelFactory(
     private val setupWallet: SetupWallet,

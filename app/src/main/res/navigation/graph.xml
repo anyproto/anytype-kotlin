@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/desktopScreen"
-        android:name="com.agileburo.anytype.ui.desktop.DesktopFragment"
+        android:name="com.agileburo.anytype.ui.desktop.HomeDashboardFragment"
         android:label="DesktopFragment"
         tools:layout="@layout/fragment_desktop">
         <action

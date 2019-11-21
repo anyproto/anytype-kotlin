@@ -80,8 +80,8 @@ class ComponentManager(private val main: MainComponent) {
 
     val desktopComponent = Component {
         main
-            .desktopComponentBuilder()
-            .desktopModule(DesktopModule())
+            .homeDashboardComponentBuilder()
+            .homeDashboardModule(HomeDashboardModule())
             .build()
     }
 

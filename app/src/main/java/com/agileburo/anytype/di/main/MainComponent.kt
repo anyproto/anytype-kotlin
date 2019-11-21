@@ -17,6 +17,6 @@ interface MainComponent {
     fun profileComponentBuilder(): ProfileSubComponent.Builder
     fun splashComponentBuilder(): SplashSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
-    fun desktopComponentBuilder(): DesktopSubComponent.Builder
+    fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder
     fun databaseViewComponentBuilder(): DatabaseViewSubComponent.Builder
 }

@@ -81,8 +81,9 @@ class TableAdapter(context: Context) :
         cellItemModel: Any?,
         columnPosition: Int,
         rowPosition: Int
-    ) {}
-    
+    ) {
+    }
+
     // -------------- Column --------------------
 
     override fun getColumnHeaderItemViewType(position: Int): Int =
@@ -162,7 +163,8 @@ class TableAdapter(context: Context) :
         holder: AbstractViewHolder?,
         columnHeaderItemModel: Any?,
         columnPosition: Int
-    ) {}
+    ) {
+    }
 
     // -------------- Row --------------------
 

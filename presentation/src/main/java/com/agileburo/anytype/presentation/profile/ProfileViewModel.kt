@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_utils.common.Event
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
+import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.interactor.Logout
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.base.BaseUseCase
-import com.agileburo.anytype.domain.desktop.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation

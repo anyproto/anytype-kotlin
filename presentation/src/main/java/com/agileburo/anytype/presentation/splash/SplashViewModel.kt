@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_utils.common.Event
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.agileburo.anytype.domain.auth.interactor.LaunchAccount
+import com.agileburo.anytype.domain.auth.interactor.LaunchWallet
 import com.agileburo.anytype.domain.auth.model.AuthStatus
 import com.agileburo.anytype.domain.base.BaseUseCase
-import com.agileburo.anytype.domain.launch.LaunchAccount
-import com.agileburo.anytype.domain.launch.LaunchWallet
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import timber.log.Timber
 

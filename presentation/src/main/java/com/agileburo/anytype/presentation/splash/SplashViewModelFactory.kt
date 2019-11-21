@@ -3,8 +3,8 @@ package com.agileburo.anytype.presentation.splash
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
-import com.agileburo.anytype.domain.launch.LaunchAccount
-import com.agileburo.anytype.domain.launch.LaunchWallet
+import com.agileburo.anytype.domain.auth.interactor.LaunchAccount
+import com.agileburo.anytype.domain.auth.interactor.LaunchWallet
 
 /**
  * Created by Konstantin Ivanov

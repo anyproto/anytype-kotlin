@@ -1,9 +1,9 @@
 package com.agileburo.anytype.di.feature
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
+import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.interactor.Logout
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
-import com.agileburo.anytype.domain.desktop.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.image.ImageLoader
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.presentation.profile.ProfileViewModelFactory
@@ -61,7 +61,8 @@ class ProfileModule {
     @PerScreen
     fun provideGetAccountUseCase(
         authRepository: AuthRepository
-    ): GetCurrentAccount = GetCurrentAccount(
-        repository = authRepository
-    )
+    ): GetCurrentAccount =
+        GetCurrentAccount(
+            repository = authRepository
+        )
 }

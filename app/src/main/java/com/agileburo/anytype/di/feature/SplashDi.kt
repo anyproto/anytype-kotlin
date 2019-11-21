@@ -2,10 +2,10 @@ package com.agileburo.anytype.di.feature
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.agileburo.anytype.domain.auth.interactor.LaunchAccount
+import com.agileburo.anytype.domain.auth.interactor.LaunchWallet
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
-import com.agileburo.anytype.domain.auth.repo.PathProvider
-import com.agileburo.anytype.domain.launch.LaunchAccount
-import com.agileburo.anytype.domain.launch.LaunchWallet
+import com.agileburo.anytype.domain.device.PathProvider
 import com.agileburo.anytype.presentation.splash.SplashViewModelFactory
 import com.agileburo.anytype.ui.splash.SplashFragment
 import dagger.Module
@@ -60,18 +60,20 @@ class SplashModule {
     fun provideLaunchAccountUseCase(
         authRepository: AuthRepository,
         pathProvider: PathProvider
-    ): LaunchAccount = LaunchAccount(
-        repository = authRepository,
-        pathProvider = pathProvider
-    )
+    ): LaunchAccount =
+        LaunchAccount(
+            repository = authRepository,
+            pathProvider = pathProvider
+        )
 
     @PerScreen
     @Provides
     fun provideLaunchWalletUseCase(
         authRepository: AuthRepository,
         pathProvider: PathProvider
-    ): LaunchWallet = LaunchWallet(
-        repository = authRepository,
-        pathProvider = pathProvider
-    )
+    ): LaunchWallet =
+        LaunchWallet(
+            repository = authRepository,
+            pathProvider = pathProvider
+        )
 }

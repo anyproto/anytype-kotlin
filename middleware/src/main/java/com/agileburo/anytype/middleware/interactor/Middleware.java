@@ -5,10 +5,12 @@ import com.agileburo.anytype.middleware.model.CreateWalletResponse;
 import com.agileburo.anytype.middleware.model.SelectAccountResponse;
 
 import anytype.Commands.Rpc.Account;
+import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.Ipfs.Image;
 import anytype.Commands.Rpc.Wallet;
 import anytype.model.Models;
 import lib.Lib;
+import timber.log.Timber;
 
 public class Middleware {
 
@@ -151,6 +153,27 @@ public class Middleware {
             throw new Exception(response.getError().getDescription());
         } else {
             return response.getBlob().toByteArray();
+        }
+    }
+
+    public void openDashboard(String contextId, String id) throws Exception {
+
+        Block.Open.Request request = Block.Open.Request
+                .newBuilder()
+                .setContextId(contextId)
+                .setId(id)
+                .build();
+
+        byte[] encodedRequest = request.toByteArray();
+
+        byte[] encodedResponse = Lib.blockOpen(encodedRequest);
+
+        Block.Open.Response response = Block.Open.Response.parseFrom(encodedResponse);
+
+        Timber.d(response.toString());
+
+        if (response.getError() != null && response.getError().getCode() != Block.Open.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
         }
     }
 }

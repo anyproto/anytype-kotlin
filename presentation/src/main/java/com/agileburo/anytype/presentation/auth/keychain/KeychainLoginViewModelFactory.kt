@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.auth.interactor.RecoverWallet
 import com.agileburo.anytype.domain.auth.interactor.SaveMnemonic
-import com.agileburo.anytype.domain.auth.repo.PathProvider
+import com.agileburo.anytype.domain.device.PathProvider
 
 class KeychainLoginViewModelFactory(
     private val pathProvider: PathProvider,

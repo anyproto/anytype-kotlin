@@ -2,10 +2,10 @@ package com.agileburo.anytype.presentation.splash
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.agileburo.anytype.domain.auth.interactor.LaunchAccount
+import com.agileburo.anytype.domain.auth.interactor.LaunchWallet
 import com.agileburo.anytype.domain.auth.model.AuthStatus
 import com.agileburo.anytype.domain.base.Either
-import com.agileburo.anytype.domain.launch.LaunchAccount
-import com.agileburo.anytype.domain.launch.LaunchWallet
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.*

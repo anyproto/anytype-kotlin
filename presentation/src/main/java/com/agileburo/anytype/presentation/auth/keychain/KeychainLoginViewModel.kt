@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_utils.common.Event
 import com.agileburo.anytype.domain.auth.interactor.RecoverWallet
 import com.agileburo.anytype.domain.auth.interactor.SaveMnemonic
-import com.agileburo.anytype.domain.auth.repo.PathProvider
+import com.agileburo.anytype.domain.device.PathProvider
 import com.agileburo.anytype.presentation.auth.congratulation.ViewState
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation

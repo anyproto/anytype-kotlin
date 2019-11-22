@@ -26,10 +26,10 @@ android {
 
 dependencies {
 
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('configuration.properties').newDataInputStream())
-    def libraryFilePath = properties.getProperty('middleware.libraryFilePath')
-    implementation(files(libraryFilePath))
+    def props = new Properties()
+    project.rootProject.file('configuration.properties').withDataInputStream { props.load(it) }
+    def libraryPath = project.rootProject.file(props.getProperty('middleware.path'))
+    implementation(files(libraryPath))
 
     implementation project(':protobuf')
     implementation project(':data')

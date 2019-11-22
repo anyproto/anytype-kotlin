@@ -6,6 +6,7 @@
 !.idea/copyright
 .DS_Store
 /build
+/libs
 /captures
 .externalNativeBuild
 ktlint

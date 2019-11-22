@@ -43,6 +43,7 @@ class HomeDashboardFragment : ViewStateFragment<ViewState>(R.layout.fragment_des
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setup()
 
         with(vm) {
             state.observe(viewLifecycleOwner, this@HomeDashboardFragment)
@@ -56,18 +57,19 @@ class HomeDashboardFragment : ViewStateFragment<ViewState>(R.layout.fragment_des
 
     override fun render(state: ViewState) {
         when (state) {
-            is ViewState.Init -> {
-                desktopRecycler.apply {
-                    layoutManager = GridLayoutManager(context, 2)
-                    adapter = dashboardAdapter
-                }
-                fab.setOnClickListener { vm.onAddNewDocumentClicked() }
-                avatar.setOnClickListener { vm.onProfileClicked() }
-            }
             is ViewState.Success -> {
                 dashboardAdapter.update(state.data)
             }
         }
+    }
+
+    private fun setup() {
+        desktopRecycler.apply {
+            layoutManager = GridLayoutManager(context, 2)
+            adapter = dashboardAdapter
+        }
+        fab.setOnClickListener { vm.onAddNewDocumentClicked() }
+        avatar.setOnClickListener { vm.onProfileClicked() }
     }
 
     override fun injectDependencies() {

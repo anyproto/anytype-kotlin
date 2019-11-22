@@ -99,7 +99,6 @@ class HomeDashboardViewModel(
     }
 
     fun onViewCreated() {
-        stateData.postValue(ViewState.Init)
         proceedWithGettingAccount()
         proceedWithOpeningHomeDashboard()
     }

@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
+
     def config = rootProject.extensions.getByName("ext")
 
     compileSdkVersion config["compile_sdk"]
@@ -25,7 +26,11 @@ android {
 
 dependencies {
 
-    implementation project(':lib-middleware')
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('configuration.properties').newDataInputStream())
+    def libraryFilePath = properties.getProperty('middleware.libraryFilePath')
+    implementation(files(libraryFilePath))
+
     implementation project(':protobuf')
     implementation project(':data')
 

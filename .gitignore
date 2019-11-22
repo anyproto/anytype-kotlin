@@ -1,6 +1,7 @@
 *.iml
 .gradle
 /local.properties
+/configuration.properties
 .idea/*
 !.idea/copyright
 .DS_Store

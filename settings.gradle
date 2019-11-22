@@ -1,1 +1,1 @@
-include ':app', ':core-utils', ':lib-middleware', ':middleware', ':protobuf', ':persistence', ':domain', ':data', ':presentation', ':core-ui'
+include ':app', ':core-utils', ':middleware', ':protobuf', ':persistence', ':domain', ':data', ':presentation', ':core-ui'

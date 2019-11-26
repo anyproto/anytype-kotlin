@@ -18,6 +18,7 @@ interface AppNavigation {
     fun startDesktopFromLogin()
     fun startSplashFromDesktop()
     fun openKeychainScreen()
+    fun openContacts()
     fun exit()
 
     sealed class Command {
@@ -41,6 +42,7 @@ interface AppNavigation {
         object StartDesktopFromSplash : Command()
         object StartDesktopFromLogin : Command()
         object StartSplashFromDesktop : Command()
+        object OpenContactsScreen : Command()
     }
 
     interface Provider {

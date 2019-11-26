@@ -21,4 +21,6 @@
     <dimen name="table_column_header_height">16dp</dimen>
     <dimen name="table_row_header_width">16dp</dimen>
 
+    <dimen name="contacts_margin_start">20dp</dimen>
+
 </resources>

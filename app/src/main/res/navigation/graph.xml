@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_desktopScreen_to_databaseViewFragment"
             app:destination="@id/databaseViewFragment" />
+        <action
+            android:id="@+id/action_desktopScreen_to_contactsFragment"
+            app:destination="@id/contactsFragment" />
     </fragment>
 
     <fragment
@@ -256,5 +259,9 @@
         android:id="@+id/databaseViewFragment"
         android:name="com.agileburo.anytype.ui.table.DatabaseViewFragment"
         android:label="DatabaseViewFragment" />
+    <fragment
+        android:id="@+id/contactsFragment"
+        android:name="com.agileburo.anytype.ui.contacts.ContactsFragment"
+        android:label="ContactsFragment" />
 
 </navigation>

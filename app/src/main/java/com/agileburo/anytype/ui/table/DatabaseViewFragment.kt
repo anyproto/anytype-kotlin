@@ -28,7 +28,7 @@ class DatabaseViewFragment : ViewStateFragment<ViewState<Table>>(R.layout.fragme
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.state.observe(this, this)
+        vm.state.observe(viewLifecycleOwner, this)
         vm.onViewCreated()
     }
 

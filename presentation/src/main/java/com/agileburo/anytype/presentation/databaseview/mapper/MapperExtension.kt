@@ -1,10 +1,16 @@
 package com.agileburo.anytype.presentation.databaseview.mapper
 
+import com.agileburo.anytype.domain.contacts.Contact
+import com.agileburo.anytype.domain.contacts.Tag
+import com.agileburo.anytype.domain.database.model.*
+import com.agileburo.anytype.presentation.contacts.model.ContactView
+import com.agileburo.anytype.presentation.contacts.model.TagView
 import com.agileburo.anytype.domain.database.model.DatabaseView
 import com.agileburo.anytype.domain.database.model.DisplayView
 import com.agileburo.anytype.domain.database.model.Property
 import com.agileburo.anytype.domain.database.model.ViewType
 import com.agileburo.anytype.presentation.databaseview.models.*
+import com.agileburo.anytype.presentation.filters.model.FilterView
 
 fun Property.toPresentation(): ColumnView =
     when (this) {
@@ -89,3 +95,16 @@ fun findTypeOfData(map: HashMap<String, Any>, properties: List<Property>): List<
     }
     return cells
 }
+
+fun Contact.toPresentation(): ContactView =
+    ContactView(
+        id = this.id,
+        name = this.name,
+        date = this.date,
+        icon = this.icon,
+        tags = this.tags?.map { it.toPresentation() })
+
+fun Tag.toPresentation(): TagView = TagView(name = this.name)
+
+fun Filter.toPresentation(): FilterView =
+    FilterView(id = this.propertyId, name = this.value as String)

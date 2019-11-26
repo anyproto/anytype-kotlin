@@ -37,6 +37,7 @@ abstract class NavigationFragment(
             is Command.OpenProfile -> navigation.openProfile()
             is Command.OpenDocument -> navigation.openDocument(command.id)
             is Command.OpenKeychainScreen -> navigation.openKeychainScreen()
+            is Command.OpenContactsScreen -> navigation.openContacts()
             is Command.Exit -> navigation.exit()
         }
     }

@@ -80,6 +80,10 @@ class Navigator : AppNavigation {
         */
     }
 
+    override fun openContacts() {
+        navController?.navigate(R.id.action_desktopScreen_to_contactsFragment)
+    }
+
     override fun exit() {
         navController?.popBackStack()
     }

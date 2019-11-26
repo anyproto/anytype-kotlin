@@ -19,4 +19,5 @@ interface MainComponent {
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
     fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder
     fun databaseViewComponentBuilder(): DatabaseViewSubComponent.Builder
+    fun contactsComponentBuilder(): ContactsSubComponent.Builder
 }

@@ -92,6 +92,13 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val contactsComponent = Component {
+        main
+            .contactsComponentBuilder()
+            .contactsModule(ContactsModule())
+            .build()
+    }
+
     class Component<T>(private val builder: () -> T) {
 
         private var instance: T? = null

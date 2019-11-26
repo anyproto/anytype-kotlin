@@ -1,7 +1,7 @@
-package com.agileburo.anytype.util
+package com.agileburo.anytype.persistence.util
 
 import androidx.room.TypeConverter
-import com.agileburo.anytype.model.AccountTable
+import com.agileburo.anytype.persistence.model.AccountTable
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

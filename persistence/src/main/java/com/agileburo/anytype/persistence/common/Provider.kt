@@ -1,4 +1,4 @@
-package com.agileburo.anytype.common
+package com.agileburo.anytype.persistence.common
 
 abstract class Provider<in P, out T> {
     private var original: T? = null

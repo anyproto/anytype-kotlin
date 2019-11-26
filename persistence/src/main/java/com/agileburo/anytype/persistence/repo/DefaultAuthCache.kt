@@ -1,11 +1,11 @@
-package com.agileburo.anytype.repo
+package com.agileburo.anytype.persistence.repo
 
 import android.content.SharedPreferences
 import com.agileburo.anytype.data.auth.model.AccountEntity
 import com.agileburo.anytype.data.auth.repo.AuthCache
-import com.agileburo.anytype.db.AnytypeDatabase
-import com.agileburo.anytype.mapper.toEntity
-import com.agileburo.anytype.mapper.toTable
+import com.agileburo.anytype.persistence.db.AnytypeDatabase
+import com.agileburo.anytype.persistence.mapper.toEntity
+import com.agileburo.anytype.persistence.mapper.toTable
 import timber.log.Timber
 
 class DefaultAuthCache(

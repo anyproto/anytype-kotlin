@@ -7,7 +7,7 @@ import com.agileburo.anytype.data.auth.repo.block.BlockDataRepository
 import com.agileburo.anytype.data.auth.repo.block.BlockDataStoreFactory
 import com.agileburo.anytype.data.auth.repo.block.BlockRemote
 import com.agileburo.anytype.data.auth.repo.block.BlockRemoteDataStore
-import com.agileburo.anytype.db.AnytypeDatabase
+import com.agileburo.anytype.persistence.db.AnytypeDatabase
 import com.agileburo.anytype.device.DefaultPathProvider
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.block.repo.BlockRepository
@@ -17,7 +17,7 @@ import com.agileburo.anytype.middleware.auth.AuthMiddleware
 import com.agileburo.anytype.middleware.block.BlockMiddleware
 import com.agileburo.anytype.middleware.interactor.EventHandler
 import com.agileburo.anytype.middleware.interactor.Middleware
-import com.agileburo.anytype.repo.DefaultAuthCache
+import com.agileburo.anytype.persistence.repo.DefaultAuthCache
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

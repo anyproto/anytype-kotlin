@@ -3,8 +3,8 @@ package com.agileburo.anytype
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
-import com.agileburo.anytype.db.AnytypeDatabase
-import com.agileburo.anytype.model.AccountTable
+import com.agileburo.anytype.persistence.db.AnytypeDatabase
+import com.agileburo.anytype.persistence.model.AccountTable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.After

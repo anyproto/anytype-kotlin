@@ -45,6 +45,7 @@ class ContactsFragment :
                     layoutManager = LinearLayoutManager(requireContext())
                     addItemDecoration(ListDividerItemDecoration(requireContext()))
                     contactsAdapter = ContactsAdapter(vm::onContactClick)
+                    adapter = contactsAdapter
                 }
 
                 with(recyclerFilters) {
@@ -57,6 +58,7 @@ class ContactsFragment :
                         )
                     )
                     filtersAdapter = FiltersAdapter(vm::onFilterClick)
+                    adapter = filtersAdapter
                 }
                 vm.getFilters()
             }

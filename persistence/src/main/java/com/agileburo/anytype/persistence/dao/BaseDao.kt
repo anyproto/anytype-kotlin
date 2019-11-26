@@ -1,4 +1,4 @@
-package com.agileburo.anytype.dao
+package com.agileburo.anytype.persistence.dao
 
 import androidx.room.Delete
 import androidx.room.Insert

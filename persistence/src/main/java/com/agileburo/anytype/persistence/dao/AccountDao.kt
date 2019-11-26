@@ -1,9 +1,9 @@
-package com.agileburo.anytype.dao
+package com.agileburo.anytype.persistence.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.agileburo.anytype.common.Config
-import com.agileburo.anytype.model.AccountTable
+import com.agileburo.anytype.persistence.common.Config
+import com.agileburo.anytype.persistence.model.AccountTable
 
 @Dao
 abstract class AccountDao : BaseDao<AccountTable> {

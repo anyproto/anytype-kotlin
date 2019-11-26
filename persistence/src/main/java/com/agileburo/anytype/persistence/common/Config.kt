@@ -1,4 +1,4 @@
-package com.agileburo.anytype.common
+package com.agileburo.anytype.persistence.common
 
 object Config {
 

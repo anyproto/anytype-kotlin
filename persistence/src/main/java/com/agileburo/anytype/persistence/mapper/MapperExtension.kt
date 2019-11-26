@@ -1,8 +1,8 @@
-package com.agileburo.anytype.mapper
+package com.agileburo.anytype.persistence.mapper
 
 import com.agileburo.anytype.data.auth.model.AccountEntity
 import com.agileburo.anytype.data.auth.model.ImageEntity
-import com.agileburo.anytype.model.AccountTable
+import com.agileburo.anytype.persistence.model.AccountTable
 
 fun AccountTable.toEntity(): AccountEntity {
     return AccountEntity(

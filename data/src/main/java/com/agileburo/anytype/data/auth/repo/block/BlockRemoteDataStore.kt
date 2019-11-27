@@ -7,4 +7,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     }
 
     override suspend fun observeBlocks() = remote.observeBlocks()
+    override suspend fun observePages() = remote.observePages()
+
+    override suspend fun openPage(id: String) {
+        remote.openPage(id)
+    }
 }

@@ -176,4 +176,22 @@ public class Middleware {
             throw new Exception(response.getError().getDescription());
         }
     }
+
+    public void openBlock(String id) throws Exception {
+
+        Block.Open.Request request = Block.Open.Request
+                .newBuilder()
+                .setId(id)
+                .build();
+
+        byte[] encodedRequest = request.toByteArray();
+
+        byte[] encodedResponse = Lib.blockOpen(encodedRequest);
+
+        Block.Open.Response response = Block.Open.Response.parseFrom(encodedResponse);
+
+        if (response.getError() != null && response.getError().getCode() != Block.Open.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        }
+    }
 }

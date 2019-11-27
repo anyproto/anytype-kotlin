@@ -3,12 +3,12 @@
     android:id="@+id/name"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textSize="14sp"
-    android:textColor="#E89D00"
+    android:background="@drawable/rounded_corner"
     android:paddingStart="5dp"
-    android:paddingEnd="5dp"
     android:paddingTop="2dp"
+    android:paddingEnd="5dp"
     android:paddingBottom="3dp"
-    android:background="@drawable/rounded_corner">
+    android:textColor="#E89D00"
+    android:textSize="14sp">
 
 </TextView>

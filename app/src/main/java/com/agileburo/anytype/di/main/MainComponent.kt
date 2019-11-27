@@ -20,4 +20,5 @@ interface MainComponent {
     fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder
     fun databaseViewComponentBuilder(): DatabaseViewSubComponent.Builder
     fun contactsComponentBuilder(): ContactsSubComponent.Builder
+    fun pageComponentBuilder(): PageSubComponent.Builder
 }

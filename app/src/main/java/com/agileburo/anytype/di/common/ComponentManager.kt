@@ -92,6 +92,13 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val pageComponent = Component {
+        main
+            .pageComponentBuilder()
+            .pageModule(PageModule())
+            .build()
+    }
+
     val contactsComponent = Component {
         main
             .contactsComponentBuilder()

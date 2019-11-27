@@ -5,9 +5,9 @@ import com.agileburo.anytype.middleware.EventProxy
 import com.google.protobuf.InvalidProtocolBufferException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.launch
 import lib.Lib.setEventHandlerMobile
 import timber.log.Timber
@@ -17,7 +17,7 @@ class EventHandler(
 ) : EventProxy {
 
     // TODO consider using BroadcastChannel in the future.
-    private val channel = Channel<Events.Event>()
+    private val channel = BroadcastChannel<Events.Event>(1)
 
     init {
         setEventHandlerMobile { bytes ->
@@ -38,5 +38,5 @@ class EventHandler(
         }
     }
 
-    override fun flow(): Flow<Events.Event> = channel.consumeAsFlow()
+    override fun flow(): Flow<Events.Event> = channel.asFlow()
 }

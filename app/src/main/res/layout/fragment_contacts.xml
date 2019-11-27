@@ -29,10 +29,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
+        android:text="Contacts"
         android:textColor="@color/black"
         android:textSize="34sp"
         android:textStyle="bold"
-        android:text="Contacts"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/avatar"
         tools:text="Contacts" />
@@ -80,9 +80,9 @@
         android:layout_marginTop="20dp"
         android:drawableStart="@drawable/ic_plus"
         android:drawablePadding="6dp"
+        android:text="New"
         android:textColor="#ACA996"
         android:textSize="16sp"
-        android:text="New"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recyclerFilters"
         tools:text="New" />

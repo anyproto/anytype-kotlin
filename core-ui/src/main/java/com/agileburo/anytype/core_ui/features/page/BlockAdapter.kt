@@ -304,13 +304,15 @@ class BlockAdapter(
         level = DeprecationLevel.WARNING,
         message = "Consider RecyclerView's AsyncListDiffer instead. Or implement it with Kotlin coroutines."
     )
-    fun update(items: List<BlockView>) {
+    fun updateWithDiffUtil(items: List<BlockView>) {
         val callback = BlockViewDiffUtil(old = blocks, new = items)
         val result = DiffUtil.calculateDiff(callback)
-        blocks.apply {
-            clear()
-            addAll(items)
-        }
+        blocks.addAll(items)
         result.dispatchUpdatesTo(this)
+    }
+
+    fun update(items: List<BlockView>) {
+        blocks.addAll(items)
+        notifyDataSetChanged()
     }
 }

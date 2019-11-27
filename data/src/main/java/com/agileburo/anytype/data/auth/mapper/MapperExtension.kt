@@ -67,6 +67,34 @@ fun BlockEntity.toDomain(): Block {
     return Block(
         id = id,
         children = children,
-        fields = Block.Fields(map = fields.map.toMap())
+        fields = Block.Fields(map = fields.map.toMap()),
+        content = content.toDomain()
+    )
+}
+
+fun BlockEntity.Content.toDomain(): Block.Content = when (this) {
+    is BlockEntity.Content.Text -> this.toDomain()
+    is BlockEntity.Content.Dashboard -> this.toDomain()
+}
+
+fun BlockEntity.Content.Text.toDomain(): Block.Content.Text {
+    return Block.Content.Text(
+        text = text,
+        marks = marks.map { it.toDomain() },
+        style = Block.Content.Text.Style.valueOf(style.name)
+    )
+}
+
+fun BlockEntity.Content.Dashboard.toDomain(): Block.Content.Dashboard {
+    return Block.Content.Dashboard(
+        type = Block.Content.Dashboard.Type.valueOf(type.name)
+    )
+}
+
+fun BlockEntity.Content.Text.Mark.toDomain(): Block.Content.Text.Mark {
+    return Block.Content.Text.Mark(
+        range = range,
+        param = param,
+        type = Block.Content.Text.Mark.Type.valueOf(type.name)
     )
 }

@@ -8,7 +8,6 @@ import com.agileburo.anytype.presentation.filters.model.FilterView
 import com.agileburo.anytype.ui.filters.viewholders.FilterCheckedViewHolder
 import com.agileburo.anytype.ui.filters.viewholders.FilterViewHolder
 import com.agileburo.anytype.ui.table.toView
-import java.lang.RuntimeException
 
 class FiltersAdapter(
     private val click: (String) -> Unit

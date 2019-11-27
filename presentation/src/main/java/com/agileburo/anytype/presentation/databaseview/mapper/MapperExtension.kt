@@ -5,10 +5,6 @@ import com.agileburo.anytype.domain.contacts.Tag
 import com.agileburo.anytype.domain.database.model.*
 import com.agileburo.anytype.presentation.contacts.model.ContactView
 import com.agileburo.anytype.presentation.contacts.model.TagView
-import com.agileburo.anytype.domain.database.model.DatabaseView
-import com.agileburo.anytype.domain.database.model.DisplayView
-import com.agileburo.anytype.domain.database.model.Property
-import com.agileburo.anytype.domain.database.model.ViewType
 import com.agileburo.anytype.presentation.databaseview.models.*
 import com.agileburo.anytype.presentation.filters.model.FilterView
 

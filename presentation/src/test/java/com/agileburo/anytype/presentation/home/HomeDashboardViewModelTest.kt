@@ -85,6 +85,9 @@ class HomeDashboardViewModelTest {
             children = listOf(MockDataFactory.randomUuid()),
             fields = Block.Fields(
                 map = mapOf("name" to MockDataFactory.randomString())
+            ),
+            content = Block.Content.Dashboard(
+                type = Block.Content.Dashboard.Type.MAIN_SCREEN
             )
         )
 

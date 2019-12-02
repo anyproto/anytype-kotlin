@@ -3,11 +3,13 @@ package com.agileburo.anytype.ui.splash
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProviders
+import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.splash.SplashViewModel
 import com.agileburo.anytype.presentation.splash.SplashViewModelFactory
 import com.agileburo.anytype.ui.base.NavigationFragment
+import kotlinx.android.synthetic.main.fragment_splash.*
 import javax.inject.Inject
 
 /**
@@ -30,6 +32,11 @@ class SplashFragment : NavigationFragment(R.layout.fragment_splash) {
         super.onViewCreated(view, savedInstanceState)
         vm.navigation.observe(this, navObserver)
         vm.onViewCreated()
+        showVersion()
+    }
+
+    private fun showVersion() {
+        version.text = BuildConfig.VERSION_NAME
     }
 
     override fun injectDependencies() {

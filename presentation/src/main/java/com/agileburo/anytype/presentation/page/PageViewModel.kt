@@ -8,6 +8,7 @@ import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.mapper.toView
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -25,9 +26,10 @@ class PageViewModel(
         viewModelScope.launch {
             observePage
                 .build()
+                .onEach { Timber.d("Received blocks: $it") }
                 .map { blocks -> blocks.map { it.toView() } }
                 .collect {
-                    Timber.d("Received blocks: $it")
+                    Timber.d("Received blocks (views): $it")
                     stateData.postValue(ViewState.Success(it + getMocks()))
                 }
         }

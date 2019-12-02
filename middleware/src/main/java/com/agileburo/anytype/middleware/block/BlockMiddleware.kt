@@ -18,6 +18,14 @@ class BlockMiddleware(
     private val events: EventProxy
 ) : BlockRemote {
 
+    private val supportedTextStyles = listOf(
+        Models.Block.Content.Text.Style.P,
+        Models.Block.Content.Text.Style.H1,
+        Models.Block.Content.Text.Style.H2,
+        Models.Block.Content.Text.Style.H3,
+        Models.Block.Content.Text.Style.Title
+    )
+
     override suspend fun observeBlocks() = events
         .flow()
         .filter { event -> event.messageCase == Events.Event.MessageCase.BLOCKSHOWFULLSCREEN }
@@ -42,13 +50,7 @@ class BlockMiddleware(
         .map { event ->
             event.blockShowFullscreen.blocksList
                 .filter { block -> block.contentCase == Models.Block.ContentCase.TEXT }
-                .filter { block ->
-                    block.text.style == Models.Block.Content.Text.Style.P
-                            || block.text.style == Models.Block.Content.Text.Style.H1
-                            || block.text.style == Models.Block.Content.Text.Style.H2
-                            || block.text.style == Models.Block.Content.Text.Style.H3
-                            || block.text.style == Models.Block.Content.Text.Style.Title
-                }
+                .filter { block -> supportedTextStyles.contains(block.text.style) }
                 .map { block ->
                     BlockEntity(
                         id = block.id,
@@ -76,7 +78,31 @@ class BlockMiddleware(
     private fun extractText(block: Models.Block): BlockEntity.Content.Text {
         return BlockEntity.Content.Text(
             text = block.text.text,
-            marks = emptyList(),
+            marks = block.text.marksList.map { mark ->
+                BlockEntity.Content.Text.Mark(
+                    range = IntRange(mark.range.from, mark.range.to),
+                    // TODO parse parameter
+                    param = null,
+                    type = when (mark.type) {
+                        Models.Block.Content.Text.Mark.Type.Bold -> {
+                            BlockEntity.Content.Text.Mark.Type.BOLD
+                        }
+                        Models.Block.Content.Text.Mark.Type.Italic -> {
+                            BlockEntity.Content.Text.Mark.Type.ITALIC
+                        }
+                        Models.Block.Content.Text.Mark.Type.Strikethrough -> {
+                            BlockEntity.Content.Text.Mark.Type.STRIKETHROUGH
+                        }
+                        Models.Block.Content.Text.Mark.Type.U -> {
+                            BlockEntity.Content.Text.Mark.Type.UNDERSCORED
+                        }
+                        Models.Block.Content.Text.Mark.Type.Keyboard -> {
+                            BlockEntity.Content.Text.Mark.Type.KEYBOARD
+                        }
+                        else -> throw IllegalStateException("Unexpected mark type: ${mark.type.name}")
+                    }
+                )
+            },
             style = when (block.text.style) {
                 Models.Block.Content.Text.Style.P -> BlockEntity.Content.Text.Style.P
                 Models.Block.Content.Text.Style.H1 -> BlockEntity.Content.Text.Style.H1

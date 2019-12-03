@@ -18,6 +18,10 @@ class BlockDataRepository(
         factory.remote.openPage(id)
     }
 
+    override suspend fun closePage(id: String) {
+        factory.remote.closePage(id)
+    }
+
     override suspend fun observeBlocks(): Flow<List<Block>> {
         return factory.remote.observeBlocks().map { blocks -> blocks.map { it.toDomain() } }
     }

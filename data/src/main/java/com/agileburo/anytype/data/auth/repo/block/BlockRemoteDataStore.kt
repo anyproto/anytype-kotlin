@@ -12,4 +12,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun openPage(id: String) {
         remote.openPage(id)
     }
+
+    override suspend fun closePage(id: String) {
+        remote.closePage(id)
+    }
 }

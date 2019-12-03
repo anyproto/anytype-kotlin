@@ -2,6 +2,7 @@ package com.agileburo.anytype.di.feature
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.ObservePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
@@ -30,10 +31,12 @@ class PageModule {
     @PerScreen
     fun providePageViewModelFactory(
         openPage: OpenPage,
+        closePage: ClosePage,
         observePage: ObservePage
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
-        observePage = observePage
+        observePage = observePage,
+        closePage = closePage
     )
 
     @Provides
@@ -49,6 +52,14 @@ class PageModule {
     fun provideObservePageUseCase(
         repo: BlockRepository
     ): ObservePage = ObservePage(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideClosePageUseCase(
+        repo: BlockRepository
+    ): ClosePage = ClosePage(
         repo = repo
     )
 }

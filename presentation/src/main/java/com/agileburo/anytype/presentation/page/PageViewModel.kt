@@ -1,11 +1,16 @@
 package com.agileburo.anytype.presentation.page
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_utils.common.Event
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
+import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.ObservePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.mapper.toView
+import com.agileburo.anytype.presentation.navigation.AppNavigation
+import com.agileburo.anytype.presentation.navigation.SupportNavigation
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -14,8 +19,11 @@ import timber.log.Timber
 
 class PageViewModel(
     private val openPage: OpenPage,
+    private val closePage: ClosePage,
     private val observePage: ObservePage
-) : ViewStateViewModel<PageViewModel.ViewState>() {
+) : ViewStateViewModel<PageViewModel.ViewState>(), SupportNavigation<Event<AppNavigation.Command>> {
+
+    override val navigation: MutableLiveData<Event<AppNavigation.Command>> = MutableLiveData()
 
     init {
         startObservingPage()
@@ -42,6 +50,15 @@ class PageViewModel(
             result.either(
                 fnR = { Timber.d("Page has been opened") },
                 fnL = { e -> Timber.e(e, "Error while openining the test page") }
+            )
+        }
+    }
+
+    fun onSystemBackPressed() {
+        closePage.invoke(viewModelScope, ClosePage.Params.reference()) { result ->
+            result.either(
+                fnR = { navigation.postValue(Event(AppNavigation.Command.Exit)) },
+                fnL = { e -> Timber.e(e, "Error while closing the test page") }
             )
         }
     }

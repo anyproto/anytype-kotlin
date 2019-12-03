@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface BlockRepository {
     suspend fun openPage(id: String)
+    suspend fun closePage(id: String)
     suspend fun openDashboard(contextId: String, id: String)
     suspend fun observeBlocks(): Flow<List<Block>>
     suspend fun observePages(): Flow<List<Block>>

@@ -2,6 +2,7 @@ package com.agileburo.anytype.ui.page
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +30,16 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
     @Inject
     lateinit var factory: PageViewModelFactory
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(this) {
+                vm.onSystemBackPressed()
+            }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -42,6 +53,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.state.observe(viewLifecycleOwner, Observer { render(it) })
+        vm.navigation.observe(this, navObserver)
     }
 
     private fun render(state: PageViewModel.ViewState) {

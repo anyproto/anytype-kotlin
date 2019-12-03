@@ -123,6 +123,10 @@ class BlockMiddleware(
         middleware.openBlock(id)
     }
 
+    override suspend fun closePage(id: String) {
+        middleware.closePage(id)
+    }
+
     private fun extractFields(block: Models.Block): BlockEntity.Fields {
         return BlockEntity.Fields().also { fields ->
             block.fields.fieldsMap.mapValues { (key, value) ->

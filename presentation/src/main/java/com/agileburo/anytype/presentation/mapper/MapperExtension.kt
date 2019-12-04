@@ -1,5 +1,6 @@
 package com.agileburo.anytype.presentation.mapper
 
+import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content.Text.Style
@@ -9,7 +10,26 @@ fun Block.toView(): BlockView = when (val content = this.content) {
         when (content.style) {
             Style.P -> BlockView.Text(
                 id = this.id,
-                text = content.text
+                text = content.text,
+                marks = content.marks.mapNotNull { mark ->
+                    when (mark.type) {
+                        Block.Content.Text.Mark.Type.ITALIC -> {
+                            Markup.Mark(
+                                from = mark.range.first,
+                                to = mark.range.last,
+                                type = Markup.Type.ITALIC
+                            )
+                        }
+                        Block.Content.Text.Mark.Type.BOLD -> {
+                            Markup.Mark(
+                                from = mark.range.first,
+                                to = mark.range.last,
+                                type = Markup.Type.BOLD
+                            )
+                        }
+                        else -> null
+                    }
+                }
             )
             Style.H1 -> BlockView.HeaderOne(
                 id = this.id,

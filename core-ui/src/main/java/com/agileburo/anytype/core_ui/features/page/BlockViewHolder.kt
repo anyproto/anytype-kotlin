@@ -3,6 +3,7 @@ package com.agileburo.anytype.core_ui.features.page
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.common.toSpannable
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -32,7 +33,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val content = itemView.textContent
 
         fun bind(item: BlockView.Text) {
-            content.text = item.text
+            content.text = if (item.marks.isNotEmpty()) item.toSpannable() else item.text
         }
     }
 

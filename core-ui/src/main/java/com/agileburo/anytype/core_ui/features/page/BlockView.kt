@@ -1,5 +1,6 @@
 package com.agileburo.anytype.core_ui.features.page
 
+import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.ViewType
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BULLET
@@ -34,12 +35,15 @@ sealed class BlockView : ViewType {
      * UI-model for a basic text block.
      * @property id block's id
      * @property text block's content text
+     * @property marks markup
      */
     data class Text(
         override val id: String,
-        val text: String
-    ) : BlockView() {
+        val text: String,
+        override val marks: List<Markup.Mark> = emptyList()
+    ) : BlockView(), Markup {
         override fun getViewType() = HOLDER_TEXT
+        override val body: String = text
     }
 
     /**

@@ -49,7 +49,7 @@ data class Block(
             }
 
             enum class Style {
-                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET
+                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE
             }
         }
 

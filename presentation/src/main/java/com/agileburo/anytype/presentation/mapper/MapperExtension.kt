@@ -55,6 +55,23 @@ fun Block.toView(): BlockView = when (val content = this.content) {
                 id = this.id,
                 snippet = content.text
             )
+            Style.BULLET -> BlockView.Bulleted(
+                id = this.id,
+                text = content.text,
+                indent = 0
+            )
+            Style.NUMBERED -> BlockView.Numbered(
+                id = this.id,
+                text = content.text,
+                number = "0",
+                indent = 0
+            )
+            Style.TOGGLE -> BlockView.Toggle(
+                id = this.id,
+                text = content.text,
+                toggled = false,
+                indent = 0
+            )
         }
     }
     else -> TODO()

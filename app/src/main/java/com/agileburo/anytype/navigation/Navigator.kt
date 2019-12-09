@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import com.agileburo.anytype.R
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.ui.auth.Keys
+import com.agileburo.anytype.ui.page.PageFragment
 
 class Navigator : AppNavigation {
 
@@ -53,7 +54,10 @@ class Navigator : AppNavigation {
     }
 
     override fun openDocument(id: String) {
-        navController?.navigate(R.id.pageScreen, Bundle().apply { putString("id", id) })
+        navController?.navigate(
+            R.id.pageScreen,
+            Bundle().apply { putString(PageFragment.ID_KEY, id) }
+        )
     }
 
     override fun openKeychainScreen() {

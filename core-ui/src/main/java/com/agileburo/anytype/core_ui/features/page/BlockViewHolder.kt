@@ -1,6 +1,9 @@
 package com.agileburo.anytype.core_ui.features.page
 
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.toSpannable
@@ -30,10 +33,34 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Text(view: View) : BlockViewHolder(view) {
 
-        private val content = itemView.textContent
+        private val content: EditText = itemView.textContent
 
-        fun bind(item: BlockView.Text) {
-            content.text = if (item.marks.isNotEmpty()) item.toSpannable() else item.text
+        fun bind(
+            item: BlockView.Text,
+            onTextChanged: (String, String) -> Unit
+        ) {
+            if (item.marks.isNotEmpty())
+                content.setText(item.toSpannable())
+            else
+                content.setText(item.text)
+
+            val listener = object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) = Unit
+
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) =
+                    Unit
+
+                override fun afterTextChanged(s: Editable) {
+                    onTextChanged(item.id, s.toString())
+                }
+            }
+
+            content.addTextChangedListener(listener)
         }
     }
 
@@ -41,8 +68,29 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val title = itemView.title
 
-        fun bind(item: BlockView.Title) {
-            title.text = item.text
+        fun bind(
+            item: BlockView.Title,
+            onTextChanged: (String, String) -> Unit
+        ) {
+            title.setText(item.text)
+
+            val listener = object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) = Unit
+
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) =
+                    Unit
+
+                override fun afterTextChanged(s: Editable) {
+                    onTextChanged(item.id, s.toString())
+                }
+            }
+
+            title.addTextChangedListener(listener)
         }
     }
 

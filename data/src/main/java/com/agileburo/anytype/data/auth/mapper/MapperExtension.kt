@@ -5,7 +5,10 @@ import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.model.Image
 import com.agileburo.anytype.domain.auth.model.Wallet
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.block.model.Command
+import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.event.model.Event
 
 fun AccountEntity.toDomain(): Account {
     return Account(
@@ -104,8 +107,94 @@ fun BlockEntity.Content.Text.Mark.toDomain(): Block.Content.Text.Mark {
     )
 }
 
+fun Block.toEntity(): BlockEntity {
+    return BlockEntity(
+        id = id,
+        children = children,
+        fields = BlockEntity.Fields(map = fields.map.toMutableMap()),
+        content = content.toEntity()
+    )
+}
+
+fun Block.Content.toEntity(): BlockEntity.Content = when (this) {
+    is Block.Content.Text -> this.toEntity()
+    is Block.Content.Dashboard -> this.toEntity()
+    is Block.Content.Page -> this.toEntity()
+}
+
+fun Block.Content.Text.toEntity(): BlockEntity.Content.Text {
+    return BlockEntity.Content.Text(
+        text = text,
+        marks = marks.map { it.toEntity() },
+        style = BlockEntity.Content.Text.Style.valueOf(style.name)
+    )
+}
+
+fun Block.Content.Dashboard.toEntity(): BlockEntity.Content.Dashboard {
+    return BlockEntity.Content.Dashboard(
+        type = BlockEntity.Content.Dashboard.Type.valueOf(type.name)
+    )
+}
+
+fun Block.Content.Page.toEntity(): BlockEntity.Content.Page {
+    return BlockEntity.Content.Page(
+        style = BlockEntity.Content.Page.Style.valueOf(style.name)
+    )
+}
+
+fun Block.Content.Text.Mark.toEntity(): BlockEntity.Content.Text.Mark {
+    return BlockEntity.Content.Text.Mark(
+        range = range,
+        param = param,
+        type = BlockEntity.Content.Text.Mark.Type.valueOf(type.name)
+    )
+}
+
 fun ConfigEntity.toDomain(): Config {
     return Config(
         homeId = homeId
     )
+}
+
+fun Command.Update.toEntity(): CommandEntity.Update {
+    return CommandEntity.Update(
+        contextId = contextId,
+        blockId = blockId,
+        text = text
+    )
+}
+
+fun Command.Create.toEntity(): CommandEntity.Create {
+    return CommandEntity.Create(
+        contextId = contextId,
+        targetId = targetId,
+        block = block.toEntity(),
+        position = position.toEntity()
+    )
+}
+
+fun Position.toEntity(): PositionEntity {
+    return PositionEntity.valueOf(name)
+}
+
+fun EventEntity.toDomain(): Event {
+    return when (this) {
+        is EventEntity.Command.ShowBlock -> {
+            Event.Command.ShowBlock(
+                rootId = rootId,
+                blocks = blocks.map { it.toDomain() }
+            )
+        }
+        is EventEntity.Command.AddBlock -> {
+            Event.Command.AddBlock(
+                blocks = blocks.map { it.toDomain() }
+            )
+        }
+        is EventEntity.Command.UpdateBlockText -> {
+            Event.Command.UpdateBlockText(
+                id = id,
+                text = text
+            )
+        }
+    }
 }

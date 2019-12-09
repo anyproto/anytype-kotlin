@@ -12,11 +12,22 @@
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="16dp" />
+            android:layout_marginEnd="16dp"
+            android:minHeight="100dp"
+            android:paddingBottom="48dp" />
 
     </FrameLayout>
+
+    <com.agileburo.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_toolbar_height"
+        android:layout_gravity="bottom"
+        android:background="@color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

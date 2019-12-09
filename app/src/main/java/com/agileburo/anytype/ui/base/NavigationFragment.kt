@@ -2,7 +2,7 @@ package com.agileburo.anytype.ui.base
 
 import androidx.annotation.LayoutRes
 import androidx.lifecycle.Observer
-import com.agileburo.anytype.core_utils.common.Event
+import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ui.BaseFragment
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.AppNavigation.Command
@@ -11,7 +11,7 @@ abstract class NavigationFragment(
     @LayoutRes private val layout: Int
 ) : BaseFragment(layout) {
 
-    val navObserver = Observer<Event<Command>> { event ->
+    val navObserver = Observer<EventWrapper<Command>> { event ->
         event.getContentIfNotHandled()?.let { navigate(it) }
     }
 

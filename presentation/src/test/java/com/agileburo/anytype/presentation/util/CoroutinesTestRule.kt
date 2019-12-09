@@ -23,4 +23,8 @@ class CoroutinesTestRule(
         Dispatchers.resetMain()
         testDispatcher.cleanupTestCoroutines()
     }
+
+    fun advanceTime(millis: Long) {
+        testDispatcher.advanceTimeBy(millis)
+    }
 }

@@ -1,16 +1,16 @@
-package com.agileburo.anytype.domain.event.model
+package com.agileburo.anytype.data.auth.model
 
-import com.agileburo.anytype.domain.block.model.Block
+sealed class EventEntity {
 
-sealed class Event {
-    sealed class Command : Event() {
+    sealed class Command : EventEntity() {
+
         data class ShowBlock(
             val rootId: String,
-            val blocks: List<Block>
+            val blocks: List<BlockEntity>
         ) : Command()
 
         data class AddBlock(
-            val blocks: List<Block>
+            val blocks: List<BlockEntity>
         ) : Command()
 
         data class UpdateBlockText(

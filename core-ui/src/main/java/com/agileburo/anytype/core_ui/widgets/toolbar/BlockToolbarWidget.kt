@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.agileburo.anytype.core_ui.R
+import kotlinx.android.synthetic.main.widget_block_toolbar.view.*
 
 class BlockToolbarWidget : ConstraintLayout {
 
@@ -28,4 +29,6 @@ class BlockToolbarWidget : ConstraintLayout {
     private fun inflate() {
         LayoutInflater.from(context).inflate(R.layout.widget_block_toolbar, this)
     }
+
+    fun addButton() = add
 }

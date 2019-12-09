@@ -32,7 +32,8 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
  * @see BlockViewDiffUtil
  */
 class BlockAdapter(
-    private val blocks: MutableList<BlockView>
+    private val blocks: MutableList<BlockView>,
+    private val onTextChanged: (String, String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -214,12 +215,14 @@ class BlockAdapter(
         when (holder) {
             is BlockViewHolder.Text -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Text
+                    item = blocks[position] as BlockView.Text,
+                    onTextChanged = onTextChanged
                 )
             }
             is BlockViewHolder.Title -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Title
+                    item = blocks[position] as BlockView.Title,
+                    onTextChanged = onTextChanged
                 )
             }
             is BlockViewHolder.HeaderOne -> {
@@ -312,6 +315,7 @@ class BlockAdapter(
     }
 
     fun update(items: List<BlockView>) {
+        blocks.clear()
         blocks.addAll(items)
         notifyDataSetChanged()
     }

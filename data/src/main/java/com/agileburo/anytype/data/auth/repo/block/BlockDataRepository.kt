@@ -1,9 +1,9 @@
 package com.agileburo.anytype.data.auth.repo.block
 
 import com.agileburo.anytype.data.auth.mapper.toDomain
-import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.data.auth.mapper.toEntity
+import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class BlockDataRepository(
@@ -30,11 +30,19 @@ class BlockDataRepository(
         factory.remote.closePage(id)
     }
 
-    override suspend fun observeBlocks(): Flow<List<Block>> {
-        return factory.remote.observeBlocks().map { blocks -> blocks.map { it.toDomain() } }
+    override suspend fun observeBlocks() =
+        factory.remote.observeBlocks().map { blocks -> blocks.map { it.toDomain() } }
+
+    override suspend fun observeEvents() = factory.remote.observeEvents().map { it.toDomain() }
+
+    override suspend fun observePages() =
+        factory.remote.observePages().map { blocks -> blocks.map { it.toDomain() } }
+
+    override suspend fun update(update: Command.Update) {
+        factory.remote.update(update.toEntity())
     }
 
-    override suspend fun observePages(): Flow<List<Block>> {
-        return factory.remote.observePages().map { blocks -> blocks.map { it.toDomain() } }
+    override suspend fun create(command: Command.Create) {
+        factory.remote.create(command.toEntity())
     }
 }

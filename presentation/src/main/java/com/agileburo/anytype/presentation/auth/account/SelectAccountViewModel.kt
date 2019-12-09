@@ -3,7 +3,7 @@ package com.agileburo.anytype.presentation.auth.account
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.agileburo.anytype.core_utils.common.Event
+import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.domain.auth.interactor.ObserveAccounts
 import com.agileburo.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.agileburo.anytype.domain.auth.model.Account
@@ -21,9 +21,10 @@ class SelectAccountViewModel(
     private val startLoadingAccounts: StartLoadingAccounts,
     private val observeAccounts: ObserveAccounts,
     private val loadImage: LoadImage
-) : ViewModel(), SupportNavigation<Event<AppNavigation.Command>> {
+) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-    override val navigation: MutableLiveData<Event<AppNavigation.Command>> = MutableLiveData()
+    override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
+        MutableLiveData()
 
     val state by lazy { MutableLiveData<List<SelectAccountView>>() }
 
@@ -120,7 +121,7 @@ class SelectAccountViewModel(
     }
 
     fun onProfileClicked(id: String) {
-        navigation.postValue(Event(AppNavigation.Command.SetupSelectedAccountScreen(id)))
+        navigation.postValue(EventWrapper(AppNavigation.Command.SetupSelectedAccountScreen(id)))
     }
 
     fun onAddProfileClicked() {

@@ -5,20 +5,25 @@ import anytype.model.Models
 import anytype.model.Models.Block.Content.Dashboard
 import anytype.model.Models.Block.Content.Page
 import com.agileburo.anytype.data.auth.model.BlockEntity
+import com.agileburo.anytype.data.auth.model.CommandEntity
 import com.agileburo.anytype.data.auth.model.ConfigEntity
+import com.agileburo.anytype.data.auth.model.EventEntity
 import com.agileburo.anytype.data.auth.repo.block.BlockRemote
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.interactor.Middleware
 import com.google.protobuf.Value
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 
 class BlockMiddleware(
     private val middleware: Middleware,
     private val events: EventProxy
 ) : BlockRemote {
+
+    private val supportedEvents = listOf(
+        Events.Event.Message.ValueCase.BLOCKSHOW,
+        Events.Event.Message.ValueCase.BLOCKADD,
+        Events.Event.Message.ValueCase.BLOCKSETTEXT
+    )
 
     private val supportedTextStyles = listOf(
         Models.Block.Content.Text.Style.Paragraph,
@@ -38,6 +43,102 @@ class BlockMiddleware(
             homeId = middleware.provideHomeDashboardId()
         )
     }
+
+    override suspend fun observeEvents(): Flow<EventEntity> = events
+        .flow()
+        .filter { event ->
+            event.messagesList.any { message ->
+                supportedEvents.contains(message.valueCase)
+            }
+        }
+        .map { event ->
+            event.messagesList.filter { message ->
+                supportedEvents.contains(message.valueCase)
+            }
+        }
+        .flatMapConcat { event -> event.asFlow() }
+        .mapNotNull { event ->
+            when (event.valueCase) {
+                Events.Event.Message.ValueCase.BLOCKADD -> {
+                    EventEntity.Command.AddBlock(
+                        blocks = event.blockAdd.blocksList.mapNotNull { block ->
+                            when (block.contentCase) {
+                                Models.Block.ContentCase.DASHBOARD -> {
+                                    BlockEntity(
+                                        id = block.id,
+                                        children = block.childrenIdsList.toList(),
+                                        fields = extractFields(block),
+                                        content = extractDashboard(block)
+                                    )
+                                }
+                                Models.Block.ContentCase.PAGE -> {
+                                    BlockEntity(
+                                        id = block.id,
+                                        children = block.childrenIdsList.toList(),
+                                        fields = extractFields(block),
+                                        content = extractPage(block)
+                                    )
+                                }
+                                Models.Block.ContentCase.TEXT -> {
+                                    BlockEntity(
+                                        id = block.id,
+                                        children = block.childrenIdsList.toList(),
+                                        fields = extractFields(block),
+                                        content = extractText(block)
+                                    )
+                                }
+                                else -> {
+                                    null
+                                }
+                            }
+                        }
+                    )
+                }
+                Events.Event.Message.ValueCase.BLOCKSHOW -> {
+                    EventEntity.Command.ShowBlock(
+                        rootId = event.blockShow.rootId,
+                        blocks = event.blockShow.blocksList.mapNotNull { block ->
+                            when (block.contentCase) {
+                                Models.Block.ContentCase.DASHBOARD -> {
+                                    BlockEntity(
+                                        id = block.id,
+                                        children = block.childrenIdsList.toList(),
+                                        fields = extractFields(block),
+                                        content = extractDashboard(block)
+                                    )
+                                }
+                                Models.Block.ContentCase.PAGE -> {
+                                    BlockEntity(
+                                        id = block.id,
+                                        children = block.childrenIdsList.toList(),
+                                        fields = extractFields(block),
+                                        content = extractPage(block)
+                                    )
+                                }
+                                Models.Block.ContentCase.TEXT -> {
+                                    BlockEntity(
+                                        id = block.id,
+                                        children = block.childrenIdsList.toList(),
+                                        fields = extractFields(block),
+                                        content = extractText(block)
+                                    )
+                                }
+                                else -> {
+                                    null
+                                }
+                            }
+                        }
+                    )
+                }
+                Events.Event.Message.ValueCase.BLOCKSETTEXT -> {
+                    EventEntity.Command.UpdateBlockText(
+                        id = event.blockSetText.id,
+                        text = event.blockSetText.text.value
+                    )
+                }
+                else -> null
+            }
+        }
 
     override suspend fun observeBlocks() = events
         .flow()
@@ -71,6 +172,14 @@ class BlockMiddleware(
                                 children = block.childrenIdsList.toList(),
                                 fields = extractFields(block),
                                 content = extractPage(block)
+                            )
+                        }
+                        Models.Block.ContentCase.TEXT -> {
+                            BlockEntity(
+                                id = block.id,
+                                children = block.childrenIdsList.toList(),
+                                fields = extractFields(block),
+                                content = extractText(block)
                             )
                         }
                         else -> {
@@ -180,7 +289,10 @@ class BlockMiddleware(
                 Models.Block.Content.Text.Style.Header3 -> BlockEntity.Content.Text.Style.H3
                 Models.Block.Content.Text.Style.Title -> BlockEntity.Content.Text.Style.TITLE
                 Models.Block.Content.Text.Style.Quote -> BlockEntity.Content.Text.Style.QUOTE
-                else -> TODO()
+                Models.Block.Content.Text.Style.Marked -> BlockEntity.Content.Text.Style.BULLET
+                Models.Block.Content.Text.Style.Numbered -> BlockEntity.Content.Text.Style.NUMBERED
+                Models.Block.Content.Text.Style.Toggle -> BlockEntity.Content.Text.Style.TOGGLE
+                else -> throw IllegalStateException("Unexpected text style: ${block.text.style}")
             }
         )
     }
@@ -193,7 +305,7 @@ class BlockMiddleware(
         middleware.closeDashboard(id)
     }
 
-    override suspend fun createPage(parentId: String) = middleware.createPage(parentId)
+    override suspend fun createPage(parentId: String): String = middleware.createPage(parentId)
 
     override suspend fun openPage(id: String) {
         middleware.openBlock(id)
@@ -213,5 +325,18 @@ class BlockMiddleware(
                 }
             }
         }
+    }
+
+    override suspend fun update(update: CommandEntity.Update) {
+        middleware.updateText(update.contextId, update.blockId, update.text)
+    }
+
+    override suspend fun create(command: CommandEntity.Create) {
+        middleware.createBlock(
+            command.contextId,
+            command.targetId,
+            command.position,
+            command.block
+        )
     }
 }

@@ -3,10 +3,16 @@ package com.agileburo.anytype.presentation.page
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.domain.base.Either
+import com.agileburo.anytype.domain.block.interactor.CreateBlock
+import com.agileburo.anytype.domain.block.interactor.UpdateBlock
+import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.event.interactor.ObserveEvents
+import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.page.ClosePage
-import com.agileburo.anytype.domain.page.ObservePage
 import com.agileburo.anytype.domain.page.OpenPage
+import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
+import com.agileburo.anytype.presentation.page.PageViewModel.ViewState
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.*
@@ -33,9 +39,15 @@ class PageViewModelTest {
     lateinit var closePage: ClosePage
 
     @Mock
-    lateinit var observePage: ObservePage
+    lateinit var observeEvents: ObserveEvents
 
-    lateinit var vm: PageViewModel
+    @Mock
+    lateinit var createBlock: CreateBlock
+
+    @Mock
+    lateinit var updateBlock: UpdateBlock
+
+    private lateinit var vm: PageViewModel
 
     @Before
     fun setup() {
@@ -43,28 +55,20 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should start observing page when view model is initialized`() = runBlockingTest {
-
-        observePage.stub {
-            onBlocking { build() } doReturn flowOf(emptyList())
-        }
-
+    fun `should start observing events when view model is initialized`() = runBlockingTest {
+        stubObserveEvents()
         buildViewModel()
-
-        verify(observePage, times(1)).build(eq(null))
+        verify(observeEvents, times(1)).build()
     }
 
     @Test
-    fun `should start opening page when requested`() = runBlockingTest {
+    fun `should start opening page when requested`() {
 
         val id = MockDataFactory.randomUuid()
 
         val param = OpenPage.Params(id = id)
 
-        observePage.stub {
-            onBlocking { build() } doReturn flowOf(emptyList())
-        }
-
+        stubObserveEvents()
         buildViewModel()
 
         vm.open(id)
@@ -73,11 +77,51 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should close page when the system back button is pressed`() = runBlockingTest {
+    fun `should dispatch a page to UI when this view model receives an appropriate command`() =
+        runBlockingTest {
+            val root = MockDataFactory.randomUuid()
+            val child = MockDataFactory.randomUuid()
 
-        observePage.stub {
-            onBlocking { build() } doReturn flowOf(emptyList())
+            val page = listOf(
+                Block(
+                    id = root,
+                    fields = Block.Fields(emptyMap()),
+                    content = Block.Content.Page(
+                        style = Block.Content.Page.Style.SET
+                    ),
+                    children = listOf(child)
+                ),
+                Block(
+                    id = child,
+                    fields = Block.Fields(emptyMap()),
+                    content = Block.Content.Text(
+                        text = MockDataFactory.randomString(),
+                        marks = emptyList(),
+                        style = Block.Content.Text.Style.P
+                    ),
+                    children = emptyList()
+                )
+            )
+
+            observeEvents.stub {
+                onBlocking { build() } doReturn flowOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            }
+
+            buildViewModel()
+
+            val expected = ViewState.Success(blocks = listOf(page.last().toView()))
+            vm.state.test().assertValue(expected)
         }
+
+    @Test
+    fun `should close page when the system back button is pressed`() {
+
+        stubObserveEvents()
 
         buildViewModel()
 
@@ -91,18 +135,10 @@ class PageViewModelTest {
     @Test
     fun `should emit an approprtiate navigation command when the page is closed`() {
 
-        observePage.stub {
-            onBlocking { build() } doReturn flowOf(emptyList())
-        }
-
         val response = Either.Right(Unit)
 
-        closePage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(response)
-            }
-        }
-
+        stubObserveEvents()
+        stubClosePage(response)
         buildViewModel()
 
         val testObserver = vm.navigation.test()
@@ -117,39 +153,226 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should not emit any navigation command if there is an error while closing the page`() =
-        runBlockingTest {
+    fun `should not emit any navigation command if there is an error while closing the page`() {
 
-            observePage.stub {
-                onBlocking { build() } doReturn flowOf(emptyList())
-            }
+        val error = Exception("Error while closing this page")
 
-            val error = Exception("Error while closing this page")
+        val response = Either.Left(error)
 
-            val response = Either.Left(error)
+        stubClosePage(response)
+        stubObserveEvents()
+        buildViewModel()
 
-            closePage.stub {
-                onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                    answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(response)
-                }
-            }
+        val testObserver = vm.navigation.test()
 
-            buildViewModel()
+        verifyZeroInteractions(closePage)
 
-            val testObserver = vm.navigation.test()
+        vm.onSystemBackPressed()
 
-            verifyZeroInteractions(closePage)
+        testObserver.assertNoValue()
+    }
 
-            vm.onSystemBackPressed()
+    @Test
+    fun `should update block when its text changes`() {
 
-            testObserver.assertNoValue()
+        val blockId = MockDataFactory.randomUuid()
+        val pageId = MockDataFactory.randomUuid()
+        val text = MockDataFactory.randomString()
+
+        stubObserveEvents()
+        buildViewModel()
+
+        vm.open(pageId)
+        vm.onTextChanged(id = blockId, text = text)
+
+        coroutineTestRule.advanceTime(500L)
+
+        verify(updateBlock, times(1)).invoke(
+            any(),
+            argThat { this.contextId == pageId && this.blockId == blockId && this.text == text },
+            any()
+        )
+    }
+
+    @Test
+    fun `should debonce values when dispatching text changes`() {
+
+        val blockId = MockDataFactory.randomUuid()
+        val pageId = MockDataFactory.randomUuid()
+        val text = MockDataFactory.randomString()
+
+        stubObserveEvents()
+        buildViewModel()
+
+        vm.open(pageId)
+
+        vm.onTextChanged(id = blockId, text = text)
+        vm.onTextChanged(id = blockId, text = text)
+        vm.onTextChanged(id = blockId, text = text)
+
+        coroutineTestRule.advanceTime(500L)
+
+        vm.onTextChanged(id = blockId, text = text)
+
+        coroutineTestRule.advanceTime(500L)
+
+        verify(updateBlock, times(2)).invoke(
+            any(),
+            argThat { this.contextId == pageId && this.blockId == blockId && this.text == text },
+            any()
+        )
+    }
+
+    @Test
+    fun `should add a new block when this view model receives a command to do that`() {
+
+        val added = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flowOf(
+                Event.Command.AddBlock(
+                    blocks = listOf(added)
+                )
+            )
         }
+
+        buildViewModel()
+
+        val expected = ViewState.Success(listOf(added.toView()))
+
+        vm.state.test().assertValue(expected)
+    }
+
+    @Test
+    fun `should a new block to the already existing one when this view model receives an appropriate command`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(child)
+            ),
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList()
+            )
+        )
+
+        val added = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flowOf(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
+                ),
+                Event.Command.AddBlock(
+                    blocks = listOf(added)
+                )
+            )
+        }
+
+        buildViewModel()
+
+        val expected = ViewState.Success(listOf(page.last().toView(), added.toView()))
+
+        vm.state.test().assertValue(expected)
+    }
+
+    @Test
+    fun `should start creating a new block if user clicked create-text-block-button`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(child)
+            ),
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList()
+            )
+        )
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flowOf(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
+                )
+            )
+        }
+
+        buildViewModel()
+
+        vm.onAddTextBlockClicked()
+
+        verify(createBlock, times(1)).invoke(any(), any(), any())
+    }
+
+    private fun stubClosePage(response: Either<Throwable, Unit>) {
+        closePage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(response)
+            }
+        }
+    }
+
+    private fun stubObserveEvents() {
+        observeEvents.stub {
+            onBlocking { build() } doReturn flowOf()
+        }
+    }
 
     private fun buildViewModel() {
         vm = PageViewModel(
             openPage = openPage,
             closePage = closePage,
-            observePage = observePage
+            updateBlock = updateBlock,
+            observeEvents = observeEvents,
+            createBlock = createBlock
         )
     }
 }

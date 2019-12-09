@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
+    <EditText
+        android:background="@null"
+        android:inputType="textMultiLine|textNoSuggestions"
         android:id="@+id/textContent"
         style="@style/BlockTextContentStyle"
         tools:text="@string/default_text_placeholder" />

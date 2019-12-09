@@ -3,7 +3,7 @@ package com.agileburo.anytype.presentation.splash
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.agileburo.anytype.core_utils.common.Event
+import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.agileburo.anytype.domain.auth.interactor.LaunchAccount
 import com.agileburo.anytype.domain.auth.interactor.LaunchWallet
@@ -23,7 +23,7 @@ class SplashViewModel(
     private val launchAccount: LaunchAccount
 ) : ViewModel() {
 
-    val navigation: MutableLiveData<Event<AppNavigation.Command>> = MutableLiveData()
+    val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> = MutableLiveData()
 
     fun onViewCreated() {
         checkAuthorizationStatus.invoke(viewModelScope, Unit) { result ->
@@ -31,7 +31,7 @@ class SplashViewModel(
                 fnL = { e -> Timber.e(e, "Error while checking auth status") },
                 fnR = { status ->
                     if (status == AuthStatus.UNAUTHORIZED)
-                        navigation.postValue(Event(AppNavigation.Command.OpenStartLoginScreen))
+                        navigation.postValue(EventWrapper(AppNavigation.Command.OpenStartLoginScreen))
                     else
                         proceedWithLaunchingWallet()
                 }
@@ -51,7 +51,7 @@ class SplashViewModel(
     private fun proceedWithLaunchingAccount() {
         launchAccount.invoke(viewModelScope, BaseUseCase.None) { result ->
             result.either(
-                fnR = { navigation.postValue(Event(AppNavigation.Command.StartDesktopFromSplash)) },
+                fnR = { navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromSplash)) },
                 fnL = { e -> Timber.e(e, "Error while launching account") }
             )
         }

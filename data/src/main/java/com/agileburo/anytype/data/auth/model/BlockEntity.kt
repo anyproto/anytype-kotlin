@@ -9,7 +9,7 @@ data class BlockEntity(
     val content: Content,
     val fields: Fields
 ) {
-    data class Fields(val map: MutableMap<String, Any> = mutableMapOf())
+    data class Fields(val map: MutableMap<String, Any?> = mutableMapOf())
 
     sealed class Content {
 
@@ -37,7 +37,7 @@ data class BlockEntity(
             }
 
             enum class Style {
-                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET
+                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE
             }
         }
 

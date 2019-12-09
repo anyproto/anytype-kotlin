@@ -3,7 +3,7 @@ package com.agileburo.anytype.presentation.auth.keychain
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.agileburo.anytype.core_utils.common.Event
+import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.domain.auth.interactor.RecoverWallet
 import com.agileburo.anytype.domain.auth.interactor.SaveMnemonic
 import com.agileburo.anytype.domain.device.PathProvider
@@ -16,9 +16,10 @@ class KeychainLoginViewModel(
     private val recoverWallet: RecoverWallet,
     private val saveMnemonic: SaveMnemonic,
     private val pathProvider: PathProvider
-) : ViewModel(), SupportNavigation<Event<AppNavigation.Command>> {
+) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-    override val navigation: MutableLiveData<Event<AppNavigation.Command>> = MutableLiveData()
+    override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
+        MutableLiveData()
 
     val state = MutableLiveData<ViewState<Boolean>>()
 
@@ -31,7 +32,7 @@ class KeychainLoginViewModel(
     }
 
     fun onBackButtonPressed() {
-        navigation.postValue(Event(AppNavigation.Command.Exit))
+        navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
     }
 
     private fun proceedWithRecoveringWallet(chain: String) {
@@ -64,7 +65,7 @@ class KeychainLoginViewModel(
         ) { result ->
             result.either(
                 fnR = {
-                    navigation.postValue(Event(AppNavigation.Command.SelectAccountScreen))
+                    navigation.postValue(EventWrapper(AppNavigation.Command.SelectAccountScreen))
                 },
                 fnL = { Timber.e(it, "Error while saving mnemonic: $mnemonic") }
             )

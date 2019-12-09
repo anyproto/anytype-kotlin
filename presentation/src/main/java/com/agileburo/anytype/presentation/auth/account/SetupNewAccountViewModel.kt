@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.agileburo.anytype.core_utils.common.Event
+import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.domain.auth.interactor.CreateAccount
 import com.agileburo.anytype.presentation.auth.model.Session
@@ -15,9 +15,10 @@ import timber.log.Timber
 class SetupNewAccountViewModel(
     private val session: Session,
     private val createAccount: CreateAccount
-) : ViewModel(), SupportNavigation<Event<AppNavigation.Command>> {
+) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-    override val navigation: MutableLiveData<Event<AppNavigation.Command>> = MutableLiveData()
+    override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
+        MutableLiveData()
 
     private val _state = MutableLiveData<ViewState<Any>>()
     val state: LiveData<ViewState<Any>>
@@ -46,7 +47,7 @@ class SetupNewAccountViewModel(
                 },
                 fnR = {
                     _state.postValue(ViewState.Success(Any()))
-                    navigation.postValue(Event(AppNavigation.Command.CongratulationScreen))
+                    navigation.postValue(EventWrapper(AppNavigation.Command.CongratulationScreen))
                 }
             )
         }

@@ -3,7 +3,7 @@ package com.agileburo.anytype.presentation.desktop
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.agileburo.anytype.core_utils.common.Event
+import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.model.Account
@@ -30,7 +30,7 @@ class HomeDashboardViewModel(
     private val createPage: CreatePage,
     private val observeDashboardBlocks: ObserveDashboardBlocks
 ) : ViewStateViewModel<HomeDashboardViewModel.ViewState>(),
-    SupportNavigation<Event<AppNavigation.Command>> {
+    SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     private val _profile = MutableLiveData<ProfileView>()
     val profile: LiveData<ProfileView> = _profile
@@ -38,7 +38,7 @@ class HomeDashboardViewModel(
     private val _image = MutableLiveData<ByteArray>()
     val image: LiveData<ByteArray> = _image
 
-    override val navigation = MutableLiveData<Event<AppNavigation.Command>>()
+    override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
     init {
         proceedWithObservingDashboardBlocks()
@@ -130,7 +130,7 @@ class HomeDashboardViewModel(
         closeDashboard.invoke(viewModelScope, CloseDashboard.Param.home()) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while closing a dashobard") },
-                fnR = { navigation.postValue(Event(AppNavigation.Command.OpenPage(id))) }
+                fnR = { navigation.postValue(EventWrapper(AppNavigation.Command.OpenPage(id))) }
             )
         }
     }
@@ -140,7 +140,7 @@ class HomeDashboardViewModel(
     }
 
     fun onProfileClicked() {
-        navigation.postValue(Event(AppNavigation.Command.OpenProfile))
+        navigation.postValue(EventWrapper(AppNavigation.Command.OpenProfile))
     }
 
     sealed class ViewState {

@@ -1,5 +1,7 @@
 package com.agileburo.anytype.middleware.interactor;
 
+import com.agileburo.anytype.data.auth.model.BlockEntity;
+import com.agileburo.anytype.data.auth.model.PositionEntity;
 import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
 import com.agileburo.anytype.middleware.model.SelectAccountResponse;
@@ -278,6 +280,62 @@ public class Middleware {
         Block.Open.Response response = Block.Open.Response.parseFrom(encodedResponse);
 
         if (response.getError() != null && response.getError().getCode() != Block.Open.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        }
+    }
+
+    public void updateText(String contextId, String blockId, String text) throws Exception {
+
+        Block.Set.Text.Editable.Request request = Block.Set.Text.Editable.Request
+                .newBuilder()
+                .setContextId(contextId)
+                .setBlockId(blockId)
+                .setText(text)
+                .build();
+
+        byte[] encodedRequest = request.toByteArray();
+
+        byte[] encodedResponse = Lib.blockSetTextText(encodedRequest);
+
+        Block.Set.Text.Editable.Response response = Block.Set.Text.Editable.Response.parseFrom(encodedResponse);
+
+        if (response.getError() != null && response.getError().getCode() != Block.Set.Text.Editable.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        }
+    }
+
+    public void createBlock(
+            String contextId,
+            String targetId,
+            PositionEntity position,
+            BlockEntity prototype
+    ) throws Exception {
+
+        Models.Block.Content.Text content = Models.Block.Content.Text
+                .newBuilder()
+                .build();
+
+        Models.Block block = Models.Block
+                .newBuilder()
+                .setText(content)
+                .build();
+
+        Block.Create.Request request = Block.Create.Request
+                .newBuilder()
+                .setContextId(contextId)
+                .setTargetId(targetId)
+                .setParentId(contextId)
+                .setPosition(Models.Block.Position.After)
+                .setBlock(block)
+                .build();
+
+        byte[] encodedRequest = request.toByteArray();
+
+        byte[] encodedResponse = Lib.blockCreate(encodedRequest);
+
+        Block.Create.Response response = Block.Create.Response.parseFrom(encodedResponse);
+
+        if (response.getError() != null && response.getError().getCode() != Block.Create.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         }
     }

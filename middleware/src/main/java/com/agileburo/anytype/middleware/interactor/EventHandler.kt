@@ -29,7 +29,7 @@ class EventHandler(
     private suspend fun handle(bytes: ByteArray) {
         try {
             Events.Event.parseFrom(bytes).let {
-                Timber.d("New event from middleware: $it")
+                Timber.d("New event from middleware:\n$it")
                 channel.send(it)
             }
         } catch (e: InvalidProtocolBufferException) {

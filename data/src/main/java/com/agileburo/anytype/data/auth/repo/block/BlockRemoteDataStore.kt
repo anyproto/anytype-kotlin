@@ -1,5 +1,7 @@
 package com.agileburo.anytype.data.auth.repo.block
 
+import com.agileburo.anytype.data.auth.model.CommandEntity
+
 class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun getConfig() = remote.getConfig()
@@ -14,14 +16,22 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun observeBlocks() = remote.observeBlocks()
     override suspend fun observePages() = remote.observePages()
+    override suspend fun observeEvents() = remote.observeEvents()
 
-    override suspend fun createPage(parentId: String) = remote.createPage(parentId)
-
+    override suspend fun createPage(parentId: String): String = remote.createPage(parentId)
     override suspend fun openPage(id: String) {
         remote.openPage(id)
     }
 
     override suspend fun closePage(id: String) {
         remote.closePage(id)
+    }
+
+    override suspend fun update(update: CommandEntity.Update) {
+        remote.update(update)
+    }
+
+    override suspend fun create(command: CommandEntity.Create) {
+        remote.create(command)
     }
 }

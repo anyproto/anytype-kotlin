@@ -3,7 +3,7 @@ package com.agileburo.anytype.presentation.profile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.agileburo.anytype.core_utils.common.Event
+import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
@@ -19,12 +19,14 @@ class ProfileViewModel(
     private val getCurrentAccount: GetCurrentAccount,
     private val loadImage: LoadImage,
     private val logout: Logout
-) : ViewStateViewModel<ViewState<ProfileView>>(), SupportNavigation<Event<AppNavigation.Command>> {
+) : ViewStateViewModel<ViewState<ProfileView>>(),
+    SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     private val _image = MutableLiveData<ByteArray>()
     val image: LiveData<ByteArray> = _image
 
-    override val navigation: MutableLiveData<Event<AppNavigation.Command>> = MutableLiveData()
+    override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
+        MutableLiveData()
 
     fun onViewCreated() {
         stateData.postValue(ViewState.Init)
@@ -32,11 +34,11 @@ class ProfileViewModel(
     }
 
     fun onBackButtonClicked() {
-        navigation.postValue(Event(AppNavigation.Command.Exit))
+        navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
     }
 
     fun onAddProfileClicked() {
-        navigation.postValue(Event(AppNavigation.Command.OpenCreateAccount))
+        navigation.postValue(EventWrapper(AppNavigation.Command.OpenCreateAccount))
     }
 
     private fun proceedWithGettingAccount() {
@@ -74,18 +76,18 @@ class ProfileViewModel(
                     Timber.e(e, "Error while logging out")
                 },
                 fnR = {
-                    navigation.postValue(Event(AppNavigation.Command.StartSplashFromDesktop))
+                    navigation.postValue(EventWrapper(AppNavigation.Command.StartSplashFromDesktop))
                 }
             )
         }
     }
 
     fun onKeyChainPhraseClicked() {
-        navigation.postValue(Event(AppNavigation.Command.OpenKeychainScreen))
+        navigation.postValue(EventWrapper(AppNavigation.Command.OpenKeychainScreen))
     }
 
     fun onPinCodeClicked() {
-        navigation.postValue(Event(AppNavigation.Command.OpenPinCodeScreen))
+        navigation.postValue(EventWrapper(AppNavigation.Command.OpenPinCodeScreen))
     }
 
     fun onUpdateToggled(value: Boolean) {

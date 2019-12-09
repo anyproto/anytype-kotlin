@@ -14,7 +14,9 @@
         android:text="🔖"
         android:textSize="28sp" />
 
-    <TextView
+    <EditText
+        android:background="@null"
+        android:inputType="textMultiLine|textNoSuggestions"
         android:id="@+id/title"
         style="@style/BlockTitleContentStyle"
         tools:text="Title" />

@@ -18,7 +18,10 @@ import javax.inject.Inject
 class PageFragment : NavigationFragment(R.layout.fragment_page) {
 
     private val pageAdapter by lazy {
-        BlockAdapter(blocks = mutableListOf())
+        BlockAdapter(
+            blocks = mutableListOf(),
+            onTextChanged = vm::onTextChanged
+        )
     }
 
     private val vm by lazy {
@@ -33,7 +36,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        vm.open(requireArguments().getString(ID_KEY, ""))
+        vm.open(requireArguments().getString(ID_KEY, ID_EMPTY_VALUE))
 
         requireActivity()
             .onBackPressedDispatcher
@@ -50,6 +53,8 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             setHasFixedSize(true)
             adapter = pageAdapter
         }
+
+        toolbar.addButton().setOnClickListener { vm.onAddTextBlockClicked() }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -76,5 +81,6 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
 
     companion object {
         const val ID_KEY = "id"
+        const val ID_EMPTY_VALUE = ""
     }
 }

@@ -1,7 +1,10 @@
 package com.agileburo.anytype.di.feature
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
+import com.agileburo.anytype.domain.block.interactor.CreateBlock
+import com.agileburo.anytype.domain.block.interactor.UpdateBlock
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.event.interactor.ObserveEvents
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.ObservePage
 import com.agileburo.anytype.domain.page.OpenPage
@@ -32,11 +35,15 @@ class PageModule {
     fun providePageViewModelFactory(
         openPage: OpenPage,
         closePage: ClosePage,
-        observePage: ObservePage
+        updateBlock: UpdateBlock,
+        createBlock: CreateBlock,
+        observeEvents: ObserveEvents
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
-        observePage = observePage,
-        closePage = closePage
+        closePage = closePage,
+        updateBlock = updateBlock,
+        createBlock = createBlock,
+        observeEvents = observeEvents
     )
 
     @Provides
@@ -60,6 +67,30 @@ class PageModule {
     fun provideClosePageUseCase(
         repo: BlockRepository
     ): ClosePage = ClosePage(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideUpdateBlockUseCase(
+        repo: BlockRepository
+    ): UpdateBlock = UpdateBlock(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideCreateBlockUseCase(
+        repo: BlockRepository
+    ): CreateBlock = CreateBlock(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideObserveEventsUseCase(
+        repo: BlockRepository
+    ): ObserveEvents = ObserveEvents(
         repo = repo
     )
 }

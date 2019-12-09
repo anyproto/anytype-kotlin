@@ -6,13 +6,16 @@ import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.model.Image
 import com.agileburo.anytype.domain.base.Either
-import com.agileburo.anytype.domain.block.interactor.ObserveDashboardBlocks
-import com.agileburo.anytype.domain.block.interactor.OpenDashboard
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
+import com.agileburo.anytype.domain.dashboard.interactor.ObserveDashboardBlocks
+import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.image.LoadImage
+import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.presentation.desktop.DashboardView
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModel
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModel.ViewState
+import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.profile.ProfileView
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
@@ -46,6 +49,12 @@ class HomeDashboardViewModelTest {
     @Mock
     lateinit var observeDashboardBlocks: ObserveDashboardBlocks
 
+    @Mock
+    lateinit var closeDashboard: CloseDashboard
+
+    @Mock
+    lateinit var createPage: CreatePage
+
     private lateinit var vm: HomeDashboardViewModel
 
     @Before
@@ -58,7 +67,9 @@ class HomeDashboardViewModelTest {
             loadImage = loadImage,
             getCurrentAccount = getCurrentAccount,
             openDashboard = openDashboard,
-            observeDashboardBlocks = observeDashboardBlocks
+            observeDashboardBlocks = observeDashboardBlocks,
+            closeDashboard = closeDashboard,
+            createPage = createPage
         )
     }
 
@@ -78,7 +89,7 @@ class HomeDashboardViewModelTest {
     }
 
     @Test
-    fun `should update view state as soon as blocks are received`() = runBlockingTest {
+    fun `should update view state as soon as blocks are received`() {
 
         val block = Block(
             id = MockDataFactory.randomUuid(),
@@ -124,7 +135,7 @@ class HomeDashboardViewModelTest {
         vm.onViewCreated()
 
         verify(getCurrentAccount, times(1)).invoke(any(), any(), any())
-        verify(openDashboard, times(1)).invoke(any(), any(), any())
+        verify(openDashboard, times(1)).invoke(any(), eq(null), any())
     }
 
     @Test
@@ -232,5 +243,52 @@ class HomeDashboardViewModelTest {
 
         verify(getCurrentAccount, times(1)).invoke(any(), any(), any())
         verify(loadImage, never()).invoke(any(), any(), any())
+    }
+
+    @Test
+    fun `should start creating page when requested from UI`() {
+
+        observeDashboardBlocks.stub {
+            onBlocking { build() } doReturn flowOf()
+        }
+
+        vm = buildViewModel()
+
+        vm.onAddNewDocumentClicked()
+
+        verify(createPage, times(1)).invoke(any(), any(), any())
+    }
+
+    @Test
+    fun `should close dashboard and navigate to page screen when page is created`() {
+
+        val id = MockDataFactory.randomUuid()
+
+        observeDashboardBlocks.stub {
+            onBlocking { build() } doReturn flowOf()
+        }
+
+        closeDashboard.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
+        }
+
+        createPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, String>) -> Unit>(2)(Either.Right(id))
+            }
+        }
+
+        vm = buildViewModel()
+
+        vm.onAddNewDocumentClicked()
+
+        vm.navigation
+            .test()
+            .assertHasValue()
+            .assertValue { value ->
+                (value.peekContent() as AppNavigation.Command.OpenPage).id == id
+            }
     }
 }

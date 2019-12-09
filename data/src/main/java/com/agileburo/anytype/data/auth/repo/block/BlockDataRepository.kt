@@ -10,9 +10,17 @@ class BlockDataRepository(
     private val factory: BlockDataStoreFactory
 ) : BlockRepository {
 
+    override suspend fun getConfig() = factory.remote.getConfig().toDomain()
+
     override suspend fun openDashboard(contextId: String, id: String) {
-        factory.remote.openDashboard(contextId = contextId, id = id)
+        factory.remote.openDashboard(id = id, contextId = contextId)
     }
+
+    override suspend fun closeDashboard(id: String) {
+        factory.remote.closeDashboard(id)
+    }
+
+    override suspend fun createPage(parentId: String) = factory.remote.createPage(parentId)
 
     override suspend fun openPage(id: String) {
         factory.remote.openPage(id)

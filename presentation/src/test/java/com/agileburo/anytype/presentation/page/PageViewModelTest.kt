@@ -1,5 +1,6 @@
 package com.agileburo.anytype.presentation.page
 
+import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.page.ClosePage
@@ -54,7 +55,11 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should start opening page when view model is initialized`() = runBlockingTest {
+    fun `should start opening page when requested`() = runBlockingTest {
+
+        val id = MockDataFactory.randomUuid()
+
+        val param = OpenPage.Params(id = id)
 
         observePage.stub {
             onBlocking { build() } doReturn flowOf(emptyList())
@@ -62,7 +67,9 @@ class PageViewModelTest {
 
         buildViewModel()
 
-        verify(openPage, times(1)).invoke(any(), any(), any())
+        vm.open(id)
+
+        verify(openPage, times(1)).invoke(any(), argThat { this.id == param.id }, any())
     }
 
     @Test

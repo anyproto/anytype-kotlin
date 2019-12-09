@@ -10,7 +10,9 @@ import com.agileburo.anytype.middleware.interactor.Middleware
 import com.agileburo.anytype.middleware.toAccountEntity
 import com.agileburo.anytype.middleware.toEntity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -54,7 +56,17 @@ class AuthMiddleware(
 
     override fun observeAccounts() = events
         .flow()
-        .filter { event -> event.messageCase == Events.Event.MessageCase.ACCOUNTSHOW }
+        .filter { event ->
+            event.messagesList.any { message ->
+                message.valueCase == Events.Event.Message.ValueCase.ACCOUNTSHOW
+            }
+        }
+        .map { event ->
+            event.messagesList.filter { message ->
+                message.valueCase == Events.Event.Message.ValueCase.ACCOUNTSHOW
+            }
+        }
+        .flatMapConcat { messages -> messages.asFlow() }
         .map { event -> event.accountShow.toAccountEntity() }
 
     override suspend fun createWallet(

@@ -37,7 +37,7 @@ class HomeDashboardFragment : ViewStateFragment<ViewState>(R.layout.fragment_des
     private val dashboardAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
-            onDocumentClicked = { vm.onDocumentClicked() }
+            onDocumentClicked = { vm.onDocumentClicked(it.id) }
         )
     }
 

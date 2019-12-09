@@ -35,7 +35,7 @@ interface AppNavigation {
         object SelectAccountScreen : Command()
         object EnterKeyChainScreen : Command()
         object WorkspaceScreen : Command()
-        data class OpenDocument(val id: String) : Command()
+        data class OpenPage(val id: String) : Command()
         object OpenProfile : Command()
         object OpenKeychainScreen : Command()
         object OpenPinCodeScreen : Command()

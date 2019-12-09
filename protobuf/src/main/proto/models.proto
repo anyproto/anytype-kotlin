@@ -7,21 +7,9 @@ import "google/protobuf/struct.proto";
 message Block {
     string id = 1;
     google.protobuf.Struct fields = 2;
-    Permissions permissions = 3;
+    Restrictions restrictions = 3;
     repeated string childrenIds = 4;
-
-    message Permissions {
-        bool read = 1;
-        bool edit = 2;
-        bool remove = 3;
-        bool drag = 4;
-        bool dropOn = 5;
-    }
-
-    enum Position {
-        Before = 0;
-        After = 1;
-    }
+    bool isArchived = 5;
 
     oneof content {
         Content.Dashboard dashboard = 11;
@@ -36,13 +24,28 @@ message Block {
         Content.Div div = 19;
         Content.Bookmark bookmark = 20;
         Content.Icon icon = 21;
+        Content.Link link = 22;
+    }
+
+
+    message Restrictions {
+        bool read = 1;
+        bool edit = 2;
+        bool remove = 3;
+        bool drag = 4;
+        bool dropOn = 5;
+    }
+
+    enum Position {
+        Before = 0;
+        After = 1;
     }
 
     message Content {
         /*
-     * Layout have no visual representation, but affects on blocks, that it contains.
-     * Row/Column layout blocks creates only automatically, after some of a D&D operations, for example
-    */
+        * Layout have no visual representation, but affects on blocks, that it contains.
+        * Row/Column layout blocks creates only automatically, after some of a D&D operations, for example
+        */
         message Layout {
             Style style = 1;
 
@@ -53,14 +56,30 @@ message Block {
         }
 
         /*
-     * Divider: block, that contains only one horizontal thin line
-    */
+        * Link: block to link some content from an external sources.
+        */
+        message Link {
+            string targetBlockId = 1; // id of the target block
+            Style style = 2;
+            google.protobuf.Struct fields = 3;
+            bool isArchived = 4;
+
+            enum Style {
+                Page = 0;
+                Dataview = 1;
+                // ...
+            }
+        }
+
+        /*
+        * Divider: block, that contains only one horizontal thin line
+        */
         message Div {
         }
 
         /*
-     * Bookmark is to keep a web-link and to preview a content.
-    */
+        * Bookmark is to keep a web-link and to preview a content.
+        */
         message Bookmark {
             // Model.Link.Preview preview = 1;
         }
@@ -70,9 +89,9 @@ message Block {
         }
 
         /*
-     * Block type to organize pages on the main screen (main purpose)
-     * It also can be mounted on a page.
-    */
+        * Block type to organize pages on the main screen (main purpose)
+        * It also can be mounted on a page.
+        */
         message Dashboard {
             enum Style {
                 MainScreen = 0;
@@ -83,19 +102,13 @@ message Block {
         }
 
         message Dataview {
-            // ...
         }
 
         message Text {
             string text = 1;
             Style style = 2;
-            repeated Mark marks = 3; // list of marks to apply to the text
-
-            bool toggleable = 4; // can be toggled or not
-            Marker marker = 5; // if no – it's not a list. If number/bullet – it should be a list with its list-siblings.
-
-            bool checkable = 6; // can be checked or not
-            bool checked = 7;
+            Marks marks = 3; // list of marks to apply to the text
+            bool checked = 4;
 
             message Marks {
                 repeated Mark marks = 1;
@@ -111,38 +124,35 @@ message Block {
                     Keyboard = 1;
                     Italic = 2;
                     Bold = 3;
-                    U = 4;
+                    Underscored = 4;
+                    Link = 5;
+                    TextColor = 6;
+                    BackgroundColor = 7;
                 }
             }
 
             enum Style {
-                P = 0;
-                H1 = 1;
-                H2 = 2;
-                H3 = 3;
-                U = 4;
+                Paragraph = 0;
+                Header1 = 1;
+                Header2 = 2;
+                Header3 = 3;
+                Header4 = 4;
                 Quote = 5;
                 Code = 6;
                 Title = 7;
-            }
-
-            enum Marker {
-                None = 0;
-                Number = 1;
-                Bullet = 2;
+                Checkbox = 8;
+                Marked = 9;
+                Numbered = 10;
+                Toggle = 11;
             }
         }
 
         message Video {
             string localFilePath = 1;
-            State state = 2;
-            Preview preview = 3;
-
-            message Preview {
-                string name = 1;
-                string icon = 2;
-                int32 width = 3;
-            }
+            string name = 2;
+            string icon = 3;
+            int32 width = 4;
+            State state = 5;
 
             enum State {
                 Empty = 0; // There is no video and preview, it's an empty block, that waits videos.
@@ -155,14 +165,16 @@ message Block {
 
         message Image {
             string localFilePath = 1;
-            State state = 2;
-            Preview preview = 3;
+            string previewFilePath = 2;
 
-            message Preview {
-                string name = 1;
-                string icon = 2;
-                int32 width = 3;
-            }
+            State state = 3;
+            Type type = 4;
+
+            string name = 5;
+            int32 size = 6;
+            int32 addedAt = 7;
+            int32 width = 8;
+            int32 widthToHeight = 9;
 
             enum State {
                 Empty = 0; // There is no image and preview, it's an empty block, that waits image.
@@ -171,17 +183,19 @@ message Block {
                 Downloading = 3; // Image exists, preview downloaded, but image downloading
                 Done = 4; // Image and preview downloaded
             }
+
+            enum Type {
+                Png = 0;
+                Jpg = 1;
+                // ...
+            }
         }
 
         message File {
             string localFilePath = 1; // Path to the file on a local machine
-            State state = 2;
-            Preview preview = 3; // Content to show before the main content downloaded
-
-            message Preview {
-                string name = 1;
-                string icon = 2;
-            }
+            string name = 2;
+            string icon = 3;
+            State state = 4;
 
             enum State {
                 Empty = 0; // There is no file and preview, it's an empty block, that waits files.
@@ -222,8 +236,8 @@ message Account {
     Avatar avatar = 3; // Avatar of a user's account
 
     /**
-* Avatar of a user's account. It could be an image or color
-*/
+    * Avatar of a user's account. It could be an image or color
+    */
     message Avatar {
         oneof avatar {
             Image image = 1; // Image of the avatar. Contains hash and size

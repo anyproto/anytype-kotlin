@@ -1,13 +1,11 @@
 package com.agileburo.anytype.data.auth.mapper
 
-import com.agileburo.anytype.data.auth.model.AccountEntity
-import com.agileburo.anytype.data.auth.model.BlockEntity
-import com.agileburo.anytype.data.auth.model.ImageEntity
-import com.agileburo.anytype.data.auth.model.WalletEntity
+import com.agileburo.anytype.data.auth.model.*
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.model.Image
 import com.agileburo.anytype.domain.auth.model.Wallet
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.config.Config
 
 fun AccountEntity.toDomain(): Account {
     return Account(
@@ -75,6 +73,7 @@ fun BlockEntity.toDomain(): Block {
 fun BlockEntity.Content.toDomain(): Block.Content = when (this) {
     is BlockEntity.Content.Text -> this.toDomain()
     is BlockEntity.Content.Dashboard -> this.toDomain()
+    is BlockEntity.Content.Page -> this.toDomain()
 }
 
 fun BlockEntity.Content.Text.toDomain(): Block.Content.Text {
@@ -91,10 +90,22 @@ fun BlockEntity.Content.Dashboard.toDomain(): Block.Content.Dashboard {
     )
 }
 
+fun BlockEntity.Content.Page.toDomain(): Block.Content.Page {
+    return Block.Content.Page(
+        style = Block.Content.Page.Style.valueOf(style.name)
+    )
+}
+
 fun BlockEntity.Content.Text.Mark.toDomain(): Block.Content.Text.Mark {
     return Block.Content.Text.Mark(
         range = range,
         param = param,
         type = Block.Content.Text.Mark.Type.valueOf(type.name)
+    )
+}
+
+fun ConfigEntity.toDomain(): Config {
+    return Config(
+        homeId = homeId
     )
 }

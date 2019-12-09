@@ -35,7 +35,7 @@ abstract class NavigationFragment(
             is Command.SetupSelectedAccountScreen -> navigation.setupSelectedAccount(command.id)
             is Command.ConfirmPinCodeScreen -> navigation.confirmPinCode(command.code)
             is Command.OpenProfile -> navigation.openProfile()
-            is Command.OpenDocument -> navigation.openDocument(command.id)
+            is Command.OpenPage -> navigation.openDocument(command.id)
             is Command.OpenKeychainScreen -> navigation.openKeychainScreen()
             is Command.OpenContactsScreen -> navigation.openContacts()
             is Command.Exit -> navigation.exit()

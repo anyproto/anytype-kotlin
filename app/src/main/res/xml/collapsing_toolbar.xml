@@ -21,24 +21,28 @@
             app:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/greeting"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="48dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/white"
+            android:textSize="36sp"
+            android:textStyle="bold"
             android:scaleX="1.0"
             android:scaleY="1.0"
+            app:layout_constraintEnd_toStartOf="@+id/avatar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
         <Constraint
-            android:id="@id/avatar"
+            android:id="@+id/avatar"
             android:layout_width="36dp"
             android:layout_height="36dp"
+            android:layout_marginTop="46dp"
             android:layout_marginEnd="20dp"
-            android:scaleX="1.0"
-            android:scaleY="1.0"
-            app:layout_constraintBottom_toBottomOf="@+id/greeting"
+            android:background="@drawable/circle_solid_default"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/greeting" />
+            app:layout_constraintTop_toTopOf="parent" />
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/collapsed">
@@ -51,25 +55,28 @@
             app:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/greeting"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="0dp"
-            android:scaleX="0.3"
-            android:scaleY="0.3"
-            app:layout_constraintBottom_toBottomOf="@+id/greeting"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/greeting" />
+            android:scaleX="0.0"
+            android:scaleY="0.0"
+            android:textColor="@color/white"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
         <Constraint
-            android:id="@id/avatar"
+            android:id="@+id/avatar"
             android:layout_width="36dp"
             android:layout_height="36dp"
+            android:layout_marginTop="0dp"
             android:layout_marginEnd="20dp"
             android:scaleX="0.0"
             android:scaleY="0.0"
-            app:layout_constraintBottom_toBottomOf="@+id/greeting"
+            android:background="@drawable/circle_solid_default"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/greeting" />
+            app:layout_constraintTop_toTopOf="parent" />
     </ConstraintSet>
 
 </MotionScene>

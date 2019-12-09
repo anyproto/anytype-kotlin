@@ -44,5 +44,9 @@ data class BlockEntity(
         data class Dashboard(val type: Type) : Content() {
             enum class Type { MAIN_SCREEN, ARCHIVE }
         }
+
+        data class Page(val style: Style) : Content() {
+            enum class Style { EMPTY, TASK, SET }
+        }
     }
 }

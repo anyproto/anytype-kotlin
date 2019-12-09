@@ -33,6 +33,8 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        vm.open(requireArguments().getString(ID_KEY, ""))
+
         requireActivity()
             .onBackPressedDispatcher
             .addCallback(this) {
@@ -70,5 +72,9 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
 
     override fun releaseDependencies() {
         componentManager().pageComponent.release()
+    }
+
+    companion object {
+        const val ID_KEY = "id"
     }
 }

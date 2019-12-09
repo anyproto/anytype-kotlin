@@ -1,4 +1,4 @@
-package com.agileburo.anytype.domain.block.interactor
+package com.agileburo.anytype.domain.dashboard.interactor
 
 import com.agileburo.anytype.domain.base.FlowUseCase
 import com.agileburo.anytype.domain.block.model.Block

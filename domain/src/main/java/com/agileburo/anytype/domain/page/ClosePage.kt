@@ -12,7 +12,7 @@ import com.agileburo.anytype.domain.page.ClosePage.Params
  */
 class ClosePage(
     private val repo: BlockRepository
-) : BaseUseCase<Unit, ClosePage.Params>() {
+) : BaseUseCase<Unit, Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.closePage(params.id).let {

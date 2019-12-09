@@ -6,6 +6,7 @@ import com.agileburo.anytype.middleware.model.SelectAccountResponse;
 
 import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
+import anytype.Commands.Rpc.Config;
 import anytype.Commands.Rpc.Ipfs.Image;
 import anytype.Commands.Rpc.Wallet;
 import anytype.model.Models;
@@ -13,6 +14,23 @@ import lib.Lib;
 import timber.log.Timber;
 
 public class Middleware {
+
+    public String provideHomeDashboardId() throws Exception {
+
+        Config.Get.Request request = Config.Get.Request
+                .newBuilder()
+                .build();
+
+        byte[] encodedResponse = Lib.configGet(request.toByteArray());
+
+        Config.Get.Response response = Config.Get.Response.parseFrom(encodedResponse);
+
+        if (response.getError() != null && response.getError().getCode() != Config.Get.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response.getHomeBlockId();
+        }
+    }
 
     public CreateWalletResponse createWallet(String path) throws Exception {
 
@@ -161,7 +179,7 @@ public class Middleware {
         Block.Open.Request request = Block.Open.Request
                 .newBuilder()
                 .setContextId(contextId)
-                .setId(id)
+                .setBlockId(id)
                 .build();
 
         byte[] encodedRequest = request.toByteArray();
@@ -181,7 +199,7 @@ public class Middleware {
 
         Block.Open.Request request = Block.Open.Request
                 .newBuilder()
-                .setId(id)
+                .setBlockId(id)
                 .build();
 
         byte[] encodedRequest = request.toByteArray();
@@ -195,11 +213,62 @@ public class Middleware {
         }
     }
 
+    public String createPage(String parentId) throws Exception {
+
+        Models.Block.Content.Page page = Models.Block.Content.Page
+                .newBuilder()
+                .setStyle(Models.Block.Content.Page.Style.Empty)
+                .build();
+
+        Models.Block block = Models.Block
+                .newBuilder()
+                .setPage(page)
+                .build();
+
+        Block.Create.Request request = Block.Create.Request
+                .newBuilder()
+                .setContextId(parentId)
+                .setParentId(parentId)
+                .setBlock(block)
+                .setPosition(Models.Block.Position.After)
+                .build();
+
+        byte[] encodedRequest = request.toByteArray();
+
+        byte[] encodedResponse = Lib.blockCreate(encodedRequest);
+
+        Block.Create.Response response = Block.Create.Response.parseFrom(encodedResponse);
+
+        if (response.getError() != null && response.getError().getCode() != Block.Create.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response.getBlockId();
+        }
+    }
+
     public void closePage(String id) throws Exception {
 
         Block.Close.Request request = Block.Close.Request
                 .newBuilder()
-                .setId(id)
+                .setBlockId(id)
+                .build();
+
+        byte[] encodedRequest = request.toByteArray();
+
+        byte[] encodedResponse = Lib.blockClose(encodedRequest);
+
+        Block.Open.Response response = Block.Open.Response.parseFrom(encodedResponse);
+
+        if (response.getError() != null && response.getError().getCode() != Block.Open.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        }
+    }
+
+    public void closeDashboard(String id) throws Exception {
+
+        Block.Close.Request request = Block.Close.Request
+                .newBuilder()
+                .setBlockId(id)
                 .build();
 
         byte[] encodedRequest = request.toByteArray();

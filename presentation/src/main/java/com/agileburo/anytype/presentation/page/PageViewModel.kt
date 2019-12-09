@@ -23,11 +23,15 @@ class PageViewModel(
     private val observePage: ObservePage
 ) : ViewStateViewModel<PageViewModel.ViewState>(), SupportNavigation<Event<AppNavigation.Command>> {
 
+    /**
+     * Currently opened page id.
+     */
+    private var id: String = ""
+
     override val navigation: MutableLiveData<Event<AppNavigation.Command>> = MutableLiveData()
 
     init {
         startObservingPage()
-        proceedWithOpeningPage()
     }
 
     private fun startObservingPage() {
@@ -43,19 +47,24 @@ class PageViewModel(
         }
     }
 
-    private fun proceedWithOpeningPage() {
+    fun open(id: String) {
+
+        this.id = id
+
+        Timber.d("Opening a page with id: $id")
+
         stateData.postValue(ViewState.Loading)
 
-        openPage.invoke(viewModelScope, OpenPage.Params.reference()) { result ->
+        openPage.invoke(viewModelScope, OpenPage.Params(id)) { result ->
             result.either(
                 fnR = { Timber.d("Page has been opened") },
-                fnL = { e -> Timber.e(e, "Error while openining the test page") }
+                fnL = { e -> Timber.e(e, "Error while openining page with id: $id") }
             )
         }
     }
 
     fun onSystemBackPressed() {
-        closePage.invoke(viewModelScope, ClosePage.Params.reference()) { result ->
+        closePage.invoke(viewModelScope, ClosePage.Params(id)) { result ->
             result.either(
                 fnR = { navigation.postValue(Event(AppNavigation.Command.Exit)) },
                 fnL = { e -> Timber.e(e, "Error while closing the test page") }

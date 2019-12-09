@@ -15,13 +15,3 @@ protobuf {
         artifact = rootProject.ext.protobuf.protoc
     }
 }
-
-ext {
-    protobuf_protocol_version = '0.0.8-rc2'
-}
-
-task version {
-    doLast {
-        println "Protobuf protocol version : " + protobuf_protocol_version
-    }
-}

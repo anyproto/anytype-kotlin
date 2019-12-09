@@ -16,7 +16,6 @@ class EventHandler(
     private val scope: CoroutineScope = GlobalScope
 ) : EventProxy {
 
-    // TODO consider using BroadcastChannel in the future.
     private val channel = BroadcastChannel<Events.Event>(1)
 
     init {

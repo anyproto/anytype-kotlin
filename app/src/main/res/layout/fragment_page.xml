@@ -7,7 +7,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@drawable/rectangle_debug_background"
         app:layout_behavior="@string/bottom_sheet_behavior">
 

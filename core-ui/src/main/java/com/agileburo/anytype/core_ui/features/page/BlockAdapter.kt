@@ -310,6 +310,7 @@ class BlockAdapter(
     fun updateWithDiffUtil(items: List<BlockView>) {
         val callback = BlockViewDiffUtil(old = blocks, new = items)
         val result = DiffUtil.calculateDiff(callback)
+        blocks.clear()
         blocks.addAll(items)
         result.dispatchUpdatesTo(this)
     }

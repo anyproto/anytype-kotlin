@@ -66,7 +66,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
     private fun render(state: PageViewModel.ViewState) {
         when (state) {
             is PageViewModel.ViewState.Success -> {
-                pageAdapter.update(state.blocks)
+                pageAdapter.updateWithDiffUtil(state.blocks)
             }
         }
     }

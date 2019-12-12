@@ -74,9 +74,11 @@ fun BlockEntity.toDomain(): Block {
 }
 
 fun BlockEntity.Content.toDomain(): Block.Content = when (this) {
-    is BlockEntity.Content.Text -> this.toDomain()
-    is BlockEntity.Content.Dashboard -> this.toDomain()
-    is BlockEntity.Content.Page -> this.toDomain()
+    is BlockEntity.Content.Text -> toDomain()
+    is BlockEntity.Content.Dashboard -> toDomain()
+    is BlockEntity.Content.Page -> toDomain()
+    is BlockEntity.Content.Layout -> toDomain()
+    is BlockEntity.Content.Image -> toDomain()
 }
 
 fun BlockEntity.Content.Text.toDomain(): Block.Content.Text {
@@ -99,6 +101,30 @@ fun BlockEntity.Content.Page.toDomain(): Block.Content.Page {
     )
 }
 
+fun BlockEntity.Content.Layout.toDomain(): Block.Content.Layout {
+    return Block.Content.Layout(
+        type = Block.Content.Layout.Type.valueOf(type.name)
+    )
+}
+
+fun Block.Content.Layout.toEntity(): BlockEntity.Content.Layout {
+    return BlockEntity.Content.Layout(
+        type = BlockEntity.Content.Layout.Type.valueOf(type.name)
+    )
+}
+
+fun BlockEntity.Content.Image.toDomain(): Block.Content.Image {
+    return Block.Content.Image(
+        path = path
+    )
+}
+
+fun Block.Content.Image.toEntity(): BlockEntity.Content.Image {
+    return BlockEntity.Content.Image(
+        path = path
+    )
+}
+
 fun BlockEntity.Content.Text.Mark.toDomain(): Block.Content.Text.Mark {
     return Block.Content.Text.Mark(
         range = range,
@@ -117,9 +143,11 @@ fun Block.toEntity(): BlockEntity {
 }
 
 fun Block.Content.toEntity(): BlockEntity.Content = when (this) {
-    is Block.Content.Text -> this.toEntity()
-    is Block.Content.Dashboard -> this.toEntity()
-    is Block.Content.Page -> this.toEntity()
+    is Block.Content.Text -> toEntity()
+    is Block.Content.Dashboard -> toEntity()
+    is Block.Content.Page -> toEntity()
+    is Block.Content.Layout -> toEntity()
+    is Block.Content.Image -> toEntity()
 }
 
 fun Block.Content.Text.toEntity(): BlockEntity.Content.Text {

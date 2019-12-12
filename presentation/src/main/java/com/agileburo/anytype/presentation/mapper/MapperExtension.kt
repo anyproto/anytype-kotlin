@@ -74,5 +74,10 @@ fun Block.toView(): BlockView = when (val content = this.content) {
             )
         }
     }
+    is Block.Content.Image -> {
+        BlockView.Picture(
+            id = id
+        )
+    }
     else -> TODO()
 }

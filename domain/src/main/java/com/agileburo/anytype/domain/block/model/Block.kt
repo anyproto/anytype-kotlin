@@ -21,6 +21,10 @@ data class Block(
     data class Fields(val map: Map<String, Any?>) {
         val name: String by map
         val icon: String by map
+
+        companion object {
+            fun empty(): Fields = Fields(emptyMap())
+        }
     }
 
     sealed class Content {
@@ -52,6 +56,14 @@ data class Block(
                 P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE
             }
         }
+
+        data class Layout(val type: Type) : Content() {
+            enum class Type { ROW, COLUMN }
+        }
+
+        data class Image(
+            val path: String
+        ) : Content()
 
         data class Dashboard(val type: Type) : Content() {
             enum class Type { MAIN_SCREEN, ARCHIVE }

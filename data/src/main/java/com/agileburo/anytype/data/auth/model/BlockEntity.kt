@@ -41,6 +41,14 @@ data class BlockEntity(
             }
         }
 
+        data class Layout(val type: Type) : Content() {
+            enum class Type { ROW, COLUMN }
+        }
+
+        data class Image(
+            val path: String
+        ) : Content()
+
         data class Dashboard(val type: Type) : Content() {
             enum class Type { MAIN_SCREEN, ARCHIVE }
         }

@@ -35,7 +35,8 @@ class BlockMiddleware(
 
     private val supportedContent = listOf(
         Models.Block.ContentCase.DASHBOARD,
-        Models.Block.ContentCase.PAGE
+        Models.Block.ContentCase.PAGE,
+        Models.Block.ContentCase.LAYOUT
     )
 
     override suspend fun getConfig(): ConfigEntity {
@@ -87,6 +88,24 @@ class BlockMiddleware(
                                         content = extractText(block)
                                     )
                                 }
+                                Models.Block.ContentCase.LAYOUT -> {
+                                    BlockEntity(
+                                        id = block.id,
+                                        children = block.childrenIdsList,
+                                        fields = extractFields(block),
+                                        content = extractLayout(block)
+                                    )
+                                }
+                                Models.Block.ContentCase.IMAGE -> {
+                                    BlockEntity(
+                                        id = block.id,
+                                        children = block.childrenIdsList,
+                                        fields = extractFields(block),
+                                        content = BlockEntity.Content.Image(
+                                            path = block.image.localFilePath
+                                        )
+                                    )
+                                }
                                 else -> {
                                     null
                                 }
@@ -121,6 +140,24 @@ class BlockMiddleware(
                                         children = block.childrenIdsList.toList(),
                                         fields = extractFields(block),
                                         content = extractText(block)
+                                    )
+                                }
+                                Models.Block.ContentCase.LAYOUT -> {
+                                    BlockEntity(
+                                        id = block.id,
+                                        children = block.childrenIdsList,
+                                        fields = extractFields(block),
+                                        content = extractLayout(block)
+                                    )
+                                }
+                                Models.Block.ContentCase.IMAGE -> {
+                                    BlockEntity(
+                                        id = block.id,
+                                        children = block.childrenIdsList,
+                                        fields = extractFields(block),
+                                        content = BlockEntity.Content.Image(
+                                            path = block.image.localFilePath
+                                        )
                                     )
                                 }
                                 else -> {
@@ -182,6 +219,24 @@ class BlockMiddleware(
                                 content = extractText(block)
                             )
                         }
+                        Models.Block.ContentCase.LAYOUT -> {
+                            BlockEntity(
+                                id = block.id,
+                                children = block.childrenIdsList,
+                                fields = extractFields(block),
+                                content = extractLayout(block)
+                            )
+                        }
+                        Models.Block.ContentCase.IMAGE -> {
+                            BlockEntity(
+                                id = block.id,
+                                children = block.childrenIdsList,
+                                fields = extractFields(block),
+                                content = BlockEntity.Content.Image(
+                                    path = block.image.localFilePath
+                                )
+                            )
+                        }
                         else -> {
                             throw IllegalStateException("Unexpected content: ${block.contentCase}")
                         }
@@ -216,6 +271,49 @@ class BlockMiddleware(
                     )
                 }
         }
+
+    override suspend fun openDashboard(contextId: String, id: String) {
+        middleware.openDashboard(contextId, id)
+    }
+
+    override suspend fun closeDashboard(id: String) {
+        middleware.closeDashboard(id)
+    }
+
+    override suspend fun createPage(parentId: String): String = middleware.createPage(parentId)
+
+    override suspend fun openPage(id: String) {
+        middleware.openBlock(id)
+    }
+
+    override suspend fun closePage(id: String) {
+        middleware.closePage(id)
+    }
+
+    private fun extractFields(block: Models.Block): BlockEntity.Fields {
+        return BlockEntity.Fields().also { fields ->
+            block.fields.fieldsMap.mapValues { (key, value) ->
+                fields.map[key] = when (val case = value.kindCase) {
+                    Value.KindCase.NUMBER_VALUE -> value.numberValue
+                    Value.KindCase.STRING_VALUE -> value.stringValue
+                    else -> throw IllegalStateException("$case is not supported.")
+                }
+            }
+        }
+    }
+
+    override suspend fun update(update: CommandEntity.Update) {
+        middleware.updateText(update.contextId, update.blockId, update.text)
+    }
+
+    override suspend fun create(command: CommandEntity.Create) {
+        middleware.createBlock(
+            command.contextId,
+            command.targetId,
+            command.position,
+            command.block
+        )
+    }
 
     private fun extractDashboard(block: Models.Block): BlockEntity.Content.Dashboard {
         return BlockEntity.Content.Dashboard(
@@ -297,46 +395,17 @@ class BlockMiddleware(
         )
     }
 
-    override suspend fun openDashboard(contextId: String, id: String) {
-        middleware.openDashboard(contextId, id)
-    }
-
-    override suspend fun closeDashboard(id: String) {
-        middleware.closeDashboard(id)
-    }
-
-    override suspend fun createPage(parentId: String): String = middleware.createPage(parentId)
-
-    override suspend fun openPage(id: String) {
-        middleware.openBlock(id)
-    }
-
-    override suspend fun closePage(id: String) {
-        middleware.closePage(id)
-    }
-
-    private fun extractFields(block: Models.Block): BlockEntity.Fields {
-        return BlockEntity.Fields().also { fields ->
-            block.fields.fieldsMap.mapValues { (key, value) ->
-                fields.map[key] = when (val case = value.kindCase) {
-                    Value.KindCase.NUMBER_VALUE -> value.numberValue
-                    Value.KindCase.STRING_VALUE -> value.stringValue
-                    else -> throw IllegalStateException("$case is not supported.")
+    private fun extractLayout(block: Models.Block): BlockEntity.Content.Layout {
+        return BlockEntity.Content.Layout(
+            type = when {
+                block.layout.style == Models.Block.Content.Layout.Style.Column -> {
+                    BlockEntity.Content.Layout.Type.COLUMN
                 }
+                block.layout.style == Models.Block.Content.Layout.Style.Row -> {
+                    BlockEntity.Content.Layout.Type.ROW
+                }
+                else -> throw IllegalStateException("Unexpected layout style: ${block.layout.style}")
             }
-        }
-    }
-
-    override suspend fun update(update: CommandEntity.Update) {
-        middleware.updateText(update.contextId, update.blockId, update.text)
-    }
-
-    override suspend fun create(command: CommandEntity.Create) {
-        middleware.createBlock(
-            command.contextId,
-            command.targetId,
-            command.position,
-            command.block
         )
     }
 }

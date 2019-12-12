@@ -10,6 +10,8 @@ import com.agileburo.anytype.domain.block.interactor.UpdateBlock
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.interactor.ObserveEvents
 import com.agileburo.anytype.domain.event.model.Event
+import com.agileburo.anytype.domain.ext.asMap
+import com.agileburo.anytype.domain.ext.asRender
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.mapper.toView
@@ -56,20 +58,16 @@ class PageViewModel(
 
     private fun handleEvent(event: Event) {
         when (event) {
-            is Event.Command.ShowBlock -> event.blocks.first { block ->
-                block.id == event.rootId
-            }.let { parent ->
-                parent.children.mapNotNull { child ->
-                    event.blocks.find { it.id == child }
-                }.also { blocks = it }
-            }.let { result ->
+            is Event.Command.ShowBlock -> {
+                blocks = event.blocks
                 stateData.postValue(
                     ViewState.Success(
-                        blocks = result.mapNotNull { block ->
-                            if (block.content is Block.Content.Text)
-                                block.toView()
-                            else
-                                null
+                        blocks = event.blocks.asMap().asRender(pageId).mapNotNull { block ->
+                            when {
+                                block.content is Block.Content.Text -> block.toView()
+                                block.content is Block.Content.Image -> block.toView()
+                                else -> null
+                            }
                         }
                     )
                 )

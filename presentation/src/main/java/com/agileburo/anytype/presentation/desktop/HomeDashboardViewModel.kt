@@ -48,7 +48,13 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             observeDashboardBlocks
                 .build()
-                .map { blocks -> blocks.map { mapToView(it) } }
+                .map { blocks ->
+                    blocks
+                        .filter { block ->
+                            block.content is Block.Content.Dashboard || block.content is Block.Content.Page
+                        }
+                        .map { mapToView(it) }
+                }
                 .collect { blocks -> dispatchViewState(blocks) }
         }
     }

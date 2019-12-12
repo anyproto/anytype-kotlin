@@ -16,6 +16,9 @@ import com.agileburo.anytype.presentation.page.PageViewModel.ViewState
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -77,46 +80,67 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should dispatch a page to UI when this view model receives an appropriate command`() =
-        runBlockingTest {
-            val root = MockDataFactory.randomUuid()
-            val child = MockDataFactory.randomUuid()
+    fun `should dispatch a page to UI when this view model receives an appropriate command`() {
 
-            val page = listOf(
-                Block(
-                    id = root,
-                    fields = Block.Fields(emptyMap()),
-                    content = Block.Content.Page(
-                        style = Block.Content.Page.Style.SET
-                    ),
-                    children = listOf(child)
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
                 ),
-                Block(
-                    id = child,
-                    fields = Block.Fields(emptyMap()),
-                    content = Block.Content.Text(
-                        text = MockDataFactory.randomString(),
-                        marks = emptyList(),
-                        style = Block.Content.Text.Style.P
-                    ),
-                    children = emptyList()
+                children = listOf(child)
+            ),
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList()
+            )
+        )
+
+        openPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
+        }
+
+        val flow: Flow<Event.Command> = flow {
+            delay(1000)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
                 )
             )
-
-            observeEvents.stub {
-                onBlocking { build() } doReturn flowOf(
-                    Event.Command.ShowBlock(
-                        rootId = root,
-                        blocks = page
-                    )
-                )
-            }
-
-            buildViewModel()
-
-            val expected = ViewState.Success(blocks = listOf(page.last().toView()))
-            vm.state.test().assertValue(expected)
         }
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flow
+        }
+
+        openPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
+        }
+
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(1001)
+
+        val expected = ViewState.Success(blocks = listOf(page.last().toView()))
+        vm.state.test().assertValue(expected)
+    }
 
     @Test
     fun `should close page when the system back button is pressed`() {
@@ -253,7 +277,7 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should a new block to the already existing one when this view model receives an appropriate command`() {
+    fun `should add a new block to the already existing one when this view model receives an appropriate command`() {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
@@ -291,18 +315,33 @@ class PageViewModelTest {
         )
 
         observeEvents.stub {
-            onBlocking { build() } doReturn flowOf(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
-                ),
-                Event.Command.AddBlock(
-                    blocks = listOf(added)
+            onBlocking { build() } doReturn flow {
+                delay(100)
+                emit(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
                 )
-            )
+                emit(
+                    Event.Command.AddBlock(
+                        blocks = listOf(added)
+                    )
+                )
+            }
+        }
+
+        openPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
         }
 
         buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(200)
 
         val expected = ViewState.Success(listOf(page.last().toView(), added.toView()))
 
@@ -350,6 +389,85 @@ class PageViewModelTest {
         vm.onAddTextBlockClicked()
 
         verify(createBlock, times(1)).invoke(any(), any(), any())
+    }
+
+    @Test
+    fun `should update block text without dispatching it to UI when we receive an appropriate event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(child)
+            ),
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList()
+            )
+        )
+
+        val text = MockDataFactory.randomString()
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flow {
+                delay(100)
+                emit(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+                delay(100)
+                emit(
+                    Event.Command.UpdateBlockText(
+                        text = text,
+                        id = child
+                    )
+                )
+            }
+        }
+
+        openPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
+        }
+
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        val beforeUpdate = ViewState.Success(
+            listOf(page.last().toView())
+        )
+
+        vm.state.test().assertValue(beforeUpdate)
+
+        coroutineTestRule.advanceTime(200)
+
+        val expected = page.last().copy(
+            content = (page.last().content as Block.Content.Text).copy(
+                text = text
+            )
+        )
+
+        val afterUpdate = beforeUpdate.copy()
+
+        vm.state.test().assertValue(afterUpdate)
     }
 
     private fun stubClosePage(response: Either<Throwable, Unit>) {

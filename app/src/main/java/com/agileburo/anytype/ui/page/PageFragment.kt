@@ -5,14 +5,20 @@ import android.view.View
 import androidx.activity.addCallback
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
+import com.agileburo.anytype.core_utils.ext.invisible
+import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.di.common.componentManager
+import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.base.NavigationFragment
 import kotlinx.android.synthetic.main.fragment_page.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 class PageFragment : NavigationFragment(R.layout.fragment_page) {
@@ -20,7 +26,19 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
     private val pageAdapter by lazy {
         BlockAdapter(
             blocks = mutableListOf(),
-            onTextChanged = vm::onTextChanged
+            onTextChanged = { id, editable ->
+                vm.onTextChanged(id, editable.toString(), editable.extractMarks())
+            },
+            onSelectionChanged = { id, selection ->
+                vm.onSelectionChanged(
+                    id = id,
+                    selection = selection
+                )
+                if (selection.first == selection.last)
+                    markupToolbar.invisible()
+                else
+                    markupToolbar.visible()
+            }
         )
     }
 
@@ -55,6 +73,11 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         }
 
         toolbar.addButton().setOnClickListener { vm.onAddTextBlockClicked() }
+
+        markupToolbar
+            .markupClicks()
+            .onEach { vm.onMarkupActionClicked(it) }
+            .launchIn(lifecycleScope)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

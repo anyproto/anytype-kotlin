@@ -2,6 +2,7 @@ package com.agileburo.anytype.presentation.page
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.CreateBlock
 import com.agileburo.anytype.domain.block.interactor.UpdateBlock
@@ -26,6 +27,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import kotlin.test.assertEquals
 
 class PageViewModelTest {
 
@@ -207,7 +209,7 @@ class PageViewModelTest {
         buildViewModel()
 
         vm.open(pageId)
-        vm.onTextChanged(id = blockId, text = text)
+        vm.onTextChanged(id = blockId, text = text, marks = emptyList())
 
         coroutineTestRule.advanceTime(500L)
 
@@ -230,13 +232,13 @@ class PageViewModelTest {
 
         vm.open(pageId)
 
-        vm.onTextChanged(id = blockId, text = text)
-        vm.onTextChanged(id = blockId, text = text)
-        vm.onTextChanged(id = blockId, text = text)
+        vm.onTextChanged(id = blockId, text = text, marks = emptyList())
+        vm.onTextChanged(id = blockId, text = text, marks = emptyList())
+        vm.onTextChanged(id = blockId, text = text, marks = emptyList())
 
         coroutineTestRule.advanceTime(500L)
 
-        vm.onTextChanged(id = blockId, text = text)
+        vm.onTextChanged(id = blockId, text = text, marks = emptyList())
 
         coroutineTestRule.advanceTime(500L)
 
@@ -245,35 +247,6 @@ class PageViewModelTest {
             argThat { this.contextId == pageId && this.blockId == blockId && this.text == text },
             any()
         )
-    }
-
-    @Test
-    fun `should add a new block when this view model receives a command to do that`() {
-
-        val added = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            children = emptyList()
-        )
-
-        observeEvents.stub {
-            onBlocking { build() } doReturn flowOf(
-                Event.Command.AddBlock(
-                    blocks = listOf(added)
-                )
-            )
-        }
-
-        buildViewModel()
-
-        val expected = ViewState.Success(listOf(added.toView()))
-
-        vm.state.test().assertValue(expected)
     }
 
     @Test
@@ -323,6 +296,7 @@ class PageViewModelTest {
                         blocks = page
                     )
                 )
+                delay(100)
                 emit(
                     Event.Command.AddBlock(
                         blocks = listOf(added)
@@ -459,21 +433,629 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(200)
 
-        val expected = page.last().copy(
-            content = (page.last().content as Block.Content.Text).copy(
-                text = text
-            )
-        )
-
         val afterUpdate = beforeUpdate.copy()
 
         vm.state.test().assertValue(afterUpdate)
+    }
+
+    @Test
+    fun `should emit loading state when starting opening a page`() {
+
+        val root = MockDataFactory.randomUuid()
+
+        stubOpenPage()
+        stubObserveEvents()
+        buildViewModel()
+
+        val testObserver = vm.state.test()
+
+        testObserver.assertNoValue()
+
+        vm.open(root)
+
+        testObserver.assertValue(ViewState.Loading)
+    }
+
+    @Test
+    fun `should apply two different markup actions`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            ),
+            children = listOf(child)
+        )
+
+        val blocks = listOf(
+            page,
+            paragraph
+        )
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flow {
+                delay(100)
+                emit(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = blocks
+                    )
+                )
+            }
+        }
+
+        stubOpenPage()
+
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        val firstTimeRange = 0..3
+        val firstTimeMarkup = Markup.Type.BOLD
+
+        vm.onSelectionChanged(
+            id = paragraph.id,
+            selection = firstTimeRange
+        )
+
+        vm.onMarkupActionClicked(firstTimeMarkup)
+
+        val firstTimeExpected = ViewState.Success(
+            listOf(
+                paragraph
+                    .copy(
+                        content = (paragraph.content as Block.Content.Text).copy(
+                            marks = listOf(
+                                Block.Content.Text.Mark(
+                                    type = Block.Content.Text.Mark.Type.BOLD,
+                                    param = null,
+                                    range = firstTimeRange
+                                )
+                            )
+                        )
+                    )
+                    .toView(focused = false)
+            )
+        )
+
+        vm.state.test().apply {
+            assertHasValue()
+            assertValue(firstTimeExpected)
+        }
+
+        val secondTimeRange = 0..5
+        val secondTimeMarkup = Markup.Type.ITALIC
+
+        vm.onSelectionChanged(
+            id = paragraph.id,
+            selection = secondTimeRange
+        )
+
+        vm.onMarkupActionClicked(secondTimeMarkup)
+
+        val secondTimeExpected = ViewState.Success(
+            listOf(
+                paragraph
+                    .copy(
+                        content = (paragraph.content as Block.Content.Text).copy(
+                            marks = listOf(
+                                Block.Content.Text.Mark(
+                                    type = Block.Content.Text.Mark.Type.BOLD,
+                                    param = null,
+                                    range = firstTimeRange
+                                ),
+                                Block.Content.Text.Mark(
+                                    type = Block.Content.Text.Mark.Type.ITALIC,
+                                    param = null,
+                                    range = secondTimeRange
+                                )
+                            )
+                        )
+                    )
+                    .toView(focused = true)
+            )
+        )
+
+        vm.state.test().apply {
+            assertHasValue()
+            assertValue(secondTimeExpected)
+        }
+    }
+
+    @Test
+    fun `should apply two markup actions of the same markup type`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            ),
+            children = listOf(child)
+        )
+
+        val blocks = listOf(
+            page,
+            paragraph
+        )
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flow {
+                delay(100)
+                emit(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = blocks
+                    )
+                )
+            }
+        }
+
+        stubOpenPage()
+
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        val firstTimeRange = 0..3
+        val firstTimeMarkup = Markup.Type.BOLD
+
+        vm.onSelectionChanged(
+            id = paragraph.id,
+            selection = firstTimeRange
+        )
+
+        vm.onMarkupActionClicked(firstTimeMarkup)
+
+        val firstTimeExpected = ViewState.Success(
+            listOf(
+                paragraph
+                    .copy(
+                        content = (paragraph.content as Block.Content.Text).copy(
+                            marks = listOf(
+                                Block.Content.Text.Mark(
+                                    type = Block.Content.Text.Mark.Type.BOLD,
+                                    param = null,
+                                    range = firstTimeRange
+                                )
+                            )
+                        )
+                    )
+                    .toView(focused = false)
+            )
+        )
+
+        vm.state.test().apply {
+            assertHasValue()
+            assertValue(firstTimeExpected)
+        }
+
+        vm.onSelectionChanged(
+            id = paragraph.id,
+            selection = 3..3
+        )
+
+        vm.onSelectionChanged(
+            id = paragraph.id,
+            selection = 0..0
+        )
+
+        val secondTimeRange = 0..5
+        val secondTimeMarkup = Markup.Type.BOLD
+
+        vm.onSelectionChanged(
+            id = paragraph.id,
+            selection = secondTimeRange
+        )
+
+        vm.onMarkupActionClicked(secondTimeMarkup)
+
+        val secondTimeExpected = ViewState.Success(
+            listOf(
+                paragraph
+                    .copy(
+                        content = (paragraph.content as Block.Content.Text).copy(
+                            marks = listOf(
+                                Block.Content.Text.Mark(
+                                    type = Block.Content.Text.Mark.Type.BOLD,
+                                    param = null,
+                                    range = firstTimeRange
+                                ),
+                                Block.Content.Text.Mark(
+                                    type = Block.Content.Text.Mark.Type.BOLD,
+                                    param = null,
+                                    range = secondTimeRange
+                                )
+                            )
+                        )
+                    )
+                    .toView(focused = true)
+            )
+        )
+
+        vm.state.test().apply {
+            assertHasValue()
+            assertValue(secondTimeExpected)
+        }
+    }
+
+    @Test
+    fun `should dispatch texts changes and markup even if only markup is changed`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            ),
+            children = listOf(child)
+        )
+
+        val blocks = listOf(
+            page,
+            paragraph
+        )
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flow {
+                delay(100)
+                emit(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = blocks
+                    )
+                )
+            }
+        }
+
+        stubOpenPage()
+
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        val range = 0..3
+        val markup = Markup.Type.BOLD
+
+        vm.onSelectionChanged(
+            id = paragraph.id,
+            selection = range
+        )
+
+        vm.onMarkupActionClicked(markup)
+
+        val marks = listOf(
+            Block.Content.Text.Mark(
+                type = Block.Content.Text.Mark.Type.BOLD,
+                param = null,
+                range = range
+            )
+        )
+
+        verify(updateBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                UpdateBlock.Params(
+                    blockId = paragraph.id,
+                    marks = marks,
+                    contextId = page.id,
+                    text = paragraph.content.asText().text
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `test changes from UI do not trigger re-rendering`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            ),
+            children = listOf(child)
+        )
+
+        val blocks = listOf(
+            page,
+            paragraph
+        )
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flow {
+                delay(100)
+                emit(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = blocks
+                    )
+                )
+            }
+        }
+
+        stubOpenPage()
+
+        buildViewModel()
+
+        val testObserver = vm.state.test()
+
+        vm.open(root)
+
+        testObserver.assertValue(ViewState.Loading)
+
+        coroutineTestRule.advanceTime(100)
+
+        val state = ViewState.Success(
+            listOf(paragraph.toView())
+        )
+
+        testObserver
+            .assertValue(state)
+            .assertHistorySize(2)
+
+        val userInput = MockDataFactory.randomString()
+
+        val range = 0..3
+
+        val marks = listOf(
+            Block.Content.Text.Mark(
+                type = Block.Content.Text.Mark.Type.BOLD,
+                param = null,
+                range = range
+            )
+        )
+
+        vm.onTextChanged(
+            id = paragraph.id,
+            marks = marks,
+            text = userInput
+        )
+
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        testObserver
+            .assertValue(state)
+            .assertHistorySize(2)
+    }
+
+    @Test
+    fun `should update text inside view state when user changed text`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val initialText = ""
+
+        val initialContent = Block.Content.Text(
+            text = initialText,
+            marks = emptyList(),
+            style = Block.Content.Text.Style.P
+        )
+
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = initialContent,
+            children = emptyList()
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            ),
+            children = listOf(child)
+        )
+
+        val blocks = listOf(
+            page,
+            paragraph
+        )
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flow {
+                delay(100)
+                emit(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = blocks
+                    )
+                )
+            }
+        }
+
+        stubOpenPage()
+
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        val userInput = MockDataFactory.randomString()
+
+        vm.onTextChanged(id = paragraph.id, text = userInput, marks = emptyList())
+
+        val contentAfterChange = Block.Content.Text(
+            text = userInput,
+            marks = emptyList(),
+            style = Block.Content.Text.Style.P
+        )
+
+        val paragraphAfterChange = paragraph.copy(
+            content = contentAfterChange
+        )
+
+        val expected = listOf(
+            page,
+            paragraphAfterChange
+        )
+
+        coroutineTestRule.advanceTime(500)
+
+        assertEquals(
+            expected = expected,
+            actual = vm.blocks
+        )
+    }
+
+    @Test
+    fun `should dispatch text changes including markup to the middleware`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val initialText = ""
+
+        val initialContent = Block.Content.Text(
+            text = initialText,
+            marks = emptyList(),
+            style = Block.Content.Text.Style.P
+        )
+
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = initialContent,
+            children = emptyList()
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            ),
+            children = listOf(child)
+        )
+
+        val blocks = listOf(
+            page,
+            paragraph
+        )
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flow {
+                delay(100)
+                emit(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = blocks
+                    )
+                )
+            }
+        }
+
+        stubOpenPage()
+
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        val userInput = MockDataFactory.randomString()
+        val marks = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                type = Block.Content.Text.Mark.Type.BOLD
+            )
+        )
+
+        vm.onTextChanged(id = paragraph.id, text = userInput, marks = marks)
+
+        coroutineTestRule.advanceTime(500)
+
+        verify(updateBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                UpdateBlock.Params(
+                    blockId = paragraph.id,
+                    text = userInput,
+                    marks = marks,
+                    contextId = page.id
+                )
+            ),
+            onResult = any()
+        )
     }
 
     private fun stubClosePage(response: Either<Throwable, Unit>) {
         closePage.stub {
             onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
                 answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(response)
+            }
+        }
+    }
+
+    private fun stubOpenPage() {
+        openPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
             }
         }
     }

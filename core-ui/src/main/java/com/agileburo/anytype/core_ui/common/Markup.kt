@@ -1,8 +1,10 @@
 package com.agileburo.anytype.core_ui.common
 
 import android.graphics.Typeface
+import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
 
 /**
@@ -36,7 +38,8 @@ interface Markup {
      */
     enum class Type {
         ITALIC,
-        BOLD
+        BOLD,
+        STRIKETHROUGH
     }
 }
 
@@ -51,6 +54,37 @@ fun Markup.toSpannable() = SpannableString(body).apply {
             )
             Markup.Type.BOLD -> setSpan(
                 StyleSpan(Typeface.BOLD),
+                mark.from,
+                mark.to,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            Markup.Type.STRIKETHROUGH -> setSpan(
+                StrikethroughSpan(),
+                mark.from,
+                mark.to,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+        }
+    }
+}
+
+fun Editable.setMarkup(markup: Markup) {
+    markup.marks.forEach { mark ->
+        when (mark.type) {
+            Markup.Type.ITALIC -> setSpan(
+                StyleSpan(Typeface.ITALIC),
+                mark.from,
+                mark.to,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            Markup.Type.BOLD -> setSpan(
+                StyleSpan(Typeface.BOLD),
+                mark.from,
+                mark.to,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            Markup.Type.STRIKETHROUGH -> setSpan(
+                StrikethroughSpan(),
                 mark.from,
                 mark.to,
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE

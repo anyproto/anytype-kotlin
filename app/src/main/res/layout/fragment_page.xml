@@ -30,4 +30,12 @@
         android:layout_gravity="bottom"
         android:background="@color/white" />
 
+    <com.agileburo.anytype.core_ui.widgets.toolbar.MarkupToolbarWidget
+        android:visibility="invisible"
+        android:id="@+id/markupToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_toolbar_height"
+        android:layout_gravity="bottom"
+        android:background="@color/white" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

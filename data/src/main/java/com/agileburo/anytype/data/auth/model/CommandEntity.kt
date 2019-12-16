@@ -5,7 +5,8 @@ class CommandEntity {
     class Update(
         val contextId: String,
         val blockId: String,
-        val text: String
+        val text: String,
+        val marks: List<BlockEntity.Content.Text.Mark>
     )
 
     class Create(

@@ -13,6 +13,7 @@ import com.agileburo.anytype.ui.page.PageFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import kotlinx.coroutines.Dispatchers
 
 @Subcomponent(modules = [PageModule::class])
 @PerScreen
@@ -91,6 +92,7 @@ class PageModule {
     fun provideObserveEventsUseCase(
         repo: BlockRepository
     ): ObserveEvents = ObserveEvents(
-        repo = repo
+        repo = repo,
+        context = Dispatchers.IO
     )
 }

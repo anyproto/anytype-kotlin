@@ -1,5 +1,6 @@
 package com.agileburo.anytype.core_ui.features.page
 
+import com.agileburo.anytype.core_ui.common.Editable
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.ViewType
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
@@ -40,8 +41,9 @@ sealed class BlockView : ViewType {
     data class Text(
         override val id: String,
         val text: String,
-        override val marks: List<Markup.Mark> = emptyList()
-    ) : BlockView(), Markup {
+        override val marks: List<Markup.Mark> = emptyList(),
+        override val focused: Boolean = false
+    ) : BlockView(), Markup, Editable {
         override fun getViewType() = HOLDER_TEXT
         override val body: String = text
     }

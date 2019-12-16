@@ -7,16 +7,43 @@ class BlockViewDiffUtil(
     private val new: List<BlockView>
 ) : DiffUtil.Callback() {
 
+    override fun getOldListSize() = old.size
+    override fun getNewListSize() = new.size
+
     override fun areItemsTheSame(
         oldItemPosition: Int,
         newItemPosition: Int
     ) = new[newItemPosition].id == old[oldItemPosition].id
 
-    override fun getOldListSize() = old.size
-    override fun getNewListSize() = new.size
-
     override fun areContentsTheSame(
         oldItemPosition: Int,
         newItemPosition: Int
     ) = new[newItemPosition] == old[oldItemPosition]
+
+    override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+
+        val oldBlock = old[oldItemPosition]
+        val newBlock = new[newItemPosition]
+
+        return if (oldBlock is BlockView.Text && newBlock is BlockView.Text) {
+            if (oldBlock.text != newBlock.text) {
+                if (oldBlock.marks != newBlock.marks)
+                    TEXT_AND_MARKUP_CHANGED
+                else
+                    TEXT_CHANGED
+            } else {
+                if (oldBlock.marks != newBlock.marks)
+                    MARKUP_CHANGED
+                else
+                    throw IllegalStateException("Unexpected change payload scenario")
+            }
+        } else
+            super.getChangePayload(oldItemPosition, newItemPosition)
+    }
+
+    companion object {
+        const val TEXT_CHANGED = 0
+        const val MARKUP_CHANGED = 1
+        const val TEXT_AND_MARKUP_CHANGED = 2
+    }
 }

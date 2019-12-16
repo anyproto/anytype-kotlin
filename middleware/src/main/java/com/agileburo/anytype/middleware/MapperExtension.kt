@@ -4,6 +4,7 @@ import anytype.Events
 import anytype.model.Models
 import anytype.model.Models.Account
 import com.agileburo.anytype.data.auth.model.AccountEntity
+import com.agileburo.anytype.data.auth.model.BlockEntity
 import com.agileburo.anytype.data.auth.model.ImageEntity
 
 fun Models.Image.toEntity(): ImageEntity? {
@@ -39,4 +40,36 @@ fun Events.Event.Account.Show.toAccountEntity(): AccountEntity {
         color = if (account.avatar.avatarCase == Account.Avatar.AvatarCase.COLOR)
             account.avatar.color else null
     )
+}
+
+fun BlockEntity.Content.Text.Mark.toMiddleware(): Models.Block.Content.Text.Mark {
+    val rangeModel = Models.Range.newBuilder()
+        .setFrom(range.first)
+        .setTo(range.last)
+        .build()
+
+    return when (type) {
+        BlockEntity.Content.Text.Mark.Type.BOLD -> {
+            Models.Block.Content.Text.Mark
+                .newBuilder()
+                .setType(Models.Block.Content.Text.Mark.Type.Bold)
+                .setRange(rangeModel)
+                .build()
+        }
+        BlockEntity.Content.Text.Mark.Type.ITALIC -> {
+            Models.Block.Content.Text.Mark
+                .newBuilder()
+                .setType(Models.Block.Content.Text.Mark.Type.Italic)
+                .setRange(rangeModel)
+                .build()
+        }
+        BlockEntity.Content.Text.Mark.Type.STRIKETHROUGH -> {
+            Models.Block.Content.Text.Mark
+                .newBuilder()
+                .setType(Models.Block.Content.Text.Mark.Type.Strikethrough)
+                .setRange(rangeModel)
+                .build()
+        }
+        else -> throw IllegalStateException("Unsupported mark type: ${type.name}")
+    }
 }

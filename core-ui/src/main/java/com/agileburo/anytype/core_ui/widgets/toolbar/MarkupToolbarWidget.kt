@@ -5,6 +5,12 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.reactive.clicks
+import kotlinx.android.synthetic.main.widget_markup_toolbar.view.*
+import kotlinx.coroutines.flow.flattenMerge
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
 
 class MarkupToolbarWidget : ConstraintLayout {
@@ -29,4 +35,9 @@ class MarkupToolbarWidget : ConstraintLayout {
     private fun inflate() {
         LayoutInflater.from(context).inflate(R.layout.widget_markup_toolbar, this)
     }
+
+    fun markupClicks() = flowOf(bold(), italic(), strike()).flattenMerge()
+    private fun bold() = bold.clicks().map { Markup.Type.BOLD }
+    private fun italic() = italic.clicks().map { Markup.Type.ITALIC }
+    private fun strike() = strike.clicks().map { Markup.Type.STRIKETHROUGH }
 }

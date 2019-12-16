@@ -1,5 +1,6 @@
 package com.agileburo.anytype.core_ui.features.page
 
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -23,6 +24,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TEXT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
+import timber.log.Timber
 
 /**
  * Adapter for rendering list of blocks.
@@ -32,8 +34,9 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
  * @see BlockViewDiffUtil
  */
 class BlockAdapter(
-    private val blocks: MutableList<BlockView>,
-    private val onTextChanged: (String, String) -> Unit
+    private var blocks: List<BlockView>,
+    private val onTextChanged: (String, Editable) -> Unit,
+    private val onSelectionChanged: (String, IntRange) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -211,12 +214,32 @@ class BlockAdapter(
 
     override fun getItemCount(): Int = blocks.size
 
+    override fun onBindViewHolder(
+        holder: BlockViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (payloads.isEmpty())
+            onBindViewHolder(holder, position)
+        else
+            when (holder) {
+                is BlockViewHolder.Text -> {
+                    holder.processChangePayload(
+                        payloads = payloads,
+                        item = blocks[position] as BlockView.Text
+                    )
+                }
+                else -> TODO()
+            }
+    }
+
     override fun onBindViewHolder(holder: BlockViewHolder, position: Int) {
         when (holder) {
             is BlockViewHolder.Text -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Text,
-                    onTextChanged = onTextChanged
+                    onTextChanged = onTextChanged,
+                    onSelectionChanged = onSelectionChanged
                 )
             }
             is BlockViewHolder.Title -> {
@@ -303,21 +326,30 @@ class BlockAdapter(
         }
     }
 
+    // Bug workaround for losing text selection ability, see:
+    // https://code.google.com/p/android/issues/detail?id=208169
+    override fun onViewAttachedToWindow(holder: BlockViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        if (holder is BlockViewHolder.Text) {
+            holder.content.isEnabled = false
+            holder.content.isEnabled = true
+        }
+    }
+
     @Deprecated(
         level = DeprecationLevel.WARNING,
         message = "Consider RecyclerView's AsyncListDiffer instead. Or implement it with Kotlin coroutines."
     )
     fun updateWithDiffUtil(items: List<BlockView>) {
-        val callback = BlockViewDiffUtil(old = blocks, new = items)
-        val result = DiffUtil.calculateDiff(callback)
-        blocks.clear()
-        blocks.addAll(items)
+        logDataSetUpdateEvent(items)
+        val result = DiffUtil.calculateDiff(BlockViewDiffUtil(old = blocks, new = items))
+        blocks = items
         result.dispatchUpdatesTo(this)
     }
 
-    fun update(items: List<BlockView>) {
-        blocks.clear()
-        blocks.addAll(items)
-        notifyDataSetChanged()
+    private fun logDataSetUpdateEvent(items: List<BlockView>) {
+        Timber.d("----------Updating------------")
+        items.forEach { Timber.d(it.toString()) }
+        Timber.d("----------Finished------------")
     }
 }

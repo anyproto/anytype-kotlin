@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <EditText
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+        android:focusable="true"
+        android:textIsSelectable="true"
         android:background="@null"
         android:inputType="textMultiLine|textNoSuggestions"
         android:id="@+id/textContent"

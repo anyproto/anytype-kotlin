@@ -188,7 +188,8 @@ fun Command.Update.toEntity(): CommandEntity.Update {
     return CommandEntity.Update(
         contextId = contextId,
         blockId = blockId,
-        text = text
+        text = text,
+        marks = marks.map { it.toEntity() }
     )
 }
 

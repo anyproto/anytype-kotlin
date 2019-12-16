@@ -6,6 +6,8 @@ import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
 import com.agileburo.anytype.middleware.model.SelectAccountResponse;
 
+import java.util.List;
+
 import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.Config;
@@ -284,14 +286,29 @@ public class Middleware {
         }
     }
 
-    public void updateText(String contextId, String blockId, String text) throws Exception {
+    public void updateText(
+            String contextId,
+            String blockId,
+            String text,
+            List<Models.Block.Content.Text.Mark> marks
+    ) throws Exception {
+
+        Timber.d("Updating block with the follwing text:" + text);
+
+        Models.Block.Content.Text.Marks markup = Models.Block.Content.Text.Marks
+                .newBuilder()
+                .addAllMarks(marks)
+                .build();
 
         Block.Set.Text.Editable.Request request = Block.Set.Text.Editable.Request
                 .newBuilder()
                 .setContextId(contextId)
                 .setBlockId(blockId)
+                .setMarks(markup)
                 .setText(text)
                 .build();
+
+        Timber.d("Updating block with the following request:\n" + request.toString());
 
         byte[] encodedRequest = request.toByteArray();
 

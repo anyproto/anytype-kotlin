@@ -11,7 +11,7 @@
         android:layout_height="64dp"
         android:background="@drawable/rectangle_default_page_logo_background"
         android:gravity="center"
-        android:text="🔖"
+        android:text="✍️"
         android:textSize="28sp" />
 
     <EditText

@@ -11,6 +11,7 @@ import com.agileburo.anytype.data.auth.model.EventEntity
 import com.agileburo.anytype.data.auth.repo.block.BlockRemote
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.interactor.Middleware
+import com.agileburo.anytype.middleware.toMiddleware
 import com.google.protobuf.Value
 import kotlinx.coroutines.flow.*
 
@@ -303,7 +304,12 @@ class BlockMiddleware(
     }
 
     override suspend fun update(update: CommandEntity.Update) {
-        middleware.updateText(update.contextId, update.blockId, update.text)
+        middleware.updateText(
+            update.contextId,
+            update.blockId,
+            update.text,
+            update.marks.map { it.toMiddleware() }
+        )
     }
 
     override suspend fun create(command: CommandEntity.Create) {

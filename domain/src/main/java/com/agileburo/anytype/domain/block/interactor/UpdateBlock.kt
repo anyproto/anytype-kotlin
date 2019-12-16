@@ -2,6 +2,7 @@ package com.agileburo.anytype.domain.block.interactor
 
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
+import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 
@@ -14,7 +15,8 @@ class UpdateBlock(
             update = Command.Update(
                 contextId = params.contextId,
                 blockId = params.blockId,
-                text = params.text
+                text = params.text,
+                marks = params.marks
             )
         ).let {
             Either.Right(it)
@@ -23,10 +25,11 @@ class UpdateBlock(
         Either.Left(t)
     }
 
-    class Params(
+    data class Params(
         val contextId: String,
         val blockId: String,
-        val text: String
+        val text: String,
+        val marks: List<Block.Content.Text.Mark>
     )
 
 }

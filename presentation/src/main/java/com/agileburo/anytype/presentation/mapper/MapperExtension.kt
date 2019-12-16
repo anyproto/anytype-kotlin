@@ -5,7 +5,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content.Text.Style
 
-fun Block.toView(): BlockView = when (val content = this.content) {
+fun Block.toView(focused: Boolean = false): BlockView = when (val content = this.content) {
     is Block.Content.Text -> {
         when (content.style) {
             Style.P -> BlockView.Text(
@@ -27,9 +27,17 @@ fun Block.toView(): BlockView = when (val content = this.content) {
                                 type = Markup.Type.BOLD
                             )
                         }
+                        Block.Content.Text.Mark.Type.STRIKETHROUGH -> {
+                            Markup.Mark(
+                                from = mark.range.first,
+                                to = mark.range.last,
+                                type = Markup.Type.STRIKETHROUGH
+                            )
+                        }
                         else -> null
                     }
-                }
+                },
+                focused = focused
             )
             Style.H1 -> BlockView.HeaderOne(
                 id = this.id,

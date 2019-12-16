@@ -76,6 +76,7 @@ ext {
             navigationUi:               "androidx.navigation:navigation-ui-ktx:$navigation_version",
             viewModel:                  "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version",
             viewModelExtensions:        "androidx.lifecycle:lifecycle-extensions:$lifecycle_version",
+            lifecycleExtensions:        "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version",
             lifecycleCompiler:          "androidx.lifecycle:lifecycle-compiler:$lifecycle_version",
             appcompat:                  "androidx.appcompat:appcompat:$appcompat_version",
             constraintLayout:           "androidx.constraintlayout:constraintlayout:$constraintLayout_version",

@@ -1,12 +1,19 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
-import android.widget.EditText
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.common.setMarkup
 import com.agileburo.anytype.core_ui.common.toSpannable
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.MARKUP_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_AND_MARKUP_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
+import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
+import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
+import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -23,6 +30,7 @@ import kotlinx.android.synthetic.main.item_block_task.view.*
 import kotlinx.android.synthetic.main.item_block_text.view.*
 import kotlinx.android.synthetic.main.item_block_title.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
+import timber.log.Timber
 
 /**
  * Viewholder for rendering different type of blocks (i.e its UI-models).
@@ -31,36 +39,77 @@ import kotlinx.android.synthetic.main.item_block_toggle.view.*
  */
 sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
+    fun focus(editText: TextInputWidget) {
+        editText.apply {
+            postDelayed(
+                { requestFocus() }
+                , FOCUS_TIMEOUT_MILLIS
+            )
+        }
+    }
+
+    fun logOnBind() {
+        Timber.d("onBind")
+    }
+
     class Text(view: View) : BlockViewHolder(view) {
 
-        private val content: EditText = itemView.textContent
+        val content: TextInputWidget = itemView.textContent
+
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
+        }
 
         fun bind(
             item: BlockView.Text,
-            onTextChanged: (String, String) -> Unit
+            onTextChanged: (String, Editable) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit
         ) {
+            logOnBind()
+
             if (item.marks.isNotEmpty())
-                content.setText(item.toSpannable())
+                content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
             else
                 content.setText(item.text)
 
-            val listener = object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) = Unit
-
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) =
-                    Unit
-
-                override fun afterTextChanged(s: Editable) {
-                    onTextChanged(item.id, s.toString())
+            content.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
                 }
+            )
+
+            if (item.focused) {
+                content.setSelection(0)
+                focus(content)
+            } else {
+                content.clearFocus()
+                content.setSelection(0)
+                content.isEnabled = false
             }
 
-            content.addTextChangedListener(listener)
+            content.selectionDetector = { onSelectionChanged(item.id, it) }
+        }
+
+        fun processChangePayload(
+            payloads: List<Any>,
+            item: BlockView.Text
+        ) = payloads.forEach { payload ->
+            when (payload) {
+                MARKUP_CHANGED -> setMarkup(markup = item)
+                TEXT_CHANGED -> {
+                    if (content.text.toString() != item.text)
+                        content.setText(item.text)
+                }
+                TEXT_AND_MARKUP_CHANGED -> {
+                    if (content.text.toString() != item.text)
+                        content.setText(item.text)
+                    setMarkup(markup = item)
+                }
+            }
+        }
+
+        private fun setMarkup(markup: Markup) {
+            content.text?.setMarkup(markup)
         }
     }
 
@@ -70,27 +119,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.Title,
-            onTextChanged: (String, String) -> Unit
+            onTextChanged: (String, Editable) -> Unit
         ) {
             title.setText(item.text)
-
-            val listener = object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) = Unit
-
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) =
-                    Unit
-
-                override fun afterTextChanged(s: Editable) {
-                    onTextChanged(item.id, s.toString())
+            title.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
                 }
-            }
-
-            title.addTextChangedListener(listener)
+            )
         }
     }
 
@@ -289,5 +325,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_PICTURE = 15
         const val HOLDER_DIVIDER = 16
         const val HOLDER_HIGHLIGHT = 17
+
+        const val FOCUS_TIMEOUT_MILLIS = 300L
     }
 }

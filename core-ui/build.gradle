@@ -31,11 +31,13 @@ dependencies {
 
     implementation applicationDependencies.appcompat
     implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutines
 
     implementation applicationDependencies.design
     implementation applicationDependencies.recyclerView
     implementation applicationDependencies.constraintLayout
     implementation applicationDependencies.glide
+    implementation applicationDependencies.timber
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

@@ -29,16 +29,20 @@ data class Block(
 
     sealed class Content {
 
+        fun asText() = this as Text
+
         data class Text(
             val text: String,
             val style: Style,
             val marks: List<Mark>
         ) : Content() {
 
+            fun isTitle() = style == Style.TITLE
+
             data class Mark(
                 val range: IntRange,
                 val type: Type,
-                val param: Any?
+                val param: Any? = null
             ) {
                 enum class Type {
                     STRIKETHROUGH,

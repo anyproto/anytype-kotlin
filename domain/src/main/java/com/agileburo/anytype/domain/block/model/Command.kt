@@ -4,7 +4,8 @@ sealed class Command {
     class Update(
         val contextId: String,
         val blockId: String,
-        val text: String
+        val text: String,
+        val marks: List<Block.Content.Text.Mark>
     )
 
     class Create(

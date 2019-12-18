@@ -4,8 +4,9 @@ import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
-import com.agileburo.anytype.domain.dashboard.interactor.ObserveDashboardBlocks
+import com.agileburo.anytype.domain.dashboard.interactor.ObserveHomeDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.image.ImageLoader
 import com.agileburo.anytype.domain.image.LoadImage
@@ -15,6 +16,7 @@ import com.agileburo.anytype.ui.desktop.HomeDashboardFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import kotlinx.coroutines.Dispatchers
 
 
 @Subcomponent(
@@ -41,16 +43,18 @@ class HomeDashboardModule {
         getCurrentAccount: GetCurrentAccount,
         loadImage: LoadImage,
         openDashboard: OpenDashboard,
-        observeDashboardBlocks: ObserveDashboardBlocks,
         createPage: CreatePage,
-        closeDashboard: CloseDashboard
+        closeDashboard: CloseDashboard,
+        getConfig: GetConfig,
+        observeHomeDashboard: ObserveHomeDashboard
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getCurrentAccount = getCurrentAccount,
         loadImage = loadImage,
         openDashboard = openDashboard,
-        observeDashboardBlocks = observeDashboardBlocks,
         createPage = createPage,
-        closeDashboard = closeDashboard
+        closeDashboard = closeDashboard,
+        getConfig = getConfig,
+        observeHomeDashboard = observeHomeDashboard
     )
 
     @Provides
@@ -80,14 +84,6 @@ class HomeDashboardModule {
 
     @Provides
     @PerScreen
-    fun provideObserveDashboardBlocksUseCase(
-        repo: BlockRepository
-    ): ObserveDashboardBlocks = ObserveDashboardBlocks(
-        repository = repo
-    )
-
-    @Provides
-    @PerScreen
     fun provideCloseDashboardUseCase(
         repo: BlockRepository
     ): CloseDashboard = CloseDashboard(
@@ -99,6 +95,23 @@ class HomeDashboardModule {
     fun provideCreatePageUseCase(
         repo: BlockRepository
     ): CreatePage = CreatePage(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun getConfigUseCase(
+        repo: BlockRepository
+    ): GetConfig = GetConfig(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideObserveHomeDashboardUseCase(
+        repo: BlockRepository
+    ): ObserveHomeDashboard = ObserveHomeDashboard(
+        context = Dispatchers.IO,
         repo = repo
     )
 }

@@ -30,6 +30,7 @@ data class Block(
     sealed class Content {
 
         fun asText() = this as Text
+        fun asDashboard() = this as Dashboard
 
         data class Text(
             val text: String,

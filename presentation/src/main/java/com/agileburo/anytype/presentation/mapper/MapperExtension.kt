@@ -4,6 +4,8 @@ import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content.Text.Style
+import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
+import com.agileburo.anytype.presentation.desktop.DashboardView
 
 fun Block.toView(focused: Boolean = false): BlockView = when (val content = this.content) {
     is Block.Content.Text -> {
@@ -88,4 +90,13 @@ fun Block.toView(focused: Boolean = false): BlockView = when (val content = this
         )
     }
     else -> TODO()
+}
+
+fun HomeDashboard.toView(): List<DashboardView.Document> {
+    return blocks.map {
+        DashboardView.Document(
+            id = it.id,
+            title = it.fields.name
+        )
+    }
 }

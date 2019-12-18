@@ -8,17 +8,17 @@ import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.base.BaseUseCase
-import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
-import com.agileburo.anytype.domain.dashboard.interactor.ObserveDashboardBlocks
+import com.agileburo.anytype.domain.dashboard.interactor.ObserveHomeDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.domain.page.CreatePage
+import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
 import com.agileburo.anytype.presentation.profile.ProfileView
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -28,7 +28,8 @@ class HomeDashboardViewModel(
     private val openDashboard: OpenDashboard,
     private val closeDashboard: CloseDashboard,
     private val createPage: CreatePage,
-    private val observeDashboardBlocks: ObserveDashboardBlocks
+    private val observeHomeDashboard: ObserveHomeDashboard,
+    private val getConfig: GetConfig
 ) : ViewStateViewModel<HomeDashboardViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -41,28 +42,23 @@ class HomeDashboardViewModel(
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
     init {
-        proceedWithObservingDashboardBlocks()
+        proceedWithGettingConfig()
     }
 
-    private fun proceedWithObservingDashboardBlocks() {
-        viewModelScope.launch {
-            observeDashboardBlocks
-                .build()
-                .map { blocks ->
-                    blocks
-                        .filter { block ->
-                            block.content is Block.Content.Dashboard || block.content is Block.Content.Page
-                        }
-                        .map { mapToView(it) }
-                }
-                .collect { blocks -> dispatchViewState(blocks) }
+    private fun proceedWithGettingConfig() {
+        getConfig.invoke(viewModelScope, Unit) { result ->
+            result.either(
+                fnR = { startObservingHomeDashboard(it.homeDashboardId) },
+                fnL = { Timber.e(it, "Error while getting config") }
+            )
         }
     }
 
-    private fun addBlock(block: Block) {
-        if (state.value is ViewState.Success) {
-            val result = (state.value as ViewState.Success).data + listOf(mapToView(block))
-            dispatchViewState(result)
+    private fun startObservingHomeDashboard(id: String) {
+        viewModelScope.launch {
+            observeHomeDashboard
+                .build(ObserveHomeDashboard.Param(id))
+                .collect { dispatchViewState(it.toView()) }
         }
     }
 
@@ -70,17 +66,10 @@ class HomeDashboardViewModel(
         stateData.postValue(ViewState.Success(data = blocks))
     }
 
-    private fun mapToView(block: Block): DashboardView.Document {
-        return DashboardView.Document(
-            id = block.id,
-            title = block.fields.name
-        )
-    }
-
     private fun proceedWithGettingAccount() {
         getCurrentAccount.invoke(viewModelScope, BaseUseCase.None) { result ->
             result.either(
-                fnL = { e -> Timber.e(e, "Error while getting account") },
+                fnL = { Timber.e(it, "Error while getting account") },
                 fnR = { account ->
                     _profile.postValue(ProfileView(name = account.name))
                     loadAvatarImage(account)
@@ -93,7 +82,7 @@ class HomeDashboardViewModel(
         stateData.postValue(ViewState.Loading)
         openDashboard.invoke(viewModelScope, null) { result ->
             result.either(
-                fnL = { e -> Timber.e(e, "Error while opening home dashboard") },
+                fnL = { Timber.e(it, "Error while opening home dashboard") },
                 fnR = { Timber.d("Home dashboard opened") }
             )
         }
@@ -108,11 +97,11 @@ class HomeDashboardViewModel(
                 )
             ) { result ->
                 result.either(
-                    fnL = { e -> Timber.e(e, "Error while loading image") },
+                    fnL = { Timber.e(it, "Error while loading image") },
                     fnR = { blob -> _image.postValue(blob) }
                 )
             }
-        } ?: Timber.d("Avatar not loaded: null value")
+        } ?: Timber.d("User does not have any avatar")
     }
 
     fun onViewCreated() {
@@ -130,9 +119,6 @@ class HomeDashboardViewModel(
     }
 
     private fun navigateToPage(id: String) {
-
-        Timber.d("Starting navigation to page: $id")
-
         closeDashboard.invoke(viewModelScope, CloseDashboard.Param.home()) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while closing a dashobard") },

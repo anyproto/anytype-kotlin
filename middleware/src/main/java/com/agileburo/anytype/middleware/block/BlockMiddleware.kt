@@ -97,6 +97,7 @@ class BlockMiddleware(
                                         content = extractLayout(block)
                                     )
                                 }
+                                /*
                                 Models.Block.ContentCase.IMAGE -> {
                                     BlockEntity(
                                         id = block.id,
@@ -107,6 +108,7 @@ class BlockMiddleware(
                                         )
                                     )
                                 }
+                                */
                                 else -> {
                                     null
                                 }
@@ -151,6 +153,7 @@ class BlockMiddleware(
                                         content = extractLayout(block)
                                     )
                                 }
+                                /*
                                 Models.Block.ContentCase.IMAGE -> {
                                     BlockEntity(
                                         id = block.id,
@@ -161,6 +164,7 @@ class BlockMiddleware(
                                         )
                                     )
                                 }
+                                 */
                                 else -> {
                                     null
                                 }
@@ -228,6 +232,7 @@ class BlockMiddleware(
                                 content = extractLayout(block)
                             )
                         }
+                        /*
                         Models.Block.ContentCase.IMAGE -> {
                             BlockEntity(
                                 id = block.id,
@@ -238,6 +243,7 @@ class BlockMiddleware(
                                 )
                             )
                         }
+                         */
                         else -> {
                             throw IllegalStateException("Unexpected content: ${block.contentCase}")
                         }

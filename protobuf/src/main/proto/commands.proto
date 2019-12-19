@@ -12,14 +12,66 @@ import "google/protobuf/struct.proto";
  * Response – message from a middleware.
 */
 message Rpc {
+
+    message ExternalDrop {
+        message Files {
+            message Request {
+                string contextId = 1;
+                string focusedBlockId = 2; // can be null
+                repeated string localFilePaths = 3;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message Content {
+            message Request {
+                string contextId = 1;
+                string focusedBlockId = 2; // can be null
+                bytes content = 3; // TODO
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+    }
+
     message BlockList {
 
         message Move {
             message Request {
                 string contextId = 1;
                 repeated string blockIds = 2;
-                string dropTargetId = 3;
-                anytype.model.Block.Position position = 4;
+                string targetContextId = 3;
+                string dropTargetId = 4;
+                anytype.model.Block.Position position = 5;
             }
 
             message Response {
@@ -72,6 +124,31 @@ message Rpc {
      * Namespace, that agregates subtopics and actions, that relates to blocks.
     */
     message Block {
+        message Replace {
+            message Request {
+                string contextId = 1;
+                string blockId = 2;
+                anytype.model.Block block = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                string blockId = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
         message Split {
             message Request {
                 string contextId = 1;
@@ -81,6 +158,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                string blockId = 2;
 
                 message Error {
                     Code code = 1;
@@ -120,14 +198,20 @@ message Rpc {
             }
         }
 
+        /*
+         * Makes block copy by given id and paste it to shown place
+        */
         message Duplicate {
             message Request {
-                string contextId = 1;
-                string blockId = 2;
+                string contextId = 1; // id of the context block
+                string targetId = 2; // id of the closest block
+                string blockId = 3; // id of block for duplicate
+                anytype.model.Block.Position position = 4;
             }
 
             message Response {
                 Error error = 1;
+                string blockId = 2;
 
                 message Error {
                     Code code = 1;
@@ -146,16 +230,14 @@ message Rpc {
         message Copy {
             message Request {
                 string contextId = 1;
-                string focusedBlockId = 2;
-                anytype.model.Range selectedTextRange = 3;
-                repeated string selectedBlocks = 4;
+                repeated string blockIds = 2;
             }
 
             message Response {
                 Error error = 1;
                 string clipboardText = 2;
                 string clipboardHtml = 3;
-                string clipboardAny = 4; // TODO: type – is string ok?
+                // string clipboardAny = 4; Client already knows blockIds
 
                 message Error {
                     Code code = 1;
@@ -178,9 +260,9 @@ message Rpc {
                 anytype.model.Range selectedTextRange = 3;
                 repeated string selectedBlocks = 4;
 
-                string clipboardText = 5;
-                string clipboardHtml = 6;
-                string clipboardAny = 7;
+                string textSlot = 5;
+                string htmlSlot = 6;
+                string anySlot = 7;
             }
 
             message Response {
@@ -272,7 +354,6 @@ message Rpc {
                     }
                 }
             }
-
             message Restrictions {
                 message Request {
                     string contextId = 1;
@@ -322,13 +403,60 @@ message Rpc {
             }
 
             message Text {
-
-                message Editable {
+                message TText {
                     message Request {
                         string contextId = 1;
                         string blockId = 2;
                         string text = 3;
                         anytype.model.Block.Content.Text.Marks marks = 4;
+                    }
+
+                    message Response {
+                        Error error = 1;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+
+                message Color {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2;
+                        string color = 3;
+                    }
+
+                    message Response {
+                        Error error = 1;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+
+                message BackgroundColor {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2;
+                        string color = 3;
                     }
 
                     message Response {
@@ -660,14 +788,14 @@ message Rpc {
          * Create a Smart/Internal block. Request can contain a block with a content, or it can be an empty block with a specific block.content.
          * **Example scenario**
          * 1A. Create Page on a dashboard
-         *     1. Front -> MW: Rpc.Block.Create.Request(blockId:dashboard.id, position:after, block: emtpy block with page content and id = "")
+         *     1. Front -> MW: Rpc.Block.Create.Request(blockId:dashboard.id, position:bottom, block: emtpy block with page content and id = "")
          *     2. Front -> MW: Rpc.Block.Close.Request(block: dashboard.id)
          *     3. Front <- MW: Rpc.Block.Close.Response(err)
          *     4. Front <- MW: Rpc.Block.Create.Response(page.id)
          *     5. Front <- MW: Rpc.Block.Open.Response(err)
          *     6. Front <- MW: Event.Block.Show(page)
          * 1B. Create Page on a Page
-         *     1. Front -> MW: Rpc.Block.Create.Request(blockId:dashboard.id, position:after, block: emtpy block with page content and id = "")
+         *     1. Front -> MW: Rpc.Block.Create.Request(blockId:dashboard.id, position:bottom, block: emtpy block with page content and id = "")
          *     2. Front <- MW: Rpc.Block.Create.Response(newPage.id)
          *     3. Front <- MW: Event.Block.Show(newPage)
         */
@@ -677,7 +805,6 @@ message Rpc {
                 string targetId = 2; // id of the closest block
                 anytype.model.Block block = 3;
                 anytype.model.Block.Position position = 4;
-                string parentId = 5; // id of the parent block
             }
 
             message Response {
@@ -704,12 +831,8 @@ message Rpc {
         message Unlink {
             message Request {
                 string contextId = 1; // id of the context block
-                repeated Target targets = 2; // targets to remove
+                repeated string blockIds = 2; // targets to remove
 
-                message Target {
-                    string blockId = 1; // id of the block to remove
-                    string parentId = 2; // id of the parent block
-                }
             }
 
             message Response {
@@ -926,6 +1049,7 @@ message Rpc {
                         FAILED_TO_RUN_NODE = 103;
                         FAILED_TO_FIND_ACCOUNT_INFO = 104;
                         LOCAL_REPO_NOT_EXISTS_AND_MNEMONIC_NOT_SET = 105;
+                        FAILED_TO_STOP_SEARCHER_NODE = 106;
                     }
                 }
             }
@@ -1060,6 +1184,7 @@ message Rpc {
 
                                 NOT_FOUND = 101;
                                 TIMEOUT = 102;
+                                NODE_NOT_STARTED = 103;
                             }
                         }
                     }
@@ -1087,6 +1212,7 @@ message Rpc {
 
                                 NOT_FOUND = 101;
                                 TIMEOUT = 102;
+                                NODE_NOT_STARTED = 103;
                             }
                         }
                     }

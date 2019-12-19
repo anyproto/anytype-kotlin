@@ -29,15 +29,13 @@ message Event {
 
             Block.Set.Text blockSetText = 10;
             Block.Set.File blockSetFile = 11;
-            Block.Set.Image blockSetImage = 12;
-            Block.Set.Video blockSetVideo = 13;
-            Block.Set.Icon blockSetIcon = 14;
+            Block.Set.Icon blockSetIcon = 12;
 
-            Block.Show blockShow = 15;
-            User.Block.Join userBlockJoin = 16;
-            User.Block.Left userBlockLeft = 17;
-            User.Block.SelectRange userBlockSelectRange = 18;
-            User.Block.TextRange userBlockTextRange = 19;
+            Block.Show blockShow = 13;
+            User.Block.Join userBlockJoin = 14;
+            User.Block.Left userBlockLeft = 15;
+            User.Block.SelectRange userBlockSelectRange = 16;
+            User.Block.TextRange userBlockTextRange = 17;
 
             Ping ping = 100;
         }
@@ -48,7 +46,7 @@ message Event {
         * Message, that will be sent to the front on each account found after an AccountRecoverRequest
         */
         message Show {
-            int64 index = 1; // Number of an account in an all found accounts list
+            int32 index = 1; // Number of an account in an all found accounts list
             anytype.model.Account account = 2; // An Account, that has been found for the mnemonic
         }
     }
@@ -125,12 +123,14 @@ message Event {
 
             message Text {
                 string id = 1;
-                Editable text = 2;
+                TText text = 2;
                 Style style = 3;
                 Marks marks = 4;
                 Checked checked = 5;
+                Color color = 6;
+                BackgroundColor backgroundColor = 7;
 
-                message Editable {
+                message TText {
                     string value = 1;
                 }
 
@@ -145,79 +145,37 @@ message Event {
                 message Checked {
                     bool value = 1;
                 }
+
+                message Color {
+                    string value = 1;
+                }
+
+                message BackgroundColor {
+                    string value = 1;
+                }
             }
 
             message File {
                 string id = 1;
-                Name name = 2;
+                Type type = 2;
                 State state = 3;
                 LocalFilePath localFilePath = 4;
-                Icon icon = 5;
+                PreviewLocalFilePath previewLocalFilePath = 5;
 
                 message Name {
                     string value = 1;
+                }
+
+                message Width {
+                    int32 value = 1;
                 }
 
                 message State {
                     anytype.model.Block.Content.File.State value = 1;
                 }
 
-                message LocalFilePath {
-                    string value = 1;
-                }
-
-                message Icon {
-                    string value = 1;
-                }
-            }
-
-            message Image {
-                string id = 1;
-                Name name = 2;
-                Width width = 3;
-                State state = 4;
-                LocalFilePath localFilePath = 5;
-                PreviewLocalFilePath previewLocalFilePath = 6;
-
-                message Name {
-                    string value = 1;
-                }
-
-                message Width {
-                    int32 value = 1;
-                }
-
-                message State {
-                    anytype.model.Block.Content.Image.State value = 1;
-                }
-
-                message LocalFilePath {
-                    string value = 1;
-                }
-
-                message PreviewLocalFilePath {
-                    string value = 1;
-                }
-            }
-
-            message Video {
-                string id = 1;
-                Name name = 2;
-                Width width = 3;
-                State state = 4;
-                LocalFilePath localFilePath = 5;
-                PreviewLocalFilePath previewLocalFilePath = 6;
-
-                message Name {
-                    string value = 1;
-                }
-
-                message Width {
-                    int32 value = 1;
-                }
-
-                message State {
-                    anytype.model.Block.Content.Video.State value = 1;
+                message Type {
+                    anytype.model.Block.Content.File.Type value = 1;
                 }
 
                 message LocalFilePath {

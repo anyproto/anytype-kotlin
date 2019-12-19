@@ -232,9 +232,8 @@ public class Middleware {
         Block.Create.Request request = Block.Create.Request
                 .newBuilder()
                 .setContextId(parentId)
-                .setParentId(parentId)
                 .setBlock(block)
-                .setPosition(Models.Block.Position.After)
+                .setPosition(Models.Block.Position.Inner)
                 .build();
 
         byte[] encodedRequest = request.toByteArray();
@@ -300,7 +299,7 @@ public class Middleware {
                 .addAllMarks(marks)
                 .build();
 
-        Block.Set.Text.Editable.Request request = Block.Set.Text.Editable.Request
+        Block.Set.Text.TText.Request request = Block.Set.Text.TText.Request
                 .newBuilder()
                 .setContextId(contextId)
                 .setBlockId(blockId)
@@ -314,9 +313,9 @@ public class Middleware {
 
         byte[] encodedResponse = Lib.blockSetTextText(encodedRequest);
 
-        Block.Set.Text.Editable.Response response = Block.Set.Text.Editable.Response.parseFrom(encodedResponse);
+        Block.Set.Text.TText.Response response = Block.Set.Text.TText.Response.parseFrom(encodedResponse);
 
-        if (response.getError() != null && response.getError().getCode() != Block.Set.Text.Editable.Response.Error.Code.NULL) {
+        if (response.getError() != null && response.getError().getCode() != Block.Set.Text.TText.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         }
     }
@@ -341,8 +340,7 @@ public class Middleware {
                 .newBuilder()
                 .setContextId(contextId)
                 .setTargetId(targetId)
-                .setParentId(contextId)
-                .setPosition(Models.Block.Position.After)
+                .setPosition(Models.Block.Position.Bottom)
                 .setBlock(block)
                 .build();
 

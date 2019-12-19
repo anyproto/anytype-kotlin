@@ -17,14 +17,12 @@ message Block {
         Content.Dataview dataview = 13;
 
         Content.Text text = 14;
-        Content.Video video = 15;
-        Content.Image image = 16;
-        Content.File file = 17;
-        Content.Layout layout = 18;
-        Content.Div div = 19;
-        Content.Bookmark bookmark = 20;
-        Content.Icon icon = 21;
-        Content.Link link = 22;
+        Content.File file = 15;
+        Content.Layout layout = 16;
+        Content.Div div = 17;
+        Content.Bookmark bookmark = 18;
+        Content.Icon icon = 19;
+        Content.Link link = 20;
     }
 
 
@@ -37,8 +35,12 @@ message Block {
     }
 
     enum Position {
-        Before = 0;
-        After = 1;
+        None = 0;
+        Top = 1;
+        Bottom = 2;
+        Left = 3;
+        Right = 4;
+        Inner = 5;
     }
 
     message Content {
@@ -109,6 +111,8 @@ message Block {
             Style style = 2;
             Marks marks = 3; // list of marks to apply to the text
             bool checked = 4;
+            string color = 5;
+            string backgroundColor = 6;
 
             message Marks {
                 repeated Mark marks = 1;
@@ -147,55 +151,20 @@ message Block {
             }
         }
 
-        message Video {
-            string localFilePath = 1;
-            string name = 2;
-            string icon = 3;
-            int32 width = 4;
-            State state = 5;
-
-            enum State {
-                Empty = 0; // There is no video and preview, it's an empty block, that waits videos.
-                Uploading = 1; // There is stil no video/preview, but video already uploading
-                PreviewDownloaded = 2; // Video exists, preview downloaded, but video – not.
-                Downloading = 3; // Video exists, preview downloaded, but video downloading
-                Done = 4; // Video and preview downloaded
-            }
-        }
-
-        message Image {
+        message File {
             string localFilePath = 1;
             string previewFilePath = 2;
-
             State state = 3;
             Type type = 4;
 
-            string name = 5;
-            int32 size = 6;
-            int32 addedAt = 7;
-            int32 width = 8;
-            int32 widthToHeight = 9;
-
-            enum State {
-                Empty = 0; // There is no image and preview, it's an empty block, that waits image.
-                Uploading = 1; // There is stil no image/preview, but image already uploading
-                PreviewDownloaded = 2; // Image exists, preview downloaded, but image – not.
-                Downloading = 3; // Image exists, preview downloaded, but image downloading
-                Done = 4; // Image and preview downloaded
-            }
+            int64 size = 5;
+            int64 addedAt = 6;
 
             enum Type {
-                Png = 0;
-                Jpg = 1;
-                // ...
+                File = 0;
+                Image = 1;
+                Video = 2;
             }
-        }
-
-        message File {
-            string localFilePath = 1; // Path to the file on a local machine
-            string name = 2;
-            string icon = 3;
-            State state = 4;
 
             enum State {
                 Empty = 0; // There is no file and preview, it's an empty block, that waits files.

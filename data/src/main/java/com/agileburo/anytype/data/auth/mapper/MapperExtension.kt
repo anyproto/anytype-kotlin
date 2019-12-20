@@ -202,6 +202,16 @@ fun Command.Create.toEntity(): CommandEntity.Create {
     )
 }
 
+fun Command.Dnd.toEntity(): CommandEntity.Dnd {
+    return CommandEntity.Dnd(
+        contextId = contextId,
+        dropTargetId = targetId,
+        dropTargetContextId = targetContextId,
+        blockIds = blockIds,
+        position = position.toEntity()
+    )
+}
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }
@@ -223,6 +233,13 @@ fun EventEntity.toDomain(): Event {
             Event.Command.UpdateBlockText(
                 id = id,
                 text = text
+            )
+        }
+        is EventEntity.Command.UpdateStructure -> {
+            Event.Command.UpdateStructure(
+                context = context,
+                id = id,
+                children = children
             )
         }
     }

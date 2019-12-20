@@ -8,5 +8,5 @@ import com.agileburo.anytype.domain.block.repo.BlockRepository
 class ObservePage(private val repo: BlockRepository) :
     FlowUseCase<List<Block>, BaseUseCase.None>() {
 
-    override suspend fun build(params: BaseUseCase.None?) = repo.observePages()
+    override fun build(params: BaseUseCase.None?) = repo.observePages()
 }

@@ -29,7 +29,6 @@ dependencies {
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
-    def databaseDependencies = rootProject.ext.db
 
     kapt applicationDependencies.daggerCompiler
 

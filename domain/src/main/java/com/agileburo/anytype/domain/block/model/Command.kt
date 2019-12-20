@@ -1,6 +1,7 @@
 package com.agileburo.anytype.domain.block.model
 
 sealed class Command {
+
     class Update(
         val contextId: String,
         val blockId: String,
@@ -13,5 +14,13 @@ sealed class Command {
         val targetId: String,
         val position: Position,
         val block: Block
+    )
+
+    class Dnd(
+        val contextId: String,
+        val targetId: String,
+        val targetContextId: String,
+        val blockIds: List<String>,
+        val position: Position
     )
 }

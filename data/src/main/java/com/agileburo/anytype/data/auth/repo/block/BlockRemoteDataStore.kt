@@ -14,9 +14,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         remote.closeDashboard(id = id)
     }
 
-    override suspend fun observeBlocks() = remote.observeBlocks()
-    override suspend fun observePages() = remote.observePages()
-    override suspend fun observeEvents() = remote.observeEvents()
+    override fun observeBlocks() = remote.observeBlocks()
+    override fun observePages() = remote.observePages()
+    override fun observeEvents() = remote.observeEvents()
 
     override suspend fun createPage(parentId: String): String = remote.createPage(parentId)
     override suspend fun openPage(id: String) {
@@ -33,5 +33,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun create(command: CommandEntity.Create) {
         remote.create(command)
+    }
+
+    override suspend fun dnd(command: CommandEntity.Dnd) {
+        remote.dnd(command)
     }
 }

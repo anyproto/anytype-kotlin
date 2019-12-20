@@ -15,4 +15,12 @@ class CommandEntity {
         val position: PositionEntity,
         val block: BlockEntity
     )
+
+    class Dnd(
+        val contextId: String,
+        val dropTargetId: String,
+        val dropTargetContextId: String,
+        val blockIds: List<String>,
+        val position: PositionEntity
+    )
 }

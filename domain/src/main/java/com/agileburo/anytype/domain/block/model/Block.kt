@@ -22,8 +22,12 @@ data class Block(
         val name: String by map
         val icon: String by map
 
+        fun hasName() = map.containsKey(NAME_KEY)
+
         companion object {
             fun empty(): Fields = Fields(emptyMap())
+
+            const val NAME_KEY = "name"
         }
     }
 

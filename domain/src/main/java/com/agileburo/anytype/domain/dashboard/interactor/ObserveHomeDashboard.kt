@@ -15,7 +15,7 @@ class ObserveHomeDashboard(
     private val repo: BlockRepository
 ) : FlowUseCase<HomeDashboard, ObserveHomeDashboard.Param>() {
 
-    override suspend fun build(params: Param?) = repo
+    override fun build(params: Param?) = repo
         .observeEvents()
         .filter { it is Event.Command.ShowBlock }
         .map { it as Event.Command.ShowBlock }

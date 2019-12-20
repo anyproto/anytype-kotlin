@@ -29,6 +29,8 @@ dependencies {
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
 
+    implementation project(':core-utils')
+
     implementation applicationDependencies.appcompat
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines

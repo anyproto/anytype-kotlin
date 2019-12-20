@@ -17,5 +17,11 @@ sealed class EventEntity {
             val id: String,
             val text: String
         ) : Command()
+
+        data class UpdateStructure(
+            val context: String,
+            val id: String,
+            val children: List<String>
+        ) : Command()
     }
 }

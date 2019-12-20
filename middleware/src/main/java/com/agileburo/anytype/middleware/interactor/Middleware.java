@@ -1,6 +1,7 @@
 package com.agileburo.anytype.middleware.interactor;
 
 import com.agileburo.anytype.data.auth.model.BlockEntity;
+import com.agileburo.anytype.data.auth.model.CommandEntity;
 import com.agileburo.anytype.data.auth.model.PositionEntity;
 import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
+import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
 import anytype.Commands.Rpc.Ipfs.Image;
 import anytype.Commands.Rpc.Wallet;
@@ -351,6 +353,34 @@ public class Middleware {
         Block.Create.Response response = Block.Create.Response.parseFrom(encodedResponse);
 
         if (response.getError() != null && response.getError().getCode() != Block.Create.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        }
+    }
+
+    public void dnd(CommandEntity.Dnd command) throws Exception {
+
+        Models.Block.Position position;
+
+        if (command.getPosition() == PositionEntity.AFTER)
+            position = Models.Block.Position.Bottom;
+        else
+            position = Models.Block.Position.Top;
+
+        BlockList.Move.Request request = BlockList.Move.Request
+                .newBuilder()
+                .setContextId(command.getContextId())
+                .setPosition(position)
+                .addAllBlockIds(command.getBlockIds())
+                .setDropTargetId(command.getDropTargetId())
+                .build();
+
+        Timber.d("Dnd request:\n" + request.toString());
+
+        byte[] encodedResponse = Lib.blockListMove(request.toByteArray());
+
+        BlockList.Move.Response response = BlockList.Move.Response.parseFrom(encodedResponse);
+
+        if (response.getError() != null && response.getError().getCode() != BlockList.Move.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         }
     }

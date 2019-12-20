@@ -92,11 +92,11 @@ fun Block.toView(focused: Boolean = false): BlockView = when (val content = this
     else -> TODO()
 }
 
-fun HomeDashboard.toView(): List<DashboardView.Document> {
-    return blocks.map {
+fun HomeDashboard.toView(): List<DashboardView.Document> = children.map { id ->
+    blocks.first { block -> block.id == id }.let { model ->
         DashboardView.Document(
-            id = it.id,
-            title = it.fields.name
+            id = model.id,
+            title = if (model.fields.hasName()) model.fields.name else "Untitled"
         )
     }
 }

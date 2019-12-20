@@ -8,7 +8,7 @@ class ObserveAccounts(
     private val repository: AuthRepository
 ) : FlowUseCase<Account, Unit>() {
 
-    override suspend fun build(
+    override fun build(
         params: Unit?
     ) = repository.observeAccounts()
 }

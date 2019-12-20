@@ -30,12 +30,11 @@ class BlockDataRepository(
         factory.remote.closePage(id)
     }
 
-    override suspend fun observeBlocks() =
+    override fun observeBlocks() =
         factory.remote.observeBlocks().map { blocks -> blocks.map { it.toDomain() } }
 
-    override suspend fun observeEvents() = factory.remote.observeEvents().map { it.toDomain() }
-
-    override suspend fun observePages() =
+    override fun observeEvents() = factory.remote.observeEvents().map { it.toDomain() }
+    override fun observePages() =
         factory.remote.observePages().map { blocks -> blocks.map { it.toDomain() } }
 
     override suspend fun update(update: Command.Update) {
@@ -44,5 +43,9 @@ class BlockDataRepository(
 
     override suspend fun create(command: Command.Create) {
         factory.remote.create(command.toEntity())
+    }
+
+    override suspend fun dnd(command: Command.Dnd) {
+        factory.remote.dnd(command.toEntity())
     }
 }

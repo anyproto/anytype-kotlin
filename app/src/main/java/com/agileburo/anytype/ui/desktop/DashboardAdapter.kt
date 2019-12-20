@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.tools.SupportDragAndDropBehavior
+import com.agileburo.anytype.core_utils.ext.shift
 import com.agileburo.anytype.feature_desktop.utils.DesktopDiffUtil
 import com.agileburo.anytype.presentation.desktop.DashboardView
 import kotlinx.android.synthetic.main.item_desktop_page.view.*
@@ -13,7 +15,7 @@ import kotlinx.android.synthetic.main.item_desktop_page.view.*
 class DashboardAdapter(
     private val data: MutableList<DashboardView>,
     private val onDocumentClicked: (DashboardView.Document) -> Unit
-) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>(), SupportDragAndDropBehavior {
 
     companion object {
         const val VIEW_TYPE_DOCUMENT = 0
@@ -77,4 +79,14 @@ class DashboardAdapter(
 
         result.dispatchUpdatesTo(this)
     }
+
+    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
+        val update = data.shift(fromPosition, toPosition)
+        data.clear()
+        data.addAll(update)
+        notifyItemMoved(fromPosition, toPosition)
+        return true
+    }
+
+    fun provideAdapterData() = data.toList()
 }

@@ -8,6 +8,7 @@ import com.agileburo.anytype.domain.event.model.Event
 import kotlinx.coroutines.flow.Flow
 
 interface BlockRepository {
+    suspend fun dnd(command: Command.Dnd)
     suspend fun create(command: Command.Create)
     suspend fun update(update: Command.Update)
     suspend fun getConfig(): Config
@@ -18,9 +19,8 @@ interface BlockRepository {
     suspend fun closeDashboard(id: String)
 
     @Deprecated("Will be removed and replaced by observeEvents()")
-    suspend fun observeBlocks(): Flow<List<Block>>
+    fun observeBlocks(): Flow<List<Block>>
 
-    suspend fun observeEvents(): Flow<Event>
-
-    suspend fun observePages(): Flow<List<Block>>
+    fun observeEvents(): Flow<Event>
+    fun observePages(): Flow<List<Block>>
 }

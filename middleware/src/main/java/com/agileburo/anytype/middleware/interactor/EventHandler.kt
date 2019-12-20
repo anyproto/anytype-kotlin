@@ -19,9 +19,11 @@ class EventHandler(
     private val channel = BroadcastChannel<Events.Event>(1)
 
     init {
-        setEventHandlerMobile { bytes ->
-            scope.launch {
-                handle(bytes)
+        scope.launch {
+            setEventHandlerMobile { bytes ->
+                scope.launch {
+                    handle(bytes)
+                }
             }
         }
     }

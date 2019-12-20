@@ -17,5 +17,17 @@ sealed class Event {
             val id: String,
             val text: String
         ) : Command()
+
+        /**
+         * Command to update a block structure.
+         * @property context context id for this command (i.e page id, dashboard id, etc.)
+         * @property id id of the block whose structure we need to update
+         * @property children list of children ids for this block [id]
+         */
+        data class UpdateStructure(
+            val context: String,
+            val id: String,
+            val children: List<String>
+        ) : Command()
     }
 }

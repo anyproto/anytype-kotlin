@@ -23,7 +23,8 @@ class BlockMiddleware(
     private val supportedEvents = listOf(
         Events.Event.Message.ValueCase.BLOCKSHOW,
         Events.Event.Message.ValueCase.BLOCKADD,
-        Events.Event.Message.ValueCase.BLOCKSETTEXT
+        Events.Event.Message.ValueCase.BLOCKSETTEXT,
+        Events.Event.Message.ValueCase.BLOCKSETCHILDRENIDS
     )
 
     private val supportedTextStyles = listOf(
@@ -46,7 +47,7 @@ class BlockMiddleware(
         )
     }
 
-    override suspend fun observeEvents(): Flow<EventEntity> = events
+    override fun observeEvents(): Flow<EventEntity> = events
         .flow()
         .filter { event ->
             event.messagesList.any { message ->
@@ -56,10 +57,11 @@ class BlockMiddleware(
         .map { event ->
             event.messagesList.filter { message ->
                 supportedEvents.contains(message.valueCase)
-            }
+            }.map { message -> Pair(event.contextId, message) }
+
         }
         .flatMapConcat { event -> event.asFlow() }
-        .mapNotNull { event ->
+        .mapNotNull { (context, event) ->
             when (event.valueCase) {
                 Events.Event.Message.ValueCase.BLOCKADD -> {
                     EventEntity.Command.AddBlock(
@@ -178,11 +180,18 @@ class BlockMiddleware(
                         text = event.blockSetText.text.value
                     )
                 }
+                Events.Event.Message.ValueCase.BLOCKSETCHILDRENIDS -> {
+                    EventEntity.Command.UpdateStructure(
+                        id = event.blockSetChildrenIds.id,
+                        children = event.blockSetChildrenIds.childrenIdsList.toList(),
+                        context = context
+                    )
+                }
                 else -> null
             }
         }
 
-    override suspend fun observeBlocks() = events
+    override fun observeBlocks() = events
         .flow()
         .filter { event ->
             event.messagesList.any { message ->
@@ -252,7 +261,7 @@ class BlockMiddleware(
                 }
         }
 
-    override suspend fun observePages() = events
+    override fun observePages() = events
         .flow()
         .filter { event ->
             event.messagesList.any { message ->
@@ -325,6 +334,10 @@ class BlockMiddleware(
             command.position,
             command.block
         )
+    }
+
+    override suspend fun dnd(command: CommandEntity.Dnd) {
+        middleware.dnd(command)
     }
 
     private fun extractDashboard(block: Models.Block): BlockEntity.Content.Dashboard {

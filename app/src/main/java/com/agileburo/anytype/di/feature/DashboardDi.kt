@@ -3,11 +3,13 @@ package com.agileburo.anytype.di.feature
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
+import com.agileburo.anytype.domain.block.interactor.DragAndDrop
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.ObserveHomeDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
+import com.agileburo.anytype.domain.event.interactor.ObserveEvents
 import com.agileburo.anytype.domain.image.ImageLoader
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.domain.page.CreatePage
@@ -46,7 +48,9 @@ class HomeDashboardModule {
         createPage: CreatePage,
         closeDashboard: CloseDashboard,
         getConfig: GetConfig,
-        observeHomeDashboard: ObserveHomeDashboard
+        observeHomeDashboard: ObserveHomeDashboard,
+        dnd: DragAndDrop,
+        observeEvents: ObserveEvents
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getCurrentAccount = getCurrentAccount,
         loadImage = loadImage,
@@ -54,7 +58,9 @@ class HomeDashboardModule {
         createPage = createPage,
         closeDashboard = closeDashboard,
         getConfig = getConfig,
-        observeHomeDashboard = observeHomeDashboard
+        observeHomeDashboard = observeHomeDashboard,
+        dnd = dnd,
+        observeEvents = observeEvents
     )
 
     @Provides
@@ -111,6 +117,23 @@ class HomeDashboardModule {
     fun provideObserveHomeDashboardUseCase(
         repo: BlockRepository
     ): ObserveHomeDashboard = ObserveHomeDashboard(
+        context = Dispatchers.IO,
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideDragAndDropUseCase(
+        repo: BlockRepository
+    ): DragAndDrop = DragAndDrop(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideObserveEventsUseCase(
+        repo: BlockRepository
+    ): ObserveEvents = ObserveEvents(
         context = Dispatchers.IO,
         repo = repo
     )

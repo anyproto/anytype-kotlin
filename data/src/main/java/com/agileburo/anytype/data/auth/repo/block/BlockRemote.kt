@@ -9,15 +9,16 @@ import kotlinx.coroutines.flow.Flow
 interface BlockRemote {
     suspend fun create(command: CommandEntity.Create)
     suspend fun update(update: CommandEntity.Update)
+    suspend fun dnd(command: CommandEntity.Dnd)
     suspend fun getConfig(): ConfigEntity
     suspend fun createPage(parentId: String): String
     suspend fun openPage(id: String)
     suspend fun closePage(id: String)
 
-    suspend fun observeBlocks(): Flow<List<BlockEntity>>
-    suspend fun observeEvents(): Flow<EventEntity>
+    fun observeBlocks(): Flow<List<BlockEntity>>
+    fun observeEvents(): Flow<EventEntity>
+    fun observePages(): Flow<List<BlockEntity>>
 
-    suspend fun observePages(): Flow<List<BlockEntity>>
     suspend fun openDashboard(contextId: String, id: String)
     suspend fun closeDashboard(id: String)
 }

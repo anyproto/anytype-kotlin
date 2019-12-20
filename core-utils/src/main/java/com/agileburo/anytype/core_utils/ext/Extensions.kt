@@ -1,12 +1,10 @@
 package com.agileburo.anytype.core_utils.ext
 
 import android.content.Context
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 
 fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
-    val tmp = this[index1] // 'this' corresponds to the list
+    val tmp = this[index1]
     this[index1] = this[index2]
     this[index2] = tmp
 }
@@ -36,8 +34,3 @@ inline fun <reified T> MutableList<T>.shiftDown(srcIndex: Int, dstIndex: Int) =
     }
 
 fun Context.toast(msg: CharSequence) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
-
-fun View.showKeyboard() {
-    val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    inputMethodManager.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
-}

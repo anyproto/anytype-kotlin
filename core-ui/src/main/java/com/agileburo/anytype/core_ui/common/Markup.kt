@@ -4,6 +4,7 @@ import android.graphics.Typeface
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.style.CharacterStyle
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
 
@@ -69,6 +70,9 @@ fun Markup.toSpannable() = SpannableString(body).apply {
 }
 
 fun Editable.setMarkup(markup: Markup) {
+    getSpans(0, length, CharacterStyle::class.java).forEach { span ->
+        removeSpan(span)
+    }
     markup.marks.forEach { mark ->
         when (mark.type) {
             Markup.Type.ITALIC -> setSpan(

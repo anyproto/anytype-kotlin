@@ -12,6 +12,7 @@ import com.agileburo.anytype.domain.block.interactor.UpdateBlock
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.interactor.ObserveEvents
 import com.agileburo.anytype.domain.event.model.Event
+import com.agileburo.anytype.domain.ext.addMark
 import com.agileburo.anytype.domain.ext.asMap
 import com.agileburo.anytype.domain.ext.asRender
 import com.agileburo.anytype.domain.page.ClosePage
@@ -121,17 +122,19 @@ class PageViewModel(
         val targetBlock = blocks.first { it.id == selection.first }
         val targetContent = targetBlock.content as Block.Content.Text
 
+        val mark = Block.Content.Text.Mark(
+            range = selection.second,
+            type = when (action) {
+                Markup.Type.BOLD -> Block.Content.Text.Mark.Type.BOLD
+                Markup.Type.ITALIC -> Block.Content.Text.Mark.Type.ITALIC
+                Markup.Type.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
+            }
+        )
+
+        val marks = targetContent.marks.addMark(mark)
+
         val newContent = targetContent.copy(
-            marks = targetContent.marks + listOf(
-                Block.Content.Text.Mark(
-                    range = selection.second,
-                    type = when (action) {
-                        Markup.Type.BOLD -> Block.Content.Text.Mark.Type.BOLD
-                        Markup.Type.ITALIC -> Block.Content.Text.Mark.Type.ITALIC
-                        Markup.Type.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
-                    }
-                )
-            )
+            marks = marks
         )
 
         val newBlock = targetBlock.copy(content = newContent)

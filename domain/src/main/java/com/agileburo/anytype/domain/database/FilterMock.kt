@@ -1,8 +1,6 @@
 package com.agileburo.anytype.domain.database
 
-import com.agileburo.anytype.domain.database.model.Filter
-import com.agileburo.anytype.domain.database.model.FilterTypeCondition
-import com.agileburo.anytype.domain.database.model.FilterTypeEquality
+import com.agileburo.anytype.domain.database.model.*
 
 const val ALL_ID = "-2"
 const val PLUS_ID = "-1"
@@ -10,7 +8,7 @@ const val PLUS_ID = "-1"
 object FilterMock {
 
     val FILTER_ALL = Filter(
-        propertyId = ALL_ID,
+        detailId = ALL_ID,
         condition = FilterTypeCondition.NONE,
         equality = FilterTypeEquality.EQUAL,
         value = "All"
@@ -25,16 +23,45 @@ object FilterMock {
 
     var filters = mutableListOf(
         Filter(
-            propertyId = "122345",
+            detailId = "333",
             condition = FilterTypeCondition.NONE,
             equality = FilterTypeEquality.EQUAL,
             value = "Team"
         ),
         Filter(
-            propertyId = "987655",
+            detailId = "777",
             condition = FilterTypeCondition.NONE,
             equality = FilterTypeEquality.EQUAL,
-            value = "Friends"
+            value = "Family"
+        ),
+//        Filter(
+//            propertyId = "333",
+//            condition = FilterTypeCondition.NONE,
+//            equality = FilterTypeEquality.EQUAL,
+//            value = "Product"
+//        ),
+//        Filter(
+//            propertyId = "555",
+//            condition = FilterTypeCondition.NONE,
+//            equality = FilterTypeEquality.EQUAL,
+//            value = "Android"
+//        ),
+        Filter(
+            detailId = "888",
+            condition = FilterTypeCondition.NONE,
+            equality = FilterTypeEquality.EQUAL,
+            value = "New"
+        )
+    )
+
+    val groups = mutableListOf(
+        Group(
+            details = listOf(
+                Detail.File(id = "9", name = "File", show = true),
+                Detail.Bool(id = "10", name = "Bool", show = true),
+                Detail.Link(id = "11", name = "Link", show = true),
+                Detail.Phone(id = "12", name = "Phone", show = true)
+            )
         )
     )
 }

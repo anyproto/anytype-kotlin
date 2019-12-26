@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iconGallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_gallery_view" />
+
+    <TextView
+        android:id="@+id/gallery"
+        style="@style/ModalRowTestStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_text_from_button_margin"
+        android:text="@string/modal_gallery"
+        app:layout_constraintBottom_toBottomOf="@+id/iconGallery"
+        app:layout_constraintStart_toEndOf="@+id/iconGallery"
+        app:layout_constraintTop_toTopOf="@+id/iconGallery" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/gallery"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/gallery"
+        app:srcCompat="@drawable/ic_arrow_forward"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

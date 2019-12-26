@@ -56,7 +56,8 @@ class AvatarWidget : FrameLayout {
 
     fun bind(name: String) {
         initials.visible()
-        initials.text = name.first().toUpperCase().toString()
+        //todo Потенциальный краш если Char sequence is empty.
+        initials.text = if (name.isNotEmpty()) name.first().toUpperCase().toString() else ""
         icon.invisible()
         backgroundTintList = ColorStateList.valueOf(randomColor(name))
     }

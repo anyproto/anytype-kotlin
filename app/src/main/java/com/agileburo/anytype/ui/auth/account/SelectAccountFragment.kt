@@ -6,8 +6,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.layout.SpacingItemDecoration
 import com.agileburo.anytype.core_utils.ext.dimen
-import com.agileburo.anytype.core_utils.ui.SpacingItemDecoration
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.auth.account.SelectAccountViewModel
 import com.agileburo.anytype.presentation.auth.account.SelectAccountViewModelFactory

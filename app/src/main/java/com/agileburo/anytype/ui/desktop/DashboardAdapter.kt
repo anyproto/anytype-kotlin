@@ -60,6 +60,7 @@ class DashboardAdapter(
             fun bind(doc: DashboardView.Document, onClick: (DashboardView.Document) -> Unit) {
                 itemView.setOnClickListener { onClick(doc) }
                 itemView.title.text = doc.title
+                itemView.emoji.text = doc.emoji
             }
         }
     }

@@ -4,20 +4,23 @@ import com.agileburo.anytype.domain.database.model.*
 
 object DatabaseMock {
 
+    const val ID = "343253"
+
     fun getDatabaseView(id: String): DatabaseView {
 
-        val properties = listOf(
-            Property.Number(id = "1", name = "Id"),
-            Property.Title(id = "2", name = "Name"),
-            Property.Email(id = "4", name = "E-mail"),
-            Property.Date(id = "5", name = "Date"),
-            Property.Select(
-                id = "6",
+        val details = listOf(
+            Detail.Number(id = "21", name = "Id", show = true),
+            Detail.Title(id = "22", name = "Name", show = true),
+            Detail.Email(id = "24", name = "E-mail", show = true),
+            Detail.Date(id = "25", name = "Date", show = true),
+            Detail.Select(
+                id = "26",
                 name = "Select",
-                select = setOf("select1", "select2", "select3")
+                select = setOf("select1", "select2", "select3"),
+                show = true
             ),
-            Property.Multiple(
-                id = "7",
+            Detail.Multiple(
+                id = "27",
                 name = "Multiple",
                 multiSelect = setOf(
                     "multiple1",
@@ -25,20 +28,30 @@ object DatabaseMock {
                     "multiple3",
                     "multiple4",
                     "multiple5"
-                )
+                ),
+                show = true
             ),
-            Property.Account(
-                id = "8",
+            Detail.Person(
+                id = "38",
                 name = "Account",
                 accounts = setOf(
                     Value(name = "Gennadiy Gusarov"),
                     Value(name = "Eduard Streltsov")
-                )
+                ),
+                show = false
             ),
-            Property.File(id = "9", name = "File"),
-            Property.Bool(id = "10", name = "Bool"),
-            Property.Link(id = "11", name = "Link"),
-            Property.Phone(id = "12", name = "Phone")
+            Detail.File(id = "49", name = "File", show = true),
+            Detail.Bool(id = "510", name = "Bool", show = true),
+            Detail.Link(id = "711", name = "Link", show = true),
+            Detail.Phone(id = "3312", name = "Phone", show = true),
+            Detail.Text(id = "213", name = "Phone", show = true),
+            Detail.Text(id = "214", name = "Phone", show = true),
+            Detail.Text(id = "215", name = "Phone", show = true),
+            Detail.Text(id = "216", name = "Phone", show = true),
+            Detail.Text(id = "217", name = "Phone", show = true),
+            Detail.Text(id = "218", name = "Phone", show = true),
+            Detail.Text(id = "219", name = "Phone", show = true),
+            Detail.Text(id = "220", name = "Phone", show = true)
         )
 
         val data1: HashMap<String, Any> = hashMapOf(
@@ -91,33 +104,37 @@ object DatabaseMock {
 
         val data = listOf(data1, data2, data3, data4, data5)
 
-        val views = listOf(
-            DisplayView(
+        val views = mutableListOf(
+            Display(
                 id = "1",
-                type = ViewType.GRID,
-                name = "Table",
+                type = ViewType.LIST,
+                name = "Нобелевские лауреаты 2019",
                 filters = listOf(
                     Filter(
-                        propertyId = "1",
+                        detailId = "1",
                         value = "",
                         condition = FilterTypeCondition.NONE,
                         equality = FilterTypeEquality.EQUAL
                     )
                 ),
                 sorts = listOf(
-                    Sort(propertyId = "1", type = SortType.ASC),
-                    Sort(propertyId = "2", type = SortType.DESC)
+                    Sort(detailId = "1", type = SortType.ASC),
+                    Sort(detailId = "2", type = SortType.DESC)
                 )
             )
         )
 
         val contentDatabaseView = ContentDatabaseView(
             data = data,
-            properties = properties,
-            view = "452088",
-            displayViews = views
+            details = details,
+            databaseId = ID,
+            displays = views
         )
 
-        return DatabaseView(content = contentDatabaseView)
+        if (id == contentDatabaseView.databaseId) {
+            return DatabaseView(content = contentDatabaseView)
+        } else {
+            throw RuntimeException("Wrong Id")
+        }
     }
 }

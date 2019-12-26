@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.layout.SpacingItemDecoration
 import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ui.BaseFragment
-import com.agileburo.anytype.core_utils.ui.SpacingItemDecoration
 import com.agileburo.anytype.presentation.auth.pin.EnterPinCodeViewModel
 import com.agileburo.anytype.presentation.auth.pin.EnterPinCodeViewModelFactory
 import kotlinx.android.synthetic.main.fragment_enter_pin_code.*

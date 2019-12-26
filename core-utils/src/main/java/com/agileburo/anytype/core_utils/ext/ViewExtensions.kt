@@ -17,6 +17,10 @@ fun View.gone() {
     this.visibility = View.GONE
 }
 
+fun View.setVisible(visible: Boolean) {
+    if (visible) this.visible() else this.invisible()
+}
+
 fun View.showSnackbar(text: String) {
     Snackbar.make(this, text, Snackbar.LENGTH_LONG).show()
 }

@@ -36,9 +36,15 @@ abstract class NavigationFragment(
             is Command.ConfirmPinCodeScreen -> navigation.confirmPinCode(command.code)
             is Command.OpenProfile -> navigation.openProfile()
             is Command.OpenPage -> navigation.openDocument(command.id)
+            is Command.OpenDatabaseViewAddView -> navigation.openDatabaseViewAddView()
+            is Command.OpenEditDatabase -> navigation.openEditDatabase()
             is Command.OpenKeychainScreen -> navigation.openKeychainScreen()
             is Command.OpenContactsScreen -> navigation.openContacts()
+            is Command.OpenSwitchDisplayView -> navigation.openSwitchDisplayView()
+            is Command.OpenCustomizeDisplayView -> navigation.openCustomizeDisplayView()
             is Command.Exit -> navigation.exit()
+            is Command.OpenKanbanScreen -> navigation.openKanban()
+            is Command.OpenGoalsScreen -> navigation.openGoals()
         }
     }
 

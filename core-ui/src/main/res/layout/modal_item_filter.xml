@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageView
+        android:id="@+id/iconFilter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_filter" />
+
+    <TextView
+        android:id="@+id/filter"
+        style="@style/ModalRowTestStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_text_from_button_margin"
+        android:text="@string/filter"
+        app:layout_constraintBottom_toBottomOf="@+id/iconFilter"
+        app:layout_constraintStart_toEndOf="@+id/iconFilter"
+        app:layout_constraintTop_toTopOf="@+id/iconFilter" />
+
+    <ImageView
+        android:id="@+id/filterForward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/filter"
+        app:srcCompat="@drawable/ic_arrow_forward" />
+
+    <TextView
+        android:id="@+id/filterCount"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/circle_solid_default"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/filterForward"
+        app:layout_constraintEnd_toStartOf="@+id/filterForward"
+        app:layout_constraintTop_toTopOf="@+id/filterForward"
+        tools:text="2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

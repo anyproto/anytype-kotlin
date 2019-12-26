@@ -44,6 +44,7 @@
     </style>
 
     <style name="BlockTitleContentStyle">
+        <item name="android:fontFamily">@font/graphik_medium</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
@@ -56,6 +57,7 @@
     </style>
 
     <style name="BlockCheckboxContentStyle">
+        <item name="android:fontFamily">@font/graphik_regular</item>
         <item name="android:paddingTop">3dp</item>
         <item name="android:paddingBottom">3dp</item>
         <item name="android:textSize">15sp</item>
@@ -182,6 +184,17 @@
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="ModalRowTestStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="ModalTitleStyle">
+        <item name="android:textColor">#2C2B27</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>

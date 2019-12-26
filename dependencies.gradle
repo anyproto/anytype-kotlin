@@ -34,6 +34,7 @@ ext {
     rxrelay_version = '2.1.0'
     better_link_method_version = '2.2.0'
     table_view_version = '0.8.8'
+    rxbinding_version = '3.0.0'
 
     // Unit Testing
     robolectric_version = '4.3.1'
@@ -101,6 +102,7 @@ ext {
             rxAndroid:                  "io.reactivex.rxjava2:rxandroid:$rxjava2_version",
             moshiKotlin:                "com.squareup.moshi:moshi-kotlin:$moshi_version",
             tableView:                  "com.evrencoskun.library:tableview:$table_view_version",
+            rxBinding:                  "com.jakewharton.rxbinding3:rxbinding:$rxbinding_version",
 
             crashlytics:                "com.crashlytics.sdk.android:crashlytics:$crashlytics_version",
             firebaseCore:              "com.google.firebase:firebase-core:$firebase_core_version"
@@ -116,7 +118,8 @@ ext {
             kluent:             "org.amshove.kluent:kluent:$kluent_version",
             archCoreTesting:    "androidx.arch.core:core-testing:$lifecycle_version",
             liveDataTesting:    "com.jraska.livedata:testing-ktx:$live_data_testing_version",
-            coroutineTesting:   "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_testing_version"
+            coroutineTesting:   "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_testing_version",
+            assertj:            "com.squareup.assertj:assertj-android:1.0.0",
     ]
 
     acceptanceTesting = [

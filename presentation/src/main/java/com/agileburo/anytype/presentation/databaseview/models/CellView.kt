@@ -11,7 +11,7 @@ sealed class CellView {
 
     data class Select(val select: String) : CellView()
     data class Multiple(val multiple: Array<String>) : CellView()
-    data class Account(val accounts: HashMap<String, String>) : CellView()
+    data class Person(val accounts: HashMap<String, String>) : CellView()
     data class File(val file: String) : CellView()
     data class Checked(val isChecked: Boolean) : CellView()
     data class Link(val link: String) : CellView()

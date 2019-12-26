@@ -1,8 +1,12 @@
 package com.agileburo.anytype.core_utils.ext
 
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Rect
 import android.net.Uri
 import android.provider.MediaStore
+import android.view.TouchDelegate
+import android.view.View
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,4 +46,31 @@ const val DATE_FORMAT_MMMdYYYY = "MMM d, yyyy"
 fun Long.formatToDateString(pattern: String, locale: Locale): String {
     val formatter = SimpleDateFormat(pattern, locale)
     return formatter.format(Date(this))
+}
+
+fun View.show() {
+    this.visibility = View.VISIBLE
+}
+
+fun View.hide() {
+    this.visibility = View.INVISIBLE
+}
+
+val Int.dp: Int
+    get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+val Int.px: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+private fun expandViewHitArea(parent: View, child: View) {
+    parent.post {
+        val parentRect = Rect()
+        val childRect = Rect()
+        parent.getHitRect(parentRect)
+        child.getHitRect(childRect)
+        childRect.left = 0
+        childRect.top = 0
+        childRect.right = parentRect.width()
+        childRect.bottom = parentRect.height()
+        parent.touchDelegate = TouchDelegate(childRect, child)
+    }
 }

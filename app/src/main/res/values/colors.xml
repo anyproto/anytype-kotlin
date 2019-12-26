@@ -14,8 +14,6 @@
     <color name="keychain_hint_color">#E0DED2</color>
     <color name="blue">#3F51B5</color>
 
-    <color name="divider">#ACA996</color>
-
     <color name="auth_divider">#DFDDD0</color>
 
 </resources>

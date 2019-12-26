@@ -84,8 +84,32 @@ class Navigator : AppNavigation {
         */
     }
 
+    override fun openKanban() {
+        navController?.navigate(R.id.action_desktopScreen_to_kanbanBoardFragment)
+    }
+
+    override fun openGoals() {
+        navController?.navigate(R.id.action_desktopScreen_to_goalsFragment)
+    }
+
+    override fun openCustomizeDisplayView() {
+        navController?.navigate(R.id.action_contactsFragment_to_customizeDisplayViewFragment)
+    }
+
+    override fun openSwitchDisplayView() {
+        navController?.navigate(R.id.customize_to_switch)
+    }
+
+    override fun openDatabaseViewAddView() {
+        navController?.navigate(R.id.action_contactsFragment_to_addViewModalFragment)
+    }
+
     override fun openContacts() {
         navController?.navigate(R.id.action_desktopScreen_to_contactsFragment)
+    }
+
+    override fun openEditDatabase() {
+        navController?.navigate(R.id.action_contactsFragment_to_editDatabaseFragment)
     }
 
     override fun exit() {

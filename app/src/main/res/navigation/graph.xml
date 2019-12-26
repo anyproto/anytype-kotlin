@@ -29,6 +29,18 @@
         <action
             android:id="@+id/action_desktopScreen_to_contactsFragment"
             app:destination="@id/contactsFragment" />
+        <action
+            android:id="@+id/action_desktopScreen_to_addViewModalFragment"
+            app:destination="@id/addViewModalFragment" />
+        <action
+            android:id="@+id/action_desktopScreen_to_editDatabaseFragment"
+            app:destination="@id/editDatabaseFragment" />
+        <action
+            android:id="@+id/action_desktopScreen_to_kanbanBoardFragment"
+            app:destination="@id/kanbanBoardFragment" />
+        <action
+            android:id="@+id/action_desktopScreen_to_goalsFragment"
+            app:destination="@id/goalsFragment" />
     </fragment>
 
     <fragment
@@ -257,11 +269,57 @@
     </navigation>
     <fragment
         android:id="@+id/databaseViewFragment"
-        android:name="com.agileburo.anytype.ui.table.DatabaseViewFragment"
+        android:name="com.agileburo.anytype.ui.database.table.DatabaseViewFragment"
         android:label="DatabaseViewFragment" />
     <fragment
         android:id="@+id/contactsFragment"
-        android:name="com.agileburo.anytype.ui.contacts.ContactsFragment"
-        android:label="ContactsFragment" />
+        android:name="com.agileburo.anytype.ui.database.list.ListBoardFragment"
+        android:label="ContactsFragment">
+        <action
+            android:id="@+id/action_contactsFragment_to_addViewModalFragment"
+            app:destination="@id/addViewModalFragment" />
+        <action
+            android:id="@+id/action_contactsFragment_to_editDatabaseFragment"
+            app:destination="@id/editDatabaseFragment" />
+        <action
+            android:id="@+id/action_contactsFragment_to_customizeDisplayViewFragment"
+            app:destination="@id/customizeDisplayViewFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/addViewModalFragment"
+        android:name="com.agileburo.anytype.ui.database.modals.AddDisplayFragment"
+        android:label="AddViewModalFragment" />
+    <dialog
+        android:id="@+id/editDatabaseFragment"
+        android:name="com.agileburo.anytype.ui.database.modals.EditDatabaseFragment"
+        android:label="EditDatabaseFragment" />
+    <dialog
+        android:id="@+id/switchDisplayViewFragment"
+        android:name="com.agileburo.anytype.ui.database.modals.SwitchDisplayFragment"
+        android:label="SwitchDisplayViewFragment"
+        tools:layout="@layout/modal_switch_view">
+        <argument
+            android:name="ViewType"
+            app:argType="com.agileburo.anytype.domain.database.model.ViewType" />
+    </dialog>
+    <dialog
+        android:id="@+id/customizeDisplayViewFragment"
+        android:name="com.agileburo.anytype.ui.database.modals.CustomizeDisplayFragment"
+        android:label="CustomizeDisplayViewFragment"
+        tools:layout="@layout/modal_customize">
+        <action
+            android:id="@+id/customize_to_switch"
+            app:destination="@id/switchDisplayViewFragment" />
+    </dialog>
+
+    <fragment
+        android:id="@+id/kanbanBoardFragment"
+        android:name="com.agileburo.anytype.ui.database.kanban.KanbanBoardFragment"
+        android:label="KanbanBoardFragment" />
+
+    <fragment
+        android:id="@+id/goalsFragment"
+        android:name="com.agileburo.anytype.ui.goals.GoalsFragment"
+        android:label="GoalsFragment" />
 
 </navigation>

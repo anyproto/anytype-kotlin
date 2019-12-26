@@ -50,4 +50,29 @@
     <dimen name="default_toolbar_color_item_divider_width">1dp</dimen>
     <dimen name="default_toolbar_color_placeholder_text_size">22sp</dimen>
 
+    <dimen name="modal_rect_margin_top">6dp</dimen>
+    <dimen name="modal_main_margin_start">20dp</dimen>
+    <dimen name="modal_main_margin_end">20dp</dimen>
+    <dimen name="modal_top_item_margin_top">30dp</dimen>
+    <dimen name="modal_item_divider_margin_top">12dp</dimen>
+    <dimen name="modal_item_icon_margin_top">12dp</dimen>
+    <dimen name="modal_text_from_button_margin">8dp</dimen>
+    <dimen name="modal_button_width">155dp</dimen>
+    <dimen name="modal_button_height">40dp</dimen>
+    <dimen name="modal_button_margin_top">30dp</dimen>
+    <dimen name="modal_button_margin_bottom">16dp</dimen>
+
+    <!-- Item property -->
+    <dimen name="modal_property_margin_start">20dp</dimen>
+    <dimen name="modal_property_margin_end">20dp</dimen>
+    <dimen name="modal_property_margin_top">12dp</dimen>
+    <dimen name="modal_property_margin_bottom">12dp</dimen>
+    <dimen name="modal_property_text_from_icon_margin">4dp</dimen>
+    <dimen name="modal_property_hide_forward_margin">20dp</dimen>
+
+
+    <dimen name="dp_4">4dp</dimen>
+    <dimen name="dp_6">6dp</dimen>
+    <dimen name="dp_8">8dp</dimen>
+
 </resources>

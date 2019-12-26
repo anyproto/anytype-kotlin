@@ -70,6 +70,7 @@
         android:layout_marginBottom="8dp"
         android:src="@drawable/ic_add_doc"
         app:backgroundTint="@color/orange"
+        app:tint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

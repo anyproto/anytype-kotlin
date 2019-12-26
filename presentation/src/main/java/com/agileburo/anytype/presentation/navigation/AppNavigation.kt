@@ -19,6 +19,12 @@ interface AppNavigation {
     fun startSplashFromDesktop()
     fun openKeychainScreen()
     fun openContacts()
+    fun openDatabaseViewAddView()
+    fun openEditDatabase()
+    fun openSwitchDisplayView()
+    fun openCustomizeDisplayView()
+    fun openKanban()
+    fun openGoals()
     fun exit()
 
     sealed class Command {
@@ -43,6 +49,12 @@ interface AppNavigation {
         object StartDesktopFromLogin : Command()
         object StartSplashFromDesktop : Command()
         object OpenContactsScreen : Command()
+        object OpenDatabaseViewAddView: Command()
+        object OpenEditDatabase: Command()
+        object OpenSwitchDisplayView: Command()
+        object OpenCustomizeDisplayView: Command()
+        object OpenKanbanScreen: Command()
+        object OpenGoalsScreen : Command()
     }
 
     interface Provider {

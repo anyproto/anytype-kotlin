@@ -10,6 +10,7 @@ import com.agileburo.anytype.data.auth.repo.block.BlockRemoteDataStore
 import com.agileburo.anytype.device.DefaultPathProvider
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.database.repo.DatabaseRepository
 import com.agileburo.anytype.domain.device.PathProvider
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.auth.AuthMiddleware
@@ -161,4 +162,9 @@ class DataModule {
     fun provideMiddleware(): Middleware {
         return Middleware()
     }
+
+    @Provides
+    @Singleton
+    fun provideDatabaseRepo(): DatabaseRepository =
+        DatabaseDataRepository()
 }

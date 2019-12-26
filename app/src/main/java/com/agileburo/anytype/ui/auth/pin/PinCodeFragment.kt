@@ -4,9 +4,9 @@ import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.layout.SpacingItemDecoration
 import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ui.BaseFragment
-import com.agileburo.anytype.core_utils.ui.SpacingItemDecoration
 import com.agileburo.anytype.presentation.auth.pin.PinCodeState
 
 abstract class PinCodeFragment(

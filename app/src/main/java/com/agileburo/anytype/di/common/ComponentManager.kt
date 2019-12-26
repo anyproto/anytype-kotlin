@@ -5,6 +5,8 @@ import com.agileburo.anytype.di.main.MainComponent
 
 class ComponentManager(private val main: MainComponent) {
 
+    val mainComponent = main
+
     private val authComponent = Component {
         main.authComponentBuilder().authModule(AuthModule()).build()
     }
@@ -88,7 +90,7 @@ class ComponentManager(private val main: MainComponent) {
     val databaseViewComponent = Component {
         main
             .databaseViewComponentBuilder()
-            .databaseViewModule(DatabaseViewModule())
+            .databaseViewModule(TableBoardModule())
             .build()
     }
 
@@ -102,7 +104,7 @@ class ComponentManager(private val main: MainComponent) {
     val contactsComponent = Component {
         main
             .contactsComponentBuilder()
-            .contactsModule(ContactsModule())
+            .contactsModule(ListBoardModule())
             .build()
     }
 

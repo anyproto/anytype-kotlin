@@ -11,12 +11,11 @@
         android:layout_height="64dp"
         android:background="@drawable/rectangle_default_page_logo_background"
         android:gravity="center"
-        android:text="✍️"
+        android:layout_marginTop="45dp"
+        android:text="🔖"
         android:textSize="28sp" />
 
-    <EditText
-        android:background="@null"
-        android:inputType="textMultiLine|textNoSuggestions"
+    <TextView
         android:id="@+id/title"
         style="@style/BlockTitleContentStyle"
         tools:text="Title" />

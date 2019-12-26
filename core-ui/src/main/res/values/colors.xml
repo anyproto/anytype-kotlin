@@ -17,6 +17,11 @@
     <color name="toolbar_section_other">#A646C9</color>
     <color name="block_higlight_divider">#FFB522</color>
 
+    <color name="kanban_main">#EEEEEE</color>
+    <color name="kanban_second">#BDBDBD</color>
+
+    <color name="divider">#ACA996</color>
+
     <array name="toolbar_color_text_colors">
         <item>#2C2B27</item>
         <item>#ACA996</item>

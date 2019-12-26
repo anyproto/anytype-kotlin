@@ -68,5 +68,47 @@
     <string name="background_color">Background color</string>
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
+    <string name="content_description_modal_icon">Modal icon</string>
+
+    <string name="modal_tap_to_type">Tap to type</string>
+    <string name="modal_gallery">Gallery</string>
+    <string name="modal_kanban">Kanban</string>
+    <string name="modal_table">Table</string>
+    <string name="modal_list">List</string>
+    <string name="cancel">Cancel</string>
+    <string name="add">Add</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="customize_view">Customize view</string>
+    <string name="kanban_view">Kanban view</string>
+    <string name="properties">Properties</string>
+    <string name="sort">Sort</string>
+    <string name="filter">Filter</string>
+    <string name="group">Group</string>
+    <string name="modal_view">View</string>
+    <string name="modal_properties">Properties</string>
+    <string name="detail_title">Title</string>
+    <string name="detail_text">Text</string>
+    <string name="detail_select">Select</string>
+    <string name="detail_person">Person</string>
+    <string name="detail_email">Email</string>
+    <string name="detail_number">Number</string>
+    <string name="detail_multiple">Multiple select</string>
+    <string name="detail_date">Date</string>
+    <string name="detail_file">File and Media</string>
+    <string name="detail_checkbox">Checkbox</string>
+    <string name="detail_url">URL</string>
+    <string name="detail_phone">Phone</string>
+    <string name="add_new">Add new</string>
+    <string name="modal_reorder">Reorder</string>
+    <string name="modal_done">Done</string>
+    <string name="modal_prop_name">Property name</string>
+    <string name="modal_property_type">Property type</string>
+    <string name="modal_hide">Hide</string>
+    <string name="modal_show">Show</string>
+    <string name="modal_view_name">View name</string>
+    <string name="modal_details">Details</string>
+    <string name="modal_detail_name">Detail name</string>
+    <string name="modal_detail_type">Detail type</string>
+
 
 </resources>

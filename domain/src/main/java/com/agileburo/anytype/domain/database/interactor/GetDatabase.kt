@@ -4,13 +4,17 @@ import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.database.DatabaseMock
 import com.agileburo.anytype.domain.database.model.DatabaseView
+import com.agileburo.anytype.domain.database.repo.DatabaseRepository
 
-class GetDatabase : BaseUseCase<DatabaseView, GetDatabase.Params>() {
+class GetDatabase(
+    private val databaseRepo: DatabaseRepository
+) : BaseUseCase<DatabaseView, GetDatabase.Params>() {
 
     override suspend fun run(params: Params): Either<Throwable, DatabaseView> = try {
-        DatabaseMock.getDatabaseView(id = params.id).let {
+        databaseRepo.getDatabase(params.id).let {
             Either.Right(it)
         }
+
     } catch (e: Throwable) {
         Either.Left(e)
     }

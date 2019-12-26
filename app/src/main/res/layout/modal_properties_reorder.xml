@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/modal_rect_margin_top"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/sheet_top" />
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/ModalTitleStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="@string/modal_properties"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:background="@color/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <ImageView
+        android:id="@+id/iconTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="@dimen/modal_item_divider_margin_top"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider1"
+        app:srcCompat="@drawable/ic_title" />
+
+    <TextView
+        android:id="@+id/propTitle"
+        style="@style/ModalRowTestStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_text_from_button_margin"
+        android:text="@string/detail_title"
+        app:layout_constraintBottom_toBottomOf="@+id/iconTitle"
+        app:layout_constraintStart_toEndOf="@+id/iconTitle"
+        app:layout_constraintTop_toTopOf="@+id/iconTitle" />
+
+    <ImageView
+        android:id="@+id/titleDnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:contentDescription="@string/content_description_modal_icon"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/propTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/propTitle"
+        app:srcCompat="@drawable/ic_drag_and_drop" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="@dimen/modal_item_divider_margin_top"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:background="@color/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/propTitle" />
+
+    <ImageView
+        android:id="@+id/iconText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="@dimen/modal_item_icon_margin_top"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider2"
+        app:srcCompat="@drawable/ic_text" />
+
+    <TextView
+        android:id="@+id/propText"
+        style="@style/ModalRowTestStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_text_from_button_margin"
+        android:text="@string/detail_text"
+        app:layout_constraintBottom_toBottomOf="@+id/iconText"
+        app:layout_constraintStart_toEndOf="@+id/iconText"
+        app:layout_constraintTop_toTopOf="@+id/iconText" />
+
+    <ImageView
+        android:id="@+id/textDnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/propText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/propText"
+        app:srcCompat="@drawable/ic_drag_and_drop" />
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="@dimen/modal_item_divider_margin_top"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:background="@color/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/propText" />
+
+    <ImageView
+        android:id="@+id/iconSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="@dimen/modal_item_icon_margin_top"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider3"
+        app:srcCompat="@drawable/ic_select" />
+
+    <TextView
+        android:id="@+id/propSelect"
+        style="@style/ModalRowTestStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_text_from_button_margin"
+        android:text="@string/detail_select"
+        app:layout_constraintBottom_toBottomOf="@+id/iconSelect"
+        app:layout_constraintStart_toEndOf="@+id/iconSelect"
+        app:layout_constraintTop_toTopOf="@+id/iconSelect" />
+
+    <ImageView
+        android:id="@+id/selectDnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/propSelect"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/propSelect"
+        app:srcCompat="@drawable/ic_drag_and_drop" />
+
+    <View
+        android:id="@+id/divider4"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="@dimen/modal_item_divider_margin_top"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:background="@color/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/propSelect" />
+
+    <ImageView
+        android:id="@+id/iconPerson"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="@dimen/modal_item_icon_margin_top"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider4"
+        app:srcCompat="@drawable/ic_person" />
+
+    <TextView
+        android:id="@+id/propPerson"
+        style="@style/ModalRowTestStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_text_from_button_margin"
+        android:text="@string/detail_person"
+        app:layout_constraintBottom_toBottomOf="@+id/iconPerson"
+        app:layout_constraintStart_toEndOf="@+id/iconPerson"
+        app:layout_constraintTop_toTopOf="@+id/iconPerson" />
+
+    <ImageView
+        android:id="@+id/personDnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/propPerson"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/propPerson"
+        app:srcCompat="@drawable/ic_drag_and_drop" />
+
+    <View
+        android:id="@+id/divider5"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="@dimen/modal_item_divider_margin_top"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:background="@color/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/propPerson" />
+
+    <ImageView
+        android:id="@+id/iconEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="@dimen/modal_item_icon_margin_top"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider5"
+        app:srcCompat="@drawable/ic_email" />
+
+    <TextView
+        android:id="@+id/propEmail"
+        style="@style/ModalRowTestStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_text_from_button_margin"
+        android:text="@string/detail_email"
+        app:layout_constraintBottom_toBottomOf="@+id/iconEmail"
+        app:layout_constraintStart_toEndOf="@+id/iconEmail"
+        app:layout_constraintTop_toTopOf="@+id/iconEmail" />
+
+    <View
+        android:id="@+id/divider6"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="@dimen/modal_item_divider_margin_top"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:background="@color/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/propEmail" />
+
+    <ImageView
+        android:id="@+id/emailDnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/propEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/propEmail"
+        app:srcCompat="@drawable/ic_drag_and_drop" />
+
+    <ImageView
+        android:id="@+id/iconPlus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider6"
+        app:srcCompat="@drawable/ic_plus" />
+
+    <TextView
+        android:id="@+id/addNew"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/add_new"
+        android:textColor="#ACA996"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@+id/iconPlus"
+        app:layout_constraintStart_toEndOf="@+id/iconPlus"
+        app:layout_constraintTop_toTopOf="@+id/iconPlus" />
+
+    <TextView
+        android:id="@+id/done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:text="@string/modal_done"
+        android:textColor="#ACA996"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/title" />
+
+    <ImageView
+        android:id="@+id/iconBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/divider1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/title"
+        app:srcCompat="@drawable/ic_back" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

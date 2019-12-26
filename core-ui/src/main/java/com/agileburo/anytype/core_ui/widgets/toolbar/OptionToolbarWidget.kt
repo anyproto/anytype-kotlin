@@ -48,6 +48,9 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.Section
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.SectionConfig.SECTION_TOOL
 import kotlinx.android.synthetic.main.item_bottom_detail_toolbar_option.view.*
 import kotlinx.android.synthetic.main.widget_bottom_detail_toolbar.view.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.flow.consumeAsFlow
 
 /**
  * This toolbar widget provides user with different types of options
@@ -59,6 +62,8 @@ import kotlinx.android.synthetic.main.widget_bottom_detail_toolbar.view.*
  * @see SectionAdapter
  */
 class OptionToolbarWidget : LinearLayout {
+
+    private val channel = Channel<Option>()
 
     constructor(
         context: Context
@@ -76,11 +81,13 @@ class OptionToolbarWidget : LinearLayout {
     ) : super(context, attrs, defStyleAttr) {
         setup()
         setupRecycler()
+        header.text = "Add block"
     }
 
     private fun setup() {
         LayoutInflater.from(context).inflate(R.layout.widget_bottom_detail_toolbar, this)
         orientation = VERTICAL
+        setBackgroundResource(R.color.default_bottom_detail_toolbar_background_color)
     }
 
     private fun setupRecycler() {
@@ -136,13 +143,10 @@ class OptionToolbarWidget : LinearLayout {
         val sectionAdapter = SectionAdapter(
             sections = sections,
             onSectionClicked = { selected ->
-
                 scrollToOptionSection(selected, options)
-
                 val update = sections.map { section ->
                     section.copy(selected = section.type == selected.type)
                 }
-
                 (sectionRecycler.adapter as SectionAdapter).update(update = update)
             }
         )
@@ -187,7 +191,10 @@ class OptionToolbarWidget : LinearLayout {
                 false
             )
 
-            adapter = OptionAdapter(options = options)
+            adapter = OptionAdapter(
+                options = options,
+                onOptionClicked = channel::sendBlocking
+            )
 
             addItemDecoration(
                 SpacingItemDecoration(
@@ -350,7 +357,8 @@ class OptionToolbarWidget : LinearLayout {
      * @see Option
      */
     class OptionAdapter(
-        private val options: List<Option>
+        private val options: List<Option>,
+        private val onOptionClicked: (Option) -> Unit
     ) : RecyclerView.Adapter<OptionAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -395,41 +403,58 @@ class OptionToolbarWidget : LinearLayout {
             when (holder) {
                 is ViewHolder.TextOptionHolder -> {
                     holder.bind(
-                        option = options[position] as Option.Text
+                        option = options[position] as Option.Text,
+                        onOptionClicked = onOptionClicked
                     )
                 }
                 is ViewHolder.ListOptionHolder -> {
                     holder.bind(
-                        option = options[position] as Option.List
+                        option = options[position] as Option.List,
+                        onOptionClicked = onOptionClicked
                     )
                 }
                 is ViewHolder.ToolOptionHolder -> {
                     holder.bind(
-                        option = options[position] as Option.Tool
+                        option = options[position] as Option.Tool,
+                        onOptionClicked = onOptionClicked
                     )
                 }
                 is ViewHolder.MediaOptionHolder -> {
                     holder.bind(
-                        option = options[position] as Option.Media
+                        option = options[position] as Option.Media,
+                        onOptionClicked = onOptionClicked
                     )
                 }
                 is ViewHolder.OtherOptionHolder -> {
                     holder.bind(
-                        option = options[position] as Option.Other
+                        option = options[position] as Option.Other,
+                        onOptionClicked = onOptionClicked
                     )
                 }
-                else -> TODO()
             }
         }
 
         sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+            fun bindClick(
+                option: Option,
+                onOptionClicked: (Option) -> Unit
+            ) {
+                itemView.setOnClickListener { onOptionClicked(option) }
+            }
 
             class TextOptionHolder(view: View) : ViewHolder(view) {
 
                 private val pic = itemView.pic
                 private val title = itemView.title
 
-                fun bind(option: Option.Text) {
+                fun bind(
+                    option: Option.Text,
+                    onOptionClicked: (Option) -> Unit
+                ) {
+
+                    bindClick(option, onOptionClicked)
+
                     when (option.type) {
                         OPTION_TEXT_TEXT -> {
                             title.setText(R.string.option_text_text)
@@ -461,7 +486,13 @@ class OptionToolbarWidget : LinearLayout {
                 private val pic = itemView.pic
                 private val title = itemView.title
 
-                fun bind(option: Option.List) {
+                fun bind(
+                    option: Option.List,
+                    onOptionClicked: (Option) -> Unit
+                ) {
+
+                    bindClick(option, onOptionClicked)
+
                     when (option.type) {
                         OPTION_LIST_CHECKBOX -> {
                             pic.setImageResource(R.drawable.ic_toolbar_option_checkbox)
@@ -490,7 +521,13 @@ class OptionToolbarWidget : LinearLayout {
                 private val pic = itemView.pic
                 private val title = itemView.title
 
-                fun bind(option: Option.Tool) {
+                fun bind(
+                    option: Option.Tool,
+                    onOptionClicked: (Option) -> Unit
+                ) {
+
+                    bindClick(option, onOptionClicked)
+
                     when (option.type) {
                         OPTION_TOOL_TASK -> {
                             pic.setImageResource(R.drawable.ic_toolbar_option_task)
@@ -527,7 +564,13 @@ class OptionToolbarWidget : LinearLayout {
                 private val pic = itemView.pic
                 private val title = itemView.title
 
-                fun bind(option: Option.Media) {
+                fun bind(
+                    option: Option.Media,
+                    onOptionClicked: (Option) -> Unit
+                ) {
+
+                    bindClick(option, onOptionClicked)
+
                     when (option.type) {
                         OPTION_MEDIA_FILE -> {
                             pic.setImageResource(R.drawable.ic_toolbar_option_file)
@@ -559,7 +602,13 @@ class OptionToolbarWidget : LinearLayout {
                 private val pic = itemView.pic
                 private val title = itemView.title
 
-                fun bind(option: Option.Other) {
+                fun bind(
+                    option: Option.Other,
+                    onOptionClicked: (Option) -> Unit
+                ) {
+
+                    bindClick(option, onOptionClicked)
+
                     if (option.type == OPTION_OTHER_DIVIDER) {
                         pic.setImageResource(R.drawable.ic_toolbar_option_divider)
                         title.setText(R.string.option_other_divider)
@@ -688,4 +737,6 @@ class OptionToolbarWidget : LinearLayout {
         const val SECTION_MEDIA = 3
         const val SECTION_OTHER = 4
     }
+
+    fun optionClicks() = channel.consumeAsFlow()
 }

@@ -1,6 +1,7 @@
 package com.agileburo.anytype.domain.markup
 
 import com.agileburo.anytype.domain.block.model.Block.Content.Text.Mark
+import com.agileburo.anytype.domain.common.MockDataFactory
 import com.agileburo.anytype.domain.ext.*
 import com.agileburo.anytype.domain.misc.Overlap
 import org.junit.Test
@@ -242,7 +243,7 @@ class MarkupExtTest {
     }
 
     @Test
-    fun `should one one bold markup, than another`() {
+    fun `should add one bold markup, than another`() {
 
         val initial = listOf<Mark>()
 
@@ -306,7 +307,436 @@ class MarkupExtTest {
         val expected = listOf(
             Mark(
                 type = Mark.Type.BOLD,
-                range = 0..2
+                range = 0..3
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
+    fun `should replace the color already present in markup by the new one`() {
+
+        val range = 0..5
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = range,
+                param = MockDataFactory.randomString()
+            )
+        )
+
+        val color = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = range,
+            param = MockDataFactory.randomString()
+        )
+
+        val result = given.addMark(color)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = range,
+                param = color.param
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
+    fun `should replace color if a new mark includes an old mark`() {
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 1..3,
+                param = MockDataFactory.randomString()
+            )
+        )
+
+        val color = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = 0..4,
+            param = MockDataFactory.randomString()
+        )
+
+        val result = given.addMark(color)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..4,
+                param = color.param
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
+    fun `should colorize only inner range`() {
+
+        val white = "white"
+        val yellow = "yellow"
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..6,
+                param = white
+            )
+        )
+
+        val color = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = 2..4,
+            param = yellow
+        )
+
+        val result = given.addMark(color)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..2,
+                param = white
+            ),
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 2..4,
+                param = yellow
+            ),
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 4..6,
+                param = white
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
+    fun `should not colorize inner range because colors are equal`() {
+
+        val color = MockDataFactory.randomString()
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..6,
+                param = color
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = 2..4,
+            param = color
+        )
+
+        val result = given.addMark(new)
+
+        assertEquals(
+            actual = result,
+            expected = given
+        )
+    }
+
+    @Test
+    fun `should colorize inner-left part`() {
+
+        val white = "white"
+        val yellow = "yellow"
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..6,
+                param = white
+            )
+        )
+
+        val color = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = 0..4,
+            param = yellow
+        )
+
+        val result = given.addMark(color)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..4,
+                param = yellow
+            ),
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 4..6,
+                param = white
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
+    fun `should colorize inner-right part`() {
+
+        val white = "white"
+        val yellow = "yellow"
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..6,
+                param = white
+            )
+        )
+
+        val color = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = 4..6,
+            param = yellow
+        )
+
+        val result = given.addMark(color)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..4,
+                param = white
+            ),
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 4..6,
+                param = yellow
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
+    fun `should not colorize inner-left part because param are equal`() {
+
+        val color = MockDataFactory.randomString()
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..6,
+                param = color
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = 0..4,
+            param = color
+        )
+
+        val result = given.addMark(new)
+
+        assertEquals(
+            actual = result,
+            expected = given
+        )
+    }
+
+    @Test
+    fun `should not colorize inner-right part because param are equal`() {
+
+        val color = MockDataFactory.randomString()
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..6,
+                param = color
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = 4..6,
+            param = color
+        )
+
+        val result = given.addMark(new)
+
+        assertEquals(
+            actual = result,
+            expected = given
+        )
+    }
+
+    @Test
+    fun `should colorize left part because colors are not equal`() {
+
+        val black = "black"
+        val yellow = "yellow"
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 5..10,
+                param = black
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = 0..7,
+            param = yellow
+        )
+
+        val result = given.addMark(new)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..7,
+                param = yellow
+            ),
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 7..10,
+                param = black
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
+    fun `should merge left part because colors are equal`() {
+
+        val color = MockDataFactory.randomString()
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 5..10,
+                param = color
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = 0..7,
+            param = color
+        )
+
+        val result = given.addMark(new)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..10,
+                param = color
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
+    fun `should colorize right part because colors are not equal`() {
+
+        val black = "black"
+        val yellow = "yellow"
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..7,
+                param = black
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = 5..10,
+            param = yellow
+        )
+
+        val result = given.addMark(new)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..5,
+                param = black
+            ),
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 5..10,
+                param = yellow
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
+    fun `should merge right part because colors are equal`() {
+
+        val color = MockDataFactory.randomString()
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..7,
+                param = color
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = 5..10,
+            param = color
+        )
+
+        val result = given.addMark(new)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..10,
+                param = color
             )
         )
 
@@ -432,7 +862,7 @@ class MarkupExtTest {
             expected = listOf(
                 Mark(
                     type = Mark.Type.BOLD,
-                    range = 6..10
+                    range = 5..10
                 )
             )
         )
@@ -462,7 +892,7 @@ class MarkupExtTest {
             expected = listOf(
                 Mark(
                     type = Mark.Type.BOLD,
-                    range = 0..4
+                    range = 0..5
                 )
             )
         )
@@ -540,11 +970,11 @@ class MarkupExtTest {
         val expected = listOf(
             Mark(
                 type = Mark.Type.BOLD,
-                range = 0..4
+                range = 0..5
             ),
             Mark(
                 type = Mark.Type.BOLD,
-                range = 8..10
+                range = 7..10
             )
         )
 

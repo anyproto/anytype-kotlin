@@ -4,6 +4,7 @@
     android:layout_width="@dimen/default_toolbar_option_width"
     android:layout_height="wrap_content"
     android:clickable="true"
+    android:focusable="true"
     android:orientation="vertical"
     android:stateListAnimator="@animator/scale_shrink">
 

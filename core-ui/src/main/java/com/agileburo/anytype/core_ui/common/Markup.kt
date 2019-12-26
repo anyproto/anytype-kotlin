@@ -1,10 +1,12 @@
 package com.agileburo.anytype.core_ui.common
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.CharacterStyle
+import android.text.style.ForegroundColorSpan
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
 
@@ -31,8 +33,13 @@ interface Markup {
     data class Mark(
         val from: Int,
         val to: Int,
-        val type: Type
-    )
+        val type: Type,
+        val param: Any? = null
+    ) {
+
+        fun color(): Int = Color.parseColor(param as String)
+
+    }
 
     /**
      * Markup types.
@@ -40,7 +47,8 @@ interface Markup {
     enum class Type {
         ITALIC,
         BOLD,
-        STRIKETHROUGH
+        STRIKETHROUGH,
+        TEXT_COLOR
     }
 }
 
@@ -61,6 +69,12 @@ fun Markup.toSpannable() = SpannableString(body).apply {
             )
             Markup.Type.STRIKETHROUGH -> setSpan(
                 StrikethroughSpan(),
+                mark.from,
+                mark.to,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            Markup.Type.TEXT_COLOR -> setSpan(
+                ForegroundColorSpan(mark.color()),
                 mark.from,
                 mark.to,
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE
@@ -89,6 +103,12 @@ fun Editable.setMarkup(markup: Markup) {
             )
             Markup.Type.STRIKETHROUGH -> setSpan(
                 StrikethroughSpan(),
+                mark.from,
+                mark.to,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            Markup.Type.TEXT_COLOR -> setSpan(
+                ForegroundColorSpan(mark.color()),
                 mark.from,
                 mark.to,
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE

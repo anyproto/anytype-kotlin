@@ -5,6 +5,9 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.reactive.clicks
+import com.agileburo.anytype.core_ui.state.ControlPanelState
+import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar.Block.Action.ADD
 import kotlinx.android.synthetic.main.widget_block_toolbar.view.*
 
 class BlockToolbarWidget : ConstraintLayout {
@@ -30,5 +33,10 @@ class BlockToolbarWidget : ConstraintLayout {
         LayoutInflater.from(context).inflate(R.layout.widget_block_toolbar, this)
     }
 
-    fun addButton() = add
+    fun keyboardClicks() = keyboard.clicks()
+    fun addButtonClicks() = add.clicks()
+
+    fun setState(state: ControlPanelState.Toolbar.Block) {
+        add.isSelected = state.selectedAction == ADD
+    }
 }

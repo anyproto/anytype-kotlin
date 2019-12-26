@@ -17,6 +17,10 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.ColorToolbarWidget.Backgrou
 import com.agileburo.anytype.core_ui.widgets.toolbar.ColorToolbarWidget.TextColorAdapter
 import kotlinx.android.synthetic.main.item_toolbar_text_color.view.*
 import kotlinx.android.synthetic.main.widget_color_toolbar.view.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.consumeAsFlow
 
 /**
  * This toolbar widget provides user with the ability to color block content.
@@ -26,6 +30,15 @@ import kotlinx.android.synthetic.main.widget_color_toolbar.view.*
  * @see BackgroundColorAdapter
  */
 class ColorToolbarWidget : LinearLayout {
+
+    private val channel = Channel<Click>()
+
+    sealed class Click {
+        data class OnTextColorClicked(val color: Int) : Click()
+        data class OnBackgroundColorClicked(val color: Int) : Click()
+    }
+
+    fun observeClicks(): Flow<Click> = channel.consumeAsFlow()
 
     constructor(
         context: Context
@@ -42,6 +55,8 @@ class ColorToolbarWidget : LinearLayout {
         defStyleAttr: Int
     ) : super(context, attrs, defStyleAttr) {
         inflate()
+        orientation = VERTICAL
+        setBackgroundResource(R.color.default_bottom_detail_toolbar_background_color)
         setupAdapters()
     }
 
@@ -78,6 +93,7 @@ class ColorToolbarWidget : LinearLayout {
             addItemDecoration(decoration)
 
             adapter = TextColorAdapter(
+                onTextColorClicked = { channel.sendBlocking(Click.OnTextColorClicked(it)) },
                 colors = resources.getIntArray(R.array.toolbar_color_text_colors).toList()
             )
         }
@@ -111,7 +127,8 @@ class ColorToolbarWidget : LinearLayout {
      * @property colors immutable list of colors represented by integers.
      */
     class TextColorAdapter(
-        private val colors: List<Int>
+        private val colors: List<Int>,
+        private val onTextColorClicked: (Int) -> Unit
     ) : RecyclerView.Adapter<TextColorAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(
@@ -128,7 +145,8 @@ class ColorToolbarWidget : LinearLayout {
             holder.bind(
                 color = colors[position],
                 isFirst = position == 0,
-                isLast = position == colors.lastIndex
+                isLast = position == colors.lastIndex,
+                onTextColorClicked = onTextColorClicked
             )
         }
 
@@ -139,10 +157,12 @@ class ColorToolbarWidget : LinearLayout {
             fun bind(
                 color: Int,
                 isFirst: Boolean,
-                isLast: Boolean
+                isLast: Boolean,
+                onTextColorClicked: (Int) -> Unit
             ) {
                 placeholder.setTextColor(color)
                 setBackground(isFirst, isLast)
+                itemView.setOnClickListener { onTextColorClicked(color) }
             }
 
             private fun setBackground(isFirst: Boolean, isLast: Boolean) {

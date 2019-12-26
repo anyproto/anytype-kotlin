@@ -8,6 +8,7 @@ import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.setMarkup
 import com.agileburo.anytype.core_ui.common.toSpannable
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.MARKUP_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_AND_MARKUP_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
@@ -104,6 +105,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     if (content.text.toString() != item.text)
                         content.setText(item.text)
                     setMarkup(markup = item)
+                }
+                FOCUS_CHANGED -> {
+                    // TODO
                 }
             }
         }

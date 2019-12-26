@@ -36,6 +36,14 @@ fun Block.toView(focused: Boolean = false): BlockView = when (val content = this
                                 type = Markup.Type.STRIKETHROUGH
                             )
                         }
+                        Block.Content.Text.Mark.Type.TEXT_COLOR -> {
+                            Markup.Mark(
+                                from = mark.range.first,
+                                to = mark.range.last,
+                                type = Markup.Type.TEXT_COLOR,
+                                param = checkNotNull(mark.param)
+                            )
+                        }
                         else -> null
                     }
                 },
@@ -92,8 +100,8 @@ fun Block.toView(focused: Boolean = false): BlockView = when (val content = this
     else -> TODO()
 }
 
-fun HomeDashboard.toView(): List<DashboardView.Document> = children.map { id ->
-    blocks.first { block -> block.id == id }.let { model ->
+fun HomeDashboard.toView(): List<DashboardView.Document> = children.mapNotNull { id ->
+    blocks.find { block -> block.id == id }?.let { model ->
         DashboardView.Document(
             id = model.id,
             title = if (model.fields.hasName()) model.fields.name else "Untitled"

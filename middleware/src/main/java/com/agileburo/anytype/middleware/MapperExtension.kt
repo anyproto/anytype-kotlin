@@ -70,6 +70,14 @@ fun BlockEntity.Content.Text.Mark.toMiddleware(): Models.Block.Content.Text.Mark
                 .setRange(rangeModel)
                 .build()
         }
+        BlockEntity.Content.Text.Mark.Type.TEXT_COLOR -> {
+            Models.Block.Content.Text.Mark
+                .newBuilder()
+                .setType(Models.Block.Content.Text.Mark.Type.TextColor)
+                .setRange(rangeModel)
+                .setParam(param as String)
+                .build()
+        }
         else -> throw IllegalStateException("Unsupported mark type: ${type.name}")
     }
 }

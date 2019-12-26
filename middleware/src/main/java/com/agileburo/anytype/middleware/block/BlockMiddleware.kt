@@ -377,8 +377,7 @@ class BlockMiddleware(
             marks = block.text.marks.marksList.map { mark ->
                 BlockEntity.Content.Text.Mark(
                     range = IntRange(mark.range.from, mark.range.to),
-                    // TODO parse parameter
-                    param = null,
+                    param = if (mark.param.isNotEmpty()) mark.param else null,
                     type = when (mark.type) {
                         Models.Block.Content.Text.Mark.Type.Bold -> {
                             BlockEntity.Content.Text.Mark.Type.BOLD

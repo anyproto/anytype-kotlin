@@ -23,19 +23,47 @@
 
     </FrameLayout>
 
-    <com.agileburo.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
-        android:id="@+id/toolbar"
+    <LinearLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/default_toolbar_height"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/white" />
+        android:orientation="vertical">
 
-    <com.agileburo.anytype.core_ui.widgets.toolbar.MarkupToolbarWidget
-        android:visibility="invisible"
-        android:id="@+id/markupToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/default_toolbar_height"
-        android:layout_gravity="bottom"
-        android:background="@color/white" />
+        <FrameLayout
+            android:id="@+id/toolbars"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.agileburo.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/default_toolbar_height"
+                android:background="@color/white" />
+
+            <com.agileburo.anytype.core_ui.widgets.toolbar.MarkupToolbarWidget
+                android:id="@+id/markupToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/default_toolbar_height"
+                android:background="@color/white"
+                android:visibility="visible" />
+
+        </FrameLayout>
+
+        <com.agileburo.anytype.core_ui.widgets.toolbar.ColorToolbarWidget
+            android:id="@+id/colorToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="bottom"
+            android:visibility="invisible" />
+
+        <com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget
+            android:id="@+id/optionToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="bottom"
+            android:visibility="invisible" />
+
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

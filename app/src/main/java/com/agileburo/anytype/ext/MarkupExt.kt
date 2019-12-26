@@ -2,8 +2,10 @@ package com.agileburo.anytype.ext
 
 import android.graphics.Typeface
 import android.text.Editable
+import android.text.style.ForegroundColorSpan
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
+import com.agileburo.anytype.core_utils.ext.hexColorCode
 import com.agileburo.anytype.domain.block.model.Block.Content.Text.Mark
 
 fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Any::class.java).mapNotNull { span ->
@@ -12,6 +14,13 @@ fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Any::class.java).m
             Mark(
                 range = getSpanStart(span)..getSpanEnd(span),
                 type = Mark.Type.STRIKETHROUGH
+            )
+        }
+        is ForegroundColorSpan -> {
+            Mark(
+                range = getSpanStart(span)..getSpanEnd(span),
+                type = Mark.Type.TEXT_COLOR,
+                param = span.foregroundColor.hexColorCode()
             )
         }
         is StyleSpan -> {

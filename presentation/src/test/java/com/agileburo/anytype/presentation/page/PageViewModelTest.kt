@@ -3,6 +3,7 @@ package com.agileburo.anytype.presentation.page
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.CreateBlock
 import com.agileburo.anytype.domain.block.interactor.UpdateBlock
@@ -324,44 +325,8 @@ class PageViewModelTest {
 
     @Test
     fun `should start creating a new block if user clicked create-text-block-button`() {
-
-        val root = MockDataFactory.randomUuid()
-        val child = MockDataFactory.randomUuid()
-
-        val page = listOf(
-            Block(
-                id = root,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
-                children = listOf(child)
-            ),
-            Block(
-                id = child,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Text(
-                    text = MockDataFactory.randomString(),
-                    marks = emptyList(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList()
-            )
-        )
-
-        observeEvents.stub {
-            onBlocking { build() } doReturn flowOf(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
-                )
-            )
-        }
-
-        buildViewModel()
-
+        simulateNormalPageOpeningFlow()
         vm.onAddTextBlockClicked()
-
         verify(createBlock, times(1)).invoke(any(), any(), any())
     }
 
@@ -689,11 +654,6 @@ class PageViewModelTest {
                     .copy(
                         content = (paragraph.content as Block.Content.Text).copy(
                             marks = listOf(
-                                Block.Content.Text.Mark(
-                                    type = Block.Content.Text.Mark.Type.BOLD,
-                                    param = null,
-                                    range = firstTimeRange
-                                ),
                                 Block.Content.Text.Mark(
                                     type = Block.Content.Text.Mark.Type.BOLD,
                                     param = null,
@@ -1042,6 +1002,221 @@ class PageViewModelTest {
             ),
             onResult = any()
         )
+    }
+
+    @Test
+    fun `should receive initial control panel state when view model is initialized`() {
+        simulateNormalPageOpeningFlow()
+        val expected = ControlPanelState.init()
+        vm.controlPanelViewState.test().assertValue(expected)
+    }
+
+    @Test
+    fun `add-block-or-turn-into panel should be opened on add-block-toolbar-clicked event`() {
+
+        simulateNormalPageOpeningFlow()
+
+        vm.onAddBlockToolbarClicked()
+
+        val expected = ControlPanelState(
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = false
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.ADD
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = true
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            )
+        )
+
+        vm.controlPanelViewState.test().assertValue(expected)
+    }
+
+    @Test
+    fun `add-block-or-turn-into panel should be closed on add-text-block-clicked event`() {
+
+        simulateNormalPageOpeningFlow()
+
+        vm.onAddBlockToolbarClicked()
+        vm.onAddTextBlockClicked()
+
+        val expected = ControlPanelState(
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = false
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = null
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = false
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            )
+        )
+
+        vm.controlPanelViewState.test().assertValue(expected)
+    }
+
+    @Test
+    fun `should open markup panel when text is selected`() {
+
+        simulateNormalPageOpeningFlow()
+
+        vm.onSelectionChanged(
+            id = MockDataFactory.randomUuid(),
+            selection = 0..4
+        )
+
+        val expectedVisibility = true
+
+        val expected = ControlPanelState(
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = false
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = null
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = false
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = expectedVisibility
+            )
+        )
+
+        vm.controlPanelViewState.test().assertValue(expected)
+    }
+
+    @Test
+    fun `should not open markup panel when text selection is empty`() {
+
+        val expectedVisibility = false
+
+        simulateNormalPageOpeningFlow()
+
+        vm.onSelectionChanged(
+            id = MockDataFactory.randomUuid(),
+            selection = 0..0
+        )
+
+        val expected = ControlPanelState(
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = false
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = null
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = false
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = expectedVisibility
+            )
+        )
+
+        vm.controlPanelViewState.test().assertValue(expected)
+    }
+
+    @Test
+    fun `should open color toolbar when this option is selected on markup toolbar`() {
+
+        simulateNormalPageOpeningFlow()
+
+        vm.onSelectionChanged(
+            id = MockDataFactory.randomUuid(),
+            selection = 0..4
+        )
+
+        vm.onMarkupToolbarColorClicked()
+
+        val expectedVisibility = true
+
+        val expected = ControlPanelState(
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = expectedVisibility
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = null
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = false
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Markup.Action.COLOR
+            )
+        )
+
+        vm.controlPanelViewState.test().assertValue(expected)
+    }
+
+    private fun simulateNormalPageOpeningFlow() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(child)
+            ),
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList()
+            )
+        )
+
+        openPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
+        }
+
+        val flow: Flow<Event.Command> = flow {
+            delay(1000)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
+                )
+            )
+        }
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flow
+        }
+
+        openPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
+        }
+
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(1001)
     }
 
     private fun stubClosePage(response: Either<Throwable, Unit>) {

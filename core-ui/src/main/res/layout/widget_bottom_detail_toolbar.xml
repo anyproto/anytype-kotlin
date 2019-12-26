@@ -1,9 +1,5 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/default_bottom_detail_toolbar_background_color"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
         android:id="@+id/header"
@@ -22,13 +18,19 @@
         android:layout_height="24dp"
         android:layout_marginTop="19dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/optionRecycler"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:layout_marginBottom="28dp"
-        tools:itemCount="3"
-        tools:listitem="@layout/item_bottom_detail_toolbar_option" />
+        android:layout_marginBottom="28dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/optionRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:itemCount="3"
+            tools:listitem="@layout/item_bottom_detail_toolbar_option" />
+
+    </androidx.core.widget.NestedScrollView>
 
 </merge>

@@ -38,49 +38,124 @@ fun Marks.toggle(target: Mark): Marks {
             targetConsumed = true
             when (target.range.overlap(mark.range)) {
                 Overlap.EQUAL -> {
+                    if (target.type == Mark.Type.TEXT_COLOR) result.add(target)
                 }
                 Overlap.OUTER -> {
                     result.add(target)
                 }
                 Overlap.INNER_LEFT -> {
-                    result.add(
-                        mark.copy(
-                            range = target.range.last.inc()..mark.range.last
+                    if (target.type == Mark.Type.TEXT_COLOR) {
+                        if (mark.param == target.param)
+                            result.add(mark)
+                        else {
+                            result.add(target)
+                            result.add(
+                                mark.copy(
+                                    range = target.range.last..mark.range.last
+                                )
+                            )
+                        }
+                    } else
+                        result.add(
+                            mark.copy(
+                                range = target.range.last..mark.range.last
+                            )
                         )
-                    )
                 }
                 Overlap.INNER_RIGHT -> {
-                    result.add(
-                        mark.copy(
-                            range = mark.range.first..target.range.first.dec()
+                    if (target.type == Mark.Type.TEXT_COLOR) {
+                        if (target.param == mark.param)
+                            result.add(mark)
+                        else {
+                            result.add(
+                                mark.copy(
+                                    range = mark.range.first..target.range.first
+                                )
+                            )
+                            result.add(target)
+                        }
+                    } else
+                        result.add(
+                            mark.copy(
+                                range = mark.range.first..target.range.first
+                            )
                         )
-                    )
                 }
                 Overlap.INNER -> {
-                    result.add(
-                        mark.copy(
-                            range = mark.range.first..target.range.first.dec()
+                    if (target.type == Mark.Type.TEXT_COLOR) {
+                        if (target.param == mark.param)
+                            result.add(mark)
+                        else {
+                            result.add(
+                                mark.copy(
+                                    range = mark.range.first..target.range.first
+                                )
+                            )
+                            result.add(target)
+                            result.add(
+                                mark.copy(
+                                    range = target.range.last..mark.range.last
+                                )
+                            )
+                        }
+                    } else {
+                        result.add(
+                            mark.copy(
+                                range = mark.range.first..target.range.first
+                            )
                         )
-                    )
-                    result.add(
-                        mark.copy(
-                            range = target.range.last.inc()..mark.range.last
+                        result.add(
+                            mark.copy(
+                                range = target.range.last..mark.range.last
+                            )
                         )
-                    )
+                    }
                 }
                 Overlap.LEFT -> {
-                    result.add(
-                        mark.copy(
-                            range = target.range.first..mark.range.last
+                    if (target.type == Mark.Type.TEXT_COLOR) {
+                        if (target.param == mark.param)
+                            result.add(
+                                mark.copy(
+                                    range = target.range.first..mark.range.last
+                                )
+                            )
+                        else {
+                            result.add(target)
+                            result.add(
+                                mark.copy(
+                                    range = target.range.last..mark.range.last
+                                )
+                            )
+                        }
+                    } else
+                        result.add(
+                            mark.copy(
+                                range = target.range.first..mark.range.last
+                            )
                         )
-                    )
                 }
                 Overlap.RIGHT -> {
-                    result.add(
-                        mark.copy(
-                            range = mark.range.first..target.range.last
+                    if (target.type == Mark.Type.TEXT_COLOR) {
+                        if (target.param == mark.param)
+                            result.add(
+                                mark.copy(
+                                    range = mark.range.first..target.range.last
+                                )
+                            )
+                        else {
+                            result.add(
+                                mark.copy(
+                                    range = mark.range.first..target.range.first
+                                )
+                            )
+                            result.add(target)
+                        }
+                    } else
+                        result.add(
+                            mark.copy(
+                                range = mark.range.first..target.range.last
+                            )
                         )
-                    )
                 }
                 Overlap.AFTER -> {
                     result.add(mark)

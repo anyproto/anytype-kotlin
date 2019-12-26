@@ -1,8 +1,11 @@
 package com.agileburo.anytype.core_utils.ext
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.getSystemService
+import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 
 fun View.invisible() {
@@ -34,3 +37,13 @@ fun View.hideKeyboard() {
         InputMethodManager.RESULT_UNCHANGED_SHOWN
     )
 }
+
+fun Activity.hideSoftInput() {
+    val imm: InputMethodManager? = getSystemService()
+    val currentFocus = currentFocus
+    if (currentFocus != null && imm != null) {
+        imm.hideSoftInputFromWindow(currentFocus.windowToken, 0)
+    }
+}
+
+fun Fragment.hideSoftInput() = requireActivity().hideSoftInput()

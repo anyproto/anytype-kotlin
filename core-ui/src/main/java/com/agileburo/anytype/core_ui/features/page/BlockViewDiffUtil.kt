@@ -32,10 +32,11 @@ class BlockViewDiffUtil(
                 else
                     TEXT_CHANGED
             } else {
-                if (oldBlock.marks != newBlock.marks)
-                    MARKUP_CHANGED
-                else
-                    throw IllegalStateException("Unexpected change payload scenario")
+                when {
+                    oldBlock.marks != newBlock.marks -> MARKUP_CHANGED
+                    oldBlock.focused != newBlock.focused -> FOCUS_CHANGED
+                    else -> throw IllegalStateException("Unexpected change payload scenario:\n$oldBlock\n$newBlock")
+                }
             }
         } else
             super.getChangePayload(oldItemPosition, newItemPosition)
@@ -45,5 +46,6 @@ class BlockViewDiffUtil(
         const val TEXT_CHANGED = 0
         const val MARKUP_CHANGED = 1
         const val TEXT_AND_MARKUP_CHANGED = 2
+        const val FOCUS_CHANGED = 3
     }
 }

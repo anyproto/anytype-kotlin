@@ -1,6 +1,6 @@
 package com.agileburo.anytype
 
-import com.agileburo.anytype.domain.database.model.KanbanRowView
+import com.agileburo.anytype.presentation.databaseview.models.KanbanRowView
 import com.agileburo.anytype.ui.database.kanban.helpers.KanbanRowDiffUtil
 import org.junit.Assert
 import org.junit.Test

@@ -15,9 +15,14 @@ import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.widgets.toolbar.ColorToolbarWidget
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.Option
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_ONE
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_THREE
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_TWO
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HIGHLIGHTED
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_TEXT
 import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.di.common.componentManager
+import com.agileburo.anytype.domain.block.model.Block.Content.Text
 import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
@@ -36,7 +41,11 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         BlockAdapter(
             blocks = mutableListOf(),
             onTextChanged = { id, editable ->
-                vm.onTextChanged(id, editable.toString(), editable.extractMarks())
+                vm.onTextChanged(
+                    id = id,
+                    text = editable.toString(),
+                    marks = editable.extractMarks()
+                )
             },
             onSelectionChanged = { id, selection ->
                 vm.onSelectionChanged(
@@ -108,7 +117,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
                 if (click is ColorToolbarWidget.Click.OnTextColorClicked)
                     vm.onMarkupTextColorAction(color = click.color.hexColorCode())
                 else
-                    requireActivity().toast("Not implemented")
+                    toast(NOT_IMPLEMENTED_MESSAGE)
             }
             .launchIn(lifecycleScope)
 
@@ -117,10 +126,14 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             .onEach { option ->
                 when (option) {
                     is Option.Text -> {
-                        if (option.type == OptionConfig.OPTION_TEXT_TEXT)
-                            vm.onAddTextBlockClicked()
-                        else
-                            requireActivity().toast("Not implemented")
+                        when (option.type) {
+                            OPTION_TEXT_TEXT -> vm.onAddTextBlockClicked(Text.Style.P)
+                            OPTION_TEXT_HEADER_ONE -> vm.onAddTextBlockClicked(Text.Style.H1)
+                            OPTION_TEXT_HEADER_TWO -> vm.onAddTextBlockClicked(Text.Style.H2)
+                            OPTION_TEXT_HEADER_THREE -> vm.onAddTextBlockClicked(Text.Style.H3)
+                            OPTION_TEXT_HIGHLIGHTED -> vm.onAddTextBlockClicked(Text.Style.QUOTE)
+                            else -> toast(NOT_IMPLEMENTED_MESSAGE)
+                        }
                     }
                 }
             }
@@ -199,5 +212,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
     companion object {
         const val ID_KEY = "id"
         const val ID_EMPTY_VALUE = ""
+
+        const val NOT_IMPLEMENTED_MESSAGE = "Not implemented."
     }
 }

@@ -2,6 +2,7 @@
 <resources>
 
     <style name="BlockTextContentStyle">
+        <item name="android:fontFamily">@font/graphik_regular</item>
         <item name="android:textSize">15sp</item>
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:layout_marginBottom">4dp</item>
@@ -11,6 +12,9 @@
     </style>
 
     <style name="BlockHeaderOneContentStyle">
+        <item name="android:fontFamily">@font/graphik_medium</item>
+        <item name="android:inputType">textMultiLine|textNoSuggestions</item>
+        <item name="android:background">@null</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_marginTop">22dp</item>
         <item name="android:textColor">@color/black</item>
@@ -22,6 +26,9 @@
     </style>
 
     <style name="BlockHeaderTwoContentStyle">
+        <item name="android:fontFamily">@font/graphik_medium</item>
+        <item name="android:inputType">textMultiLine|textNoSuggestions</item>
+        <item name="android:background">@null</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_marginTop">14dp</item>
         <item name="android:textColor">@color/black</item>
@@ -33,6 +40,9 @@
     </style>
 
     <style name="BlockHeaderThreeContentStyle">
+        <item name="android:fontFamily">@font/graphik_medium</item>
+        <item name="android:inputType">textMultiLine|textNoSuggestions</item>
+        <item name="android:background">@null</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_marginTop">14dp</item>
         <item name="android:textColor">@color/black</item>
@@ -44,6 +54,8 @@
     </style>
 
     <style name="BlockTitleContentStyle">
+        <item name="android:inputType">textMultiLine|textNoSuggestions</item>
+        <item name="android:background">@null</item>
         <item name="android:fontFamily">@font/graphik_medium</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -175,6 +187,9 @@
     </style>
 
     <style name="BlockHighlightContentStyle">
+        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:inputType">textMultiLine|textNoSuggestions</item>
+        <item name="android:background">@null</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">17sp</item>
         <item name="android:textStyle">italic</item>

@@ -57,4 +57,10 @@ data class BlockEntity(
             enum class Style { EMPTY, TASK, SET }
         }
     }
+
+    sealed class Prototype {
+        class Text(
+            val style: Content.Text.Style
+        ) : Prototype()
+    }
 }

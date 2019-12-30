@@ -13,7 +13,7 @@ import com.agileburo.anytype.presentation.desktop.DashboardView
 import kotlinx.android.synthetic.main.item_desktop_page.view.*
 
 class DashboardAdapter(
-    private val data: MutableList<DashboardView>,
+    private var data: MutableList<DashboardView>,
     private val onDocumentClicked: (DashboardView.Document) -> Unit
 ) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>(), SupportDragAndDropBehavior {
 
@@ -60,7 +60,7 @@ class DashboardAdapter(
             fun bind(doc: DashboardView.Document, onClick: (DashboardView.Document) -> Unit) {
                 itemView.setOnClickListener { onClick(doc) }
                 itemView.title.text = doc.title
-                itemView.emoji.text = doc.emoji
+                itemView.emoji.text = if (doc.emoji.isNotEmpty()) doc.emoji else "🎬"
             }
         }
     }

@@ -109,6 +109,12 @@
     <string name="modal_details">Details</string>
     <string name="modal_detail_name">Detail name</string>
     <string name="modal_detail_type">Detail type</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_paragraph">Paragraph</string>
+    <string name="hint_header_one">Header 1</string>
+    <string name="hint_quote">Quote</string>
+    <string name="hint_header_two">Header 2</string>
+    <string name="hint_header_three">Header 3</string>
 
 
 </resources>

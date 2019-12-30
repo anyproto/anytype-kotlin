@@ -12,6 +12,8 @@ import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.block.interactor.CreateBlock
 import com.agileburo.anytype.domain.block.interactor.UpdateBlock
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.block.model.Block.Prototype
+import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.event.interactor.ObserveEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.addMark
@@ -40,7 +42,7 @@ class PageViewModel(
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-    private val controlPanelInteractor = ControlPanelMachine.Interactor(viewModelScope)
+    private val controlPanelInteractor = Interactor(viewModelScope)
     val controlPanelViewState = MutableLiveData<ControlPanelState>()
 
     private val renderingChannel = Channel<List<Block>>()
@@ -87,6 +89,9 @@ class PageViewModel(
     }
 
     private fun handleEvent(event: Event) {
+
+        Timber.d("Handling event: $event")
+
         when (event) {
             is Event.Command.ShowBlock -> {
                 blocks = event.blocks
@@ -178,23 +183,23 @@ class PageViewModel(
     }
 
     private fun processRendering() {
-        renderings
-            .zip(focusChanges) { models, focus -> Pair(models, focus) }
-            .map { (models, focus) ->
-                models.asMap().asRender(pageId).mapNotNull { block ->
-                    when {
-                        block.content is Block.Content.Text -> {
-                            block.toView(focused = block.id == focus)
+        viewModelScope.launch {
+            renderings
+                .withLatestFrom(focusChanges) { models, focus ->
+                    models.asMap().asRender(pageId).mapNotNull { block ->
+                        when {
+                            block.content is Block.Content.Text -> {
+                                block.toView(focused = block.id == focus)
+                            }
+                            block.content is Block.Content.Image -> {
+                                block.toView()
+                            }
+                            else -> null
                         }
-                        block.content is Block.Content.Image -> {
-                            block.toView()
-                        }
-                        else -> null
                     }
                 }
-            }
-            .onEach { dispatchToUI(it) }
-            .launchIn(viewModelScope)
+                .collect { dispatchToUI(it) }
+        }
     }
 
     private fun dispatchToUI(views: List<BlockView>) {
@@ -296,12 +301,14 @@ class PageViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMarkupToolbarColorClicked)
     }
 
-    fun onAddTextBlockClicked() {
+    fun onAddTextBlockClicked(style: Block.Content.Text.Style) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnOptionSelected)
         createBlock.invoke(
-            viewModelScope, CreateBlock.Params.empty(
+            viewModelScope, CreateBlock.Params(
                 contextId = pageId,
-                targetId = blocks.last().id
+                targetId = "",
+                position = Position.INNER,
+                prototype = Prototype.Text(style = style)
             )
         ) { result ->
             result.either(

@@ -326,7 +326,7 @@ class PageViewModelTest {
     @Test
     fun `should start creating a new block if user clicked create-text-block-button`() {
         simulateNormalPageOpeningFlow()
-        vm.onAddTextBlockClicked()
+        vm.onAddTextBlockClicked(style = Block.Content.Text.Style.P)
         verify(createBlock, times(1)).invoke(any(), any(), any())
     }
 
@@ -496,7 +496,7 @@ class PageViewModelTest {
                             )
                         )
                     )
-                    .toView(focused = false)
+                    .toView(focused = true)
             )
         )
 
@@ -619,7 +619,7 @@ class PageViewModelTest {
                             )
                         )
                     )
-                    .toView(focused = false)
+                    .toView(focused = true)
             )
         )
 
@@ -1043,7 +1043,7 @@ class PageViewModelTest {
         simulateNormalPageOpeningFlow()
 
         vm.onAddBlockToolbarClicked()
-        vm.onAddTextBlockClicked()
+        vm.onAddTextBlockClicked(style = Block.Content.Text.Style.P)
 
         val expected = ControlPanelState(
             colorToolbar = ControlPanelState.Toolbar.Color(
@@ -1158,6 +1158,104 @@ class PageViewModelTest {
         )
 
         vm.controlPanelViewState.test().assertValue(expected)
+    }
+
+    @Test
+    fun `should add a header-one block on add-header-one event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(child)
+            ),
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList()
+            )
+        )
+
+        openPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
+        }
+
+        val style = Block.Content.Text.Style.H1
+
+        val new = Block(
+            id = MockDataFactory.randomString(),
+            content = Block.Content.Text(
+                text = "",
+                marks = emptyList(),
+                style = style
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val flow: Flow<Event.Command> = flow {
+            delay(500)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
+                )
+            )
+            delay(500)
+            emit(
+                Event.Command.AddBlock(
+                    blocks = listOf(new)
+                )
+            )
+        }
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flow
+        }
+
+        openPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
+        }
+
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(500)
+
+        val testObserver = vm.state.test()
+
+        testObserver.assertValue(
+            ViewState.Success(
+                blocks = listOf(page.last().toView(false))
+            )
+        )
+
+        coroutineTestRule.advanceTime(500)
+
+        testObserver.assertValue(
+            ViewState.Success(
+                blocks = listOf(
+                    page.last().toView(focused = false),
+                    new.toView(focused = true)
+                )
+            )
+        )
     }
 
     private fun simulateNormalPageOpeningFlow() {

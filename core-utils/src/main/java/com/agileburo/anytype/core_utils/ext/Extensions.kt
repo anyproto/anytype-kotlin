@@ -2,6 +2,7 @@ package com.agileburo.anytype.core_utils.ext
 
 import android.content.Context
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 
 fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
     val tmp = this[index1]
@@ -34,3 +35,4 @@ inline fun <reified T> MutableList<T>.shiftDown(srcIndex: Int, dstIndex: Int) =
     }
 
 fun Context.toast(msg: CharSequence) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+fun Fragment.toast(msg: CharSequence) = requireActivity().toast(msg)

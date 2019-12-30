@@ -197,7 +197,7 @@ fun Command.Create.toEntity(): CommandEntity.Create {
     return CommandEntity.Create(
         contextId = contextId,
         targetId = targetId,
-        block = block.toEntity(),
+        prototype = prototype.toEntity(),
         position = position.toEntity()
     )
 }
@@ -242,5 +242,13 @@ fun EventEntity.toDomain(): Event {
                 children = children
             )
         }
+    }
+}
+
+fun Block.Prototype.toEntity(): BlockEntity.Prototype = when (this) {
+    is Block.Prototype.Text -> {
+        BlockEntity.Prototype.Text(
+            style = BlockEntity.Content.Text.Style.valueOf(this.style.name)
+        )
     }
 }

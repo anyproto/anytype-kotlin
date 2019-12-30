@@ -13,7 +13,7 @@ class CommandEntity {
         val contextId: String,
         val targetId: String,
         val position: PositionEntity,
-        val block: BlockEntity
+        val prototype: BlockEntity.Prototype
     )
 
     class Dnd(

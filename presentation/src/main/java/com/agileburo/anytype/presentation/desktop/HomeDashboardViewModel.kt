@@ -190,7 +190,7 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             movementChannel.send(
                 Movement(
-                    direction = if (from < to) Position.AFTER else Position.BEFORE,
+                    direction = if (from < to) Position.BOTTOM else Position.TOP,
                     subject = (alteredViews[to] as DashboardView.Document).id,
                     target = (alteredViews[from] as DashboardView.Document).id
                 )

@@ -9,11 +9,18 @@ sealed class Command {
         val marks: List<Block.Content.Text.Mark>
     )
 
+    /**
+     * Params for creating a block
+     * @property contextId id of the context of the block (i.e. page, dashboard or something else)
+     * @property targetId id of the block associated with the block we need to create
+     * @property position position of the block that we need to create in relation with the target block
+     * @property prototype a prototype of the block we would like to create
+     */
     class Create(
         val contextId: String,
         val targetId: String,
         val position: Position,
-        val block: Block
+        val prototype: Block.Prototype
     )
 
     class Dnd(

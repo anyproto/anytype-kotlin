@@ -385,7 +385,7 @@ class HomeDashboardViewModelTest {
                     targetContext = config.homeDashboardId,
                     targetId = pages.last().id,
                     blockIds = listOf(pages.first().id),
-                    position = Position.AFTER
+                    position = Position.BOTTOM
                 )
             ),
             onResult = any()

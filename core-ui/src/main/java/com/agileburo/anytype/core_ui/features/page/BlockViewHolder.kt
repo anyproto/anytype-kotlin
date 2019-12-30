@@ -138,8 +138,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val header = itemView.headerOne
 
-        fun bind(item: BlockView.HeaderOne) {
-            header.text = item.text
+        fun bind(
+            item: BlockView.HeaderOne,
+            onTextChanged: (String, Editable) -> Unit
+        ) {
+            header.setText(item.text)
+            header.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
+                }
+            )
         }
     }
 
@@ -147,8 +155,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val header = itemView.headerTwo
 
-        fun bind(item: BlockView.HeaderTwo) {
-            header.text = item.text
+        fun bind(
+            item: BlockView.HeaderTwo,
+            onTextChanged: (String, Editable) -> Unit
+        ) {
+            header.setText(item.text)
+            header.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
+                }
+            )
         }
     }
 
@@ -156,8 +172,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val header = itemView.headerThree
 
-        fun bind(item: BlockView.HeaderThree) {
-            header.text = item.text
+        fun bind(
+            item: BlockView.HeaderThree,
+            onTextChanged: (String, Editable) -> Unit
+        ) {
+            header.setText(item.text)
+            header.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
+                }
+            )
         }
     }
 
@@ -304,8 +328,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val content = itemView.highlightContent
 
-        fun bind(item: BlockView.Highlight) {
-            content.text = item.text
+        fun bind(
+            item: BlockView.Highlight,
+            onTextChanged: (String, Editable) -> Unit
+        ) {
+            content.setText(item.text)
+            content.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
+                }
+            )
         }
 
     }

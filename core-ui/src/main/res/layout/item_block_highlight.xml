@@ -14,7 +14,8 @@
         android:layout_marginStart="10dp"
         android:background="@color/block_higlight_divider" />
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+        android:hint="@string/hint_quote"
         android:id="@+id/highlightContent"
         style="@style/BlockHighlightContentStyle"
         tools:text="@string/default_text_placeholder" />

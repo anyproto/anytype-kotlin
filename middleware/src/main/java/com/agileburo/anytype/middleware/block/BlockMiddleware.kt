@@ -332,7 +332,7 @@ class BlockMiddleware(
             command.contextId,
             command.targetId,
             command.position,
-            command.block
+            command.prototype
         )
     }
 

@@ -250,17 +250,20 @@ class BlockAdapter(
             }
             is BlockViewHolder.HeaderOne -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.HeaderOne
+                    item = blocks[position] as BlockView.HeaderOne,
+                    onTextChanged = onTextChanged
                 )
             }
             is BlockViewHolder.HeaderTwo -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.HeaderTwo
+                    item = blocks[position] as BlockView.HeaderTwo,
+                    onTextChanged = onTextChanged
                 )
             }
             is BlockViewHolder.HeaderThree -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.HeaderThree
+                    item = blocks[position] as BlockView.HeaderThree,
+                    onTextChanged = onTextChanged
                 )
             }
             is BlockViewHolder.Code -> {
@@ -320,7 +323,8 @@ class BlockAdapter(
             }
             is BlockViewHolder.Highlight -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Highlight
+                    item = blocks[position] as BlockView.Highlight,
+                    onTextChanged = onTextChanged
                 )
             }
         }

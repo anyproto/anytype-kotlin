@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+        android:hint="@string/hint_header_two"
         android:id="@+id/headerTwo"
         style="@style/BlockHeaderTwoContentStyle"
         tools:text="Header 2" />

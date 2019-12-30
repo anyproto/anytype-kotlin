@@ -326,25 +326,122 @@ public class Middleware {
             String contextId,
             String targetId,
             PositionEntity position,
-            BlockEntity prototype
+            BlockEntity.Prototype prototype
     ) throws Exception {
 
-        Models.Block.Content.Text content = Models.Block.Content.Text
-                .newBuilder()
-                .build();
+        Models.Block.Content.Text contentModel = null;
 
-        Models.Block block = Models.Block
+        if (prototype instanceof BlockEntity.Prototype.Text) {
+
+            BlockEntity.Content.Text.Style style = ((BlockEntity.Prototype.Text) prototype).getStyle();
+
+            switch (style) {
+                case P:
+                    contentModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Paragraph)
+                            .build();
+                    break;
+                case H1:
+                    contentModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Header1)
+                            .build();
+                    break;
+                case H2:
+                    contentModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Header2)
+                            .build();
+                    break;
+                case H3:
+                    contentModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Header3)
+                            .build();
+                    break;
+                case H4:
+                    throw new IllegalStateException("Unexpected prototype text style");
+                case TITLE:
+                    contentModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Header4)
+                            .build();
+                    break;
+                case QUOTE:
+                    contentModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Quote)
+                            .build();
+                    break;
+                case CODE_SNIPPET:
+                    contentModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Code)
+                            .build();
+                    break;
+                case BULLET:
+                    contentModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Marked)
+                            .build();
+                    break;
+                case NUMBERED:
+                    contentModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Numbered)
+                            .build();
+                    break;
+                case TOGGLE:
+                    contentModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Toggle)
+                            .build();
+                    break;
+            }
+        }
+
+        if (contentModel == null) {
+            throw new IllegalStateException("Could not create content from the given prototype");
+        }
+
+        Models.Block.Position positionModel = null;
+
+        switch (position) {
+            case NONE:
+                positionModel = Models.Block.Position.None;
+                break;
+            case TOP:
+                positionModel = Models.Block.Position.Top;
+                break;
+            case BOTTOM:
+                positionModel = Models.Block.Position.Bottom;
+                break;
+            case LEFT:
+                positionModel = Models.Block.Position.Left;
+                break;
+            case RIGHT:
+                positionModel = Models.Block.Position.Right;
+                break;
+            case INNER:
+                positionModel = Models.Block.Position.Inner;
+                break;
+        }
+
+        Models.Block blockModel = Models.Block
                 .newBuilder()
-                .setText(content)
+                .setText(contentModel)
                 .build();
 
         Block.Create.Request request = Block.Create.Request
                 .newBuilder()
                 .setContextId(contextId)
                 .setTargetId(targetId)
-                .setPosition(Models.Block.Position.Bottom)
-                .setBlock(block)
+                .setPosition(positionModel)
+                .setBlock(blockModel)
                 .build();
+
+        Timber.d("Creating block with the following request:\n" + request.toString());
 
         byte[] encodedRequest = request.toByteArray();
 
@@ -359,22 +456,36 @@ public class Middleware {
 
     public void dnd(CommandEntity.Dnd command) throws Exception {
 
-        Models.Block.Position position;
+        Models.Block.Position positionModel = null;
 
-        if (command.getPosition() == PositionEntity.AFTER)
-            position = Models.Block.Position.Bottom;
-        else
-            position = Models.Block.Position.Top;
+        switch (command.getPosition()) {
+            case NONE:
+                positionModel = Models.Block.Position.None;
+                break;
+            case TOP:
+                positionModel = Models.Block.Position.Top;
+                break;
+            case BOTTOM:
+                positionModel = Models.Block.Position.Bottom;
+                break;
+            case LEFT:
+                positionModel = Models.Block.Position.Left;
+                break;
+            case RIGHT:
+                positionModel = Models.Block.Position.Right;
+                break;
+            case INNER:
+                positionModel = Models.Block.Position.Inner;
+                break;
+        }
 
         BlockList.Move.Request request = BlockList.Move.Request
                 .newBuilder()
                 .setContextId(command.getContextId())
-                .setPosition(position)
+                .setPosition(positionModel)
                 .addAllBlockIds(command.getBlockIds())
                 .setDropTargetId(command.getDropTargetId())
                 .build();
-
-        Timber.d("Dnd request:\n" + request.toString());
 
         byte[] encodedResponse = Lib.blockListMove(request.toByteArray());
 

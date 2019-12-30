@@ -19,6 +19,7 @@ data class Block(
      * @property map map containing fields
      */
     data class Fields(val map: Map<String, Any?>) {
+
         val name: String by map
         val icon: String by map
 
@@ -81,5 +82,18 @@ data class Block(
         data class Page(val style: Style) : Content() {
             enum class Style { EMPTY, TASK, SET }
         }
+    }
+
+    /**
+     * Block prototype used as a model or a blueprint for a block to create.
+     */
+    sealed class Prototype {
+        /**
+         * Prototype of the textual block.
+         * @param style style for a block to create
+         */
+        class Text(
+            val style: Content.Text.Style
+        ) : Prototype()
     }
 }

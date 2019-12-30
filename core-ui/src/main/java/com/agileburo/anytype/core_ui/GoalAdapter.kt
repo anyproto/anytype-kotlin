@@ -84,7 +84,7 @@ class GoalAdapter(
             private val header = itemView.headerThree
 
             fun bind(item: GoalView.Header) {
-                header.text = item.text
+                header.setText(item.text)
             }
 
         }
@@ -95,7 +95,7 @@ class GoalAdapter(
             private val logo = itemView.logo
 
             fun bind(item: GoalView.Title) {
-                title.text = item.title
+                title.setText(item.title)
                 logo.text = "⛳"
 
             }

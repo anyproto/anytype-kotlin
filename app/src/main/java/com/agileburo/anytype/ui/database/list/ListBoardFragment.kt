@@ -5,29 +5,23 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.agileburo.anytype.ModalsNavFragment
+import com.agileburo.anytype.ModalsNavFragment.Companion.TAG_CUSTOMIZE
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.layout.ListDividerItemDecoration
 import com.agileburo.anytype.core_ui.layout.SpacingItemDecoration
 import com.agileburo.anytype.di.common.componentManager
-import com.agileburo.anytype.domain.database.DatabaseMock
 import com.agileburo.anytype.presentation.databaseview.ListBoardViewModel
 import com.agileburo.anytype.presentation.databaseview.ListBoardViewModelFactory
 import com.agileburo.anytype.presentation.databaseview.ListBoardViewState
 import com.agileburo.anytype.ui.base.NavigationFragment
 import com.agileburo.anytype.ui.database.filters.FiltersAdapter
 import com.agileburo.anytype.ui.database.list.adapter.ListBoardAdapter
-import com.agileburo.anytype.ui.database.modals.*
 import kotlinx.android.synthetic.main.fragment_list_board.*
 import javax.inject.Inject
 
-const val TAG_SWITCH = "tag.switch"
-const val TAG_CUSTOMIZE = "tag.customize"
-const val TAG_PROPERTIES = "tag.properties"
-const val TAG_EDIT_DETAIL = "tag.edit.detail"
-const val TAG_REORDER = "tag.details.reorder"
-
 class ListBoardFragment :
-    NavigationFragment(R.layout.fragment_list_board), ModalNavigation {
+    NavigationFragment(R.layout.fragment_list_board) {
 
     @Inject
     lateinit var factory: ListBoardViewModelFactory
@@ -88,111 +82,11 @@ class ListBoardFragment :
             ListBoardViewState.ScreenState.Loading -> TODO()
             ListBoardViewState.ScreenState.Error -> TODO()
             ListBoardViewState.ScreenState.OpenBottomSheet -> {
-                openCustomizeScreen(DatabaseMock.ID)
+                ModalsNavFragment.newInstance(
+                    databaseId = "343253",
+                    startTag = TAG_CUSTOMIZE
+                ).show(requireActivity().supportFragmentManager, "Modals")
             }
-        }
-    }
-
-    override fun openCustomizeScreen(id: String) {
-        childFragmentManager.findFragmentByTag(TAG_SWITCH)?.let {
-            childFragmentManager.beginTransaction()
-                .remove(it)
-                .add(
-                    CustomizeDisplayFragment.newInstance(id),
-                    TAG_CUSTOMIZE
-                )
-                .commit()
-            return
-        }
-        childFragmentManager.findFragmentByTag(TAG_PROPERTIES)?.let {
-            childFragmentManager.beginTransaction()
-                .remove(it)
-                .add(
-                    CustomizeDisplayFragment.newInstance(id),
-                    TAG_CUSTOMIZE
-                )
-                .commit()
-            return
-        }
-        childFragmentManager.beginTransaction()
-            .add(
-                CustomizeDisplayFragment.newInstance(id),
-                TAG_CUSTOMIZE
-            )
-            .commit()
-    }
-
-    override fun openSwitchScreen(id: String) {
-        childFragmentManager.findFragmentByTag(TAG_CUSTOMIZE)?.let {
-            childFragmentManager.beginTransaction()
-                .remove(it)
-                .add(
-                    SwitchDisplayFragment.newInstance(id),
-                    TAG_SWITCH
-                )
-                .commit()
-        }
-    }
-
-    override fun openPropertiesScreen(id: String) {
-        childFragmentManager.findFragmentByTag(TAG_CUSTOMIZE)?.let {
-            childFragmentManager.beginTransaction()
-                .remove(it)
-                .add(
-                    DetailsFragment.newInstance(id),
-                    TAG_PROPERTIES
-                )
-                .commit()
-            return
-        }
-        childFragmentManager.findFragmentByTag(TAG_EDIT_DETAIL)?.let {
-            childFragmentManager.beginTransaction()
-                .remove(it)
-                .add(
-                    DetailsFragment.newInstance(id),
-                    TAG_PROPERTIES
-                )
-                .commit()
-            return
-        }
-        childFragmentManager.findFragmentByTag(TAG_REORDER)?.let {
-            childFragmentManager.beginTransaction()
-                .remove(it)
-                .add(
-                    DetailsFragment.newInstance(id),
-                    TAG_PROPERTIES
-                )
-                .commit()
-            return
-        }
-    }
-
-    override fun openEditDetail(databaseId: String, detailId: String) {
-        childFragmentManager.findFragmentByTag(TAG_PROPERTIES)?.let {
-            childFragmentManager.beginTransaction()
-                .remove(it)
-                .add(
-                    DetailEditFragment.newInstance(
-                        propertyId = detailId,
-                        databaseId = databaseId
-                    ),
-                    TAG_EDIT_DETAIL
-                )
-                .commit()
-        }
-    }
-
-    override fun openReorderDetails(databaseId: String) {
-        childFragmentManager.findFragmentByTag(TAG_PROPERTIES)?.let {
-            childFragmentManager.beginTransaction()
-                .remove(it)
-                .add(
-                    DetailsReorderFragment.newInstance(
-                        id = databaseId
-                    ),
-                    TAG_REORDER
-                )
-                .commit()
         }
     }
 
@@ -205,10 +99,3 @@ class ListBoardFragment :
     }
 }
 
-interface ModalNavigation {
-    fun openCustomizeScreen(id: String)
-    fun openSwitchScreen(id: String)
-    fun openPropertiesScreen(id: String)
-    fun openEditDetail(databaseId: String, detailId: String)
-    fun openReorderDetails(databaseId: String)
-}

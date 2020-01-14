@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.agileburo.anytype.ModalNavigation
+import com.agileburo.anytype.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.layout.ListDividerItemDecoration
 import com.agileburo.anytype.core_utils.ui.BaseBottomSheetFragment
@@ -15,12 +17,20 @@ import com.agileburo.anytype.di.feature.DetailsModule
 import com.agileburo.anytype.presentation.databaseview.modals.DetailsViewModel
 import com.agileburo.anytype.presentation.databaseview.modals.DetailsViewModelFactory
 import com.agileburo.anytype.presentation.databaseview.modals.DetailsViewState
-import com.agileburo.anytype.ui.database.list.ModalNavigation
 import com.agileburo.anytype.ui.database.modals.adapter.DetailsAdapter
 import kotlinx.android.synthetic.main.modal_properties.*
 import javax.inject.Inject
 
 class DetailsFragment : BaseBottomSheetFragment() {
+
+    companion object {
+        fun newInstance(id: String): DetailsFragment =
+            DetailsFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARGS_DB_ID, id)
+                }
+            }
+    }
 
     @Inject
     lateinit var factory: DetailsViewModelFactory
@@ -60,18 +70,15 @@ class DetailsFragment : BaseBottomSheetFragment() {
                 }
             }
             is DetailsViewState.NavigateToCustomize -> {
-                (parentFragment as ModalNavigation).openCustomizeScreen(state.id)
+                (parentFragment as ModalNavigation).showCustomizeScreen()
             }
             is DetailsViewState.NavigateToEditDetail -> {
-                (parentFragment as ModalNavigation).openEditDetail(
-                    detailId = state.detailId,
-                    databaseId = state.databaseId
+                (parentFragment as ModalNavigation).showDetailEditScreen(
+                    detailId = state.detailId
                 )
             }
             is DetailsViewState.NavigateToReorder -> {
-                (parentFragment as ModalNavigation).openReorderDetails(
-                    databaseId = state.databaseId
-                )
+                (parentFragment as ModalNavigation).showReorderDetails()
             }
         }
     }
@@ -80,26 +87,10 @@ class DetailsFragment : BaseBottomSheetFragment() {
         componentManager()
             .mainComponent
             .detailsBuilder()
-            .propertiesModule(
-                DetailsModule(
-                    id = arguments?.getString(ARGS_ID) as String
-                )
-            )
+            .propertiesModule(DetailsModule(id = arguments?.getString(ARGS_DB_ID) as String))
             .build()
             .inject(this)
     }
 
-    override fun releaseDependencies() {
-    }
-
-    companion object {
-        const val ARGS_ID = "args.id"
-
-        fun newInstance(id: String): DetailsFragment =
-            DetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARGS_ID, id)
-                }
-            }
-    }
+    override fun releaseDependencies() {}
 }

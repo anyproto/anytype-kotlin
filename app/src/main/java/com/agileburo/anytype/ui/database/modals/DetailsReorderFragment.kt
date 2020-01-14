@@ -8,6 +8,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.agileburo.anytype.ModalNavigation
+import com.agileburo.anytype.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.extensions.invisible
 import com.agileburo.anytype.core_ui.extensions.visible
@@ -18,13 +20,22 @@ import com.agileburo.anytype.di.feature.DetailsReorderModule
 import com.agileburo.anytype.presentation.databaseview.modals.DetailsReorderViewModel
 import com.agileburo.anytype.presentation.databaseview.modals.DetailsReorderViewModelFactory
 import com.agileburo.anytype.presentation.databaseview.modals.DetailsReorderViewState
-import com.agileburo.anytype.ui.database.list.ModalNavigation
 import com.agileburo.anytype.ui.database.modals.adapter.DetailsAdapter
 import com.agileburo.anytype.ui.database.modals.helpers.DetailsTouchHelper
 import kotlinx.android.synthetic.main.modal_properties.*
 import javax.inject.Inject
 
 class DetailsReorderFragment : BaseBottomSheetFragment() {
+
+    companion object {
+
+        fun newInstance(id: String): DetailsReorderFragment =
+            DetailsReorderFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARGS_DB_ID, id)
+                }
+            }
+    }
 
     @Inject
     lateinit var factory: DetailsReorderViewModelFactory
@@ -76,7 +87,7 @@ class DetailsReorderFragment : BaseBottomSheetFragment() {
                 }
             }
             is DetailsReorderViewState.NavigateToDetails -> {
-                (parentFragment as ModalNavigation).openPropertiesScreen(state.databaseId)
+                (parentFragment as ModalNavigation).showDetailsScreen()
             }
             is DetailsReorderViewState.Error -> TODO()
         }
@@ -86,21 +97,10 @@ class DetailsReorderFragment : BaseBottomSheetFragment() {
         componentManager()
             .mainComponent
             .detailsReorderBuilder()
-            .module(DetailsReorderModule(id = arguments?.getString(ARGS_ID) as String))
+            .module(DetailsReorderModule(id = arguments?.getString(ARGS_DB_ID) as String))
             .build()
             .inject(this)
     }
 
     override fun releaseDependencies() = Unit
-
-    companion object {
-        const val ARGS_ID = "args.id"
-
-        fun newInstance(id: String): DetailsReorderFragment =
-            DetailsReorderFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARGS_ID, id)
-                }
-            }
-    }
 }

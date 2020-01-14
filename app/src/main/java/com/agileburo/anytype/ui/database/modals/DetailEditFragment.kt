@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.agileburo.anytype.ModalNavigation
+import com.agileburo.anytype.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.extensions.drawable
 import com.agileburo.anytype.core_ui.extensions.invisible
@@ -18,11 +20,22 @@ import com.agileburo.anytype.presentation.databaseview.modals.DetailEditViewMode
 import com.agileburo.anytype.presentation.databaseview.modals.DetailEditViewModelFactory
 import com.agileburo.anytype.presentation.databaseview.modals.DetailEditViewState
 import com.agileburo.anytype.presentation.databaseview.models.ColumnView
-import com.agileburo.anytype.ui.database.list.ModalNavigation
 import kotlinx.android.synthetic.main.modals_properties_edit.*
 import javax.inject.Inject
 
 class DetailEditFragment : BaseBottomSheetFragment() {
+
+    companion object {
+        const val ARGS_DETAIL_ID = "args.detail.id"
+
+        fun newInstance(propertyId: String, databaseId: String): DetailEditFragment =
+            DetailEditFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARGS_DETAIL_ID, propertyId)
+                    putString(ARGS_DB_ID, databaseId)
+                }
+            }
+    }
 
     @Inject
     lateinit var factory: DetailEditViewModelFactory
@@ -138,7 +151,7 @@ class DetailEditFragment : BaseBottomSheetFragment() {
                 }
             }
             is DetailEditViewState.NavigateToDetails -> {
-                (parentFragment as ModalNavigation).openPropertiesScreen(state.databaseId)
+                (parentFragment as ModalNavigation).showDetailsScreen()
             }
             is DetailEditViewState.Error -> {
                 requireContext().toast(state.msg)
@@ -153,7 +166,7 @@ class DetailEditFragment : BaseBottomSheetFragment() {
             .propertyModule(
                 DetailEditModule(
                     detailId = arguments?.getString(ARGS_DETAIL_ID) as String,
-                    databaseId = arguments?.getString(ARGS_DATABASE_ID) as String
+                    databaseId = arguments?.getString(ARGS_DB_ID) as String
                 )
             )
             .build()
@@ -173,18 +186,5 @@ class DetailEditFragment : BaseBottomSheetFragment() {
             iconShow.visible()
             hide.text = getString(R.string.modal_show)
         }
-    }
-
-    companion object {
-        const val ARGS_DETAIL_ID = "args.detail.id"
-        const val ARGS_DATABASE_ID = "args.database.id"
-
-        fun newInstance(propertyId: String, databaseId: String): DetailEditFragment =
-            DetailEditFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARGS_DETAIL_ID, propertyId)
-                    putString(ARGS_DATABASE_ID, databaseId)
-                }
-            }
     }
 }

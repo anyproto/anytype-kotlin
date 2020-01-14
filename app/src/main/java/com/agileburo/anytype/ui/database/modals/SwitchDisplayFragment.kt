@@ -1,12 +1,12 @@
 package com.agileburo.anytype.ui.database.modals
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.agileburo.anytype.ModalNavigation
+import com.agileburo.anytype.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_utils.ext.hide
 import com.agileburo.anytype.core_utils.ext.show
@@ -16,8 +16,7 @@ import com.agileburo.anytype.domain.database.model.ViewType
 import com.agileburo.anytype.presentation.databaseview.modals.SwitchDisplayViewState
 import com.agileburo.anytype.presentation.databaseview.modals.SwitchDisplayViewViewModel
 import com.agileburo.anytype.presentation.databaseview.modals.SwitchDisplayViewViewModelFactory
-import com.agileburo.anytype.ui.base.NavigationBottomSheetFragment
-import com.agileburo.anytype.ui.database.list.ModalNavigation
+import com.agileburo.anytype.ui.base.NavigationFragment
 import kotlinx.android.synthetic.main.modal_add_view.item_gallery
 import kotlinx.android.synthetic.main.modal_add_view.item_kanban
 import kotlinx.android.synthetic.main.modal_add_view.item_list
@@ -25,7 +24,16 @@ import kotlinx.android.synthetic.main.modal_add_view.item_table
 import kotlinx.android.synthetic.main.modal_switch_view.*
 import javax.inject.Inject
 
-class SwitchDisplayFragment : NavigationBottomSheetFragment() {
+class SwitchDisplayFragment : NavigationFragment(R.layout.modal_switch_view) {
+
+    companion object {
+        fun newInstance(id: String): SwitchDisplayFragment =
+            SwitchDisplayFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARGS_DB_ID, id)
+                }
+            }
+    }
 
     @Inject
     lateinit var factory: SwitchDisplayViewViewModelFactory
@@ -40,24 +48,6 @@ class SwitchDisplayFragment : NavigationBottomSheetFragment() {
     lateinit var tableChosen: ImageView
     lateinit var galleryChosen: ImageView
     lateinit var kanbanChosen: ImageView
-
-    companion object {
-
-        const val ARGS_ID = "args.id"
-
-        fun newInstance(id: String): SwitchDisplayFragment =
-            SwitchDisplayFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARGS_ID, id)
-                }
-            }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.modal_switch_view, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -115,7 +105,7 @@ class SwitchDisplayFragment : NavigationBottomSheetFragment() {
                 galleryChosen.hide()
             }
             is SwitchDisplayViewState.NavigateToCustomize -> {
-                (parentFragment as ModalNavigation).openCustomizeScreen(state.id)
+                (parentFragment as ModalNavigation).showCustomizeScreen()
             }
         }
     }
@@ -124,11 +114,7 @@ class SwitchDisplayFragment : NavigationBottomSheetFragment() {
         componentManager()
             .mainComponent
             .switchDisplayViewComponentBuilder()
-            .switchModule(
-                module = SwitchDisplayViewModule(
-                    id = arguments?.getString(ARGS_ID) as String
-                )
-            )
+            .switchModule(SwitchDisplayViewModule(id = arguments?.getString(ARGS_DB_ID) as String))
             .build()
             .inject(this)
     }

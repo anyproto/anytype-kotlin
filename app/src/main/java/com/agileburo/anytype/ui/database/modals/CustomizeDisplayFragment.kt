@@ -1,12 +1,12 @@
 package com.agileburo.anytype.ui.database.modals
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.agileburo.anytype.ModalNavigation
+import com.agileburo.anytype.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_utils.ext.show
 import com.agileburo.anytype.di.common.componentManager
@@ -15,16 +15,23 @@ import com.agileburo.anytype.domain.database.model.ViewType
 import com.agileburo.anytype.presentation.databaseview.modals.CustomizeDisplayViewModel
 import com.agileburo.anytype.presentation.databaseview.modals.CustomizeDisplayViewModelFactory
 import com.agileburo.anytype.presentation.databaseview.modals.CustomizeDisplayViewState
-import com.agileburo.anytype.ui.base.NavigationBottomSheetFragment
-import com.agileburo.anytype.ui.database.list.ModalNavigation
+import com.agileburo.anytype.ui.base.NavigationFragment
 import kotlinx.android.synthetic.main.modal_customize.*
 import javax.inject.Inject
 
-class CustomizeDisplayFragment : NavigationBottomSheetFragment() {
+class CustomizeDisplayFragment : NavigationFragment(R.layout.modal_customize) {
+
+    companion object {
+        fun newInstance(id: String): CustomizeDisplayFragment =
+            CustomizeDisplayFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARGS_DB_ID, id)
+                }
+            }
+    }
 
     @Inject
     lateinit var factory: CustomizeDisplayViewModelFactory
-
     lateinit var filterCount: TextView
     lateinit var groupCount: TextView
 
@@ -33,24 +40,6 @@ class CustomizeDisplayFragment : NavigationBottomSheetFragment() {
             .of(this, factory)
             .get(CustomizeDisplayViewModel::class.java)
     }
-
-    companion object {
-
-        const val ARGS_ID = "args.id"
-
-        fun newInstance(id: String): CustomizeDisplayFragment =
-            CustomizeDisplayFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARGS_ID, id)
-                }
-            }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.modal_customize, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -87,10 +76,10 @@ class CustomizeDisplayFragment : NavigationBottomSheetFragment() {
                 groupCount.text = state.groups.size.toString()
             }
             is CustomizeDisplayViewState.NavigateToSwitchScreen -> {
-                (parentFragment as ModalNavigation).openSwitchScreen(state.id)
+                (parentFragment as ModalNavigation).showSwitchScreen()
             }
             is CustomizeDisplayViewState.NavigateToPropertiesScreen -> {
-                ((parentFragment as ModalNavigation).openPropertiesScreen(state.id))
+                (parentFragment as ModalNavigation).showDetailsScreen()
             }
         }
     }
@@ -98,7 +87,7 @@ class CustomizeDisplayFragment : NavigationBottomSheetFragment() {
     override fun injectDependencies() {
         componentManager().mainComponent
             .customizeDisplayViewComponentBuilder()
-            .customizeModule(CustomizeDisplayViewModule(id = arguments?.getString(ARGS_ID) as String))
+            .customizeModule(CustomizeDisplayViewModule(id = arguments?.getString(ARGS_DB_ID) as String))
             .build()
             .inject(this)
     }

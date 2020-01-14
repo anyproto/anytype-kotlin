@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface BlockRemote {
     suspend fun create(command: CommandEntity.Create)
-    suspend fun update(update: CommandEntity.Update)
+    suspend fun updateText(command: CommandEntity.UpdateText)
+    suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun dnd(command: CommandEntity.Dnd)
     suspend fun getConfig(): ConfigEntity
     suspend fun createPage(parentId: String): String

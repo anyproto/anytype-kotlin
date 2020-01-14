@@ -36,7 +36,8 @@ import timber.log.Timber
 class BlockAdapter(
     private var blocks: List<BlockView>,
     private val onTextChanged: (String, Editable) -> Unit,
-    private val onSelectionChanged: (String, IntRange) -> Unit
+    private val onSelectionChanged: (String, IntRange) -> Unit,
+    private val onCheckboxClicked: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -229,6 +230,18 @@ class BlockAdapter(
                         item = blocks[position] as BlockView.Text
                     )
                 }
+                is BlockViewHolder.Bulleted -> {
+                    holder.processChangePayload(
+                        payloads = payloads,
+                        item = blocks[position] as BlockView.Bulleted
+                    )
+                }
+                is BlockViewHolder.Checkbox -> {
+                    holder.processChangePayload(
+                        payloads = payloads,
+                        item = blocks[position] as BlockView.Checkbox
+                    )
+                }
                 else -> TODO()
             }
     }
@@ -273,7 +286,10 @@ class BlockAdapter(
             }
             is BlockViewHolder.Checkbox -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Checkbox
+                    item = blocks[position] as BlockView.Checkbox,
+                    onTextChanged = onTextChanged,
+                    onCheckboxClicked = onCheckboxClicked,
+                    onSelectionChanged = onSelectionChanged
                 )
             }
             is BlockViewHolder.Task -> {
@@ -283,7 +299,9 @@ class BlockAdapter(
             }
             is BlockViewHolder.Bulleted -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Bulleted
+                    item = blocks[position] as BlockView.Bulleted,
+                    onTextChanged = onTextChanged,
+                    onSelectionChanged = onSelectionChanged
                 )
             }
             is BlockViewHolder.Numbered -> {

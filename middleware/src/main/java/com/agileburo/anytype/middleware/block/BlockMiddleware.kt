@@ -318,12 +318,20 @@ class BlockMiddleware(
         }
     }
 
-    override suspend fun update(update: CommandEntity.Update) {
+    override suspend fun updateText(command: CommandEntity.UpdateText) {
         middleware.updateText(
-            update.contextId,
-            update.blockId,
-            update.text,
-            update.marks.map { it.toMiddleware() }
+            command.contextId,
+            command.blockId,
+            command.text,
+            command.marks.map { it.toMiddleware() }
+        )
+    }
+
+    override suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox) {
+        middleware.updateCheckbox(
+            command.context,
+            command.target,
+            command.isChecked
         )
     }
 
@@ -414,8 +422,10 @@ class BlockMiddleware(
                 Models.Block.Content.Text.Style.Marked -> BlockEntity.Content.Text.Style.BULLET
                 Models.Block.Content.Text.Style.Numbered -> BlockEntity.Content.Text.Style.NUMBERED
                 Models.Block.Content.Text.Style.Toggle -> BlockEntity.Content.Text.Style.TOGGLE
+                Models.Block.Content.Text.Style.Checkbox -> BlockEntity.Content.Text.Style.CHECKBOX
                 else -> throw IllegalStateException("Unexpected text style: ${block.text.style}")
-            }
+            },
+            isChecked = block.text.checked
         )
     }
 

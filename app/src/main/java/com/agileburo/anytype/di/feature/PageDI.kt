@@ -3,6 +3,7 @@ package com.agileburo.anytype.di.feature
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.block.interactor.CreateBlock
 import com.agileburo.anytype.domain.block.interactor.UpdateBlock
+import com.agileburo.anytype.domain.block.interactor.UpdateCheckbox
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.event.interactor.ObserveEvents
 import com.agileburo.anytype.domain.page.ClosePage
@@ -38,13 +39,15 @@ class PageModule {
         closePage: ClosePage,
         updateBlock: UpdateBlock,
         createBlock: CreateBlock,
-        observeEvents: ObserveEvents
+        observeEvents: ObserveEvents,
+        updateCheckbox: UpdateCheckbox
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
         updateBlock = updateBlock,
         createBlock = createBlock,
-        observeEvents = observeEvents
+        observeEvents = observeEvents,
+        updateCheckbox = updateCheckbox
     )
 
     @Provides
@@ -94,5 +97,13 @@ class PageModule {
     ): ObserveEvents = ObserveEvents(
         repo = repo,
         context = Dispatchers.IO
+    )
+
+    @Provides
+    @PerScreen
+    fun provideUpdateCheckboxUseCase(
+        repo: BlockRepository
+    ): UpdateCheckbox = UpdateCheckbox(
+        repo = repo
     )
 }

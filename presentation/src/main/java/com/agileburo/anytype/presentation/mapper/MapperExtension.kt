@@ -13,79 +13,54 @@ fun Block.toView(focused: Boolean = false): BlockView = when (val content = this
             Style.P -> BlockView.Text(
                 id = this.id,
                 text = content.text,
-                marks = content.marks.mapNotNull { mark ->
-                    when (mark.type) {
-                        Block.Content.Text.Mark.Type.ITALIC -> {
-                            Markup.Mark(
-                                from = mark.range.first,
-                                to = mark.range.last,
-                                type = Markup.Type.ITALIC
-                            )
-                        }
-                        Block.Content.Text.Mark.Type.BOLD -> {
-                            Markup.Mark(
-                                from = mark.range.first,
-                                to = mark.range.last,
-                                type = Markup.Type.BOLD
-                            )
-                        }
-                        Block.Content.Text.Mark.Type.STRIKETHROUGH -> {
-                            Markup.Mark(
-                                from = mark.range.first,
-                                to = mark.range.last,
-                                type = Markup.Type.STRIKETHROUGH
-                            )
-                        }
-                        Block.Content.Text.Mark.Type.TEXT_COLOR -> {
-                            Markup.Mark(
-                                from = mark.range.first,
-                                to = mark.range.last,
-                                type = Markup.Type.TEXT_COLOR,
-                                param = checkNotNull(mark.param)
-                            )
-                        }
-                        else -> null
-                    }
-                },
+                marks = mapMarks(content),
                 focused = focused
             )
             Style.H1 -> BlockView.HeaderOne(
-                id = this.id,
+                id = id,
                 text = content.text
             )
             Style.H2 -> BlockView.HeaderTwo(
-                id = this.id,
+                id = id,
                 text = content.text
             )
             Style.H3, Style.H4 -> BlockView.HeaderThree(
-                id = this.id,
+                id = id,
                 text = content.text
             )
             Style.TITLE -> BlockView.Title(
-                id = this.id,
+                id = id,
                 text = content.text
             )
             Style.QUOTE -> BlockView.Highlight(
-                id = this.id,
+                id = id,
                 text = content.text
             )
             Style.CODE_SNIPPET -> BlockView.Code(
-                id = this.id,
+                id = id,
                 snippet = content.text
             )
             Style.BULLET -> BlockView.Bulleted(
-                id = this.id,
+                id = id,
                 text = content.text,
-                indent = 0
+                indent = 0,
+                marks = mapMarks(content),
+                focused = focused
             )
             Style.NUMBERED -> BlockView.Numbered(
-                id = this.id,
+                id = id,
                 text = content.text,
                 number = "0",
                 indent = 0
             )
+            Style.CHECKBOX -> BlockView.Checkbox(
+                id = id,
+                text = content.text,
+                marks = mapMarks(content),
+                checked = content.isChecked == true
+            )
             Style.TOGGLE -> BlockView.Toggle(
-                id = this.id,
+                id = id,
                 text = content.text,
                 toggled = false,
                 indent = 0
@@ -99,6 +74,42 @@ fun Block.toView(focused: Boolean = false): BlockView = when (val content = this
     }
     else -> TODO()
 }
+
+private fun mapMarks(content: Block.Content.Text): List<Markup.Mark> =
+    content.marks.mapNotNull { mark ->
+        when (mark.type) {
+            Block.Content.Text.Mark.Type.ITALIC -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.ITALIC
+                )
+            }
+            Block.Content.Text.Mark.Type.BOLD -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.BOLD
+                )
+            }
+            Block.Content.Text.Mark.Type.STRIKETHROUGH -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.STRIKETHROUGH
+                )
+            }
+            Block.Content.Text.Mark.Type.TEXT_COLOR -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.TEXT_COLOR,
+                    param = checkNotNull(mark.param)
+                )
+            }
+            else -> null
+        }
+    }
 
 fun HomeDashboard.toView(): List<DashboardView.Document> = children.mapNotNull { id ->
     blocks.find { block -> block.id == id }?.let { model ->

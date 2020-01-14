@@ -10,7 +10,8 @@ import kotlinx.coroutines.flow.Flow
 interface BlockRepository {
     suspend fun dnd(command: Command.Dnd)
     suspend fun create(command: Command.Create)
-    suspend fun update(update: Command.Update)
+    suspend fun updateText(command: Command.UpdateText)
+    suspend fun updateCheckbox(command: Command.UpdateCheckbox)
     suspend fun getConfig(): Config
     suspend fun createPage(parentId: String): Id
     suspend fun openPage(id: String)

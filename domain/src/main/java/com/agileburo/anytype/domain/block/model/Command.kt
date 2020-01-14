@@ -2,11 +2,17 @@ package com.agileburo.anytype.domain.block.model
 
 sealed class Command {
 
-    class Update(
+    class UpdateText(
         val contextId: String,
         val blockId: String,
         val text: String,
         val marks: List<Block.Content.Text.Mark>
+    )
+
+    class UpdateCheckbox(
+        val context: String,
+        val target: String,
+        val isChecked: Boolean
     )
 
     /**

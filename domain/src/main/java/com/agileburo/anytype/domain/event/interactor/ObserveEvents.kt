@@ -12,7 +12,5 @@ class ObserveEvents(
     private val repo: BlockRepository
 ) : FlowUseCase<Event, BaseUseCase.None>() {
 
-    override fun build(params: BaseUseCase.None?) = repo
-        .observeEvents()
-        .flowOn(context)
+    override fun build(params: BaseUseCase.None?) = repo.observeEvents().flowOn(context)
 }

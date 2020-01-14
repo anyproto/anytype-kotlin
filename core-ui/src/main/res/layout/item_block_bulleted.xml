@@ -13,7 +13,8 @@
         android:layout_marginTop="12dp"
         android:background="@drawable/circle_bullet" />
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+        android:hint="@string/hint_bullet"
         android:id="@+id/bulletedListContent"
         style="@style/BlockBulletContentStyle"
         tools:text="@string/default_text_placeholder" />

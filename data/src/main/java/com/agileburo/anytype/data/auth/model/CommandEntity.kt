@@ -2,11 +2,17 @@ package com.agileburo.anytype.data.auth.model
 
 class CommandEntity {
 
-    class Update(
+    class UpdateText(
         val contextId: String,
         val blockId: String,
         val text: String,
         val marks: List<BlockEntity.Content.Text.Mark>
+    )
+
+    class UpdateCheckbox(
+        val context: String,
+        val target: String,
+        val isChecked: Boolean
     )
 
     class Create(

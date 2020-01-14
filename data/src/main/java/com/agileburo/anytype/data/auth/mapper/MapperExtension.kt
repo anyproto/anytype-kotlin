@@ -85,7 +85,8 @@ fun BlockEntity.Content.Text.toDomain(): Block.Content.Text {
     return Block.Content.Text(
         text = text,
         marks = marks.map { it.toDomain() },
-        style = Block.Content.Text.Style.valueOf(style.name)
+        style = Block.Content.Text.Style.valueOf(style.name),
+        isChecked = isChecked
     )
 }
 
@@ -184,14 +185,20 @@ fun ConfigEntity.toDomain(): Config {
     )
 }
 
-fun Command.Update.toEntity(): CommandEntity.Update {
-    return CommandEntity.Update(
+fun Command.UpdateText.toEntity(): CommandEntity.UpdateText {
+    return CommandEntity.UpdateText(
         contextId = contextId,
         blockId = blockId,
         text = text,
         marks = marks.map { it.toEntity() }
     )
 }
+
+fun Command.UpdateCheckbox.toEntity(): CommandEntity.UpdateCheckbox = CommandEntity.UpdateCheckbox(
+    context = context,
+    target = target,
+    isChecked = isChecked
+)
 
 fun Command.Create.toEntity(): CommandEntity.Create {
     return CommandEntity.Create(

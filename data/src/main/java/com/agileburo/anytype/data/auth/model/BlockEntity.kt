@@ -16,7 +16,8 @@ data class BlockEntity(
         data class Text(
             val text: String,
             val style: Style,
-            val marks: List<Mark>
+            val marks: List<Mark>,
+            val isChecked: Boolean? = null
         ) : Content() {
 
             data class Mark(
@@ -37,7 +38,7 @@ data class BlockEntity(
             }
 
             enum class Style {
-                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE
+                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE, CHECKBOX
             }
         }
 

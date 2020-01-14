@@ -322,6 +322,30 @@ public class Middleware {
         }
     }
 
+    public void updateCheckbox(
+            String context,
+            String target,
+            boolean isChecked
+    ) throws Exception {
+
+        Block.Set.Text.Checked.Request request = Block.Set.Text.Checked.Request
+                .newBuilder()
+                .setContextId(context)
+                .setBlockId(target)
+                .setChecked(isChecked)
+                .build();
+
+        byte[] encodedRequest = request.toByteArray();
+
+        byte[] encodedResponse = Lib.blockSetTextChecked(encodedRequest);
+
+        Block.Set.Text.Checked.Response response = Block.Set.Text.Checked.Response.parseFrom(encodedResponse);
+
+        if (response.getError() != null && response.getError().getCode() != Block.Set.Text.Checked.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        }
+    }
+
     public void createBlock(
             String contextId,
             String targetId,
@@ -384,6 +408,12 @@ public class Middleware {
                     contentModel = Models.Block.Content.Text
                             .newBuilder()
                             .setStyle(Models.Block.Content.Text.Style.Marked)
+                            .build();
+                    break;
+                case CHECKBOX:
+                    contentModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Checkbox)
                             .build();
                     break;
                 case NUMBERED:

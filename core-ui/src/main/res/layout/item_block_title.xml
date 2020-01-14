@@ -12,10 +12,11 @@
         android:background="@drawable/rectangle_default_page_logo_background"
         android:gravity="center"
         android:layout_marginTop="45dp"
-        android:text="🔖"
+        android:text="✍️"
         android:textSize="28sp" />
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+        android:hint="@string/hint_title"
         android:id="@+id/title"
         style="@style/BlockTitleContentStyle"
         tools:text="Title" />

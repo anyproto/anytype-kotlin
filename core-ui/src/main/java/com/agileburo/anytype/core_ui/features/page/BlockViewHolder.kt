@@ -199,9 +199,65 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val checkbox = itemView.checkboxIcon
         private val content = itemView.checkboxContent
 
-        fun bind(item: BlockView.Checkbox) {
+        fun bind(
+            item: BlockView.Checkbox,
+            onTextChanged: (String, Editable) -> Unit,
+            onCheckboxClicked: (String) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit
+        ) {
+
             checkbox.isSelected = item.checked
-            content.text = item.text
+
+            checkbox.setOnClickListener {
+                checkbox.isSelected = !checkbox.isSelected
+                onCheckboxClicked(item.id)
+            }
+
+            if (item.marks.isNotEmpty())
+                content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
+            else
+                content.setText(item.text)
+
+            content.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
+                }
+            )
+
+            if (item.focused) {
+                content.setSelection(0)
+                focus(content)
+            } else {
+                content.clearFocus()
+                content.setSelection(0)
+            }
+
+            content.selectionDetector = { onSelectionChanged(item.id, it) }
+        }
+
+        fun processChangePayload(
+            payloads: List<Any>,
+            item: BlockView.Checkbox
+        ) = payloads.forEach { payload ->
+            when (payload) {
+                MARKUP_CHANGED -> setMarkup(markup = item)
+                TEXT_CHANGED -> {
+                    if (content.text.toString() != item.text)
+                        content.setText(item.text)
+                }
+                TEXT_AND_MARKUP_CHANGED -> {
+                    if (content.text.toString() != item.text)
+                        content.setText(item.text)
+                    setMarkup(markup = item)
+                }
+                FOCUS_CHANGED -> {
+                    // TODO
+                }
+            }
+        }
+
+        private fun setMarkup(markup: Markup) {
+            content.text?.setMarkup(markup)
         }
     }
 
@@ -220,8 +276,62 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val content = itemView.bulletedListContent
 
-        fun bind(item: BlockView.Bulleted) {
-            content.text = item.text
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
+        }
+
+        fun bind(
+            item: BlockView.Bulleted,
+            onTextChanged: (String, Editable) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit
+        ) {
+            Timber.d("Binding bullet")
+
+            if (item.marks.isNotEmpty())
+                content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
+            else
+                content.setText(item.text)
+
+            content.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
+                }
+            )
+
+            if (item.focused) {
+                content.setSelection(0)
+                focus(content)
+            } else {
+                content.clearFocus()
+                content.setSelection(0)
+            }
+
+            content.selectionDetector = { onSelectionChanged(item.id, it) }
+        }
+
+        fun processChangePayload(
+            payloads: List<Any>,
+            item: BlockView.Bulleted
+        ) = payloads.forEach { payload ->
+            when (payload) {
+                MARKUP_CHANGED -> setMarkup(markup = item)
+                TEXT_CHANGED -> {
+                    if (content.text.toString() != item.text)
+                        content.setText(item.text)
+                }
+                TEXT_AND_MARKUP_CHANGED -> {
+                    if (content.text.toString() != item.text)
+                        content.setText(item.text)
+                    setMarkup(markup = item)
+                }
+                FOCUS_CHANGED -> {
+                    // TODO
+                }
+            }
+        }
+
+        private fun setMarkup(markup: Markup) {
+            content.text?.setMarkup(markup)
         }
     }
 

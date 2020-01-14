@@ -40,8 +40,16 @@ data class Block(
         data class Text(
             val text: String,
             val style: Style,
-            val marks: List<Mark>
+            val marks: List<Mark>,
+            val isChecked: Boolean? = null
         ) : Content() {
+
+            /**
+             * Toggles checked/unchecked state.
+             * Does not modify this instance's checked/unchecked state (preserves immutability)
+             * @return new checked/unchecked state without modifying
+             */
+            fun toggleCheck(): Boolean = isChecked == null || isChecked == false
 
             fun isTitle() = style == Style.TITLE
 
@@ -63,7 +71,7 @@ data class Block(
             }
 
             enum class Style {
-                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE
+                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE, CHECKBOX
             }
         }
 

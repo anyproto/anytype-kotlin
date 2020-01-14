@@ -2,21 +2,19 @@ package com.agileburo.anytype.domain.block.interactor
 
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
-import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 
-class UpdateBlock(
+class UpdateCheckbox(
     private val repo: BlockRepository
-) : BaseUseCase<Unit, UpdateBlock.Params>() {
+) : BaseUseCase<Unit, UpdateCheckbox.Params>() {
 
     override suspend fun run(params: Params) = try {
-        repo.updateText(
-            command = Command.UpdateText(
-                contextId = params.contextId,
-                blockId = params.blockId,
-                text = params.text,
-                marks = params.marks
+        repo.updateCheckbox(
+            command = Command.UpdateCheckbox(
+                context = params.context,
+                target = params.target,
+                isChecked = params.isChecked
             )
         ).let {
             Either.Right(it)
@@ -25,11 +23,15 @@ class UpdateBlock(
         Either.Left(t)
     }
 
+    /**
+     * @property context context id
+     * @property target checkbox block id
+     * @property isChecked new checked/unchecked state for this target
+     */
     data class Params(
-        val contextId: String,
-        val blockId: String,
-        val text: String,
-        val marks: List<Block.Content.Text.Mark>
+        val context: String,
+        val target: String,
+        val isChecked: Boolean
     )
 
 }

@@ -11,6 +11,7 @@ import com.agileburo.anytype.core_utils.ext.withLatestFrom
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.block.interactor.CreateBlock
 import com.agileburo.anytype.domain.block.interactor.UpdateBlock
+import com.agileburo.anytype.domain.block.interactor.UpdateCheckbox
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Prototype
 import com.agileburo.anytype.domain.block.model.Position
@@ -38,7 +39,8 @@ class PageViewModel(
     private val closePage: ClosePage,
     private val updateBlock: UpdateBlock,
     private val createBlock: CreateBlock,
-    private val observeEvents: ObserveEvents
+    private val observeEvents: ObserveEvents,
+    private val updateCheckbox: UpdateCheckbox
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -314,6 +316,23 @@ class PageViewModel(
             result.either(
                 fnL = { Timber.e(it, "Error while creating a block") },
                 fnR = { Timber.d("Request to create a block has been dispatched") }
+            )
+        }
+    }
+
+    fun onCheckboxClicked(id: String) {
+        val target = blocks.first { it.id == id }
+
+        val params = UpdateCheckbox.Params(
+            context = pageId,
+            target = target.id,
+            isChecked = target.content.asText().toggleCheck()
+        )
+
+        updateCheckbox.invoke(viewModelScope, params) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while updating checkbox: $id") },
+                fnR = { Timber.d("Checkbox block has been succesfully updated") }
             )
         }
     }

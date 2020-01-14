@@ -15,6 +15,8 @@ import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.widgets.toolbar.ColorToolbarWidget
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.Option
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_BULLETED_LIST
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_CHECKBOX
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_ONE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_THREE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_TWO
@@ -52,7 +54,8 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
                     id = id,
                     selection = selection
                 )
-            }
+            },
+            onCheckboxClicked = vm::onCheckboxClicked
         )
     }
 
@@ -132,6 +135,15 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
                             OPTION_TEXT_HEADER_TWO -> vm.onAddTextBlockClicked(Text.Style.H2)
                             OPTION_TEXT_HEADER_THREE -> vm.onAddTextBlockClicked(Text.Style.H3)
                             OPTION_TEXT_HIGHLIGHTED -> vm.onAddTextBlockClicked(Text.Style.QUOTE)
+                            OPTION_LIST_BULLETED_LIST -> vm.onAddTextBlockClicked(Text.Style.BULLET)
+                            OPTION_LIST_CHECKBOX -> vm.onAddTextBlockClicked(Text.Style.CHECKBOX)
+                            else -> toast(NOT_IMPLEMENTED_MESSAGE)
+                        }
+                    }
+                    is Option.List -> {
+                        when (option.type) {
+                            OPTION_LIST_BULLETED_LIST -> vm.onAddTextBlockClicked(Text.Style.BULLET)
+                            OPTION_LIST_CHECKBOX -> vm.onAddTextBlockClicked(Text.Style.CHECKBOX)
                             else -> toast(NOT_IMPLEMENTED_MESSAGE)
                         }
                     }

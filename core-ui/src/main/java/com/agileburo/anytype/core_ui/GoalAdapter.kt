@@ -72,7 +72,7 @@ class GoalAdapter(
 
             fun bind(item: GoalView.Goal) {
                 checkbox.isSelected = item.checked
-                content.text = item.text
+                content.setText(item.text)
 
                 itemView.setOnClickListener { checkbox.isSelected = !checkbox.isSelected }
             }

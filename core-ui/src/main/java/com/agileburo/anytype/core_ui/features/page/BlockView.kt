@@ -130,10 +130,13 @@ sealed class BlockView : ViewType {
      */
     data class Checkbox(
         override val id: String,
+        override val marks: List<Markup.Mark> = emptyList(),
+        override val focused: Boolean = false,
         val text: String,
         val checked: Boolean = false
-    ) : BlockView() {
+    ) : BlockView(), Markup, Editable {
         override fun getViewType() = HOLDER_CHECKBOX
+        override val body: String = text
     }
 
     /**
@@ -158,10 +161,13 @@ sealed class BlockView : ViewType {
      */
     data class Bulleted(
         override val id: String,
+        override val marks: List<Markup.Mark> = emptyList(),
+        override val focused: Boolean = false,
         val text: String,
         val indent: Int
-    ) : BlockView() {
+    ) : BlockView(), Markup, Editable {
         override fun getViewType() = HOLDER_BULLET
+        override val body: String = text
     }
 
     /**

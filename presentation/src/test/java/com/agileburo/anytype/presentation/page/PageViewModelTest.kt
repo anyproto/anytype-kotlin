@@ -7,6 +7,7 @@ import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.CreateBlock
 import com.agileburo.anytype.domain.block.interactor.UpdateBlock
+import com.agileburo.anytype.domain.block.interactor.UpdateCheckbox
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.interactor.ObserveEvents
 import com.agileburo.anytype.domain.event.model.Event
@@ -52,6 +53,9 @@ class PageViewModelTest {
 
     @Mock
     lateinit var updateBlock: UpdateBlock
+
+    @Mock
+    lateinit var updateCheckbox: UpdateCheckbox
 
     private lateinit var vm: PageViewModel
 
@@ -1258,6 +1262,80 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should start updating checkbox when it is clicked`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(child)
+            ),
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.CHECKBOX
+                ),
+                children = emptyList()
+            )
+        )
+
+        openPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
+        }
+
+        val flow: Flow<Event.Command> = flow {
+            delay(1000)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
+                )
+            )
+        }
+
+        observeEvents.stub {
+            onBlocking { build() } doReturn flow
+        }
+
+        openPage.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
+        }
+
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(1000)
+
+        vm.onCheckboxClicked(page.last().id)
+
+        verify(updateCheckbox, times(1)).invoke(
+            any(),
+            eq(
+                UpdateCheckbox.Params(
+                    context = root,
+                    target = child,
+                    isChecked = true
+                )
+            ),
+            any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()
@@ -1345,7 +1423,8 @@ class PageViewModelTest {
             closePage = closePage,
             updateBlock = updateBlock,
             observeEvents = observeEvents,
-            createBlock = createBlock
+            createBlock = createBlock,
+            updateCheckbox = updateCheckbox
         )
     }
 }

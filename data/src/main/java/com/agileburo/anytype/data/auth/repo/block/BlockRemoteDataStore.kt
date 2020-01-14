@@ -27,8 +27,12 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         remote.closePage(id)
     }
 
-    override suspend fun update(update: CommandEntity.Update) {
-        remote.update(update)
+    override suspend fun updateText(command: CommandEntity.UpdateText) {
+        remote.updateText(command)
+    }
+
+    override suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox) {
+        remote.updateCheckbox(command)
     }
 
     override suspend fun create(command: CommandEntity.Create) {

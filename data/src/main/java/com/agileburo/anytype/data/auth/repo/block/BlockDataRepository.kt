@@ -37,8 +37,12 @@ class BlockDataRepository(
     override fun observePages() =
         factory.remote.observePages().map { blocks -> blocks.map { it.toDomain() } }
 
-    override suspend fun update(update: Command.Update) {
-        factory.remote.update(update.toEntity())
+    override suspend fun updateText(command: Command.UpdateText) {
+        factory.remote.updateText(command.toEntity())
+    }
+
+    override suspend fun updateCheckbox(command: Command.UpdateCheckbox) {
+        factory.remote.updateCheckbox(command.toEntity())
     }
 
     override suspend fun create(command: Command.Create) {

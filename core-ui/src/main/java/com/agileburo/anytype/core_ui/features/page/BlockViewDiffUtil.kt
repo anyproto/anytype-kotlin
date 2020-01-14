@@ -38,6 +38,32 @@ class BlockViewDiffUtil(
                     else -> throw IllegalStateException("Unexpected change payload scenario:\n$oldBlock\n$newBlock")
                 }
             }
+        } else if (oldBlock is BlockView.Bulleted && newBlock is BlockView.Bulleted) {
+            if (oldBlock.text != newBlock.text) {
+                if (oldBlock.marks != newBlock.marks)
+                    TEXT_AND_MARKUP_CHANGED
+                else
+                    TEXT_CHANGED
+            } else {
+                when {
+                    oldBlock.marks != newBlock.marks -> MARKUP_CHANGED
+                    oldBlock.focused != newBlock.focused -> FOCUS_CHANGED
+                    else -> throw IllegalStateException("Unexpected change payload scenario:\n$oldBlock\n$newBlock")
+                }
+            }
+        } else if (oldBlock is BlockView.Checkbox && newBlock is BlockView.Checkbox) {
+            if (oldBlock.text != newBlock.text) {
+                if (oldBlock.marks != newBlock.marks)
+                    TEXT_AND_MARKUP_CHANGED
+                else
+                    TEXT_CHANGED
+            } else {
+                when {
+                    oldBlock.marks != newBlock.marks -> MARKUP_CHANGED
+                    oldBlock.focused != newBlock.focused -> FOCUS_CHANGED
+                    else -> throw IllegalStateException("Unexpected change payload scenario:\n$oldBlock\n$newBlock")
+                }
+            }
         } else
             super.getChangePayload(oldItemPosition, newItemPosition)
     }

@@ -17,6 +17,8 @@ import com.agileburo.anytype.middleware.auth.AuthMiddleware
 import com.agileburo.anytype.middleware.block.BlockMiddleware
 import com.agileburo.anytype.middleware.interactor.EventHandler
 import com.agileburo.anytype.middleware.interactor.Middleware
+import com.agileburo.anytype.middleware.service.DefaultMiddlewareService
+import com.agileburo.anytype.middleware.service.MiddlewareService
 import com.agileburo.anytype.persistence.db.AnytypeDatabase
 import com.agileburo.anytype.persistence.repo.DefaultAuthCache
 import dagger.Module
@@ -159,9 +161,13 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideMiddleware(): Middleware {
-        return Middleware()
-    }
+    fun provideMiddleware(
+        service: MiddlewareService
+    ): Middleware = Middleware(service)
+
+    @Provides
+    @Singleton
+    fun provideMiddlewareService(): MiddlewareService = DefaultMiddlewareService()
 
     @Provides
     @Singleton

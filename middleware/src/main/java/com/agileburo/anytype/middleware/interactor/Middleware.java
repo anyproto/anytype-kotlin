@@ -6,6 +6,7 @@ import com.agileburo.anytype.data.auth.model.PositionEntity;
 import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
 import com.agileburo.anytype.middleware.model.SelectAccountResponse;
+import com.agileburo.anytype.middleware.service.MiddlewareService;
 
 import java.util.List;
 
@@ -16,44 +17,31 @@ import anytype.Commands.Rpc.Config;
 import anytype.Commands.Rpc.Ipfs.Image;
 import anytype.Commands.Rpc.Wallet;
 import anytype.model.Models;
-import lib.Lib;
 import timber.log.Timber;
 
 public class Middleware {
 
+    private final MiddlewareService service;
+
+    public Middleware(MiddlewareService service) {
+        this.service = service;
+    }
+
     public String provideHomeDashboardId() throws Exception {
-
-        Config.Get.Request request = Config.Get.Request
-                .newBuilder()
-                .build();
-
-        byte[] encodedResponse = Lib.configGet(request.toByteArray());
-
-        Config.Get.Response response = Config.Get.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Config.Get.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        } else {
-            return response.getHomeBlockId();
-        }
+        Config.Get.Request request = Config.Get.Request.newBuilder().build();
+        Config.Get.Response response = service.configGet(request);
+        return response.getHomeBlockId();
     }
 
     public CreateWalletResponse createWallet(String path) throws Exception {
-
         Wallet.Create.Request request = Wallet.Create.Request
                 .newBuilder()
                 .setRootPath(path)
                 .build();
 
-        byte[] encodedResponse = Lib.walletCreate(request.toByteArray());
+        Wallet.Create.Response response = service.walletCreate(request);
 
-        Wallet.Create.Response response = Wallet.Create.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Wallet.Create.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        } else {
-            return new CreateWalletResponse(response.getMnemonic());
-        }
+        return new CreateWalletResponse(response.getMnemonic());
     }
 
     public CreateAccountResponse createAccount(String name, String path) throws Exception {
@@ -73,154 +61,78 @@ public class Middleware {
                     .build();
         }
 
-        byte[] encodedRequest = request.toByteArray();
+        Account.Create.Response response = service.accountCreate(request);
 
-        byte[] encodedResponse = Lib.accountCreate(encodedRequest);
-
-        Account.Create.Response response = Account.Create.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Account.Create.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        } else {
-            return new CreateAccountResponse(
-                    response.getAccount().getId(),
-                    response.getAccount().getName(),
-                    response.getAccount().getAvatar()
-            );
-        }
+        return new CreateAccountResponse(
+                response.getAccount().getId(),
+                response.getAccount().getName(),
+                response.getAccount().getAvatar()
+        );
     }
 
     public void recoverWallet(String path, String mnemonic) throws Exception {
-
         Wallet.Recover.Request request = Wallet.Recover.Request
                 .newBuilder()
                 .setMnemonic(mnemonic)
                 .setRootPath(path)
                 .build();
 
-        byte[] encodedRequest = request.toByteArray();
-
-        byte[] encodedResponse = Lib.walletRecover(encodedRequest);
-
-        // TODO remove.
-        if (encodedResponse == null)
-            return;
-
-        Wallet.Recover.Response response = Wallet.Recover.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Wallet.Recover.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        }
+        service.walletRecover(request);
     }
 
     public void recoverAccount() throws Exception {
-
-        Account.Recover.Request request = Account.Recover.Request
-                .newBuilder()
-                .build();
-
-        byte[] encodedRequest = request.toByteArray();
-
-        byte[] encodedResponse = Lib.accountRecover(encodedRequest);
-
-        // TODO remove.
-        if (encodedResponse == null)
-            return;
-
-        Account.Recover.Response response = Account.Recover.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Account.Recover.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        }
+        Account.Recover.Request request = Account.Recover.Request.newBuilder().build();
+        service.accountRecover(request);
     }
 
     public SelectAccountResponse selectAccount(String id, String path) throws Exception {
-
         Account.Select.Request request = Account.Select.Request
                 .newBuilder()
                 .setId(id)
                 .setRootPath(path)
                 .build();
 
-        byte[] encodedRequest = request.toByteArray();
+        Account.Select.Response response = service.accountSelect(request);
 
-        byte[] encodedResponse = Lib.accountSelect(encodedRequest);
-
-        Account.Select.Response response = Account.Select.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Account.Select.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        } else {
-            return new SelectAccountResponse(
-                    response.getAccount().getId(),
-                    response.getAccount().getName(),
-                    response.getAccount().getAvatar()
-            );
-        }
+        return new SelectAccountResponse(
+                response.getAccount().getId(),
+                response.getAccount().getName(),
+                response.getAccount().getAvatar()
+        );
     }
 
     public byte[] loadImage(String id, Models.Image.Size size) throws Exception {
-
         Image.Get.Blob.Request request = Image.Get.Blob.Request
                 .newBuilder()
                 .setId(id)
                 .setSize(size)
                 .build();
 
-        byte[] encodedRequest = request.toByteArray();
+        Image.Get.Blob.Response response = service.imageGet(request);
 
-        byte[] encodedResponse = Lib.imageGetBlob(encodedRequest);
-
-        Image.Get.Blob.Response response = Image.Get.Blob.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Image.Get.Blob.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        } else {
-            return response.getBlob().toByteArray();
-        }
+        return response.getBlob().toByteArray();
     }
 
     public void openDashboard(String contextId, String id) throws Exception {
-
         Block.Open.Request request = Block.Open.Request
                 .newBuilder()
                 .setContextId(contextId)
                 .setBlockId(id)
                 .build();
 
-        byte[] encodedRequest = request.toByteArray();
-
-        byte[] encodedResponse = Lib.blockOpen(encodedRequest);
-
-        Block.Open.Response response = Block.Open.Response.parseFrom(encodedResponse);
-
-        Timber.d(response.toString());
-
-        if (response.getError() != null && response.getError().getCode() != Block.Open.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        }
+        service.blockOpen(request);
     }
 
     public void openBlock(String id) throws Exception {
-
         Block.Open.Request request = Block.Open.Request
                 .newBuilder()
                 .setBlockId(id)
                 .build();
 
-        byte[] encodedRequest = request.toByteArray();
-
-        byte[] encodedResponse = Lib.blockOpen(encodedRequest);
-
-        Block.Open.Response response = Block.Open.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Block.Open.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        }
+        service.blockOpen(request);
     }
 
     public String createPage(String parentId) throws Exception {
-
         Models.Block.Content.Page page = Models.Block.Content.Page
                 .newBuilder()
                 .setStyle(Models.Block.Content.Page.Style.Empty)
@@ -238,53 +150,26 @@ public class Middleware {
                 .setPosition(Models.Block.Position.Inner)
                 .build();
 
-        byte[] encodedRequest = request.toByteArray();
-
-        byte[] encodedResponse = Lib.blockCreate(encodedRequest);
-
-        Block.Create.Response response = Block.Create.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Block.Create.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        } else {
-            return response.getBlockId();
-        }
+        Block.Create.Response response = service.blockCreate(request);
+        return response.getBlockId();
     }
 
     public void closePage(String id) throws Exception {
-
         Block.Close.Request request = Block.Close.Request
                 .newBuilder()
                 .setBlockId(id)
                 .build();
 
-        byte[] encodedRequest = request.toByteArray();
-
-        byte[] encodedResponse = Lib.blockClose(encodedRequest);
-
-        Block.Open.Response response = Block.Open.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Block.Open.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        }
+        service.blockClose(request);
     }
 
     public void closeDashboard(String id) throws Exception {
-
         Block.Close.Request request = Block.Close.Request
                 .newBuilder()
                 .setBlockId(id)
                 .build();
 
-        byte[] encodedRequest = request.toByteArray();
-
-        byte[] encodedResponse = Lib.blockClose(encodedRequest);
-
-        Block.Open.Response response = Block.Open.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Block.Open.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        }
+        service.blockClose(request);
     }
 
     public void updateText(
@@ -294,7 +179,7 @@ public class Middleware {
             List<Models.Block.Content.Text.Mark> marks
     ) throws Exception {
 
-        Timber.d("Updating block with the follwing text:" + text);
+        Timber.d("Updating block with the follwing text:\n%s", text);
 
         Models.Block.Content.Text.Marks markup = Models.Block.Content.Text.Marks
                 .newBuilder()
@@ -309,17 +194,9 @@ public class Middleware {
                 .setText(text)
                 .build();
 
-        Timber.d("Updating block with the following request:\n" + request.toString());
+        Timber.d("Updating block with the following request:\n%s", request.toString());
 
-        byte[] encodedRequest = request.toByteArray();
-
-        byte[] encodedResponse = Lib.blockSetTextText(encodedRequest);
-
-        Block.Set.Text.TText.Response response = Block.Set.Text.TText.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Block.Set.Text.TText.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        }
+        service.blockSetTextText(request);
     }
 
     public void updateCheckbox(
@@ -327,7 +204,6 @@ public class Middleware {
             String target,
             boolean isChecked
     ) throws Exception {
-
         Block.Set.Text.Checked.Request request = Block.Set.Text.Checked.Request
                 .newBuilder()
                 .setContextId(context)
@@ -335,15 +211,7 @@ public class Middleware {
                 .setChecked(isChecked)
                 .build();
 
-        byte[] encodedRequest = request.toByteArray();
-
-        byte[] encodedResponse = Lib.blockSetTextChecked(encodedRequest);
-
-        Block.Set.Text.Checked.Response response = Block.Set.Text.Checked.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Block.Set.Text.Checked.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        }
+        service.blockSetTextChecked(request);
     }
 
     public void createBlock(
@@ -471,17 +339,9 @@ public class Middleware {
                 .setBlock(blockModel)
                 .build();
 
-        Timber.d("Creating block with the following request:\n" + request.toString());
+        Timber.d("Creating block with the following request:\n%s", request.toString());
 
-        byte[] encodedRequest = request.toByteArray();
-
-        byte[] encodedResponse = Lib.blockCreate(encodedRequest);
-
-        Block.Create.Response response = Block.Create.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != Block.Create.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        }
+        service.blockCreate(request);
     }
 
     public void dnd(CommandEntity.Dnd command) throws Exception {
@@ -517,12 +377,6 @@ public class Middleware {
                 .setDropTargetId(command.getDropTargetId())
                 .build();
 
-        byte[] encodedResponse = Lib.blockListMove(request.toByteArray());
-
-        BlockList.Move.Response response = BlockList.Move.Response.parseFrom(encodedResponse);
-
-        if (response.getError() != null && response.getError().getCode() != BlockList.Move.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        }
+        service.blockListMove(request);
     }
 }

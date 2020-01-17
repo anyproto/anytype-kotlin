@@ -52,4 +52,11 @@ class BlockDataRepository(
     override suspend fun dnd(command: Command.Dnd) {
         factory.remote.dnd(command.toEntity())
     }
+
+    override suspend fun duplicate(command: Command.Duplicate) =
+        factory.remote.duplicate(command.toEntity())
+
+    override suspend fun unlink(command: Command.Unlink) {
+        factory.remote.unlink(command.toEntity())
+    }
 }

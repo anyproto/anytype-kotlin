@@ -4,6 +4,7 @@ import com.agileburo.anytype.data.auth.model.BlockEntity
 import com.agileburo.anytype.data.auth.model.CommandEntity
 import com.agileburo.anytype.data.auth.model.ConfigEntity
 import com.agileburo.anytype.data.auth.model.EventEntity
+import com.agileburo.anytype.domain.common.Id
 import kotlinx.coroutines.flow.Flow
 
 interface BlockRemote {
@@ -11,6 +12,8 @@ interface BlockRemote {
     suspend fun updateText(command: CommandEntity.UpdateText)
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun dnd(command: CommandEntity.Dnd)
+    suspend fun duplicate(command: CommandEntity.Duplicate): Id
+    suspend fun unlink(command: CommandEntity.Unlink)
     suspend fun getConfig(): ConfigEntity
     suspend fun createPage(parentId: String): String
     suspend fun openPage(id: String)

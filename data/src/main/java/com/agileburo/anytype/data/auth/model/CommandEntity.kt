@@ -1,5 +1,8 @@
 package com.agileburo.anytype.data.auth.model
 
+/**
+ * For documentation, please refer to domain models description.
+ */
 class CommandEntity {
 
     class UpdateText(
@@ -28,5 +31,15 @@ class CommandEntity {
         val dropTargetContextId: String,
         val blockIds: List<String>,
         val position: PositionEntity
+    )
+
+    class Duplicate(
+        val context: String,
+        val original: String
+    )
+
+    class Unlink(
+        val context: String,
+        val targets: List<String>
     )
 }

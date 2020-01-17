@@ -8,6 +8,7 @@ import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar.Block.Action.ADD
+import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar.Block.Action.BLOCK_ACTION
 import kotlinx.android.synthetic.main.widget_block_toolbar.view.*
 
 class BlockToolbarWidget : ConstraintLayout {
@@ -35,8 +36,10 @@ class BlockToolbarWidget : ConstraintLayout {
 
     fun keyboardClicks() = keyboard.clicks()
     fun addButtonClicks() = add.clicks()
+    fun actionClicks() = actions.clicks()
 
     fun setState(state: ControlPanelState.Toolbar.Block) {
         add.isSelected = state.selectedAction == ADD
+        actions.isSelected = state.selectedAction == BLOCK_ACTION
     }
 }

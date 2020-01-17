@@ -36,4 +36,8 @@ public interface MiddlewareService {
     Block.Set.Text.Checked.Response blockSetTextChecked(Block.Set.Text.Checked.Request request) throws Exception;
 
     BlockList.Move.Response blockListMove(BlockList.Move.Request request) throws Exception;
+
+    Block.Unlink.Response blockUnlink(Block.Unlink.Request request) throws Exception;
+
+    Block.Duplicate.Response blockDuplicate(Block.Duplicate.Request request) throws Exception;
 }

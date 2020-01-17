@@ -152,4 +152,26 @@ public class DefaultMiddlewareService implements MiddlewareService {
             return response;
         }
     }
+
+    @Override
+    public Block.Unlink.Response blockUnlink(Block.Unlink.Request request) throws Exception {
+        byte[] encoded = Lib.blockUnlink(request.toByteArray());
+        Block.Unlink.Response response = Block.Unlink.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Block.Unlink.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
+    public Block.Duplicate.Response blockDuplicate(Block.Duplicate.Request request) throws Exception {
+        byte[] encoded = Lib.blockDuplicate(request.toByteArray());
+        Block.Duplicate.Response response = Block.Duplicate.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Block.Duplicate.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
 }

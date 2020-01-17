@@ -23,5 +23,9 @@ sealed class EventEntity {
             val id: String,
             val children: List<String>
         ) : Command()
+
+        data class DeleteBlock(
+            val target: String
+        ) : Command()
     }
 }

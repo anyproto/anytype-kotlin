@@ -37,7 +37,8 @@ class BlockAdapter(
     private var blocks: List<BlockView>,
     private val onTextChanged: (String, Editable) -> Unit,
     private val onSelectionChanged: (String, IntRange) -> Unit,
-    private val onCheckboxClicked: (String) -> Unit
+    private val onCheckboxClicked: (String) -> Unit,
+    private val onFocusChanged: (String, Boolean) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -252,31 +253,36 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Text,
                     onTextChanged = onTextChanged,
-                    onSelectionChanged = onSelectionChanged
+                    onSelectionChanged = onSelectionChanged,
+                    onFocusChanged = onFocusChanged
                 )
             }
             is BlockViewHolder.Title -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Title,
-                    onTextChanged = onTextChanged
+                    onTextChanged = onTextChanged,
+                    onFocusChanged = onFocusChanged
                 )
             }
             is BlockViewHolder.HeaderOne -> {
                 holder.bind(
                     item = blocks[position] as BlockView.HeaderOne,
-                    onTextChanged = onTextChanged
+                    onTextChanged = onTextChanged,
+                    onFocusChanged = onFocusChanged
                 )
             }
             is BlockViewHolder.HeaderTwo -> {
                 holder.bind(
                     item = blocks[position] as BlockView.HeaderTwo,
-                    onTextChanged = onTextChanged
+                    onTextChanged = onTextChanged,
+                    onFocusChanged = onFocusChanged
                 )
             }
             is BlockViewHolder.HeaderThree -> {
                 holder.bind(
                     item = blocks[position] as BlockView.HeaderThree,
-                    onTextChanged = onTextChanged
+                    onTextChanged = onTextChanged,
+                    onFocusChanged = onFocusChanged
                 )
             }
             is BlockViewHolder.Code -> {
@@ -289,7 +295,8 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Checkbox,
                     onTextChanged = onTextChanged,
                     onCheckboxClicked = onCheckboxClicked,
-                    onSelectionChanged = onSelectionChanged
+                    onSelectionChanged = onSelectionChanged,
+                    onFocusChanged = onFocusChanged
                 )
             }
             is BlockViewHolder.Task -> {
@@ -301,7 +308,8 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Bulleted,
                     onTextChanged = onTextChanged,
-                    onSelectionChanged = onSelectionChanged
+                    onSelectionChanged = onSelectionChanged,
+                    onFocusChanged = onFocusChanged
                 )
             }
             is BlockViewHolder.Numbered -> {
@@ -342,7 +350,8 @@ class BlockAdapter(
             is BlockViewHolder.Highlight -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Highlight,
-                    onTextChanged = onTextChanged
+                    onTextChanged = onTextChanged,
+                    onFocusChanged = onFocusChanged
                 )
             }
         }

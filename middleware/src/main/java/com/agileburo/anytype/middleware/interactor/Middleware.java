@@ -45,7 +45,6 @@ public class Middleware {
     }
 
     public CreateAccountResponse createAccount(String name, String path) throws Exception {
-
         Account.Create.Request request;
 
         if (path != null) {
@@ -178,7 +177,6 @@ public class Middleware {
             String text,
             List<Models.Block.Content.Text.Mark> marks
     ) throws Exception {
-
         Timber.d("Updating block with the follwing text:\n%s", text);
 
         Models.Block.Content.Text.Marks markup = Models.Block.Content.Text.Marks
@@ -220,7 +218,6 @@ public class Middleware {
             PositionEntity position,
             BlockEntity.Prototype prototype
     ) throws Exception {
-
         Models.Block.Content.Text contentModel = null;
 
         if (prototype instanceof BlockEntity.Prototype.Text) {
@@ -345,7 +342,6 @@ public class Middleware {
     }
 
     public void dnd(CommandEntity.Dnd command) throws Exception {
-
         Models.Block.Position positionModel = null;
 
         switch (command.getPosition()) {
@@ -378,5 +374,33 @@ public class Middleware {
                 .build();
 
         service.blockListMove(request);
+    }
+
+    public String duplicate(CommandEntity.Duplicate command) throws Exception {
+        Block.Duplicate.Request request = Block.Duplicate.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .setTargetId(command.getOriginal())
+                .setBlockId(command.getOriginal())
+                .setPosition(Models.Block.Position.Bottom)
+                .build();
+
+        Timber.d("Duplicating blocks with the following request:\n%s", request.toString());
+
+        Block.Duplicate.Response response = service.blockDuplicate(request);
+
+        return response.getBlockId();
+    }
+
+    public void unlink(CommandEntity.Unlink command) throws Exception {
+        Block.Unlink.Request request = Block.Unlink.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .addAllBlockIds(command.getTargets())
+                .build();
+
+        Timber.d("Unlinking blocks with the following request:\n%s", request.toString());
+
+        service.blockUnlink(request);
     }
 }

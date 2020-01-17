@@ -9,12 +9,11 @@ import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.withLatestFrom
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
-import com.agileburo.anytype.domain.block.interactor.CreateBlock
-import com.agileburo.anytype.domain.block.interactor.UpdateBlock
-import com.agileburo.anytype.domain.block.interactor.UpdateCheckbox
+import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Prototype
 import com.agileburo.anytype.domain.block.model.Position
+import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.event.interactor.ObserveEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.addMark
@@ -40,7 +39,9 @@ class PageViewModel(
     private val updateBlock: UpdateBlock,
     private val createBlock: CreateBlock,
     private val observeEvents: ObserveEvents,
-    private val updateCheckbox: UpdateCheckbox
+    private val updateCheckbox: UpdateCheckbox,
+    private val unlinkBlocks: UnlinkBlocks,
+    private val duplicateBlock: DuplicateBlock
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -50,13 +51,13 @@ class PageViewModel(
     private val renderingChannel = Channel<List<Block>>()
     private val renderings = renderingChannel.consumeAsFlow()
 
-    private val focusChannel = ConflatedBroadcastChannel(DEFAULT_FOCUS_ID)
+    private val focusChannel = ConflatedBroadcastChannel(EMPTY_FOCUS_ID)
     private val focusChanges = focusChannel.asFlow()
 
-    private val textChannel = Channel<Triple<String, String, List<Block.Content.Text.Mark>>>()
+    private val textChannel = Channel<Triple<Id, String, List<Block.Content.Text.Mark>>>()
     private val textChanges = textChannel.consumeAsFlow()
 
-    private val selectionChannel = Channel<Pair<String, IntRange>>()
+    private val selectionChannel = Channel<Pair<Id, IntRange>>()
     private val selectionsChanges = selectionChannel.consumeAsFlow()
 
     private val markupActionChannel = Channel<MarkupAction>()
@@ -66,7 +67,12 @@ class PageViewModel(
      * Currently opened page id.
      */
     private var pageId: String = ""
+
+    /**
+     * Current set of blocks on this page.
+     */
     var blocks: List<Block> = emptyList()
+        private set
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
@@ -86,7 +92,8 @@ class PageViewModel(
 
     private fun startProcessingControlPanelViewState() {
         viewModelScope.launch {
-            controlPanelInteractor.state().collect { controlPanelViewState.postValue(it) }
+            controlPanelInteractor.state().distinctUntilChanged()
+                .collect { controlPanelViewState.postValue(it) }
         }
     }
 
@@ -110,14 +117,22 @@ class PageViewModel(
                 )
             }
             is Event.Command.AddBlock -> {
+                blocks = blocks + event.blocks
+                viewModelScope.launch {
+                    focusChannel.send(event.blocks.last().id)
+                    renderingChannel.send(blocks)
+                }
+            }
+            is Event.Command.UpdateStructure -> {
                 blocks = blocks.map { block ->
-                    if (block.id == pageId)
-                        block.copy(
-                            children = block.children + event.blocks.map { it.id }
-                        )
+                    if (block.id == event.id)
+                        block.copy(children = event.children)
                     else
                         block
-                } + event.blocks
+                }
+            }
+            is Event.Command.DeleteBlock -> {
+                blocks = blocks.filter { it.id != event.target }
                 viewModelScope.launch { renderingChannel.send(blocks) }
             }
         }
@@ -131,7 +146,6 @@ class PageViewModel(
                     .filter { (_, selection) -> selection.first != selection.last }
             ) { a, b -> Pair(a, b) }
             .onEach { (action, selection) ->
-                focusChannel.send(selection.first)
                 applyMarkup(selection, action)
             }
             .launchIn(viewModelScope)
@@ -212,7 +226,6 @@ class PageViewModel(
         textChanges
             .debounce(TEXT_CHANGES_DEBOUNCE_DURATION)
             .map { (id, text, marks) ->
-
                 val update = blocks.map { block ->
                     if (block.id == id) {
                         block.copy(
@@ -239,9 +252,7 @@ class PageViewModel(
     }
 
     private fun proceedWithUpdatingBlock(params: UpdateBlock.Params) {
-
         Timber.d("Starting updating block with params: $params")
-
         updateBlock.invoke(viewModelScope, params) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while updating text: $params") },
@@ -281,6 +292,10 @@ class PageViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnSelectionChanged(selection))
     }
 
+    fun onBlockFocusChanged(id: String, hasFocus: Boolean) {
+        if (hasFocus) viewModelScope.launch { focusChannel.send(id) }
+    }
+
     fun onMarkupActionClicked(markup: Markup.Type) {
         viewModelScope.launch {
             markupActionChannel.send(MarkupAction(type = markup))
@@ -301,6 +316,48 @@ class PageViewModel(
 
     fun onMarkupToolbarColorClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMarkupToolbarColorClicked)
+    }
+
+    fun onActionDeleteClicked() {
+        viewModelScope.launch {
+            focusChanges
+                .take(1)
+                .collect { focus ->
+                    unlinkBlocks.invoke(
+                        scope = this,
+                        params = UnlinkBlocks.Params(
+                            context = pageId,
+                            targets = listOf(focus)
+                        )
+                    ) { result ->
+                        result.either(
+                            fnL = { Timber.e(it, "Error while unlinking block with id: $focus") },
+                            fnR = { Timber.d("Succesfully unlinked block with id: $focus") }
+                        )
+                    }
+                }
+        }
+    }
+
+    fun onActionDuplicateClicked() {
+        viewModelScope.launch {
+            focusChanges
+                .take(1)
+                .collect { focus ->
+                    duplicateBlock.invoke(
+                        scope = this,
+                        params = DuplicateBlock.Params(
+                            context = pageId,
+                            original = focus
+                        )
+                    ) { result ->
+                        result.either(
+                            fnL = { Timber.e(it, "Error while duplicating block with id: $focus") },
+                            fnR = { Timber.d("Succesfully duplicated block with id: $focus") }
+                        )
+                    }
+                }
+        }
     }
 
     fun onAddTextBlockClicked(style: Block.Content.Text.Style) {
@@ -341,6 +398,10 @@ class PageViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarClicked)
     }
 
+    fun onActionToolbarClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnActionToolbarClicked)
+    }
+
     sealed class ViewState {
         object Loading : ViewState()
         data class Success(val blocks: List<BlockView>) : ViewState()
@@ -348,7 +409,7 @@ class PageViewModel(
     }
 
     companion object {
-        const val DEFAULT_FOCUS_ID = ""
+        const val EMPTY_FOCUS_ID = ""
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
     }
 
@@ -411,6 +472,11 @@ class PageViewModel(
              * Represents an event when user selected a text color on [Toolbar.Color] toolbar.
              */
             object OnTextColorSelected : Event()
+
+            /**
+             * Represents an event when user selected an action toolbar on [Toolbar.Block]
+             */
+            object OnActionToolbarClicked : Event()
         }
 
         /**
@@ -419,13 +485,35 @@ class PageViewModel(
         class Reducer : StateReducer<ControlPanelState, Event> {
 
             override val function: suspend (ControlPanelState, Event) -> ControlPanelState
-                get() = { state, event -> reduce(state, event) }
+                get() = { state, event ->
+                    reduce(
+                        state,
+                        event
+                    ).also { Timber.d("Reducing event:\n$event") }
+                }
 
             override suspend fun reduce(state: ControlPanelState, event: Event) = when (event) {
                 is Event.OnSelectionChanged -> state.copy(
                     markupToolbar = state.markupToolbar.copy(
-                        isVisible = event.selection.first != event.selection.last
-                    )
+                        isVisible = event.selection.first != event.selection.last,
+                        selectedAction = if (event.selection.first != event.selection.last)
+                            state.markupToolbar.selectedAction
+                        else
+                            null
+                    ),
+                    blockToolbar = state.blockToolbar.copy(
+                        selectedAction = null
+                    ),
+                    actionToolbar = state.actionToolbar.copy(
+                        isVisible = false
+                    ),
+                    addBlockToolbar = state.addBlockToolbar.copy(
+                        isVisible = false
+                    ),
+                    colorToolbar = if (event.selection.first != event.selection.last)
+                        state.colorToolbar.copy()
+                    else
+                        state.colorToolbar.copy(isVisible = false)
                 )
                 is Event.OnMarkupToolbarColorClicked -> state.copy(
                     colorToolbar = state.colorToolbar.copy(
@@ -455,6 +543,9 @@ class PageViewModel(
                             Toolbar.Block.Action.ADD
                         else
                             null
+                    ),
+                    actionToolbar = state.actionToolbar.copy(
+                        isVisible = false
                     )
                 )
                 is Event.OnOptionSelected -> state.copy(
@@ -463,6 +554,22 @@ class PageViewModel(
                     ),
                     blockToolbar = state.blockToolbar.copy(
                         selectedAction = null
+                    )
+                )
+                is Event.OnActionToolbarClicked -> state.copy(
+                    colorToolbar = state.colorToolbar.copy(
+                        isVisible = false
+                    ),
+                    addBlockToolbar = state.addBlockToolbar.copy(
+                        isVisible = false
+                    ),
+                    actionToolbar = state.actionToolbar.copy(
+                        isVisible = !state.actionToolbar.isVisible
+                    ),
+                    blockToolbar = state.blockToolbar.copy(
+                        selectedAction = if (state.actionToolbar.isVisible)
+                            null
+                        else Toolbar.Block.Action.BLOCK_ACTION
                     )
                 )
             }

@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface BlockRepository {
     suspend fun dnd(command: Command.Dnd)
+    suspend fun duplicate(command: Command.Duplicate): Id
+    suspend fun unlink(command: Command.Unlink)
     suspend fun create(command: Command.Create)
     suspend fun updateText(command: Command.UpdateText)
     suspend fun updateCheckbox(command: Command.UpdateCheckbox)

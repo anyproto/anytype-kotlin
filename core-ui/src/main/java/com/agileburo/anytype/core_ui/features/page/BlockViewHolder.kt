@@ -64,9 +64,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
             item: BlockView.Text,
             onTextChanged: (String, Editable) -> Unit,
-            onSelectionChanged: (String, IntRange) -> Unit
+            onSelectionChanged: (String, IntRange) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit
         ) {
             logOnBind()
+
+            content.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
 
             if (item.marks.isNotEmpty())
                 content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
@@ -123,9 +128,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.Title,
-            onTextChanged: (String, Editable) -> Unit
+            onTextChanged: (String, Editable) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit
         ) {
+            title.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
+
             title.setText(item.text)
+
             title.addTextChangedListener(
                 DefaultTextWatcher { text ->
                     onTextChanged(item.id, text)
@@ -140,8 +151,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.HeaderOne,
-            onTextChanged: (String, Editable) -> Unit
+            onTextChanged: (String, Editable) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit
         ) {
+            header.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
             header.setText(item.text)
             header.addTextChangedListener(
                 DefaultTextWatcher { text ->
@@ -157,8 +172,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.HeaderTwo,
-            onTextChanged: (String, Editable) -> Unit
+            onTextChanged: (String, Editable) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit
         ) {
+            header.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
             header.setText(item.text)
             header.addTextChangedListener(
                 DefaultTextWatcher { text ->
@@ -174,8 +193,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.HeaderThree,
-            onTextChanged: (String, Editable) -> Unit
+            onTextChanged: (String, Editable) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit
         ) {
+            header.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
             header.setText(item.text)
             header.addTextChangedListener(
                 DefaultTextWatcher { text ->
@@ -203,8 +226,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             item: BlockView.Checkbox,
             onTextChanged: (String, Editable) -> Unit,
             onCheckboxClicked: (String) -> Unit,
-            onSelectionChanged: (String, IntRange) -> Unit
+            onSelectionChanged: (String, IntRange) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit
         ) {
+            content.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
 
             checkbox.isSelected = item.checked
 
@@ -283,9 +310,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
             item: BlockView.Bulleted,
             onTextChanged: (String, Editable) -> Unit,
-            onSelectionChanged: (String, IntRange) -> Unit
+            onSelectionChanged: (String, IntRange) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit
         ) {
             Timber.d("Binding bullet")
+
+            content.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
 
             if (item.marks.isNotEmpty())
                 content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
@@ -440,8 +472,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.Highlight,
-            onTextChanged: (String, Editable) -> Unit
+            onTextChanged: (String, Editable) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit
         ) {
+            content.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
             content.setText(item.text)
             content.addTextChangedListener(
                 DefaultTextWatcher { text ->
@@ -449,7 +485,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
             )
         }
-
     }
 
     companion object {

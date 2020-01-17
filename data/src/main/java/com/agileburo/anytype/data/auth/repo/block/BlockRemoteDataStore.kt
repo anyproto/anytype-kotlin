@@ -42,4 +42,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun dnd(command: CommandEntity.Dnd) {
         remote.dnd(command)
     }
+
+    override suspend fun duplicate(command: CommandEntity.Duplicate) = remote.duplicate(command)
+
+    override suspend fun unlink(command: CommandEntity.Unlink) {
+        remote.unlink(command)
+    }
 }

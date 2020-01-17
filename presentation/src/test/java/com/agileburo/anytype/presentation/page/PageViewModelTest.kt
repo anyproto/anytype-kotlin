@@ -5,14 +5,13 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.domain.base.Either
-import com.agileburo.anytype.domain.block.interactor.CreateBlock
-import com.agileburo.anytype.domain.block.interactor.UpdateBlock
-import com.agileburo.anytype.domain.block.interactor.UpdateCheckbox
+import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.interactor.ObserveEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.OpenPage
+import com.agileburo.anytype.presentation.MockBlockFactory
 import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.page.PageViewModel.ViewState
@@ -56,6 +55,12 @@ class PageViewModelTest {
 
     @Mock
     lateinit var updateCheckbox: UpdateCheckbox
+
+    @Mock
+    lateinit var duplicateBlock: DuplicateBlock
+
+    @Mock
+    lateinit var unlinkBlocks: UnlinkBlocks
 
     private lateinit var vm: PageViewModel
 
@@ -303,6 +308,13 @@ class PageViewModelTest {
                 )
                 delay(100)
                 emit(
+                    Event.Command.UpdateStructure(
+                        context = root,
+                        id = root,
+                        children = listOf(child, added.id)
+                    )
+                )
+                emit(
                     Event.Command.AddBlock(
                         blocks = listOf(added)
                     )
@@ -322,7 +334,7 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(200)
 
-        val expected = ViewState.Success(listOf(page.last().toView(), added.toView()))
+        val expected = ViewState.Success(listOf(page.last().toView(), added.toView(focused = true)))
 
         vm.state.test().assertValue(expected)
     }
@@ -479,6 +491,11 @@ class PageViewModelTest {
         val firstTimeRange = 0..3
         val firstTimeMarkup = Markup.Type.BOLD
 
+        vm.onBlockFocusChanged(
+            hasFocus = true,
+            id = paragraph.id
+        )
+
         vm.onSelectionChanged(
             id = paragraph.id,
             selection = firstTimeRange
@@ -579,20 +596,18 @@ class PageViewModelTest {
             paragraph
         )
 
-        observeEvents.stub {
-            onBlocking { build() } doReturn flow {
-                delay(100)
-                emit(
-                    Event.Command.ShowBlock(
-                        rootId = root,
-                        blocks = blocks
-                    )
+        val events = flow {
+            delay(100)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = blocks
                 )
-            }
+            )
         }
 
+        stubObserveEvents(events)
         stubOpenPage()
-
         buildViewModel()
 
         vm.open(root)
@@ -601,6 +616,11 @@ class PageViewModelTest {
 
         val firstTimeRange = 0..3
         val firstTimeMarkup = Markup.Type.BOLD
+
+        vm.onBlockFocusChanged(
+            hasFocus = true,
+            id = paragraph.id
+        )
 
         vm.onSelectionChanged(
             id = paragraph.id,
@@ -707,20 +727,18 @@ class PageViewModelTest {
             paragraph
         )
 
-        observeEvents.stub {
-            onBlocking { build() } doReturn flow {
-                delay(100)
-                emit(
-                    Event.Command.ShowBlock(
-                        rootId = root,
-                        blocks = blocks
-                    )
+        val events = flow {
+            delay(100)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = blocks
                 )
-            }
+            )
         }
 
+        stubObserveEvents(events)
         stubOpenPage()
-
         buildViewModel()
 
         vm.open(root)
@@ -790,20 +808,18 @@ class PageViewModelTest {
             paragraph
         )
 
-        observeEvents.stub {
-            onBlocking { build() } doReturn flow {
-                delay(100)
-                emit(
-                    Event.Command.ShowBlock(
-                        rootId = root,
-                        blocks = blocks
-                    )
+        val events = flow {
+            delay(100)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = blocks
                 )
-            }
+            )
         }
 
+        stubObserveEvents(events)
         stubOpenPage()
-
         buildViewModel()
 
         val testObserver = vm.state.test()
@@ -881,18 +897,17 @@ class PageViewModelTest {
             paragraph
         )
 
-        observeEvents.stub {
-            onBlocking { build() } doReturn flow {
-                delay(100)
-                emit(
-                    Event.Command.ShowBlock(
-                        rootId = root,
-                        blocks = blocks
-                    )
+        val events = flow {
+            delay(100)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = blocks
                 )
-            }
+            )
         }
 
+        stubObserveEvents(events)
         stubOpenPage()
 
         buildViewModel()
@@ -1035,6 +1050,9 @@ class PageViewModelTest {
             ),
             markupToolbar = ControlPanelState.Toolbar.Markup(
                 isVisible = false
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = false
             )
         )
 
@@ -1061,6 +1079,9 @@ class PageViewModelTest {
                 isVisible = false
             ),
             markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
                 isVisible = false
             )
         )
@@ -1093,6 +1114,9 @@ class PageViewModelTest {
             ),
             markupToolbar = ControlPanelState.Toolbar.Markup(
                 isVisible = expectedVisibility
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = false
             )
         )
 
@@ -1124,6 +1148,9 @@ class PageViewModelTest {
             ),
             markupToolbar = ControlPanelState.Toolbar.Markup(
                 isVisible = expectedVisibility
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = false
             )
         )
 
@@ -1158,6 +1185,9 @@ class PageViewModelTest {
             markupToolbar = ControlPanelState.Toolbar.Markup(
                 isVisible = true,
                 selectedAction = ControlPanelState.Toolbar.Markup.Action.COLOR
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = false
             )
         )
 
@@ -1169,33 +1199,7 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-
-        val page = listOf(
-            Block(
-                id = root,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
-                children = listOf(child)
-            ),
-            Block(
-                id = child,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Text(
-                    text = MockDataFactory.randomString(),
-                    marks = emptyList(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList()
-            )
-        )
-
-        openPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
 
         val style = Block.Content.Text.Style.H1
 
@@ -1220,21 +1224,21 @@ class PageViewModelTest {
             )
             delay(500)
             emit(
+                Event.Command.UpdateStructure(
+                    context = root,
+                    id = root,
+                    children = listOf(child, new.id)
+                )
+            )
+            emit(
                 Event.Command.AddBlock(
                     blocks = listOf(new)
                 )
             )
         }
 
-        observeEvents.stub {
-            onBlocking { build() } doReturn flow
-        }
-
-        openPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
+        stubObserveEvents(flow)
+        stubOpenPage()
 
         buildViewModel()
 
@@ -1268,32 +1272,11 @@ class PageViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
-        val page = listOf(
-            Block(
-                id = root,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
-                children = listOf(child)
-            ),
-            Block(
-                id = child,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Text(
-                    text = MockDataFactory.randomString(),
-                    marks = emptyList(),
-                    style = Block.Content.Text.Style.CHECKBOX
-                ),
-                children = emptyList()
-            )
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
+            root = root,
+            child = child,
+            style = Block.Content.Text.Style.CHECKBOX
         )
-
-        openPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
 
         val flow: Flow<Event.Command> = flow {
             delay(1000)
@@ -1305,16 +1288,8 @@ class PageViewModelTest {
             )
         }
 
-        observeEvents.stub {
-            onBlocking { build() } doReturn flow
-        }
-
-        openPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
-
+        stubObserveEvents(flow)
+        stubOpenPage()
         buildViewModel()
 
         vm.open(root)
@@ -1336,37 +1311,159 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should start duplicating focused block when requested`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
+
+        val events: Flow<Event.Command> = flow {
+            delay(1000)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
+                )
+            )
+        }
+
+        stubOpenPage()
+        stubObserveEvents(events)
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(1001)
+
+        vm.onBlockFocusChanged(id = child, hasFocus = true)
+        vm.onActionDuplicateClicked()
+
+        verify(duplicateBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                DuplicateBlock.Params(
+                    original = child,
+                    context = root
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should start deleting focused block when requested`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
+
+        val events: Flow<Event.Command> = flow {
+            delay(1000)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
+                )
+            )
+        }
+
+        stubOpenPage()
+        stubObserveEvents(events)
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(1001)
+
+        vm.onBlockFocusChanged(id = child, hasFocus = true)
+        vm.onActionDeleteClicked()
+
+        verify(unlinkBlocks, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                UnlinkBlocks.Params(
+                    context = root,
+                    targets = listOf(child)
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should delete the first block when the delete-block event received for the first block, then rerender the page`() {
+
+        val pageOpenedDelay = 100L
+        val blockDeletedEventDelay = 100L
+
+        val root = MockDataFactory.randomUuid()
+        val firstChild = MockDataFactory.randomUuid()
+        val secondChild = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithTwoTextBlocks(
+            root = root,
+            firstChild = firstChild,
+            secondChild = secondChild
+        )
+
+        val events: Flow<Event.Command> = flow {
+            delay(pageOpenedDelay)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
+                )
+            )
+            delay(blockDeletedEventDelay)
+            emit(
+                Event.Command.DeleteBlock(
+                    target = firstChild
+                )
+            )
+        }
+
+        stubOpenPage()
+        stubObserveEvents(events)
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(pageOpenedDelay)
+
+        val testObserver = vm.state.test()
+
+        testObserver.assertValue(
+            ViewState.Success(
+                blocks = listOf(
+                    page[1].toView(focused = false),
+                    page.last().toView(focused = false)
+                )
+            )
+        )
+
+        vm.onBlockFocusChanged(id = firstChild, hasFocus = true)
+        vm.onActionDeleteClicked()
+
+        assertEquals(expected = 3, actual = vm.blocks.size)
+
+        coroutineTestRule.advanceTime(blockDeletedEventDelay)
+
+        assertEquals(expected = 2, actual = vm.blocks.size)
+
+        testObserver.assertValue(
+            ViewState.Success(
+                blocks = listOf(
+                    page.last().toView(focused = false)
+                )
+            )
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-
-        val page = listOf(
-            Block(
-                id = root,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
-                children = listOf(child)
-            ),
-            Block(
-                id = child,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Text(
-                    text = MockDataFactory.randomString(),
-                    marks = emptyList(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList()
-            )
-        )
-
-        openPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
 
         val flow: Flow<Event.Command> = flow {
             delay(1000)
@@ -1378,16 +1475,8 @@ class PageViewModelTest {
             )
         }
 
-        observeEvents.stub {
-            onBlocking { build() } doReturn flow
-        }
-
-        openPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
-
+        stubObserveEvents(flow)
+        stubOpenPage()
         buildViewModel()
 
         vm.open(root)
@@ -1411,9 +1500,9 @@ class PageViewModelTest {
         }
     }
 
-    private fun stubObserveEvents() {
+    private fun stubObserveEvents(flow: Flow<Event> = flowOf()) {
         observeEvents.stub {
-            onBlocking { build() } doReturn flowOf()
+            onBlocking { build() } doReturn flow
         }
     }
 
@@ -1424,7 +1513,9 @@ class PageViewModelTest {
             updateBlock = updateBlock,
             observeEvents = observeEvents,
             createBlock = createBlock,
-            updateCheckbox = updateCheckbox
+            updateCheckbox = updateCheckbox,
+            unlinkBlocks = unlinkBlocks,
+            duplicateBlock = duplicateBlock
         )
     }
 }

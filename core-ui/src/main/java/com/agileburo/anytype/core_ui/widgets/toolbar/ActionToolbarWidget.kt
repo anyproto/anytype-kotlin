@@ -5,10 +5,14 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.extensions.invisible
+import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.layout.SpacingItemDecoration
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.Action
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionAdapter
@@ -21,6 +25,10 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionC
 import kotlinx.android.synthetic.main.item_toolbar_action.view.*
 import kotlinx.android.synthetic.main.item_toolbar_action.view.title
 import kotlinx.android.synthetic.main.widget_action_toolbar.view.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.consumeAsFlow
 
 /**
  * This toolbar widget provides user with different types of actions applicable to blocks.
@@ -29,6 +37,8 @@ import kotlinx.android.synthetic.main.widget_action_toolbar.view.*
  * @see ActionAdapter
  */
 class ActionToolbarWidget : LinearLayout {
+
+    private val channel = Channel<Action>()
 
     constructor(
         context: Context
@@ -48,6 +58,7 @@ class ActionToolbarWidget : LinearLayout {
     }
 
     private fun inflate() {
+        // TODO remove redundant linear layout
         LayoutInflater.from(context).inflate(R.layout.widget_action_toolbar, this)
         setupAdapter()
     }
@@ -89,12 +100,23 @@ class ActionToolbarWidget : LinearLayout {
                     Action(ACTION_UNDO),
                     Action(ACTION_REDO)
                 ),
-                onActionClicked = { action ->
-                    // do nothing
-                }
+                onActionClicked = channel::sendBlocking
             )
         }
     }
+
+    fun actionClicks(): Flow<Action> = channel.consumeAsFlow()
+
+    fun show() {
+        layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+        visible()
+    }
+
+    fun hide() {
+        layoutParams = LayoutParams(MATCH_PARENT, 0)
+        invisible()
+    }
+
 
     /**
      * Adapter for rendering list of actions

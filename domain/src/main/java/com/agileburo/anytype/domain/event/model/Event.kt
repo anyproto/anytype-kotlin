@@ -1,6 +1,7 @@
 package com.agileburo.anytype.domain.event.model
 
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.common.Id
 
 sealed class Event {
 
@@ -13,6 +14,10 @@ sealed class Event {
 
         data class AddBlock(
             val blocks: List<Block>
+        ) : Command()
+
+        data class DeleteBlock(
+            val target: Id
         ) : Command()
 
         data class UpdateBlockText(

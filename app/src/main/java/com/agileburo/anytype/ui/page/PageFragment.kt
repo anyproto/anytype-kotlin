@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.state.ControlPanelState
+import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DELETE
+import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DUPLICATE
 import com.agileburo.anytype.core_ui.widgets.toolbar.ColorToolbarWidget
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.Option
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_BULLETED_LIST
@@ -35,6 +37,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -50,13 +53,9 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
                     marks = editable.extractMarks()
                 )
             },
-            onSelectionChanged = { id, selection ->
-                vm.onSelectionChanged(
-                    id = id,
-                    selection = selection
-                )
-            },
-            onCheckboxClicked = vm::onCheckboxClicked
+            onSelectionChanged = vm::onSelectionChanged,
+            onCheckboxClicked = vm::onCheckboxClicked,
+            onFocusChanged = vm::onBlockFocusChanged
         )
     }
 
@@ -102,6 +101,11 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         toolbar
             .addButtonClicks()
             .onEach { vm.onAddBlockToolbarClicked() }
+            .launchIn(lifecycleScope)
+
+        toolbar
+            .actionClicks()
+            .onEach { vm.onActionToolbarClicked() }
             .launchIn(lifecycleScope)
 
         markupToolbar
@@ -156,6 +160,16 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             }
             .launchIn(lifecycleScope)
 
+        actionToolbar
+            .actionClicks()
+            .onEach { action ->
+                when (action.type) {
+                    ACTION_DELETE -> vm.onActionDeleteClicked()
+                    ACTION_DUPLICATE -> vm.onActionDuplicateClicked()
+                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
+                }
+            }
+            .launchIn(lifecycleScope)
     }
 
     private fun showColorToolbar() {
@@ -194,6 +208,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
     }
 
     private fun render(state: ControlPanelState) {
+        Timber.d("Rendering new control panel state:\n$state")
         markupToolbar.setState(state.markupToolbar)
         toolbar.setState(state.blockToolbar)
         with(state.colorToolbar) {
@@ -215,6 +230,16 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
                 }
             } else
                 hideOptionToolbar()
+        }
+        with(state.actionToolbar) {
+            if (isVisible) {
+                hideSoftInput()
+                lifecycleScope.launch {
+                    delay(300)
+                    actionToolbar.show()
+                }
+            } else
+                actionToolbar.hide()
         }
     }
 

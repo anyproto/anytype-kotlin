@@ -17,13 +17,19 @@
         android:textSize="15sp"
         android:textStyle="bold" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/actionRecycler"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="13dp"
-        android:layout_marginBottom="13dp"
-        tools:itemCount="1"
-        tools:listitem="@layout/item_toolbar_action" />
+        android:layout_marginBottom="13dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/actionRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:itemCount="1"
+            tools:listitem="@layout/item_toolbar_action" />
+
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

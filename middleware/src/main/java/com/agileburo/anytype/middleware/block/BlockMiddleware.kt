@@ -24,7 +24,8 @@ class BlockMiddleware(
         Events.Event.Message.ValueCase.BLOCKSHOW,
         Events.Event.Message.ValueCase.BLOCKADD,
         Events.Event.Message.ValueCase.BLOCKSETTEXT,
-        Events.Event.Message.ValueCase.BLOCKSETCHILDRENIDS
+        Events.Event.Message.ValueCase.BLOCKSETCHILDRENIDS,
+        Events.Event.Message.ValueCase.BLOCKDELETE
     )
 
     private val supportedTextStyles = listOf(
@@ -178,6 +179,11 @@ class BlockMiddleware(
                     EventEntity.Command.UpdateBlockText(
                         id = event.blockSetText.id,
                         text = event.blockSetText.text.value
+                    )
+                }
+                Events.Event.Message.ValueCase.BLOCKDELETE -> {
+                    EventEntity.Command.DeleteBlock(
+                        target = event.blockDelete.blockId
                     )
                 }
                 Events.Event.Message.ValueCase.BLOCKSETCHILDRENIDS -> {
@@ -346,6 +352,13 @@ class BlockMiddleware(
 
     override suspend fun dnd(command: CommandEntity.Dnd) {
         middleware.dnd(command)
+    }
+
+    override suspend fun duplicate(command: CommandEntity.Duplicate): String =
+        middleware.duplicate(command)
+
+    override suspend fun unlink(command: CommandEntity.Unlink) {
+        middleware.unlink(command)
     }
 
     private fun extractDashboard(block: Models.Block): BlockEntity.Content.Dashboard {

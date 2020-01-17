@@ -219,6 +219,16 @@ fun Command.Dnd.toEntity(): CommandEntity.Dnd {
     )
 }
 
+fun Command.Unlink.toEntity(): CommandEntity.Unlink = CommandEntity.Unlink(
+    context = context,
+    targets = targets
+)
+
+fun Command.Duplicate.toEntity(): CommandEntity.Duplicate = CommandEntity.Duplicate(
+    context = context,
+    original = original
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }
@@ -247,6 +257,11 @@ fun EventEntity.toDomain(): Event {
                 context = context,
                 id = id,
                 children = children
+            )
+        }
+        is EventEntity.Command.DeleteBlock -> {
+            Event.Command.DeleteBlock(
+                target = target
             )
         }
     }

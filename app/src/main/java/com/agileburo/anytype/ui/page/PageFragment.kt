@@ -29,6 +29,7 @@ import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.base.NavigationFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_page.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
@@ -82,6 +83,10 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        BottomSheetBehavior.from(sheet).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+        }
 
         recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())

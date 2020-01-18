@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.state.ControlPanelState
+import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DELETE
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DUPLICATE
 import com.agileburo.anytype.core_ui.widgets.toolbar.ColorToolbarWidget
@@ -85,6 +86,10 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        recycler.addOnItemTouchListener(
+            OutsideClickDetector(vm::onOutsideClicked)
+        )
 
         BottomSheetBehavior.from(sheet).apply {
             state = BottomSheetBehavior.STATE_EXPANDED

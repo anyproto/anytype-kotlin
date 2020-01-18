@@ -414,6 +414,22 @@ class PageViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnActionToolbarClicked)
     }
 
+    fun onOutsideClicked() {
+        createBlock.invoke(
+            viewModelScope, CreateBlock.Params(
+                contextId = pageId,
+                targetId = "",
+                position = Position.INNER,
+                prototype = Prototype.Text(style = Block.Content.Text.Style.P)
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while creating a block") },
+                fnR = { Timber.d("Request to create a block has been dispatched") }
+            )
+        }
+    }
+
     sealed class ViewState {
         object Loading : ViewState()
         data class Success(val blocks: List<BlockView>) : ViewState()

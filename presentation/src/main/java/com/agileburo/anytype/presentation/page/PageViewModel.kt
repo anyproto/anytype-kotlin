@@ -415,8 +415,19 @@ class PageViewModel(
     }
 
     fun onOutsideClicked() {
+        blocks.first { it.id == pageId }.let { page ->
+            if (page.children.isNotEmpty()) {
+                val lastBlock = blocks.first { it.id == page.children.last() }
+                if (lastBlock.content is Block.Content.Text && lastBlock.content.asText().isTitle())
+                    addNewBlockAtTheEnd()
+            }
+        }
+    }
+
+    private fun addNewBlockAtTheEnd() {
         createBlock.invoke(
-            viewModelScope, CreateBlock.Params(
+            scope = viewModelScope,
+            params = CreateBlock.Params(
                 contextId = pageId,
                 targetId = "",
                 position = Position.INNER,

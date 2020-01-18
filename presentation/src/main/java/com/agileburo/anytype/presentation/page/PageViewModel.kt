@@ -296,6 +296,18 @@ class PageViewModel(
         if (hasFocus) viewModelScope.launch { focusChannel.send(id) }
     }
 
+    fun onEmptyBlockBackspaceClicked(id: String) {
+        Timber.d("onEmptyBlockBackspaceClicked: $id")
+    }
+
+    fun onSplitLineEnterClicked(id: String) {
+        Timber.d("onSplitLineEnterClicked: $id")
+    }
+
+    fun onEndLineEnterClicked(id: String) {
+        Timber.d("onEndLineEnterClicked: $id")
+    }
+
     fun onMarkupActionClicked(markup: Markup.Type) {
         viewModelScope.launch {
             markupActionChannel.send(MarkupAction(type = markup))

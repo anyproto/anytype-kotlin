@@ -55,7 +55,10 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             },
             onSelectionChanged = vm::onSelectionChanged,
             onCheckboxClicked = vm::onCheckboxClicked,
-            onFocusChanged = vm::onBlockFocusChanged
+            onFocusChanged = vm::onBlockFocusChanged,
+            onSplitLineEnterClicked = vm::onSplitLineEnterClicked,
+            onEndLineEnterClicked = vm::onEndLineEnterClicked,
+            onEmptyBlockBackspaceClicked = vm::onEmptyBlockBackspaceClicked
         )
     }
 

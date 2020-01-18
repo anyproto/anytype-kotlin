@@ -38,7 +38,10 @@ class BlockAdapter(
     private val onTextChanged: (String, Editable) -> Unit,
     private val onSelectionChanged: (String, IntRange) -> Unit,
     private val onCheckboxClicked: (String) -> Unit,
-    private val onFocusChanged: (String, Boolean) -> Unit
+    private val onFocusChanged: (String, Boolean) -> Unit,
+    private val onEmptyBlockBackspaceClicked: (String) -> Unit,
+    private val onSplitLineEnterClicked: (String) -> Unit,
+    private val onEndLineEnterClicked: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -254,14 +257,17 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Text,
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
-                    onFocusChanged = onFocusChanged
+                    onFocusChanged = onFocusChanged,
+                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked
                 )
             }
             is BlockViewHolder.Title -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Title,
                     onTextChanged = onTextChanged,
-                    onFocusChanged = onFocusChanged
+                    onFocusChanged = onFocusChanged,
+                    onEndLineEnterClicked = onEndLineEnterClicked,
+                    onSplitLineEnterClicked = onSplitLineEnterClicked
                 )
             }
             is BlockViewHolder.HeaderOne -> {

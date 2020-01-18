@@ -15,6 +15,8 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.T
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+import com.agileburo.anytype.core_utils.text.BackspaceKeyDetector
+import com.agileburo.anytype.core_utils.text.DefaultEnterKeyDetector
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -65,7 +67,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             item: BlockView.Text,
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit,
+            onEmptyBlockBackspaceClicked: (String) -> Unit
         ) {
             logOnBind()
 
@@ -94,6 +97,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
 
             content.selectionDetector = { onSelectionChanged(item.id, it) }
+
+            content.setOnKeyListener(
+                BackspaceKeyDetector {
+                    if (content.text.toString().isEmpty())
+                        onEmptyBlockBackspaceClicked(item.id)
+                }
+            )
         }
 
         fun processChangePayload(
@@ -129,7 +139,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
             item: BlockView.Title,
             onTextChanged: (String, Editable) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit,
+            onSplitLineEnterClicked: (String) -> Unit,
+            onEndLineEnterClicked: (String) -> Unit
         ) {
             title.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
@@ -141,6 +153,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 DefaultTextWatcher { text ->
                     onTextChanged(item.id, text)
                 }
+            )
+            title.filters += DefaultEnterKeyDetector(
+                onSplitLineEnterClicked = { onSplitLineEnterClicked(item.id) },
+                onEndLineEnterClicked = { onEndLineEnterClicked(item.id) }
             )
         }
     }

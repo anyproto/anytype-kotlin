@@ -42,6 +42,22 @@ import timber.log.Timber
  */
 sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
+    interface EnterKeyHandler {
+
+        val content: TextInputWidget
+
+        fun enableEnterKeyDetector(
+            onEndLineEnterClicked: () -> Unit,
+            onSplitLineEnterClicked: () -> Unit
+        ) {
+            content.filters += DefaultEnterKeyDetector(
+                onSplitLineEnterClicked = onSplitLineEnterClicked,
+                onEndLineEnterClicked = onEndLineEnterClicked
+            )
+        }
+
+    }
+
     fun focus(editText: TextInputWidget) {
         editText.apply {
             postDelayed(
@@ -55,9 +71,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         Timber.d("onBind")
     }
 
-    class Text(view: View) : BlockViewHolder(view) {
+    class Text(view: View) : BlockViewHolder(view), EnterKeyHandler {
 
-        val content: TextInputWidget = itemView.textContent
+        override val content: TextInputWidget = itemView.textContent
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
@@ -132,16 +148,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Title(view: View) : BlockViewHolder(view) {
+    class Title(view: View) : BlockViewHolder(view), EnterKeyHandler {
 
         private val title = itemView.title
+        override val content: TextInputWidget
+            get() = title
 
         fun bind(
             item: BlockView.Title,
             onTextChanged: (String, Editable) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit,
-            onSplitLineEnterClicked: (String) -> Unit,
-            onEndLineEnterClicked: (String) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit
         ) {
             title.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
@@ -154,16 +170,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onTextChanged(item.id, text)
                 }
             )
-            title.filters += DefaultEnterKeyDetector(
-                onSplitLineEnterClicked = { onSplitLineEnterClicked(item.id) },
-                onEndLineEnterClicked = { onEndLineEnterClicked(item.id) }
-            )
         }
     }
 
-    class HeaderOne(view: View) : BlockViewHolder(view) {
+    class HeaderOne(view: View) : BlockViewHolder(view), EnterKeyHandler {
 
         private val header = itemView.headerOne
+        override val content: TextInputWidget
+            get() = header
 
         fun bind(
             item: BlockView.HeaderOne,
@@ -182,9 +196,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class HeaderTwo(view: View) : BlockViewHolder(view) {
+    class HeaderTwo(view: View) : BlockViewHolder(view), EnterKeyHandler {
 
         private val header = itemView.headerTwo
+        override val content: TextInputWidget
+            get() = header
 
         fun bind(
             item: BlockView.HeaderTwo,

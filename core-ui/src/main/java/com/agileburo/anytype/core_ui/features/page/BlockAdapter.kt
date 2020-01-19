@@ -265,9 +265,7 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Title,
                     onTextChanged = onTextChanged,
-                    onFocusChanged = onFocusChanged,
-                    onEndLineEnterClicked = onEndLineEnterClicked,
-                    onSplitLineEnterClicked = onSplitLineEnterClicked
+                    onFocusChanged = onFocusChanged
                 )
             }
             is BlockViewHolder.HeaderOne -> {
@@ -360,6 +358,13 @@ class BlockAdapter(
                     onFocusChanged = onFocusChanged
                 )
             }
+        }
+
+        if (holder is BlockViewHolder.EnterKeyHandler) {
+            holder.enableEnterKeyDetector(
+                onEndLineEnterClicked = { onEndLineEnterClicked(blocks[position].id) },
+                onSplitLineEnterClicked = { onSplitLineEnterClicked(blocks[position].id) }
+            )
         }
     }
 

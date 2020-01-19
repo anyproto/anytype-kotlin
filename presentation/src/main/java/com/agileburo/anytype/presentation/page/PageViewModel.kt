@@ -297,15 +297,29 @@ class PageViewModel(
     }
 
     fun onEmptyBlockBackspaceClicked(id: String) {
-        Timber.d("onEmptyBlockBackspaceClicked: $id")
+        // TODO
     }
 
     fun onSplitLineEnterClicked(id: String) {
-        Timber.d("onSplitLineEnterClicked: $id")
+        // TODO
     }
 
     fun onEndLineEnterClicked(id: String) {
-        Timber.d("onEndLineEnterClicked: $id")
+        Timber.d("On endline enter clicked")
+        createBlock.invoke(
+            scope = viewModelScope,
+            params = CreateBlock.Params(
+                contextId = pageId,
+                targetId = id,
+                position = Position.BOTTOM,
+                prototype = Prototype.Text(style = Block.Content.Text.Style.P)
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while creating a block") },
+                fnR = { Timber.d("Request to create a block has been dispatched") }
+            )
+        }
     }
 
     fun onMarkupActionClicked(markup: Markup.Type) {

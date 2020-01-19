@@ -7,6 +7,7 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.common.Id
 
 /**
  * Use-case for creating a block.
@@ -39,10 +40,9 @@ class CreateBlock(
      * @property prototype a prototype of the block we would like to create
      */
     class Params(
-        val contextId: String,
-        val targetId: String,
+        val contextId: Id,
+        val targetId: Id,
         val position: Position,
         val prototype: Block.Prototype
     )
-
 }

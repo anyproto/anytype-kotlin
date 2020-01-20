@@ -8,7 +8,7 @@ sealed class Event {
     sealed class Command : Event() {
 
         data class ShowBlock(
-            val rootId: String,
+            val rootId: Id,
             val blocks: List<Block>
         ) : Command()
 
@@ -21,7 +21,7 @@ sealed class Event {
         ) : Command()
 
         data class UpdateBlockText(
-            val id: String,
+            val id: Id,
             val text: String
         ) : Command()
 
@@ -33,8 +33,8 @@ sealed class Event {
          */
         data class UpdateStructure(
             val context: String,
-            val id: String,
-            val children: List<String>
+            val id: Id,
+            val children: List<Id>
         ) : Command()
     }
 }

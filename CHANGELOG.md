@@ -9,6 +9,7 @@
 * Added block-action (delete, duplicate) toolbar (#107)
 * Create a new paragraph on enter-press event at the end of the line (#129)
 * Create an empty paragraph block when user clicks on empty space (#126)
+* Delete target block when user presses backspace inside an empty block (#113)
 
 ### Fixes
 

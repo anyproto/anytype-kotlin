@@ -201,6 +201,7 @@ class PageViewModel(
     private fun processRendering() {
         viewModelScope.launch {
             renderings
+                .onEach { Timber.d("New rendering: $it") }
                 .withLatestFrom(focusChanges) { models, focus ->
                     models.asMap().asRender(pageId).mapNotNull { block ->
                         when {
@@ -284,6 +285,8 @@ class PageViewModel(
     }
 
     fun onTextChanged(id: String, text: String, marks: List<Block.Content.Text.Mark>) {
+        Timber.d("onTextChanged: $id")
+        Timber.d("With the following: $text")
         viewModelScope.launch { textChannel.send(Triple(id, text, marks)) }
     }
 
@@ -297,7 +300,11 @@ class PageViewModel(
     }
 
     fun onEmptyBlockBackspaceClicked(id: String) {
-        // TODO
+        Timber.d("onEmptyBlockBackspaceClicked: $id")
+        blocks.find { it.id == id }?.let { target ->
+            if (!target.content.asText().isTitle())
+                proceedWithUnlinking(target = id)
+        }
     }
 
     fun onSplitLineEnterClicked(id: String) {
@@ -348,20 +355,22 @@ class PageViewModel(
         viewModelScope.launch {
             focusChanges
                 .take(1)
-                .collect { focus ->
-                    unlinkBlocks.invoke(
-                        scope = this,
-                        params = UnlinkBlocks.Params(
-                            context = pageId,
-                            targets = listOf(focus)
-                        )
-                    ) { result ->
-                        result.either(
-                            fnL = { Timber.e(it, "Error while unlinking block with id: $focus") },
-                            fnR = { Timber.d("Succesfully unlinked block with id: $focus") }
-                        )
-                    }
-                }
+                .collect { focus -> proceedWithUnlinking(focus) }
+        }
+    }
+
+    private fun proceedWithUnlinking(target: String) {
+        unlinkBlocks.invoke(
+            scope = viewModelScope,
+            params = UnlinkBlocks.Params(
+                context = pageId,
+                targets = listOf(target)
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while unlinking block with id: $target") },
+                fnR = { Timber.d("Succesfully unlinked block with id: $target") }
+            )
         }
     }
 

@@ -19,9 +19,9 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HIGHLIGHT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_NUMBERED
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PARAGRAPH
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TASK
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TEXT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
 import timber.log.Timber
@@ -49,8 +49,8 @@ class BlockAdapter(
         val inflater = LayoutInflater.from(parent.context)
 
         return when (viewType) {
-            HOLDER_TEXT -> {
-                BlockViewHolder.Text(
+            HOLDER_PARAGRAPH -> {
+                BlockViewHolder.Paragraph(
                     view = inflater.inflate(
                         R.layout.item_block_text,
                         parent,
@@ -228,7 +228,7 @@ class BlockAdapter(
             onBindViewHolder(holder, position)
         else
             when (holder) {
-                is BlockViewHolder.Text -> {
+                is BlockViewHolder.Paragraph -> {
                     holder.processChangePayload(
                         payloads = payloads,
                         item = blocks[position] as BlockView.Text
@@ -252,13 +252,12 @@ class BlockAdapter(
 
     override fun onBindViewHolder(holder: BlockViewHolder, position: Int) {
         when (holder) {
-            is BlockViewHolder.Text -> {
+            is BlockViewHolder.Paragraph -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Text,
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
-                    onFocusChanged = onFocusChanged,
-                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked
+                    onFocusChanged = onFocusChanged
                 )
             }
             is BlockViewHolder.Title -> {
@@ -360,11 +359,12 @@ class BlockAdapter(
             }
         }
 
-        if (holder is BlockViewHolder.EnterKeyHandler) {
+        if (holder is BlockViewHolder.TextHolder) {
             holder.enableEnterKeyDetector(
                 onEndLineEnterClicked = { onEndLineEnterClicked(blocks[position].id) },
                 onSplitLineEnterClicked = { onSplitLineEnterClicked(blocks[position].id) }
             )
+            holder.enableBackspaceDetector { onEmptyBlockBackspaceClicked(blocks[position].id) }
         }
     }
 
@@ -372,7 +372,7 @@ class BlockAdapter(
     // https://code.google.com/p/android/issues/detail?id=208169
     override fun onViewAttachedToWindow(holder: BlockViewHolder) {
         super.onViewAttachedToWindow(holder)
-        if (holder is BlockViewHolder.Text) {
+        if (holder is BlockViewHolder.Paragraph) {
             holder.content.isEnabled = false
             holder.content.isEnabled = true
         }

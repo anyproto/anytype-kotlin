@@ -42,8 +42,15 @@ import timber.log.Timber
  */
 sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    interface EnterKeyHandler {
+    /**
+     * Provides default implementation for common behavior for text blocks.
+     */
+    interface TextHolder {
 
+        /**
+         * Block's content widget.
+         * Common behavior is applied to this widget.
+         */
         val content: TextInputWidget
 
         fun enableEnterKeyDetector(
@@ -56,6 +63,18 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             )
         }
 
+        fun enableBackspaceDetector(
+            onEmptyBlockBackspaceClicked: () -> Unit
+        ) {
+            content.setOnKeyListener(
+                BackspaceKeyDetector {
+                    if (content.text.toString().isEmpty()) {
+                        content.clearTextWatchers()
+                        onEmptyBlockBackspaceClicked()
+                    }
+                }
+            )
+        }
     }
 
     fun focus(editText: TextInputWidget) {
@@ -71,7 +90,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         Timber.d("onBind")
     }
 
-    class Text(view: View) : BlockViewHolder(view), EnterKeyHandler {
+    class Paragraph(view: View) : BlockViewHolder(view), TextHolder {
 
         override val content: TextInputWidget = itemView.textContent
 
@@ -83,10 +102,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             item: BlockView.Text,
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit,
-            onEmptyBlockBackspaceClicked: (String) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit
         ) {
-            logOnBind()
+            Timber.d("Binding item:\n$item")
 
             content.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
@@ -97,12 +115,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             else
                 content.setText(item.text)
 
-            content.addTextChangedListener(
-                DefaultTextWatcher { text ->
-                    onTextChanged(item.id, text)
-                }
-            )
-
             if (item.focused) {
                 content.setSelection(0)
                 focus(content)
@@ -112,14 +124,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 content.isEnabled = false
             }
 
-            content.selectionDetector = { onSelectionChanged(item.id, it) }
-
-            content.setOnKeyListener(
-                BackspaceKeyDetector {
-                    if (content.text.toString().isEmpty())
-                        onEmptyBlockBackspaceClicked(item.id)
+            content.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
                 }
             )
+            content.selectionDetector = { onSelectionChanged(item.id, it) }
         }
 
         fun processChangePayload(
@@ -148,7 +158,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Title(view: View) : BlockViewHolder(view), EnterKeyHandler {
+    class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         private val title = itemView.title
         override val content: TextInputWidget
@@ -173,7 +183,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class HeaderOne(view: View) : BlockViewHolder(view), EnterKeyHandler {
+    class HeaderOne(view: View) : BlockViewHolder(view), TextHolder {
 
         private val header = itemView.headerOne
         override val content: TextInputWidget
@@ -196,7 +206,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class HeaderTwo(view: View) : BlockViewHolder(view), EnterKeyHandler {
+    class HeaderTwo(view: View) : BlockViewHolder(view), TextHolder {
 
         private val header = itemView.headerTwo
         override val content: TextInputWidget
@@ -219,9 +229,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class HeaderThree(view: View) : BlockViewHolder(view) {
+    class HeaderThree(view: View) : BlockViewHolder(view), TextHolder {
 
         private val header = itemView.headerThree
+        override val content: TextInputWidget
+            get() = header
 
         fun bind(
             item: BlockView.HeaderThree,
@@ -249,10 +261,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Checkbox(view: View) : BlockViewHolder(view) {
+    class Checkbox(view: View) : BlockViewHolder(view), TextHolder {
 
         private val checkbox = itemView.checkboxIcon
-        private val content = itemView.checkboxContent
+        override val content = itemView.checkboxContent
 
         fun bind(
             item: BlockView.Checkbox,
@@ -331,9 +343,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Bulleted(view: View) : BlockViewHolder(view) {
+    class Bulleted(view: View) : BlockViewHolder(view), TextHolder {
 
-        private val content = itemView.bulletedListContent
+        override val content: TextInputWidget = itemView.bulletedListContent
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
@@ -498,9 +510,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Divider(view: View) : BlockViewHolder(view)
 
-    class Highlight(view: View) : BlockViewHolder(view) {
+    class Highlight(view: View) : BlockViewHolder(view), TextHolder {
 
-        private val content = itemView.highlightContent
+        override val content: TextInputWidget = itemView.highlightContent
 
         fun bind(
             item: BlockView.Highlight,
@@ -520,7 +532,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     companion object {
-        const val HOLDER_TEXT = 0
+        const val HOLDER_PARAGRAPH = 0
         const val HOLDER_TITLE = 1
         const val HOLDER_HEADER_ONE = 2
         const val HOLDER_HEADER_TWO = 3

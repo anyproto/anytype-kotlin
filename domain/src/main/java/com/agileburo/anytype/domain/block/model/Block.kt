@@ -100,7 +100,7 @@ data class Block(
          * Prototype of the textual block.
          * @param style style for a block to create
          */
-        class Text(
+        data class Text(
             val style: Content.Text.Style
         ) : Prototype()
     }

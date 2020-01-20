@@ -39,7 +39,7 @@ class CreateBlock(
      * @property position position of the block that we need to create in relation with the target block
      * @property prototype a prototype of the block we would like to create
      */
-    class Params(
+    data class Params(
         val contextId: Id,
         val targetId: Id,
         val position: Position,

@@ -7,6 +7,7 @@ import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.event.interactor.ObserveEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.page.ClosePage
@@ -1456,6 +1457,128 @@ class PageViewModelTest {
                     page.last().toView(focused = false)
                 )
             )
+        )
+    }
+
+    @Test
+    fun `should start deleting the target block on empty-block-backspace-click event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
+
+        val events: Flow<Event.Command> = flow {
+            delay(100)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
+                )
+            )
+        }
+
+        stubOpenPage()
+        stubObserveEvents(events)
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onEmptyBlockBackspaceClicked(child)
+
+        verify(unlinkBlocks, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                UnlinkBlocks.Params(
+                    context = root,
+                    targets = listOf(child)
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should not proceed with deleting the title block on empty-block-backspace-click event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
+            root = root,
+            child = child,
+            style = Block.Content.Text.Style.TITLE
+        )
+
+        val events: Flow<Event.Command> = flow {
+            delay(100)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
+                )
+            )
+        }
+
+        stubOpenPage()
+        stubObserveEvents(events)
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onEmptyBlockBackspaceClicked(child)
+
+        verify(unlinkBlocks, never()).invoke(
+            scope = any(),
+            params = any(),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should proceed with creating a new block on end-line-enter-press event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
+            root = root,
+            child = child,
+            style = Block.Content.Text.Style.TITLE
+        )
+
+        val events: Flow<Event.Command> = flow {
+            delay(100)
+            emit(
+                Event.Command.ShowBlock(
+                    rootId = root,
+                    blocks = page
+                )
+            )
+        }
+
+        stubOpenPage()
+        stubObserveEvents(events)
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onEndLineEnterClicked(child)
+
+        verify(createBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                CreateBlock.Params(
+                    contextId = root,
+                    targetId = child,
+                    position = Position.BOTTOM,
+                    prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
+                )
+            ),
+            onResult = any()
         )
     }
 

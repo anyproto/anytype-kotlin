@@ -9,6 +9,7 @@ import javax.inject.Singleton
     modules = [
         ContextModule::class,
         DataModule::class,
+        EventModule::class,
         ImageModule::class
     ]
 )

@@ -14,7 +14,7 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Prototype
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
-import com.agileburo.anytype.domain.event.interactor.ObserveEvents
+import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.addMark
 import com.agileburo.anytype.domain.ext.asMap
@@ -38,7 +38,7 @@ class PageViewModel(
     private val closePage: ClosePage,
     private val updateBlock: UpdateBlock,
     private val createBlock: CreateBlock,
-    private val observeEvents: ObserveEvents,
+    private val interceptEvents: InterceptEvents,
     private val updateCheckbox: UpdateCheckbox,
     private val unlinkBlocks: UnlinkBlocks,
     private val duplicateBlock: DuplicateBlock
@@ -86,7 +86,7 @@ class PageViewModel(
 
     private fun startObservingEvents() {
         viewModelScope.launch {
-            observeEvents.build().collect { event -> handleEvent(event) }
+            interceptEvents.build().collect { event -> handleEvents(event) }
         }
     }
 
@@ -97,45 +97,33 @@ class PageViewModel(
         }
     }
 
-    private fun handleEvent(event: Event) {
-
-        Timber.d("Handling event: $event")
-
-        when (event) {
-            is Event.Command.ShowBlock -> {
-                blocks = event.blocks
-                dispatchToUI(
-                    views = event.blocks.asMap().asRender(pageId).mapNotNull { block ->
-                        when {
-                            block.content is Block.Content.Text -> block.toView(
-                                focused = (block.content as Block.Content.Text).isTitle()
-                            )
-                            block.content is Block.Content.Image -> block.toView()
-                            else -> null
-                        }
+    private fun handleEvents(events: List<Event>) {
+        Timber.d("Intercepted events: $events")
+        events.forEach { event ->
+            Timber.d("Handling event: $event")
+            when (event) {
+                is Event.Command.ShowBlock -> {
+                    blocks = event.blocks
+                }
+                is Event.Command.AddBlock -> {
+                    blocks = blocks + event.blocks
+                    viewModelScope.launch { focusChannel.send(event.blocks.last().id) }
+                }
+                is Event.Command.UpdateStructure -> {
+                    blocks = blocks.map { block ->
+                        if (block.id == event.id)
+                            block.copy(children = event.children)
+                        else
+                            block
                     }
-                )
-            }
-            is Event.Command.AddBlock -> {
-                blocks = blocks + event.blocks
-                viewModelScope.launch {
-                    focusChannel.send(event.blocks.last().id)
-                    renderingChannel.send(blocks)
                 }
-            }
-            is Event.Command.UpdateStructure -> {
-                blocks = blocks.map { block ->
-                    if (block.id == event.id)
-                        block.copy(children = event.children)
-                    else
-                        block
+                is Event.Command.DeleteBlock -> {
+                    blocks = blocks.filter { it.id != event.target }
                 }
-            }
-            is Event.Command.DeleteBlock -> {
-                blocks = blocks.filter { it.id != event.target }
-                viewModelScope.launch { renderingChannel.send(blocks) }
             }
         }
+
+        viewModelScope.launch { renderingChannel.send(blocks) }
     }
 
     private fun processMarkupChanges() {

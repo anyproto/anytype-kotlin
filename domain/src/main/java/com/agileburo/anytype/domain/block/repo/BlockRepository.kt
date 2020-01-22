@@ -24,6 +24,7 @@ interface BlockRepository {
     @Deprecated("Will be removed and replaced by observeEvents()")
     fun observeBlocks(): Flow<List<Block>>
 
+    @Deprecated("Will be removed and replaced by [EventChannel]")
     fun observeEvents(): Flow<Event>
     fun observePages(): Flow<List<Block>>
 }

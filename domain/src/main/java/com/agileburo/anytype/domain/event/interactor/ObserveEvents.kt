@@ -7,6 +7,7 @@ import com.agileburo.anytype.domain.event.model.Event
 import kotlinx.coroutines.flow.flowOn
 import kotlin.coroutines.CoroutineContext
 
+@Deprecated("Should use InterceptEvents")
 class ObserveEvents(
     private val context: CoroutineContext,
     private val repo: BlockRepository

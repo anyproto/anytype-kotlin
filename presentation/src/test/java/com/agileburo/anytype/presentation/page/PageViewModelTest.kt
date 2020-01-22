@@ -8,7 +8,7 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
-import com.agileburo.anytype.domain.event.interactor.ObserveEvents
+import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.OpenPage
@@ -23,7 +23,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -46,7 +45,7 @@ class PageViewModelTest {
     lateinit var closePage: ClosePage
 
     @Mock
-    lateinit var observeEvents: ObserveEvents
+    lateinit var interceptEvents: InterceptEvents
 
     @Mock
     lateinit var createBlock: CreateBlock
@@ -71,10 +70,10 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should start observing events when view model is initialized`() = runBlockingTest {
+    fun `should start observing events when view model is initialized`() {
         stubObserveEvents()
         buildViewModel()
-        verify(observeEvents, times(1)).build()
+        verify(interceptEvents, times(1)).build()
     }
 
     @Test
@@ -125,19 +124,19 @@ class PageViewModelTest {
             }
         }
 
-        val flow: Flow<Event.Command> = flow {
+        val flow: Flow<List<Event>> = flow {
             delay(1000)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
                 )
             )
         }
 
-        observeEvents.stub {
-            onBlocking { build() } doReturn flow
-        }
+        stubObserveEvents(flow)
 
         openPage.stub {
             onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
@@ -298,39 +297,39 @@ class PageViewModelTest {
             children = emptyList()
         )
 
-        observeEvents.stub {
-            onBlocking { build() } doReturn flow {
+        stubObserveEvents(
+            flow {
                 delay(100)
                 emit(
-                    Event.Command.ShowBlock(
-                        rootId = root,
-                        blocks = page
+                    listOf(
+                        Event.Command.ShowBlock(
+                            rootId = root,
+                            blocks = page
+                        )
                     )
                 )
                 delay(100)
                 emit(
-                    Event.Command.UpdateStructure(
-                        context = root,
-                        id = root,
-                        children = listOf(child, added.id)
+                    listOf(
+                        Event.Command.UpdateStructure(
+                            context = root,
+                            id = root,
+                            children = listOf(child, added.id)
+                        )
                     )
                 )
                 emit(
-                    Event.Command.AddBlock(
-                        blocks = listOf(added)
+                    listOf(
+                        Event.Command.AddBlock(
+                            blocks = listOf(added)
+                        )
                     )
                 )
             }
-        }
+        )
 
-        openPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
-
+        stubOpenPage()
         buildViewModel()
-
         vm.open(root)
 
         coroutineTestRule.advanceTime(200)
@@ -376,31 +375,30 @@ class PageViewModelTest {
 
         val text = MockDataFactory.randomString()
 
-        observeEvents.stub {
+        interceptEvents.stub {
             onBlocking { build() } doReturn flow {
                 delay(100)
                 emit(
-                    Event.Command.ShowBlock(
-                        rootId = root,
-                        blocks = page
+                    listOf(
+                        Event.Command.ShowBlock(
+                            rootId = root,
+                            blocks = page
+                        )
                     )
                 )
                 delay(100)
                 emit(
-                    Event.Command.UpdateBlockText(
-                        text = text,
-                        id = child
+                    listOf(
+                        Event.Command.UpdateBlockText(
+                            text = text,
+                            id = child
+                        )
                     )
                 )
             }
         }
 
-        openPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
-
+        stubOpenPage()
         buildViewModel()
 
         vm.open(root)
@@ -469,13 +467,15 @@ class PageViewModelTest {
             paragraph
         )
 
-        observeEvents.stub {
+        interceptEvents.stub {
             onBlocking { build() } doReturn flow {
                 delay(100)
                 emit(
-                    Event.Command.ShowBlock(
-                        rootId = root,
-                        blocks = blocks
+                    listOf(
+                        Event.Command.ShowBlock(
+                            rootId = root,
+                            blocks = blocks
+                        )
                     )
                 )
             }
@@ -600,9 +600,11 @@ class PageViewModelTest {
         val events = flow {
             delay(100)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = blocks
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = blocks
+                    )
                 )
             )
         }
@@ -731,9 +733,11 @@ class PageViewModelTest {
         val events = flow {
             delay(100)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = blocks
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = blocks
+                    )
                 )
             )
         }
@@ -812,9 +816,11 @@ class PageViewModelTest {
         val events = flow {
             delay(100)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = blocks
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = blocks
+                    )
                 )
             )
         }
@@ -901,9 +907,11 @@ class PageViewModelTest {
         val events = flow {
             delay(100)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = blocks
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = blocks
+                    )
                 )
             )
         }
@@ -978,13 +986,15 @@ class PageViewModelTest {
             paragraph
         )
 
-        observeEvents.stub {
+        interceptEvents.stub {
             onBlocking { build() } doReturn flow {
                 delay(100)
                 emit(
-                    Event.Command.ShowBlock(
-                        rootId = root,
-                        blocks = blocks
+                    listOf(
+                        Event.Command.ShowBlock(
+                            rootId = root,
+                            blocks = blocks
+                        )
                     )
                 )
             }
@@ -1215,25 +1225,31 @@ class PageViewModelTest {
             fields = Block.Fields.empty()
         )
 
-        val flow: Flow<Event.Command> = flow {
+        val flow: Flow<List<Event>> = flow {
             delay(500)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
                 )
             )
             delay(500)
             emit(
-                Event.Command.UpdateStructure(
-                    context = root,
-                    id = root,
-                    children = listOf(child, new.id)
+                listOf(
+                    Event.Command.UpdateStructure(
+                        context = root,
+                        id = root,
+                        children = listOf(child, new.id)
+                    )
                 )
             )
             emit(
-                Event.Command.AddBlock(
-                    blocks = listOf(new)
+                listOf(
+                    Event.Command.AddBlock(
+                        blocks = listOf(new)
+                    )
                 )
             )
         }
@@ -1279,12 +1295,14 @@ class PageViewModelTest {
             style = Block.Content.Text.Style.CHECKBOX
         )
 
-        val flow: Flow<Event.Command> = flow {
+        val flow: Flow<List<Event.Command>> = flow {
             delay(1000)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
                 )
             )
         }
@@ -1319,12 +1337,14 @@ class PageViewModelTest {
         val child = MockDataFactory.randomUuid()
         val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
 
-        val events: Flow<Event.Command> = flow {
+        val events: Flow<List<Event.Command>> = flow {
             delay(1000)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
                 )
             )
         }
@@ -1359,12 +1379,14 @@ class PageViewModelTest {
         val child = MockDataFactory.randomUuid()
         val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
 
-        val events: Flow<Event.Command> = flow {
+        val events: Flow<List<Event.Command>> = flow {
             delay(1000)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
                 )
             )
         }
@@ -1407,18 +1429,22 @@ class PageViewModelTest {
             secondChild = secondChild
         )
 
-        val events: Flow<Event.Command> = flow {
+        val events: Flow<List<Event.Command>> = flow {
             delay(pageOpenedDelay)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
                 )
             )
             delay(blockDeletedEventDelay)
             emit(
-                Event.Command.DeleteBlock(
-                    target = firstChild
+                listOf(
+                    Event.Command.DeleteBlock(
+                        target = firstChild
+                    )
                 )
             )
         }
@@ -1467,12 +1493,14 @@ class PageViewModelTest {
         val child = MockDataFactory.randomUuid()
         val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
 
-        val events: Flow<Event.Command> = flow {
+        val events: Flow<List<Event.Command>> = flow {
             delay(100)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
                 )
             )
         }
@@ -1510,12 +1538,14 @@ class PageViewModelTest {
             style = Block.Content.Text.Style.TITLE
         )
 
-        val events: Flow<Event.Command> = flow {
+        val events: Flow<List<Event.Command>> = flow {
             delay(100)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
                 )
             )
         }
@@ -1548,12 +1578,14 @@ class PageViewModelTest {
             style = Block.Content.Text.Style.TITLE
         )
 
-        val events: Flow<Event.Command> = flow {
+        val events: Flow<List<Event.Command>> = flow {
             delay(100)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
                 )
             )
         }
@@ -1588,12 +1620,14 @@ class PageViewModelTest {
         val child = MockDataFactory.randomUuid()
         val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
 
-        val flow: Flow<Event.Command> = flow {
+        val flow: Flow<List<Event.Command>> = flow {
             delay(1000)
             emit(
-                Event.Command.ShowBlock(
-                    rootId = root,
-                    blocks = page
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
                 )
             )
         }
@@ -1623,8 +1657,8 @@ class PageViewModelTest {
         }
     }
 
-    private fun stubObserveEvents(flow: Flow<Event> = flowOf()) {
-        observeEvents.stub {
+    private fun stubObserveEvents(flow: Flow<List<Event>> = flowOf()) {
+        interceptEvents.stub {
             onBlocking { build() } doReturn flow
         }
     }
@@ -1634,7 +1668,7 @@ class PageViewModelTest {
             openPage = openPage,
             closePage = closePage,
             updateBlock = updateBlock,
-            observeEvents = observeEvents,
+            interceptEvents = interceptEvents,
             createBlock = createBlock,
             updateCheckbox = updateCheckbox,
             unlinkBlocks = unlinkBlocks,

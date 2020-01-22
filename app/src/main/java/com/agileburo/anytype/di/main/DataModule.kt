@@ -15,7 +15,6 @@ import com.agileburo.anytype.domain.device.PathProvider
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.auth.AuthMiddleware
 import com.agileburo.anytype.middleware.block.BlockMiddleware
-import com.agileburo.anytype.middleware.interactor.EventHandler
 import com.agileburo.anytype.middleware.interactor.Middleware
 import com.agileburo.anytype.middleware.service.DefaultMiddlewareService
 import com.agileburo.anytype.middleware.service.MiddlewareService
@@ -155,12 +154,6 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideEventProxy(): EventProxy {
-        return EventHandler()
-    }
-
-    @Provides
-    @Singleton
     fun provideMiddleware(
         service: MiddlewareService
     ): Middleware = Middleware(service)
@@ -171,6 +164,5 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideDatabaseRepo(): DatabaseRepository =
-        DatabaseDataRepository()
+    fun provideDatabaseRepo(): DatabaseRepository = DatabaseDataRepository()
 }

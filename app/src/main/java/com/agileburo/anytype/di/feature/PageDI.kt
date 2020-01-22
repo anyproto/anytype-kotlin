@@ -3,7 +3,8 @@ package com.agileburo.anytype.di.feature
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.repo.BlockRepository
-import com.agileburo.anytype.domain.event.interactor.ObserveEvents
+import com.agileburo.anytype.domain.event.interactor.EventChannel
+import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.ObservePage
 import com.agileburo.anytype.domain.page.OpenPage
@@ -37,7 +38,7 @@ class PageModule {
         closePage: ClosePage,
         updateBlock: UpdateBlock,
         createBlock: CreateBlock,
-        observeEvents: ObserveEvents,
+        interceptEvents: InterceptEvents,
         updateCheckbox: UpdateCheckbox,
         unlinkBlocks: UnlinkBlocks,
         duplicateBlock: DuplicateBlock
@@ -46,7 +47,7 @@ class PageModule {
         closePage = closePage,
         updateBlock = updateBlock,
         createBlock = createBlock,
-        observeEvents = observeEvents,
+        interceptEvents = interceptEvents,
         updateCheckbox = updateCheckbox,
         unlinkBlocks = unlinkBlocks,
         duplicateBlock = duplicateBlock
@@ -94,10 +95,10 @@ class PageModule {
 
     @Provides
     @PerScreen
-    fun provideObserveEventsUseCase(
-        repo: BlockRepository
-    ): ObserveEvents = ObserveEvents(
-        repo = repo,
+    fun provideInterceptEventsUseCase(
+        channel: EventChannel
+    ): InterceptEvents = InterceptEvents(
+        channel = channel,
         context = Dispatchers.IO
     )
 

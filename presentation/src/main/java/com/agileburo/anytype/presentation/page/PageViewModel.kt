@@ -1,5 +1,6 @@
 package com.agileburo.anytype.presentation.page
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_ui.common.Markup
@@ -74,14 +75,24 @@ class PageViewModel(
     var blocks: List<Block> = emptyList()
         private set
 
+    private val _focus: MutableLiveData<Id> = MutableLiveData()
+    val focus: LiveData<Id> = _focus
+
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
     init {
         startHandlingTextChanges()
+        startProcessingFocusChanges()
         startProcessingControlPanelViewState()
         startObservingEvents()
         processRendering()
         processMarkupChanges()
+    }
+
+    private fun startProcessingFocusChanges() {
+        viewModelScope.launch {
+            focusChanges.collect { _focus.postValue(it) }
+        }
     }
 
     private fun startObservingEvents() {
@@ -284,7 +295,11 @@ class PageViewModel(
     }
 
     fun onBlockFocusChanged(id: String, hasFocus: Boolean) {
-        if (hasFocus) viewModelScope.launch { focusChannel.send(id) }
+        Timber.d("Focus changed ($hasFocus): $id")
+        if (hasFocus) {
+            viewModelScope.launch { focusChannel.send(id) }
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnFocusChanged(id))
+        }
     }
 
     fun onEmptyBlockBackspaceClicked(id: String) {
@@ -435,6 +450,14 @@ class PageViewModel(
         }
     }
 
+    fun onHideKeyboardClicked() {
+        viewModelScope.launch {
+            focusChannel.send(EMPTY_FOCUS_ID)
+            renderingChannel.send(blocks)
+        }
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
+    }
+
     private fun addNewBlockAtTheEnd() {
         createBlock.invoke(
             scope = viewModelScope,
@@ -527,6 +550,19 @@ class PageViewModel(
              * Represents an event when user selected an action toolbar on [Toolbar.Block]
              */
             object OnActionToolbarClicked : Event()
+
+            /**
+             * Represents an event when user cleares the current focus by closing keyboard.
+             */
+            object OnClearFocusClicked : Event()
+
+            /**
+             * Represents an event when focus changes.
+             * @property id id of the focused block
+             */
+            data class OnFocusChanged(
+                val id: String
+            ) : Event()
         }
 
         /**
@@ -622,6 +658,21 @@ class PageViewModel(
                         else Toolbar.Block.Action.BLOCK_ACTION
                     )
                 )
+                is Event.OnClearFocusClicked -> ControlPanelState.init()
+                is Event.OnFocusChanged -> {
+                    if (state.isNotVisible())
+                        state.copy(
+                            blockToolbar = state.blockToolbar.copy(
+                                isVisible = true
+                            ),
+                            focus = ControlPanelState.Focus(event.id)
+                        )
+                    else {
+                        state.copy(
+                            focus = ControlPanelState.Focus(event.id)
+                        )
+                    }
+                }
             }
         }
     }

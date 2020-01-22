@@ -1,5 +1,23 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.16 (WIP)
+
+### New features
+
+* Clearing focus when user hides keyboard (#133)
+* Added `PLUS` button on page screen (#133)
+
+### Fixes
+
+* `ControlPanelToolbar` holds now the id of the focused block (#133)
+* The main toolbar is hidden when no block is focused on a page (#103)
+* Regress: new paragraph is not focused when created after on-enter-press event is triggered (#138)
+
+### Middleware
+
+* Refactored event handler (list of events is now processed at once, not one event after another as before) (#134)
+
+
 ## Version 0.0.15
 
 ### New features

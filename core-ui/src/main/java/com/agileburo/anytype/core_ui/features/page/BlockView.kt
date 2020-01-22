@@ -1,6 +1,6 @@
 package com.agileburo.anytype.core_ui.features.page
 
-import com.agileburo.anytype.core_ui.common.Editable
+import com.agileburo.anytype.core_ui.common.Focusable
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.ViewType
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
@@ -37,13 +37,14 @@ sealed class BlockView : ViewType {
      * @property id block's id
      * @property text block's content text
      * @property marks markup
+     * @property focused whether this block is currently focused or not
      */
     data class Text(
         override val id: String,
         val text: String,
         override val marks: List<Markup.Mark> = emptyList(),
-        override val focused: Boolean = false
-    ) : BlockView(), Markup, Editable {
+        override var focused: Boolean = false
+    ) : BlockView(), Markup, Focusable {
         override fun getViewType() = HOLDER_PARAGRAPH
         override val body: String = text
     }
@@ -134,7 +135,7 @@ sealed class BlockView : ViewType {
         override val focused: Boolean = false,
         val text: String,
         val checked: Boolean = false
-    ) : BlockView(), Markup, Editable {
+    ) : BlockView(), Markup, Focusable {
         override fun getViewType() = HOLDER_CHECKBOX
         override val body: String = text
     }
@@ -165,7 +166,7 @@ sealed class BlockView : ViewType {
         override val focused: Boolean = false,
         val text: String,
         val indent: Int
-    ) : BlockView(), Markup, Editable {
+    ) : BlockView(), Markup, Focusable {
         override fun getViewType() = HOLDER_BULLET
         override val body: String = text
     }

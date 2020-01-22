@@ -1,5 +1,8 @@
 package com.agileburo.anytype.core_ui.common
 
-interface Editable {
+/**
+ * Defines a view that can be focused.
+ */
+interface Focusable {
     val focused: Boolean
 }

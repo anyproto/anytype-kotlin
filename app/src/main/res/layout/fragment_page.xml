@@ -2,8 +2,17 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:id="@+id/root"
     android:background="@drawable/background_desktop"
     android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/placeholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
 
     <FrameLayout
         android:id="@+id/sheet"
@@ -40,6 +49,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/default_toolbar_height"
+                android:visibility="invisible"
                 android:background="@color/white" />
 
             <com.agileburo.anytype.core_ui.widgets.toolbar.MarkupToolbarWidget
@@ -47,7 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/default_toolbar_height"
                 android:background="@color/white"
-                android:visibility="visible" />
+                android:visibility="invisible" />
 
         </FrameLayout>
 
@@ -73,5 +83,17 @@
             android:visibility="invisible" />
 
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:src="@drawable/ic_add_doc_inside_page"
+        android:visibility="invisible"
+        app:backgroundTint="@color/white"
+        app:tint="@null" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

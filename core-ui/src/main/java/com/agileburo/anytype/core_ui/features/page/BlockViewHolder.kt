@@ -86,10 +86,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    fun logOnBind() {
-        Timber.d("onBind")
-    }
-
     class Paragraph(view: View) : BlockViewHolder(view), TextHolder {
 
         override val content: TextInputWidget = itemView.textContent
@@ -104,31 +100,22 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
-            Timber.d("Binding item:\n$item")
-
-            content.setOnFocusChangeListener { _, hasFocus ->
-                onFocusChanged(item.id, hasFocus)
-            }
-
             if (item.marks.isNotEmpty())
                 content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
             else
                 content.setText(item.text)
 
-            if (item.focused) {
-                content.setSelection(0)
-                focus(content)
-            } else {
-                content.clearFocus()
-                content.setSelection(0)
-                content.isEnabled = false
-            }
+            setFocus(item)
 
             content.addTextChangedListener(
                 DefaultTextWatcher { text ->
                     onTextChanged(item.id, text)
                 }
             )
+            content.setOnFocusChangeListener { _, focused ->
+                item.focused = focused
+                onFocusChanged(item.id, focused)
+            }
             content.selectionDetector = { onSelectionChanged(item.id, it) }
         }
 
@@ -148,8 +135,18 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setMarkup(markup = item)
                 }
                 FOCUS_CHANGED -> {
-                    // TODO
+                    setFocus(item)
                 }
+            }
+        }
+
+        private fun setFocus(item: BlockView.Text) {
+            if (item.focused) {
+                Timber.d("Requesting focus of block: $item.id")
+                focus(content)
+            } else {
+                Timber.d("Clearing focus of block: $item.id")
+                content.clearFocus()
             }
         }
 

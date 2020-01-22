@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.extensions.invisible
+import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar.Block.Action.ADD
@@ -39,6 +41,7 @@ class BlockToolbarWidget : ConstraintLayout {
     fun actionClicks() = actions.clicks()
 
     fun setState(state: ControlPanelState.Toolbar.Block) {
+        if (state.isVisible) visible() else invisible()
         add.isSelected = state.selectedAction == ADD
         actions.isSelected = state.selectedAction == BLOCK_ACTION
     }

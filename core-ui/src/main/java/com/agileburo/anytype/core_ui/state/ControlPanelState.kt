@@ -19,6 +19,8 @@ data class ControlPanelState(
     val actionToolbar: Toolbar.BlockAction
 ) {
 
+    fun isNotVisible(): Boolean = !blockToolbar.isVisible && !markupToolbar.isVisible
+
     sealed class Toolbar {
 
         /**
@@ -97,7 +99,7 @@ data class ControlPanelState(
          */
         fun init(): ControlPanelState = ControlPanelState(
             blockToolbar = Toolbar.Block(
-                isVisible = true,
+                isVisible = false,
                 selectedAction = null
             ),
             markupToolbar = Toolbar.Markup(

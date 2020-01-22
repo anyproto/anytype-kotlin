@@ -11,7 +11,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.extensions.invisible
+import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
+import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DELETE
@@ -25,9 +28,13 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionC
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_TWO
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HIGHLIGHTED
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_TEXT
-import com.agileburo.anytype.core_utils.ext.*
+import com.agileburo.anytype.core_utils.ext.gone
+import com.agileburo.anytype.core_utils.ext.hexColorCode
+import com.agileburo.anytype.core_utils.ext.hideSoftInput
+import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.domain.block.model.Block.Content.Text
+import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
@@ -103,7 +110,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
 
         toolbar
             .keyboardClicks()
-            .onEach { hideSoftInput() }
+            .onEach { vm.onHideKeyboardClicked() }
             .launchIn(lifecycleScope)
 
         toolbar
@@ -123,7 +130,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
 
         markupToolbar
             .hideKeyboardClicks()
-            .onEach { hideSoftInput() }
+            .onEach { vm.onHideKeyboardClicked() }
             .launchIn(lifecycleScope)
 
         markupToolbar
@@ -178,6 +185,8 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
                 }
             }
             .launchIn(lifecycleScope)
+
+        fab.clicks().onEach { toast(NOT_IMPLEMENTED_MESSAGE) }.launchIn(lifecycleScope)
     }
 
     private fun showColorToolbar() {
@@ -205,6 +214,18 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         vm.state.observe(viewLifecycleOwner, Observer { render(it) })
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         vm.controlPanelViewState.observe(viewLifecycleOwner, Observer { render(it) })
+        vm.focus.observe(viewLifecycleOwner, Observer { handleFocus(it) })
+    }
+
+    private fun handleFocus(focus: Id) {
+        Timber.d("Handling focus: $focus")
+        if (focus.isEmpty()) {
+            placeholder.requestFocus()
+            hideKeyboard()
+            fab.visible()
+        } else {
+            fab.gone()
+        }
     }
 
     private fun render(state: PageViewModel.ViewState) {
@@ -221,7 +242,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         toolbar.setState(state.blockToolbar)
         with(state.colorToolbar) {
             if (isVisible) {
-                hideSoftInput()
+                hideKeyboard()
                 lifecycleScope.launch {
                     delay(300)
                     showColorToolbar()
@@ -231,7 +252,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         }
         with(state.addBlockToolbar) {
             if (isVisible) {
-                hideSoftInput()
+                hideKeyboard()
                 lifecycleScope.launch {
                     delay(300)
                     showOptionToolbar()
@@ -241,7 +262,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         }
         with(state.actionToolbar) {
             if (isVisible) {
-                hideSoftInput()
+                hideKeyboard()
                 lifecycleScope.launch {
                     delay(300)
                     actionToolbar.show()
@@ -249,6 +270,11 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             } else
                 actionToolbar.hide()
         }
+    }
+
+    private fun hideKeyboard() {
+        Timber.d("Hiding keyboard")
+        hideSoftInput()
     }
 
     override fun injectDependencies() {
@@ -262,7 +288,6 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
     companion object {
         const val ID_KEY = "id"
         const val ID_EMPTY_VALUE = ""
-
         const val NOT_IMPLEMENTED_MESSAGE = "Not implemented."
     }
 }

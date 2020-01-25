@@ -57,10 +57,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onEndLineEnterClicked: () -> Unit,
             onSplitLineEnterClicked: () -> Unit
         ) {
-            content.filters += DefaultEnterKeyDetector(
-                onSplitLineEnterClicked = onSplitLineEnterClicked,
-                onEndLineEnterClicked = onEndLineEnterClicked
+            content.filters = arrayOf(
+                DefaultEnterKeyDetector(
+                    onSplitLineEnterClicked = onSplitLineEnterClicked,
+                    onEndLineEnterClicked = onEndLineEnterClicked
+                )
             )
+        }
+
+        fun removeEnterKeyDetectors() {
+            content.filters = arrayOf()
         }
 
         fun enableBackspaceDetector(
@@ -548,6 +554,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_DIVIDER = 16
         const val HOLDER_HIGHLIGHT = 17
 
-        const val FOCUS_TIMEOUT_MILLIS = 300L
+        const val FOCUS_TIMEOUT_MILLIS = 60L
     }
 }

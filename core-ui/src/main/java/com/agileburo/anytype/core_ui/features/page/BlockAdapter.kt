@@ -361,8 +361,12 @@ class BlockAdapter(
 
         if (holder is BlockViewHolder.TextHolder) {
             holder.enableEnterKeyDetector(
-                onEndLineEnterClicked = { onEndLineEnterClicked(blocks[position].id) },
-                onSplitLineEnterClicked = { onSplitLineEnterClicked(blocks[position].id) }
+                onEndLineEnterClicked = {
+                    onEndLineEnterClicked(blocks[position].id)
+                },
+                onSplitLineEnterClicked = {
+                    onSplitLineEnterClicked(blocks[position].id)
+                }
             )
             holder.enableBackspaceDetector { onEmptyBlockBackspaceClicked(blocks[position].id) }
         }

@@ -10,6 +10,9 @@
     <color name="chapter_yellow">#ECD91B</color>
     <color name="default_toolbar_option_stroke_color">#DFDDD0</color>
 
+    <color name="toolbar_block_turn_into_toggle_selected">#2C2B27</color>
+    <color name="toolbar_block_turn_into_toggle_default">#ACA996</color>
+
     <color name="toolbar_section_text">#ECD91B</color>
     <color name="toolbar_section_list">#FFB522</color>
     <color name="toolbar_section_tool">#2AA7EE</color>

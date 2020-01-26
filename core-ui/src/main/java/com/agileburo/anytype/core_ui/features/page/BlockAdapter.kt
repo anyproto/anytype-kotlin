@@ -362,13 +362,13 @@ class BlockAdapter(
         if (holder is BlockViewHolder.TextHolder) {
             holder.enableEnterKeyDetector(
                 onEndLineEnterClicked = {
-                    onEndLineEnterClicked(blocks[position].id)
+                    onEndLineEnterClicked(blocks[holder.adapterPosition].id)
                 },
                 onSplitLineEnterClicked = {
-                    onSplitLineEnterClicked(blocks[position].id)
+                    onSplitLineEnterClicked(blocks[holder.adapterPosition].id)
                 }
             )
-            holder.enableBackspaceDetector { onEmptyBlockBackspaceClicked(blocks[position].id) }
+            holder.enableBackspaceDetector { onEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id) }
         }
     }
 
@@ -381,6 +381,7 @@ class BlockAdapter(
             holder.content.isEnabled = true
         }
     }
+
 
     @Deprecated(
         level = DeprecationLevel.WARNING,

@@ -153,19 +153,7 @@ fun Block.text(): BlockEntity.Content.Text = BlockEntity.Content.Text(
             }
         )
     },
-    style = when (text.style) {
-        Block.Content.Text.Style.Paragraph -> BlockEntity.Content.Text.Style.P
-        Block.Content.Text.Style.Header1 -> BlockEntity.Content.Text.Style.H1
-        Block.Content.Text.Style.Header2 -> BlockEntity.Content.Text.Style.H2
-        Block.Content.Text.Style.Header3 -> BlockEntity.Content.Text.Style.H3
-        Block.Content.Text.Style.Title -> BlockEntity.Content.Text.Style.TITLE
-        Block.Content.Text.Style.Quote -> BlockEntity.Content.Text.Style.QUOTE
-        Block.Content.Text.Style.Marked -> BlockEntity.Content.Text.Style.BULLET
-        Block.Content.Text.Style.Numbered -> BlockEntity.Content.Text.Style.NUMBERED
-        Block.Content.Text.Style.Toggle -> BlockEntity.Content.Text.Style.TOGGLE
-        Block.Content.Text.Style.Checkbox -> BlockEntity.Content.Text.Style.CHECKBOX
-        else -> throw IllegalStateException("Unexpected text style: ${text.style}")
-    },
+    style = text.style.entity(),
     isChecked = text.checked
 )
 
@@ -231,4 +219,18 @@ fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
             null
         }
     }
+}
+
+fun Block.Content.Text.Style.entity(): BlockEntity.Content.Text.Style = when (this) {
+    Block.Content.Text.Style.Paragraph -> BlockEntity.Content.Text.Style.P
+    Block.Content.Text.Style.Header1 -> BlockEntity.Content.Text.Style.H1
+    Block.Content.Text.Style.Header2 -> BlockEntity.Content.Text.Style.H2
+    Block.Content.Text.Style.Header3 -> BlockEntity.Content.Text.Style.H3
+    Block.Content.Text.Style.Title -> BlockEntity.Content.Text.Style.TITLE
+    Block.Content.Text.Style.Quote -> BlockEntity.Content.Text.Style.QUOTE
+    Block.Content.Text.Style.Marked -> BlockEntity.Content.Text.Style.BULLET
+    Block.Content.Text.Style.Numbered -> BlockEntity.Content.Text.Style.NUMBERED
+    Block.Content.Text.Style.Toggle -> BlockEntity.Content.Text.Style.TOGGLE
+    Block.Content.Text.Style.Checkbox -> BlockEntity.Content.Text.Style.CHECKBOX
+    else -> throw IllegalStateException("Unexpected text style: $this")
 }

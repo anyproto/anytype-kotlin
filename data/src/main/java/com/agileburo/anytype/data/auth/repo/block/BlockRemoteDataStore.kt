@@ -31,6 +31,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         remote.updateText(command)
     }
 
+    override suspend fun updateTextStyle(command: CommandEntity.UpdateStyle) {
+        remote.updateTextStyle(command)
+    }
+
     override suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox) {
         remote.updateCheckbox(command)
     }

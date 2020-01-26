@@ -1,6 +1,7 @@
 package com.agileburo.anytype.domain.event.model
 
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.block.model.Block.Content.Text
 import com.agileburo.anytype.domain.common.Id
 
 sealed class Event {
@@ -23,6 +24,18 @@ sealed class Event {
         data class UpdateBlockText(
             val id: Id,
             val text: String
+        ) : Command()
+
+        /**
+         * Command to update block's text content.
+         * @property id id of the target block
+         * @property text new text (considered updated if not null)
+         * @property style new style (considered updated if not null)
+         */
+        data class GranularChange(
+            val id: Id,
+            val text: String? = null,
+            val style: Text.Style? = null
         ) : Command()
 
         /**

@@ -9,10 +9,12 @@ package com.agileburo.anytype.core_ui.state
  * @property colorToolbar color toolbar state
  * @property addBlockToolbar add-block toolbar state
  * @property actionToolbar action-toolbar state
+ * @property turnIntoToolbar turn-into tolbar state
  */
 data class ControlPanelState(
     val focus: Focus? = null,
     val blockToolbar: Toolbar.Block,
+    val turnIntoToolbar: Toolbar.TurnInto,
     val markupToolbar: Toolbar.Markup,
     val colorToolbar: Toolbar.Color,
     val addBlockToolbar: Toolbar.AddBlock,
@@ -79,18 +81,25 @@ data class ControlPanelState(
         ) : Toolbar()
 
         /**
-         * TODO
+         * Turn-into (converting one block into another) toolbar state.
          */
         data class TurnInto(
-            val isVisible: Boolean
-        )
+            override val isVisible: Boolean
+        ) : Toolbar()
     }
 
     /**
      * Block currently associated with this panel.
      * @property id id of the focused block
      */
-    data class Focus(val id: String)
+    data class Focus(
+        val id: String,
+        val type: Type
+    ) {
+        enum class Type {
+            P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE, CHECKBOX
+        }
+    }
 
     companion object {
 
@@ -105,6 +114,9 @@ data class ControlPanelState(
             markupToolbar = Toolbar.Markup(
                 isVisible = false,
                 selectedAction = null
+            ),
+            turnIntoToolbar = Toolbar.TurnInto(
+                isVisible = false
             ),
             colorToolbar = Toolbar.Color(
                 isVisible = false

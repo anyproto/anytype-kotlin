@@ -12,6 +12,12 @@ class CommandEntity {
         val marks: List<BlockEntity.Content.Text.Mark>
     )
 
+    data class UpdateStyle(
+        val context: String,
+        val target: String,
+        val style: BlockEntity.Content.Text.Style
+    )
+
     class UpdateCheckbox(
         val context: String,
         val target: String,

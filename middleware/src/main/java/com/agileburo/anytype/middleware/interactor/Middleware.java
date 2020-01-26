@@ -212,6 +212,59 @@ public class Middleware {
         service.blockSetTextChecked(request);
     }
 
+    public void updateTextStyle(CommandEntity.UpdateStyle command) throws Exception {
+
+        Models.Block.Content.Text.Style style = null;
+
+        switch (command.getStyle()) {
+            case P:
+                style = Models.Block.Content.Text.Style.Paragraph;
+                break;
+            case H1:
+                style = Models.Block.Content.Text.Style.Header1;
+                break;
+            case H2:
+                style = Models.Block.Content.Text.Style.Header2;
+                break;
+            case H3:
+                style = Models.Block.Content.Text.Style.Header3;
+                break;
+            case H4:
+                style = Models.Block.Content.Text.Style.Header4;
+                break;
+            case TITLE:
+                style = Models.Block.Content.Text.Style.Title;
+                break;
+            case QUOTE:
+                style = Models.Block.Content.Text.Style.Quote;
+                break;
+            case CODE_SNIPPET:
+                style = Models.Block.Content.Text.Style.Code;
+                break;
+            case BULLET:
+                style = Models.Block.Content.Text.Style.Marked;
+                break;
+            case CHECKBOX:
+                style = Models.Block.Content.Text.Style.Checkbox;
+                break;
+            case NUMBERED:
+                style = Models.Block.Content.Text.Style.Numbered;
+                break;
+            case TOGGLE:
+                style = Models.Block.Content.Text.Style.Toggle;
+                break;
+        }
+
+        Block.Set.Text.Style.Request request = Block.Set.Text.Style.Request
+                .newBuilder()
+                .setStyle(style)
+                .setBlockId(command.getTarget())
+                .setContextId(command.getContext())
+                .build();
+
+        service.blockSetTextStyle(request);
+    }
+
     public void createBlock(
             String contextId,
             String targetId,
@@ -254,7 +307,7 @@ public class Middleware {
                 case TITLE:
                     contentModel = Models.Block.Content.Text
                             .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Header4)
+                            .setStyle(Models.Block.Content.Text.Style.Title)
                             .build();
                     break;
                 case QUOTE:

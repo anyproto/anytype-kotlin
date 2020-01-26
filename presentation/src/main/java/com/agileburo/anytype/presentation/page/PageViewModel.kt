@@ -20,6 +20,7 @@ import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.addMark
 import com.agileburo.anytype.domain.ext.asMap
 import com.agileburo.anytype.domain.ext.asRender
+import com.agileburo.anytype.domain.ext.textStyle
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.common.StateReducer
@@ -42,7 +43,8 @@ class PageViewModel(
     private val interceptEvents: InterceptEvents,
     private val updateCheckbox: UpdateCheckbox,
     private val unlinkBlocks: UnlinkBlocks,
-    private val duplicateBlock: DuplicateBlock
+    private val duplicateBlock: DuplicateBlock,
+    private val updateTextStyle: UpdateTextStyle
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -131,6 +133,18 @@ class PageViewModel(
                 is Event.Command.DeleteBlock -> {
                     blocks = blocks.filter { it.id != event.target }
                 }
+                is Event.Command.GranularChange -> {
+                    blocks = blocks.map { block ->
+                        if (block.id == event.id)
+                            block.copy(
+                                content = block.content.asText().copy(
+                                    style = event.style ?: block.textStyle()
+                                )
+                            )
+                        else
+                            block
+                    }
+                }
             }
         }
 
@@ -199,22 +213,19 @@ class PageViewModel(
 
     private fun processRendering() {
         viewModelScope.launch {
-            renderings
-                .onEach { Timber.d("New rendering: $it") }
-                .withLatestFrom(focusChanges) { models, focus ->
-                    models.asMap().asRender(pageId).mapNotNull { block ->
-                        when {
-                            block.content is Block.Content.Text -> {
-                                block.toView(focused = block.id == focus)
-                            }
-                            block.content is Block.Content.Image -> {
-                                block.toView()
-                            }
-                            else -> null
+            renderings.withLatestFrom(focusChanges) { models, focus ->
+                models.asMap().asRender(pageId).mapNotNull { block ->
+                    when {
+                        block.content is Block.Content.Text -> {
+                            block.toView(focused = block.id == focus)
                         }
+                        block.content is Block.Content.Image -> {
+                            block.toView()
+                        }
+                        else -> null
                     }
                 }
-                .collect { dispatchToUI(it) }
+            }.collect { dispatchToUI(it) }
         }
     }
 
@@ -298,7 +309,12 @@ class PageViewModel(
         Timber.d("Focus changed ($hasFocus): $id")
         if (hasFocus) {
             viewModelScope.launch { focusChannel.send(id) }
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnFocusChanged(id))
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.OnFocusChanged(
+                    id = id,
+                    style = blocks.first { it.id == id }.textStyle()
+                )
+            )
         }
     }
 
@@ -399,7 +415,7 @@ class PageViewModel(
     }
 
     fun onAddTextBlockClicked(style: Block.Content.Text.Style) {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnOptionSelected)
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
         createBlock.invoke(
             viewModelScope, CreateBlock.Params(
                 contextId = pageId,
@@ -433,11 +449,31 @@ class PageViewModel(
     }
 
     fun onAddBlockToolbarClicked() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarClicked)
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarToggleClicked)
     }
 
     fun onActionToolbarClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnActionToolbarClicked)
+    }
+
+    fun onTurnIntoToolbarToggleClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTurnIntoToolbarToggleClicked)
+    }
+
+    fun onTurnIntoStyleClicked(style: Block.Content.Text.Style) {
+        updateTextStyle.invoke(
+            scope = viewModelScope,
+            params = UpdateTextStyle.Params(
+                context = pageId,
+                target = focusChannel.value,
+                style = style
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while updating text style") },
+                fnR = { Timber.d("Text style succesfully updated") }
+            )
+        }
     }
 
     fun onOutsideClicked() {
@@ -532,14 +568,24 @@ class PageViewModel(
             object OnMarkupToolbarColorClicked : Event()
 
             /**
-             * Represents an event when user selected a add-block-option on [Toolbar.AddBlock] toolbar.
+             * Represents an event when user toggled [Toolbar.AddBlock] toolbar button on [Toolbar.Block].
              */
-            object OnAddBlockToolbarClicked : Event()
+            object OnAddBlockToolbarToggleClicked : Event()
+
+            /**
+             * Represents an event when user toggled [Toolbar.TurnInto] toolbar button on [Toolbar.Block]
+             */
+            object OnTurnIntoToolbarToggleClicked : Event()
 
             /**
              * Represents an event when user selected any of the options on [Toolbar.AddBlock] toolbar.
              */
-            object OnOptionSelected : Event()
+            object OnAddBlockToolbarOptionSelected : Event()
+
+            /**
+             * Represents an event when user selected any of the options on [Toolbar.TurnInto] toolbar.
+             */
+            object OnTurnIntoToolbarOptionSelected : Event()
 
             /**
              * Represents an event when user selected a text color on [Toolbar.Color] toolbar.
@@ -561,7 +607,8 @@ class PageViewModel(
              * @property id id of the focused block
              */
             data class OnFocusChanged(
-                val id: String
+                val id: String,
+                val style: Block.Content.Text.Style
             ) : Event()
         }
 
@@ -620,7 +667,7 @@ class PageViewModel(
                         selectedAction = null
                     )
                 )
-                is Event.OnAddBlockToolbarClicked -> state.copy(
+                is Event.OnAddBlockToolbarToggleClicked -> state.copy(
                     addBlockToolbar = state.addBlockToolbar.copy(
                         isVisible = !state.addBlockToolbar.isVisible
                     ),
@@ -632,10 +679,38 @@ class PageViewModel(
                     ),
                     actionToolbar = state.actionToolbar.copy(
                         isVisible = false
+                    ),
+                    turnIntoToolbar = state.turnIntoToolbar.copy(
+                        isVisible = false
                     )
                 )
-                is Event.OnOptionSelected -> state.copy(
+                is Event.OnTurnIntoToolbarToggleClicked -> state.copy(
+                    turnIntoToolbar = state.turnIntoToolbar.copy(
+                        isVisible = !state.turnIntoToolbar.isVisible
+                    ),
+                    blockToolbar = state.blockToolbar.copy(
+                        selectedAction = if (!state.turnIntoToolbar.isVisible)
+                            Toolbar.Block.Action.TURN_INTO
+                        else
+                            null
+                    ),
                     addBlockToolbar = state.addBlockToolbar.copy(
+                        isVisible = false
+                    ),
+                    actionToolbar = state.actionToolbar.copy(
+                        isVisible = false
+                    )
+                )
+                is Event.OnAddBlockToolbarOptionSelected -> state.copy(
+                    addBlockToolbar = state.addBlockToolbar.copy(
+                        isVisible = false
+                    ),
+                    blockToolbar = state.blockToolbar.copy(
+                        selectedAction = null
+                    )
+                )
+                is Event.OnTurnIntoToolbarOptionSelected -> state.copy(
+                    turnIntoToolbar = state.turnIntoToolbar.copy(
                         isVisible = false
                     ),
                     blockToolbar = state.blockToolbar.copy(
@@ -647,6 +722,9 @@ class PageViewModel(
                         isVisible = false
                     ),
                     addBlockToolbar = state.addBlockToolbar.copy(
+                        isVisible = false
+                    ),
+                    turnIntoToolbar = state.turnIntoToolbar.copy(
                         isVisible = false
                     ),
                     actionToolbar = state.actionToolbar.copy(
@@ -663,13 +741,45 @@ class PageViewModel(
                     if (state.isNotVisible())
                         state.copy(
                             blockToolbar = state.blockToolbar.copy(
-                                isVisible = true
+                                isVisible = true,
+                                selectedAction = null
                             ),
-                            focus = ControlPanelState.Focus(event.id)
+                            turnIntoToolbar = state.turnIntoToolbar.copy(
+                                isVisible = false
+                            ),
+                            addBlockToolbar = state.addBlockToolbar.copy(
+                                isVisible = false
+                            ),
+                            actionToolbar = state.actionToolbar.copy(
+                                isVisible = false
+                            ),
+                            focus = ControlPanelState.Focus(
+                                id = event.id,
+                                type = ControlPanelState.Focus.Type.valueOf(
+                                    value = event.style.name
+                                )
+                            )
                         )
                     else {
                         state.copy(
-                            focus = ControlPanelState.Focus(event.id)
+                            blockToolbar = state.blockToolbar.copy(
+                                selectedAction = null
+                            ),
+                            focus = ControlPanelState.Focus(
+                                id = event.id,
+                                type = ControlPanelState.Focus.Type.valueOf(
+                                    value = event.style.name
+                                )
+                            ),
+                            addBlockToolbar = state.addBlockToolbar.copy(
+                                isVisible = false
+                            ),
+                            actionToolbar = state.actionToolbar.copy(
+                                isVisible = false
+                            ),
+                            turnIntoToolbar = state.turnIntoToolbar.copy(
+                                isVisible = false
+                            )
                         )
                     }
                 }

@@ -62,6 +62,9 @@ class PageViewModelTest {
     @Mock
     lateinit var unlinkBlocks: UnlinkBlocks
 
+    @Mock
+    lateinit var updateTextStyle: UpdateTextStyle
+
     private lateinit var vm: PageViewModel
 
     @Before
@@ -1044,8 +1047,34 @@ class PageViewModelTest {
     @Test
     fun `add-block-or-turn-into panel should be opened on add-block-toolbar-clicked event`() {
 
-        simulateNormalPageOpeningFlow()
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
 
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(1000)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(1001)
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
         vm.onAddBlockToolbarClicked()
 
         val expected = ControlPanelState(
@@ -1064,6 +1093,13 @@ class PageViewModelTest {
             ),
             actionToolbar = ControlPanelState.Toolbar.BlockAction(
                 isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            focus = ControlPanelState.Focus(
+                id = child,
+                type = ControlPanelState.Focus.Type.P
             )
         )
 
@@ -1073,8 +1109,34 @@ class PageViewModelTest {
     @Test
     fun `add-block-or-turn-into panel should be closed on add-text-block-clicked event`() {
 
-        simulateNormalPageOpeningFlow()
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
 
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(1000)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(1001)
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
         vm.onAddBlockToolbarClicked()
         vm.onAddTextBlockClicked(style = Block.Content.Text.Style.P)
 
@@ -1094,6 +1156,13 @@ class PageViewModelTest {
             ),
             actionToolbar = ControlPanelState.Toolbar.BlockAction(
                 isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            focus = ControlPanelState.Focus(
+                id = child,
+                type = ControlPanelState.Focus.Type.P
             )
         )
 
@@ -1103,8 +1172,34 @@ class PageViewModelTest {
     @Test
     fun `should open markup panel when text is selected`() {
 
-        simulateNormalPageOpeningFlow()
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
 
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(1000)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(1001)
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
         vm.onSelectionChanged(
             id = MockDataFactory.randomUuid(),
             selection = 0..4
@@ -1128,6 +1223,13 @@ class PageViewModelTest {
             ),
             actionToolbar = ControlPanelState.Toolbar.BlockAction(
                 isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            focus = ControlPanelState.Focus(
+                id = child,
+                type = ControlPanelState.Focus.Type.P
             )
         )
 
@@ -1139,7 +1241,34 @@ class PageViewModelTest {
 
         val expectedVisibility = false
 
-        simulateNormalPageOpeningFlow()
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(1000)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(1001)
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
 
         vm.onSelectionChanged(
             id = MockDataFactory.randomUuid(),
@@ -1162,6 +1291,13 @@ class PageViewModelTest {
             ),
             actionToolbar = ControlPanelState.Toolbar.BlockAction(
                 isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            focus = ControlPanelState.Focus(
+                id = child,
+                type = ControlPanelState.Focus.Type.P
             )
         )
 
@@ -1171,7 +1307,34 @@ class PageViewModelTest {
     @Test
     fun `should open color toolbar when this option is selected on markup toolbar`() {
 
-        simulateNormalPageOpeningFlow()
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(1000)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(1001)
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
 
         vm.onSelectionChanged(
             id = MockDataFactory.randomUuid(),
@@ -1199,6 +1362,13 @@ class PageViewModelTest {
             ),
             actionToolbar = ControlPanelState.Toolbar.BlockAction(
                 isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            focus = ControlPanelState.Focus(
+                id = child,
+                type = ControlPanelState.Focus.Type.P
             )
         )
 
@@ -1614,6 +1784,199 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should create a new paragraph on outside-clicked event if page contains only title and icon`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
+            root = root,
+            child = child,
+            style = Block.Content.Text.Style.TITLE
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onOutsideClicked()
+
+        verify(createBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                CreateBlock.Params(
+                    contextId = root,
+                    targetId = "",
+                    position = Position.INNER,
+                    prototype = Block.Prototype.Text(
+                        style = Block.Content.Text.Style.P
+                    )
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should not create a new paragraph on outside-clicked event if page already contains one paragraph`() {
+
+        val root = MockDataFactory.randomUuid()
+        val firstChild = MockDataFactory.randomUuid()
+        val secondChild = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithTwoTextBlocks(
+            root = root,
+            firstChild = firstChild,
+            firstChildStyle = Block.Content.Text.Style.TITLE,
+            secondChild = secondChild,
+            secondChildStyle = Block.Content.Text.Style.P
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onOutsideClicked()
+
+        verify(createBlock, never()).invoke(
+            scope = any(),
+            params = any(),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should start updating text style of the focused block on turn-into-option-clicked event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val firstChild = MockDataFactory.randomUuid()
+        val secondChild = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithTwoTextBlocks(
+            root = root,
+            firstChild = firstChild,
+            firstChildStyle = Block.Content.Text.Style.TITLE,
+            secondChild = secondChild,
+            secondChildStyle = Block.Content.Text.Style.P
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onBlockFocusChanged(
+            id = secondChild,
+            hasFocus = true
+        )
+
+        val newStyle = Block.Content.Text.Style.H1
+
+        vm.onTurnIntoStyleClicked(style = newStyle)
+
+        verify(updateTextStyle, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                UpdateTextStyle.Params(
+                    context = root,
+                    target = secondChild,
+                    style = newStyle
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should clear focus internally and re-render on hide-keyboard event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
+            root = root,
+            child = child,
+            style = Block.Content.Text.Style.TITLE
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        val testObserver = vm.focus.test()
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
+
+        testObserver.assertValue(child)
+
+        vm.onHideKeyboardClicked()
+
+        testObserver.assertValue(PageViewModel.EMPTY_FOCUS_ID)
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()
@@ -1672,7 +2035,8 @@ class PageViewModelTest {
             createBlock = createBlock,
             updateCheckbox = updateCheckbox,
             unlinkBlocks = unlinkBlocks,
-            duplicateBlock = duplicateBlock
+            duplicateBlock = duplicateBlock,
+            updateTextStyle = updateTextStyle
         )
     }
 }

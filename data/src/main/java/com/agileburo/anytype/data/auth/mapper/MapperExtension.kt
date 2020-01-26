@@ -194,6 +194,12 @@ fun Command.UpdateText.toEntity(): CommandEntity.UpdateText {
     )
 }
 
+fun Command.UpdateStyle.toEntity(): CommandEntity.UpdateStyle = CommandEntity.UpdateStyle(
+    context = context,
+    target = target,
+    style = BlockEntity.Content.Text.Style.valueOf(style.name)
+)
+
 fun Command.UpdateCheckbox.toEntity(): CommandEntity.UpdateCheckbox = CommandEntity.UpdateCheckbox(
     context = context,
     target = target,
@@ -262,6 +268,16 @@ fun EventEntity.toDomain(): Event {
         is EventEntity.Command.DeleteBlock -> {
             Event.Command.DeleteBlock(
                 target = target
+            )
+        }
+        is EventEntity.Command.GranularChange -> {
+            Event.Command.GranularChange(
+                id = id,
+                text = text,
+                style = if (style != null)
+                    Block.Content.Text.Style.valueOf(style.name)
+                else
+                    null
             )
         }
     }

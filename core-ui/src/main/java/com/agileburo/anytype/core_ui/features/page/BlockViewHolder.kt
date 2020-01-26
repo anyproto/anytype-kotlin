@@ -76,6 +76,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 BackspaceKeyDetector {
                     if (content.text.toString().isEmpty()) {
                         content.clearTextWatchers()
+                        content.setOnKeyListener(null)
                         onEmptyBlockBackspaceClicked()
                     }
                 }

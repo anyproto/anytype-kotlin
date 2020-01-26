@@ -13,6 +13,8 @@ import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.ViewType
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.extensions.drawable
+import com.agileburo.anytype.core_ui.extensions.invisible
+import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.layout.SpacingItemDecoration
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.*
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionAdapter.Companion.LIST_TYPE
@@ -51,6 +53,7 @@ import kotlinx.android.synthetic.main.widget_bottom_detail_toolbar.view.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlin.properties.Delegates
 
 /**
  * This toolbar widget provides user with different types of options
@@ -62,6 +65,21 @@ import kotlinx.coroutines.flow.consumeAsFlow
  * @see SectionAdapter
  */
 class OptionToolbarWidget : LinearLayout {
+
+    var state: State by Delegates.observable(State.INIT) { _, old, new ->
+        if (new != old)
+            when (new) {
+                State.TURN_INTO -> {
+                    header.setText(R.string.option_toolbar_header_turn_into)
+                }
+                State.ADD_BLOCK -> {
+                    header.setText(R.string.option_toolbar_header_add_block)
+                }
+                State.INIT -> {
+                    header.text = ""
+                }
+            }
+    }
 
     private val channel = Channel<Option>()
 
@@ -81,13 +99,27 @@ class OptionToolbarWidget : LinearLayout {
     ) : super(context, attrs, defStyleAttr) {
         setup()
         setupRecycler()
-        header.text = "Add block"
     }
 
     private fun setup() {
         LayoutInflater.from(context).inflate(R.layout.widget_bottom_detail_toolbar, this)
         orientation = VERTICAL
         setBackgroundResource(R.color.default_bottom_detail_toolbar_background_color)
+    }
+
+    fun show() {
+        if (visibility != View.VISIBLE) {
+            layoutParams = LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            visible()
+        }
+    }
+
+    fun hide() {
+        layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+        invisible()
     }
 
     private fun setupRecycler() {
@@ -737,6 +769,8 @@ class OptionToolbarWidget : LinearLayout {
         const val SECTION_MEDIA = 3
         const val SECTION_OTHER = 4
     }
+
+    enum class State { INIT, TURN_INTO, ADD_BLOCK }
 
     fun optionClicks() = channel.consumeAsFlow()
 }

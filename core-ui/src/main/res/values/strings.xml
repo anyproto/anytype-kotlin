@@ -22,7 +22,10 @@
     <string name="content_description_avatar_image">Avatar image</string>
     <string name="content_description_bookmark_image">Bookmark image</string>
     <string name="content_description_toggle_icon">Toggle icon</string>
+    <string name="content_description_turn_into_arrow">Turn into arrow</string>
 
+    <string name="option_toolbar_header_turn_into">Turn into</string>
+    <string name="option_toolbar_header_add_block">Add block</string>
     <string name="option_text_text">Text</string>
     <string name="option_text_header_one">Header 1</string>
     <string name="option_text_header_two">Header 2</string>

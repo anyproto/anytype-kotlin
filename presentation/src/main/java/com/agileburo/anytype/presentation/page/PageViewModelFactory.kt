@@ -15,7 +15,8 @@ class PageViewModelFactory(
     private val interceptEvents: InterceptEvents,
     private val updateCheckbox: UpdateCheckbox,
     private val unlinkBlocks: UnlinkBlocks,
-    private val duplicateBlock: DuplicateBlock
+    private val duplicateBlock: DuplicateBlock,
+    private val updateTextStyle: UpdateTextStyle
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -28,7 +29,8 @@ class PageViewModelFactory(
             interceptEvents = interceptEvents,
             updateCheckbox = updateCheckbox,
             duplicateBlock = duplicateBlock,
-            unlinkBlocks = unlinkBlocks
+            unlinkBlocks = unlinkBlocks,
+            updateTextStyle = updateTextStyle
         ) as T
     }
 }

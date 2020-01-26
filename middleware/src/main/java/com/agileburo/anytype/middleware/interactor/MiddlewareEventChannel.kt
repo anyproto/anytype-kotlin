@@ -5,6 +5,7 @@ import com.agileburo.anytype.data.auth.event.EventRemoteChannel
 import com.agileburo.anytype.data.auth.model.EventEntity
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.blocks
+import com.agileburo.anytype.middleware.entity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -48,9 +49,15 @@ class MiddlewareEventChannel(
                         )
                     }
                     Events.Event.Message.ValueCase.BLOCKSETTEXT -> {
-                        EventEntity.Command.UpdateBlockText(
+                        EventEntity.Command.GranularChange(
                             id = event.blockSetText.id,
-                            text = event.blockSetText.text.value
+                            text = if (event.blockSetText.hasText())
+                                event.blockSetText.text.value
+                            else null,
+                            style = if (event.blockSetText.hasStyle())
+                                event.blockSetText.style.value.entity()
+                            else
+                                null
                         )
                     }
                     Events.Event.Message.ValueCase.BLOCKDELETE -> {

@@ -29,3 +29,15 @@ fun Map<String, List<Block>>.asRender(anchor: String): List<Block> {
     }
     return result
 }
+
+/**
+ * Tries to get block's content text style if possible.
+ * @return block's text style
+ * @throws UnsupportedOperationException if this block has no text content.
+ */
+fun Block.textStyle(): Block.Content.Text.Style {
+    if (content is Block.Content.Text)
+        return content.style
+    else
+        throw UnsupportedOperationException("Wrong block content type: ${content.javaClass}")
+}

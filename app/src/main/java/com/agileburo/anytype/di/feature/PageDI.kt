@@ -41,7 +41,8 @@ class PageModule {
         interceptEvents: InterceptEvents,
         updateCheckbox: UpdateCheckbox,
         unlinkBlocks: UnlinkBlocks,
-        duplicateBlock: DuplicateBlock
+        duplicateBlock: DuplicateBlock,
+        updateTextStyle: UpdateTextStyle
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -50,7 +51,8 @@ class PageModule {
         interceptEvents = interceptEvents,
         updateCheckbox = updateCheckbox,
         unlinkBlocks = unlinkBlocks,
-        duplicateBlock = duplicateBlock
+        duplicateBlock = duplicateBlock,
+        updateTextStyle = updateTextStyle
     )
 
     @Provides
@@ -123,6 +125,14 @@ class PageModule {
     fun provideDuplicateBlockUseCase(
         repo: BlockRepository
     ): DuplicateBlock = DuplicateBlock(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideUpdateTextStyleUseCase(
+        repo: BlockRepository
+    ): UpdateTextStyle = UpdateTextStyle(
         repo = repo
     )
 }

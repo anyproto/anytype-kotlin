@@ -18,6 +18,12 @@ sealed class EventEntity {
             val text: String
         ) : Command()
 
+        data class GranularChange(
+            val id: String,
+            val text: String? = null,
+            val style: BlockEntity.Content.Text.Style? = null
+        ) : Command()
+
         data class UpdateStructure(
             val context: String,
             val id: String,

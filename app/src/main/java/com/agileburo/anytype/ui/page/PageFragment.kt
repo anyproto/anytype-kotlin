@@ -20,6 +20,7 @@ import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DELETE
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DUPLICATE
 import com.agileburo.anytype.core_ui.widgets.toolbar.ColorToolbarWidget
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.Option
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_BULLETED_LIST
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_CHECKBOX
@@ -114,6 +115,11 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             .launchIn(lifecycleScope)
 
         toolbar
+            .turnIntoClicks()
+            .onEach { vm.onTurnIntoToolbarToggleClicked() }
+            .launchIn(lifecycleScope)
+
+        toolbar
             .addButtonClicks()
             .onEach { vm.onAddBlockToolbarClicked() }
             .launchIn(lifecycleScope)
@@ -151,27 +157,10 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         optionToolbar
             .optionClicks()
             .onEach { option ->
-                when (option) {
-                    is Option.Text -> {
-                        when (option.type) {
-                            OPTION_TEXT_TEXT -> vm.onAddTextBlockClicked(Text.Style.P)
-                            OPTION_TEXT_HEADER_ONE -> vm.onAddTextBlockClicked(Text.Style.H1)
-                            OPTION_TEXT_HEADER_TWO -> vm.onAddTextBlockClicked(Text.Style.H2)
-                            OPTION_TEXT_HEADER_THREE -> vm.onAddTextBlockClicked(Text.Style.H3)
-                            OPTION_TEXT_HIGHLIGHTED -> vm.onAddTextBlockClicked(Text.Style.QUOTE)
-                            OPTION_LIST_BULLETED_LIST -> vm.onAddTextBlockClicked(Text.Style.BULLET)
-                            OPTION_LIST_CHECKBOX -> vm.onAddTextBlockClicked(Text.Style.CHECKBOX)
-                            else -> toast(NOT_IMPLEMENTED_MESSAGE)
-                        }
-                    }
-                    is Option.List -> {
-                        when (option.type) {
-                            OPTION_LIST_BULLETED_LIST -> vm.onAddTextBlockClicked(Text.Style.BULLET)
-                            OPTION_LIST_CHECKBOX -> vm.onAddTextBlockClicked(Text.Style.CHECKBOX)
-                            else -> toast(NOT_IMPLEMENTED_MESSAGE)
-                        }
-                    }
-                }
+                if (optionToolbar.state == OptionToolbarWidget.State.ADD_BLOCK)
+                    handleAddBlockToolbarOptionClicked(option)
+                else if (optionToolbar.state == OptionToolbarWidget.State.TURN_INTO)
+                    handleTurnIntoToolbarOptionClicked(option)
             }
             .launchIn(lifecycleScope)
 
@@ -187,6 +176,50 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             .launchIn(lifecycleScope)
 
         fab.clicks().onEach { toast(NOT_IMPLEMENTED_MESSAGE) }.launchIn(lifecycleScope)
+    }
+
+    private fun handleAddBlockToolbarOptionClicked(option: Option) {
+        when (option) {
+            is Option.Text -> {
+                when (option.type) {
+                    OPTION_TEXT_TEXT -> vm.onAddTextBlockClicked(Text.Style.P)
+                    OPTION_TEXT_HEADER_ONE -> vm.onAddTextBlockClicked(Text.Style.H1)
+                    OPTION_TEXT_HEADER_TWO -> vm.onAddTextBlockClicked(Text.Style.H2)
+                    OPTION_TEXT_HEADER_THREE -> vm.onAddTextBlockClicked(Text.Style.H3)
+                    OPTION_TEXT_HIGHLIGHTED -> vm.onAddTextBlockClicked(Text.Style.QUOTE)
+                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
+                }
+            }
+            is Option.List -> {
+                when (option.type) {
+                    OPTION_LIST_BULLETED_LIST -> vm.onAddTextBlockClicked(Text.Style.BULLET)
+                    OPTION_LIST_CHECKBOX -> vm.onAddTextBlockClicked(Text.Style.CHECKBOX)
+                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
+                }
+            }
+        }
+    }
+
+    private fun handleTurnIntoToolbarOptionClicked(option: Option) {
+        when (option) {
+            is Option.Text -> {
+                when (option.type) {
+                    OPTION_TEXT_TEXT -> vm.onTurnIntoStyleClicked(Text.Style.P)
+                    OPTION_TEXT_HEADER_ONE -> vm.onTurnIntoStyleClicked(Text.Style.H1)
+                    OPTION_TEXT_HEADER_TWO -> vm.onTurnIntoStyleClicked(Text.Style.H2)
+                    OPTION_TEXT_HEADER_THREE -> vm.onTurnIntoStyleClicked(Text.Style.H3)
+                    OPTION_TEXT_HIGHLIGHTED -> vm.onTurnIntoStyleClicked(Text.Style.QUOTE)
+                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
+                }
+            }
+            is Option.List -> {
+                when (option.type) {
+                    OPTION_LIST_BULLETED_LIST -> vm.onTurnIntoStyleClicked(Text.Style.BULLET)
+                    OPTION_LIST_CHECKBOX -> vm.onTurnIntoStyleClicked(Text.Style.CHECKBOX)
+                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
+                }
+            }
+        }
     }
 
     private fun showColorToolbar() {
@@ -240,6 +273,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         Timber.d("Rendering new control panel state:\n$state")
         markupToolbar.setState(state.markupToolbar)
         toolbar.setState(state.blockToolbar)
+        state.focus?.let { toolbar.setTurnIntoTarget(it.type) }
         with(state.colorToolbar) {
             if (isVisible) {
                 hideKeyboard()
@@ -250,15 +284,31 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             } else
                 hideColorToolbar()
         }
-        with(state.addBlockToolbar) {
+        state.addBlockToolbar.apply {
             if (isVisible) {
+                optionToolbar.state = OptionToolbarWidget.State.ADD_BLOCK
                 hideKeyboard()
                 lifecycleScope.launch {
                     delay(300)
                     showOptionToolbar()
                 }
-            } else
-                hideOptionToolbar()
+            } else {
+                if (!state.turnIntoToolbar.isVisible)
+                    hideOptionToolbar()
+            }
+        }
+        state.turnIntoToolbar.apply {
+            if (isVisible) {
+                optionToolbar.state = OptionToolbarWidget.State.TURN_INTO
+                hideKeyboard()
+                lifecycleScope.launch {
+                    delay(300)
+                    optionToolbar.show()
+                }
+            } else {
+                if (!state.addBlockToolbar.isVisible)
+                    hideOptionToolbar()
+            }
         }
         with(state.actionToolbar) {
             if (isVisible) {

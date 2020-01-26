@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface BlockRemote {
     suspend fun create(command: CommandEntity.Create)
     suspend fun updateText(command: CommandEntity.UpdateText)
+    suspend fun updateTextStyle(command: CommandEntity.UpdateStyle)
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun dnd(command: CommandEntity.Dnd)
     suspend fun duplicate(command: CommandEntity.Duplicate): Id

@@ -13,6 +13,7 @@ interface BlockRepository {
     suspend fun unlink(command: Command.Unlink)
     suspend fun create(command: Command.Create)
     suspend fun updateText(command: Command.UpdateText)
+    suspend fun updateTextStyle(command: Command.UpdateStyle)
     suspend fun updateCheckbox(command: Command.UpdateCheckbox)
     suspend fun getConfig(): Config
     suspend fun createPage(parentId: String): Id

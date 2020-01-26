@@ -12,6 +12,7 @@
 * `ControlPanelToolbar` holds now the id of the focused block (#133)
 * The main toolbar is hidden when no block is focused on a page (#103)
 * Regress: new paragraph is not focused when created after on-enter-press event is triggered (#138)
+* Fixed Github Actions CI issue related with token.
 
 ### Middleware
 

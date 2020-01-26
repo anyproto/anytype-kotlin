@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - run: ./middleware.sh
+      - run: ./middleware.sh ${{ secrets.ANYTYPE_SECRET }}
       - run: ./gradlew build test -Dpre-dex=false
       - uses: actions/upload-artifact@master
         with:

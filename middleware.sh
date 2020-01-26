@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+TOKEN=$1
+
 PROPERTY_PATH="middleware.path"
 PROPERTY_VERSION="middleware.version"
 LIBRARY_PATH="libs/lib.aar"
@@ -8,18 +10,12 @@ REPO="anytypeio/go-anytype-middleware"
 FILE="lib.tar.gz"
 GITHUB="api.github.com"
 
-#echo -n "GitHub auth token: "
-#read -s token
-#printf "\n"
-
-token='185fa730ee27be84392c8e334d1afb808761cdc6'
-
-if [ "$token" = "" ]; then
+if [ "$TOKEN" = "" ]; then
   echo "ERROR: token is empty"
   exit 1
 fi;
 
-version=`curl -H "Authorization: token $token" -H "Accept: application/vnd.github.v3+json" -sL https://$GITHUB/repos/$REPO/releases | jq ".[0]"`
+version=`curl -H "Authorization: token $TOKEN" -H "Accept: application/vnd.github.v3+json" -sL https://$GITHUB/repos/$REPO/releases | jq ".[0]"`
 tag=`echo $version | jq ".tag_name"`
 asset_id=`echo $version | jq ".assets | map(select(.name | match(\"android_lib_\";\"i\")))[0].id"`
 
@@ -31,7 +27,7 @@ fi;
 printf "Version: $tag\n"
 printf "Found asset: $asset_id\n"
 echo -n "Downloading file... "
-curl -sL -H 'Accept: application/octet-stream' https://$token:@$GITHUB/repos/$REPO/releases/assets/$asset_id > $FILE
+curl -sL -H 'Accept: application/octet-stream' https://$TOKEN:@$GITHUB/repos/$REPO/releases/assets/$asset_id > $FILE
 printf "Done\n"
 
 echo -n "Uncompressing... "

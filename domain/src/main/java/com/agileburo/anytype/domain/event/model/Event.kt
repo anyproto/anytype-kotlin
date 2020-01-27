@@ -36,7 +36,10 @@ sealed class Event {
             val id: Id,
             val text: String? = null,
             val style: Text.Style? = null
-        ) : Command()
+        ) : Command() {
+            fun textChanged(): Boolean = text != null
+            fun styleChanged(): Boolean = style != null
+        }
 
         /**
          * Command to update a block structure.

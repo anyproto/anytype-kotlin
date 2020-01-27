@@ -111,7 +111,8 @@ class PageViewModel(
     }
 
     private fun handleEvents(events: List<Event>) {
-        Timber.d("Intercepted events: $events")
+        var rerender = true
+
         events.forEach { event ->
             Timber.d("Handling event: $event")
             when (event) {
@@ -134,6 +135,8 @@ class PageViewModel(
                     blocks = blocks.filter { it.id != event.target }
                 }
                 is Event.Command.GranularChange -> {
+                    if (event.textChanged() && !event.styleChanged())
+                        rerender = false
                     blocks = blocks.map { block ->
                         if (block.id == event.id)
                             block.copy(
@@ -148,7 +151,8 @@ class PageViewModel(
             }
         }
 
-        viewModelScope.launch { renderingChannel.send(blocks) }
+        if (rerender)
+            viewModelScope.launch { renderingChannel.send(blocks) }
     }
 
     private fun processMarkupChanges() {

@@ -120,6 +120,11 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             .launchIn(lifecycleScope)
 
         toolbar
+            .colorClicks()
+            .onEach { vm.onColorToolbarToogleClicked() }
+            .launchIn(lifecycleScope)
+
+        toolbar
             .addButtonClicks()
             .onEach { vm.onAddBlockToolbarClicked() }
             .launchIn(lifecycleScope)
@@ -148,9 +153,9 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             .observeClicks()
             .onEach { click ->
                 if (click is ColorToolbarWidget.Click.OnTextColorClicked)
-                    vm.onMarkupTextColorAction(color = click.color.hexColorCode())
+                    handleTextColorClick(click)
                 else
-                    toast(NOT_IMPLEMENTED_MESSAGE)
+                    handleBackgroundColorClicked()
             }
             .launchIn(lifecycleScope)
 
@@ -176,6 +181,17 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             .launchIn(lifecycleScope)
 
         fab.clicks().onEach { toast(NOT_IMPLEMENTED_MESSAGE) }.launchIn(lifecycleScope)
+    }
+
+    private fun handleTextColorClick(click: ColorToolbarWidget.Click.OnTextColorClicked) {
+        when {
+            colorToolbar.state == ColorToolbarWidget.State.SELECTION -> {
+                vm.onMarkupTextColorAction(click.color.hexColorCode())
+            }
+            colorToolbar.state == ColorToolbarWidget.State.BLOCK -> {
+                vm.onToolbarTextColorAction(click.color.hexColorCode())
+            }
+        }
     }
 
     private fun handleAddBlockToolbarOptionClicked(option: Option) {
@@ -220,6 +236,10 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
                 }
             }
         }
+    }
+
+    private fun handleBackgroundColorClicked() {
+        toast(NOT_IMPLEMENTED_MESSAGE)
     }
 
     private fun showColorToolbar() {
@@ -273,8 +293,15 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         Timber.d("Rendering new control panel state:\n$state")
         markupToolbar.setState(state.markupToolbar)
         toolbar.setState(state.blockToolbar)
+
         state.focus?.let { toolbar.setTurnIntoTarget(it.type) }
-        with(state.colorToolbar) {
+
+        state.colorToolbar.apply {
+            colorToolbar.state = when {
+                state.blockToolbar.isVisible -> ColorToolbarWidget.State.BLOCK
+                state.markupToolbar.isVisible -> ColorToolbarWidget.State.SELECTION
+                else -> ColorToolbarWidget.State.IDLE
+            }
             if (isVisible) {
                 hideKeyboard()
                 lifecycleScope.launch {
@@ -284,6 +311,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
             } else
                 hideColorToolbar()
         }
+
         state.addBlockToolbar.apply {
             if (isVisible) {
                 optionToolbar.state = OptionToolbarWidget.State.ADD_BLOCK
@@ -297,6 +325,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
                     hideOptionToolbar()
             }
         }
+
         state.turnIntoToolbar.apply {
             if (isVisible) {
                 optionToolbar.state = OptionToolbarWidget.State.TURN_INTO
@@ -310,6 +339,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
                     hideOptionToolbar()
             }
         }
+
         with(state.actionToolbar) {
             if (isVisible) {
                 hideKeyboard()

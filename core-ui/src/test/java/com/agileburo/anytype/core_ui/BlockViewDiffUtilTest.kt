@@ -13,7 +13,7 @@ class BlockViewDiffUtilTest {
 
         val index = 0
 
-        val oldBlock = BlockView.Text(
+        val oldBlock = BlockView.Paragraph(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString()
         )
@@ -36,12 +36,12 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock: BlockView = BlockView.Text(
+        val oldBlock: BlockView = BlockView.Paragraph(
             id = id,
             text = MockDataFactory.randomString()
         )
 
-        val newBlock: BlockView = BlockView.Text(
+        val newBlock: BlockView = BlockView.Paragraph(
             id = id,
             text = MockDataFactory.randomString()
         )
@@ -64,7 +64,7 @@ class BlockViewDiffUtilTest {
         val id = MockDataFactory.randomUuid()
         val text = MockDataFactory.randomString()
 
-        val oldBlock = BlockView.Text(
+        val oldBlock = BlockView.Paragraph(
             id = id,
             text = text
         )
@@ -93,13 +93,13 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock: BlockView = BlockView.Text(
+        val oldBlock: BlockView = BlockView.Paragraph(
             id = id,
             text = text,
             marks = emptyList()
         )
 
-        val newBlock: BlockView = BlockView.Text(
+        val newBlock: BlockView = BlockView.Paragraph(
             id = id,
             text = text,
             marks = listOf(
@@ -140,13 +140,13 @@ class BlockViewDiffUtilTest {
             )
         )
 
-        val oldBlock: BlockView = BlockView.Text(
+        val oldBlock: BlockView = BlockView.Paragraph(
             id = id,
             text = MockDataFactory.randomString(),
             marks = marks
         )
 
-        val newBlock: BlockView = BlockView.Text(
+        val newBlock: BlockView = BlockView.Paragraph(
             id = id,
             text = MockDataFactory.randomString(),
             marks = marks
@@ -173,13 +173,13 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock: BlockView = BlockView.Text(
+        val oldBlock: BlockView = BlockView.Paragraph(
             id = id,
             text = MockDataFactory.randomString(),
             marks = emptyList()
         )
 
-        val newBlock: BlockView = BlockView.Text(
+        val newBlock: BlockView = BlockView.Paragraph(
             id = id,
             text = MockDataFactory.randomString(),
             marks = listOf(

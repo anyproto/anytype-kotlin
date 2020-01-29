@@ -31,6 +31,8 @@ import kotlinx.coroutines.flow.consumeAsFlow
  */
 class ColorToolbarWidget : LinearLayout {
 
+    var state: State = State.IDLE
+
     private val channel = Channel<Click>()
 
     sealed class Click {
@@ -241,4 +243,6 @@ class ColorToolbarWidget : LinearLayout {
             }
         }
     }
+
+    enum class State { IDLE, BLOCK, SELECTION }
 }

@@ -11,6 +11,7 @@ interface BlockRemote {
     suspend fun create(command: CommandEntity.Create)
     suspend fun updateText(command: CommandEntity.UpdateText)
     suspend fun updateTextStyle(command: CommandEntity.UpdateStyle)
+    suspend fun updateTextColor(command: CommandEntity.UpdateTextColor)
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun dnd(command: CommandEntity.Dnd)
     suspend fun duplicate(command: CommandEntity.Duplicate): Id

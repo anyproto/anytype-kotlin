@@ -1,5 +1,6 @@
 package com.agileburo.anytype.core_ui.features.page
 
+import android.graphics.Color
 import android.text.Editable
 import android.view.View
 import android.widget.TextView
@@ -8,10 +9,16 @@ import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.setMarkup
 import com.agileburo.anytype.core_ui.common.toSpannable
+import com.agileburo.anytype.core_ui.extensions.color
+import com.agileburo.anytype.core_ui.extensions.tint
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_AND_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.MARKUP_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_AND_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_AND_MARKUP_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_MARKUP_AND_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
@@ -65,10 +72,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             )
         }
 
-        fun removeEnterKeyDetectors() {
-            content.filters = arrayOf()
-        }
-
         fun enableBackspaceDetector(
             onEmptyBlockBackspaceClicked: () -> Unit
         ) {
@@ -81,6 +84,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     }
                 }
             )
+        }
+
+        fun setTextColor(color: String) {
+            content.setTextColor(Color.parseColor(color))
+        }
+
+        fun setTextColor(color: Int) {
+            content.setTextColor(color)
         }
     }
 
@@ -102,7 +113,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         fun bind(
-            item: BlockView.Text,
+            item: BlockView.Paragraph,
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
@@ -111,6 +122,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
             else
                 content.setText(item.text)
+
+            if (item.color != null) {
+                setTextColor(item.color)
+            } else {
+                setTextColor(content.context.color(R.color.black))
+            }
 
             setFocus(item)
 
@@ -128,8 +145,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun processChangePayload(
             payloads: List<Any>,
-            item: BlockView.Text
+            item: BlockView.Paragraph
         ) = payloads.forEach { payload ->
+
+            Timber.d("Applying change payload: $payload")
+
             when (payload) {
                 MARKUP_CHANGED -> setMarkup(markup = item)
                 TEXT_CHANGED -> {
@@ -141,13 +161,28 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                         content.setText(item.text)
                     setMarkup(markup = item)
                 }
+                TEXT_MARKUP_AND_COLOR_CHANGED -> {
+                    if (item.color != null) setTextColor(item.color)
+                    if (content.text.toString() != item.text) content.setText(item.text)
+                    setMarkup(markup = item)
+                }
                 FOCUS_CHANGED -> {
                     setFocus(item)
+                }
+                TEXT_COLOR_CHANGED -> {
+                    if (item.color != null) setTextColor(item.color)
+                }
+                TEXT_AND_COLOR_CHANGED -> {
+                    if (item.color != null) setTextColor(item.color)
+                    if (content.text.toString() != item.text) content.setText(item.text)
+                }
+                FOCUS_AND_COLOR_CHANGED -> {
+                    if (item.color != null) setTextColor(item.color)
                 }
             }
         }
 
-        private fun setFocus(item: BlockView.Text) {
+        private fun setFocus(item: BlockView.Paragraph) {
             if (item.focused) {
                 Timber.d("Requesting focus of block: $item.id")
                 focus(content)
@@ -202,6 +237,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 onFocusChanged(item.id, hasFocus)
             }
             header.setText(item.text)
+
+            if (item.color != null) {
+                setTextColor(item.color)
+            } else {
+                setTextColor(content.context.color(R.color.black))
+            }
+
             header.addTextChangedListener(
                 DefaultTextWatcher { text ->
                     onTextChanged(item.id, text)
@@ -225,6 +267,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 onFocusChanged(item.id, hasFocus)
             }
             header.setText(item.text)
+
+            if (item.color != null) {
+                setTextColor(item.color)
+            } else {
+                setTextColor(content.context.color(R.color.black))
+            }
+
             header.addTextChangedListener(
                 DefaultTextWatcher { text ->
                     onTextChanged(item.id, text)
@@ -244,10 +293,18 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
+            header.setText(item.text)
+
+            if (item.color != null) {
+                setTextColor(item.color)
+            } else {
+                setTextColor(content.context.color(R.color.black))
+            }
+
             header.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
             }
-            header.setText(item.text)
+
             header.addTextChangedListener(
                 DefaultTextWatcher { text ->
                     onTextChanged(item.id, text)
@@ -268,7 +325,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     class Checkbox(view: View) : BlockViewHolder(view), TextHolder {
 
         private val checkbox = itemView.checkboxIcon
-        override val content = itemView.checkboxContent
+        override val content: TextInputWidget = itemView.checkboxContent
 
         fun bind(
             item: BlockView.Checkbox,
@@ -349,6 +406,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Bulleted(view: View) : BlockViewHolder(view), TextHolder {
 
+        private val bullet = itemView.bullet
         override val content: TextInputWidget = itemView.bulletedListContent
 
         init {
@@ -372,6 +430,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             else
                 content.setText(item.text)
 
+            if (item.color != null) {
+                setTextColor(item.color)
+            } else {
+                setTextColor(content.context.color(R.color.black))
+            }
+
             content.addTextChangedListener(
                 DefaultTextWatcher { text ->
                     onTextChanged(item.id, text)
@@ -389,10 +453,23 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             content.selectionDetector = { onSelectionChanged(item.id, it) }
         }
 
+        override fun setTextColor(color: String) {
+            super.setTextColor(color)
+            bullet.tint(Color.parseColor(color))
+        }
+
+        override fun setTextColor(color: Int) {
+            super.setTextColor(color)
+            bullet.tint(content.context.color(R.color.black))
+        }
+
         fun processChangePayload(
             payloads: List<Any>,
             item: BlockView.Bulleted
         ) = payloads.forEach { payload ->
+
+            Timber.d("Applying change payload: $payload")
+
             when (payload) {
                 MARKUP_CHANGED -> setMarkup(markup = item)
                 TEXT_CHANGED -> {
@@ -404,8 +481,23 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                         content.setText(item.text)
                     setMarkup(markup = item)
                 }
+                TEXT_MARKUP_AND_COLOR_CHANGED -> {
+                    if (item.color != null) setTextColor(item.color)
+                    if (content.text.toString() != item.text) content.setText(item.text)
+                    setMarkup(markup = item)
+                }
                 FOCUS_CHANGED -> {
                     // TODO
+                }
+                FOCUS_AND_COLOR_CHANGED -> {
+                    if (item.color != null) setTextColor(item.color)
+                }
+                TEXT_COLOR_CHANGED -> {
+                    if (item.color != null) setTextColor(item.color)
+                }
+                TEXT_AND_COLOR_CHANGED -> {
+                    if (item.color != null) setTextColor(item.color)
+                    if (content.text.toString() != item.text) content.setText(item.text)
                 }
             }
         }

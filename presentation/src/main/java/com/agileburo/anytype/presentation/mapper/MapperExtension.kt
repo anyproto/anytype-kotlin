@@ -10,23 +10,27 @@ import com.agileburo.anytype.presentation.desktop.DashboardView
 fun Block.toView(focused: Boolean = false): BlockView = when (val content = this.content) {
     is Block.Content.Text -> {
         when (content.style) {
-            Style.P -> BlockView.Text(
+            Style.P -> BlockView.Paragraph(
                 id = this.id,
                 text = content.text,
                 marks = mapMarks(content),
-                focused = focused
+                focused = focused,
+                color = content.color
             )
             Style.H1 -> BlockView.HeaderOne(
                 id = id,
-                text = content.text
+                text = content.text,
+                color = content.color
             )
             Style.H2 -> BlockView.HeaderTwo(
                 id = id,
-                text = content.text
+                text = content.text,
+                color = content.color
             )
             Style.H3, Style.H4 -> BlockView.HeaderThree(
                 id = id,
-                text = content.text
+                text = content.text,
+                color = content.color
             )
             Style.TITLE -> BlockView.Title(
                 id = id,
@@ -45,7 +49,8 @@ fun Block.toView(focused: Boolean = false): BlockView = when (val content = this
                 text = content.text,
                 indent = 0,
                 marks = mapMarks(content),
-                focused = focused
+                focused = focused,
+                color = content.color
             )
             Style.NUMBERED -> BlockView.Numbered(
                 id = id,

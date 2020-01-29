@@ -42,7 +42,8 @@ class PageModule {
         updateCheckbox: UpdateCheckbox,
         unlinkBlocks: UnlinkBlocks,
         duplicateBlock: DuplicateBlock,
-        updateTextStyle: UpdateTextStyle
+        updateTextStyle: UpdateTextStyle,
+        updateTextColor: UpdateTextColor
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -52,7 +53,8 @@ class PageModule {
         updateCheckbox = updateCheckbox,
         unlinkBlocks = unlinkBlocks,
         duplicateBlock = duplicateBlock,
-        updateTextStyle = updateTextStyle
+        updateTextStyle = updateTextStyle,
+        updateTextColor = updateTextColor
     )
 
     @Provides
@@ -133,6 +135,14 @@ class PageModule {
     fun provideUpdateTextStyleUseCase(
         repo: BlockRepository
     ): UpdateTextStyle = UpdateTextStyle(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideUpdateTextColorUseCase(
+        repo: BlockRepository
+    ): UpdateTextColor = UpdateTextColor(
         repo = repo
     )
 }

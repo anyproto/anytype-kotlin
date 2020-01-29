@@ -231,7 +231,7 @@ class BlockAdapter(
                 is BlockViewHolder.Paragraph -> {
                     holder.processChangePayload(
                         payloads = payloads,
-                        item = blocks[position] as BlockView.Text
+                        item = blocks[position] as BlockView.Paragraph
                     )
                 }
                 is BlockViewHolder.Bulleted -> {
@@ -254,7 +254,7 @@ class BlockAdapter(
         when (holder) {
             is BlockViewHolder.Paragraph -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Text,
+                    item = blocks[position] as BlockView.Paragraph,
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged

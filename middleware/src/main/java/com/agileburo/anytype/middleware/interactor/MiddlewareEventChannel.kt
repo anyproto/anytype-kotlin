@@ -57,6 +57,10 @@ class MiddlewareEventChannel(
                             style = if (event.blockSetText.hasStyle())
                                 event.blockSetText.style.value.entity()
                             else
+                                null,
+                            color = if (event.blockSetText.hasColor())
+                                event.blockSetText.color.value
+                            else
                                 null
                         )
                     }

@@ -265,6 +265,20 @@ public class Middleware {
         service.blockSetTextStyle(request);
     }
 
+    public void updateTextColor(CommandEntity.UpdateTextColor command) throws Exception {
+
+        Block.Set.Text.Color.Request request = Block.Set.Text.Color.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .setBlockId(command.getTarget())
+                .setColor(command.getColor())
+                .build();
+
+        Timber.d("Updating text color with the following request:\n%s", request.toString());
+
+        service.blockSetTextColor(request);
+    }
+
     public void createBlock(
             String contextId,
             String targetId,

@@ -17,10 +17,7 @@ import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
-import com.agileburo.anytype.domain.ext.addMark
-import com.agileburo.anytype.domain.ext.asMap
-import com.agileburo.anytype.domain.ext.asRender
-import com.agileburo.anytype.domain.ext.textStyle
+import com.agileburo.anytype.domain.ext.*
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.common.StateReducer
@@ -44,7 +41,8 @@ class PageViewModel(
     private val updateCheckbox: UpdateCheckbox,
     private val unlinkBlocks: UnlinkBlocks,
     private val duplicateBlock: DuplicateBlock,
-    private val updateTextStyle: UpdateTextStyle
+    private val updateTextStyle: UpdateTextStyle,
+    private val updateTextColor: UpdateTextColor
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -105,7 +103,9 @@ class PageViewModel(
 
     private fun startProcessingControlPanelViewState() {
         viewModelScope.launch {
-            controlPanelInteractor.state().distinctUntilChanged()
+            controlPanelInteractor
+                .state()
+                .distinctUntilChanged()
                 .collect { controlPanelViewState.postValue(it) }
         }
     }
@@ -135,13 +135,13 @@ class PageViewModel(
                     blocks = blocks.filter { it.id != event.target }
                 }
                 is Event.Command.GranularChange -> {
-                    if (event.textChanged() && !event.styleChanged())
-                        rerender = false
+                    if (event.onlyTextChanged()) rerender = false
                     blocks = blocks.map { block ->
                         if (block.id == event.id)
                             block.copy(
                                 content = block.content.asText().copy(
-                                    style = event.style ?: block.textStyle()
+                                    style = event.style ?: block.textStyle(),
+                                    color = event.color ?: block.textColor()
                                 )
                             )
                         else
@@ -151,8 +151,7 @@ class PageViewModel(
             }
         }
 
-        if (rerender)
-            viewModelScope.launch { renderingChannel.send(blocks) }
+        if (rerender) viewModelScope.launch { renderingChannel.send(blocks) }
     }
 
     private fun processMarkupChanges() {
@@ -359,7 +358,7 @@ class PageViewModel(
     }
 
     fun onMarkupTextColorAction(color: String) {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextColorSelected)
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMarkupTextColorSelected)
         viewModelScope.launch {
             markupActionChannel.send(
                 MarkupAction(
@@ -367,6 +366,25 @@ class PageViewModel(
                     param = color
                 )
             )
+        }
+    }
+
+    fun onToolbarTextColorAction(color: String) {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockTextColorSelected)
+        focusChannel.value.let { focus ->
+            updateTextColor.invoke(
+                scope = viewModelScope,
+                params = UpdateTextColor.Params(
+                    context = pageId,
+                    target = focus,
+                    color = color
+                )
+            ) { result ->
+                result.either(
+                    fnL = { Timber.e(it, "Error while updating the whole block's text color") },
+                    fnR = { Timber.d("Text color ($color) has been succesfully updated for the block: $focus") }
+                )
+            }
         }
     }
 
@@ -396,6 +414,7 @@ class PageViewModel(
             )
         }
     }
+
 
     fun onActionDuplicateClicked() {
         viewModelScope.launch {
@@ -462,6 +481,10 @@ class PageViewModel(
 
     fun onTurnIntoToolbarToggleClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTurnIntoToolbarToggleClicked)
+    }
+
+    fun onColorToolbarToogleClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnColorToolbarToggleClicked)
     }
 
     fun onTurnIntoStyleClicked(style: Block.Content.Text.Style) {
@@ -591,10 +614,21 @@ class PageViewModel(
              */
             object OnTurnIntoToolbarOptionSelected : Event()
 
+
             /**
-             * Represents an event when user selected a text color on [Toolbar.Color] toolbar.
+             * Represents an event when user toggled [Toolbar.Color] toolbar button on [Toolbar.Block]
              */
-            object OnTextColorSelected : Event()
+            object OnColorToolbarToggleClicked : Event()
+
+            /**
+             * Represents an event when user selected a markup text color on [Toolbar.Color] toolbar.
+             */
+            object OnMarkupTextColorSelected : Event()
+
+            /**
+             * Represents an event when user selected a block text color on [Toolbar.Color] toolbar.
+             */
+            object OnBlockTextColorSelected : Event()
 
             /**
              * Represents an event when user selected an action toolbar on [Toolbar.Block]
@@ -639,7 +673,8 @@ class PageViewModel(
                             null
                     ),
                     blockToolbar = state.blockToolbar.copy(
-                        selectedAction = null
+                        selectedAction = null,
+                        isVisible = (event.selection.first == event.selection.last)
                     ),
                     actionToolbar = state.actionToolbar.copy(
                         isVisible = false
@@ -663,11 +698,19 @@ class PageViewModel(
                             null
                     )
                 )
-                is Event.OnTextColorSelected -> state.copy(
+                is Event.OnMarkupTextColorSelected -> state.copy(
                     colorToolbar = state.colorToolbar.copy(
                         isVisible = false
                     ),
                     markupToolbar = state.markupToolbar.copy(
+                        selectedAction = null
+                    )
+                )
+                is Event.OnBlockTextColorSelected -> state.copy(
+                    colorToolbar = state.colorToolbar.copy(
+                        isVisible = false
+                    ),
+                    blockToolbar = state.blockToolbar.copy(
                         selectedAction = null
                     )
                 )
@@ -686,6 +729,9 @@ class PageViewModel(
                     ),
                     turnIntoToolbar = state.turnIntoToolbar.copy(
                         isVisible = false
+                    ),
+                    colorToolbar = state.colorToolbar.copy(
+                        isVisible = false
                     )
                 )
                 is Event.OnTurnIntoToolbarToggleClicked -> state.copy(
@@ -703,6 +749,20 @@ class PageViewModel(
                     ),
                     actionToolbar = state.actionToolbar.copy(
                         isVisible = false
+                    ),
+                    colorToolbar = state.colorToolbar.copy(
+                        isVisible = false
+                    )
+                )
+                is Event.OnColorToolbarToggleClicked -> state.copy(
+                    colorToolbar = state.colorToolbar.copy(
+                        isVisible = !state.colorToolbar.isVisible
+                    ),
+                    blockToolbar = state.blockToolbar.copy(
+                        selectedAction = if (!state.colorToolbar.isVisible)
+                            Toolbar.Block.Action.COLOR
+                        else
+                            null
                     )
                 )
                 is Event.OnAddBlockToolbarOptionSelected -> state.copy(
@@ -757,6 +817,9 @@ class PageViewModel(
                             actionToolbar = state.actionToolbar.copy(
                                 isVisible = false
                             ),
+                            colorToolbar = state.colorToolbar.copy(
+                                isVisible = false
+                            ),
                             focus = ControlPanelState.Focus(
                                 id = event.id,
                                 type = ControlPanelState.Focus.Type.valueOf(
@@ -782,6 +845,9 @@ class PageViewModel(
                                 isVisible = false
                             ),
                             turnIntoToolbar = state.turnIntoToolbar.copy(
+                                isVisible = false
+                            ),
+                            colorToolbar = state.colorToolbar.copy(
                                 isVisible = false
                             )
                         )

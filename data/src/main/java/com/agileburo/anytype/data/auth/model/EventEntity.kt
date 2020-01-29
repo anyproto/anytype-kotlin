@@ -21,7 +21,8 @@ sealed class EventEntity {
         data class GranularChange(
             val id: String,
             val text: String? = null,
-            val style: BlockEntity.Content.Text.Style? = null
+            val style: BlockEntity.Content.Text.Style? = null,
+            val color: String? = null
         ) : Command()
 
         data class UpdateStructure(

@@ -37,11 +37,19 @@ data class Block(
         fun asText() = this as Text
         fun asDashboard() = this as Dashboard
 
+        /**
+         * Textual block.
+         * @property text content text
+         * @property marks markup related to [text],
+         * @property isChecked whether this block is checked or not (see [Style.CHECKBOX])
+         * @property color text color, which should be applied to the whole block (as opposed to [Mark.Type.TEXT_COLOR])
+         */
         data class Text(
             val text: String,
             val style: Style,
             val marks: List<Mark>,
-            val isChecked: Boolean? = null
+            val isChecked: Boolean? = null,
+            val color: String? = null
         ) : Content() {
 
             /**

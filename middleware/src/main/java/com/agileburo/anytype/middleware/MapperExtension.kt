@@ -154,7 +154,8 @@ fun Block.text(): BlockEntity.Content.Text = BlockEntity.Content.Text(
         )
     },
     style = text.style.entity(),
-    isChecked = text.checked
+    isChecked = text.checked,
+    color = if (text.color.isNotEmpty()) text.color else null
 )
 
 fun Block.layout(): BlockEntity.Content.Layout = BlockEntity.Content.Layout(

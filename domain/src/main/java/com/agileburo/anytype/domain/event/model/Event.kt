@@ -31,14 +31,15 @@ sealed class Event {
          * @property id id of the target block
          * @property text new text (considered updated if not null)
          * @property style new style (considered updated if not null)
+         * @property color new color of the whole block
          */
         data class GranularChange(
             val id: Id,
             val text: String? = null,
-            val style: Text.Style? = null
+            val style: Text.Style? = null,
+            val color: String? = null
         ) : Command() {
-            fun textChanged(): Boolean = text != null
-            fun styleChanged(): Boolean = style != null
+            fun onlyTextChanged() = style == null && color == null && text != null
         }
 
         /**

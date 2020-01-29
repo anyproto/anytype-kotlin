@@ -1,6 +1,7 @@
 package com.agileburo.anytype.core_ui.extensions
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.view.View
 import android.widget.Toast
 import com.agileburo.anytype.core_ui.R
@@ -31,3 +32,7 @@ fun Context.toast(
         )
     }
     .show()
+
+fun View.tint(color: Int) {
+    backgroundTintList = ColorStateList.valueOf(color)
+}

@@ -19,6 +19,7 @@ import com.agileburo.anytype.presentation.page.PageViewModel.ViewState
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -30,6 +31,7 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
 
+@ExperimentalCoroutinesApi
 class PageViewModelTest {
 
     @get:Rule
@@ -64,6 +66,9 @@ class PageViewModelTest {
 
     @Mock
     lateinit var updateTextStyle: UpdateTextStyle
+
+    @Mock
+    lateinit var updateTextColor: UpdateTextColor
 
     private lateinit var vm: PageViewModel
 
@@ -1212,7 +1217,7 @@ class PageViewModelTest {
                 isVisible = false
             ),
             blockToolbar = ControlPanelState.Toolbar.Block(
-                isVisible = true,
+                isVisible = false,
                 selectedAction = null
             ),
             addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
@@ -1350,7 +1355,7 @@ class PageViewModelTest {
                 isVisible = expectedVisibility
             ),
             blockToolbar = ControlPanelState.Toolbar.Block(
-                isVisible = true,
+                isVisible = false,
                 selectedAction = null
             ),
             addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
@@ -1977,6 +1982,60 @@ class PageViewModelTest {
         testObserver.assertValue(PageViewModel.EMPTY_FOCUS_ID)
     }
 
+    @Test
+    fun `should start updating the target block's color on color-toolbar-option-selected event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
+            root = root,
+            child = child,
+            style = Block.Content.Text.Style.TITLE
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
+
+        val color = MockDataFactory.randomString()
+
+        vm.onToolbarTextColorAction(color = color)
+
+        verify(updateTextColor, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                UpdateTextColor.Params(
+                    context = root,
+                    target = child,
+                    color = color
+                )
+            ),
+            onResult = any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()
@@ -2036,7 +2095,8 @@ class PageViewModelTest {
             updateCheckbox = updateCheckbox,
             unlinkBlocks = unlinkBlocks,
             duplicateBlock = duplicateBlock,
-            updateTextStyle = updateTextStyle
+            updateTextStyle = updateTextStyle,
+            updateTextColor = updateTextColor
         )
     }
 }

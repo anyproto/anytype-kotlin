@@ -1,5 +1,20 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.17 (WIP)
+
+### New features
+
+* User can now use olor toolbar to change the text color of the whole text block (#153)
+* `Block.Content.Text` model now has optional `color` property (#153).
+
+### Fixes
+
+*
+
+### Middleware
+
+* Added `blockSetTextColor` command (#153). 
+
 ## Version 0.0.16
 
 ### New features

@@ -14,6 +14,7 @@ interface BlockRepository {
     suspend fun create(command: Command.Create)
     suspend fun updateText(command: Command.UpdateText)
     suspend fun updateTextStyle(command: Command.UpdateStyle)
+    suspend fun updateTextColor(command: Command.UpdateTextColor)
     suspend fun updateCheckbox(command: Command.UpdateCheckbox)
     suspend fun getConfig(): Config
     suspend fun createPage(parentId: String): Id

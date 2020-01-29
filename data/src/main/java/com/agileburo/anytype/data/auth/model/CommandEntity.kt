@@ -18,6 +18,12 @@ class CommandEntity {
         val style: BlockEntity.Content.Text.Style
     )
 
+    data class UpdateTextColor(
+        val context: String,
+        val target: String,
+        val color: String
+    )
+
     class UpdateCheckbox(
         val context: String,
         val target: String,

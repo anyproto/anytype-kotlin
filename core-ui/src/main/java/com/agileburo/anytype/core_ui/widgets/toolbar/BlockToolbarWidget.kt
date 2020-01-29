@@ -41,12 +41,14 @@ class BlockToolbarWidget : ConstraintLayout {
     fun addButtonClicks() = add.clicks()
     fun actionClicks() = actions.clicks()
     fun turnIntoClicks() = turnIntoToggle.clicks()
+    fun colorClicks() = color.clicks()
 
     fun setState(state: ControlPanelState.Toolbar.Block) {
         if (state.isVisible) visible() else invisible()
         add.isSelected = state.selectedAction == ADD
         actions.isSelected = state.selectedAction == BLOCK_ACTION
         turnIntoToggle.isSelected = state.selectedAction == TURN_INTO
+        color.isSelected = state.selectedAction == COLOR
         arrow.isSelected = state.selectedAction == TURN_INTO
     }
 

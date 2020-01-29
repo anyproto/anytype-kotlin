@@ -18,6 +18,18 @@ sealed class Command {
     )
 
     /**
+     * Command for updating the whole block's text color.
+     * @property context context id
+     * @property target id of the target block, whose color we need to update.
+     * @property color new color (hex)
+     */
+    data class UpdateTextColor(
+        val context: Id,
+        val target: Id,
+        val color: String
+    )
+
+    /**
      * @property context context id
      * @property target id of the target checkbox block
      * @property isChecked new checked/unchecked state for this checkbox block

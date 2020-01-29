@@ -337,6 +337,10 @@ class BlockMiddleware(
         middleware.updateTextStyle(command)
     }
 
+    override suspend fun updateTextColor(command: CommandEntity.UpdateTextColor) {
+        middleware.updateTextColor(command)
+    }
+
     override suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox) {
         middleware.updateCheckbox(
             command.context,

@@ -27,24 +27,43 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
  */
 sealed class BlockView : ViewType {
 
+
     /**
      * Each block view has a corresponding block id.
      */
     abstract val id: String
 
     /**
-     * UI-model for a basic text block.
+     * Basic interface for textual blocks' common properties.
+     */
+    interface Text {
+
+        /**
+         * Base text color for this text. If not present, default color will be applied.
+         */
+        val color: String?
+
+        /**
+         * Textual block's text.
+         */
+        val text: String
+    }
+
+    /**
+     * UI-model for a basic paragraph block.
      * @property id block's id
      * @property text block's content text
      * @property marks markup
      * @property focused whether this block is currently focused or not
+     * @property color text color
      */
-    data class Text(
+    data class Paragraph(
         override val id: String,
-        val text: String,
+        override val text: String,
         override val marks: List<Markup.Mark> = emptyList(),
-        override var focused: Boolean = false
-    ) : BlockView(), Markup, Focusable {
+        override var focused: Boolean = false,
+        override val color: String? = null
+    ) : BlockView(), Markup, Focusable, Text {
         override fun getViewType() = HOLDER_PARAGRAPH
         override val body: String = text
     }
@@ -67,11 +86,13 @@ sealed class BlockView : ViewType {
      * UI-model for a header block.
      * @property id block's id
      * @property text header's content (i.e. a header's text)
+     * @property color text color
      */
     data class HeaderOne(
         override val id: String,
-        val text: String
-    ) : BlockView() {
+        override val text: String,
+        override val color: String? = null
+    ) : BlockView(), Text {
         override fun getViewType() = HOLDER_HEADER_ONE
     }
 
@@ -79,11 +100,13 @@ sealed class BlockView : ViewType {
      * UI-model for a header block.
      * @property id block's id
      * @property text header's content (i.e. a header's text)
+     * @property color text color
      */
     data class HeaderTwo(
         override val id: String,
-        val text: String
-    ) : BlockView() {
+        override val color: String? = null,
+        override val text: String
+    ) : BlockView(), Text {
         override fun getViewType() = HOLDER_HEADER_TWO
     }
 
@@ -91,11 +114,13 @@ sealed class BlockView : ViewType {
      * UI-model for a header block.
      * @property id block's id
      * @property text header's content (i.e. a header's text)
+     * @property color text color
      */
     data class HeaderThree(
         override val id: String,
-        val text: String
-    ) : BlockView() {
+        override val color: String? = null,
+        override val text: String
+    ) : BlockView(), Text {
         override fun getViewType() = HOLDER_HEADER_THREE
     }
 
@@ -159,14 +184,16 @@ sealed class BlockView : ViewType {
      * @property id block's id
      * @property text bullet list item content
      * @property indent indentation value
+     * @property color text color
      */
     data class Bulleted(
         override val id: String,
         override val marks: List<Markup.Mark> = emptyList(),
         override val focused: Boolean = false,
-        val text: String,
+        override val color: String? = null,
+        override val text: String,
         val indent: Int
-    ) : BlockView(), Markup, Focusable {
+    ) : BlockView(), Markup, Focusable, Text {
         override fun getViewType() = HOLDER_BULLET
         override val body: String = text
     }

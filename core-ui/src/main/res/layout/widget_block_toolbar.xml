@@ -75,7 +75,7 @@
         android:clickable="true"
         android:focusable="true"
         android:contentDescription="@string/content_description_show_colors"
-        android:src="@drawable/ic_toolbar_color"
+        android:src="@drawable/ic_toolbar_color_selector"
         android:stateListAnimator="@animator/scale_shrink"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/actions"

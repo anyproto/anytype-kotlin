@@ -41,3 +41,10 @@ fun Block.textStyle(): Block.Content.Text.Style {
     else
         throw UnsupportedOperationException("Wrong block content type: ${content.javaClass}")
 }
+
+fun Block.textColor(): String? {
+    if (content is Block.Content.Text)
+        return content.color
+    else
+        throw UnsupportedOperationException("Wrong block content type: ${content.javaClass}")
+}

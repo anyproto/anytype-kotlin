@@ -6,6 +6,7 @@
 
 * User can now use olor toolbar to change the text color of the whole text block (#153)
 * `Block.Content.Text` model now has optional `color` property (#153).
+* Can add/remove links to text + opens links in web browser.
 
 ### Fixes
 

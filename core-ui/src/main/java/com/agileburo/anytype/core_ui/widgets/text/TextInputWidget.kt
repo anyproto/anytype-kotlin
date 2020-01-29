@@ -23,7 +23,7 @@ class TextInputWidget : AppCompatEditText {
     )
 
     init {
-        makeLinksActive()
+        //makeLinksActive()
     }
 
     override fun addTextChangedListener(watcher: TextWatcher) {

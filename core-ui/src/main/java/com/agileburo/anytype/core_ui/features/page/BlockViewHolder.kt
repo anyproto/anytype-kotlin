@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.common.Focusable
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.setMarkup
 import com.agileburo.anytype.core_ui.common.toSpannable
@@ -93,14 +94,25 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun setTextColor(color: Int) {
             content.setTextColor(color)
         }
-    }
 
-    fun focus(editText: TextInputWidget) {
-        editText.apply {
-            postDelayed(
-                { requestFocus() }
-                , FOCUS_TIMEOUT_MILLIS
-            )
+        fun setFocus(item: Focusable) {
+            if (item.focused && !content.hasFocus())
+                focus()
+            else
+                content.clearFocus()
+        }
+
+        fun setMarkup(markup: Markup) {
+            content.text?.setMarkup(markup)
+        }
+
+        private fun focus() {
+            content.apply {
+                postDelayed(
+                    { requestFocus() }
+                    , FOCUS_TIMEOUT_MILLIS
+                )
+            }
         }
     }
 
@@ -180,20 +192,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     if (item.color != null) setTextColor(item.color)
                 }
             }
-        }
-
-        private fun setFocus(item: BlockView.Paragraph) {
-            if (item.focused) {
-                Timber.d("Requesting focus of block: $item.id")
-                focus(content)
-            } else {
-                Timber.d("Clearing focus of block: $item.id")
-                content.clearFocus()
-            }
-        }
-
-        private fun setMarkup(markup: Markup) {
-            content.text?.setMarkup(markup)
         }
     }
 
@@ -334,35 +332,30 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
-            content.setOnFocusChangeListener { _, hasFocus ->
-                onFocusChanged(item.id, hasFocus)
-            }
 
             checkbox.isSelected = item.checked
-
-            checkbox.setOnClickListener {
-                checkbox.isSelected = !checkbox.isSelected
-                onCheckboxClicked(item.id)
-            }
 
             if (item.marks.isNotEmpty())
                 content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
             else
                 content.setText(item.text)
 
+            setFocus(item)
+
+            checkbox.setOnClickListener {
+                checkbox.isSelected = !checkbox.isSelected
+                onCheckboxClicked(item.id)
+            }
+
+            content.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
+
             content.addTextChangedListener(
                 DefaultTextWatcher { text ->
                     onTextChanged(item.id, text)
                 }
             )
-
-            if (item.focused) {
-                content.setSelection(0)
-                focus(content)
-            } else {
-                content.clearFocus()
-                content.setSelection(0)
-            }
 
             content.selectionDetector = { onSelectionChanged(item.id, it) }
         }
@@ -383,13 +376,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setMarkup(markup = item)
                 }
                 FOCUS_CHANGED -> {
-                    // TODO
+                    setFocus(item)
                 }
             }
-        }
-
-        private fun setMarkup(markup: Markup) {
-            content.text?.setMarkup(markup)
         }
     }
 
@@ -421,10 +410,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         ) {
             Timber.d("Binding bullet")
 
-            content.setOnFocusChangeListener { _, hasFocus ->
-                onFocusChanged(item.id, hasFocus)
-            }
-
             if (item.marks.isNotEmpty())
                 content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
             else
@@ -436,18 +421,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 setTextColor(content.context.color(R.color.black))
             }
 
+            setFocus(item)
+
             content.addTextChangedListener(
                 DefaultTextWatcher { text ->
                     onTextChanged(item.id, text)
                 }
             )
 
-            if (item.focused) {
-                content.setSelection(0)
-                focus(content)
-            } else {
-                content.clearFocus()
-                content.setSelection(0)
+            content.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
             }
 
             content.selectionDetector = { onSelectionChanged(item.id, it) }
@@ -487,7 +470,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setMarkup(markup = item)
                 }
                 FOCUS_CHANGED -> {
-                    // TODO
+                    setFocus(item)
                 }
                 FOCUS_AND_COLOR_CHANGED -> {
                     if (item.color != null) setTextColor(item.color)
@@ -500,10 +483,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     if (content.text.toString() != item.text) content.setText(item.text)
                 }
             }
-        }
-
-        private fun setMarkup(markup: Markup) {
-            content.text?.setMarkup(markup)
         }
     }
 
@@ -576,7 +555,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             else if (item.emoji == null)
                 icon.setBackgroundResource(R.drawable.ic_block_page_without_emoji)
         }
-
     }
 
     class Bookmark(view: View) : BlockViewHolder(view) {
@@ -593,7 +571,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             url.text = item.url
             // TODO set logo icon and website's image
         }
-
     }
 
     class Picture(view: View) : BlockViewHolder(view) {
@@ -601,7 +578,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(item: BlockView.Picture) {
             // TODO
         }
-
     }
 
     class Divider(view: View) : BlockViewHolder(view)

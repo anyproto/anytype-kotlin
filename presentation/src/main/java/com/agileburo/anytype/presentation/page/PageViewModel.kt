@@ -282,6 +282,9 @@ class PageViewModel(
     private fun processRendering() {
         viewModelScope.launch {
             renderings.withLatestFrom(focusChanges) { models, focus ->
+
+                Timber.d("Preparing views for focus: $focus")
+
                 models.asMap().asRender(pageId).mapNotNull { block ->
                     when {
                         block.content is Block.Content.Text -> {
@@ -431,13 +434,21 @@ class PageViewModel(
 
     fun onEndLineEnterClicked(id: String) {
         Timber.d("On endline enter clicked")
+
+        var newStyle = Block.Content.Text.Style.P
+
+        blocks.first { it.id == id }.let { target ->
+            if (target.content.asText().isList())
+                newStyle = target.content.asText().style
+        }
+
         createBlock.invoke(
             scope = viewModelScope,
             params = CreateBlock.Params(
                 contextId = pageId,
                 targetId = id,
                 position = Position.BOTTOM,
-                prototype = Prototype.Text(style = Block.Content.Text.Style.P)
+                prototype = Prototype.Text(style = newStyle)
             )
         ) { result ->
             result.either(

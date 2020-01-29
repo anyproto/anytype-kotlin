@@ -59,7 +59,17 @@ data class Block(
              */
             fun toggleCheck(): Boolean = isChecked == null || isChecked == false
 
+            /**
+             * @return true if this is a title block.
+             */
             fun isTitle() = style == Style.TITLE
+
+            /**
+             * @return true if this text block is a list item.
+             */
+            fun isList(): Boolean {
+                return style == Style.BULLET || style == Style.CHECKBOX || style == Style.NUMBERED
+            }
 
             data class Mark(
                 val range: IntRange,

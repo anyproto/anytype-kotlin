@@ -2042,6 +2042,174 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should start creating a new bulleted-list item on endline-enter-pressed event inside a bullet block`() {
+
+        val style = Block.Content.Text.Style.BULLET
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
+            root = root,
+            child = child,
+            style = style
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
+
+        vm.onEndLineEnterClicked(id = child)
+
+        verify(createBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                CreateBlock.Params(
+                    contextId = root,
+                    targetId = child,
+                    prototype = Block.Prototype.Text(
+                        style = style
+                    ),
+                    position = Position.BOTTOM
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should start creating a new checkbox item on endline-enter-pressed event inside a bullet block`() {
+
+        val style = Block.Content.Text.Style.CHECKBOX
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
+            root = root,
+            child = child,
+            style = style
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
+
+        vm.onEndLineEnterClicked(id = child)
+
+        verify(createBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                CreateBlock.Params(
+                    contextId = root,
+                    targetId = child,
+                    prototype = Block.Prototype.Text(
+                        style = style
+                    ),
+                    position = Position.BOTTOM
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should start creating a new paragraph on endline-enter-pressed event inside a quote block`() {
+
+        val style = Block.Content.Text.Style.QUOTE
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
+            root = root,
+            child = child,
+            style = style
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
+
+        vm.onEndLineEnterClicked(id = child)
+
+        verify(createBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                CreateBlock.Params(
+                    contextId = root,
+                    targetId = child,
+                    prototype = Block.Prototype.Text(
+                        style = Block.Content.Text.Style.P
+                    ),
+                    position = Position.BOTTOM
+                )
+            ),
+            onResult = any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()

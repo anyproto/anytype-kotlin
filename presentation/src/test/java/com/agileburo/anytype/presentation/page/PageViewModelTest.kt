@@ -70,6 +70,12 @@ class PageViewModelTest {
     @Mock
     lateinit var updateTextColor: UpdateTextColor
 
+    @Mock
+    lateinit var updateLinkMark: UpdateLinkMarks
+
+    @Mock
+    lateinit var removeLinkMark: RemoveLinkMark
+
     private lateinit var vm: PageViewModel
 
     @Before
@@ -2096,7 +2102,9 @@ class PageViewModelTest {
             unlinkBlocks = unlinkBlocks,
             duplicateBlock = duplicateBlock,
             updateTextStyle = updateTextStyle,
-            updateTextColor = updateTextColor
+            updateTextColor = updateTextColor,
+            updateLinkMarks = updateLinkMark,
+            removeLinkMark = removeLinkMark
         )
     }
 }

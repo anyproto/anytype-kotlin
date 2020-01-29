@@ -17,7 +17,9 @@ class PageViewModelFactory(
     private val unlinkBlocks: UnlinkBlocks,
     private val duplicateBlock: DuplicateBlock,
     private val updateTextStyle: UpdateTextStyle,
-    private val updateTextColor: UpdateTextColor
+    private val updateTextColor: UpdateTextColor,
+    private val updateLinkMarks: UpdateLinkMarks,
+    private val removeLinkMark: RemoveLinkMark
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -32,7 +34,9 @@ class PageViewModelFactory(
             duplicateBlock = duplicateBlock,
             unlinkBlocks = unlinkBlocks,
             updateTextStyle = updateTextStyle,
-            updateTextColor = updateTextColor
+            updateTextColor = updateTextColor,
+            updateLinkMarks = updateLinkMarks,
+            removeLinkMark = removeLinkMark
         ) as T
     }
 }

@@ -42,6 +42,21 @@ fun Block.textStyle(): Block.Content.Text.Style {
         throw UnsupportedOperationException("Wrong block content type: ${content.javaClass}")
 }
 
+fun Block.Content.Text.Mark.rangeIntersection(range: IntRange): Int {
+    val markRange = IntRange(start = this.range.first, endInclusive = this.range.last)
+    val set = markRange.intersect(range)
+    return set.size
+}
+
+fun Block.getFirstLinkMarkupParam(range: IntRange): String? {
+    val marks = this.content.asText().marks
+    return marks.filter { mark -> mark.type == Block.Content.Text.Mark.Type.LINK }
+        .firstOrNull { mark: Block.Content.Text.Mark ->
+            mark.rangeIntersection(range) > 0
+        }.let { mark: Block.Content.Text.Mark? -> mark?.param as? String }
+}
+
+fun Block.getSubstring(range: IntRange): String = content.asText().text.substring(range)
 fun Block.textColor(): String? {
     if (content is Block.Content.Text)
         return content.color

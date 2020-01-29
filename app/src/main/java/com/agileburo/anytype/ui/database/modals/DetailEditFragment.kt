@@ -6,8 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.agileburo.anytype.ModalNavigation
-import com.agileburo.anytype.ModalsNavFragment.Companion.ARGS_DB_ID
+import com.agileburo.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.extensions.drawable
 import com.agileburo.anytype.core_ui.extensions.invisible

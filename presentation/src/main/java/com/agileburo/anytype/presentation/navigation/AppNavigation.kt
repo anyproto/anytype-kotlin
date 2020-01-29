@@ -49,11 +49,11 @@ interface AppNavigation {
         object StartDesktopFromLogin : Command()
         object StartSplashFromDesktop : Command()
         object OpenContactsScreen : Command()
-        object OpenDatabaseViewAddView: Command()
-        object OpenEditDatabase: Command()
-        object OpenSwitchDisplayView: Command()
-        object OpenCustomizeDisplayView: Command()
-        object OpenKanbanScreen: Command()
+        object OpenDatabaseViewAddView : Command()
+        object OpenEditDatabase : Command()
+        object OpenSwitchDisplayView : Command()
+        object OpenCustomizeDisplayView : Command()
+        object OpenKanbanScreen : Command()
         object OpenGoalsScreen : Command()
     }
 

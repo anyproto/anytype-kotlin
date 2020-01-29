@@ -40,10 +40,11 @@ class MarkupToolbarWidget : ConstraintLayout {
         LayoutInflater.from(context).inflate(R.layout.widget_markup_toolbar, this)
     }
 
-    fun markupClicks() = flowOf(bold(), italic(), strike()).flattenMerge()
+    fun markupClicks() = flowOf(bold(), italic(), strike(), link()).flattenMerge()
     private fun bold() = bold.clicks().map { Markup.Type.BOLD }
     private fun italic() = italic.clicks().map { Markup.Type.ITALIC }
     private fun strike() = strike.clicks().map { Markup.Type.STRIKETHROUGH }
+    private fun link() = link.clicks().map { Markup.Type.LINK }
 
     fun colorClicks() = color.clicks()
     fun hideKeyboardClicks() = keyboard.clicks()

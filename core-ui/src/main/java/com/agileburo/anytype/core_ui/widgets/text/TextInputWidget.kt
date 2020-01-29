@@ -2,6 +2,8 @@ package com.agileburo.anytype.core_ui.widgets.text
 
 import android.content.Context
 import android.text.TextWatcher
+import android.text.method.LinkMovementMethod
+import android.text.util.Linkify
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
 import timber.log.Timber
@@ -19,6 +21,10 @@ class TextInputWidget : AppCompatEditText {
         attrs,
         defStyle
     )
+
+    init {
+        makeLinksActive()
+    }
 
     override fun addTextChangedListener(watcher: TextWatcher) {
         watchers.add(watcher)
@@ -39,5 +45,13 @@ class TextInputWidget : AppCompatEditText {
         Timber.d("New selection: $selStart - $selEnd")
         selectionDetector?.invoke(selStart..selEnd)
         super.onSelectionChanged(selStart, selEnd)
+    }
+
+    /**
+     *  Makes all links in the TextView object active.
+     */
+    private fun makeLinksActive() {
+        this.movementMethod = LinkMovementMethod.getInstance()
+        Linkify.addLinks(this, Linkify.WEB_URLS)
     }
 }

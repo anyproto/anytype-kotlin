@@ -28,4 +28,5 @@ interface MainComponent {
     fun detailEditBuilder(): DetailEditSubComponent.Builder
     fun detailsReorderBuilder(): DetailsReorderSubComponent.Builder
     fun pageComponentBuilder(): PageSubComponent.Builder
+    fun linkAddComponentBuilder(): LinkSubComponent.Builder
 }

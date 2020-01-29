@@ -5,10 +5,8 @@ import android.graphics.Typeface
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.style.CharacterStyle
-import android.text.style.ForegroundColorSpan
-import android.text.style.StrikethroughSpan
-import android.text.style.StyleSpan
+import android.text.style.*
+import android.text.util.Linkify
 
 /**
  * Classes implementing this interface should support markup rendering.
@@ -48,7 +46,8 @@ interface Markup {
         ITALIC,
         BOLD,
         STRIKETHROUGH,
-        TEXT_COLOR
+        TEXT_COLOR,
+        LINK
     }
 }
 
@@ -75,6 +74,12 @@ fun Markup.toSpannable() = SpannableString(body).apply {
             )
             Markup.Type.TEXT_COLOR -> setSpan(
                 ForegroundColorSpan(mark.color()),
+                mark.from,
+                mark.to,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            Markup.Type.LINK -> setSpan(
+                URLSpan(mark.param as String),
                 mark.from,
                 mark.to,
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE
@@ -113,6 +118,14 @@ fun Editable.setMarkup(markup: Markup) {
                 mark.to,
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE
             )
+            Markup.Type.LINK -> {
+                setSpan(
+                    URLSpan(mark.param as String),
+                    mark.from,
+                    mark.to,
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                )
+            }
         }
     }
 }

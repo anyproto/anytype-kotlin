@@ -108,6 +108,13 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val linkAddComponent = Component {
+        main
+            .linkAddComponentBuilder()
+            .linkModule(LinkModule())
+            .build()
+    }
+
     class Component<T>(private val builder: () -> T) {
 
         private var instance: T? = null

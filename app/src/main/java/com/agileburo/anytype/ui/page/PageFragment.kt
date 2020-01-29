@@ -36,10 +36,13 @@ import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.domain.block.model.Block.Content.Text
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.ext.getFirstLinkMarkupParam
+import com.agileburo.anytype.domain.ext.getSubstring
 import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.base.NavigationFragment
+import com.agileburo.anytype.ui.page.modals.LinkFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_page.*
 import kotlinx.coroutines.delay
@@ -50,7 +53,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-class PageFragment : NavigationFragment(R.layout.fragment_page) {
+class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInteractionListener {
 
     private val pageAdapter by lazy {
         BlockAdapter(
@@ -84,7 +87,6 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         super.onCreate(savedInstanceState)
 
         vm.open(requireArguments().getString(ID_KEY, ID_EMPTY_VALUE))
-
         requireActivity()
             .onBackPressedDispatcher
             .addCallback(this) {
@@ -238,6 +240,14 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         }
     }
 
+    override fun onAddMarkupLinkClicked(blockId: String, link: String, range: IntRange) {
+        vm.onAddLinkPressed(blockId, link, range)
+    }
+
+    override fun onRemoveMarkupLinkClicked(blockId: String, range: IntRange) {
+        vm.onUnlinkPressed(blockId, range)
+    }
+
     private fun handleBackgroundColorClicked() {
         toast(NOT_IMPLEMENTED_MESSAGE)
     }
@@ -285,6 +295,15 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         when (state) {
             is PageViewModel.ViewState.Success -> {
                 pageAdapter.updateWithDiffUtil(state.blocks)
+            }
+            is PageViewModel.ViewState.OpenLinkScreen -> {
+                LinkFragment.newInstance(
+                    blockId = state.block.id,
+                    initUrl = state.block.getFirstLinkMarkupParam(state.range),
+                    text = state.block.getSubstring(state.range),
+                    rangeEnd = state.range.last,
+                    rangeStart = state.range.first
+                ).show(childFragmentManager, null)
             }
         }
     }
@@ -370,4 +389,9 @@ class PageFragment : NavigationFragment(R.layout.fragment_page) {
         const val ID_EMPTY_VALUE = ""
         const val NOT_IMPLEMENTED_MESSAGE = "Not implemented."
     }
+}
+
+interface OnFragmentInteractionListener {
+    fun onAddMarkupLinkClicked(blockId: String, link: String, range: IntRange)
+    fun onRemoveMarkupLinkClicked(blockId: String, range: IntRange)
 }

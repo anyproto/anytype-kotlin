@@ -4,6 +4,9 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.common.MockDataFactory
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertSame
 
 class BlockExtensionTest {
 
@@ -440,5 +443,288 @@ class BlockExtensionTest {
             expected = lastBlock,
             actual = rendering[4]
         )
+    }
+
+    @Test
+    fun `should return substring of block text by range`() {
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Text(
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P,
+                text = "Test block 123"
+            ),
+            children = emptyList()
+        )
+
+        val range = IntRange(5, 12)
+
+        val result = block.getSubstring(range)
+
+        assertEquals("block 12", result)
+    }
+
+    @Test(expected = IndexOutOfBoundsException::class)
+    fun `should return error when range is out of bounds`() {
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Text(
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P,
+                text = "Test"
+            ),
+            children = emptyList()
+        )
+        val range = IntRange(0, 4)
+
+        block.getSubstring(range)
+    }
+
+    @Test(expected = ClassCastException::class)
+    fun `should return error when block not text`() {
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.EMPTY
+            ),
+            children = emptyList()
+        )
+        val range = IntRange(0, 44)
+
+        block.getSubstring(range)
+    }
+
+    @Test
+    fun `should return not empty range intersection`() {
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Text(
+                marks = listOf(
+                    Block.Content.Text.Mark(
+                        range = IntRange(
+                            start = 5,
+                            endInclusive = 8
+                        ),
+                        type = Block.Content.Text.Mark.Type.BOLD
+                    )
+                ),
+                style = Block.Content.Text.Style.P,
+                text = "Test Bold text"
+            ),
+            children = emptyList()
+        )
+        val range = IntRange(7, 144)
+
+        val result = block.content.asText().marks[0].rangeIntersection(range)
+
+        assertEquals(2, result)
+    }
+
+    @Test
+    fun `should return empty range intersection`() {
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Text(
+                marks = listOf(
+                    Block.Content.Text.Mark(
+                        range = IntRange(
+                            start = 5,
+                            endInclusive = 8
+                        ),
+                        type = Block.Content.Text.Mark.Type.BOLD
+                    )
+                ),
+                style = Block.Content.Text.Style.P,
+                text = "Test Bold text"
+            ),
+            children = emptyList()
+        )
+        val range = IntRange(0, 4)
+
+        val result = block.content.asText().marks[0].rangeIntersection(range)
+
+        assertEquals(0, result)
+    }
+
+    @Test
+    fun `should return link markup`() {
+        val link = Block.Content.Text.Mark(
+            range = IntRange(
+                start = 10,
+                endInclusive = 13
+            ),
+            type = Block.Content.Text.Mark.Type.LINK,
+            param = "www.anytype.io/test"
+        )
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Text(
+                marks = listOf(
+                    Block.Content.Text.Mark(
+                        range = IntRange(
+                            start = 5,
+                            endInclusive = 8
+                        ),
+                        type = Block.Content.Text.Mark.Type.BOLD
+                    ),
+                    Block.Content.Text.Mark(
+                        range = IntRange(
+                            start = 10,
+                            endInclusive = 13
+                        ),
+                        type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+                    ),
+                    link
+                ),
+                style = Block.Content.Text.Style.P,
+                text = "Test Bold text"
+            ),
+            children = emptyList()
+        )
+        val range = IntRange(10, 13)
+
+        val result = block.getFirstLinkMarkupParam(range)
+
+        assertEquals(link.param, result)
+    }
+
+    @Test
+    fun `should return nullable markup`() {
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Text(
+                marks = listOf(
+                    Block.Content.Text.Mark(
+                        range = IntRange(
+                            start = 5,
+                            endInclusive = 8
+                        ),
+                        type = Block.Content.Text.Mark.Type.BOLD
+                    ),
+                    Block.Content.Text.Mark(
+                        range = IntRange(
+                            start = 10,
+                            endInclusive = 13
+                        ),
+                        type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+                    )
+                ),
+                style = Block.Content.Text.Style.P,
+                text = "Test Bold text"
+            ),
+            children = emptyList()
+        )
+        val range = IntRange(10, 13)
+
+        val result = block.getFirstLinkMarkupParam(range)
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `should return first link markup`() {
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Text(
+                marks = listOf(
+                    Block.Content.Text.Mark(
+                        range = IntRange(
+                            start = 0,
+                            endInclusive = 8
+                        ),
+                        type = Block.Content.Text.Mark.Type.LINK,
+                        param = "https://kotlinlang.ru"
+                    ),
+                    Block.Content.Text.Mark(
+                        range = IntRange(
+                            start = 0,
+                            endInclusive = 8
+                        ),
+                        type = Block.Content.Text.Mark.Type.LINK,
+                        param = "https://ya.ru/"
+                    )
+                ),
+                style = Block.Content.Text.Style.P,
+                text = "Test Bold text"
+            ),
+            children = emptyList()
+        )
+        val range = IntRange(0, 8)
+
+        val result = block.getFirstLinkMarkupParam(range)
+
+        assertEquals("https://kotlinlang.ru", result)
+    }
+
+    @Test
+    fun `should return nullable markup when no marks in block`() {
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Text(
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P,
+                text = "Test Bold text"
+            ),
+            children = emptyList()
+        )
+        val range = IntRange(10, 13)
+
+        val result = block.getFirstLinkMarkupParam(range)
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `should return nullable markup when link param not string`() {
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Text(
+                marks = listOf(
+                    Block.Content.Text.Mark(
+                        range = IntRange(
+                            start = 0,
+                            endInclusive = 8
+                        ),
+                        type = Block.Content.Text.Mark.Type.LINK,
+                        param = 45678
+                    )
+                ),
+                style = Block.Content.Text.Style.P,
+                text = "Test Bold text"
+            ),
+            children = emptyList()
+        )
+        val range = IntRange(0, 8)
+
+        val result = block.getFirstLinkMarkupParam(range)
+
+        assertNull(result)
+    }
+
+    @Test(expected = ClassCastException::class)
+    fun `should throw exception when block is not text`() {
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Dashboard(
+                type = Block.Content.Dashboard.Type.MAIN_SCREEN
+            ),
+            children = emptyList()
+        )
+        val range = IntRange(10, 13)
+
+        val result = block.getFirstLinkMarkupParam(range)
+
+        assertNull(result)
     }
 }

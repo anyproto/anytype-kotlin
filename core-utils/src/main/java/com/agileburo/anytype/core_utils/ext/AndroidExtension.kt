@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.net.Uri
 import android.provider.MediaStore
+import android.text.Spanned
 import android.view.TouchDelegate
 import android.view.View
 import timber.log.Timber
@@ -73,4 +74,9 @@ private fun expandViewHitArea(parent: View, child: View) {
         childRect.bottom = parentRect.height()
         parent.touchDelegate = TouchDelegate(childRect, child)
     }
+}
+
+fun <T> hasSpan(spanned: Spanned, clazz: Class<T>): Boolean {
+    val limit = spanned.length
+    return spanned.nextSpanTransition(0, limit, clazz) < limit
 }

@@ -87,5 +87,8 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="create_a_new_profile">Create a new profile</string>
     <string name="no_peers">No peers</string>
     <string name="content_description_back_button_icon">Back button icon</string>
+    <string name="hint_link">Paste or type a URL</string>
+    <string name="button_unlink">Unlink</string>
+    <string name="button_link">Link</string>
 
 </resources>

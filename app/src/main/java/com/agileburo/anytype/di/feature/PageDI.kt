@@ -41,6 +41,8 @@ class PageModule {
         interceptEvents: InterceptEvents,
         updateCheckbox: UpdateCheckbox,
         unlinkBlocks: UnlinkBlocks,
+        updateLinkMarks: UpdateLinkMarks,
+        removeLinkMark: RemoveLinkMark,
         duplicateBlock: DuplicateBlock,
         updateTextStyle: UpdateTextStyle,
         updateTextColor: UpdateTextColor
@@ -54,7 +56,9 @@ class PageModule {
         unlinkBlocks = unlinkBlocks,
         duplicateBlock = duplicateBlock,
         updateTextStyle = updateTextStyle,
-        updateTextColor = updateTextColor
+        updateTextColor = updateTextColor,
+        updateLinkMarks = updateLinkMarks,
+        removeLinkMark = removeLinkMark
     )
 
     @Provides
@@ -129,6 +133,14 @@ class PageModule {
     ): DuplicateBlock = DuplicateBlock(
         repo = repo
     )
+
+    @Provides
+    @PerScreen
+    fun provideUpdateLinkMarks(): UpdateLinkMarks = UpdateLinkMarks()
+
+    @Provides
+    @PerScreen
+    fun provideRemoveLinkMark(): RemoveLinkMark = RemoveLinkMark()
 
     @Provides
     @PerScreen

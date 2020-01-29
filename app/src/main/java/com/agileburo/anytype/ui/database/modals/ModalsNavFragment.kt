@@ -1,14 +1,15 @@
-package com.agileburo.anytype
+package com.agileburo.anytype.ui.database.modals
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import com.agileburo.anytype.ui.database.modals.*
+import com.agileburo.anytype.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class ModalsNavFragment : BottomSheetDialogFragment(), ModalNavigation {
+class ModalsNavFragment : BottomSheetDialogFragment(),
+    ModalNavigation {
 
     companion object {
         const val TAG_CUSTOMIZE = "tag.customize"

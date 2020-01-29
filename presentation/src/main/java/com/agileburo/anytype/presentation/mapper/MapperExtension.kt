@@ -112,6 +112,14 @@ private fun mapMarks(content: Block.Content.Text): List<Markup.Mark> =
                     param = checkNotNull(mark.param)
                 )
             }
+            Block.Content.Text.Mark.Type.LINK -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.LINK,
+                    param = checkNotNull(mark.param)
+                )
+            }
             else -> null
         }
     }

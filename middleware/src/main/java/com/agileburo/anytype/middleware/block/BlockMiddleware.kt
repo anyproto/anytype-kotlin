@@ -429,6 +429,9 @@ class BlockMiddleware(
                         Models.Block.Content.Text.Mark.Type.BackgroundColor -> {
                             BlockEntity.Content.Text.Mark.Type.BACKGROUND_COLOR
                         }
+                        Models.Block.Content.Text.Mark.Type.Link -> {
+                            BlockEntity.Content.Text.Mark.Type.LINK
+                        }
                         else -> throw IllegalStateException("Unexpected mark type: ${mark.type.name}")
                     }
                 )

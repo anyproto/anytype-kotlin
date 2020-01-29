@@ -5,8 +5,8 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.agileburo.anytype.ModalsNavFragment
-import com.agileburo.anytype.ModalsNavFragment.Companion.TAG_CUSTOMIZE
+import com.agileburo.anytype.ui.database.modals.ModalsNavFragment
+import com.agileburo.anytype.ui.database.modals.ModalsNavFragment.Companion.TAG_CUSTOMIZE
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.layout.ListDividerItemDecoration
 import com.agileburo.anytype.core_ui.layout.SpacingItemDecoration

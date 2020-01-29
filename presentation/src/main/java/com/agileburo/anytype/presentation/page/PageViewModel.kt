@@ -42,7 +42,9 @@ class PageViewModel(
     private val unlinkBlocks: UnlinkBlocks,
     private val duplicateBlock: DuplicateBlock,
     private val updateTextStyle: UpdateTextStyle,
-    private val updateTextColor: UpdateTextColor
+    private val updateTextColor: UpdateTextColor,
+    private val updateLinkMarks: UpdateLinkMarks,
+    private val removeLinkMark: RemoveLinkMark
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -162,9 +164,59 @@ class PageViewModel(
                     .filter { (_, selection) -> selection.first != selection.last }
             ) { a, b -> Pair(a, b) }
             .onEach { (action, selection) ->
-                applyMarkup(selection, action)
+
+                when (action.type) {
+                    Markup.Type.LINK -> {
+                        val block = blocks.first { it.id == selection.first }
+                        val range = IntRange(
+                            start = selection.second.first,
+                            endInclusive = selection.second.last.dec()
+                        )
+                        stateData.value = ViewState.OpenLinkScreen(pageId, block, range)
+                    }
+                    else -> {
+                        applyMarkup(selection, action)
+                    }
+                }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun applyLinkMarkup(
+        blockId: String, link: String, range: IntRange
+    ) {
+        val targetBlock = blocks.first { it.id == blockId }
+        val targetContent = targetBlock.content as Block.Content.Text
+        val linkMark = Block.Content.Text.Mark(
+            type = Block.Content.Text.Mark.Type.LINK,
+            range = IntRange(start = range.first, endInclusive = range.last.inc()),
+            param = link
+        )
+        val marks = targetContent.marks
+
+        updateLinkMarks.invoke(
+            viewModelScope,
+            UpdateLinkMarks.Params(marks = marks, newMark = linkMark)
+        ) { result ->
+            result.either(
+                fnL = {
+                    throwable -> Timber.e("Error update marks:${throwable.message}")
+                },
+                fnR = {
+                    val newContent = targetContent.copy(marks = it)
+                    val newBlock = targetBlock.copy(content = newContent)
+                    rerenderingBlocks(newBlock)
+                    proceedWithUpdatingBlock(
+                        params = UpdateBlock.Params(
+                            contextId = pageId,
+                            text = newBlock.content.asText().text,
+                            blockId = targetBlock.id,
+                            marks = it
+                        )
+                    )
+                }
+            )
+        }
     }
 
     private suspend fun applyMarkup(
@@ -181,6 +233,7 @@ class PageViewModel(
                 Markup.Type.ITALIC -> Block.Content.Text.Mark.Type.ITALIC
                 Markup.Type.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
                 Markup.Type.TEXT_COLOR -> Block.Content.Text.Mark.Type.TEXT_COLOR
+                Markup.Type.LINK -> Block.Content.Text.Mark.Type.LINK
             },
             param = action.param
         )
@@ -213,6 +266,18 @@ class PageViewModel(
             )
         )
     }
+
+    private fun rerenderingBlocks(block: Block) =
+        viewModelScope.launch {
+            val update = blocks.map {
+                if (it.id != block.id)
+                    it
+                else
+                    block
+            }
+            blocks = update
+            renderingChannel.send(blocks)
+        }
 
     private fun processRendering() {
         viewModelScope.launch {
@@ -284,6 +349,37 @@ class PageViewModel(
             result.either(
                 fnR = { Timber.d("Page has been opened") },
                 fnL = { Timber.e(it, "Error while openining page with id: $id") }
+            )
+        }
+    }
+
+    fun onAddLinkPressed(blockId: String, link: String, range: IntRange) {
+        applyLinkMarkup(blockId, link, range)
+    }
+
+    fun onUnlinkPressed(blockId: String, range: IntRange) {
+        val targetBlock = blocks.first { it.id == blockId }
+        val targetContent = targetBlock.content as Block.Content.Text
+        val marks = targetContent.marks
+
+        removeLinkMark.invoke(
+            viewModelScope, RemoveLinkMark.Params(range = range, marks = marks)
+        ) { result ->
+            result.either(
+                fnL = { Timber.e("Error update marks:${it.message}") },
+                fnR = {
+                    val newContent = targetContent.copy(marks = it)
+                    val newBlock = targetBlock.copy(content = newContent)
+                    rerenderingBlocks(newBlock)
+                    proceedWithUpdatingBlock(
+                        params = UpdateBlock.Params(
+                            contextId = pageId,
+                            text = newBlock.content.asText().text,
+                            blockId = targetBlock.id,
+                            marks = it
+                        )
+                    )
+                }
             )
         }
     }
@@ -542,6 +638,8 @@ class PageViewModel(
         object Loading : ViewState()
         data class Success(val blocks: List<BlockView>) : ViewState()
         data class Error(val message: String) : ViewState()
+        data class OpenLinkScreen(val pageId: String, val block: Block, val range: IntRange) :
+            ViewState()
     }
 
     companion object {

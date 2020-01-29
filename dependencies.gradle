@@ -37,7 +37,7 @@ ext {
     rxbinding_version = '3.0.0'
 
     // Unit Testing
-    robolectric_version = '4.3.1'
+    robolectric_version = '4.3'
     junit_version = '4.12'
     mockito_version = '1.4.0'
     kluent_version = '1.14'

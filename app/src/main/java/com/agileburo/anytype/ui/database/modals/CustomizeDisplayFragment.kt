@@ -5,8 +5,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.agileburo.anytype.ModalNavigation
-import com.agileburo.anytype.ModalsNavFragment.Companion.ARGS_DB_ID
+import com.agileburo.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_utils.ext.show
 import com.agileburo.anytype.di.common.componentManager

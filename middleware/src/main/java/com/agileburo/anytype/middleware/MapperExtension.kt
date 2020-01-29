@@ -80,6 +80,14 @@ fun BlockEntity.Content.Text.Mark.toMiddleware(): Block.Content.Text.Mark {
                 .setParam(param as String)
                 .build()
         }
+        BlockEntity.Content.Text.Mark.Type.LINK -> {
+            Block.Content.Text.Mark
+                .newBuilder()
+                .setType(Block.Content.Text.Mark.Type.Link)
+                .setRange(rangeModel)
+                .setParam(param as String)
+                .build()
+        }
         else -> throw IllegalStateException("Unsupported mark type: ${type.name}")
     }
 }
@@ -148,6 +156,9 @@ fun Block.text(): BlockEntity.Content.Text = BlockEntity.Content.Text(
                 }
                 Block.Content.Text.Mark.Type.BackgroundColor -> {
                     BlockEntity.Content.Text.Mark.Type.BACKGROUND_COLOR
+                }
+                Block.Content.Text.Mark.Type.Link -> {
+                    BlockEntity.Content.Text.Mark.Type.LINK
                 }
                 else -> throw IllegalStateException("Unexpected mark type: ${mark.type.name}")
             }

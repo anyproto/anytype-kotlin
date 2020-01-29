@@ -10,9 +10,6 @@ android {
     defaultConfig {
         minSdkVersion config["min_sdk"]
         targetSdkVersion config["target_sdk"]
-        versionCode config["version_code"]
-        versionName config["version_name"]
-
         testInstrumentationRunner config["test_runner"]
     }
 
@@ -22,13 +19,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
+    def acceptanceTesting = rootProject.ext.acceptanceTesting
 
     kapt applicationDependencies.daggerCompiler
 
@@ -51,4 +48,9 @@ dependencies {
 
     implementation applicationDependencies.navigation
     implementation applicationDependencies.navigationUi
+
+    testImplementation unitTestDependencies.robolectric
+    androidTestImplementation acceptanceTesting.androidJUnit
+    androidTestImplementation acceptanceTesting.testRules
+    testImplementation unitTestDependencies.archCoreTesting
 }

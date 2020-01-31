@@ -11,7 +11,7 @@
 
 ### Fixes
 
-*
+* Fixed issue: user cannot undo markup formatting if there are already several markup of the same type in the text (#151)
 
 ### Middleware
 

@@ -26,13 +26,13 @@ class SpanExtensionsTest {
             URLSpan("https://anytype.io/"),
             0,
             text.lastIndex,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
         spannable.setSpan(
             BackgroundColorSpan(Color.RED),
             0,
             6,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
 
         assertTrue(hasSpan(spannable, URLSpan::class.java))

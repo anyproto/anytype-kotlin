@@ -27,6 +27,8 @@ fun Marks.addMark(mark: Mark): Marks {
  */
 fun Marks.toggle(target: Mark): Marks {
 
+    val del = mutableListOf<Mark>()
+
     val result = mutableListOf<Mark>()
 
     var targetConsumed = false
@@ -35,10 +37,15 @@ fun Marks.toggle(target: Mark): Marks {
         if (mark.type != target.type)
             result.add(mark)
         else {
+
             targetConsumed = true
+
             when (target.range.overlap(mark.range)) {
                 Overlap.EQUAL -> {
-                    if (target.type == Mark.Type.TEXT_COLOR) result.add(target)
+                    if (target.type == Mark.Type.TEXT_COLOR)
+                        result.add(target)
+                    else
+                        del.add(target)
                 }
                 Overlap.OUTER -> {
                     result.add(target)
@@ -171,7 +178,7 @@ fun Marks.toggle(target: Mark): Marks {
 
     if (!targetConsumed) result.add(target)
 
-    return result
+    return result - del
 }
 
 /**

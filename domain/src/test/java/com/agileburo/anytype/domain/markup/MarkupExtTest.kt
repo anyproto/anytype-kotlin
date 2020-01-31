@@ -288,6 +288,35 @@ class MarkupExtTest {
     }
 
     @Test
+    fun `should undo bold markup when there are three bold markups already present in the text`() {
+
+        val first = Mark(
+            type = Mark.Type.BOLD,
+            range = 2..5
+        )
+
+        val second = Mark(
+            type = Mark.Type.BOLD,
+            range = 10..15
+        )
+
+        val third = Mark(
+            type = Mark.Type.BOLD,
+            range = 20..22
+        )
+
+        val new = second.copy()
+
+        val given = listOf(first, second, third).shuffled()
+
+        val result = given.addMark(new)
+
+        assertTrue {
+            result.size == 2 && result.contains(first) && result.contains(third)
+        }
+    }
+
+    @Test
     fun `should partly undo markup`() {
 
         val given = listOf(

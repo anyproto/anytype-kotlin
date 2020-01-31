@@ -4,9 +4,10 @@
 
 ### New features
 
-* User can now use olor toolbar to change the text color of the whole text block (#153)
+* User can now use color toolbar to change the text color of the whole text block (#153)
 * `Block.Content.Text` model now has optional `color` property (#153).
-* Can add/remove links to text + opens links in web browser.
+* User can add or remove links from text and open these links in a web browser (#112).
+* Added documentation engine (`DOKKA`) for `domain` module: documentation is generated automatically from KDoc (#168).
 
 ### Fixes
 

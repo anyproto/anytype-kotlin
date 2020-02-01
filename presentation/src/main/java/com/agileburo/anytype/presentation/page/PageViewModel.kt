@@ -313,7 +313,7 @@ class PageViewModel(
                         block.copy(
                             content = block.content.asText().copy(
                                 text = text,
-                                marks = marks
+                                marks = marks.filter { it.range.first != it.range.last }
                             )
                         )
                     } else
@@ -326,7 +326,7 @@ class PageViewModel(
                     contextId = pageId,
                     blockId = id,
                     text = text,
-                    marks = marks
+                    marks = marks.filter { it.range.first != it.range.last }
                 )
             }
             .onEach { params -> proceedWithUpdatingBlock(params) }
@@ -655,7 +655,7 @@ class PageViewModel(
 
     companion object {
         const val EMPTY_FOCUS_ID = ""
-        const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
+        const val TEXT_CHANGES_DEBOUNCE_DURATION = 1000L
     }
 
     /**

@@ -6,7 +6,6 @@ import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.*
-import android.text.util.Linkify
 
 /**
  * Classes implementing this interface should support markup rendering.
@@ -49,6 +48,10 @@ interface Markup {
         TEXT_COLOR,
         LINK
     }
+
+    companion object {
+        const val DEFAULT_SPANNABLE_FLAG = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+    }
 }
 
 fun Markup.toSpannable() = SpannableString(body).apply {
@@ -58,31 +61,31 @@ fun Markup.toSpannable() = SpannableString(body).apply {
                 StyleSpan(Typeface.ITALIC),
                 mark.from,
                 mark.to,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.BOLD -> setSpan(
                 StyleSpan(Typeface.BOLD),
                 mark.from,
                 mark.to,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.STRIKETHROUGH -> setSpan(
                 StrikethroughSpan(),
                 mark.from,
                 mark.to,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.TEXT_COLOR -> setSpan(
                 ForegroundColorSpan(mark.color()),
                 mark.from,
                 mark.to,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.LINK -> setSpan(
                 URLSpan(mark.param as String),
                 mark.from,
                 mark.to,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                Markup.DEFAULT_SPANNABLE_FLAG
             )
         }
     }
@@ -98,32 +101,32 @@ fun Editable.setMarkup(markup: Markup) {
                 StyleSpan(Typeface.ITALIC),
                 mark.from,
                 mark.to,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.BOLD -> setSpan(
                 StyleSpan(Typeface.BOLD),
                 mark.from,
                 mark.to,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.STRIKETHROUGH -> setSpan(
                 StrikethroughSpan(),
                 mark.from,
                 mark.to,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.TEXT_COLOR -> setSpan(
                 ForegroundColorSpan(mark.color()),
                 mark.from,
                 mark.to,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.LINK -> {
                 setSpan(
                     URLSpan(mark.param as String),
                     mark.from,
                     mark.to,
-                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                    Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
         }

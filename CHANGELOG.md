@@ -11,7 +11,8 @@
 
 ### Fixes
 
-* Fixed issue: user cannot undo markup formatting if there are already several markup of the same type in the text (#151)
+* User cannot undo markup formatting if there are already several markups of the same type in the text (#151)
+* Markup is broken when user splits the range (#122)
 
 ### Middleware
 

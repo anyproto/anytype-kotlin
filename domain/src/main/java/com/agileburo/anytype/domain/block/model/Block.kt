@@ -32,6 +32,9 @@ data class Block(
         }
     }
 
+    /**
+     * Block's content.
+     */
     sealed class Content {
 
         fun asText() = this as Text
@@ -71,6 +74,12 @@ data class Block(
                 return style == Style.BULLET || style == Style.CHECKBOX || style == Style.NUMBERED
             }
 
+            /**
+             * Mark as a part of markup.
+             * @property type markup type
+             * @property param optional parameter (i.e. text color, url, etc)
+             * @property range text range for markup (start == start char index, end == end char index + 1).
+             */
             data class Mark(
                 val range: IntRange,
                 val type: Type,

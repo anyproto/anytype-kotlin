@@ -8,6 +8,7 @@
 * `Block.Content.Text` model now has optional `color` property (#153).
 * User can add or remove links from text and open these links in a web browser (#112).
 * Added documentation engine (`DOKKA`) for `domain` module: documentation is generated automatically from KDoc (#168).
+* Added new content model: `Block.Content.Link` (#173)
 
 ### Fixes
 
@@ -16,6 +17,8 @@
 
 ### Middleware
 
+* Updated middleware library to 0.2.0 (#173)
+* Added `blockCreatePage` command (#173)
 * Added `blockSetTextColor` command (#153). 
 
 ## Version 0.0.16

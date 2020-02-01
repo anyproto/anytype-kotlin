@@ -125,11 +125,18 @@ private fun mapMarks(content: Block.Content.Text): List<Markup.Mark> =
         }
     }
 
-fun HomeDashboard.toView(): List<DashboardView.Document> = children.mapNotNull { id ->
+fun HomeDashboard.toView(
+    defaultTitle: String = "Untitled"
+): List<DashboardView.Document> = children.mapNotNull { id ->
     blocks.find { block -> block.id == id }?.let { model ->
-        DashboardView.Document(
-            id = model.id,
-            title = if (model.fields.hasName()) model.fields.name else "Untitled"
-        )
+        when (val content = model.content) {
+            is Block.Content.Link -> {
+                DashboardView.Document(
+                    id = content.target,
+                    title = if (content.fields.hasName()) content.fields.name else defaultTitle
+                )
+            }
+            else -> null
+        }
     }
 }

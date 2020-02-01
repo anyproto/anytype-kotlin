@@ -31,6 +31,8 @@ public interface MiddlewareService {
 
     Block.Create.Response blockCreate(Block.Create.Request request) throws Exception;
 
+    Block.CreatePage.Response blockCreatePage(Block.CreatePage.Request request) throws Exception;
+
     Block.Set.Text.TText.Response blockSetTextText(Block.Set.Text.TText.Request request) throws Exception;
 
     Block.Set.Text.Checked.Response blockSetTextChecked(Block.Set.Text.Checked.Request request) throws Exception;
@@ -43,5 +45,5 @@ public interface MiddlewareService {
 
     Block.Unlink.Response blockUnlink(Block.Unlink.Request request) throws Exception;
 
-    Block.Duplicate.Response blockDuplicate(Block.Duplicate.Request request) throws Exception;
+    BlockList.Duplicate.Response blockListDuplicate(BlockList.Duplicate.Request request) throws Exception;
 }

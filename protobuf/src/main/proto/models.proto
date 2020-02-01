@@ -152,26 +152,27 @@ message Block {
         }
 
         message File {
-            string localFilePath = 1;
-            string previewFilePath = 2;
-            State state = 3;
-            Type type = 4;
-
+            string hash = 1;
+            string name = 2;
+            Type type = 3;
+            string mime = 4;
             int64 size = 5;
             int64 addedAt = 6;
 
+            State state = 7;
+
             enum Type {
-                File = 0;
-                Image = 1;
-                Video = 2;
+                None = 0;
+                File = 1;
+                Image = 2;
+                Video = 3;
             }
 
             enum State {
                 Empty = 0; // There is no file and preview, it's an empty block, that waits files.
                 Uploading = 1; // There is still no file/preview, but file already uploading
-                PreviewDownloaded = 2; // File exists, preview downloaded, but file is not.
-                Downloading = 3; // File exists, preview downloaded, but file downloading
-                Done = 4; // File and preview downloaded
+                Done = 2; // File and preview downloaded
+                Error = 3; // Error while uploading
             }
         }
 
@@ -186,6 +187,15 @@ message Block {
             Style style = 1;
         }
     }
+}
+
+/*
+* Used to decode block meta only, without the content itself
+*/
+message BlockMetaOnly {
+    string id = 1;
+    google.protobuf.Struct fields = 2;
+    bool isArchived = 5;
 }
 
 /*
@@ -209,39 +219,8 @@ message Account {
     */
     message Avatar {
         oneof avatar {
-            Image image = 1; // Image of the avatar. Contains hash and size
-            string color = 2; // Color of the avatar, if no image
+            Block.Content.File image = 1; // Image of the avatar. Contains the hash to retrieve the image.
+            string color = 2; // Color of the avatar, used if image not set.
         }
-    }
-}
-
-message Image {
-    string id = 1;
-    repeated Size sizes = 2;
-    Style style = 3;
-
-    enum Size {
-        Large = 0;
-        Small = 1;
-        Thumb = 2;
-    }
-
-    enum Style {
-        Picture = 0;
-        File = 1;
-    }
-}
-
-message Video {
-    string id = 1;
-    repeated Size sizes = 2;
-
-    enum Size {
-        SD360p = 0;
-        SD480p = 1;
-        HD720p = 2;
-        HD1080p = 3;
-        UHD1440p = 4;
-        UHD2160p = 5;
     }
 }

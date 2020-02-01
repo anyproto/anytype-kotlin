@@ -6,41 +6,17 @@ import anytype.model.Models.Account
 import anytype.model.Models.Block
 import com.agileburo.anytype.data.auth.model.AccountEntity
 import com.agileburo.anytype.data.auth.model.BlockEntity
-import com.agileburo.anytype.data.auth.model.ImageEntity
 import com.google.protobuf.Value
 
-fun Models.Image.toEntity(): ImageEntity? {
-    return if (id.isNullOrBlank())
-        null
-    else
-        ImageEntity(
-            id = id,
-            sizes = sizesList.map { size -> size.toEntity() }
-        )
-}
-
-fun ImageEntity.Size.toMiddleware(): Models.Image.Size = when (this) {
-    ImageEntity.Size.SMALL -> Models.Image.Size.Small
-    ImageEntity.Size.LARGE -> Models.Image.Size.Large
-    ImageEntity.Size.THUMB -> Models.Image.Size.Thumb
-}
-
-fun Models.Image.Size.toEntity(): ImageEntity.Size = when (this) {
-    Models.Image.Size.Small -> ImageEntity.Size.SMALL
-    Models.Image.Size.Large -> ImageEntity.Size.LARGE
-    Models.Image.Size.Thumb -> ImageEntity.Size.THUMB
-    else -> throw IllegalStateException("Unexpected image size from middleware")
-}
 
 fun Events.Event.Account.Show.toAccountEntity(): AccountEntity {
     return AccountEntity(
         id = account.id,
         name = account.name,
-        avatar = if (account.avatar.avatarCase == Account.Avatar.AvatarCase.IMAGE)
-            account.avatar.image.toEntity()
-        else null,
+        avatar = null,
         color = if (account.avatar.avatarCase == Account.Avatar.AvatarCase.COLOR)
-            account.avatar.color else null
+            account.avatar.color
+        else null
     )
 }
 
@@ -181,6 +157,29 @@ fun Block.layout(): BlockEntity.Content.Layout = BlockEntity.Content.Layout(
     }
 )
 
+fun Block.link(): BlockEntity.Content.Link = BlockEntity.Content.Link(
+    type = when {
+        link.style == Block.Content.Link.Style.Page -> {
+            BlockEntity.Content.Link.Type.PAGE
+        }
+        link.style == Block.Content.Link.Style.Dataview -> {
+            BlockEntity.Content.Link.Type.DATA_VIEW
+        }
+        else -> throw IllegalStateException("Unexpected link style: ${link.style}")
+    },
+    target = link.targetBlockId,
+    isArchived = link.isArchived,
+    fields = BlockEntity.Fields().also { result ->
+        link.fields.fieldsMap.forEach { (key, value) ->
+            result.map[key] = when (val case = value.kindCase) {
+                Value.KindCase.NUMBER_VALUE -> value.numberValue
+                Value.KindCase.STRING_VALUE -> value.stringValue
+                else -> throw IllegalStateException("$case is not supported.")
+            }
+        }
+    }
+)
+
 fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
     when (block.contentCase) {
         Block.ContentCase.DASHBOARD -> {
@@ -215,18 +214,14 @@ fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
                 content = block.layout()
             )
         }
-        /*
-        Models.Block.ContentCase.IMAGE -> {
+        Block.ContentCase.LINK -> {
             BlockEntity(
                 id = block.id,
                 children = block.childrenIdsList,
-                fields = extractFields(block),
-                content = BlockEntity.Content.Image(
-                    path = block.image.localFilePath
-                )
+                fields = block.fields(),
+                content = block.link()
             )
         }
-         */
         else -> {
             null
         }

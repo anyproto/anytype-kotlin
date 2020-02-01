@@ -11,6 +11,7 @@ import com.agileburo.anytype.data.auth.model.EventEntity
 import com.agileburo.anytype.data.auth.repo.block.BlockRemote
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.interactor.Middleware
+import com.agileburo.anytype.middleware.link
 import com.agileburo.anytype.middleware.toMiddleware
 import com.google.protobuf.Value
 import kotlinx.coroutines.flow.*
@@ -100,18 +101,14 @@ class BlockMiddleware(
                                         content = extractLayout(block)
                                     )
                                 }
-                                /*
-                                Models.Block.ContentCase.IMAGE -> {
+                                Models.Block.ContentCase.LINK -> {
                                     BlockEntity(
                                         id = block.id,
                                         children = block.childrenIdsList,
                                         fields = extractFields(block),
-                                        content = BlockEntity.Content.Image(
-                                            path = block.image.localFilePath
-                                        )
+                                        content = block.link()
                                     )
                                 }
-                                */
                                 else -> {
                                     null
                                 }
@@ -156,18 +153,14 @@ class BlockMiddleware(
                                         content = extractLayout(block)
                                     )
                                 }
-                                /*
-                                Models.Block.ContentCase.IMAGE -> {
+                                Models.Block.ContentCase.LINK -> {
                                     BlockEntity(
                                         id = block.id,
                                         children = block.childrenIdsList,
                                         fields = extractFields(block),
-                                        content = BlockEntity.Content.Image(
-                                            path = block.image.localFilePath
-                                        )
+                                        content = block.link()
                                     )
                                 }
-                                 */
                                 else -> {
                                     null
                                 }

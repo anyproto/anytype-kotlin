@@ -58,6 +58,15 @@ data class BlockEntity(
         data class Page(val style: Style) : Content() {
             enum class Style { EMPTY, TASK, SET }
         }
+
+        data class Link(
+            val target: String,
+            val type: Type,
+            val isArchived: Boolean,
+            val fields: Fields
+        ) : Content() {
+            enum class Type { PAGE, DATA_VIEW }
+        }
     }
 
     sealed class Prototype {

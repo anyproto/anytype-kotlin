@@ -235,7 +235,7 @@ class PageViewModelTest {
         vm.open(pageId)
         vm.onTextChanged(id = blockId, text = text, marks = emptyList())
 
-        coroutineTestRule.advanceTime(500L)
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         verify(updateBlock, times(1)).invoke(
             any(),
@@ -260,11 +260,11 @@ class PageViewModelTest {
         vm.onTextChanged(id = blockId, text = text, marks = emptyList())
         vm.onTextChanged(id = blockId, text = text, marks = emptyList())
 
-        coroutineTestRule.advanceTime(500L)
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         vm.onTextChanged(id = blockId, text = text, marks = emptyList())
 
-        coroutineTestRule.advanceTime(500L)
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         verify(updateBlock, times(2)).invoke(
             any(),
@@ -958,7 +958,7 @@ class PageViewModelTest {
             paragraphAfterChange
         )
 
-        coroutineTestRule.advanceTime(500)
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         assertEquals(
             expected = expected,
@@ -1032,7 +1032,7 @@ class PageViewModelTest {
 
         vm.onTextChanged(id = paragraph.id, text = userInput, marks = marks)
 
-        coroutineTestRule.advanceTime(500)
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         verify(updateBlock, times(1)).invoke(
             scope = any(),

@@ -14,7 +14,6 @@ import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
-import anytype.Commands.Rpc.Ipfs.Image;
 import anytype.Commands.Rpc.Wallet;
 import anytype.model.Models;
 import timber.log.Timber;
@@ -100,18 +99,6 @@ public class Middleware {
         );
     }
 
-    public byte[] loadImage(String id, Models.Image.Size size) throws Exception {
-        Image.Get.Blob.Request request = Image.Get.Blob.Request
-                .newBuilder()
-                .setId(id)
-                .setSize(size)
-                .build();
-
-        Image.Get.Blob.Response response = service.imageGet(request);
-
-        return response.getBlob().toByteArray();
-    }
-
     public void openDashboard(String contextId, String id) throws Exception {
         Block.Open.Request request = Block.Open.Request
                 .newBuilder()
@@ -128,6 +115,8 @@ public class Middleware {
                 .setBlockId(id)
                 .build();
 
+        Timber.d("Opening page with the following request:\n%s", request.toString());
+
         service.blockOpen(request);
     }
 
@@ -142,15 +131,17 @@ public class Middleware {
                 .setPage(page)
                 .build();
 
-        Block.Create.Request request = Block.Create.Request
+        Block.CreatePage.Request request = Block.CreatePage.Request
                 .newBuilder()
                 .setContextId(parentId)
                 .setBlock(block)
                 .setPosition(Models.Block.Position.Inner)
                 .build();
 
-        Block.Create.Response response = service.blockCreate(request);
-        return response.getBlockId();
+        Timber.d("Creating page with the following request:\n%s", request.toString());
+
+        Block.CreatePage.Response response = service.blockCreatePage(request);
+        return response.getTargetId();
     }
 
     public void closePage(String id) throws Exception {
@@ -167,6 +158,8 @@ public class Middleware {
                 .newBuilder()
                 .setBlockId(id)
                 .build();
+
+        Timber.d("Closing dashboard with the following request:\n%s", request.toString());
 
         service.blockClose(request);
     }
@@ -444,19 +437,19 @@ public class Middleware {
     }
 
     public String duplicate(CommandEntity.Duplicate command) throws Exception {
-        Block.Duplicate.Request request = Block.Duplicate.Request
+        BlockList.Duplicate.Request request = BlockList.Duplicate.Request
                 .newBuilder()
                 .setContextId(command.getContext())
                 .setTargetId(command.getOriginal())
-                .setBlockId(command.getOriginal())
+                .addBlockIds(command.getOriginal())
                 .setPosition(Models.Block.Position.Bottom)
                 .build();
 
         Timber.d("Duplicating blocks with the following request:\n%s", request.toString());
 
-        Block.Duplicate.Response response = service.blockDuplicate(request);
+        BlockList.Duplicate.Response response = service.blockListDuplicate(request);
 
-        return response.getBlockId();
+        return response.getBlockIds(0);
     }
 
     public void unlink(CommandEntity.Unlink command) throws Exception {

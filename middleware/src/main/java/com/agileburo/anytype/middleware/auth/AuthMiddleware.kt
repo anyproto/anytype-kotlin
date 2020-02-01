@@ -8,7 +8,6 @@ import com.agileburo.anytype.data.auth.repo.AuthRemote
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.interactor.Middleware
 import com.agileburo.anytype.middleware.toAccountEntity
-import com.agileburo.anytype.middleware.toEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.filter
@@ -27,8 +26,7 @@ class AuthMiddleware(
         AccountEntity(
             id = response.id,
             name = response.name,
-            avatar = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.IMAGE)
-                response.avatar.image.toEntity() else null,
+            avatar = null,
             color = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.COLOR)
                 response.avatar.color else null
         )
@@ -42,8 +40,7 @@ class AuthMiddleware(
             AccountEntity(
                 id = response.id,
                 name = response.name,
-                avatar = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.IMAGE)
-                    response.avatar.image.toEntity() else null,
+                avatar = null,
                 color = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.COLOR)
                     response.avatar.color else null
             )

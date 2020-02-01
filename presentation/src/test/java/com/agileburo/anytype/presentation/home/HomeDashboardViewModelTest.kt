@@ -321,16 +321,22 @@ class HomeDashboardViewModelTest {
                 id = MockDataFactory.randomUuid(),
                 children = emptyList(),
                 fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Link(
+                    type = Block.Content.Link.Type.PAGE,
+                    target = MockDataFactory.randomUuid(),
+                    isArchived = MockDataFactory.randomBoolean(),
+                    fields = Block.Fields.empty()
                 )
             ),
             Block(
                 id = MockDataFactory.randomUuid(),
                 children = emptyList(),
                 fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Link(
+                    type = Block.Content.Link.Type.PAGE,
+                    target = MockDataFactory.randomUuid(),
+                    isArchived = MockDataFactory.randomBoolean(),
+                    fields = Block.Fields.empty()
                 )
             )
         )
@@ -383,8 +389,8 @@ class HomeDashboardViewModelTest {
                 DragAndDrop.Params(
                     context = config.homeDashboardId,
                     targetContext = config.homeDashboardId,
-                    targetId = pages.last().id,
-                    blockIds = listOf(pages.first().id),
+                    targetId = pages.last().content.asLink().target,
+                    blockIds = listOf(pages.first().content.asLink().target),
                     position = Position.BOTTOM
                 )
             ),

@@ -91,6 +91,35 @@ message Rpc {
             }
         }
 
+        /*
+         * Makes blocks copy by given ids and paste it to shown place
+        */
+        message Duplicate {
+            message Request {
+                string contextId = 1; // id of the context block
+                string targetId = 2; // id of the closest block
+                repeated string blockIds = 3; // id of block for duplicate
+                anytype.model.Block.Position position = 4;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated string blockIds = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
         message Set {
             message Text {
                 message Style {
@@ -113,6 +142,78 @@ message Rpc {
                                 BAD_INPUT = 2;
                                 // ...
                             }
+                        }
+                    }
+                }
+                message Color {
+                    message Request {
+                        string contextId = 1;
+                        repeated string blockIds = 2;
+                        string color = 3;
+                    }
+
+                    message Response {
+                        Error error = 1;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+                message BackgroundColor {
+                    message Request {
+                        string contextId = 1;
+                        repeated string blockIds = 2;
+                        string color = 3;
+                    }
+
+                    message Response {
+                        Error error = 1;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+            }
+            message Fields {
+                message Request {
+                    string contextId = 1;
+                    repeated BlockField blockFields = 2;
+
+                    message BlockField {
+                        string blockId = 1;
+                        google.protobuf.Struct fields = 2;
+                    }
+                }
+                message Response {
+                    Error error = 1;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                            // ...
                         }
                     }
                 }
@@ -198,34 +299,6 @@ message Rpc {
             }
         }
 
-        /*
-         * Makes block copy by given id and paste it to shown place
-        */
-        message Duplicate {
-            message Request {
-                string contextId = 1; // id of the context block
-                string targetId = 2; // id of the closest block
-                string blockId = 3; // id of block for duplicate
-                anytype.model.Block.Position position = 4;
-            }
-
-            message Response {
-                Error error = 1;
-                string blockId = 2;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        // ...
-                    }
-                }
-            }
-        }
 
         message Copy {
             message Request {
@@ -258,11 +331,11 @@ message Rpc {
                 string contextId = 1;
                 string focusedBlockId = 2;
                 anytype.model.Range selectedTextRange = 3;
-                repeated string selectedBlocks = 4;
+                repeated string selectedBlockIds = 4;
 
                 string textSlot = 5;
                 string htmlSlot = 6;
-                string anySlot = 7;
+                repeated anytype.model.Block anySlot = 7;
             }
 
             message Response {
@@ -286,7 +359,7 @@ message Rpc {
             message Request {
                 string contextId = 1;
                 string blockId = 2;
-                string localPath = 3;
+                string filePath = 3;
                 string url = 4;
             }
 
@@ -676,6 +749,32 @@ message Rpc {
                     }
                 }
             }
+
+            message Link {
+                message TargetBlockId {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2;
+                        string targetBlockId = 3;
+                    }
+
+                    message Response {
+                        Error error = 1;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         message Get {
@@ -707,38 +806,47 @@ message Rpc {
             }
         }
 
-        /*
-         * Block history: switch between versions (lib context: switch block head), move forward or backward
-         * **Example scenario**
-         * 1. User -> MacOS Front: CMD+Z
-         * 2. Front -> MW: Rpc.Block.History.Move.Request(blockId, false)
-         * 3. MW -> Lib: ?? TODO
-         * 4. Lib: switches current block header to a previous one
-         * 5. Lib -> MW: prev version of block
-         * 6. MW -> Front: BlockShow(block.prevVersion)
-        */
-        message History {
-            message Move {
-                message Request {
-                    string contextId = 1; // id of the context block
-                    string blockId = 2;
-                    bool moveForward = 3; // Move direction. If true, move forward
+        message Undo {
+            message Request {
+                string contextId = 1; // id of the context block
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        CAN_NOT_MOVE = 3;
+                        // ...
+                    }
                 }
+            }
+        }
 
-                message Response {
-                    Error error = 1;
+        message Redo {
+            message Request {
+                string contextId = 1; // id of the context block
+            }
 
-                    message Error {
-                        Code code = 1;
-                        string description = 2;
+            message Response {
+                Error error = 1;
 
-                        enum Code {
-                            NULL = 0;
-                            UNKNOWN_ERROR = 1;
-                            BAD_INPUT = 2;
-                            CAN_NOT_MOVE = 3;
-                            // ...
-                        }
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        CAN_NOT_MOVE = 3;
+                        // ...
                     }
                 }
             }
@@ -825,6 +933,32 @@ message Rpc {
             }
         }
 
+        message CreatePage {
+            message Request {
+                string contextId = 1; // id of the context block
+                string targetId = 2; // id of the closest block
+                anytype.model.Block block = 3; // page block
+                anytype.model.Block.Position position = 4;
+            }
+
+            message Response {
+                Error error = 1;
+                string blockId = 2;
+                string targetId = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
         /*
          * Remove blocks from the childrenIds of its parents
         */
@@ -1013,6 +1147,8 @@ message Rpc {
                         LOCAL_REPO_EXISTS_BUT_CORRUPTED = 104;
                         FAILED_TO_RUN_NODE = 105;
                         WALLET_RECOVER_NOT_PERFORMED = 106;
+                        FAILED_TO_STOP_RUNNING_NODE = 107;
+
                     }
                 }
             }
@@ -1050,6 +1186,7 @@ message Rpc {
                         FAILED_TO_FIND_ACCOUNT_INFO = 104;
                         LOCAL_REPO_NOT_EXISTS_AND_MNEMONIC_NOT_SET = 105;
                         FAILED_TO_STOP_SEARCHER_NODE = 106;
+                        FAILED_TO_RECOVER_PREDEFINED_BLOCKS = 107;
                     }
                 }
             }
@@ -1164,8 +1301,8 @@ message Rpc {
             message Get {
                 message Blob {
                     message Request {
-                        string id = 1;
-                        anytype.model.Image.Size size = 2;
+                        string hash = 1;
+                        int32 wantWidth = 2;
                     }
 
                     message Response {
@@ -1192,8 +1329,8 @@ message Rpc {
 
                 message File {
                     message Request {
-                        string id = 1;
-                        anytype.model.Image.Size size = 2;
+                        string hash = 1;
+                        int32 wantWidth = 2;
                     }
 
                     message Response {
@@ -1227,7 +1364,8 @@ message Rpc {
             }
             message Response {
                 Error error = 1;
-                string homeBlockId = 2;
+                string homeBlockId = 2; // home dashboard block id
+                string gatewayUrl = 3; // gateway url for fetching static files
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -1264,5 +1402,9 @@ message Rpc {
             }
         }
     }
+
+}
+
+message Empty {
 
 }

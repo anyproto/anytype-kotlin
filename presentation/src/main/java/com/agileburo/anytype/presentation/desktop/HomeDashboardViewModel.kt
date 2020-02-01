@@ -72,6 +72,7 @@ class HomeDashboardViewModel(
     private fun startObservingEvents() {
         observeEvents
             .build()
+            .onEach { Timber.d("New event: $it") }
             .onEach { event ->
                 if (event is Event.Command.UpdateStructure)
                     machine.onEvent(Machine.Event.OnStructureUpdated(event.children))
@@ -172,8 +173,13 @@ class HomeDashboardViewModel(
         createPage.invoke(viewModelScope, CreatePage.Params.insideDashboard()) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while creating a new page") },
-                fnR = { id -> navigateToPage(id) }
+                fnR = { id ->
+                    machine.onEvent(Machine.Event.OnFinishedCreatingPage)
+                    navigateToPage(id)
+                }
             )
+        }.also {
+            machine.onEvent(Machine.Event.OnStartedCreatingPage)
         }
     }
 
@@ -287,6 +293,10 @@ class HomeDashboardViewModel(
             ) : Event()
 
             object OnDashboardLoadingStarted : Event()
+
+            object OnStartedCreatingPage : Event()
+
+            object OnFinishedCreatingPage : Event()
         }
 
         class Reducer : StateReducer<State, Event> {
@@ -308,6 +318,12 @@ class HomeDashboardViewModel(
                     isLoading = false,
                     error = null,
                     homeDashboard = event.dashboard
+                )
+                is Event.OnStartedCreatingPage -> state.copy(
+                    isLoading = true
+                )
+                is Event.OnFinishedCreatingPage -> state.copy(
+                    isLoading = false
                 )
                 is Event.OnStructureUpdated -> state.copy(
                     isInitialzed = true,

@@ -30,12 +30,13 @@ message Event {
             Block.Set.Text blockSetText = 10;
             Block.Set.File blockSetFile = 11;
             Block.Set.Icon blockSetIcon = 12;
+            Block.Set.Link blockSetLink = 13;
 
-            Block.Show blockShow = 13;
-            User.Block.Join userBlockJoin = 14;
-            User.Block.Left userBlockLeft = 15;
-            User.Block.SelectRange userBlockSelectRange = 16;
-            User.Block.TextRange userBlockTextRange = 17;
+            Block.Show blockShow = 20;
+            User.Block.Join userBlockJoin = 21;
+            User.Block.Left userBlockLeft = 22;
+            User.Block.SelectRange userBlockSelectRange = 23;
+            User.Block.TextRange userBlockTextRange = 24;
 
             Ping ping = 100;
         }
@@ -92,6 +93,7 @@ message Event {
          *
         */
         message Delete {
+            // TODO: repeated string blockIds?
             string blockId = 1;
         }
 
@@ -159,8 +161,10 @@ message Event {
                 string id = 1;
                 Type type = 2;
                 State state = 3;
-                LocalFilePath localFilePath = 4;
-                PreviewLocalFilePath previewLocalFilePath = 5;
+                Mime mime = 4;
+                Hash hash = 5;
+                Name name = 6;
+                Size size = 7;
 
                 message Name {
                     string value = 1;
@@ -178,12 +182,16 @@ message Event {
                     anytype.model.Block.Content.File.Type value = 1;
                 }
 
-                message LocalFilePath {
+                message Hash {
                     string value = 1;
                 }
 
-                message PreviewLocalFilePath {
+                message Mime {
                     string value = 1;
+                }
+
+                message Size {
+                    int64 value = 1;
                 }
             }
 
@@ -193,6 +201,25 @@ message Event {
 
                 message Name {
                     string value = 1;
+                }
+            }
+
+            message Link {
+                string id = 1;
+                TargetBlockId targetBlockId = 2;
+                Style style = 3;
+                Fields fields = 4;
+
+                message TargetBlockId {
+                    string value = 1;
+                }
+
+                message Style {
+                    anytype.model.Block.Content.Link.Style value = 1;
+                }
+
+                message Fields {
+                    google.protobuf.Struct value = 1;
                 }
             }
         }

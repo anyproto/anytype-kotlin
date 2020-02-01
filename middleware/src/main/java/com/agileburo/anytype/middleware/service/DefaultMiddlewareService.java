@@ -121,6 +121,17 @@ public class DefaultMiddlewareService implements MiddlewareService {
     }
 
     @Override
+    public Block.CreatePage.Response blockCreatePage(Block.CreatePage.Request request) throws Exception {
+        byte[] encoded = Lib.blockCreatePage(request.toByteArray());
+        Block.CreatePage.Response response = Block.CreatePage.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Block.CreatePage.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
     public Block.Set.Text.TText.Response blockSetTextText(Block.Set.Text.TText.Request request) throws Exception {
         byte[] encoded = Lib.blockSetTextText(request.toByteArray());
         Block.Set.Text.TText.Response response = Block.Set.Text.TText.Response.parseFrom(encoded);
@@ -187,10 +198,10 @@ public class DefaultMiddlewareService implements MiddlewareService {
     }
 
     @Override
-    public Block.Duplicate.Response blockDuplicate(Block.Duplicate.Request request) throws Exception {
-        byte[] encoded = Lib.blockDuplicate(request.toByteArray());
-        Block.Duplicate.Response response = Block.Duplicate.Response.parseFrom(encoded);
-        if (response.getError() != null && response.getError().getCode() != Block.Duplicate.Response.Error.Code.NULL) {
+    public BlockList.Duplicate.Response blockListDuplicate(BlockList.Duplicate.Request request) throws Exception {
+        byte[] encoded = Lib.blockListDuplicate(request.toByteArray());
+        BlockList.Duplicate.Response response = BlockList.Duplicate.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != BlockList.Duplicate.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return response;

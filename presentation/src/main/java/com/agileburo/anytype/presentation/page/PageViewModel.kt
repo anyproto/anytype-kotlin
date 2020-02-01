@@ -308,6 +308,7 @@ class PageViewModel(
         textChanges
             .debounce(TEXT_CHANGES_DEBOUNCE_DURATION)
             .map { (id, text, marks) ->
+
                 val update = blocks.map { block ->
                     if (block.id == id) {
                         block.copy(

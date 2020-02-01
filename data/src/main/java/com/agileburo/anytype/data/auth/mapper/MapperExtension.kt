@@ -79,6 +79,7 @@ fun BlockEntity.Content.toDomain(): Block.Content = when (this) {
     is BlockEntity.Content.Page -> toDomain()
     is BlockEntity.Content.Layout -> toDomain()
     is BlockEntity.Content.Image -> toDomain()
+    is BlockEntity.Content.Link -> toDomain()
 }
 
 fun BlockEntity.Content.Text.toDomain(): Block.Content.Text {
@@ -100,6 +101,15 @@ fun BlockEntity.Content.Dashboard.toDomain(): Block.Content.Dashboard {
 fun BlockEntity.Content.Page.toDomain(): Block.Content.Page {
     return Block.Content.Page(
         style = Block.Content.Page.Style.valueOf(style.name)
+    )
+}
+
+fun BlockEntity.Content.Link.toDomain(): Block.Content.Link {
+    return Block.Content.Link(
+        target = target,
+        isArchived = isArchived,
+        type = Block.Content.Link.Type.valueOf(type.name),
+        fields = Block.Fields(map = fields.map.toMap())
     )
 }
 
@@ -150,6 +160,7 @@ fun Block.Content.toEntity(): BlockEntity.Content = when (this) {
     is Block.Content.Page -> toEntity()
     is Block.Content.Layout -> toEntity()
     is Block.Content.Image -> toEntity()
+    is Block.Content.Link -> toEntity()
 }
 
 fun Block.Content.Text.toEntity(): BlockEntity.Content.Text {
@@ -169,6 +180,15 @@ fun Block.Content.Dashboard.toEntity(): BlockEntity.Content.Dashboard {
 fun Block.Content.Page.toEntity(): BlockEntity.Content.Page {
     return BlockEntity.Content.Page(
         style = BlockEntity.Content.Page.Style.valueOf(style.name)
+    )
+}
+
+fun Block.Content.Link.toEntity(): BlockEntity.Content.Link {
+    return BlockEntity.Content.Link(
+        target = target,
+        type = BlockEntity.Content.Link.Type.valueOf(type.name),
+        isArchived = isArchived,
+        fields = BlockEntity.Fields(map = fields.map.toMutableMap())
     )
 }
 

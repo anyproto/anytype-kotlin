@@ -1,5 +1,9 @@
 package com.agileburo.anytype.domain.block.model
 
+import com.agileburo.anytype.domain.block.model.Block.Content.Text.Mark
+import com.agileburo.anytype.domain.block.model.Block.Content.Text.Style
+import com.agileburo.anytype.domain.common.Id
+
 /**
  * Represents block as basic data structure.
  * @property id block's id
@@ -38,6 +42,7 @@ data class Block(
     sealed class Content {
 
         fun asText() = this as Text
+        fun asLink() = this as Link
         fun asDashboard() = this as Dashboard
 
         /**
@@ -116,6 +121,22 @@ data class Block(
 
         data class Page(val style: Style) : Content() {
             enum class Style { EMPTY, TASK, SET }
+        }
+
+        /**
+         * A link to some other block.
+         * @property target id of the target block
+         * @property type type of the link
+         * @property isArchived whether the target block is archived or not
+         * @property fields fields storing additional properties
+         */
+        data class Link(
+            val target: Id,
+            val type: Type,
+            val isArchived: Boolean,
+            val fields: Fields
+        ) : Content() {
+            enum class Type { PAGE, DATA_VIEW }
         }
     }
 

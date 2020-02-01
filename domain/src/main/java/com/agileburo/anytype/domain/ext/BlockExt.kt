@@ -57,6 +57,7 @@ fun Block.getFirstLinkMarkupParam(range: IntRange): String? {
 }
 
 fun Block.getSubstring(range: IntRange): String = content.asText().text.substring(range)
+
 fun Block.textColor(): String? {
     if (content is Block.Content.Text)
         return content.color

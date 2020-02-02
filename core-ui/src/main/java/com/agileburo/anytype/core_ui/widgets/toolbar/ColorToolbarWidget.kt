@@ -111,6 +111,7 @@ class ColorToolbarWidget : LinearLayout {
             addItemDecoration(decoration)
 
             adapter = BackgroundColorAdapter(
+                onBackgroundColorClicked = { channel.sendBlocking(Click.OnBackgroundColorClicked(it)) },
                 colors = resources.getIntArray(R.array.toolbar_color_background_colours).toList()
             )
         }
@@ -191,7 +192,8 @@ class ColorToolbarWidget : LinearLayout {
      * @property colors immutable list of background colors represented by integers.
      */
     class BackgroundColorAdapter(
-        private val colors: List<Int>
+        private val colors: List<Int>,
+        private val onBackgroundColorClicked: (Int) -> Unit
     ) : RecyclerView.Adapter<BackgroundColorAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(
@@ -208,7 +210,8 @@ class ColorToolbarWidget : LinearLayout {
             holder.bind(
                 color = colors[position],
                 isFirst = position == 0,
-                isLast = position == colors.lastIndex
+                isLast = position == colors.lastIndex,
+                onBackgroundColorClicked = onBackgroundColorClicked
             )
         }
 
@@ -219,10 +222,12 @@ class ColorToolbarWidget : LinearLayout {
             fun bind(
                 color: Int,
                 isFirst: Boolean,
-                isLast: Boolean
+                isLast: Boolean,
+                onBackgroundColorClicked: (Int) -> Unit
             ) {
                 placeholder.backgroundTintList = ColorStateList.valueOf(color)
                 setBackground(isFirst, isLast)
+                itemView.setOnClickListener { onBackgroundColorClicked(color) }
             }
 
             private fun setBackground(isFirst: Boolean, isLast: Boolean) {

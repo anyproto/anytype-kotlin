@@ -347,13 +347,18 @@ class MarkupExtTest {
     }
 
     @Test
-    fun `should replace the color already present in markup by the new one`() {
+    fun `should replace the text color and background color already present in markup by the new ones`() {
 
         val range = 0..5
 
         val given = listOf(
             Mark(
                 type = Mark.Type.TEXT_COLOR,
+                range = range,
+                param = MockDataFactory.randomString()
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
                 range = range,
                 param = MockDataFactory.randomString()
             )
@@ -365,13 +370,24 @@ class MarkupExtTest {
             param = MockDataFactory.randomString()
         )
 
-        val result = given.addMark(color)
+        val background = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = range,
+            param = MockDataFactory.randomString()
+        )
+
+        val result = given.addMark(color).addMark(background)
 
         val expected = listOf(
             Mark(
                 type = Mark.Type.TEXT_COLOR,
                 range = range,
                 param = color.param
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = range,
+                param = background.param
             )
         )
 
@@ -382,12 +398,17 @@ class MarkupExtTest {
     }
 
     @Test
-    fun `should replace color if a new mark includes an old mark`() {
+    fun `should replace text color and background color if a new marks includes an old marks`() {
 
         val given = listOf(
             Mark(
                 type = Mark.Type.TEXT_COLOR,
                 range = 1..3,
+                param = MockDataFactory.randomString()
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 7..10,
                 param = MockDataFactory.randomString()
             )
         )
@@ -398,13 +419,24 @@ class MarkupExtTest {
             param = MockDataFactory.randomString()
         )
 
-        val result = given.addMark(color)
+        val background = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = 6..20,
+            param = MockDataFactory.randomString()
+        )
+
+        val result = given.addMark(color).addMark(background)
 
         val expected = listOf(
             Mark(
                 type = Mark.Type.TEXT_COLOR,
                 range = 0..4,
                 param = color.param
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 6..20,
+                param = background.param
             )
         )
 
@@ -461,15 +493,67 @@ class MarkupExtTest {
     }
 
     @Test
+    fun `should colorize only inner range for background text color`() {
+
+        val white = "white"
+        val yellow = "yellow"
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 0..6,
+                param = white
+            )
+        )
+
+        val color = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = 2..4,
+            param = yellow
+        )
+
+        val result = given.addMark(color)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 0..2,
+                param = white
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 2..4,
+                param = yellow
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 4..6,
+                param = white
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
     fun `should not colorize inner range because colors are equal`() {
 
         val color = MockDataFactory.randomString()
+        val background = MockDataFactory.randomString()
 
         val given = listOf(
             Mark(
                 type = Mark.Type.TEXT_COLOR,
                 range = 0..6,
                 param = color
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 10..16,
+                param = background
             )
         )
 
@@ -479,7 +563,13 @@ class MarkupExtTest {
             param = color
         )
 
-        val result = given.addMark(new)
+        val newBackground = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = 12..14,
+            param = background
+        )
+
+        val result = given.addMark(new).addMark(newBackground)
 
         assertEquals(
             actual = result,
@@ -517,6 +607,47 @@ class MarkupExtTest {
             ),
             Mark(
                 type = Mark.Type.TEXT_COLOR,
+                range = 4..6,
+                param = white
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
+    fun `should colorize inner-left part for background text color`() {
+
+        val white = "white"
+        val yellow = "yellow"
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 0..6,
+                param = white
+            )
+        )
+
+        val color = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = 0..4,
+            param = yellow
+        )
+
+        val result = given.addMark(color)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 0..4,
+                param = yellow
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
                 range = 4..6,
                 param = white
             )
@@ -570,6 +701,47 @@ class MarkupExtTest {
     }
 
     @Test
+    fun `should colorize inner-right part for background text color`() {
+
+        val white = "white"
+        val yellow = "yellow"
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 0..6,
+                param = white
+            )
+        )
+
+        val color = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = 4..6,
+            param = yellow
+        )
+
+        val result = given.addMark(color)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 0..4,
+                param = white
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 4..6,
+                param = yellow
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
     fun `should not colorize inner-left part because param are equal`() {
 
         val color = MockDataFactory.randomString()
@@ -597,15 +769,48 @@ class MarkupExtTest {
     }
 
     @Test
+    fun `should not colorize inner-left part because param are equal for background text color`() {
+
+        val color = MockDataFactory.randomString()
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 0..6,
+                param = color
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = 0..4,
+            param = color
+        )
+
+        val result = given.addMark(new)
+
+        assertEquals(
+            actual = result,
+            expected = given
+        )
+    }
+
+    @Test
     fun `should not colorize inner-right part because param are equal`() {
 
         val color = MockDataFactory.randomString()
+        val background = MockDataFactory.randomString()
 
         val given = listOf(
             Mark(
                 type = Mark.Type.TEXT_COLOR,
                 range = 0..6,
                 param = color
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 10..16,
+                param = background
             )
         )
 
@@ -615,7 +820,13 @@ class MarkupExtTest {
             param = color
         )
 
-        val result = given.addMark(new)
+        val backgroundNew = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = 14..16,
+            param = background
+        )
+
+        val result = given.addMark(new).addMark(backgroundNew)
 
         assertEquals(
             actual = result,
@@ -665,15 +876,62 @@ class MarkupExtTest {
     }
 
     @Test
+    fun `should colorize left part because colors are not equal for background text color`() {
+
+        val black = "black"
+        val yellow = "yellow"
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 15..20,
+                param = black
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = 11..14,
+            param = yellow
+        )
+
+        val result = given.addMark(new)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 11..14,
+                param = yellow
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 15..20,
+                param = black
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
     fun `should merge left part because colors are equal`() {
 
         val color = MockDataFactory.randomString()
+        val backgroundColor = MockDataFactory.randomString()
 
         val given = listOf(
             Mark(
                 type = Mark.Type.TEXT_COLOR,
                 range = 5..10,
                 param = color
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 15..25,
+                param = backgroundColor
             )
         )
 
@@ -683,13 +941,24 @@ class MarkupExtTest {
             param = color
         )
 
-        val result = given.addMark(new)
+        val backgroundNew = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = 6..18,
+            param = backgroundColor
+        )
+
+        val result = given.addMark(new).addMark(backgroundNew)
 
         val expected = listOf(
             Mark(
                 type = Mark.Type.TEXT_COLOR,
                 range = 0..10,
                 param = color
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 6..25,
+                param = backgroundColor
             )
         )
 
@@ -705,11 +974,19 @@ class MarkupExtTest {
         val black = "black"
         val yellow = "yellow"
 
+        val red = "red"
+        val green = "green"
+
         val given = listOf(
             Mark(
                 type = Mark.Type.TEXT_COLOR,
                 range = 0..7,
                 param = black
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 15..25,
+                param = red
             )
         )
 
@@ -719,7 +996,13 @@ class MarkupExtTest {
             param = yellow
         )
 
-        val result = given.addMark(new)
+        val backgroundNew = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = 20..30,
+            param = green
+        )
+
+        val result = given.addMark(new).addMark(backgroundNew)
 
         val expected = listOf(
             Mark(
@@ -731,6 +1014,16 @@ class MarkupExtTest {
                 type = Mark.Type.TEXT_COLOR,
                 range = 5..10,
                 param = yellow
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 15..20,
+                param = red
+            ),
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 20..30,
+                param = green
             )
         )
 
@@ -765,6 +1058,41 @@ class MarkupExtTest {
             Mark(
                 type = Mark.Type.TEXT_COLOR,
                 range = 0..10,
+                param = color
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
+    fun `should merge right part because colors are equal for background text color`() {
+
+        val color = MockDataFactory.randomString()
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 10..17,
+                param = color
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.BACKGROUND_COLOR,
+            range = 15..60,
+            param = color
+        )
+
+        val result = given.addMark(new)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.BACKGROUND_COLOR,
+                range = 10..60,
                 param = color
             )
         )

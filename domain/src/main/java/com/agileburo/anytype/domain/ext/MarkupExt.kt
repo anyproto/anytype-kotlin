@@ -42,7 +42,7 @@ fun Marks.toggle(target: Mark): Marks {
 
             when (target.range.overlap(mark.range)) {
                 Overlap.EQUAL -> {
-                    if (target.type == Mark.Type.TEXT_COLOR)
+                    if (target.type == Mark.Type.TEXT_COLOR || target.type == Mark.Type.BACKGROUND_COLOR)
                         result.add(target)
                     else
                         del.add(target)
@@ -51,7 +51,7 @@ fun Marks.toggle(target: Mark): Marks {
                     result.add(target)
                 }
                 Overlap.INNER_LEFT -> {
-                    if (target.type == Mark.Type.TEXT_COLOR) {
+                    if (target.type == Mark.Type.TEXT_COLOR || target.type == Mark.Type.BACKGROUND_COLOR) {
                         if (mark.param == target.param)
                             result.add(mark)
                         else {
@@ -70,7 +70,7 @@ fun Marks.toggle(target: Mark): Marks {
                         )
                 }
                 Overlap.INNER_RIGHT -> {
-                    if (target.type == Mark.Type.TEXT_COLOR) {
+                    if (target.type == Mark.Type.TEXT_COLOR || target.type == Mark.Type.BACKGROUND_COLOR) {
                         if (target.param == mark.param)
                             result.add(mark)
                         else {
@@ -89,7 +89,7 @@ fun Marks.toggle(target: Mark): Marks {
                         )
                 }
                 Overlap.INNER -> {
-                    if (target.type == Mark.Type.TEXT_COLOR) {
+                    if (target.type == Mark.Type.TEXT_COLOR || target.type == Mark.Type.BACKGROUND_COLOR) {
                         if (target.param == mark.param)
                             result.add(mark)
                         else {
@@ -119,7 +119,7 @@ fun Marks.toggle(target: Mark): Marks {
                     }
                 }
                 Overlap.LEFT -> {
-                    if (target.type == Mark.Type.TEXT_COLOR) {
+                    if (target.type == Mark.Type.TEXT_COLOR || target.type == Mark.Type.BACKGROUND_COLOR) {
                         if (target.param == mark.param)
                             result.add(
                                 mark.copy(
@@ -142,7 +142,7 @@ fun Marks.toggle(target: Mark): Marks {
                         )
                 }
                 Overlap.RIGHT -> {
-                    if (target.type == Mark.Type.TEXT_COLOR) {
+                    if (target.type == Mark.Type.TEXT_COLOR || target.type == Mark.Type.BACKGROUND_COLOR) {
                         if (target.param == mark.param)
                             result.add(
                                 mark.copy(

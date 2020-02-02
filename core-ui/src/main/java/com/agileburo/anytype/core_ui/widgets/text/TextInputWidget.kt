@@ -2,10 +2,11 @@ package com.agileburo.anytype.core_ui.widgets.text
 
 import android.content.Context
 import android.text.TextWatcher
-import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
+import com.agileburo.anytype.core_ui.extensions.toast
+import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
 
 class TextInputWidget : AppCompatEditText {
@@ -21,10 +22,6 @@ class TextInputWidget : AppCompatEditText {
         attrs,
         defStyle
     )
-
-    init {
-        //makeLinksActive()
-    }
 
     override fun addTextChangedListener(watcher: TextWatcher) {
         watchers.add(watcher)
@@ -47,11 +44,18 @@ class TextInputWidget : AppCompatEditText {
         super.onSelectionChanged(selStart, selEnd)
     }
 
+    fun setLinksClickable() {
+        //makeLinksActive()
+    }
+
     /**
      *  Makes all links in the TextView object active.
      */
     private fun makeLinksActive() {
-        this.movementMethod = LinkMovementMethod.getInstance()
-        Linkify.addLinks(this, Linkify.WEB_URLS)
+        BetterLinkMovementMethod.linkify(Linkify.ALL, this)
+            .setOnLinkClickListener { textView, url ->
+                textView.context.toast("On link click $url")
+                false
+            }
     }
 }

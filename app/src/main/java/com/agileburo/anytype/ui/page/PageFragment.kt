@@ -154,10 +154,18 @@ class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInter
         colorToolbar
             .observeClicks()
             .onEach { click ->
-                if (click is ColorToolbarWidget.Click.OnTextColorClicked)
-                    handleTextColorClick(click)
-                else
-                    handleBackgroundColorClicked()
+                when (click) {
+                    is ColorToolbarWidget.Click.OnTextColorClicked -> {
+                        handleTextColorClick(click)
+                    }
+                    is ColorToolbarWidget.Click.OnBackgroundColorClicked -> {
+                        handleBackgroundColorClicked(click)
+                    }
+                    else -> {
+                        toast(NOT_IMPLEMENTED_MESSAGE)
+                    }
+
+                }
             }
             .launchIn(lifecycleScope)
 
@@ -185,16 +193,27 @@ class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInter
         fab.clicks().onEach { toast(NOT_IMPLEMENTED_MESSAGE) }.launchIn(lifecycleScope)
     }
 
-    private fun handleTextColorClick(click: ColorToolbarWidget.Click.OnTextColorClicked) {
-        when {
-            colorToolbar.state == ColorToolbarWidget.State.SELECTION -> {
+    private fun handleTextColorClick(click: ColorToolbarWidget.Click.OnTextColorClicked) =
+        when (colorToolbar.state) {
+            ColorToolbarWidget.State.SELECTION -> {
                 vm.onMarkupTextColorAction(click.color.hexColorCode())
             }
-            colorToolbar.state == ColorToolbarWidget.State.BLOCK -> {
+            ColorToolbarWidget.State.BLOCK -> {
                 vm.onToolbarTextColorAction(click.color.hexColorCode())
             }
+            else -> toast(NOT_IMPLEMENTED_MESSAGE)
         }
-    }
+
+    private fun handleBackgroundColorClicked(click: ColorToolbarWidget.Click.OnBackgroundColorClicked) =
+        when (colorToolbar.state) {
+            ColorToolbarWidget.State.SELECTION -> {
+                vm.onMarkupBackgroundColorAction(click.color.hexColorCode())
+            }
+            ColorToolbarWidget.State.BLOCK -> {
+                vm.onBlockBackgroundColorAction(click.color.hexColorCode())
+            }
+            else -> toast(NOT_IMPLEMENTED_MESSAGE)
+        }
 
     private fun handleAddBlockToolbarOptionClicked(option: Option) {
         when (option) {
@@ -246,10 +265,6 @@ class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInter
 
     override fun onRemoveMarkupLinkClicked(blockId: String, range: IntRange) {
         vm.onUnlinkPressed(blockId, range)
-    }
-
-    private fun handleBackgroundColorClicked() {
-        toast(NOT_IMPLEMENTED_MESSAGE)
     }
 
     private fun showColorToolbar() {

@@ -40,6 +40,7 @@ dependencies {
     implementation applicationDependencies.constraintLayout
     implementation applicationDependencies.glide
     implementation applicationDependencies.timber
+    implementation applicationDependencies.betterLinkMovement
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

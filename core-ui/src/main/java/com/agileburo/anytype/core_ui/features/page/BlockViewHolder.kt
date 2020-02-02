@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Focusable
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.common.isLinksPresent
 import com.agileburo.anytype.core_ui.common.setMarkup
 import com.agileburo.anytype.core_ui.common.toSpannable
 import com.agileburo.anytype.core_ui.extensions.color
@@ -130,6 +131,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
+            if (item.marks.isLinksPresent()) {
+                content.setLinksClickable()
+            }
+
             if (item.marks.isNotEmpty())
                 content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
             else
@@ -163,12 +168,20 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             Timber.d("Applying change payload: $payload")
 
             when (payload) {
-                MARKUP_CHANGED -> setMarkup(markup = item)
+                MARKUP_CHANGED -> {
+                    if (item.marks.isLinksPresent()) {
+                        content.setLinksClickable()
+                    }
+                    setMarkup(markup = item)
+                }
                 TEXT_CHANGED -> {
                     if (content.text.toString() != item.text)
                         content.setText(item.text)
                 }
                 TEXT_AND_MARKUP_CHANGED -> {
+                    if (item.marks.isLinksPresent()) {
+                        content.setLinksClickable()
+                    }
                     if (content.text.toString() != item.text)
                         content.setText(item.text)
                     setMarkup(markup = item)
@@ -335,6 +348,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             checkbox.isSelected = item.checked
 
+            checkbox.setOnClickListener {
+                checkbox.isSelected = !checkbox.isSelected
+                onCheckboxClicked(item.id)
+            }
+
+            if (item.marks.isLinksPresent()) {
+                content.setLinksClickable()
+            }
+
             if (item.marks.isNotEmpty())
                 content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
             else
@@ -409,6 +431,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onFocusChanged: (String, Boolean) -> Unit
         ) {
             Timber.d("Binding bullet")
+
+            content.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
+
+            if (item.marks.isLinksPresent()) {
+                content.setLinksClickable()
+            }
 
             if (item.marks.isNotEmpty())
                 content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)

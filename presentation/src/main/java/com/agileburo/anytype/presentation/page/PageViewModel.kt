@@ -234,6 +234,7 @@ class PageViewModel(
                 Markup.Type.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
                 Markup.Type.TEXT_COLOR -> Block.Content.Text.Mark.Type.TEXT_COLOR
                 Markup.Type.LINK -> Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BACKGROUND_COLOR -> Block.Content.Text.Mark.Type.BACKGROUND_COLOR
             },
             param = action.param
         )
@@ -477,6 +478,18 @@ class PageViewModel(
         }
     }
 
+    fun onMarkupBackgroundColorAction(color: String) {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMarkupBackgroundColorSelected)
+        viewModelScope.launch {
+            markupActionChannel.send(
+                MarkupAction(
+                    type = Markup.Type.BACKGROUND_COLOR,
+                    param = color
+                )
+            )
+        }
+    }
+
     fun onToolbarTextColorAction(color: String) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockTextColorSelected)
         focusChannel.value.let { focus ->
@@ -494,6 +507,10 @@ class PageViewModel(
                 )
             }
         }
+    }
+
+    fun onBlockBackgroundColorAction(color: String) {
+        Timber.e("Not implemented")
     }
 
     fun onMarkupToolbarColorClicked() {
@@ -736,6 +753,11 @@ class PageViewModel(
             object OnMarkupTextColorSelected : Event()
 
             /**
+             * Represents an event when user selected a background color on [Toolbar.Color] toolbar.
+             */
+            object OnMarkupBackgroundColorSelected : Event()
+            
+            /**
              * Represents an event when user selected a block text color on [Toolbar.Color] toolbar.
              */
             object OnBlockTextColorSelected : Event()
@@ -880,6 +902,14 @@ class PageViewModel(
                         isVisible = false
                     ),
                     blockToolbar = state.blockToolbar.copy(
+                        selectedAction = null
+                    )
+                )
+                is Event.OnMarkupBackgroundColorSelected -> state.copy(
+                    colorToolbar = state.colorToolbar.copy(
+                        isVisible = false
+                    ),
+                    markupToolbar = state.markupToolbar.copy(
                         selectedAction = null
                     )
                 )

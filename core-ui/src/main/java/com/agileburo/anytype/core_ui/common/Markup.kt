@@ -46,6 +46,7 @@ interface Markup {
         BOLD,
         STRIKETHROUGH,
         TEXT_COLOR,
+        BACKGROUND_COLOR,
         LINK
     }
 
@@ -77,6 +78,12 @@ fun Markup.toSpannable() = SpannableString(body).apply {
             )
             Markup.Type.TEXT_COLOR -> setSpan(
                 ForegroundColorSpan(mark.color()),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
+            Markup.Type.BACKGROUND_COLOR -> setSpan(
+                BackgroundColorSpan(mark.color()),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
@@ -121,6 +128,12 @@ fun Editable.setMarkup(markup: Markup) {
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
+            Markup.Type.BACKGROUND_COLOR -> setSpan(
+                BackgroundColorSpan(mark.color()),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
             Markup.Type.LINK -> {
                 setSpan(
                     URLSpan(mark.param as String),
@@ -132,3 +145,5 @@ fun Editable.setMarkup(markup: Markup) {
         }
     }
 }
+
+fun List<Markup.Mark>.isLinksPresent(): Boolean = this.any { it.type == Markup.Type.LINK }

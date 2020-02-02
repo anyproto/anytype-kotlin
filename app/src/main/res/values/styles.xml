@@ -9,6 +9,16 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+        <item name="android:textViewStyle">@style/GraphikTextViewStyle</item>
+        <item name="buttonStyle">@style/GraphikButtonStyle</item>
+    </style>
+
+    <style name="GraphikTextViewStyle" parent="Widget.MaterialComponents.TextView">
+        <item name="android:fontFamily">@font/graphik_regular</item>
+    </style>
+
+    <style name="GraphikButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:fontFamily">@font/graphik_regular</item>
     </style>
 
     <style name="WhiteProgressBar" parent="ThemeOverlay.AppCompat.Light">

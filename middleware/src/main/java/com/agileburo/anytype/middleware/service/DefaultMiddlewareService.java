@@ -66,6 +66,17 @@ public class DefaultMiddlewareService implements MiddlewareService {
     }
 
     @Override
+    public Account.Stop.Response accountStop(Account.Stop.Request request) throws Exception {
+        byte[] encoded = Lib.accountStop(request.toByteArray());
+        Account.Stop.Response response = Account.Stop.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Account.Stop.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
     public Account.Select.Response accountSelect(Account.Select.Request request) throws Exception {
         byte[] encoded = Lib.accountSelect(request.toByteArray());
         Account.Select.Response response = Account.Select.Response.parseFrom(encoded);

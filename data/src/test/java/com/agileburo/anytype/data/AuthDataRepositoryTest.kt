@@ -211,7 +211,7 @@ class AuthDataRepositoryTest {
     }
 
     @Test
-    fun `should call only cache in order to logout`() = runBlocking {
+    fun `should call cache and remote in order to logout`() = runBlocking {
 
         authCache.stub {
             onBlocking { logout() } doReturn Unit
@@ -219,9 +219,23 @@ class AuthDataRepositoryTest {
 
         repo.logout()
 
-        verifyZeroInteractions(authRemote)
         verify(authCache, times(1)).logout()
         verifyNoMoreInteractions(authCache)
+        verify(authRemote, times(1)).logout()
+        verifyNoMoreInteractions(authRemote)
+    }
+
+    @Test
+    fun `should not call logout on cache if remote logout is not succeeded`() {
+
+        authRemote.stub {
+            onBlocking { logout() } doThrow IllegalStateException()
+        }
+
+        runBlocking {
+            verify(authRemote, times(1)).logout()
+            verifyZeroInteractions(authCache)
+        }
     }
 
     @Test

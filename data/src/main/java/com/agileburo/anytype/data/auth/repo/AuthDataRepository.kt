@@ -53,6 +53,7 @@ class AuthDataRepository(
     override suspend fun getMnemonic() = factory.cache.getMnemonic()
 
     override suspend fun logout() {
+        factory.remote.logout()
         factory.cache.logout()
     }
 

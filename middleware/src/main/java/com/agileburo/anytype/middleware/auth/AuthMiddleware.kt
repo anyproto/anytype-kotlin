@@ -73,4 +73,8 @@ class AuthMiddleware(
     override suspend fun recoverWallet(path: String, mnemonic: String) {
         middleware.recoverWallet(path, mnemonic)
     }
+
+    override suspend fun logout() {
+        middleware.logout()
+    }
 }

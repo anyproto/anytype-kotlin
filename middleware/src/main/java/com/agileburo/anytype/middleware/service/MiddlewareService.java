@@ -23,6 +23,8 @@ public interface MiddlewareService {
 
     Account.Recover.Response accountRecover(Account.Recover.Request request) throws Exception;
 
+    Account.Stop.Response accountStop(Account.Stop.Request request) throws Exception;
+
     Image.Get.Blob.Response imageGet(Image.Get.Blob.Request request) throws Exception;
 
     Block.Open.Response blockOpen(Block.Open.Request request) throws Exception;

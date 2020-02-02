@@ -78,6 +78,14 @@ public class Middleware {
         service.walletRecover(request);
     }
 
+    public void logout() throws Exception {
+        Account.Stop.Request request = Account.Stop.Request
+                .newBuilder()
+                .build();
+
+        service.accountStop(request);
+    }
+
     public void recoverAccount() throws Exception {
         Account.Recover.Request request = Account.Recover.Request.newBuilder().build();
         service.accountRecover(request);

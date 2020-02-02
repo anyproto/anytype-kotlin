@@ -28,8 +28,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            android:fontFamily="@font/graphik_medium"
+            android:textSize="17sp"
             tools:text="Konstantin Ivanov" />
 
         <TextView

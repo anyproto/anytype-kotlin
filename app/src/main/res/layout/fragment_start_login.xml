@@ -37,8 +37,8 @@
                 android:layout_marginBottom="10dp"
                 android:text="@string/organize_everything"
                 android:textColor="@color/black"
-                android:textSize="21sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/graphik_semibold"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toTopOf="@+id/textView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

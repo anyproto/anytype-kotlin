@@ -895,6 +895,15 @@ class PageViewModel(
                             Toolbar.Block.Action.COLOR
                         else
                             null
+                    ),
+                    turnIntoToolbar = state.turnIntoToolbar.copy(
+                        isVisible = false
+                    ),
+                    addBlockToolbar = state.addBlockToolbar.copy(
+                        isVisible = false
+                    ),
+                    actionToolbar = state.actionToolbar.copy(
+                        isVisible = false
                     )
                 )
                 is Event.OnAddBlockToolbarOptionSelected -> state.copy(

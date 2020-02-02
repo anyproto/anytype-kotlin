@@ -233,8 +233,12 @@ class AuthDataRepositoryTest {
         }
 
         runBlocking {
-            verify(authRemote, times(1)).logout()
-            verifyZeroInteractions(authCache)
+            try {
+                repo.logout()
+            } catch (e: Exception) {
+                verify(authRemote, times(1)).logout()
+                verifyZeroInteractions(authCache)
+            }
         }
     }
 

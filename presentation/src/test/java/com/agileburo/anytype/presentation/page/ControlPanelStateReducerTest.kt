@@ -899,6 +899,7 @@ class ControlPanelStateReducerTest {
 
     @Test
     fun `should hide color toolbar on add-block-toolbar-toogle-clicked event`() {
+
         val given = ControlPanelState(
             focus = ControlPanelState.Focus(
                 id = MockDataFactory.randomUuid(),
@@ -944,6 +945,177 @@ class ControlPanelStateReducerTest {
             ),
             addBlockToolbar = given.addBlockToolbar.copy(
                 isVisible = true
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `should hide turn-into toolbar on block-color-toolbar-toggle-clicked event`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.TURN_INTO
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = true
+            ),
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = false
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = false
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnColorToolbarToggleClicked
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            blockToolbar = given.blockToolbar.copy(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.COLOR
+            ),
+            colorToolbar = given.colorToolbar.copy(
+                isVisible = true
+            ),
+            turnIntoToolbar = given.turnIntoToolbar.copy(
+                isVisible = false
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `should hide add-block toolbar on block-color-toolbar-toggle-clicked event`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.ADD
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = true
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = false
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = false
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnColorToolbarToggleClicked
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            blockToolbar = given.blockToolbar.copy(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.COLOR
+            ),
+            colorToolbar = given.colorToolbar.copy(
+                isVisible = true
+            ),
+            addBlockToolbar = given.addBlockToolbar.copy(
+                isVisible = false
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `should hide block-action toolbar on block-color-toolbar-toggle-clicked event`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.BLOCK_ACTION
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = false
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = true
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnColorToolbarToggleClicked
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            blockToolbar = given.blockToolbar.copy(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.COLOR
+            ),
+            colorToolbar = given.colorToolbar.copy(
+                isVisible = true
+            ),
+            actionToolbar = given.actionToolbar.copy(
+                isVisible = false
             )
         )
 

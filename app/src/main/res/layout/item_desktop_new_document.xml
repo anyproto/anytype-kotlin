@@ -12,6 +12,7 @@
         android:layout_margin="4dp"
         android:stateListAnimator="@animator/scale_shrink"
         app:cardBackgroundColor="@color/white"
+        app:cardElevation="0dp"
         app:cardCornerRadius="4dp">
 
         <TextView

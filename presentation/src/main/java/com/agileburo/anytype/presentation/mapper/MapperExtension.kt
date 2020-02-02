@@ -139,10 +139,14 @@ fun HomeDashboard.toView(
     blocks.find { block -> block.id == id }?.let { model ->
         when (val content = model.content) {
             is Block.Content.Link -> {
-                DashboardView.Document(
-                    id = content.target,
-                    title = if (content.fields.hasName()) content.fields.name else defaultTitle
-                )
+                if (content.type == Block.Content.Link.Type.PAGE) {
+                    DashboardView.Document(
+                        id = content.target,
+                        title = if (content.fields.hasName()) content.fields.name else defaultTitle
+                    )
+                } else {
+                    null
+                }
             }
             else -> null
         }

@@ -1114,6 +1114,8 @@ message Rpc {
                         ACCOUNT_CREATED_BUT_FAILED_TO_START_NODE = 101;
                         ACCOUNT_CREATED_BUT_FAILED_TO_SET_NAME = 102;
                         ACCOUNT_CREATED_BUT_FAILED_TO_SET_AVATAR = 103;
+                        FAILED_TO_STOP_RUNNING_NODE = 104;
+
                     }
                 }
             }
@@ -1187,6 +1189,36 @@ message Rpc {
                         LOCAL_REPO_NOT_EXISTS_AND_MNEMONIC_NOT_SET = 105;
                         FAILED_TO_STOP_SEARCHER_NODE = 106;
                         FAILED_TO_RECOVER_PREDEFINED_BLOCKS = 107;
+                    }
+                }
+            }
+        }
+
+        message Stop {
+            /**
+            * Front end to middleware request to stop currently running account node and optionally remove the locally stored data
+            */
+            message Request {
+                bool removeData = 1;
+            }
+
+            /**
+            * Middleware-to-front-end response for an account stop request
+            */
+            message Response {
+                Error error = 1; // Error while trying to launch/select an account
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0; // No error
+                        UNKNOWN_ERROR = 1; // Any other errors
+                        BAD_INPUT = 2; // Id or root path is wrong
+
+                        ACCOUNT_IS_NOT_RUNNING = 101;
+                        FAILED_TO_STOP_NODE = 102;
+                        FAILED_TO_REMOVE_ACCOUNT_DATA = 103;
                     }
                 }
             }
@@ -1365,7 +1397,8 @@ message Rpc {
             message Response {
                 Error error = 1;
                 string homeBlockId = 2; // home dashboard block id
-                string gatewayUrl = 3; // gateway url for fetching static files
+                string archiveBlockId = 3; // home dashboard block id
+                string gatewayUrl = 101; // gateway url for fetching static files
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -1373,6 +1406,8 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+
+                        NODE_NOT_STARTED = 101;
                     }
                 }
 

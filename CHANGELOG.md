@@ -4,11 +4,18 @@
 
 ### New features
 
-* User can now use color toolbar to change the text color of the whole text block (#153)
+* User can now use the color toolbar to change the text color of the whole text block (#153)
+* User can now user the markup-color toolbar to change the background color of the selected text (#111)
+* Create checkbox-list item on enter-pressed-event (instead of a simple paragraph) (#155)
+* Create bulleted-list item on enter-pressed-event (instead of a simple paragraph) (#154)
 * `Block.Content.Text` model now has optional `color` property (#153).
-* User can add or remove links from text and open these links in a web browser (#112).
 * Added documentation engine (`DOKKA`) for `domain` module: documentation is generated automatically from KDoc (#168).
 * Added new content model: `Block.Content.Link` (#173)
+
+### Design
+
+* Updated app fonts (#183)
+* Removed shadows from cards (#177)
 
 ### Fixes
 
@@ -18,9 +25,10 @@
 
 ### Middleware
 
-* Updated middleware library to 0.2.0 (#173)
+* Updated middleware library and protocol to 0.2.3 (#173, #181)
 * Added `blockCreatePage` command (#173)
 * Added `blockSetTextColor` command (#153). 
+* Added `accountStop` command (#180)
 
 ## Version 0.0.16
 

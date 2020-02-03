@@ -14,6 +14,7 @@
 
 * User cannot undo markup formatting if there are already several markups of the same type in the text (#151)
 * Markup is broken when user splits the range (#122)
+* Page title changes are not saved after user pressed backspace on empty page title block (#185). 
 
 ### Middleware
 

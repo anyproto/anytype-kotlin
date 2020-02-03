@@ -6,11 +6,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.common.Focusable
-import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.common.isLinksPresent
-import com.agileburo.anytype.core_ui.common.setMarkup
-import com.agileburo.anytype.core_ui.common.toSpannable
+import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.extensions.tint
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_AND_COLOR_CHANGED
@@ -231,6 +227,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
             )
         }
+
+        override fun enableBackspaceDetector(onEmptyBlockBackspaceClicked: () -> Unit) {}
     }
 
     class HeaderOne(view: View) : BlockViewHolder(view), TextHolder {

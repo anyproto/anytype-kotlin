@@ -673,7 +673,7 @@ class PageViewModel(
 
     companion object {
         const val EMPTY_FOCUS_ID = ""
-        const val TEXT_CHANGES_DEBOUNCE_DURATION = 1000L
+        const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
     }
 
     /**

@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.17 (WIP)
+## Version 0.0.17
 
 ### New features
 
@@ -25,7 +25,7 @@
 
 ### Middleware
 
-* Updated middleware library and protocol to 0.2.3 (#173, #181)
+* Updated middleware library and protocol to 0.2.4 (#173, #181)
 * Added `blockCreatePage` command (#173)
 * Added `blockSetTextColor` command (#153). 
 * Added `accountStop` command (#180)

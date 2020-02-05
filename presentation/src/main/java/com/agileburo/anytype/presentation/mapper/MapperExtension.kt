@@ -62,7 +62,7 @@ fun Block.toView(focused: Boolean = false): BlockView = when (val content = this
                 id = id,
                 text = content.text,
                 marks = mapMarks(content),
-                checked = content.isChecked == true,
+                isChecked = content.isChecked == true,
                 focused = focused
             )
             Style.TOGGLE -> BlockView.Toggle(

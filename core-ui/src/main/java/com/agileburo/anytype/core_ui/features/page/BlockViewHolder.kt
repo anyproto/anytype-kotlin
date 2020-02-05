@@ -9,14 +9,11 @@ import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.extensions.tint
-import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_AND_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.MARKUP_CHANGED
-import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_AND_COLOR_CHANGED
-import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_AND_MARKUP_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
-import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_MARKUP_AND_COLOR_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
@@ -111,6 +108,33 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 )
             }
         }
+
+        fun processChangePayload(
+            payloads: List<Payload>,
+            item: BlockView
+        ) = payloads.forEach { payload ->
+
+            Timber.d("Processing $payload")
+
+            if (item is BlockView.Text) {
+                if (payload.changes.contains(TEXT_CHANGED))
+                    if (content.text.toString() != item.text)
+                        content.setText(item.text)
+
+                if (payload.changes.contains(TEXT_COLOR_CHANGED))
+                    item.color?.let { setTextColor(it) }
+            }
+
+            if (item is Markup) {
+                if (payload.changes.contains(MARKUP_CHANGED))
+                    setMarkup(item)
+            }
+
+            if (item is Focusable) {
+                if (payload.changes.contains(FOCUS_CHANGED))
+                    setFocus(item)
+            }
+        }
     }
 
     class Paragraph(view: View) : BlockViewHolder(view), TextHolder {
@@ -154,53 +178,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 onFocusChanged(item.id, focused)
             }
             content.selectionDetector = { onSelectionChanged(item.id, it) }
-        }
-
-        fun processChangePayload(
-            payloads: List<Any>,
-            item: BlockView.Paragraph
-        ) = payloads.forEach { payload ->
-
-            Timber.d("Applying change payload: $payload")
-
-            when (payload) {
-                MARKUP_CHANGED -> {
-                    if (item.marks.isLinksPresent()) {
-                        content.setLinksClickable()
-                    }
-                    setMarkup(markup = item)
-                }
-                TEXT_CHANGED -> {
-                    if (content.text.toString() != item.text)
-                        content.setText(item.text)
-                }
-                TEXT_AND_MARKUP_CHANGED -> {
-                    if (item.marks.isLinksPresent()) {
-                        content.setLinksClickable()
-                    }
-                    if (content.text.toString() != item.text)
-                        content.setText(item.text)
-                    setMarkup(markup = item)
-                }
-                TEXT_MARKUP_AND_COLOR_CHANGED -> {
-                    if (item.color != null) setTextColor(item.color)
-                    if (content.text.toString() != item.text) content.setText(item.text)
-                    setMarkup(markup = item)
-                }
-                FOCUS_CHANGED -> {
-                    setFocus(item)
-                }
-                TEXT_COLOR_CHANGED -> {
-                    if (item.color != null) setTextColor(item.color)
-                }
-                TEXT_AND_COLOR_CHANGED -> {
-                    if (item.color != null) setTextColor(item.color)
-                    if (content.text.toString() != item.text) content.setText(item.text)
-                }
-                FOCUS_AND_COLOR_CHANGED -> {
-                    if (item.color != null) setTextColor(item.color)
-                }
-            }
         }
     }
 
@@ -344,7 +321,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onFocusChanged: (String, Boolean) -> Unit
         ) {
 
-            checkbox.isSelected = item.checked
+            checkbox.isSelected = item.isChecked
 
             checkbox.setOnClickListener {
                 checkbox.isSelected = !checkbox.isSelected
@@ -378,27 +355,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             )
 
             content.selectionDetector = { onSelectionChanged(item.id, it) }
-        }
-
-        fun processChangePayload(
-            payloads: List<Any>,
-            item: BlockView.Checkbox
-        ) = payloads.forEach { payload ->
-            when (payload) {
-                MARKUP_CHANGED -> setMarkup(markup = item)
-                TEXT_CHANGED -> {
-                    if (content.text.toString() != item.text)
-                        content.setText(item.text)
-                }
-                TEXT_AND_MARKUP_CHANGED -> {
-                    if (content.text.toString() != item.text)
-                        content.setText(item.text)
-                    setMarkup(markup = item)
-                }
-                FOCUS_CHANGED -> {
-                    setFocus(item)
-                }
-            }
         }
     }
 
@@ -472,45 +428,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override fun setTextColor(color: Int) {
             super.setTextColor(color)
             bullet.tint(content.context.color(R.color.black))
-        }
-
-        fun processChangePayload(
-            payloads: List<Any>,
-            item: BlockView.Bulleted
-        ) = payloads.forEach { payload ->
-
-            Timber.d("Applying change payload: $payload")
-
-            when (payload) {
-                MARKUP_CHANGED -> setMarkup(markup = item)
-                TEXT_CHANGED -> {
-                    if (content.text.toString() != item.text)
-                        content.setText(item.text)
-                }
-                TEXT_AND_MARKUP_CHANGED -> {
-                    if (content.text.toString() != item.text)
-                        content.setText(item.text)
-                    setMarkup(markup = item)
-                }
-                TEXT_MARKUP_AND_COLOR_CHANGED -> {
-                    if (item.color != null) setTextColor(item.color)
-                    if (content.text.toString() != item.text) content.setText(item.text)
-                    setMarkup(markup = item)
-                }
-                FOCUS_CHANGED -> {
-                    setFocus(item)
-                }
-                FOCUS_AND_COLOR_CHANGED -> {
-                    if (item.color != null) setTextColor(item.color)
-                }
-                TEXT_COLOR_CHANGED -> {
-                    if (item.color != null) setTextColor(item.color)
-                }
-                TEXT_AND_COLOR_CHANGED -> {
-                    if (item.color != null) setTextColor(item.color)
-                    if (content.text.toString() != item.text) content.setText(item.text)
-                }
-            }
         }
     }
 

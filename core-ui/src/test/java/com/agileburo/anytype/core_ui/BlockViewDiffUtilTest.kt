@@ -3,8 +3,12 @@ package com.agileburo.anytype.core_ui
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.MARKUP_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class BlockViewDiffUtilTest {
 
@@ -121,7 +125,7 @@ class BlockViewDiffUtilTest {
 
         assertEquals(
             actual = payload,
-            expected = BlockViewDiffUtil.MARKUP_CHANGED
+            expected = Payload(listOf(MARKUP_CHANGED))
         )
     }
 
@@ -162,7 +166,7 @@ class BlockViewDiffUtilTest {
 
         assertEquals(
             actual = payload,
-            expected = BlockViewDiffUtil.TEXT_CHANGED
+            expected = Payload(listOf(TEXT_CHANGED))
         )
     }
 
@@ -201,7 +205,37 @@ class BlockViewDiffUtilTest {
 
         assertEquals(
             actual = payload,
-            expected = BlockViewDiffUtil.TEXT_AND_MARKUP_CHANGED
+            expected = Payload(listOf(TEXT_CHANGED, MARKUP_CHANGED))
         )
+    }
+
+    @Test
+    fun `should return empty payload if types differ`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val text = MockDataFactory.randomString()
+
+        val oldBlock: BlockView = BlockView.HeaderOne(
+            id = id,
+            text = text
+        )
+
+        val newBlock: BlockView = BlockView.HeaderOne(
+            id = id,
+            text = text
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        assertNull(actual = payload)
     }
 }

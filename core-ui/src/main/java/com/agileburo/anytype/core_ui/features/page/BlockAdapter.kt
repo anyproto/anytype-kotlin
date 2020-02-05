@@ -24,6 +24,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TASK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
+import com.agileburo.anytype.core_utils.ext.typeOf
 import timber.log.Timber
 
 /**
@@ -230,20 +231,20 @@ class BlockAdapter(
             when (holder) {
                 is BlockViewHolder.Paragraph -> {
                     holder.processChangePayload(
-                        payloads = payloads,
-                        item = blocks[position] as BlockView.Paragraph
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
                     )
                 }
                 is BlockViewHolder.Bulleted -> {
                     holder.processChangePayload(
-                        payloads = payloads,
-                        item = blocks[position] as BlockView.Bulleted
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
                     )
                 }
                 is BlockViewHolder.Checkbox -> {
                     holder.processChangePayload(
-                        payloads = payloads,
-                        item = blocks[position] as BlockView.Checkbox
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
                     )
                 }
                 else -> TODO()

@@ -1,13 +1,31 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.18 (WIP)
+
+### New features
+
+*
+
+### Design
+
+*
+
+### Fixes && tech
+
+* Refactored `BlockViewDiffUtil` (processing change payload) (#164)
+
+### Middleware
+
+*
+
 ## Version 0.0.17
 
 ### New features
 
 * User can now use the color toolbar to change the text color of the whole text block (#153)
-* User can now user the markup-color toolbar to change the background color of the selected text (#111)
-* Create checkbox-list item on enter-pressed-event (instead of a simple paragraph) (#155)
-* Create bulleted-list item on enter-pressed-event (instead of a simple paragraph) (#154)
+* User can now use the markup-color toolbar to change the background color of the selected text (#111)
+* Create a checkbox-list item on enter-pressed-event (instead of a simple paragraph) (#155)
+* Create a bulleted-list item on enter-pressed-event (instead of a simple paragraph) (#154)
 * `Block.Content.Text` model now has optional `color` property (#153).
 * Added documentation engine (`DOKKA`) for `domain` module: documentation is generated automatically from KDoc (#168).
 * Added new content model: `Block.Content.Link` (#173)

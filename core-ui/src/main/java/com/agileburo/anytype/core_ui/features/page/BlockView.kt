@@ -1,5 +1,6 @@
 package com.agileburo.anytype.core_ui.features.page
 
+import com.agileburo.anytype.core_ui.common.Checkable
 import com.agileburo.anytype.core_ui.common.Focusable
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.ViewType
@@ -152,15 +153,16 @@ sealed class BlockView : ViewType {
      * UI-model for checkbox blocks.
      * @property id block's id
      * @property text checkbox's content text
-     * @property checked immutable checkbox state (whether this checkbox is checked or not)
+     * @property isChecked immutable checkbox state (whether this checkbox is checked or not)
      */
     data class Checkbox(
         override val id: String,
         override val marks: List<Markup.Mark> = emptyList(),
         override val focused: Boolean = false,
-        val text: String,
-        val checked: Boolean = false
-    ) : BlockView(), Markup, Focusable {
+        override val text: String,
+        override val color: String? = null,
+        override val isChecked: Boolean = false
+    ) : BlockView(), Markup, Focusable, Text, Checkable {
         override fun getViewType() = HOLDER_CHECKBOX
         override val body: String = text
     }

@@ -34,5 +34,15 @@ inline fun <reified T> MutableList<T>.shiftDown(srcIndex: Int, dstIndex: Int) =
         }
     }
 
+inline fun <reified T> List<*>.typeOf(): List<T> {
+    val retlist = mutableListOf<T>()
+    this.forEach {
+        if (it is T) {
+            retlist.add(it)
+        }
+    }
+    return retlist
+}
+
 fun Context.toast(msg: CharSequence) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
 fun Fragment.toast(msg: CharSequence) = requireActivity().toast(msg)

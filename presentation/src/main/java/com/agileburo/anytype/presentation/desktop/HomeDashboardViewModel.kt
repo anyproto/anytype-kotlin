@@ -10,27 +10,25 @@ import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.block.interactor.DragAndDrop
-import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
-import com.agileburo.anytype.domain.dashboard.interactor.ObserveHomeDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
-import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
-import com.agileburo.anytype.domain.event.interactor.ObserveEvents
+import com.agileburo.anytype.domain.dashboard.interactor.toHomeDashboard
+import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.domain.page.CreatePage
-import com.agileburo.anytype.presentation.common.StateReducer
-import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModel.Machine.*
+import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.Interactor
+import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.State
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
 import com.agileburo.anytype.presentation.profile.ProfileView
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine as Machine
 
 class HomeDashboardViewModel(
     private val loadImage: LoadImage,
@@ -38,10 +36,9 @@ class HomeDashboardViewModel(
     private val openDashboard: OpenDashboard,
     private val closeDashboard: CloseDashboard,
     private val createPage: CreatePage,
-    private val observeHomeDashboard: ObserveHomeDashboard,
     private val getConfig: GetConfig,
     private val dragAndDrop: DragAndDrop,
-    private val observeEvents: ObserveEvents
+    private val interceptEvents: InterceptEvents
 ) : ViewStateViewModel<State>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -61,23 +58,55 @@ class HomeDashboardViewModel(
 
     init {
         startProcessingState()
-        startObservingEvents()
         proceedWithGettingConfig()
     }
+
 
     private fun startProcessingState() {
         viewModelScope.launch { machine.state().collect { stateData.postValue(it) } }
     }
 
-    private fun startObservingEvents() {
-        observeEvents
-            .build()
-            .onEach { Timber.d("New event: $it") }
-            .onEach { event ->
-                if (event is Event.Command.UpdateStructure)
-                    machine.onEvent(Machine.Event.OnStructureUpdated(event.children))
-                else if (event is Event.Command.AddBlock)
-                    machine.onEvent(Machine.Event.OnBlocksAdded(event.blocks))
+    private fun startInterceptingEvents(context: String) {
+        // TODO use context when middleware is ready
+        interceptEvents
+            .build(InterceptEvents.Params(context = null))
+            .onEach { Timber.d("New events: $it") }
+            .onEach { events ->
+                events.forEach { event ->
+                    when (event) {
+                        is Event.Command.UpdateStructure -> machine.onEvent(
+                            Machine.Event.OnStructureUpdated(
+                                event.children
+                            )
+                        )
+                        is Event.Command.AddBlock -> machine.onEvent(
+                            Machine.Event.OnBlocksAdded(
+                                event.blocks
+                            )
+                        )
+                        is Event.Command.ShowBlock -> {
+                            if (event.rootId == context) {
+                                machine.onEvent(
+                                    Machine.Event.OnDashboardLoaded(
+                                        dashboard = event.blocks.toHomeDashboard(id = context)
+                                    )
+                                )
+                            } else {
+                                Timber.e("Receiving event from other context!")
+                            }
+                        }
+                        is Event.Command.LinkGranularChange -> {
+                            event.fields?.let { fields ->
+                                machine.onEvent(
+                                    Machine.Event.OnLinkFieldsChanged(
+                                        id = event.id,
+                                        fields = fields
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
             }
             .launchIn(viewModelScope)
     }
@@ -85,20 +114,13 @@ class HomeDashboardViewModel(
     private fun proceedWithGettingConfig() {
         getConfig.invoke(viewModelScope, Unit) { result ->
             result.either(
-                fnR = {
-                    startObservingHomeDashboard(id = it.homeDashboardId)
-                    processDragAndDrop(context = it.homeDashboardId)
+                fnR = { config ->
+                    startInterceptingEvents(context = config.home)
+                    processDragAndDrop(context = config.home)
                 },
                 fnL = { Timber.e(it, "Error while getting config") }
             )
         }
-    }
-
-    private fun startObservingHomeDashboard(id: String) {
-        observeHomeDashboard
-            .build(ObserveHomeDashboard.Param(id))
-            .onEach { machine.onEvent(Machine.Event.OnDashboardLoaded(it)) }
-            .launchIn(viewModelScope)
     }
 
     private fun proceedWithGettingAccount() {
@@ -118,7 +140,7 @@ class HomeDashboardViewModel(
             dropChanges
                 .withLatestFrom(movementChanges) { a, b -> Pair(a, b) }
                 .onEach { Timber.d("Dnd request: $it") }
-                .map { (subject, movement) ->
+                .mapLatest { (subject, movement) ->
                     DragAndDrop.Params(
                         context = context,
                         targetContext = context,
@@ -140,7 +162,12 @@ class HomeDashboardViewModel(
 
     private fun proceedWithOpeningHomeDashboard() {
         machine.onEvent(Machine.Event.OnDashboardLoadingStarted)
-        openDashboard.invoke(viewModelScope, null) { result ->
+        Timber.d("Opening home dashboard")
+        // TODO replace params = null by more explicit code
+        openDashboard.invoke(
+            scope = viewModelScope,
+            params = null
+        ) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while opening home dashboard") },
                 fnR = { Timber.d("Home dashboard opened") }
@@ -239,107 +266,4 @@ class HomeDashboardViewModel(
         val target: String,
         val direction: Position
     )
-
-    /**
-     * State machine for this view model consisting of [Interactor], [State], [Event] and [Reducer]
-     * It reduces [Event] to the immutable [State] by applying [Reducer] fuction.
-     * This [State] then will be rendered.
-     */
-    sealed class Machine {
-
-        class Interactor(
-            private val scope: CoroutineScope,
-            private val reducer: Reducer = Reducer(),
-            private val channel: Channel<Event> = Channel(),
-            private val events: Flow<Event> = channel.consumeAsFlow()
-        ) {
-            fun onEvent(event: Event) = scope.launch { channel.send(event) }
-            fun state(): Flow<State> = events.scan(State.init(), reducer.function)
-        }
-
-        /**
-         * @property isInitialized whether this state is initialized
-         * @property isLoading whether the data is being loaded to prepare a new state
-         * @property error if present, represents an error occured in this state machine
-         * @property homeDashboard current dashboard data state that should be rendered
-         */
-        data class State(
-            val isInitialzed: Boolean,
-            val isLoading: Boolean,
-            val error: String?,
-            val homeDashboard: HomeDashboard?
-        ) : Machine() {
-            companion object {
-                fun init() = State(
-                    isInitialzed = true,
-                    isLoading = false,
-                    error = null,
-                    homeDashboard = null
-                )
-            }
-        }
-
-        sealed class Event : Machine() {
-            data class OnDashboardLoaded(
-                val dashboard: HomeDashboard
-            ) : Event()
-
-            data class OnBlocksAdded(
-                val blocks: List<Block>
-            ) : Event()
-
-            data class OnStructureUpdated(
-                val children: List<String>
-            ) : Event()
-
-            object OnDashboardLoadingStarted : Event()
-
-            object OnStartedCreatingPage : Event()
-
-            object OnFinishedCreatingPage : Event()
-        }
-
-        class Reducer : StateReducer<State, Event> {
-
-            override val function: suspend (State, Event) -> State
-                get() = { state, event -> reduce(state, event) }
-
-            override suspend fun reduce(
-                state: State, event: Event
-            ) = when (event) {
-                is Event.OnDashboardLoadingStarted -> state.copy(
-                    isInitialzed = true,
-                    isLoading = true,
-                    error = null,
-                    homeDashboard = null
-                )
-                is Event.OnDashboardLoaded -> state.copy(
-                    isInitialzed = true,
-                    isLoading = false,
-                    error = null,
-                    homeDashboard = event.dashboard
-                )
-                is Event.OnStartedCreatingPage -> state.copy(
-                    isLoading = true
-                )
-                is Event.OnFinishedCreatingPage -> state.copy(
-                    isLoading = false
-                )
-                is Event.OnStructureUpdated -> state.copy(
-                    isInitialzed = true,
-                    isLoading = false,
-                    homeDashboard = state.homeDashboard?.copy(
-                        children = event.children
-                    )
-                )
-                is Event.OnBlocksAdded -> state.copy(
-                    isInitialzed = true,
-                    isLoading = false,
-                    homeDashboard = state.homeDashboard?.let { dashboard ->
-                        dashboard.copy(blocks = dashboard.blocks + event.blocks)
-                    }
-                )
-            }
-        }
-    }
 }

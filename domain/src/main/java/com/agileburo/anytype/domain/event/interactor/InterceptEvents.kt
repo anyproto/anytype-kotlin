@@ -1,7 +1,7 @@
 package com.agileburo.anytype.domain.event.interactor
 
-import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.FlowUseCase
+import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.event.model.Event
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -15,9 +15,15 @@ import kotlin.coroutines.CoroutineContext
 class InterceptEvents(
     private val context: CoroutineContext,
     private val channel: EventChannel
-) : FlowUseCase<List<Event>, BaseUseCase.None>() {
+) : FlowUseCase<List<Event>, InterceptEvents.Params>() {
 
-    override fun build(params: BaseUseCase.None?): Flow<List<Event>> {
-        return channel.observeEvents().flowOn(context)
+    override fun build(params: Params?): Flow<List<Event>> {
+        return channel.observeEvents(params?.context).flowOn(context)
     }
+
+    /**
+     * @property context optional event's context used for filtering.
+     * If a context is provided, only events related to this context will be intercepted.
+     */
+    data class Params(val context: Id? = null)
 }

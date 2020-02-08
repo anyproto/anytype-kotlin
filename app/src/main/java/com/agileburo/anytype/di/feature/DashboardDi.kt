@@ -7,9 +7,9 @@ import com.agileburo.anytype.domain.block.interactor.DragAndDrop
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
-import com.agileburo.anytype.domain.dashboard.interactor.ObserveHomeDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
-import com.agileburo.anytype.domain.event.interactor.ObserveEvents
+import com.agileburo.anytype.domain.event.interactor.EventChannel
+import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.image.ImageLoader
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.domain.page.CreatePage
@@ -48,9 +48,8 @@ class HomeDashboardModule {
         createPage: CreatePage,
         closeDashboard: CloseDashboard,
         getConfig: GetConfig,
-        observeHomeDashboard: ObserveHomeDashboard,
         dnd: DragAndDrop,
-        observeEvents: ObserveEvents
+        interceptEvents: InterceptEvents
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getCurrentAccount = getCurrentAccount,
         loadImage = loadImage,
@@ -58,9 +57,8 @@ class HomeDashboardModule {
         createPage = createPage,
         closeDashboard = closeDashboard,
         getConfig = getConfig,
-        observeHomeDashboard = observeHomeDashboard,
         dnd = dnd,
-        observeEvents = observeEvents
+        interceptEvents = interceptEvents
     )
 
     @Provides
@@ -114,15 +112,6 @@ class HomeDashboardModule {
 
     @Provides
     @PerScreen
-    fun provideObserveHomeDashboardUseCase(
-        repo: BlockRepository
-    ): ObserveHomeDashboard = ObserveHomeDashboard(
-        context = Dispatchers.IO,
-        repo = repo
-    )
-
-    @Provides
-    @PerScreen
     fun provideDragAndDropUseCase(
         repo: BlockRepository
     ): DragAndDrop = DragAndDrop(
@@ -131,10 +120,10 @@ class HomeDashboardModule {
 
     @Provides
     @PerScreen
-    fun provideObserveEventsUseCase(
-        repo: BlockRepository
-    ): ObserveEvents = ObserveEvents(
+    fun provideInterceptEvents(
+        channel: EventChannel
+    ): InterceptEvents = InterceptEvents(
         context = Dispatchers.IO,
-        repo = repo
+        channel = channel
     )
 }

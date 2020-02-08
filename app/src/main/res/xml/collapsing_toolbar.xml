@@ -20,20 +20,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
         <Constraint
-            android:id="@id/greeting"
+            android:id="@+id/greeting"
+            android:fontFamily="@font/graphik_semibold"
+            android:scaleX="1.0"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="48dp"
             android:layout_marginEnd="16dp"
-            android:textColor="@color/white"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            android:scaleX="1.0"
             android:scaleY="1.0"
+            android:textColor="@color/white"
+            android:textSize="34sp"
+            app:layout_constraintBottom_toBottomOf="@+id/avatar"
             app:layout_constraintEnd_toStartOf="@+id/avatar"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/avatar" />
         <Constraint
             android:id="@+id/avatar"
             android:layout_width="36dp"
@@ -54,18 +54,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
         <Constraint
-            android:id="@id/greeting"
+            android:id="@+id/greeting"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="0dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/graphik_semibold"
             android:scaleX="0.0"
             android:scaleY="0.0"
             android:textColor="@color/white"
-            android:textSize="36sp"
-            android:textStyle="bold"
+            android:textSize="34sp"
+            app:layout_constraintBottom_toBottomOf="@+id/avatar"
+            app:layout_constraintEnd_toStartOf="@+id/avatar"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/avatar" />
         <Constraint
             android:id="@+id/avatar"
             android:layout_width="36dp"

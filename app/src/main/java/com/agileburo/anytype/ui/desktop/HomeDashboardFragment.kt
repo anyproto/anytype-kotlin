@@ -12,8 +12,8 @@ import com.agileburo.anytype.core_utils.ext.invisible
 import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.di.common.componentManager
+import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.State
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModel
-import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModel.Machine.State
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModelFactory
 import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.profile.ProfileView
@@ -92,10 +92,10 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
                 progress.invisible()
                 requireActivity().toast("Error: ${state.error}")
             }
-            state.homeDashboard != null -> {
+            state.dashboard != null -> {
                 progress.invisible()
                 fab.visible()
-                dashboardAdapter.update(state.homeDashboard!!.toView())
+                state.dashboard?.let { dashboardAdapter.update(it.toView()) }
             }
         }
     }

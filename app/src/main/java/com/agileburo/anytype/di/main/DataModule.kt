@@ -143,14 +143,8 @@ class DataModule {
     @Provides
     @Singleton
     fun provideBlockRemote(
-        middleware: Middleware,
-        eventProxy: EventProxy
-    ): BlockRemote {
-        return BlockMiddleware(
-            middleware = middleware,
-            events = eventProxy
-        )
-    }
+        middleware: Middleware
+    ): BlockRemote = BlockMiddleware(middleware = middleware)
 
     @Provides
     @Singleton

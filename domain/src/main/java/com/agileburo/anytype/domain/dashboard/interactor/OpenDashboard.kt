@@ -24,8 +24,8 @@ class OpenDashboard(
         else {
             repo.getConfig().let { config ->
                 repo.openDashboard(
-                    contextId = config.homeDashboardId,
-                    id = config.homeDashboardId
+                    contextId = config.home,
+                    id = config.home
                 ).let {
                     Either.Right(it)
                 }

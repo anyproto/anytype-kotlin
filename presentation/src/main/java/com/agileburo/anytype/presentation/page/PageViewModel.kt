@@ -347,6 +347,7 @@ class PageViewModel(
     }
 
     fun open(id: String) {
+
         pageId = id
 
         stateData.postValue(ViewState.Loading)

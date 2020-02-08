@@ -1,3 +1,9 @@
 package com.agileburo.anytype.domain.config
 
-data class Config(val homeDashboardId: String)
+import com.agileburo.anytype.domain.common.Id
+
+/**
+ * Anytype app configuration properties.
+ * @property home id of the home dashboard
+ */
+data class Config(val home: Id)

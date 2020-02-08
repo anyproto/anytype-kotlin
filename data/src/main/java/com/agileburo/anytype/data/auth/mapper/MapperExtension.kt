@@ -202,7 +202,7 @@ fun Block.Content.Text.Mark.toEntity(): BlockEntity.Content.Text.Mark {
 
 fun ConfigEntity.toDomain(): Config {
     return Config(
-        homeDashboardId = homeId
+        home = homeId
     )
 }
 
@@ -272,18 +272,21 @@ fun EventEntity.toDomain(): Event {
         is EventEntity.Command.ShowBlock -> {
             Event.Command.ShowBlock(
                 rootId = rootId,
-                blocks = blocks.map { it.toDomain() }
+                blocks = blocks.map { it.toDomain() },
+                context = context
             )
         }
         is EventEntity.Command.AddBlock -> {
             Event.Command.AddBlock(
-                blocks = blocks.map { it.toDomain() }
+                blocks = blocks.map { it.toDomain() },
+                context = context
             )
         }
         is EventEntity.Command.UpdateBlockText -> {
             Event.Command.UpdateBlockText(
                 id = id,
-                text = text
+                text = text,
+                context = context
             )
         }
         is EventEntity.Command.UpdateStructure -> {
@@ -295,11 +298,13 @@ fun EventEntity.toDomain(): Event {
         }
         is EventEntity.Command.DeleteBlock -> {
             Event.Command.DeleteBlock(
+                context = context,
                 target = target
             )
         }
         is EventEntity.Command.GranularChange -> {
             Event.Command.GranularChange(
+                context = context,
                 id = id,
                 text = text,
                 style = if (style != null)
@@ -307,6 +312,14 @@ fun EventEntity.toDomain(): Event {
                 else
                     null,
                 color = color
+            )
+        }
+        is EventEntity.Command.LinkGranularChange -> {
+            Event.Command.LinkGranularChange(
+                context = context,
+                id = id,
+                target = target,
+                fields = fields?.let { Block.Fields(it.map) }
             )
         }
     }

@@ -14,10 +14,6 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         remote.closeDashboard(id = id)
     }
 
-    override fun observeBlocks() = remote.observeBlocks()
-    override fun observePages() = remote.observePages()
-    override fun observeEvents() = remote.observeEvents()
-
     override suspend fun createPage(parentId: String): String = remote.createPage(parentId)
     override suspend fun openPage(id: String) {
         remote.openPage(id)

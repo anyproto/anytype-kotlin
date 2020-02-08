@@ -17,7 +17,7 @@ class CreatePage(
     override suspend fun run(params: Params) = try {
         if (params.id == MainConfig.HOME_DASHBOARD_ID) {
             repo.getConfig().let { config ->
-                repo.createPage(config.homeDashboardId).let {
+                repo.createPage(config.home).let {
                     Either.Right(it)
                 }
             }

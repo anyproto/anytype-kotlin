@@ -13,15 +13,15 @@ import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
-import com.agileburo.anytype.domain.dashboard.interactor.ObserveHomeDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
+import com.agileburo.anytype.domain.dashboard.interactor.toHomeDashboard
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
-import com.agileburo.anytype.domain.event.interactor.ObserveEvents
+import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.domain.page.CreatePage
+import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModel
-import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModel.Machine.State
 import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.profile.ProfileView
@@ -57,9 +57,6 @@ class HomeDashboardViewModelTest {
     lateinit var openDashboard: OpenDashboard
 
     @Mock
-    lateinit var observeHomeDashboard: ObserveHomeDashboard
-
-    @Mock
     lateinit var getConfig: GetConfig
 
     @Mock
@@ -69,7 +66,7 @@ class HomeDashboardViewModelTest {
     lateinit var createPage: CreatePage
 
     @Mock
-    lateinit var observeEvents: ObserveEvents
+    lateinit var interceptEvents: InterceptEvents
 
     @Mock
     lateinit var dnd: DragAndDrop
@@ -88,23 +85,20 @@ class HomeDashboardViewModelTest {
             openDashboard = openDashboard,
             closeDashboard = closeDashboard,
             createPage = createPage,
-            observeHomeDashboard = observeHomeDashboard,
             getConfig = getConfig,
             dragAndDrop = dnd,
-            observeEvents = observeEvents
+            interceptEvents = interceptEvents
         )
     }
 
     @Test
     fun `should only start getting config when view model is initialized`() {
 
-        val config = Config(homeDashboardId = MockDataFactory.randomUuid())
-        val param = ObserveHomeDashboard.Param(config.homeDashboardId)
+        val config = Config(home = MockDataFactory.randomUuid())
         val response = Either.Right(config)
 
         stubGetConfig(response)
-        stubObserveHomeDashboard(param)
-        stubObserveEvents()
+        stubObserveEvents(params = InterceptEvents.Params(context = null))
 
         vm = buildViewModel()
 
@@ -115,35 +109,34 @@ class HomeDashboardViewModelTest {
     }
 
     @Test
-    fun `should start observing events when view model is initialized`() {
+    fun `should start observing events after receiving config`() {
 
-        val config = Config(homeDashboardId = MockDataFactory.randomUuid())
+        val config = Config(home = MockDataFactory.randomUuid())
         val response = Either.Right(config)
 
+        val params = InterceptEvents.Params(context = null)
+
         stubGetConfig(response)
-        stubObserveHomeDashboard()
-        stubObserveEvents()
+        stubObserveEvents(params = params)
 
         vm = buildViewModel()
 
-        verify(observeEvents, times(1)).build()
+        verify(getConfig, times(1)).invoke(any(), any(), any())
+        verify(interceptEvents, times(1)).build(params)
     }
 
     @Test
     fun `should start observing home dashboard after receiving config`() {
 
-        val config = Config(homeDashboardId = MockDataFactory.randomUuid())
+        val config = Config(home = MockDataFactory.randomUuid())
         val response = Either.Right(config)
-        val param = ObserveHomeDashboard.Param(id = config.homeDashboardId)
 
         stubGetConfig(response)
-        stubObserveHomeDashboard()
-        stubObserveEvents()
+        stubObserveEvents(params = InterceptEvents.Params(context = null))
 
         vm = buildViewModel()
 
         verify(getConfig, times(1)).invoke(any(), any(), any())
-        verify(observeHomeDashboard, times(1)).build(param)
         verifyZeroInteractions(openDashboard)
         verifyZeroInteractions(loadImage)
         verifyZeroInteractions(getCurrentAccount)
@@ -152,20 +145,19 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should emit loading state when home dashboard loading started`() {
 
-        val config = Config(homeDashboardId = MockDataFactory.randomUuid())
+        val config = Config(home = MockDataFactory.randomUuid())
 
         stubGetConfig(Either.Right(config))
-        stubObserveHomeDashboard()
-        stubObserveEvents()
+        stubObserveEvents(params = InterceptEvents.Params(context = null))
 
         vm = buildViewModel()
 
         vm.onViewCreated()
 
-        val expected = State(
+        val expected = HomeDashboardStateMachine.State(
             isLoading = true,
             isInitialzed = true,
-            homeDashboard = null,
+            dashboard = null,
             error = null
         )
 
@@ -175,7 +167,7 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should emit view state with dashboard when home dashboard loading started`() {
 
-        val config = Config(homeDashboardId = MockDataFactory.randomUuid())
+        val config = Config(home = MockDataFactory.randomUuid())
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
@@ -186,27 +178,35 @@ class HomeDashboardViewModelTest {
             )
         )
 
-        val dashboard = HomeDashboard(
-            id = config.homeDashboardId,
-            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-            type = Block.Content.Dashboard.Type.MAIN_SCREEN,
-            blocks = listOf(page),
-            children = listOf(page.id)
+        val dashboard = Block(
+            id = config.home,
+            content = Block.Content.Dashboard(
+                type = Block.Content.Dashboard.Type.MAIN_SCREEN
+            ),
+            children = listOf(page.id),
+            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString()))
         )
 
         val delayInMillis = 100L
 
-        val flow = flow {
+        val events = flow {
             delay(delayInMillis)
-            emit(dashboard)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = config.home,
+                        context = config.home,
+                        blocks = listOf(dashboard, page)
+                    )
+                )
+            )
         }
 
         stubGetConfig(Either.Right(config))
-        stubObserveHomeDashboard(
-            flow = flow,
-            param = ObserveHomeDashboard.Param(id = dashboard.id)
+        stubObserveEvents(
+            params = InterceptEvents.Params(context = null),
+            flow = events
         )
-        stubObserveEvents()
         stubOpenDashboard()
 
         vm = buildViewModel()
@@ -214,10 +214,10 @@ class HomeDashboardViewModelTest {
         vm.onViewCreated()
 
         vm.state.test().assertValue(
-            State(
+            HomeDashboardStateMachine.State(
                 isLoading = true,
                 isInitialzed = true,
-                homeDashboard = null,
+                dashboard = null,
                 error = null
             )
         )
@@ -225,10 +225,10 @@ class HomeDashboardViewModelTest {
         coroutineTestRule.advanceTime(delayInMillis)
 
         vm.state.test().assertValue(
-            State(
+            HomeDashboardStateMachine.State(
                 isLoading = false,
                 isInitialzed = true,
-                homeDashboard = dashboard,
+                dashboard = listOf(dashboard, page).toHomeDashboard(dashboard.id),
                 error = null
             )
         )
@@ -237,48 +237,62 @@ class HomeDashboardViewModelTest {
     @Test
     fun `block dragging events do not alter overall state`() {
 
-        val config = Config(homeDashboardId = MockDataFactory.randomUuid())
+        val config = Config(home = MockDataFactory.randomUuid())
 
         val pages = listOf(
             Block(
                 id = MockDataFactory.randomUuid(),
                 children = emptyList(),
                 fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Link(
+                    target = MockDataFactory.randomUuid(),
+                    type = Block.Content.Link.Type.PAGE,
+                    fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
+                    isArchived = MockDataFactory.randomBoolean()
                 )
             ),
             Block(
                 id = MockDataFactory.randomUuid(),
                 children = emptyList(),
                 fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Link(
+                    target = MockDataFactory.randomUuid(),
+                    type = Block.Content.Link.Type.PAGE,
+                    fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
+                    isArchived = MockDataFactory.randomBoolean()
                 )
             )
         )
 
-        val dashboard = HomeDashboard(
-            id = config.homeDashboardId,
-            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-            type = Block.Content.Dashboard.Type.MAIN_SCREEN,
-            blocks = pages,
-            children = pages.map { it.id }
+        val dashboard = Block(
+            id = config.home,
+            content = Block.Content.Dashboard(
+                type = Block.Content.Dashboard.Type.MAIN_SCREEN
+            ),
+            children = pages.map { page -> page.id },
+            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString()))
         )
 
         val delayInMillis = 100L
 
-        val flow = flow {
+        val events = flow {
             delay(delayInMillis)
-            emit(dashboard)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = config.home,
+                        context = config.home,
+                        blocks = listOf(dashboard) + pages
+                    )
+                )
+            )
         }
 
         stubGetConfig(Either.Right(config))
-        stubObserveHomeDashboard(
-            flow = flow,
-            param = ObserveHomeDashboard.Param(id = dashboard.id)
+        stubObserveEvents(
+            params = InterceptEvents.Params(context = null),
+            flow = events
         )
-        stubObserveEvents()
         stubOpenDashboard()
 
         vm = buildViewModel()
@@ -287,14 +301,19 @@ class HomeDashboardViewModelTest {
 
         coroutineTestRule.advanceTime(delayInMillis)
 
-        val expected = State(
+        val expected = HomeDashboardStateMachine.State(
             isLoading = false,
             isInitialzed = true,
-            homeDashboard = dashboard,
+            dashboard = listOf(
+                dashboard,
+                pages.first(),
+                pages.last()
+            ).toHomeDashboard(dashboard.id),
             error = null
         )
 
-        val views = dashboard.toView()
+        val views =
+            listOf(dashboard, pages.first(), pages.last()).toHomeDashboard(dashboard.id).toView()
 
         val from = 0
         val to = 1
@@ -314,7 +333,7 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should start dispatching drag-and-drop actions when the dragged item is dropped`() {
 
-        val config = Config(homeDashboardId = MockDataFactory.randomUuid())
+        val config = Config(home = MockDataFactory.randomUuid())
 
         val pages = listOf(
             Block(
@@ -342,7 +361,7 @@ class HomeDashboardViewModelTest {
         )
 
         val dashboard = HomeDashboard(
-            id = config.homeDashboardId,
+            id = config.home,
             fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
             type = Block.Content.Dashboard.Type.MAIN_SCREEN,
             blocks = pages,
@@ -357,11 +376,7 @@ class HomeDashboardViewModelTest {
         }
 
         stubGetConfig(Either.Right(config))
-        stubObserveHomeDashboard(
-            flow = flow,
-            param = ObserveHomeDashboard.Param(id = dashboard.id)
-        )
-        stubObserveEvents()
+        stubObserveEvents(params = InterceptEvents.Params(context = null))
         stubOpenDashboard()
 
         vm = buildViewModel()
@@ -387,8 +402,8 @@ class HomeDashboardViewModelTest {
             scope = any(),
             params = eq(
                 DragAndDrop.Params(
-                    context = config.homeDashboardId,
-                    targetContext = config.homeDashboardId,
+                    context = config.home,
+                    targetContext = config.home,
                     targetId = pages.last().content.asLink().target,
                     blockIds = listOf(pages.first().content.asLink().target),
                     position = Position.BOTTOM
@@ -401,10 +416,9 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should proceed with getting account and opening dashboard when view is created`() {
 
-        val config = Config(homeDashboardId = MockDataFactory.randomUuid())
+        val config = Config(home = MockDataFactory.randomUuid())
         stubGetConfig(Either.Right(config))
-        stubObserveHomeDashboard()
-        stubObserveEvents()
+        stubObserveEvents(params = InterceptEvents.Params(context = null))
 
         vm = buildViewModel()
         vm.onViewCreated()
@@ -425,8 +439,6 @@ class HomeDashboardViewModelTest {
 
         val response = Either.Right(account)
 
-        stubObserveHomeDashboard()
-        stubObserveEvents()
         stubGetCurrentAccount(response)
 
         vm = buildViewModel()
@@ -456,7 +468,6 @@ class HomeDashboardViewModelTest {
         val accountResponse = Either.Right(account)
         val imageResponse = Either.Right(blob)
 
-        stubObserveHomeDashboard()
         stubObserveEvents()
 
         stubGetCurrentAccount(accountResponse)
@@ -491,7 +502,6 @@ class HomeDashboardViewModelTest {
 
         val accountResponse = Either.Right(account)
 
-        stubObserveHomeDashboard()
         stubObserveEvents()
         stubGetCurrentAccount(accountResponse)
 
@@ -506,7 +516,6 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should start creating page when requested from UI`() {
 
-        stubObserveHomeDashboard()
         stubObserveEvents()
 
         vm = buildViewModel()
@@ -521,7 +530,6 @@ class HomeDashboardViewModelTest {
 
         val id = MockDataFactory.randomUuid()
 
-        stubObserveHomeDashboard()
         stubObserveEvents()
 
         closeDashboard.stub {
@@ -549,60 +557,64 @@ class HomeDashboardViewModelTest {
     }
 
     @Test
-    fun `should update state when a new block is added`() {
+    fun `should update state when a new block is added without updating dashboard children structure`() {
 
-        val config = Config(homeDashboardId = MockDataFactory.randomUuid())
+        val config = Config(home = "HOME_ID")
 
         val page = Block(
-            id = MockDataFactory.randomUuid(),
+            id = "FIRST_PAGE_ID",
             children = emptyList(),
-            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
+            fields = Block.Fields(map = mapOf("name" to "FIRST_PAGE")),
             content = Block.Content.Page(
                 style = Block.Content.Page.Style.SET
             )
         )
 
         val new = Block(
-            id = MockDataFactory.randomUuid(),
+            id = "NEW_BLOCK_ID",
             children = emptyList(),
-            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
+            fields = Block.Fields(map = mapOf("name" to "SECOND_PAGE")),
             content = Block.Content.Page(
                 style = Block.Content.Page.Style.SET
             )
         )
 
-        val dashboard = HomeDashboard(
-            id = config.homeDashboardId,
-            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-            type = Block.Content.Dashboard.Type.MAIN_SCREEN,
-            blocks = listOf(page),
-            children = listOf(page.id)
+        val dashboardName = "HOME"
+
+        val dashboard = Block(
+            id = config.home,
+            content = Block.Content.Dashboard(
+                type = Block.Content.Dashboard.Type.MAIN_SCREEN
+            ),
+            children = listOf(page.id),
+            fields = Block.Fields(map = mapOf("name" to dashboardName))
         )
 
-        val event = Event.Command.AddBlock(
-            blocks = listOf(new)
+        val showDashboardEvent = Event.Command.ShowBlock(
+            rootId = config.home,
+            context = config.home,
+            blocks = listOf(dashboard, page)
+        )
+
+        val addBlockEvent = Event.Command.AddBlock(
+            blocks = listOf(new),
+            context = config.home
         )
 
         val dashboardDelayInMillis = 100L
         val eventDelayInMillis = 200L
 
-        val dashboardFlow = flow {
+        val events: Flow<List<Event>> = flow {
             delay(dashboardDelayInMillis)
-            emit(dashboard)
-        }
-
-        val eventFlow = flow {
+            emit(listOf(showDashboardEvent))
             delay(eventDelayInMillis)
-            emit(event)
+            emit(listOf(addBlockEvent))
         }
 
         stubGetConfig(Either.Right(config))
-        stubObserveHomeDashboard(
-            flow = dashboardFlow,
-            param = ObserveHomeDashboard.Param(id = dashboard.id)
-        )
         stubObserveEvents(
-            flow = eventFlow
+            flow = events,
+            params = InterceptEvents.Params(context = null)
         )
         stubOpenDashboard()
 
@@ -612,11 +624,27 @@ class HomeDashboardViewModelTest {
 
         coroutineTestRule.advanceTime(dashboardDelayInMillis)
 
+        val firstExpectedState = HomeDashboard(
+            id = config.home,
+            fields = Block.Fields(map = mapOf("name" to dashboardName)),
+            type = Block.Content.Dashboard.Type.MAIN_SCREEN,
+            blocks = listOf(page),
+            children = listOf(page.id)
+        )
+
+        val secondExpectedState = HomeDashboard(
+            id = config.home,
+            fields = Block.Fields(map = mapOf("name" to dashboardName)),
+            type = Block.Content.Dashboard.Type.MAIN_SCREEN,
+            blocks = listOf(page, new),
+            children = listOf(page.id)
+        )
+
         vm.state.test().assertValue(
-            State(
+            HomeDashboardStateMachine.State(
                 isLoading = false,
                 isInitialzed = true,
-                homeDashboard = dashboard,
+                dashboard = firstExpectedState,
                 error = null
             )
         )
@@ -624,24 +652,13 @@ class HomeDashboardViewModelTest {
         coroutineTestRule.advanceTime(eventDelayInMillis)
 
         vm.state.test().assertValue(
-            State(
+            HomeDashboardStateMachine.State(
                 isLoading = false,
                 isInitialzed = true,
-                homeDashboard = dashboard.copy(
-                    blocks = dashboard.blocks + listOf(new)
-                ),
+                dashboard = secondExpectedState,
                 error = null
             )
         )
-    }
-
-    private fun stubObserveHomeDashboard(
-        param: ObserveHomeDashboard.Param = any(),
-        flow: Flow<HomeDashboard> = flowOf()
-    ) {
-        observeHomeDashboard.stub {
-            onBlocking { build(param) } doReturn flow
-        }
     }
 
     private fun stubGetConfig(response: Either.Right<Config>) {
@@ -652,9 +669,12 @@ class HomeDashboardViewModelTest {
         }
     }
 
-    private fun stubObserveEvents(flow: Flow<Event> = flowOf()) {
-        observeEvents.stub {
-            onBlocking { build() } doReturn flow
+    private fun stubObserveEvents(
+        flow: Flow<List<Event>> = flowOf(),
+        params: InterceptEvents.Params? = null
+    ) {
+        interceptEvents.stub {
+            onBlocking { build(params) } doReturn flow
         }
     }
 

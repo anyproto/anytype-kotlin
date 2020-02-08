@@ -17,7 +17,7 @@ class CloseDashboard(
     override suspend fun run(params: Param) = try {
         if (params.id == MainConfig.HOME_DASHBOARD_ID)
             repo.getConfig().let { config ->
-                repo.closeDashboard(id = config.homeDashboardId)
+                repo.closeDashboard(id = config.home)
             }.let {
                 Either.Right(it)
             }

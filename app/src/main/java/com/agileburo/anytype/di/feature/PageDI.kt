@@ -6,7 +6,6 @@ import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.event.interactor.EventChannel
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.page.ClosePage
-import com.agileburo.anytype.domain.page.ObservePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.page.PageFragment
@@ -66,14 +65,6 @@ class PageModule {
     fun provideOpenPageUseCase(
         repo: BlockRepository
     ): OpenPage = OpenPage(
-        repo = repo
-    )
-
-    @Provides
-    @PerScreen
-    fun provideObservePageUseCase(
-        repo: BlockRepository
-    ): ObservePage = ObservePage(
         repo = repo
     )
 

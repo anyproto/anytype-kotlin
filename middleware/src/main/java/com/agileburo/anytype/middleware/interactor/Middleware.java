@@ -114,6 +114,8 @@ public class Middleware {
                 .setBlockId(id)
                 .build();
 
+        Timber.d("Opening home dashboard with the following request:\n%s", request.toString());
+
         service.blockOpen(request);
     }
 

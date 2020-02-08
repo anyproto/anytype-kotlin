@@ -6,6 +6,7 @@ import anytype.model.Models.Account
 import anytype.model.Models.Block
 import com.agileburo.anytype.data.auth.model.AccountEntity
 import com.agileburo.anytype.data.auth.model.BlockEntity
+import com.google.protobuf.Struct
 import com.google.protobuf.Value
 
 
@@ -85,6 +86,16 @@ fun BlockEntity.Content.Text.Mark.toMiddleware(): Block.Content.Text.Mark {
 
 fun Block.fields(): BlockEntity.Fields = BlockEntity.Fields().also { result ->
     fields.fieldsMap.forEach { (key, value) ->
+        result.map[key] = when (val case = value.kindCase) {
+            Value.KindCase.NUMBER_VALUE -> value.numberValue
+            Value.KindCase.STRING_VALUE -> value.stringValue
+            else -> throw IllegalStateException("$case is not supported.")
+        }
+    }
+}
+
+fun Struct.fields(): BlockEntity.Fields = BlockEntity.Fields().also { result ->
+    fieldsMap.forEach { (key, value) ->
         result.map[key] = when (val case = value.kindCase) {
             Value.KindCase.NUMBER_VALUE -> value.numberValue
             Value.KindCase.STRING_VALUE -> value.stringValue

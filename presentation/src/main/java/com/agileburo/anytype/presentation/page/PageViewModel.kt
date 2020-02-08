@@ -235,6 +235,7 @@ class PageViewModel(
                 Markup.Type.TEXT_COLOR -> Block.Content.Text.Mark.Type.TEXT_COLOR
                 Markup.Type.LINK -> Block.Content.Text.Mark.Type.LINK
                 Markup.Type.BACKGROUND_COLOR -> Block.Content.Text.Mark.Type.BACKGROUND_COLOR
+                Markup.Type.KEYBOARD -> Block.Content.Text.Mark.Type.KEYBOARD
             },
             param = action.param
         )
@@ -287,11 +288,11 @@ class PageViewModel(
                 Timber.d("Preparing views for focus: $focus")
 
                 models.asMap().asRender(pageId).mapNotNull { block ->
-                    when {
-                        block.content is Block.Content.Text -> {
+                    when (block.content) {
+                        is Block.Content.Text -> {
                             block.toView(focused = block.id == focus)
                         }
-                        block.content is Block.Content.Image -> {
+                        is Block.Content.Image -> {
                             block.toView()
                         }
                         else -> null

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp">
+
+    <com.agileburo.anytype.sample.RoundedBgTextView
+        android:id="@+id/item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="21sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"/>
+
+</FrameLayout>

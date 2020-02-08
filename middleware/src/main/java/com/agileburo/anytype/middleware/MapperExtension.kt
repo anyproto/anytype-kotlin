@@ -65,11 +65,18 @@ fun BlockEntity.Content.Text.Mark.toMiddleware(): Block.Content.Text.Mark {
                 .build()
         }
         BlockEntity.Content.Text.Mark.Type.BACKGROUND_COLOR -> {
-            Models.Block.Content.Text.Mark
+            Block.Content.Text.Mark
                 .newBuilder()
-                .setType(Models.Block.Content.Text.Mark.Type.BackgroundColor)
+                .setType(Block.Content.Text.Mark.Type.BackgroundColor)
                 .setRange(rangeModel)
                 .setParam(param as String)
+                .build()
+        }
+        BlockEntity.Content.Text.Mark.Type.KEYBOARD -> {
+            Block.Content.Text.Mark
+                .newBuilder()
+                .setType(Block.Content.Text.Mark.Type.Keyboard)
+                .setRange(rangeModel)
                 .build()
         }
         else -> throw IllegalStateException("Unsupported mark type: ${type.name}")

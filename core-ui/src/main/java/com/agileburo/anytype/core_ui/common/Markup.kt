@@ -2,10 +2,13 @@ package com.agileburo.anytype.core_ui.common
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.text.Annotation
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.*
+import com.agileburo.anytype.core_ui.widgets.text.KEY_ROUNDED
+import com.agileburo.anytype.core_ui.widgets.text.VALUE_ROUNDED
 
 /**
  * Classes implementing this interface should support markup rendering.
@@ -47,11 +50,13 @@ interface Markup {
         STRIKETHROUGH,
         TEXT_COLOR,
         BACKGROUND_COLOR,
-        LINK
+        LINK,
+        KEYBOARD
     }
 
     companion object {
         const val DEFAULT_SPANNABLE_FLAG = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+        const val SPAN_MONOSPACE = "monospace"
     }
 }
 
@@ -94,12 +99,28 @@ fun Markup.toSpannable() = SpannableString(body).apply {
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
+            Markup.Type.KEYBOARD -> setSpan(
+                TypefaceSpan(Markup.SPAN_MONOSPACE),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            ).also {
+                setSpan(
+                    Annotation(KEY_ROUNDED, VALUE_ROUNDED),
+                    mark.from,
+                    mark.to,
+                    Markup.DEFAULT_SPANNABLE_FLAG
+                )
+            }
         }
     }
 }
 
 fun Editable.setMarkup(markup: Markup) {
     getSpans(0, length, CharacterStyle::class.java).forEach { span ->
+        removeSpan(span)
+    }
+    getSpans(0, length, Annotation::class.java).forEach { span ->
         removeSpan(span)
     }
     markup.marks.forEach { mark ->
@@ -141,6 +162,21 @@ fun Editable.setMarkup(markup: Markup) {
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
+            }
+            Markup.Type.KEYBOARD -> {
+                setSpan(
+                    TypefaceSpan(Markup.SPAN_MONOSPACE),
+                    mark.from,
+                    mark.to,
+                    Markup.DEFAULT_SPANNABLE_FLAG
+                ).also {
+                    setSpan(
+                        Annotation(KEY_ROUNDED, VALUE_ROUNDED),
+                        mark.from,
+                        mark.to,
+                        Markup.DEFAULT_SPANNABLE_FLAG
+                    )
+                }
             }
         }
     }

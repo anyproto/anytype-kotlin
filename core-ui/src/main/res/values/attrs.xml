@@ -6,4 +6,13 @@
     <declare-styleable name="ToolbarSectionWidget">
         <attr name="active_background_color" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="TextRoundedBgHelper">
+        <attr name="roundedTextHorizontalPadding" format="dimension" />
+        <attr name="roundedTextVerticalPadding" format="dimension" />
+        <attr name="roundedTextDrawable" format="reference" />
+        <attr name="roundedTextDrawableLeft" format="reference" />
+        <attr name="roundedTextDrawableMid" format="reference" />
+        <attr name="roundedTextDrawableRight" format="reference" />
+    </declare-styleable>
 </resources>

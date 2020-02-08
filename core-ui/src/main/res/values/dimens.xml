@@ -75,4 +75,7 @@
     <dimen name="dp_6">6dp</dimen>
     <dimen name="dp_8">8dp</dimen>
 
+    <dimen name="roundedTextBorderRadius">4dp</dimen>
+    <dimen name="roundedTextBorderWidth">1dp</dimen>
+
 </resources>

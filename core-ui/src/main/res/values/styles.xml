@@ -212,4 +212,13 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="RoundedBgTextView" parent="@android:style/Widget.TextView">
+        <item name="roundedTextHorizontalPadding">2dp</item>
+        <item name="roundedTextVerticalPadding">2dp</item>
+        <item name="roundedTextDrawable">@drawable/rounded_text_bg</item>
+        <item name="roundedTextDrawableLeft">@drawable/rounded_text_bg_left</item>
+        <item name="roundedTextDrawableMid">@drawable/rounded_text_bg_mid</item>
+        <item name="roundedTextDrawableRight">@drawable/rounded_text_bg_right</item>
+    </style>
+
 </resources>

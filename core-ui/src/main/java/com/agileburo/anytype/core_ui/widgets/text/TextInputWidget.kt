@@ -1,10 +1,13 @@
 package com.agileburo.anytype.core_ui.widgets.text
 
 import android.content.Context
+import android.graphics.Canvas
+import android.text.Spanned
 import android.text.TextWatcher
 import android.text.util.Linkify
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.graphics.withTranslation
 import com.agileburo.anytype.core_ui.extensions.toast
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
@@ -12,16 +15,29 @@ import timber.log.Timber
 class TextInputWidget : AppCompatEditText {
 
     private val watchers: MutableList<TextWatcher> = mutableListOf()
+    private val textRoundedBgHelper: TextRoundedBgHelper
 
     var selectionDetector: ((IntRange) -> Unit)? = null
 
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet,
+        defStyle: Int = android.R.attr.textViewStyle) : super(
         context,
         attrs,
         defStyle
-    )
+    ) {
+        val attributeReader = TextRoundedBgAttributeReader(context, attrs)
+        textRoundedBgHelper = TextRoundedBgHelper(
+            horizontalPadding = attributeReader.horizontalPadding,
+            verticalPadding = attributeReader.verticalPadding,
+            drawable = attributeReader.drawable,
+            drawableLeft = attributeReader.drawableLeft,
+            drawableMid = attributeReader.drawableMid,
+            drawableRight = attributeReader.drawableRight
+        )
+    }
 
     override fun addTextChangedListener(watcher: TextWatcher) {
         watchers.add(watcher)
@@ -42,6 +58,16 @@ class TextInputWidget : AppCompatEditText {
         Timber.d("New selection: $selStart - $selEnd")
         selectionDetector?.invoke(selStart..selEnd)
         super.onSelectionChanged(selStart, selEnd)
+    }
+
+    override fun onDraw(canvas: Canvas?) {
+        // need to draw bg first so that text can be on top during super.onDraw()
+        if (text is Spanned && layout != null) {
+            canvas?.withTranslation(totalPaddingLeft.toFloat(), totalPaddingTop.toFloat()) {
+                textRoundedBgHelper.draw(canvas, text as Spanned, layout)
+            }
+        }
+        super.onDraw(canvas)
     }
 
     fun setLinksClickable() {

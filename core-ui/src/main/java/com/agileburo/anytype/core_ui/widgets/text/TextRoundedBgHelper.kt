@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.text.Annotation
 import android.text.Layout
 import android.text.Spanned
+import com.agileburo.anytype.core_utils.ext.VALUE_ROUNDED
 
 /**
  * Helper class to draw multi-line rounded background to certain parts of a text. The start/end
@@ -27,8 +28,6 @@ import android.text.Spanned
  * @param drawableMid the drawable used to draw for whole line
  * @param drawableRight the drawable used to draw right edge of the background
  */
-const val KEY_ROUNDED = "key"
-const val VALUE_ROUNDED = "rounded"
 
 class TextRoundedBgHelper(
     val horizontalPadding: Int,

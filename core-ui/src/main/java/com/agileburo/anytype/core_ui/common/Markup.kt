@@ -7,8 +7,9 @@ import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.*
-import com.agileburo.anytype.core_ui.widgets.text.KEY_ROUNDED
-import com.agileburo.anytype.core_ui.widgets.text.VALUE_ROUNDED
+import com.agileburo.anytype.core_utils.ext.KEY_ROUNDED
+import com.agileburo.anytype.core_utils.ext.VALUE_ROUNDED
+import com.agileburo.anytype.core_utils.ext.removeRoundedSpans
 import com.agileburo.anytype.core_utils.ext.removeSpans
 
 /**
@@ -119,6 +120,7 @@ fun Markup.toSpannable() = SpannableStringBuilder(body).apply {
 
 fun Editable.setMarkup(markup: Markup) {
     removeSpans<CharacterStyle>()
+    removeRoundedSpans()
     markup.marks.forEach { mark ->
         when (mark.type) {
             Markup.Type.ITALIC -> setSpan(

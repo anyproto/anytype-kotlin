@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.net.Uri
 import android.provider.MediaStore
+import android.text.Annotation
 import android.text.Editable
 import android.text.Spanned
 import android.view.TouchDelegate
@@ -44,6 +45,8 @@ fun Uri.parsePath(context: Context): String {
 fun Throwable.timber() = Timber.e("Get error : ${this.message}")
 
 const val DATE_FORMAT_MMMdYYYY = "MMM d, yyyy"
+const val KEY_ROUNDED = "key"
+const val VALUE_ROUNDED = "rounded"
 
 fun Long.formatToDateString(pattern: String, locale: Locale): String {
     val formatter = SimpleDateFormat(pattern, locale)
@@ -87,4 +90,11 @@ inline fun <reified T> Editable.removeSpans() {
     for (span in allSpans) {
         removeSpan(span)
     }
+}
+
+fun Editable.removeRoundedSpans(): Editable {
+    this.getSpans(0, length, Annotation::class.java).forEach { span ->
+        if (span.key == KEY_ROUNDED && span.value == VALUE_ROUNDED) removeSpan(span)
+    }
+    return this
 }

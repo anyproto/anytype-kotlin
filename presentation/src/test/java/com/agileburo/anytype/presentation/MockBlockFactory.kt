@@ -35,7 +35,8 @@ object MockBlockFactory {
         firstChild: String,
         firstChildStyle: Block.Content.Text.Style = Block.Content.Text.Style.P,
         secondChild: String,
-        secondChildStyle: Block.Content.Text.Style = Block.Content.Text.Style.P
+        secondChildStyle: Block.Content.Text.Style = Block.Content.Text.Style.P,
+        secondChildText: String = MockDataFactory.randomString()
     ) = listOf(
         Block(
             id = root,
@@ -59,7 +60,7 @@ object MockBlockFactory {
             id = secondChild,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
+                text = secondChildText,
                 marks = emptyList(),
                 style = secondChildStyle
             ),

@@ -2244,6 +2244,68 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should turn a list item with empty text into a paragraph on endline-enter-pressed event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val firstChild = MockDataFactory.randomUuid()
+        val secondChild = MockDataFactory.randomUuid()
+
+        val page = MockBlockFactory.makeOnePageWithTwoTextBlocks(
+            root = root,
+            firstChild = firstChild,
+            secondChild = secondChild,
+            firstChildStyle = Block.Content.Text.Style.TITLE,
+            secondChildStyle = Block.Content.Text.Style.BULLET,
+            secondChildText = ""
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onBlockFocusChanged(
+            id = secondChild,
+            hasFocus = true
+        )
+
+        vm.onEndLineEnterClicked(id = secondChild)
+
+        verify(createBlock, never()).invoke(
+            scope = any(),
+            params = any(),
+            onResult = any()
+        )
+        verify(updateTextStyle, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                UpdateTextStyle.Params(
+                    target = secondChild,
+                    style = Block.Content.Text.Style.P,
+                    context = root
+                )
+            ),
+            onResult = any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()

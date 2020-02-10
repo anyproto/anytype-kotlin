@@ -439,20 +439,46 @@ class PageViewModel(
     fun onEndLineEnterClicked(id: String) {
         Timber.d("On endline enter clicked")
 
-        var newStyle = Block.Content.Text.Style.P
+        val target = blocks.first { it.id == id }
 
-        blocks.first { it.id == id }.let { target ->
-            if (target.content.asText().isList())
-                newStyle = target.content.asText().style
+        val content = target.content<Block.Content.Text>()
+
+        if (content.isList()) {
+            handleEndlineEnterPressedEventForListItem(content, id)
+        } else {
+            proceedWithCreatingNewTextBlock(
+                id = id,
+                style = Block.Content.Text.Style.P
+            )
         }
+    }
 
+    private fun handleEndlineEnterPressedEventForListItem(
+        content: Block.Content.Text,
+        id: String
+    ) {
+        if (content.text.isNotEmpty()) {
+            proceedWithCreatingNewTextBlock(id, content.style)
+        } else {
+            proceedWithUpdatingTextStyle(
+                style = Block.Content.Text.Style.P,
+                target = id
+            )
+        }
+    }
+
+    private fun proceedWithCreatingNewTextBlock(
+        id: String,
+        style: Block.Content.Text.Style,
+        position: Position = Position.BOTTOM
+    ) {
         createBlock.invoke(
             scope = viewModelScope,
             params = CreateBlock.Params(
                 contextId = pageId,
                 targetId = id,
-                position = Position.BOTTOM,
-                prototype = Prototype.Text(style = newStyle)
+                position = position,
+                prototype = Prototype.Text(style = style)
             )
         ) { result ->
             result.either(
@@ -566,19 +592,11 @@ class PageViewModel(
 
     fun onAddTextBlockClicked(style: Block.Content.Text.Style) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
-        createBlock.invoke(
-            viewModelScope, CreateBlock.Params(
-                contextId = pageId,
-                targetId = "",
-                position = Position.INNER,
-                prototype = Prototype.Text(style = style)
-            )
-        ) { result ->
-            result.either(
-                fnL = { Timber.e(it, "Error while creating a block") },
-                fnR = { Timber.d("Request to create a block has been dispatched") }
-            )
-        }
+        proceedWithCreatingNewTextBlock(
+            id = "",
+            position = Position.INNER,
+            style = style
+        )
     }
 
     fun onCheckboxClicked(id: String) {
@@ -615,11 +633,18 @@ class PageViewModel(
     }
 
     fun onTurnIntoStyleClicked(style: Block.Content.Text.Style) {
+        proceedWithUpdatingTextStyle(style, focusChannel.value)
+    }
+
+    private fun proceedWithUpdatingTextStyle(
+        style: Block.Content.Text.Style,
+        target: String
+    ) {
         updateTextStyle.invoke(
             scope = viewModelScope,
             params = UpdateTextStyle.Params(
                 context = pageId,
-                target = focusChannel.value,
+                target = target,
                 style = style
             )
         ) { result ->
@@ -649,20 +674,11 @@ class PageViewModel(
     }
 
     private fun addNewBlockAtTheEnd() {
-        createBlock.invoke(
-            scope = viewModelScope,
-            params = CreateBlock.Params(
-                contextId = pageId,
-                targetId = "",
-                position = Position.INNER,
-                prototype = Prototype.Text(style = Block.Content.Text.Style.P)
-            )
-        ) { result ->
-            result.either(
-                fnL = { Timber.e(it, "Error while creating a block") },
-                fnR = { Timber.d("Request to create a block has been dispatched") }
-            )
-        }
+        proceedWithCreatingNewTextBlock(
+            id = "",
+            position = Position.INNER,
+            style = Block.Content.Text.Style.P
+        )
     }
 
     sealed class ViewState {

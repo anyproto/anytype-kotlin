@@ -64,3 +64,7 @@ fun Block.textColor(): String? {
     else
         throw UnsupportedOperationException("Wrong block content type: ${content.javaClass}")
 }
+
+inline fun <reified T> Block.content(): T {
+    return content as T
+}

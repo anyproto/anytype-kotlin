@@ -1,22 +1,23 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.18 (WIP)
+## Version 0.0.18
 
 ### New features
 
-*
+* Merge the target block with the previous block if the carriage of the target block is positioned at the beginning of the text on backspace-pressed event (#159)
+* Turn a list item into a paragraph on empty-block-enter-pressed event (#207)
+* Enable keyboard/code (not stable yet) (#80)
 
-### Design
+### Fixes & tech
 
-*
-
-### Fixes && tech
-
-* Refactored `BlockViewDiffUtil` (processing change payload) (#164)
+* Improved `BlockViewDiffUtil` implementation (better change payload procession) (#164, #195)
+* Page titles on the home dashboard are not always updated when user returns back from a page to the home dashboard (#199)
+* Inconsistent behaviour while editing page's title on page screen (#182)
+* Event channel refactoring (decreased code duplication) (#194)
 
 ### Middleware
 
-*
+* Added `blockMerge` command (#159)
 
 ## Version 0.0.17
 

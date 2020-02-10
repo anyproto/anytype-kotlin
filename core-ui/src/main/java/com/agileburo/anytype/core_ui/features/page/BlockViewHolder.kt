@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.text.Editable
 import android.view.View
 import android.widget.TextView
+import android.widget.TextView.BufferType
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.*
@@ -140,7 +141,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                         Timber.d("Text changed.\nBefore:${content.text.toString()}\nAfter:${item.text}")
                         content.pauseTextWatchers {
                             if (item is Markup)
-                                content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
+                                content.setText(item.toSpannable(), BufferType.SPANNABLE)
                         }
                     }
 
@@ -181,7 +182,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 content.setLinksClickable()
             }
 
-            content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
+            content.setText(item.toSpannable(), BufferType.SPANNABLE)
 
             if (item.color != null) {
                 setTextColor(item.color)
@@ -203,33 +204,44 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Title(view: View) : BlockViewHolder(view), TextHolder {
 
-        private val title = itemView.title
-        override val content: TextInputWidget
-            get() = title
+        override val content: TextInputWidget = itemView.title
+
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
+        }
 
         fun bind(
             item: BlockView.Title,
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
-            title.setOnFocusChangeListener { _, hasFocus ->
+            content.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
             }
-
-            title.setText(item.text)
-
-            title.addTextChangedListener(
-                DefaultTextWatcher { text ->
-                    onTextChanged(item.id, text)
-                }
-            )
+            content.setText(item.text, BufferType.EDITABLE)
+            setupTextWatcher(onTextChanged, item)
         }
 
+        fun processPayloads(
+            payloads: List<Payload>,
+            item: BlockView.Title
+        ) {
+            payloads.forEach { payload ->
+                if (payload.changes.contains(TEXT_CHANGED)) {
+                    content.pauseTextWatchers {
+                        if (content.text.toString() != item.text) {
+                            content.setText(item.text, BufferType.EDITABLE)
+                        }
+                    }
+                }
+            }
+        }
+
+        override fun processChangePayload(payloads: List<Payload>, item: BlockView) {}
         override fun enableBackspaceDetector(
             onEmptyBlockBackspaceClicked: () -> Unit,
             onNonEmptyBlockBackspaceClicked: () -> Unit
-        ) {
-        }
+        ) = Unit
     }
 
     class HeaderOne(view: View) : BlockViewHolder(view), TextHolder {

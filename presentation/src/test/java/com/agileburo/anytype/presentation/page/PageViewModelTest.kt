@@ -10,6 +10,7 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
+import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.MockBlockFactory
@@ -1808,7 +1809,11 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(100)
 
-        vm.onEndLineEnterClicked(child)
+        vm.onEndLineEnterClicked(
+            id = child,
+            marks = emptyList(),
+            text = page.last().content<Block.Content.Text>().text
+        )
 
         verify(createBlock, times(1)).invoke(
             scope = any(),
@@ -2115,7 +2120,11 @@ class PageViewModelTest {
             hasFocus = true
         )
 
-        vm.onEndLineEnterClicked(id = child)
+        vm.onEndLineEnterClicked(
+            id = child,
+            text = page.last().content<Block.Content.Text>().text,
+            marks = emptyList()
+        )
 
         verify(createBlock, times(1)).invoke(
             scope = any(),
@@ -2172,7 +2181,11 @@ class PageViewModelTest {
             hasFocus = true
         )
 
-        vm.onEndLineEnterClicked(id = child)
+        vm.onEndLineEnterClicked(
+            id = child,
+            marks = emptyList(),
+            text = page.last().content<Block.Content.Text>().text
+        )
 
         verify(createBlock, times(1)).invoke(
             scope = any(),
@@ -2229,7 +2242,11 @@ class PageViewModelTest {
             hasFocus = true
         )
 
-        vm.onEndLineEnterClicked(id = child)
+        vm.onEndLineEnterClicked(
+            id = child,
+            text = page.last().content<Block.Content.Text>().text,
+            marks = emptyList()
+        )
 
         verify(createBlock, times(1)).invoke(
             scope = any(),
@@ -2401,7 +2418,11 @@ class PageViewModelTest {
             hasFocus = true
         )
 
-        vm.onEndLineEnterClicked(id = secondChild)
+        vm.onEndLineEnterClicked(
+            id = secondChild,
+            text = "",
+            marks = emptyList()
+        )
 
         verify(createBlock, never()).invoke(
             scope = any(),

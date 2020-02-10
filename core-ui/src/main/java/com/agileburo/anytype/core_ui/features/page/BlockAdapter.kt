@@ -248,6 +248,12 @@ class BlockAdapter(
                         item = blocks[position]
                     )
                 }
+                is BlockViewHolder.Title -> {
+                    holder.processPayloads(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position] as BlockView.Title
+                    )
+                }
                 else -> TODO()
             }
     }

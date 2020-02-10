@@ -32,6 +32,11 @@ class BlockViewDiffUtil(
 
         val changes = mutableListOf<Int>()
 
+        if (newBlock is BlockView.Title && oldBlock is BlockView.Title) {
+            if (newBlock.text != oldBlock.text)
+                changes.add(TEXT_CHANGED)
+        }
+
         if (newBlock is BlockView.Text && oldBlock is BlockView.Text) {
             if (newBlock.text != oldBlock.text)
                 changes.add(TEXT_CHANGED)

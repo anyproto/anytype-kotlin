@@ -59,4 +59,8 @@ class BlockDataRepository(
     override suspend fun unlink(command: Command.Unlink) {
         factory.remote.unlink(command.toEntity())
     }
+
+    override suspend fun merge(command: Command.Merge) {
+        factory.remote.merge(command.toEntity())
+    }
 }

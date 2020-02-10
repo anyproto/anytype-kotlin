@@ -44,7 +44,8 @@ class PageModule {
         removeLinkMark: RemoveLinkMark,
         duplicateBlock: DuplicateBlock,
         updateTextStyle: UpdateTextStyle,
-        updateTextColor: UpdateTextColor
+        updateTextColor: UpdateTextColor,
+        mergeBlocks: MergeBlocks
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -57,7 +58,8 @@ class PageModule {
         updateTextStyle = updateTextStyle,
         updateTextColor = updateTextColor,
         updateLinkMarks = updateLinkMarks,
-        removeLinkMark = removeLinkMark
+        removeLinkMark = removeLinkMark,
+        mergeBlocks = mergeBlocks
     )
 
     @Provides
@@ -122,6 +124,14 @@ class PageModule {
     fun provideDuplicateBlockUseCase(
         repo: BlockRepository
     ): DuplicateBlock = DuplicateBlock(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideMergeBlocksUseCase(
+        repo: BlockRepository
+    ): MergeBlocks = MergeBlocks(
         repo = repo
     )
 

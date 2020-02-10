@@ -133,43 +133,45 @@ fun Block.page(): BlockEntity.Content.Page = BlockEntity.Content.Page(
 
 fun Block.text(): BlockEntity.Content.Text = BlockEntity.Content.Text(
     text = text.text,
-    marks = text.marks.marksList.map { mark ->
-        BlockEntity.Content.Text.Mark(
-            range = IntRange(mark.range.from, mark.range.to),
-            param = if (mark.param.isNotEmpty()) mark.param else null,
-            type = when (mark.type) {
-                Block.Content.Text.Mark.Type.Bold -> {
-                    BlockEntity.Content.Text.Mark.Type.BOLD
-                }
-                Block.Content.Text.Mark.Type.Italic -> {
-                    BlockEntity.Content.Text.Mark.Type.ITALIC
-                }
-                Block.Content.Text.Mark.Type.Strikethrough -> {
-                    BlockEntity.Content.Text.Mark.Type.STRIKETHROUGH
-                }
-                Block.Content.Text.Mark.Type.Underscored -> {
-                    BlockEntity.Content.Text.Mark.Type.UNDERSCORED
-                }
-                Block.Content.Text.Mark.Type.Keyboard -> {
-                    BlockEntity.Content.Text.Mark.Type.KEYBOARD
-                }
-                Block.Content.Text.Mark.Type.TextColor -> {
-                    BlockEntity.Content.Text.Mark.Type.TEXT_COLOR
-                }
-                Block.Content.Text.Mark.Type.BackgroundColor -> {
-                    BlockEntity.Content.Text.Mark.Type.BACKGROUND_COLOR
-                }
-                Block.Content.Text.Mark.Type.Link -> {
-                    BlockEntity.Content.Text.Mark.Type.LINK
-                }
-                else -> throw IllegalStateException("Unexpected mark type: ${mark.type.name}")
-            }
-        )
-    },
+    marks = text.marks.marksList.marks(),
     style = text.style.entity(),
     isChecked = text.checked,
     color = if (text.color.isNotEmpty()) text.color else null
 )
+
+fun List<Block.Content.Text.Mark>.marks(): List<BlockEntity.Content.Text.Mark> = map { mark ->
+    BlockEntity.Content.Text.Mark(
+        range = IntRange(mark.range.from, mark.range.to),
+        param = if (mark.param.isNotEmpty()) mark.param else null,
+        type = when (mark.type) {
+            Block.Content.Text.Mark.Type.Bold -> {
+                BlockEntity.Content.Text.Mark.Type.BOLD
+            }
+            Block.Content.Text.Mark.Type.Italic -> {
+                BlockEntity.Content.Text.Mark.Type.ITALIC
+            }
+            Block.Content.Text.Mark.Type.Strikethrough -> {
+                BlockEntity.Content.Text.Mark.Type.STRIKETHROUGH
+            }
+            Block.Content.Text.Mark.Type.Underscored -> {
+                BlockEntity.Content.Text.Mark.Type.UNDERSCORED
+            }
+            Block.Content.Text.Mark.Type.Keyboard -> {
+                BlockEntity.Content.Text.Mark.Type.KEYBOARD
+            }
+            Block.Content.Text.Mark.Type.TextColor -> {
+                BlockEntity.Content.Text.Mark.Type.TEXT_COLOR
+            }
+            Block.Content.Text.Mark.Type.BackgroundColor -> {
+                BlockEntity.Content.Text.Mark.Type.BACKGROUND_COLOR
+            }
+            Block.Content.Text.Mark.Type.Link -> {
+                BlockEntity.Content.Text.Mark.Type.LINK
+            }
+            else -> throw IllegalStateException("Unexpected mark type: ${mark.type.name}")
+        }
+    )
+}
 
 fun Block.layout(): BlockEntity.Content.Layout = BlockEntity.Content.Layout(
     type = when {

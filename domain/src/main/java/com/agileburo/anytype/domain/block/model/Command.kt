@@ -93,4 +93,14 @@ sealed class Command {
         val context: Id,
         val targets: List<Id>
     )
+
+    /**
+     * Command for merging two blocks into one block
+     * @property context context id
+     * @property pair pair of the blocks, which we need to merge
+     */
+    data class Merge(
+        val context: Id,
+        val pair: Pair<Id, Id>
+    )
 }

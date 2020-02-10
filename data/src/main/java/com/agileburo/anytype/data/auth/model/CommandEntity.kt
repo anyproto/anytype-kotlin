@@ -54,4 +54,9 @@ class CommandEntity {
         val context: String,
         val targets: List<String>
     )
+
+    data class Merge(
+        val context: String,
+        val pair: Pair<String, String>
+    )
 }

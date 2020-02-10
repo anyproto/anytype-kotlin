@@ -473,4 +473,17 @@ public class Middleware {
 
         service.blockUnlink(request);
     }
+
+    public void merge(CommandEntity.Merge command) throws Exception {
+        Block.Merge.Request request = Block.Merge.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .setFirstBlockId(command.getPair().getFirst())
+                .setSecondBlockId(command.getPair().getSecond())
+                .build();
+
+        Timber.d("Merging blocks with the following request:\n%s", request.toString());
+
+        service.blockMerge(request);
+    }
 }

@@ -3,10 +3,7 @@ package com.agileburo.anytype.middleware.interactor
 import anytype.Events
 import com.agileburo.anytype.data.auth.event.EventRemoteChannel
 import com.agileburo.anytype.data.auth.model.EventEntity
-import com.agileburo.anytype.middleware.EventProxy
-import com.agileburo.anytype.middleware.blocks
-import com.agileburo.anytype.middleware.entity
-import com.agileburo.anytype.middleware.fields
+import com.agileburo.anytype.middleware.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -70,6 +67,10 @@ class MiddlewareEventChannel(
                             null,
                         color = if (event.blockSetText.hasColor())
                             event.blockSetText.color.value
+                        else
+                            null,
+                        marks = if (event.blockSetText.hasMarks())
+                            event.blockSetText.marks.value.marksList.marks()
                         else
                             null
                     )

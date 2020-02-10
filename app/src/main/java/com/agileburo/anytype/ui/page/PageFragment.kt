@@ -70,7 +70,8 @@ class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInter
             onFocusChanged = vm::onBlockFocusChanged,
             onSplitLineEnterClicked = vm::onSplitLineEnterClicked,
             onEndLineEnterClicked = vm::onEndLineEnterClicked,
-            onEmptyBlockBackspaceClicked = vm::onEmptyBlockBackspaceClicked
+            onEmptyBlockBackspaceClicked = vm::onEmptyBlockBackspaceClicked,
+            onNonEmptyBlockBackspaceClicked = vm::onNonEmptyBlockBackspaceClicked
         )
     }
 

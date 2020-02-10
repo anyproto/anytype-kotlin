@@ -41,6 +41,7 @@ class BlockAdapter(
     private val onCheckboxClicked: (String) -> Unit,
     private val onFocusChanged: (String, Boolean) -> Unit,
     private val onEmptyBlockBackspaceClicked: (String) -> Unit,
+    private val onNonEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onSplitLineEnterClicked: (String) -> Unit,
     private val onEndLineEnterClicked: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
@@ -369,7 +370,10 @@ class BlockAdapter(
                     onSplitLineEnterClicked(blocks[holder.adapterPosition].id)
                 }
             )
-            holder.enableBackspaceDetector { onEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id) }
+            holder.enableBackspaceDetector(
+                onEmptyBlockBackspaceClicked = { onEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id) },
+                onNonEmptyBlockBackspaceClicked = { onNonEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id) }
+            )
         }
     }
 
@@ -382,7 +386,6 @@ class BlockAdapter(
             holder.content.isEnabled = true
         }
     }
-
 
     @Deprecated(
         level = DeprecationLevel.WARNING,

@@ -44,10 +44,9 @@ sealed class Event {
             val id: Id,
             val text: String? = null,
             val style: Text.Style? = null,
-            val color: String? = null
-        ) : Command() {
-            fun onlyTextChanged() = style == null && color == null && text != null
-        }
+            val color: String? = null,
+            val marks: List<Text.Mark>? = null
+        ) : Command()
 
         /**
          * Command to update link.

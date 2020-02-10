@@ -78,4 +78,8 @@ class BlockMiddleware(
     override suspend fun unlink(command: CommandEntity.Unlink) {
         middleware.unlink(command)
     }
+
+    override suspend fun merge(command: CommandEntity.Merge) {
+        middleware.merge(command)
+    }
 }

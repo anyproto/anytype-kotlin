@@ -5,10 +5,11 @@ import android.graphics.Typeface
 import android.text.Annotation
 import android.text.Editable
 import android.text.Spannable
-import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.style.*
 import com.agileburo.anytype.core_ui.widgets.text.KEY_ROUNDED
 import com.agileburo.anytype.core_ui.widgets.text.VALUE_ROUNDED
+import com.agileburo.anytype.core_utils.ext.removeSpans
 
 /**
  * Classes implementing this interface should support markup rendering.
@@ -60,7 +61,7 @@ interface Markup {
     }
 }
 
-fun Markup.toSpannable() = SpannableString(body).apply {
+fun Markup.toSpannable() = SpannableStringBuilder(body).apply {
     marks.forEach { mark ->
         when (mark.type) {
             Markup.Type.ITALIC -> setSpan(
@@ -117,9 +118,7 @@ fun Markup.toSpannable() = SpannableString(body).apply {
 }
 
 fun Editable.setMarkup(markup: Markup) {
-    getSpans(0, length, CharacterStyle::class.java).forEach { span ->
-        removeSpan(span)
-    }
+    removeSpans<CharacterStyle>()
     markup.marks.forEach { mark ->
         when (mark.type) {
             Markup.Type.ITALIC -> setSpan(
@@ -166,14 +165,13 @@ fun Editable.setMarkup(markup: Markup) {
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG
-                ).also {
-                    setSpan(
-                        Annotation(KEY_ROUNDED, VALUE_ROUNDED),
-                        mark.from,
-                        mark.to,
-                        Markup.DEFAULT_SPANNABLE_FLAG
-                    )
-                }
+                )
+                setSpan(
+                    Annotation(KEY_ROUNDED, VALUE_ROUNDED),
+                    mark.from,
+                    mark.to,
+                    Markup.DEFAULT_SPANNABLE_FLAG
+                )
             }
         }
     }

@@ -11,6 +11,7 @@ interface BlockRemote {
     suspend fun updateTextColor(command: CommandEntity.UpdateTextColor)
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun dnd(command: CommandEntity.Dnd)
+    suspend fun merge(command: CommandEntity.Merge)
     suspend fun duplicate(command: CommandEntity.Duplicate): Id
     suspend fun unlink(command: CommandEntity.Unlink)
     suspend fun getConfig(): ConfigEntity

@@ -68,14 +68,21 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         fun enableBackspaceDetector(
-            onEmptyBlockBackspaceClicked: () -> Unit
+            onEmptyBlockBackspaceClicked: () -> Unit,
+            onNonEmptyBlockBackspaceClicked: () -> Unit
         ) {
             content.setOnKeyListener(
                 BackspaceKeyDetector {
                     if (content.text.toString().isEmpty()) {
-                        content.clearTextWatchers()
-                        content.setOnKeyListener(null)
+                        // Refactoring needed, there are cases when we shouldn't clear text watchers
+                        //content.clearTextWatchers()
+                        //content.setOnKeyListener(null)
                         onEmptyBlockBackspaceClicked()
+                    } else {
+                        // Refactoring needed, there are cases when we shouldn't clear text watchers
+                        //content.clearTextWatchers()
+                        //content.setOnKeyListener(null)
+                        onNonEmptyBlockBackspaceClicked()
                     }
                 }
             )
@@ -100,6 +107,17 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             content.text?.setMarkup(markup)
         }
 
+        fun setupTextWatcher(
+            onTextChanged: (String, Editable) -> Unit,
+            item: BlockView
+        ) {
+            content.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
+                }
+            )
+        }
+
         private fun focus() {
             content.apply {
                 postDelayed(
@@ -114,19 +132,27 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             item: BlockView
         ) = payloads.forEach { payload ->
 
-            Timber.d("Processing $payload")
+            Timber.d("Processing $payload for new view:\n$item")
 
             if (item is BlockView.Text) {
                 if (payload.changes.contains(TEXT_CHANGED))
-                    if (content.text.toString() != item.text)
-                        content.setText(item.text)
+                    if (content.text.toString() != item.text) {
+                        Timber.d("Text changed.\nBefore:${content.text.toString()}\nAfter:${item.text}")
+                        content.pauseTextWatchers {
+                            if (item is Markup)
+                                content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
+                        }
+                    }
 
                 if (payload.changes.contains(TEXT_COLOR_CHANGED))
                     item.color?.let { setTextColor(it) }
             }
 
             if (item is Markup) {
-                if (payload.changes.contains(MARKUP_CHANGED))
+                if (payload.changes.contains(MARKUP_CHANGED) && !payload.changes.contains(
+                        TEXT_CHANGED
+                    )
+                )
                     setMarkup(item)
             }
 
@@ -155,10 +181,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 content.setLinksClickable()
             }
 
-            if (item.marks.isNotEmpty())
-                content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
-            else
-                content.setText(item.text)
+            content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
 
             if (item.color != null) {
                 setTextColor(item.color)
@@ -168,11 +191,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             setFocus(item)
 
-            content.addTextChangedListener(
-                DefaultTextWatcher { text ->
-                    onTextChanged(item.id, text)
-                }
-            )
+            setupTextWatcher(onTextChanged, item)
+
             content.setOnFocusChangeListener { _, focused ->
                 item.focused = focused
                 onFocusChanged(item.id, focused)
@@ -205,7 +225,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             )
         }
 
-        override fun enableBackspaceDetector(onEmptyBlockBackspaceClicked: () -> Unit) {}
+        override fun enableBackspaceDetector(
+            onEmptyBlockBackspaceClicked: () -> Unit,
+            onNonEmptyBlockBackspaceClicked: () -> Unit
+        ) {
+        }
     }
 
     class HeaderOne(view: View) : BlockViewHolder(view), TextHolder {

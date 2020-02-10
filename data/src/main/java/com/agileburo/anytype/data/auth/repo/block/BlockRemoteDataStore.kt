@@ -52,4 +52,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun unlink(command: CommandEntity.Unlink) {
         remote.unlink(command)
     }
+
+    override suspend fun merge(command: CommandEntity.Merge) {
+        remote.merge(command)
+    }
 }

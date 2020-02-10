@@ -67,4 +67,53 @@ object MockBlockFactory {
             children = emptyList()
         )
     )
+
+    fun makeOnePageWithThreeTextBlocks(
+        root: String,
+        firstChild: String,
+        firstChildStyle: Block.Content.Text.Style = Block.Content.Text.Style.P,
+        secondChild: String,
+        secondChildStyle: Block.Content.Text.Style = Block.Content.Text.Style.P,
+        thirdChild: String,
+        thirdChildStyle: Block.Content.Text.Style = Block.Content.Text.Style.P
+    ) = listOf(
+        Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            ),
+            children = listOf(firstChild, secondChild, thirdChild)
+        ),
+        Block(
+            id = firstChild,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = firstChildStyle
+            ),
+            children = emptyList()
+        ),
+        Block(
+            id = secondChild,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = secondChildStyle
+            ),
+            children = emptyList()
+        ),
+        Block(
+            id = thirdChild,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = thirdChildStyle
+            ),
+            children = emptyList()
+        )
+    )
 }

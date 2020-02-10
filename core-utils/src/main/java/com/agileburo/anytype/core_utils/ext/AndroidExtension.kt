@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.net.Uri
 import android.provider.MediaStore
+import android.text.Editable
 import android.text.Spanned
 import android.view.TouchDelegate
 import android.view.View
@@ -79,4 +80,11 @@ private fun expandViewHitArea(parent: View, child: View) {
 fun <T> hasSpan(spanned: Spanned, clazz: Class<T>): Boolean {
     val limit = spanned.length
     return spanned.nextSpanTransition(0, limit, clazz) < limit
+}
+
+inline fun <reified T> Editable.removeSpans() {
+    val allSpans = getSpans(0, length, T::class.java)
+    for (span in allSpans) {
+        removeSpan(span)
+    }
 }

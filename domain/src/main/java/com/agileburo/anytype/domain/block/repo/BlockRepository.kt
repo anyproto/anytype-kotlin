@@ -9,6 +9,7 @@ interface BlockRepository {
     suspend fun duplicate(command: Command.Duplicate): Id
     suspend fun unlink(command: Command.Unlink)
     suspend fun create(command: Command.Create)
+    suspend fun merge(command: Command.Merge)
     suspend fun updateText(command: Command.UpdateText)
     suspend fun updateTextStyle(command: Command.UpdateStyle)
     suspend fun updateTextColor(command: Command.UpdateTextColor)

@@ -76,6 +76,9 @@ class PageViewModelTest {
     @Mock
     lateinit var removeLinkMark: RemoveLinkMark
 
+    @Mock
+    lateinit var mergeBlocks: MergeBlocks
+
     private lateinit var vm: PageViewModel
 
     @Before
@@ -2245,6 +2248,118 @@ class PageViewModelTest {
     }
 
     @Test
+    fun `should not proceed with merging page title with the first paragraph on non-empty-block-backspace-pressed event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val firstChild = MockDataFactory.randomUuid()
+        val secondChild = MockDataFactory.randomUuid()
+
+        val page = MockBlockFactory.makeOnePageWithTwoTextBlocks(
+            root = root,
+            firstChild = firstChild,
+            secondChild = secondChild,
+            firstChildStyle = Block.Content.Text.Style.TITLE,
+            secondChildStyle = Block.Content.Text.Style.P
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onBlockFocusChanged(
+            id = secondChild,
+            hasFocus = true
+        )
+
+        vm.onNonEmptyBlockBackspaceClicked(
+            id = secondChild
+        )
+
+        verify(mergeBlocks, never()).invoke(
+            scope = any(),
+            params = any(),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should proceed with merging the first paragraph with the second on non-empty-block-backspace-pressed event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val firstChild = MockDataFactory.randomUuid()
+        val secondChild = MockDataFactory.randomUuid()
+        val thirdChild = MockDataFactory.randomUuid()
+
+        val page = MockBlockFactory.makeOnePageWithThreeTextBlocks(
+            root = root,
+            firstChild = firstChild,
+            secondChild = secondChild,
+            thirdChild = thirdChild,
+            firstChildStyle = Block.Content.Text.Style.TITLE,
+            secondChildStyle = Block.Content.Text.Style.P,
+            thirdChildStyle = Block.Content.Text.Style.P
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        vm.onBlockFocusChanged(
+            id = thirdChild,
+            hasFocus = true
+        )
+
+        vm.onNonEmptyBlockBackspaceClicked(
+            id = thirdChild
+        )
+
+        verify(mergeBlocks, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                MergeBlocks.Params(
+                    context = root,
+                    pair = Pair(secondChild, thirdChild)
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
     fun `should turn a list item with empty text into a paragraph on endline-enter-pressed event`() {
 
         val root = MockDataFactory.randomUuid()
@@ -2369,7 +2484,8 @@ class PageViewModelTest {
             updateTextStyle = updateTextStyle,
             updateTextColor = updateTextColor,
             updateLinkMarks = updateLinkMark,
-            removeLinkMark = removeLinkMark
+            removeLinkMark = removeLinkMark,
+            mergeBlocks = mergeBlocks
         )
     }
 }

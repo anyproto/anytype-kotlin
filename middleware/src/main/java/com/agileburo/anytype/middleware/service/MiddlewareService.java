@@ -47,5 +47,7 @@ public interface MiddlewareService {
 
     Block.Unlink.Response blockUnlink(Block.Unlink.Request request) throws Exception;
 
+    Block.Merge.Response blockMerge(Block.Merge.Request request) throws Exception;
+
     BlockList.Duplicate.Response blockListDuplicate(BlockList.Duplicate.Request request) throws Exception;
 }

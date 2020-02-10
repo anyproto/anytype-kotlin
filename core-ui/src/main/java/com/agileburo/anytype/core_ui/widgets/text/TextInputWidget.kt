@@ -6,6 +6,7 @@ import android.text.util.Linkify
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
 import com.agileburo.anytype.core_ui.extensions.toast
+import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
 
@@ -36,6 +37,24 @@ class TextInputWidget : AppCompatEditText {
     fun clearTextWatchers() {
         watchers.forEach { super.removeTextChangedListener(it) }
         watchers.clear()
+    }
+
+    fun pauseTextWatchers(block: () -> Unit) = synchronized(this) {
+        lockTextWatchers()
+        block()
+        unlockTextWatchers()
+    }
+
+    private fun lockTextWatchers() {
+        watchers.forEach { watcher ->
+            if (watcher is DefaultTextWatcher) watcher.lock()
+        }
+    }
+
+    private fun unlockTextWatchers() {
+        watchers.forEach { watcher ->
+            if (watcher is DefaultTextWatcher) watcher.unlock()
+        }
     }
 
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {

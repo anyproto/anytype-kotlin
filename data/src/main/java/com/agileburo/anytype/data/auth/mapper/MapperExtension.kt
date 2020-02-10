@@ -263,6 +263,11 @@ fun Command.Duplicate.toEntity(): CommandEntity.Duplicate = CommandEntity.Duplic
     original = original
 )
 
+fun Command.Merge.toEntity(): CommandEntity.Merge = CommandEntity.Merge(
+    context = context,
+    pair = pair
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }
@@ -311,7 +316,8 @@ fun EventEntity.toDomain(): Event {
                     Block.Content.Text.Style.valueOf(style.name)
                 else
                     null,
-                color = color
+                color = color,
+                marks = marks?.map { it.toDomain() }
             )
         }
         is EventEntity.Command.LinkGranularChange -> {

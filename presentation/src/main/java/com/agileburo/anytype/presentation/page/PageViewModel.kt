@@ -44,7 +44,8 @@ class PageViewModel(
     private val updateTextStyle: UpdateTextStyle,
     private val updateTextColor: UpdateTextColor,
     private val updateLinkMarks: UpdateLinkMarks,
-    private val removeLinkMark: RemoveLinkMark
+    private val removeLinkMark: RemoveLinkMark,
+    private val mergeBlocks: MergeBlocks
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -113,7 +114,6 @@ class PageViewModel(
     }
 
     private fun handleEvents(events: List<Event>) {
-        var rerender = true
 
         events.forEach { event ->
             Timber.d("Handling event: $event")
@@ -137,23 +137,25 @@ class PageViewModel(
                     blocks = blocks.filter { it.id != event.target }
                 }
                 is Event.Command.GranularChange -> {
-                    if (event.onlyTextChanged()) rerender = false
                     blocks = blocks.map { block ->
-                        if (block.id == event.id)
+                        if (block.id == event.id) {
+                            val content = block.content.asText()
                             block.copy(
-                                content = block.content.asText().copy(
-                                    style = event.style ?: block.textStyle(),
-                                    color = event.color ?: block.textColor()
+                                content = content.copy(
+                                    style = event.style ?: content.style,
+                                    color = event.color ?: content.color,
+                                    text = event.text ?: content.text,
+                                    marks = event.marks ?: content.marks
                                 )
                             )
-                        else
+                        } else
                             block
                     }
                 }
             }
         }
 
-        if (rerender) viewModelScope.launch { renderingChannel.send(blocks) }
+        viewModelScope.launch { renderingChannel.send(blocks) }
     }
 
     private fun processMarkupChanges() {
@@ -401,8 +403,7 @@ class PageViewModel(
     }
 
     fun onTextChanged(id: String, text: String, marks: List<Block.Content.Text.Mark>) {
-        Timber.d("onTextChanged: $id")
-        Timber.d("With the following: $text")
+        Timber.d("onTextChanged: $id\nNew text: $text\nMarks: $marks")
         viewModelScope.launch { textChannel.send(Triple(id, text, marks)) }
     }
 
@@ -429,6 +430,32 @@ class PageViewModel(
         blocks.find { it.id == id }?.let { target ->
             if (!target.content.asText().isTitle())
                 proceedWithUnlinking(target = id)
+        }
+    }
+
+    fun onNonEmptyBlockBackspaceClicked(id: String) {
+        val page = blocks.first { it.id == pageId }
+        val index = page.children.indexOf(id)
+        if (index > 1) {
+            val previous = page.children[index.dec()]
+            proceedWithMergingBlocks(previous, id)
+        } else {
+            Timber.d("Skipping merge on non-empty-block-backspace-pressed event")
+        }
+    }
+
+    private fun proceedWithMergingBlocks(id: String, previous: String) {
+        mergeBlocks.invoke(
+            scope = viewModelScope,
+            params = MergeBlocks.Params(
+                context = pageId,
+                pair = Pair(id, previous)
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while merging blocks: $id, $previous") },
+                fnR = { Timber.d("Succesfully merged $id and $previous") }
+            )
         }
     }
 

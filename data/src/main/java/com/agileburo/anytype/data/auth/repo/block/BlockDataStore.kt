@@ -12,6 +12,7 @@ interface BlockDataStore {
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun dnd(command: CommandEntity.Dnd)
     suspend fun duplicate(command: CommandEntity.Duplicate): Id
+    suspend fun merge(command: CommandEntity.Merge)
     suspend fun unlink(command: CommandEntity.Unlink)
     suspend fun getConfig(): ConfigEntity
     suspend fun createPage(parentId: String): String

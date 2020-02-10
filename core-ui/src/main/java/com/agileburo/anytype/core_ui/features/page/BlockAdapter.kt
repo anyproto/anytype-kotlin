@@ -43,7 +43,7 @@ class BlockAdapter(
     private val onEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onNonEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onSplitLineEnterClicked: (String) -> Unit,
-    private val onEndLineEnterClicked: (String) -> Unit
+    private val onEndLineEnterClicked: (String, Editable) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -363,8 +363,8 @@ class BlockAdapter(
 
         if (holder is BlockViewHolder.TextHolder) {
             holder.enableEnterKeyDetector(
-                onEndLineEnterClicked = {
-                    onEndLineEnterClicked(blocks[holder.adapterPosition].id)
+                onEndLineEnterClicked = { editable ->
+                    onEndLineEnterClicked(blocks[holder.adapterPosition].id, editable)
                 },
                 onSplitLineEnterClicked = {
                     onSplitLineEnterClicked(blocks[holder.adapterPosition].id)

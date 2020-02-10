@@ -8,6 +8,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar
 import com.agileburo.anytype.core_utils.common.EventWrapper
+import com.agileburo.anytype.core_utils.ext.replace
 import com.agileburo.anytype.core_utils.ext.withLatestFrom
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.block.interactor.*
@@ -463,12 +464,23 @@ class PageViewModel(
         // TODO
     }
 
-    fun onEndLineEnterClicked(id: String) {
+    fun onEndLineEnterClicked(
+        id: String,
+        text: String,
+        marks: List<Block.Content.Text.Mark>
+    ) {
         Timber.d("On endline enter clicked")
 
         val target = blocks.first { it.id == id }
 
-        val content = target.content<Block.Content.Text>()
+        val content = target.content<Block.Content.Text>().copy(
+            text = text,
+            marks = marks
+        )
+
+        blocks = blocks.replace(
+            replacement = { old -> old.copy(content = content) }
+        ) { block -> block.id == id }
 
         if (content.isList()) {
             handleEndlineEnterPressedEventForListItem(content, id)

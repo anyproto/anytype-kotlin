@@ -69,7 +69,13 @@ class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInter
             onCheckboxClicked = vm::onCheckboxClicked,
             onFocusChanged = vm::onBlockFocusChanged,
             onSplitLineEnterClicked = vm::onSplitLineEnterClicked,
-            onEndLineEnterClicked = vm::onEndLineEnterClicked,
+            onEndLineEnterClicked = { id, editable ->
+                vm.onEndLineEnterClicked(
+                    id = id,
+                    text = editable.toString(),
+                    marks = editable.extractMarks()
+                )
+            },
             onEmptyBlockBackspaceClicked = vm::onEmptyBlockBackspaceClicked,
             onNonEmptyBlockBackspaceClicked = vm::onNonEmptyBlockBackspaceClicked
         )

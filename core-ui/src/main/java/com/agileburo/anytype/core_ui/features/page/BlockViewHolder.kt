@@ -56,13 +56,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val content: TextInputWidget
 
         fun enableEnterKeyDetector(
-            onEndLineEnterClicked: () -> Unit,
+            onEndLineEnterClicked: (Editable) -> Unit,
             onSplitLineEnterClicked: () -> Unit
         ) {
             content.filters = arrayOf(
                 DefaultEnterKeyDetector(
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onEndLineEnterClicked = onEndLineEnterClicked
+                    onEndLineEnterClicked = { onEndLineEnterClicked(content.editableText) }
                 )
             )
         }

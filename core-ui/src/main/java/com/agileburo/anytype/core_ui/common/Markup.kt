@@ -120,9 +120,6 @@ fun Editable.setMarkup(markup: Markup) {
     getSpans(0, length, CharacterStyle::class.java).forEach { span ->
         removeSpan(span)
     }
-    getSpans(0, length, Annotation::class.java).forEach { span ->
-        removeSpan(span)
-    }
     markup.marks.forEach { mark ->
         when (mark.type) {
             Markup.Type.ITALIC -> setSpan(

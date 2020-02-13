@@ -238,4 +238,44 @@ class BlockViewDiffUtilTest {
 
         assertNull(actual = payload)
     }
+
+    @Test
+    fun `there should a number change detected`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val text = MockDataFactory.randomString()
+
+        val oldBlock = BlockView.Numbered(
+            id = id,
+            text = text,
+            marks = emptyList(),
+            number = "1",
+            focused = MockDataFactory.randomBoolean(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            number = "2"
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.NUMBER_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
 }

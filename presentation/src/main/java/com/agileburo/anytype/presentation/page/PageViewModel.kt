@@ -288,12 +288,17 @@ class PageViewModel(
         viewModelScope.launch {
             renderings.withLatestFrom(focusChanges) { models, focus ->
 
-                Timber.d("Preparing views for focus: $focus")
+                val render = models.asMap().asRender(pageId)
 
-                models.asMap().asRender(pageId).mapNotNull { block ->
+                val numbers = render.numbers()
+
+                render.mapNotNull { block ->
                     when (block.content) {
                         is Block.Content.Text -> {
-                            block.toView(focused = block.id == focus)
+                            block.toView(
+                                focused = block.id == focus,
+                                numbers = numbers
+                            )
                         }
                         is Block.Content.Image -> {
                             block.toView()
@@ -301,6 +306,7 @@ class PageViewModel(
                         else -> null
                     }
                 }
+
             }.collect { dispatchToUI(it) }
         }
     }

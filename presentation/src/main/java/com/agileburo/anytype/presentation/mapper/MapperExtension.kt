@@ -7,7 +7,10 @@ import com.agileburo.anytype.domain.block.model.Block.Content.Text.Style
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
 import com.agileburo.anytype.presentation.desktop.DashboardView
 
-fun Block.toView(focused: Boolean = false): BlockView = when (val content = this.content) {
+fun Block.toView(
+    focused: Boolean = false,
+    numbers: Map<String, Int> = emptyMap()
+): BlockView = when (val content = this.content) {
     is Block.Content.Text -> {
         when (content.style) {
             Style.P -> BlockView.Paragraph(
@@ -55,7 +58,8 @@ fun Block.toView(focused: Boolean = false): BlockView = when (val content = this
             Style.NUMBERED -> BlockView.Numbered(
                 id = id,
                 text = content.text,
-                number = "0",
+                number = numbers[id].toString(),
+                focused = focused,
                 indent = 0
             )
             Style.CHECKBOX -> BlockView.Checkbox(

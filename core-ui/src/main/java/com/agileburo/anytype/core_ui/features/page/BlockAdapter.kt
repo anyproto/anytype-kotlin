@@ -265,6 +265,12 @@ class BlockAdapter(
                         item = blocks[position] as BlockView.Title
                     )
                 }
+                is BlockViewHolder.Numbered -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
                 else -> TODO()
             }
     }
@@ -336,7 +342,10 @@ class BlockAdapter(
             }
             is BlockViewHolder.Numbered -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Numbered
+                    item = blocks[position] as BlockView.Numbered,
+                    onTextChanged = onTextChanged,
+                    onSelectionChanged = onSelectionChanged,
+                    onFocusChanged = onFocusChanged
                 )
             }
             is BlockViewHolder.Toggle -> {

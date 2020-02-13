@@ -4,9 +4,7 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.common.MockDataFactory
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertSame
 
 class BlockExtensionTest {
 
@@ -726,5 +724,108 @@ class BlockExtensionTest {
         val result = block.getFirstLinkMarkupParam(range)
 
         assertNull(result)
+    }
+
+    @Test
+    fun `should return map with numbered list data`() {
+
+        val blocks = listOf(
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.TITLE,
+                    marks = emptyList()
+                ),
+                children = emptyList()
+            ),
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.NUMBERED,
+                    marks = emptyList()
+                ),
+                children = emptyList()
+            ),
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.NUMBERED,
+                    marks = emptyList()
+                ),
+                children = emptyList()
+            ),
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.NUMBERED,
+                    marks = emptyList()
+                ),
+                children = emptyList()
+            ),
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.TITLE,
+                    marks = emptyList()
+                ),
+                children = emptyList()
+            ),
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.NUMBERED,
+                    marks = emptyList()
+                ),
+                children = emptyList()
+            ),
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.NUMBERED,
+                    marks = emptyList()
+                ),
+                children = emptyList()
+            ),
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.NUMBERED,
+                    marks = emptyList()
+                ),
+                children = emptyList()
+            )
+        )
+
+        val numbers = blocks.numbers()
+
+        val expected = mapOf(
+            blocks[1].id to 1,
+            blocks[2].id to 2,
+            blocks[3].id to 3,
+            blocks[5].id to 1,
+            blocks[6].id to 2,
+            blocks[7].id to 3
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = numbers
+        )
     }
 }

@@ -210,11 +210,15 @@ sealed class BlockView : ViewType {
      */
     data class Numbered(
         override val id: String,
-        val text: String,
+        override val text: String,
+        override val marks: List<Markup.Mark> = emptyList(),
+        override val focused: Boolean = false,
+        override val color: String? = null,
         val number: String,
         val indent: Int
-    ) : BlockView() {
+    ) : BlockView(), Markup, Focusable, Text {
         override fun getViewType() = HOLDER_NUMBERED
+        override val body: String = text
     }
 
     /**

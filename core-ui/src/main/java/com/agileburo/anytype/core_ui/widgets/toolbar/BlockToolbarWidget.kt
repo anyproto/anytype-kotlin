@@ -77,6 +77,9 @@ class BlockToolbarWidget : ConstraintLayout {
             Focus.Type.QUOTE -> {
                 turnIntoToggle.setImageResource(R.drawable.ic_block_toolbar_turn_into_highlight)
             }
+            Focus.Type.NUMBERED -> {
+                turnIntoToggle.setImageResource(R.drawable.ic_block_toolbar_turn_into_numbered)
+            }
         }
 
         val color = if (turnIntoToggle.isSelected)

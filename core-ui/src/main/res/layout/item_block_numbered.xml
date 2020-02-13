@@ -14,9 +14,10 @@
         android:layout_marginStart="9dp"
         tools:text="1.1" />
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/numberedListContent"
         style="@style/BlockNumberedContentStyle"
+        android:hint="@string/hint_numbered_list"
         tools:text="@string/default_text_placeholder" />
 
 </LinearLayout>

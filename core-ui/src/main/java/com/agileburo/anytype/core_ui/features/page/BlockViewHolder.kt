@@ -3,7 +3,6 @@ package com.agileburo.anytype.core_ui.features.page
 import android.graphics.Color
 import android.text.Editable
 import android.view.View
-import android.widget.TextView
 import android.widget.TextView.BufferType
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
@@ -12,6 +11,7 @@ import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.extensions.tint
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.MARKUP_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.NUMBER_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
@@ -356,20 +356,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
-
             checkbox.isSelected = item.isChecked
-
-            checkbox.setOnClickListener {
-                checkbox.isSelected = !checkbox.isSelected
-                onCheckboxClicked(item.id)
-            }
 
             if (item.marks.isLinksPresent()) {
                 content.setLinksClickable()
             }
 
             if (item.marks.isNotEmpty())
-                content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
+                content.setText(item.toSpannable(), BufferType.SPANNABLE)
             else
                 content.setText(item.text)
 
@@ -422,16 +416,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         ) {
             Timber.d("Binding bullet")
 
-            content.setOnFocusChangeListener { _, hasFocus ->
-                onFocusChanged(item.id, hasFocus)
-            }
-
             if (item.marks.isLinksPresent()) {
                 content.setLinksClickable()
             }
 
             if (item.marks.isNotEmpty())
-                content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
+                content.setText(item.toSpannable(), BufferType.SPANNABLE)
             else
                 content.setText(item.text)
 
@@ -467,14 +457,48 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Numbered(view: View) : BlockViewHolder(view) {
+    class Numbered(view: View) : BlockViewHolder(view), TextHolder {
 
         private val number = itemView.number
-        private val content = itemView.numberedListContent
+        override val content: TextInputWidget = itemView.numberedListContent
 
-        fun bind(item: BlockView.Numbered) {
+        fun bind(
+            item: BlockView.Numbered,
+            onTextChanged: (String, Editable) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit
+        ) {
             number.text = item.number
-            content.text = item.text
+
+            content.setText(item.toSpannable(), BufferType.SPANNABLE)
+
+            if (item.color != null) {
+                setTextColor(item.color)
+            } else {
+                setTextColor(content.context.color(R.color.black))
+            }
+
+            setFocus(item)
+
+            content.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
+                }
+            )
+
+            content.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
+
+            content.selectionDetector = { onSelectionChanged(item.id, it) }
+        }
+
+        override fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+            super.processChangePayload(payloads, item)
+            payloads.forEach { payload ->
+                if (payload.changes.contains(NUMBER_CHANGED))
+                    number.text = (item as BlockView.Numbered).number
+            }
         }
     }
 

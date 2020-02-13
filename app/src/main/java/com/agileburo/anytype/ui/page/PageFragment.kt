@@ -25,6 +25,7 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.Option
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_BULLETED_LIST
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_CHECKBOX
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_NUMBERED_LIST
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_ONE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_THREE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_TWO
@@ -262,6 +263,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInter
                 when (option.type) {
                     OPTION_LIST_BULLETED_LIST -> vm.onTurnIntoStyleClicked(Text.Style.BULLET)
                     OPTION_LIST_CHECKBOX -> vm.onTurnIntoStyleClicked(Text.Style.CHECKBOX)
+                    OPTION_LIST_NUMBERED_LIST -> vm.onTurnIntoStyleClicked(Text.Style.NUMBERED)
                     else -> toast(NOT_IMPLEMENTED_MESSAGE)
                 }
             }

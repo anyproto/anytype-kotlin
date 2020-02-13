@@ -54,6 +54,11 @@ class BlockViewDiffUtil(
                 changes.add(FOCUS_CHANGED)
         }
 
+        if (newBlock is BlockView.Numbered && oldBlock is BlockView.Numbered) {
+            if (newBlock.number != oldBlock.number)
+                changes.add(NUMBER_CHANGED)
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes)
         else
@@ -72,5 +77,6 @@ class BlockViewDiffUtil(
         const val MARKUP_CHANGED = 1
         const val FOCUS_CHANGED = 3
         const val TEXT_COLOR_CHANGED = 4
+        const val NUMBER_CHANGED = 5
     }
 }

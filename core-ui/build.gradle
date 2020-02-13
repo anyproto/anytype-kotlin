@@ -23,6 +23,11 @@ android {
         }
     }
 
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -45,4 +50,6 @@ dependencies {
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.robolectric
+    testImplementation unitTestDependencies.androidXTestCore
 }

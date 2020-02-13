@@ -11,6 +11,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CONTACT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FOOTER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_ONE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_THREE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_TWO
@@ -316,5 +317,17 @@ sealed class BlockView : ViewType {
         override val id: String
     ) : BlockView() {
         override fun getViewType() = HOLDER_PICTURE
+    }
+
+    /**
+     * Footer block. Just holds space at the end of the page.
+     */
+    object Footer : BlockView() {
+        override val id: String = FOOTER_ID
+        override fun getViewType() = HOLDER_FOOTER
+    }
+
+    companion object {
+        const val FOOTER_ID = "FOOTER"
     }
 }

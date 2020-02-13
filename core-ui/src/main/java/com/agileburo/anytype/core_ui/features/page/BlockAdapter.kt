@@ -13,6 +13,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CONTACT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FOOTER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_ONE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_THREE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_TWO
@@ -43,7 +44,8 @@ class BlockAdapter(
     private val onEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onNonEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onSplitLineEnterClicked: (String) -> Unit,
-    private val onEndLineEnterClicked: (String, Editable) -> Unit
+    private val onEndLineEnterClicked: (String, Editable) -> Unit,
+    private val onFooterClicked: () -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -213,6 +215,15 @@ class BlockAdapter(
                     )
                 )
             }
+            HOLDER_FOOTER -> {
+                BlockViewHolder.Footer(
+                    view = inflater.inflate(
+                        R.layout.item_block_footer,
+                        parent,
+                        false
+                    )
+                )
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -364,6 +375,9 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged
                 )
+            }
+            is BlockViewHolder.Footer -> {
+                holder.bind(onFooterClicked)
             }
         }
 

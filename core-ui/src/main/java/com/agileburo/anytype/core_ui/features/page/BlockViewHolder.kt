@@ -584,6 +584,17 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
+    class Footer(view: View) : BlockViewHolder(view) {
+
+        private val footer = itemView
+
+        fun bind(
+            onFooterClicked: () -> Unit
+        ) {
+            footer.setOnClickListener { onFooterClicked() }
+        }
+    }
+
     companion object {
         const val HOLDER_PARAGRAPH = 0
         const val HOLDER_TITLE = 1
@@ -603,6 +614,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_PICTURE = 15
         const val HOLDER_DIVIDER = 16
         const val HOLDER_HIGHLIGHT = 17
+        const val HOLDER_FOOTER = 18
 
         const val FOCUS_TIMEOUT_MILLIS = 60L
     }

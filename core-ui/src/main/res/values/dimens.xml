@@ -78,4 +78,6 @@
     <dimen name="roundedTextBorderRadius">4dp</dimen>
     <dimen name="roundedTextBorderWidth">1dp</dimen>
 
+    <dimen name="footer_default_height">50dp</dimen>
+
 </resources>

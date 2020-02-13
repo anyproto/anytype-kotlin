@@ -2,6 +2,7 @@ package com.agileburo.anytype
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Build
 import android.text.Annotation
 import android.text.Editable
 import android.text.Spannable
@@ -17,7 +18,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-@Config(manifest = Config.NONE)
+@Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
 class SpanExtensionsTest {
 

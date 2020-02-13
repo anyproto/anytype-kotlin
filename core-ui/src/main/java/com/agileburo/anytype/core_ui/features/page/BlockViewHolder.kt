@@ -550,11 +550,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Page(view: View) : BlockViewHolder(view) {
 
+        private val untitled = itemView.resources.getString(R.string.untitled)
         private val icon = itemView.pageIcon
         private val title = itemView.pageTitle
 
         fun bind(item: BlockView.Page) {
-            title.text = item.text
+            title.text = item.text ?: untitled
             if (item.isEmpty)
                 icon.setImageResource(R.drawable.ic_block_empty_page)
             else if (item.emoji == null)

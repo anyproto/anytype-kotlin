@@ -31,6 +31,7 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionC
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_TWO
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HIGHLIGHTED
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_TEXT
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TOOL_PAGE
 import com.agileburo.anytype.core_utils.ext.gone
 import com.agileburo.anytype.core_utils.ext.hexColorCode
 import com.agileburo.anytype.core_utils.ext.hideSoftInput
@@ -241,6 +242,12 @@ class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInter
                 when (option.type) {
                     OPTION_LIST_BULLETED_LIST -> vm.onAddTextBlockClicked(Text.Style.BULLET)
                     OPTION_LIST_CHECKBOX -> vm.onAddTextBlockClicked(Text.Style.CHECKBOX)
+                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
+                }
+            }
+            is Option.Tool -> {
+                when (option.type) {
+                    OPTION_TOOL_PAGE -> vm.onAddNewPageClicked()
                     else -> toast(NOT_IMPLEMENTED_MESSAGE)
                 }
             }

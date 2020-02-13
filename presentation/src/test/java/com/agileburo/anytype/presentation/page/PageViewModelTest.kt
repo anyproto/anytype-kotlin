@@ -1819,8 +1819,8 @@ class PageViewModelTest {
             scope = any(),
             params = eq(
                 CreateBlock.Params(
-                    contextId = root,
-                    targetId = child,
+                    context = root,
+                    target = child,
                     position = Position.BOTTOM,
                     prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
                 )
@@ -1867,8 +1867,8 @@ class PageViewModelTest {
             scope = any(),
             params = eq(
                 CreateBlock.Params(
-                    contextId = root,
-                    targetId = "",
+                    context = root,
+                    target = "",
                     position = Position.INNER,
                     prototype = Block.Prototype.Text(
                         style = Block.Content.Text.Style.P
@@ -2130,8 +2130,8 @@ class PageViewModelTest {
             scope = any(),
             params = eq(
                 CreateBlock.Params(
-                    contextId = root,
-                    targetId = child,
+                    context = root,
+                    target = child,
                     prototype = Block.Prototype.Text(
                         style = style
                     ),
@@ -2191,8 +2191,8 @@ class PageViewModelTest {
             scope = any(),
             params = eq(
                 CreateBlock.Params(
-                    contextId = root,
-                    targetId = child,
+                    context = root,
+                    target = child,
                     prototype = Block.Prototype.Text(
                         style = style
                     ),
@@ -2252,8 +2252,8 @@ class PageViewModelTest {
             scope = any(),
             params = eq(
                 CreateBlock.Params(
-                    contextId = root,
-                    targetId = child,
+                    context = root,
+                    target = child,
                     prototype = Block.Prototype.Text(
                         style = Block.Content.Text.Style.P
                     ),
@@ -2436,6 +2436,60 @@ class PageViewModelTest {
                     target = secondChild,
                     style = Block.Content.Text.Style.P,
                     context = root
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should create a new paragraph on outside-clicked event if the last block is a link block`() {
+
+        val root = MockDataFactory.randomUuid()
+        val firstChild = MockDataFactory.randomUuid()
+        val secondChild = MockDataFactory.randomUuid()
+
+        val page = MockBlockFactory.makeOnePageWithTitleAndOnePageLinkBlock(
+            rootId = root,
+            titleBlockId = firstChild,
+            pageBlockId = secondChild
+        )
+
+        val startDelay = 100L
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(startDelay)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(startDelay)
+
+        vm.onOutsideClicked()
+
+        verify(createBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                CreateBlock.Params(
+                    target = "",
+                    context = root,
+                    position = Position.INNER,
+                    prototype = Block.Prototype.Text(
+                        style = Block.Content.Text.Style.P
+                    )
                 )
             ),
             onResult = any()

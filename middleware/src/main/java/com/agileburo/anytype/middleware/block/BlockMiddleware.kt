@@ -61,8 +61,8 @@ class BlockMiddleware(
 
     override suspend fun create(command: CommandEntity.Create) {
         middleware.createBlock(
-            command.contextId,
-            command.targetId,
+            command.context,
+            command.target,
             command.position,
             command.prototype
         )

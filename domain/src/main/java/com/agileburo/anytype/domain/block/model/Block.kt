@@ -151,5 +151,9 @@ data class Block(
         data class Text(
             val style: Content.Text.Style
         ) : Prototype()
+
+        data class Page(
+            val style: Content.Page.Style
+        ) : Prototype()
     }
 }

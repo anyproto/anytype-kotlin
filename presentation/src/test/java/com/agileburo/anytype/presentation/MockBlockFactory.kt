@@ -116,4 +116,40 @@ object MockBlockFactory {
             children = emptyList()
         )
     )
+
+    fun makeOnePageWithTitleAndOnePageLinkBlock(
+        rootId: String,
+        titleBlockId: String,
+        pageBlockId: String
+    ) = listOf(
+        Block(
+            id = rootId,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            ),
+            children = listOf(titleBlockId, pageBlockId)
+        ),
+        Block(
+            id = titleBlockId,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.TITLE
+            ),
+            children = emptyList()
+        ),
+        Block(
+            id = pageBlockId,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Link(
+                target = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                isArchived = MockDataFactory.randomBoolean(),
+                type = Block.Content.Link.Type.PAGE
+            ),
+            children = emptyList()
+        )
+    )
 }

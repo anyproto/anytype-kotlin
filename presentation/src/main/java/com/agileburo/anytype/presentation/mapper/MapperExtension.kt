@@ -82,6 +82,15 @@ fun Block.toView(
             id = id
         )
     }
+    is Block.Content.Link -> {
+        BlockView.Page(
+            id = id,
+            isEmpty = true,
+            emoji = null,
+            isArchived = content.isArchived,
+            text = if (content.fields.hasName()) content.fields.name else null
+        )
+    }
     else -> TODO()
 }
 

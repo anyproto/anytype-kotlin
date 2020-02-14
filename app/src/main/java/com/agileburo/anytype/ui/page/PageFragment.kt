@@ -14,7 +14,6 @@ import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.extensions.invisible
 import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
-import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
@@ -320,7 +319,7 @@ class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInter
     private fun render(state: PageViewModel.ViewState) {
         when (state) {
             is PageViewModel.ViewState.Success -> {
-                pageAdapter.updateWithDiffUtil(state.blocks + listOf(BlockView.Footer))
+                pageAdapter.updateWithDiffUtil(state.blocks)
             }
             is PageViewModel.ViewState.OpenLinkScreen -> {
                 LinkFragment.newInstance(

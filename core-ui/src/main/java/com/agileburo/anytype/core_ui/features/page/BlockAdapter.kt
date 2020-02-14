@@ -271,7 +271,7 @@ class BlockAdapter(
                         item = blocks[position]
                     )
                 }
-                else -> TODO()
+                else -> throw IllegalStateException("Unexpected view holder: $holder")
             }
     }
 

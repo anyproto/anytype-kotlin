@@ -178,6 +178,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
+            content.clearTextWatchers()
+
             if (item.marks.isLinksPresent()) {
                 content.setLinksClickable()
             }
@@ -215,6 +217,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
+            content.clearTextWatchers()
             content.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
             }
@@ -255,6 +258,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
+            header.clearTextWatchers()
+
             header.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
             }
@@ -285,9 +290,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
-            header.setOnFocusChangeListener { _, hasFocus ->
-                onFocusChanged(item.id, hasFocus)
-            }
+            header.clearTextWatchers()
+
             header.setText(item.text)
 
             if (item.color != null) {
@@ -301,6 +305,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onTextChanged(item.id, text)
                 }
             )
+
+            header.setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(item.id, hasFocus)
+            }
         }
     }
 
@@ -315,6 +323,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
+            header.clearTextWatchers()
+
             header.setText(item.text)
 
             if (item.color != null) {
@@ -349,6 +359,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val checkbox = itemView.checkboxIcon
         override val content: TextInputWidget = itemView.checkboxContent
 
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
+        }
+
         fun bind(
             item: BlockView.Checkbox,
             onTextChanged: (String, Editable) -> Unit,
@@ -356,6 +370,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
+            content.clearTextWatchers()
+
             checkbox.isSelected = item.isChecked
 
             if (item.marks.isLinksPresent()) {
@@ -414,7 +430,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
-            Timber.d("Binding bullet")
+            content.clearTextWatchers()
 
             if (item.marks.isLinksPresent()) {
                 content.setLinksClickable()
@@ -462,12 +478,18 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val number = itemView.number
         override val content: TextInputWidget = itemView.numberedListContent
 
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
+        }
+
         fun bind(
             item: BlockView.Numbered,
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
+            content.clearTextWatchers()
+
             number.text = item.number
 
             content.setText(item.toSpannable(), BufferType.SPANNABLE)
@@ -592,11 +614,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         override val content: TextInputWidget = itemView.highlightContent
 
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
+        }
+
         fun bind(
             item: BlockView.Highlight,
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
+            content.clearTextWatchers()
             content.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
             }

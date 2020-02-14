@@ -13,6 +13,7 @@ import com.agileburo.anytype.core_utils.ext.withLatestFrom
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.block.model.Block.Content
 import com.agileburo.anytype.domain.block.model.Block.Prototype
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
@@ -59,7 +60,7 @@ class PageViewModel(
     private val focusChannel = ConflatedBroadcastChannel(EMPTY_FOCUS_ID)
     private val focusChanges = focusChannel.asFlow()
 
-    private val textChannel = Channel<Triple<Id, String, List<Block.Content.Text.Mark>>>()
+    private val textChannel = Channel<Triple<Id, String, List<Content.Text.Mark>>>()
     private val textChanges = textChannel.consumeAsFlow()
 
     private val selectionChannel = Channel<Pair<Id, IntRange>>()
@@ -189,9 +190,9 @@ class PageViewModel(
         blockId: String, link: String, range: IntRange
     ) {
         val targetBlock = blocks.first { it.id == blockId }
-        val targetContent = targetBlock.content as Block.Content.Text
-        val linkMark = Block.Content.Text.Mark(
-            type = Block.Content.Text.Mark.Type.LINK,
+        val targetContent = targetBlock.content as Content.Text
+        val linkMark = Content.Text.Mark(
+            type = Content.Text.Mark.Type.LINK,
             range = IntRange(start = range.first, endInclusive = range.last.inc()),
             param = link
         )
@@ -227,18 +228,18 @@ class PageViewModel(
         action: MarkupAction
     ) {
         val targetBlock = blocks.first { it.id == selection.first }
-        val targetContent = targetBlock.content as Block.Content.Text
+        val targetContent = targetBlock.content as Content.Text
 
-        val mark = Block.Content.Text.Mark(
+        val mark = Content.Text.Mark(
             range = selection.second,
             type = when (action.type) {
-                Markup.Type.BOLD -> Block.Content.Text.Mark.Type.BOLD
-                Markup.Type.ITALIC -> Block.Content.Text.Mark.Type.ITALIC
-                Markup.Type.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
-                Markup.Type.TEXT_COLOR -> Block.Content.Text.Mark.Type.TEXT_COLOR
-                Markup.Type.LINK -> Block.Content.Text.Mark.Type.LINK
-                Markup.Type.BACKGROUND_COLOR -> Block.Content.Text.Mark.Type.BACKGROUND_COLOR
-                Markup.Type.KEYBOARD -> Block.Content.Text.Mark.Type.KEYBOARD
+                Markup.Type.BOLD -> Content.Text.Mark.Type.BOLD
+                Markup.Type.ITALIC -> Content.Text.Mark.Type.ITALIC
+                Markup.Type.STRIKETHROUGH -> Content.Text.Mark.Type.STRIKETHROUGH
+                Markup.Type.TEXT_COLOR -> Content.Text.Mark.Type.TEXT_COLOR
+                Markup.Type.LINK -> Content.Text.Mark.Type.LINK
+                Markup.Type.BACKGROUND_COLOR -> Content.Text.Mark.Type.BACKGROUND_COLOR
+                Markup.Type.KEYBOARD -> Content.Text.Mark.Type.KEYBOARD
             },
             param = action.param
         )
@@ -294,19 +295,19 @@ class PageViewModel(
 
                 render.mapNotNull { block ->
                     when (block.content) {
-                        is Block.Content.Text -> {
+                        is Content.Text -> {
                             block.toView(
                                 focused = block.id == focus,
                                 numbers = numbers
                             )
                         }
-                        is Block.Content.Image -> {
+                        is Content.Image -> {
                             block.toView()
                         }
+                        is Content.Link -> block.toView()
                         else -> null
                     }
                 }
-
             }.collect { dispatchToUI(it) }
         }
     }
@@ -375,7 +376,7 @@ class PageViewModel(
 
     fun onUnlinkPressed(blockId: String, range: IntRange) {
         val targetBlock = blocks.first { it.id == blockId }
-        val targetContent = targetBlock.content as Block.Content.Text
+        val targetContent = targetBlock.content as Content.Text
         val marks = targetContent.marks
 
         removeLinkMark.invoke(
@@ -409,7 +410,7 @@ class PageViewModel(
         }
     }
 
-    fun onTextChanged(id: String, text: String, marks: List<Block.Content.Text.Mark>) {
+    fun onTextChanged(id: String, text: String, marks: List<Content.Text.Mark>) {
         Timber.d("onTextChanged: $id\nNew text: $text\nMarks: $marks")
         viewModelScope.launch { textChannel.send(Triple(id, text, marks)) }
     }
@@ -473,13 +474,13 @@ class PageViewModel(
     fun onEndLineEnterClicked(
         id: String,
         text: String,
-        marks: List<Block.Content.Text.Mark>
+        marks: List<Content.Text.Mark>
     ) {
         Timber.d("On endline enter clicked")
 
         val target = blocks.first { it.id == id }
 
-        val content = target.content<Block.Content.Text>().copy(
+        val content = target.content<Content.Text>().copy(
             text = text,
             marks = marks
         )
@@ -493,20 +494,20 @@ class PageViewModel(
         } else {
             proceedWithCreatingNewTextBlock(
                 id = id,
-                style = Block.Content.Text.Style.P
+                style = Content.Text.Style.P
             )
         }
     }
 
     private fun handleEndlineEnterPressedEventForListItem(
-        content: Block.Content.Text,
+        content: Content.Text,
         id: String
     ) {
         if (content.text.isNotEmpty()) {
             proceedWithCreatingNewTextBlock(id, content.style)
         } else {
             proceedWithUpdatingTextStyle(
-                style = Block.Content.Text.Style.P,
+                style = Content.Text.Style.P,
                 target = id
             )
         }
@@ -514,14 +515,14 @@ class PageViewModel(
 
     private fun proceedWithCreatingNewTextBlock(
         id: String,
-        style: Block.Content.Text.Style,
+        style: Content.Text.Style,
         position: Position = Position.BOTTOM
     ) {
         createBlock.invoke(
             scope = viewModelScope,
             params = CreateBlock.Params(
-                contextId = pageId,
-                targetId = id,
+                context = pageId,
+                target = id,
                 position = position,
                 prototype = Prototype.Text(style = style)
             )
@@ -635,7 +636,7 @@ class PageViewModel(
         }
     }
 
-    fun onAddTextBlockClicked(style: Block.Content.Text.Style) {
+    fun onAddTextBlockClicked(style: Content.Text.Style) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
         proceedWithCreatingNewTextBlock(
             id = "",
@@ -677,12 +678,12 @@ class PageViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnColorToolbarToggleClicked)
     }
 
-    fun onTurnIntoStyleClicked(style: Block.Content.Text.Style) {
+    fun onTurnIntoStyleClicked(style: Content.Text.Style) {
         proceedWithUpdatingTextStyle(style, focusChannel.value)
     }
 
     private fun proceedWithUpdatingTextStyle(
-        style: Block.Content.Text.Style,
+        style: Content.Text.Style,
         target: String
     ) {
         updateTextStyle.invoke(
@@ -703,9 +704,20 @@ class PageViewModel(
     fun onOutsideClicked() {
         blocks.first { it.id == pageId }.let { page ->
             if (page.children.isNotEmpty()) {
-                val lastBlock = blocks.first { it.id == page.children.last() }
-                if (lastBlock.content is Block.Content.Text && lastBlock.content.asText().isTitle())
-                    addNewBlockAtTheEnd()
+                val last = blocks.first { it.id == page.children.last() }
+                when (val content = last.content) {
+                    is Content.Text -> {
+                        if (content.style == Content.Text.Style.TITLE) {
+                            addNewBlockAtTheEnd()
+                        }
+                    }
+                    is Content.Link -> {
+                        addNewBlockAtTheEnd()
+                    }
+                    else -> {
+                        Timber.d("Outside-click has been ignored.")
+                    }
+                }
             }
         }
     }
@@ -718,11 +730,30 @@ class PageViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
     }
 
+    fun onAddNewPageClicked() {
+
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
+
+        val params = CreateBlock.Params(
+            context = pageId,
+            position = Position.BOTTOM,
+            target = focusChannel.value,
+            prototype = Prototype.Page(style = Content.Page.Style.EMPTY)
+        )
+
+        createBlock.invoke(scope = viewModelScope, params = params) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while creating new page with params: $params") },
+                fnR = { Timber.d("Page created!") }
+            )
+        }
+    }
+
     private fun addNewBlockAtTheEnd() {
         proceedWithCreatingNewTextBlock(
             id = "",
             position = Position.INNER,
-            style = Block.Content.Text.Style.P
+            style = Content.Text.Style.P
         )
     }
 

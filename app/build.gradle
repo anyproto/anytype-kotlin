@@ -122,11 +122,13 @@ dependencies {
 
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.robolectric
 
     //Acceptance tests dependencies
     androidTestImplementation acceptanceTesting.espressoCore
     androidTestImplementation acceptanceTesting.androidJUnit
     androidTestImplementation acceptanceTesting.testRules
+
 }
 
 apply plugin: 'com.google.gms.google-services'

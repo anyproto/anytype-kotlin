@@ -724,7 +724,8 @@ class BlockAdapterTest {
             onTextChanged = onTextChanged,
             onCheckboxClicked = {},
             onFocusChanged = onFocusChanged,
-            onSelectionChanged = { _, _ -> }
+            onSelectionChanged = { _, _ -> },
+            onFooterClicked = {}
         )
     }
 }

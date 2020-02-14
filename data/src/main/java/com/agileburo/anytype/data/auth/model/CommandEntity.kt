@@ -31,8 +31,8 @@ class CommandEntity {
     )
 
     class Create(
-        val contextId: String,
-        val targetId: String,
+        val context: String,
+        val target: String,
         val position: PositionEntity,
         val prototype: BlockEntity.Prototype
     )

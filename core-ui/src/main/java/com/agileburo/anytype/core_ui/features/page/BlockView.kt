@@ -275,7 +275,7 @@ sealed class BlockView : ViewType {
      */
     data class Page(
         override val id: String,
-        val text: String,
+        val text: String? = null,
         val emoji: String?,
         val isEmpty: Boolean = false,
         val isArchived: Boolean = false

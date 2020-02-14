@@ -288,87 +288,6 @@ public class Middleware {
             PositionEntity position,
             BlockEntity.Prototype prototype
     ) throws Exception {
-        Models.Block.Content.Text contentModel = null;
-
-        if (prototype instanceof BlockEntity.Prototype.Text) {
-
-            BlockEntity.Content.Text.Style style = ((BlockEntity.Prototype.Text) prototype).getStyle();
-
-            switch (style) {
-                case P:
-                    contentModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Paragraph)
-                            .build();
-                    break;
-                case H1:
-                    contentModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Header1)
-                            .build();
-                    break;
-                case H2:
-                    contentModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Header2)
-                            .build();
-                    break;
-                case H3:
-                    contentModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Header3)
-                            .build();
-                    break;
-                case H4:
-                    throw new IllegalStateException("Unexpected prototype text style");
-                case TITLE:
-                    contentModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Title)
-                            .build();
-                    break;
-                case QUOTE:
-                    contentModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Quote)
-                            .build();
-                    break;
-                case CODE_SNIPPET:
-                    contentModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Code)
-                            .build();
-                    break;
-                case BULLET:
-                    contentModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Marked)
-                            .build();
-                    break;
-                case CHECKBOX:
-                    contentModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Checkbox)
-                            .build();
-                    break;
-                case NUMBERED:
-                    contentModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Numbered)
-                            .build();
-                    break;
-                case TOGGLE:
-                    contentModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Toggle)
-                            .build();
-                    break;
-            }
-        }
-
-        if (contentModel == null) {
-            throw new IllegalStateException("Could not create content from the given prototype");
-        }
 
         Models.Block.Position positionModel = null;
 
@@ -393,10 +312,107 @@ public class Middleware {
                 break;
         }
 
-        Models.Block blockModel = Models.Block
-                .newBuilder()
-                .setText(contentModel)
-                .build();
+        Models.Block.Content.Text textBlockModel = null;
+        Models.Block.Content.Page pageBlockModel = null;
+
+        if (prototype instanceof BlockEntity.Prototype.Text) {
+
+            BlockEntity.Content.Text.Style style = ((BlockEntity.Prototype.Text) prototype).getStyle();
+
+            switch (style) {
+                case P:
+                    textBlockModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Paragraph)
+                            .build();
+                    break;
+                case H1:
+                    textBlockModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Header1)
+                            .build();
+                    break;
+                case H2:
+                    textBlockModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Header2)
+                            .build();
+                    break;
+                case H3:
+                    textBlockModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Header3)
+                            .build();
+                    break;
+                case H4:
+                    throw new IllegalStateException("Unexpected prototype text style");
+                case TITLE:
+                    textBlockModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Title)
+                            .build();
+                    break;
+                case QUOTE:
+                    textBlockModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Quote)
+                            .build();
+                    break;
+                case CODE_SNIPPET:
+                    textBlockModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Code)
+                            .build();
+                    break;
+                case BULLET:
+                    textBlockModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Marked)
+                            .build();
+                    break;
+                case CHECKBOX:
+                    textBlockModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Checkbox)
+                            .build();
+                    break;
+                case NUMBERED:
+                    textBlockModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Numbered)
+                            .build();
+                    break;
+                case TOGGLE:
+                    textBlockModel = Models.Block.Content.Text
+                            .newBuilder()
+                            .setStyle(Models.Block.Content.Text.Style.Toggle)
+                            .build();
+                    break;
+            }
+        } else if (prototype instanceof BlockEntity.Prototype.Page) {
+            pageBlockModel = Models.Block.Content.Page
+                    .newBuilder()
+                    .setStyle(Models.Block.Content.Page.Style.Empty)
+                    .build();
+        }
+
+        Models.Block blockModel = null;
+
+        if (textBlockModel != null) {
+            blockModel = Models.Block
+                    .newBuilder()
+                    .setText(textBlockModel)
+                    .build();
+        } else if (pageBlockModel != null) {
+            blockModel = Models.Block
+                    .newBuilder()
+                    .setPage(pageBlockModel)
+                    .build();
+        }
+
+        if (blockModel == null) {
+            throw new IllegalStateException("Could not create content from the following prototype: " + prototype.toString());
+        }
 
         Block.Create.Request request = Block.Create.Request
                 .newBuilder()

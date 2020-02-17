@@ -271,6 +271,24 @@ class BlockAdapter(
                         item = blocks[position]
                     )
                 }
+                is BlockViewHolder.HeaderOne -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.HeaderTwo -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.HeaderThree -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
                 else -> throw IllegalStateException("Unexpected view holder: $holder")
             }
     }

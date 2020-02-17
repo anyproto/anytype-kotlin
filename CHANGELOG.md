@@ -1,18 +1,17 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.19 (WIP)
+## Version 0.0.19
 
 ### New features 🚀
 
 * Allow users to create numbered lists (nested lists are not supported) (#156)
+* Allow users to create a sub-page (navigation is not supported) (#214)
 
 ### Fixes & tech 🚒
 
-
-
-### Middleware ⚙️
-
-
+* Fix: Text watcher is not always removed when the corresponding block is deleted (#221)
+* Testing: added basic unit testing for BlockAdapter (#220)
+* Testing: added first UI tests for editor/page (#208)
 
 ## Version 0.0.18
 

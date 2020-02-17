@@ -1,9 +1,6 @@
-package com.agileburo.anytype;
+package com.agileburo.anytype.utils;
 
 import android.view.View;
-
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 
 import androidx.annotation.IdRes;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +9,9 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.espresso.util.HumanReadables;
+
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 
 public class TestUtils {
 

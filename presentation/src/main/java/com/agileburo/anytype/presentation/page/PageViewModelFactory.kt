@@ -7,7 +7,7 @@ import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.OpenPage
 
-class PageViewModelFactory(
+open class PageViewModelFactory(
     private val openPage: OpenPage,
     private val closePage: ClosePage,
     private val updateBlock: UpdateBlock,

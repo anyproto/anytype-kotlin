@@ -13,7 +13,7 @@ import com.agileburo.anytype.domain.common.Id
  * Use-case for creating a block.
  * @see Params
  */
-class CreateBlock(
+open class CreateBlock(
     private val repo: BlockRepository
 ) : BaseUseCase<Unit, Params>() {
 

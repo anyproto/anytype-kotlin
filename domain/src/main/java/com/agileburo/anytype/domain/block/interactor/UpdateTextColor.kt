@@ -9,7 +9,7 @@ import com.agileburo.anytype.domain.common.Id
 /**
  * Use-case for updating the whole block's text color.
  */
-class UpdateTextColor(
+open class UpdateTextColor(
     private val repo: BlockRepository
 ) : BaseUseCase<Unit, UpdateTextColor.Params>() {
 

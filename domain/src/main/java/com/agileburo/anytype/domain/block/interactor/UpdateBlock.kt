@@ -6,7 +6,7 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 
-class UpdateBlock(
+open class UpdateBlock(
     private val repo: BlockRepository
 ) : BaseUseCase<Unit, UpdateBlock.Params>() {
 

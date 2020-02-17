@@ -10,7 +10,7 @@ import com.agileburo.anytype.domain.common.Id
  * Use-case for block duplication.
  * Should return id of the new block.
  */
-class DuplicateBlock(private val repo: BlockRepository) :
+open class DuplicateBlock(private val repo: BlockRepository) :
     BaseUseCase<Id, DuplicateBlock.Params>() {
 
     override suspend fun run(params: Params) = try {

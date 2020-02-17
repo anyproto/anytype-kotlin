@@ -5,7 +5,7 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 
-class UpdateCheckbox(
+open class UpdateCheckbox(
     private val repo: BlockRepository
 ) : BaseUseCase<Unit, UpdateCheckbox.Params>() {
 

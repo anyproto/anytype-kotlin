@@ -10,7 +10,7 @@ import com.agileburo.anytype.domain.common.Id
 /**
  * Use-case for udpating a block's text style
  */
-class UpdateTextStyle(
+open class UpdateTextStyle(
     private val repo: BlockRepository
 ) : BaseUseCase<Unit, UpdateTextStyle.Params>() {
 

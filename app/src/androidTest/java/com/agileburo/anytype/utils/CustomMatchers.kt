@@ -1,4 +1,4 @@
-package com.agileburo.anytype
+package com.agileburo.anytype.utils
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

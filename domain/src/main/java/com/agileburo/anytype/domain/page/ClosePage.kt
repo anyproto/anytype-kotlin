@@ -10,7 +10,7 @@ import com.agileburo.anytype.domain.page.ClosePage.Params
  * Use-case for closing a page by id.
  * @see Params
  */
-class ClosePage(
+open class ClosePage(
     private val repo: BlockRepository
 ) : BaseUseCase<Unit, Params>() {
 

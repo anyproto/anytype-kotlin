@@ -10,7 +10,7 @@ import com.agileburo.anytype.domain.ext.rangeIntersection
  * with given range.
  */
 
-class RemoveLinkMark : BaseUseCase<List<Block.Content.Text.Mark>, RemoveLinkMark.Params>() {
+open class RemoveLinkMark : BaseUseCase<List<Block.Content.Text.Mark>, RemoveLinkMark.Params>() {
 
     override suspend fun run(params: Params): Either<Throwable, List<Block.Content.Text.Mark>> =
         try {

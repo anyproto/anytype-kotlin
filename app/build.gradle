@@ -97,6 +97,7 @@ dependencies {
 
     //Application dependencies
     implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutines
     implementation applicationDependencies.navigation
     implementation applicationDependencies.navigationUi
     implementation applicationDependencies.appcompat
@@ -125,10 +126,16 @@ dependencies {
     testImplementation unitTestDependencies.robolectric
 
     //Acceptance tests dependencies
+    androidTestImplementation acceptanceTesting.mockitoAndroid
+    androidTestImplementation unitTestDependencies.mockitoKotlin
     androidTestImplementation acceptanceTesting.espressoCore
+    androidTestImplementation acceptanceTesting.espressoContrib
     androidTestImplementation acceptanceTesting.androidJUnit
     androidTestImplementation acceptanceTesting.testRules
+    androidTestImplementation acceptanceTesting.disableAnimation
+    androidTestImplementation unitTestDependencies.coroutineTesting
 
+    debugImplementation acceptanceTesting.fragmentTesting
 }
 
 apply plugin: 'com.google.gms.google-services'

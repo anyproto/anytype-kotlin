@@ -12,7 +12,7 @@ import kotlin.coroutines.CoroutineContext
  * @property channel event channel
  * @property context coroutine context for this event channel
  */
-class InterceptEvents(
+open class InterceptEvents(
     private val context: CoroutineContext,
     private val channel: EventChannel
 ) : FlowUseCase<List<Event>, InterceptEvents.Params>() {

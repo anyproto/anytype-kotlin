@@ -55,7 +55,13 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInteractionListener {
+open class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInteractionListener {
+
+    private val vm by lazy {
+        ViewModelProviders
+            .of(this, factory)
+            .get(PageViewModel::class.java)
+    }
 
     private val pageAdapter by lazy {
         BlockAdapter(
@@ -84,18 +90,11 @@ class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInter
         )
     }
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(PageViewModel::class.java)
-    }
-
     @Inject
     lateinit var factory: PageViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         vm.open(requireArguments().getString(ID_KEY, ID_EMPTY_VALUE))
         requireActivity()
             .onBackPressedDispatcher

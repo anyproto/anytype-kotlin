@@ -72,13 +72,12 @@ class PageViewModel(
     /**
      * Currently opened page id.
      */
-    private var pageId: String = ""
+    var pageId: String = ""
 
     /**
      * Current set of blocks on this page.
      */
     var blocks: List<Block> = emptyList()
-        private set
 
     private val _focus: MutableLiveData<Id> = MutableLiveData()
     val focus: LiveData<Id> = _focus
@@ -785,7 +784,7 @@ class PageViewModel(
         ) : ControlPanelMachine() {
 
             private val reducer: Reducer = Reducer()
-            private val channel: Channel<Event> = Channel()
+            val channel: Channel<Event> = Channel()
             private val events: Flow<Event> = channel.consumeAsFlow()
 
             fun onEvent(event: Event) = scope.launch { channel.send(event) }
@@ -1104,5 +1103,15 @@ class PageViewModel(
         val type: Markup.Type,
         val param: Any? = null
     )
+
+    override fun onCleared() {
+        super.onCleared()
+        focusChannel.cancel()
+        renderingChannel.cancel()
+        textChannel.cancel()
+        selectionChannel.cancel()
+        markupActionChannel.cancel()
+        controlPanelInteractor.channel.cancel()
+    }
 }
 

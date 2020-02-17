@@ -11,7 +11,7 @@ import com.agileburo.anytype.domain.ext.rangeIntersection
  * with new mark.
  */
 
-class UpdateLinkMarks : BaseUseCase<List<Block.Content.Text.Mark>, UpdateLinkMarks.Params>() {
+open class UpdateLinkMarks : BaseUseCase<List<Block.Content.Text.Mark>, UpdateLinkMarks.Params>() {
 
     override suspend fun run(params: Params): Either<Throwable, List<Block.Content.Text.Mark>> =
         try {

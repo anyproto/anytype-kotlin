@@ -240,6 +240,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragment
                 when (option.type) {
                     OPTION_LIST_BULLETED_LIST -> vm.onAddTextBlockClicked(Text.Style.BULLET)
                     OPTION_LIST_CHECKBOX -> vm.onAddTextBlockClicked(Text.Style.CHECKBOX)
+                    OPTION_LIST_NUMBERED_LIST -> vm.onAddTextBlockClicked(Text.Style.NUMBERED)
                     else -> toast(NOT_IMPLEMENTED_MESSAGE)
                 }
             }

@@ -146,7 +146,6 @@ object MockBlockFactory {
             content = Block.Content.Link(
                 target = MockDataFactory.randomUuid(),
                 fields = Block.Fields.empty(),
-                isArchived = MockDataFactory.randomBoolean(),
                 type = Block.Content.Link.Type.PAGE
             ),
             children = emptyList()

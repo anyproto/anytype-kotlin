@@ -779,7 +779,8 @@ class BlockAdapterTest {
             onCheckboxClicked = {},
             onFocusChanged = onFocusChanged,
             onSelectionChanged = { _, _ -> },
-            onFooterClicked = {}
+            onFooterClicked = {},
+            onPageClicked = {}
         )
     }
 }

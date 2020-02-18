@@ -45,7 +45,8 @@ class BlockAdapter(
     private val onNonEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onSplitLineEnterClicked: (String, Int) -> Unit,
     private val onEndLineEnterClicked: (String, Editable) -> Unit,
-    private val onFooterClicked: () -> Unit
+    private val onFooterClicked: () -> Unit,
+    private val onPageClicked: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -383,7 +384,8 @@ class BlockAdapter(
             }
             is BlockViewHolder.Page -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Page
+                    item = blocks[position] as BlockView.Page,
+                    onPageClicked = onPageClicked
                 )
             }
             is BlockViewHolder.Bookmark -> {

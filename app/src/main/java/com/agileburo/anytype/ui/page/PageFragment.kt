@@ -86,7 +86,8 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragment
             },
             onEmptyBlockBackspaceClicked = vm::onEmptyBlockBackspaceClicked,
             onNonEmptyBlockBackspaceClicked = vm::onNonEmptyBlockBackspaceClicked,
-            onFooterClicked = vm::onOutsideClicked
+            onFooterClicked = vm::onOutsideClicked,
+            onPageClicked = vm::onPageClicked
         )
     }
 
@@ -112,6 +113,16 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragment
 
         BottomSheetBehavior.from(sheet).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
+            isHideable = true
+            addBottomSheetCallback(
+                object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_HIDDEN)
+                            vm.onBottomSheetHidden()
+                    }
+                }
+            )
         }
 
         recycler.apply {

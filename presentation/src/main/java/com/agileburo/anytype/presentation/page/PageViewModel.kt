@@ -70,7 +70,7 @@ class PageViewModel(
     /**
      * Currently opened page id.
      */
-    var pageId: String = ""
+    var context: String = ""
 
     /**
      * Current set of blocks on this page.
@@ -99,7 +99,10 @@ class PageViewModel(
 
     private fun startObservingEvents() {
         viewModelScope.launch {
-            interceptEvents.build().collect { event -> handleEvents(event) }
+            interceptEvents
+                .build()
+                .filter { events -> events.any { it.context == context } }
+                .collect { event -> handleEvents(event) }
         }
     }
 
@@ -173,7 +176,7 @@ class PageViewModel(
                             start = selection.second.first,
                             endInclusive = selection.second.last.dec()
                         )
-                        stateData.value = ViewState.OpenLinkScreen(pageId, block, range)
+                        stateData.value = ViewState.OpenLinkScreen(context, block, range)
                     }
                     else -> {
                         applyMarkup(selection, action)
@@ -209,7 +212,7 @@ class PageViewModel(
                     rerenderingBlocks(newBlock)
                     proceedWithUpdatingBlock(
                         params = UpdateBlock.Params(
-                            contextId = pageId,
+                            contextId = context,
                             text = newBlock.content.asText().text,
                             blockId = targetBlock.id,
                             marks = it
@@ -262,7 +265,7 @@ class PageViewModel(
 
         proceedWithUpdatingBlock(
             params = UpdateBlock.Params(
-                contextId = pageId,
+                contextId = context,
                 blockId = newBlock.id,
                 text = newContent.text,
                 marks = newContent.marks
@@ -286,7 +289,7 @@ class PageViewModel(
         viewModelScope.launch {
             renderings.withLatestFrom(focusChanges) { models, focus ->
 
-                val render = models.asMap().asRender(pageId)
+                val render = models.asMap().asRender(context)
 
                 val numbers = render.numbers()
 
@@ -333,7 +336,7 @@ class PageViewModel(
                 blocks = update
 
                 UpdateBlock.Params(
-                    contextId = pageId,
+                    contextId = context,
                     blockId = id,
                     text = text,
                     marks = marks.filter { it.range.first != it.range.last }
@@ -355,13 +358,13 @@ class PageViewModel(
 
     fun open(id: String) {
 
-        pageId = id
+        context = id
 
         stateData.postValue(ViewState.Loading)
 
         openPage.invoke(viewModelScope, OpenPage.Params(id)) { result ->
             result.either(
-                fnR = { Timber.d("Page has been opened") },
+                fnR = { Timber.d("Page with id $id has been opened") },
                 fnL = { Timber.e(it, "Error while openining page with id: $id") }
             )
         }
@@ -387,7 +390,7 @@ class PageViewModel(
                     rerenderingBlocks(newBlock)
                     proceedWithUpdatingBlock(
                         params = UpdateBlock.Params(
-                            contextId = pageId,
+                            contextId = context,
                             text = newBlock.content.asText().text,
                             blockId = targetBlock.id,
                             marks = it
@@ -399,7 +402,15 @@ class PageViewModel(
     }
 
     fun onSystemBackPressed() {
-        closePage.invoke(viewModelScope, ClosePage.Params(pageId)) { result ->
+        proceedWithExiting()
+    }
+
+    fun onBottomSheetHidden() {
+        proceedWithExiting()
+    }
+
+    private fun proceedWithExiting() {
+        closePage.invoke(viewModelScope, ClosePage.Params(context)) { result ->
             result.either(
                 fnR = { navigation.postValue(EventWrapper(AppNavigation.Command.Exit)) },
                 fnL = { Timber.e(it, "Error while closing the test page") }
@@ -439,7 +450,7 @@ class PageViewModel(
     }
 
     fun onNonEmptyBlockBackspaceClicked(id: String) {
-        val page = blocks.first { it.id == pageId }
+        val page = blocks.first { it.id == context }
         val index = page.children.indexOf(id)
         if (index > 1) {
             val previous = page.children[index.dec()]
@@ -453,7 +464,7 @@ class PageViewModel(
         mergeBlocks.invoke(
             scope = viewModelScope,
             params = MergeBlocks.Params(
-                context = pageId,
+                context = context,
                 pair = Pair(id, previous)
             )
         ) { result ->
@@ -471,7 +482,7 @@ class PageViewModel(
         splitBlock.invoke(
             scope = viewModelScope,
             params = SplitBlock.Params(
-                context = pageId,
+                context = context,
                 target = id,
                 index = index
             )
@@ -533,7 +544,7 @@ class PageViewModel(
         createBlock.invoke(
             scope = viewModelScope,
             params = CreateBlock.Params(
-                context = pageId,
+                context = context,
                 target = id,
                 position = position,
                 prototype = Prototype.Text(style = style)
@@ -582,7 +593,7 @@ class PageViewModel(
             updateTextColor.invoke(
                 scope = viewModelScope,
                 params = UpdateTextColor.Params(
-                    context = pageId,
+                    context = context,
                     target = focus,
                     color = color
                 )
@@ -615,7 +626,7 @@ class PageViewModel(
         unlinkBlocks.invoke(
             scope = viewModelScope,
             params = UnlinkBlocks.Params(
-                context = pageId,
+                context = context,
                 targets = listOf(target)
             )
         ) { result ->
@@ -635,7 +646,7 @@ class PageViewModel(
                     duplicateBlock.invoke(
                         scope = this,
                         params = DuplicateBlock.Params(
-                            context = pageId,
+                            context = context,
                             original = focus
                         )
                     ) { result ->
@@ -661,7 +672,7 @@ class PageViewModel(
         val target = blocks.first { it.id == id }
 
         val params = UpdateCheckbox.Params(
-            context = pageId,
+            context = context,
             target = target.id,
             isChecked = target.content.asText().toggleCheck()
         )
@@ -701,7 +712,7 @@ class PageViewModel(
         updateTextStyle.invoke(
             scope = viewModelScope,
             params = UpdateTextStyle.Params(
-                context = pageId,
+                context = context,
                 target = target,
                 style = style
             )
@@ -714,7 +725,7 @@ class PageViewModel(
     }
 
     fun onOutsideClicked() {
-        blocks.first { it.id == pageId }.let { page ->
+        blocks.first { it.id == context }.let { page ->
             if (page.children.isNotEmpty()) {
                 val last = blocks.first { it.id == page.children.last() }
                 when (val content = last.content) {
@@ -742,12 +753,22 @@ class PageViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
     }
 
+    fun onPageClicked(id: String) {
+        proceedWithOpeningPage(
+            target = blocks.first { it.id == id }.content<Content.Link>().target
+        )
+    }
+
+    private fun proceedWithOpeningPage(target: Id) {
+        navigate(EventWrapper(AppNavigation.Command.OpenPage(target)))
+    }
+
     fun onAddNewPageClicked() {
 
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
         val params = CreateBlock.Params(
-            context = pageId,
+            context = context,
             position = Position.BOTTOM,
             target = focusChannel.value,
             prototype = Prototype.Page(style = Content.Page.Style.EMPTY)

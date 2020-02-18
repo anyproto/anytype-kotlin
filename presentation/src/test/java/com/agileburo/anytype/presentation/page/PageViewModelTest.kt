@@ -1653,7 +1653,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.DeleteBlock(
-                        target = firstChild,
+                        targets = listOf(firstChild),
                         context = root
                     )
                 )

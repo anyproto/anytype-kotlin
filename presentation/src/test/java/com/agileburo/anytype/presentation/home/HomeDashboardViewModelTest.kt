@@ -247,8 +247,7 @@ class HomeDashboardViewModelTest {
                 content = Block.Content.Link(
                     target = MockDataFactory.randomUuid(),
                     type = Block.Content.Link.Type.PAGE,
-                    fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                    isArchived = MockDataFactory.randomBoolean()
+                    fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString()))
                 )
             ),
             Block(
@@ -258,8 +257,7 @@ class HomeDashboardViewModelTest {
                 content = Block.Content.Link(
                     target = MockDataFactory.randomUuid(),
                     type = Block.Content.Link.Type.PAGE,
-                    fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                    isArchived = MockDataFactory.randomBoolean()
+                    fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString()))
                 )
             )
         )
@@ -343,7 +341,6 @@ class HomeDashboardViewModelTest {
                 content = Block.Content.Link(
                     type = Block.Content.Link.Type.PAGE,
                     target = MockDataFactory.randomUuid(),
-                    isArchived = MockDataFactory.randomBoolean(),
                     fields = Block.Fields.empty()
                 )
             ),
@@ -354,7 +351,6 @@ class HomeDashboardViewModelTest {
                 content = Block.Content.Link(
                     type = Block.Content.Link.Type.PAGE,
                     target = MockDataFactory.randomUuid(),
-                    isArchived = MockDataFactory.randomBoolean(),
                     fields = Block.Fields.empty()
                 )
             )

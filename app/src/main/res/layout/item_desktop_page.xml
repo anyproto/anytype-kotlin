@@ -36,8 +36,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginTop="14dp"
             android:layout_marginBottom="12dp"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textColor="@color/black"
             android:textSize="15sp"
             tools:text="Movies" />

@@ -49,5 +49,7 @@ public interface MiddlewareService {
 
     Block.Merge.Response blockMerge(Block.Merge.Request request) throws Exception;
 
+    Block.Split.Response blockSplit(Block.Split.Request request) throws Exception;
+
     BlockList.Duplicate.Response blockListDuplicate(BlockList.Duplicate.Request request) throws Exception;
 }

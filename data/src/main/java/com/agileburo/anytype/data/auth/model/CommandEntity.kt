@@ -59,4 +59,10 @@ class CommandEntity {
         val context: String,
         val pair: Pair<String, String>
     )
+
+    data class Split(
+        val context: String,
+        val target: String,
+        val index: Int
+    )
 }

@@ -43,7 +43,7 @@ class BlockAdapter(
     private val onFocusChanged: (String, Boolean) -> Unit,
     private val onEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onNonEmptyBlockBackspaceClicked: (String) -> Unit,
-    private val onSplitLineEnterClicked: (String) -> Unit,
+    private val onSplitLineEnterClicked: (String, Int) -> Unit,
     private val onEndLineEnterClicked: (String, Editable) -> Unit,
     private val onFooterClicked: () -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
@@ -413,8 +413,8 @@ class BlockAdapter(
                 onEndLineEnterClicked = { editable ->
                     onEndLineEnterClicked(blocks[holder.adapterPosition].id, editable)
                 },
-                onSplitLineEnterClicked = {
-                    onSplitLineEnterClicked(blocks[holder.adapterPosition].id)
+                onSplitLineEnterClicked = { index ->
+                    onSplitLineEnterClicked(blocks[holder.adapterPosition].id, index)
                 }
             )
             holder.enableBackspaceDetector(

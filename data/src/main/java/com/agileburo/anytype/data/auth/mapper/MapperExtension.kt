@@ -266,6 +266,12 @@ fun Command.Merge.toEntity(): CommandEntity.Merge = CommandEntity.Merge(
     pair = pair
 )
 
+fun Command.Split.toEntity(): CommandEntity.Split = CommandEntity.Split(
+    context = context,
+    target = target,
+    index = index
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }

@@ -70,7 +70,12 @@ class BlockViewDiffUtil(
      */
     data class Payload(
         val changes: List<Int>
-    )
+    ) {
+        fun markupChanged() = changes.contains(MARKUP_CHANGED)
+        fun textChanged() = changes.contains(TEXT_CHANGED)
+        fun textColorChanged() = changes.contains(TEXT_COLOR_CHANGED)
+        fun focusChanged() = changes.contains(FOCUS_CHANGED)
+    }
 
     companion object {
         const val TEXT_CHANGED = 0

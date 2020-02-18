@@ -80,6 +80,9 @@ class PageViewModelTest {
     @Mock
     lateinit var mergeBlocks: MergeBlocks
 
+    @Mock
+    lateinit var splitBlock: SplitBlock
+
     private lateinit var vm: PageViewModel
 
     @Before
@@ -2496,6 +2499,67 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should proceed with splittig block on split-enter-key event`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
+            root = root,
+            child = child
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
+
+        val index = MockDataFactory.randomInt()
+
+        vm.onSplitLineEnterClicked(
+            id = child,
+            index = index
+        )
+
+        verify(splitBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                SplitBlock.Params(
+                    context = root,
+                    target = child,
+                    index = index
+                )
+            ),
+            onResult = any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()
@@ -2560,7 +2624,8 @@ class PageViewModelTest {
             updateTextColor = updateTextColor,
             updateLinkMarks = updateLinkMark,
             removeLinkMark = removeLinkMark,
-            mergeBlocks = mergeBlocks
+            mergeBlocks = mergeBlocks,
+            splitBlock = splitBlock
         )
     }
 }

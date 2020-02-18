@@ -502,4 +502,17 @@ public class Middleware {
 
         service.blockMerge(request);
     }
+
+    public void split(CommandEntity.Split command) throws Exception {
+        Block.Split.Request request = Block.Split.Request
+                .newBuilder()
+                .setBlockId(command.getTarget())
+                .setContextId(command.getContext())
+                .setCursorPosition(command.getIndex())
+                .build();
+
+        Timber.d("Splitting the target block with the following request:\n%s", request.toString());
+
+        service.blockSplit(request);
+    }
 }

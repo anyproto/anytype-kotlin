@@ -1,5 +1,15 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.20 (WIP)
+
+### New features 🚀
+
+* Allow users to split blocks (#229)
+
+### Middleware ⚙️
+
+* Added `blockSplit` command (#229)
+
 ## Version 0.0.19
 
 ### New features 🚀

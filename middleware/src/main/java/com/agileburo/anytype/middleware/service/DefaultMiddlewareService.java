@@ -220,6 +220,17 @@ public class DefaultMiddlewareService implements MiddlewareService {
     }
 
     @Override
+    public Block.Split.Response blockSplit(Block.Split.Request request) throws Exception {
+        byte[] encoded = Lib.blockSplit(request.toByteArray());
+        Block.Split.Response response = Block.Split.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Block.Split.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
     public BlockList.Duplicate.Response blockListDuplicate(BlockList.Duplicate.Request request) throws Exception {
         byte[] encoded = Lib.blockListDuplicate(request.toByteArray());
         BlockList.Duplicate.Response response = BlockList.Duplicate.Response.parseFrom(encoded);

@@ -56,4 +56,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun merge(command: CommandEntity.Merge) {
         remote.merge(command)
     }
+
+    override suspend fun split(command: CommandEntity.Split) {
+        remote.split(command)
+    }
 }

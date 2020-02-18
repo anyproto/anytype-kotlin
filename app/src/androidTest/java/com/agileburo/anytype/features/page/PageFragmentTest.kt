@@ -13,6 +13,7 @@ import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.page.ClosePage
@@ -41,6 +42,7 @@ import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
@@ -92,6 +94,11 @@ class PageFragmentTest {
     @Mock
     lateinit var mergeBlocks: MergeBlocks
 
+    @Mock
+    lateinit var repo: BlockRepository
+
+    private lateinit var splitBlock: SplitBlock
+
     private lateinit var actionToolbar: ViewInteraction
     private lateinit var optionToolbar: ViewInteraction
 
@@ -104,20 +111,23 @@ class PageFragmentTest {
         actionToolbar = onView(withId(R.id.actionToolbar))
         optionToolbar = onView(withId(R.id.optionToolbar))
 
+        splitBlock = SplitBlock(repo)
+
         TestPageFragment.testViewModelFactory = PageViewModelFactory(
-            openPage,
-            closePage,
-            updateBlock,
-            createBlock,
-            interceptEvents,
-            updateCheckbox,
-            unlinkBlocks,
-            duplicateBlock,
-            updateTextStyle,
-            updateTextColor,
-            updateLinkMarks,
-            removeLinkMark,
-            mergeBlocks
+            openPage = openPage,
+            closePage = closePage,
+            updateBlock = updateBlock,
+            createBlock = createBlock,
+            interceptEvents = interceptEvents,
+            updateCheckbox = updateCheckbox,
+            unlinkBlocks = unlinkBlocks,
+            duplicateBlock = duplicateBlock,
+            updateTextStyle = updateTextStyle,
+            updateTextColor = updateTextColor,
+            updateLinkMarks = updateLinkMarks,
+            removeLinkMark = removeLinkMark,
+            mergeBlocks = mergeBlocks,
+            splitBlock = splitBlock
         )
     }
 
@@ -371,8 +381,108 @@ class PageFragmentTest {
 
         onView(allOf(withId(R.id.keyboard), isDisplayed())).perform(click())
         onView(withId(R.id.toolbar)).check(matches(not(isDisplayed())))
-        //onView(withId(R.id.placeholder)).check(matches(hasFocus()))
         target.check(matches(not(hasFocus())))
+    }
+
+    @Test
+    fun shouldSplitBlocks() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val delayBeforeGettingEvents = 100L
+        val delayBeforeSplittingBlocks = 100L
+
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(paragraph.id)
+            ),
+            paragraph
+        )
+
+        val new = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Bar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        stubEvents(
+            events = flow {
+                delay(delayBeforeGettingEvents)
+                emit(
+                    listOf(
+                        Event.Command.ShowBlock(
+                            rootId = root,
+                            blocks = page,
+                            context = root
+                        )
+                    )
+                )
+                delay(delayBeforeSplittingBlocks)
+                emit(
+                    listOf(
+                        Event.Command.GranularChange(
+                            context = root,
+                            id = paragraph.id,
+                            text = "Foo"
+                        ),
+                        Event.Command.UpdateStructure(
+                            context = root,
+                            id = page.first().id,
+                            children = listOf(paragraph.id, new.id)
+                        ),
+                        Event.Command.AddBlock(
+                            context = root,
+                            blocks = listOf(new)
+                        )
+                    )
+                )
+            }
+        )
+
+        launchFragmentInContainer<TestPageFragment>(
+            fragmentArgs = args,
+            themeResId = R.style.AppTheme
+        )
+
+        // TESTING
+
+        advance(delayBeforeGettingEvents)
+
+        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent))
+
+        target.check(matches(withText(paragraph.content.asText().text)))
+
+        advance(delayBeforeSplittingBlocks)
+
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent)).apply {
+            check(matches(withText("Foo")))
+        }
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)).apply {
+            check(matches(withText("Bar")))
+        }
     }
 
     /**
@@ -393,6 +503,12 @@ class PageFragmentTest {
                     )
                 )
             }
+        }
+    }
+
+    private fun stubEvents(events: Flow<List<Event>>) {
+        interceptEvents.stub {
+            onBlocking { build() } doReturn events
         }
     }
 

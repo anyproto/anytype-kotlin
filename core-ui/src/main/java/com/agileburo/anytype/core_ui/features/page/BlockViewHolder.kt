@@ -9,11 +9,8 @@ import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.extensions.tint
-import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_CHANGED
-import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.MARKUP_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.NUMBER_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
-import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
@@ -58,7 +55,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun enableEnterKeyDetector(
             onEndLineEnterClicked: (Editable) -> Unit,
-            onSplitLineEnterClicked: () -> Unit
+            onSplitLineEnterClicked: (Int) -> Unit
         ) {
             content.filters = arrayOf(
                 DefaultEnterKeyDetector(
@@ -136,29 +133,27 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             Timber.d("Processing $payload for new view:\n$item")
 
             if (item is BlockView.Text) {
-                if (payload.changes.contains(TEXT_CHANGED))
-                    if (content.text.toString() != item.text) {
-                        Timber.d("Text changed.\nBefore:${content.text.toString()}\nAfter:${item.text}")
-                        content.pauseTextWatchers {
-                            if (item is Markup)
-                                content.setText(item.toSpannable(), BufferType.SPANNABLE)
-                        }
+
+                if (payload.textChanged()) {
+                    val cursor = content.selectionEnd
+                    content.pauseTextWatchers {
+                        if (item is Markup)
+                            content.setText(item.toSpannable(), BufferType.SPANNABLE)
+                        else
+                            content.setText(item.text)
                     }
+                    content.setSelection(cursor)
+                } else if (payload.markupChanged()) {
+                    if (item is Markup) setMarkup(item)
+                }
 
-                if (payload.changes.contains(TEXT_COLOR_CHANGED))
+                if (payload.textColorChanged()) {
                     item.color?.let { setTextColor(it) }
-            }
-
-            if (item is Markup) {
-                if (payload.changes.contains(MARKUP_CHANGED) && !payload.changes.contains(
-                        TEXT_CHANGED
-                    )
-                )
-                    setMarkup(item)
+                }
             }
 
             if (item is Focusable) {
-                if (payload.changes.contains(FOCUS_CHANGED))
+                if (payload.focusChanged())
                     setFocus(item)
             }
         }

@@ -103,4 +103,16 @@ sealed class Command {
         val context: Id,
         val pair: Pair<Id, Id>
     )
+
+    /**
+     * Command for splitting one block into two blocks
+     * @property context context id
+     * @property target id of the target block, which we need to split
+     * @property index index or cursor position
+     */
+    data class Split(
+        val context: Id,
+        val target: Id,
+        val index: Int
+    )
 }

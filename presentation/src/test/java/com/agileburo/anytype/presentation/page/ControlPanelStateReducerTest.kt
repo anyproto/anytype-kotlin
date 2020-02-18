@@ -3,7 +3,6 @@ package com.agileburo.anytype.presentation.page
 import MockDataFactory
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.domain.block.model.Block
-import com.agileburo.anytype.presentation.page.PageViewModel.ControlPanelMachine
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule

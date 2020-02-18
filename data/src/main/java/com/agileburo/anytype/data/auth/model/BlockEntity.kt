@@ -62,10 +62,9 @@ data class BlockEntity(
         data class Link(
             val target: String,
             val type: Type,
-            val isArchived: Boolean,
             val fields: Fields
         ) : Content() {
-            enum class Type { PAGE, DATA_VIEW }
+            enum class Type { PAGE, DATA_VIEW, DASHBOARD, ARCHIVE }
         }
     }
 

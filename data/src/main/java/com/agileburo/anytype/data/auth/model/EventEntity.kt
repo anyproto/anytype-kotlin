@@ -47,7 +47,7 @@ sealed class EventEntity {
 
         data class DeleteBlock(
             override val context: String,
-            val target: String
+            val targets: List<String>
         ) : Command()
     }
 }

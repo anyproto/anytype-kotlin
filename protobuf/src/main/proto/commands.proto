@@ -451,25 +451,27 @@ message Rpc {
                 }
             }
 
-            message IsArchived {
-                message Request {
-                    string contextId = 1;
-                    string blockId = 2;
-                    bool IsArchived = 3;
-                }
+            message Page {
+                message IsArchived {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2;
+                        bool isArchived = 3;
+                    }
 
-                message Response {
-                    Error error = 1;
+                    message Response {
+                        Error error = 1;
 
-                    message Error {
-                        Code code = 1;
-                        string description = 2;
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
 
-                        enum Code {
-                            NULL = 0;
-                            UNKNOWN_ERROR = 1;
-                            BAD_INPUT = 2;
-                            // ...
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
                         }
                     }
                 }
@@ -777,6 +779,31 @@ message Rpc {
             }
         }
 
+        message Bookmark {
+            message Fetch {
+                message Request {
+                    string contextId = 1;
+                    string blockId = 2;
+                    string url = 3;
+                }
+
+                message Response {
+                    Error error = 1;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                        }
+                    }
+                }
+            }
+        }
+
         message Get {
             /*
              * Get marks list in the selected range in text block.
@@ -873,6 +900,53 @@ message Rpc {
             message Request {
                 string contextId = 1; // id of the context blo1k
                 string blockId = 2;
+                repeated string breadcrumbsIds = 3; // optional ids of breadcrubms blocks
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message OpenBreadcrumbs {
+            message Request {
+                string contextId = 1; // id of the context blo1k
+            }
+
+            message Response {
+                Error error = 1;
+                string blockId = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message CutBreadcrumbs {
+            message Request {
+                string breadcrumbsId = 1;
+                int32 index = 2; // 0 - for full reset
             }
 
             message Response {
@@ -1276,7 +1350,8 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-                string version = 2; // BuildDate, GitCommit, GitBranch, GitState
+                string version = 2;
+                string details = 3; // build date, branch and commit
 
                 message Error {
                     Code code = 1;
@@ -1424,6 +1499,28 @@ message Rpc {
         message Response {
             Error error = 1;
             int32 index = 2;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+                }
+            }
+        }
+    }
+
+    message LinkPreview {
+        message Request {
+            string url = 1;
+        }
+
+        message Response {
+            Error error = 1;
+            anytype.model.LinkPreview linkPreview = 2;
 
             message Error {
                 Code code = 1;

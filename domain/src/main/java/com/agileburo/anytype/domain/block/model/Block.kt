@@ -127,16 +127,14 @@ data class Block(
          * A link to some other block.
          * @property target id of the target block
          * @property type type of the link
-         * @property isArchived whether the target block is archived or not
          * @property fields fields storing additional properties
          */
         data class Link(
             val target: Id,
             val type: Type,
-            val isArchived: Boolean,
             val fields: Fields
         ) : Content() {
-            enum class Type { PAGE, DATA_VIEW }
+            enum class Type { PAGE, DATA_VIEW, DASHBOARD, ARCHIVE }
         }
     }
 

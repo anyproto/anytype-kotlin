@@ -78,7 +78,7 @@ class MiddlewareEventChannel(
                 Events.Event.Message.ValueCase.BLOCKDELETE -> {
                     EventEntity.Command.DeleteBlock(
                         context = context,
-                        target = event.blockDelete.blockId
+                        targets = event.blockDelete.blockIdsList.toList()
                     )
                 }
                 Events.Event.Message.ValueCase.BLOCKSETCHILDRENIDS -> {

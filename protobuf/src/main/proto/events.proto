@@ -25,12 +25,12 @@ message Event {
             Block.Set.Fields blockSetFields = 6;
             Block.Set.ChildrenIds blockSetChildrenIds = 7;
             Block.Set.Restrictions blockSetRestrictions = 8;
-            Block.Set.IsArchived blockSetIsArchived = 9;
 
             Block.Set.Text blockSetText = 10;
             Block.Set.File blockSetFile = 11;
             Block.Set.Icon blockSetIcon = 12;
             Block.Set.Link blockSetLink = 13;
+            Block.Set.Bookmark blockSetBookmark = 14;
 
             Block.Show blockShow = 20;
             User.Block.Join userBlockJoin = 21;
@@ -93,8 +93,7 @@ message Event {
          *
         */
         message Delete {
-            // TODO: repeated string blockIds?
-            string blockId = 1;
+            repeated string blockIds = 1;
         }
 
         message MarksInfo {
@@ -118,10 +117,6 @@ message Event {
                 anytype.model.Block.Restrictions restrictions = 2;
             }
 
-            message IsArchived {
-                string id = 1;
-                bool IsArchived = 2;
-            }
 
             message Text {
                 string id = 1;
@@ -221,6 +216,42 @@ message Event {
                 message Fields {
                     google.protobuf.Struct value = 1;
                 }
+
+            }
+
+            message Bookmark {
+                string id = 1;
+                Url url = 2;
+                Title title = 3;
+                Description description = 4;
+                ImageHash imageHash = 5;
+                FaviconHash faviconHash = 6;
+                Type type = 7;
+
+                message Url {
+                    string value = 1;
+                }
+
+                message Title {
+                    string value = 1;
+                }
+
+                message Description {
+                    string value = 1;
+                }
+
+                message ImageHash {
+                    string value = 1;
+                }
+
+                message FaviconHash {
+                    string value = 1;
+                }
+
+                message Type {
+                    anytype.model.LinkPreview.Type value = 1;
+                }
+
             }
         }
     }

@@ -87,7 +87,6 @@ fun Block.toView(
             id = id,
             isEmpty = true,
             emoji = null,
-            isArchived = content.isArchived,
             text = if (content.fields.hasName()) content.fields.name else null
         )
     }

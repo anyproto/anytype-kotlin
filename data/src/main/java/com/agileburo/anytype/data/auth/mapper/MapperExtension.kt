@@ -107,7 +107,6 @@ fun BlockEntity.Content.Page.toDomain(): Block.Content.Page {
 fun BlockEntity.Content.Link.toDomain(): Block.Content.Link {
     return Block.Content.Link(
         target = target,
-        isArchived = isArchived,
         type = Block.Content.Link.Type.valueOf(type.name),
         fields = Block.Fields(map = fields.map.toMap())
     )
@@ -187,7 +186,6 @@ fun Block.Content.Link.toEntity(): BlockEntity.Content.Link {
     return BlockEntity.Content.Link(
         target = target,
         type = BlockEntity.Content.Link.Type.valueOf(type.name),
-        isArchived = isArchived,
         fields = BlockEntity.Fields(map = fields.map.toMutableMap())
     )
 }
@@ -304,7 +302,7 @@ fun EventEntity.toDomain(): Event {
         is EventEntity.Command.DeleteBlock -> {
             Event.Command.DeleteBlock(
                 context = context,
-                target = target
+                targets = targets
             )
         }
         is EventEntity.Command.GranularChange -> {

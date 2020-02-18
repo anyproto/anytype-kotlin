@@ -193,10 +193,15 @@ fun Block.link(): BlockEntity.Content.Link = BlockEntity.Content.Link(
         link.style == Block.Content.Link.Style.Dataview -> {
             BlockEntity.Content.Link.Type.DATA_VIEW
         }
+        link.style == Block.Content.Link.Style.Archive -> {
+            BlockEntity.Content.Link.Type.ARCHIVE
+        }
+        link.style == Block.Content.Link.Style.Dashboard -> {
+            BlockEntity.Content.Link.Type.DASHBOARD
+        }
         else -> throw IllegalStateException("Unexpected link style: ${link.style}")
     },
     target = link.targetBlockId,
-    isArchived = link.isArchived,
     fields = BlockEntity.Fields().also { result ->
         link.fields.fieldsMap.forEach { (key, value) ->
             result.map[key] = when (val case = value.kindCase) {

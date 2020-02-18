@@ -21,9 +21,14 @@ sealed class Event {
             val blocks: List<Block>
         ) : Command()
 
+        /**
+         * Command to delete blocks
+         * @property context id of the context
+         * @property targets id of the target blocks, which we need to delete
+         */
         data class DeleteBlock(
             override val context: String,
-            val target: Id
+            val targets: List<Id>
         ) : Command()
 
         data class UpdateBlockText(

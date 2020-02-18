@@ -9,7 +9,7 @@ message Block {
     google.protobuf.Struct fields = 2;
     Restrictions restrictions = 3;
     repeated string childrenIds = 4;
-    bool isArchived = 5;
+
 
     oneof content {
         Content.Dashboard dashboard = 11;
@@ -41,6 +41,7 @@ message Block {
         Left = 3;
         Right = 4;
         Inner = 5;
+        Replace = 6;
     }
 
     message Content {
@@ -64,11 +65,12 @@ message Block {
             string targetBlockId = 1; // id of the target block
             Style style = 2;
             google.protobuf.Struct fields = 3;
-            bool isArchived = 4;
 
             enum Style {
                 Page = 0;
                 Dataview = 1;
+                Dashboard = 2;
+                Archive = 3;
                 // ...
             }
         }
@@ -77,13 +79,24 @@ message Block {
         * Divider: block, that contains only one horizontal thin line
         */
         message Div {
+            Style style = 1;
+
+            enum Style {
+                Line = 0;
+                Dots = 1;
+            }
         }
 
         /*
         * Bookmark is to keep a web-link and to preview a content.
         */
         message Bookmark {
-            // Model.Link.Preview preview = 1;
+            string url = 1;
+            string title = 2;
+            string description = 3;
+            string imageHash = 4;
+            string faviconHash = 5;
+            LinkPreview.Type type = 6;
         }
 
         message Icon {
@@ -181,6 +194,7 @@ message Block {
                 Empty = 0; // Ordinary page, without additional fields
                 Task = 1; // Page with a task fields
                 Set = 2; // Page, that organize a set of blocks by a specific criterio
+                Breadcrumbs = 3;
                 // ...
             }
 
@@ -195,7 +209,6 @@ message Block {
 message BlockMetaOnly {
     string id = 1;
     google.protobuf.Struct fields = 2;
-    bool isArchived = 5;
 }
 
 /*
@@ -222,5 +235,21 @@ message Account {
             Block.Content.File image = 1; // Image of the avatar. Contains the hash to retrieve the image.
             string color = 2; // Color of the avatar, used if image not set.
         }
+    }
+}
+
+message LinkPreview {
+    string url = 1;
+    string title = 2;
+    string description = 3;
+    string imageUrl = 4;
+    string faviconUrl = 5;
+    Type type = 6;
+
+    enum Type {
+        Unknown = 0;
+        Page = 1;
+        Image = 2;
+        Text = 3;
     }
 }

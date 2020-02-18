@@ -135,7 +135,7 @@ class PageViewModel(
                     }
                 }
                 is Event.Command.DeleteBlock -> {
-                    blocks = blocks.filter { it.id != event.target }
+                    blocks = blocks.filter { !event.targets.contains(it.id) }
                 }
                 is Event.Command.GranularChange -> {
                     blocks = blocks.map { block ->

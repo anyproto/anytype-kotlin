@@ -1,5 +1,6 @@
 package com.agileburo.anytype.features.page
 
+import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
@@ -17,6 +18,7 @@ import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.page.ClosePage
+import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.mocking.MockDataFactory
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_BULLET
@@ -98,6 +100,7 @@ class PageFragmentTest {
     lateinit var repo: BlockRepository
 
     private lateinit var splitBlock: SplitBlock
+    private lateinit var createPage: CreatePage
 
     private lateinit var actionToolbar: ViewInteraction
     private lateinit var optionToolbar: ViewInteraction
@@ -112,6 +115,7 @@ class PageFragmentTest {
         optionToolbar = onView(withId(R.id.optionToolbar))
 
         splitBlock = SplitBlock(repo)
+        createPage = CreatePage(repo)
 
         TestPageFragment.testViewModelFactory = PageViewModelFactory(
             openPage = openPage,
@@ -127,7 +131,8 @@ class PageFragmentTest {
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
             mergeBlocks = mergeBlocks,
-            splitBlock = splitBlock
+            splitBlock = splitBlock,
+            createPage = createPage
         )
     }
 
@@ -164,10 +169,7 @@ class PageFragmentTest {
             blocks = page
         )
 
-        launchFragmentInContainer<TestPageFragment>(
-            fragmentArgs = args,
-            themeResId = R.style.AppTheme
-        )
+        launchFragment(args)
 
         advance(delayBeforeGettingEvents)
 
@@ -250,10 +252,7 @@ class PageFragmentTest {
             blocks = page
         )
 
-        launchFragmentInContainer<TestPageFragment>(
-            fragmentArgs = args,
-            themeResId = R.style.AppTheme
-        )
+        launchFragment(args)
 
         advance(delayBeforeGettingEvents)
 
@@ -311,10 +310,7 @@ class PageFragmentTest {
             blocks = page
         )
 
-        launchFragmentInContainer<TestPageFragment>(
-            fragmentArgs = args,
-            themeResId = R.style.AppTheme
-        )
+        launchFragment(args)
 
         advance(delayBeforeGettingEvents)
 
@@ -324,9 +320,7 @@ class PageFragmentTest {
 
         val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.title))
 
-        target.apply {
-            perform(click())
-        }
+        target.apply { perform(click()) }
 
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
     }
@@ -366,10 +360,7 @@ class PageFragmentTest {
             blocks = page
         )
 
-        launchFragmentInContainer<TestPageFragment>(
-            fragmentArgs = args,
-            themeResId = R.style.AppTheme
-        )
+        launchFragment(args)
 
         advance(delayBeforeGettingEvents)
 
@@ -462,10 +453,7 @@ class PageFragmentTest {
             }
         )
 
-        launchFragmentInContainer<TestPageFragment>(
-            fragmentArgs = args,
-            themeResId = R.style.AppTheme
-        )
+        launchFragment(args)
 
         // TESTING
 
@@ -483,6 +471,90 @@ class PageFragmentTest {
         onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)).apply {
             check(matches(withText("Bar")))
         }
+    }
+
+    /*
+    @Test
+    fun shouldHideOptionToolbarsOnEmptyBlockClick() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val delayBeforeGettingEvents = 100L
+        val delayBeforeKeyboardIsHidden = 300L
+
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(paragraph.id)
+            ),
+            paragraph
+        )
+
+        stubEvents(
+            events = flow {
+                delay(delayBeforeGettingEvents)
+                emit(
+                    listOf(
+                        Event.Command.ShowBlock(
+                            rootId = root,
+                            blocks = page,
+                            context = root
+                        )
+                    )
+                )
+            }
+        )
+
+        launchFragment(args)
+
+        // TESTING
+
+        advance(delayBeforeGettingEvents)
+
+        val targetBlock = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent))
+
+        onView(withId(R.id.toolbar)).check(matches(not(isDisplayed())))
+
+        targetBlock.perform(click())
+
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+
+        onView(allOf(withId(R.id.actions))).perform(click())
+
+        advance(delayBeforeKeyboardIsHidden)
+
+        val actionToolbar = onView(withId(R.id.actionToolbar))
+
+        actionToolbar.check(matches(isDisplayed()))
+
+        targetBlock.apply { perform(click()) }
+
+        actionToolbar.check(matches(not(isDisplayed())))
+    }
+     */
+
+    private fun launchFragment(args: Bundle) {
+        launchFragmentInContainer<TestPageFragment>(
+            fragmentArgs = args,
+            themeResId = R.style.AppTheme
+        )
     }
 
     /**

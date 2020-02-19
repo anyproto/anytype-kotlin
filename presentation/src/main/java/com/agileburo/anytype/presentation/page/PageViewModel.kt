@@ -780,6 +780,10 @@ class PageViewModel(
         }
     }
 
+    fun onTextInputClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
+    }
+
     fun onPlusButtonPressed() {
         createPage.invoke(
             scope = viewModelScope,

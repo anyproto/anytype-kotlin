@@ -8,6 +8,8 @@ import android.provider.MediaStore
 import android.text.Annotation
 import android.text.Editable
 import android.text.Spanned
+import android.util.TypedValue
+import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.TouchDelegate
 import android.view.View
 import timber.log.Timber
@@ -63,6 +65,10 @@ fun View.hide() {
 
 val Int.dp: Int
     get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+
+fun Context.dp(value: Float) =
+    TypedValue.applyDimension(COMPLEX_UNIT_DIP, value, resources.displayMetrics)
+
 val Int.px: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 

@@ -1123,4 +1123,220 @@ class ControlPanelStateReducerTest {
             actual = actual
         )
     }
+
+    @Test
+    fun `should hide add-block toolbar on on-text-input-clicked event`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.ADD
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = true
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = false
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = false
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnTextInputClicked
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            blockToolbar = given.blockToolbar.copy(
+                isVisible = true,
+                selectedAction = null
+            ),
+            addBlockToolbar = given.addBlockToolbar.copy(
+                isVisible = false
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `should hide turn-into toolbar on on-text-input-clicked event`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.TURN_INTO
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = true
+            ),
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = false
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = false
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnTextInputClicked
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            blockToolbar = given.blockToolbar.copy(
+                isVisible = true,
+                selectedAction = null
+            ),
+            turnIntoToolbar = given.turnIntoToolbar.copy(
+                isVisible = false
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `should hide block-action toolbar on on-text-input-clicked event`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.BLOCK_ACTION
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = false
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = true
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnTextInputClicked
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            blockToolbar = given.blockToolbar.copy(
+                isVisible = true,
+                selectedAction = null
+            ),
+            actionToolbar = given.actionToolbar.copy(
+                isVisible = false
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `should hide color toolbar on on-text-input-clicked event`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.COLOR
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = true
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = false
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnTextInputClicked
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            blockToolbar = given.blockToolbar.copy(
+                isVisible = true,
+                selectedAction = null
+            ),
+            colorToolbar = given.colorToolbar.copy(
+                isVisible = false
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
 }

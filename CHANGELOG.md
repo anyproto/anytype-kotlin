@@ -6,6 +6,11 @@
 
 * Allow users to split blocks (#229)
 
+### Fixes & tech 🚒
+
+* Turn-into panel is still visible when system opens virtual keyboard on focus (#169)
+* Option toolbars (`add-block`, `turn-into`, `color`, `action`) are still visible when system opens virtual keyboard on focus (#102)
+
 ### Middleware ⚙️
 
 * Added `blockSplit` command (#229)

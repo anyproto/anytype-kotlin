@@ -110,6 +110,12 @@ sealed class ControlPanelMachine {
         object OnClearFocusClicked : Event()
 
         /**
+         * Represents an event when user clicked on text input widget.
+         * This event is expected to trigger keyboard openining.
+         */
+        object OnTextInputClicked : Event()
+
+        /**
          * Represents an event when focus changes.
          * @property id id of the focused block
          */
@@ -287,6 +293,26 @@ sealed class ControlPanelMachine {
                 )
             )
             is Event.OnClearFocusClicked -> ControlPanelState.init()
+            is Event.OnTextInputClicked -> state.copy(
+                blockToolbar = state.blockToolbar.copy(
+                    selectedAction = null
+                ),
+                markupToolbar = state.markupToolbar.copy(
+                    selectedAction = null
+                ),
+                addBlockToolbar = state.addBlockToolbar.copy(
+                    isVisible = false
+                ),
+                turnIntoToolbar = state.turnIntoToolbar.copy(
+                    isVisible = false
+                ),
+                actionToolbar = state.actionToolbar.copy(
+                    isVisible = false
+                ),
+                colorToolbar = state.colorToolbar.copy(
+                    isVisible = false
+                )
+            )
             is Event.OnFocusChanged -> {
                 if (state.isNotVisible())
                     state.copy(

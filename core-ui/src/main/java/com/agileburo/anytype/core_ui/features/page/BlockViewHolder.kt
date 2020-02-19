@@ -65,6 +65,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             )
         }
 
+        fun setOnClickListener(onTextInputClicked: () -> Unit) {
+            content.setOnClickListener { onTextInputClicked() }
+        }
+
         fun enableBackspaceDetector(
             onEmptyBlockBackspaceClicked: () -> Unit,
             onNonEmptyBlockBackspaceClicked: () -> Unit

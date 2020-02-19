@@ -88,7 +88,8 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             onEmptyBlockBackspaceClicked = vm::onEmptyBlockBackspaceClicked,
             onNonEmptyBlockBackspaceClicked = vm::onNonEmptyBlockBackspaceClicked,
             onFooterClicked = vm::onOutsideClicked,
-            onPageClicked = vm::onPageClicked
+            onPageClicked = vm::onPageClicked,
+            onTextInputClicked = vm::onTextInputClicked
         )
     }
 
@@ -386,8 +387,9 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                     showOptionToolbar()
                 }
             } else {
-                if (!state.turnIntoToolbar.isVisible)
+                if (!state.turnIntoToolbar.isVisible) {
                     hideOptionToolbar()
+                }
             }
         }
 

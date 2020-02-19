@@ -12,6 +12,7 @@ import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.domain.page.ClosePage
+import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.MockBlockFactory
 import com.agileburo.anytype.presentation.mapper.toView
@@ -82,6 +83,9 @@ class PageViewModelTest {
 
     @Mock
     lateinit var splitBlock: SplitBlock
+
+    @Mock
+    lateinit var createPage: CreatePage
 
     private lateinit var vm: PageViewModel
 
@@ -2560,6 +2564,53 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should proceed with creating a new page on on-plus-button-clicked event`() {
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
+            root = root,
+            child = child
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.onPlusButtonPressed()
+
+        verify(createPage, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                CreatePage.Params(
+                    id = root
+                )
+            ),
+            onResult = any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()
@@ -2614,6 +2665,7 @@ class PageViewModelTest {
         vm = PageViewModel(
             openPage = openPage,
             closePage = closePage,
+            createPage = createPage,
             updateBlock = updateBlock,
             interceptEvents = interceptEvents,
             createBlock = createBlock,

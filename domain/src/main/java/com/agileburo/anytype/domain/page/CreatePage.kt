@@ -33,7 +33,7 @@ class CreatePage(
     /**
      * @property id parent id for a new page
      */
-    class Params(val id: String) {
+    data class Params(val id: String) {
         companion object {
             fun insideDashboard() = Params(MainConfig.HOME_DASHBOARD_ID)
         }

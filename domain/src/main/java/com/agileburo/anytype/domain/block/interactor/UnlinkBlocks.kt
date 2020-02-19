@@ -10,7 +10,8 @@ import com.agileburo.anytype.domain.common.Id
  * Use-case for unlinking blocks from its context.
  * Unlinking is a remplacement for delete operations.
  */
-open class UnlinkBlocks(private val repo: BlockRepository) : BaseUseCase<Unit, UnlinkBlocks.Params>() {
+open class UnlinkBlocks(private val repo: BlockRepository) :
+    BaseUseCase<Unit, UnlinkBlocks.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.unlink(

@@ -20,6 +20,7 @@ import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.*
 import com.agileburo.anytype.domain.page.ClosePage
+import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
@@ -34,6 +35,7 @@ import timber.log.Timber
 class PageViewModel(
     private val openPage: OpenPage,
     private val closePage: ClosePage,
+    private val createPage: CreatePage,
     private val updateBlock: UpdateBlock,
     private val createBlock: CreateBlock,
     private val interceptEvents: InterceptEvents,
@@ -759,10 +761,6 @@ class PageViewModel(
         )
     }
 
-    private fun proceedWithOpeningPage(target: Id) {
-        navigate(EventWrapper(AppNavigation.Command.OpenPage(target)))
-    }
-
     fun onAddNewPageClicked() {
 
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
@@ -782,12 +780,28 @@ class PageViewModel(
         }
     }
 
+    fun onPlusButtonPressed() {
+        createPage.invoke(
+            scope = viewModelScope,
+            params = CreatePage.Params.insideDashboard()
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while creating a new page on home dashboard") },
+                fnR = { id -> proceedWithOpeningPage(id) }
+            )
+        }
+    }
+
     private fun addNewBlockAtTheEnd() {
         proceedWithCreatingNewTextBlock(
             id = "",
             position = Position.INNER,
             style = Content.Text.Style.P
         )
+    }
+
+    private fun proceedWithOpeningPage(target: Id) {
+        navigate(EventWrapper(AppNavigation.Command.OpenPage(target)))
     }
 
     sealed class ViewState {

@@ -55,7 +55,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-open class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragmentInteractionListener {
+open class PageFragment : NavigationFragment(R.layout.fragment_page),
+    OnFragmentInteractionListener {
 
     private val vm by lazy {
         ViewModelProviders
@@ -97,11 +98,13 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vm.open(requireArguments().getString(ID_KEY, ID_EMPTY_VALUE))
+        setupOnBackPressedDispatcher()
+    }
+
+    private fun setupOnBackPressedDispatcher() {
         requireActivity()
             .onBackPressedDispatcher
-            .addCallback(this) {
-                vm.onSystemBackPressed()
-            }
+            .addCallback(this) { vm.onSystemBackPressed() }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -210,7 +213,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page), OnFragment
             }
             .launchIn(lifecycleScope)
 
-        fab.clicks().onEach { toast(NOT_IMPLEMENTED_MESSAGE) }.launchIn(lifecycleScope)
+        fab.clicks().onEach { vm.onPlusButtonPressed() }.launchIn(lifecycleScope)
     }
 
     private fun handleTextColorClick(click: ColorToolbarWidget.Click.OnTextColorClicked) =

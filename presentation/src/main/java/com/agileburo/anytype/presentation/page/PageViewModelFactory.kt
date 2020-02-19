@@ -5,11 +5,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.page.ClosePage
+import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
 
 open class PageViewModelFactory(
     private val openPage: OpenPage,
     private val closePage: ClosePage,
+    private val createPage: CreatePage,
     private val updateBlock: UpdateBlock,
     private val createBlock: CreateBlock,
     private val interceptEvents: InterceptEvents,
@@ -40,7 +42,8 @@ open class PageViewModelFactory(
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
             mergeBlocks = mergeBlocks,
-            splitBlock = splitBlock
+            splitBlock = splitBlock,
+            createPage = createPage
         ) as T
     }
 }

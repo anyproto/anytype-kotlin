@@ -9,7 +9,8 @@ import com.agileburo.anytype.domain.common.Id
 /**
  * Use-case for merging a pair of blocks.
  */
-open class MergeBlocks(private val repo: BlockRepository) : BaseUseCase<Unit, MergeBlocks.Params>() {
+open class MergeBlocks(private val repo: BlockRepository) :
+    BaseUseCase<Unit, MergeBlocks.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.merge(

@@ -6,6 +6,7 @@ import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.event.interactor.EventChannel
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.page.ClosePage
+import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.page.PageFragment
@@ -46,10 +47,12 @@ class PageModule {
         updateTextStyle: UpdateTextStyle,
         updateTextColor: UpdateTextColor,
         mergeBlocks: MergeBlocks,
-        splitBlock: SplitBlock
+        splitBlock: SplitBlock,
+        createPage: CreatePage
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
+        createPage = createPage,
         updateBlock = updateBlock,
         createBlock = createBlock,
         interceptEvents = interceptEvents,
@@ -166,6 +169,14 @@ class PageModule {
     fun provideUpdateTextColorUseCase(
         repo: BlockRepository
     ): UpdateTextColor = UpdateTextColor(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideCreatePageUseCase(
+        repo: BlockRepository
+    ): CreatePage = CreatePage(
         repo = repo
     )
 }

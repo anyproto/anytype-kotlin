@@ -33,6 +33,19 @@ class BlockAdapterTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     @Test
+    fun `should return transparent hex code when int color value is zero`() {
+
+        val transparentColor = 0
+
+        val actual = transparentColor.hexColorCode()
+
+        assertEquals(
+            expected = "#00000000",
+            actual = actual
+        )
+    }
+
+    @Test
     fun `should create paragraph view holder`() {
 
         val paragraph = BlockView.Paragraph(

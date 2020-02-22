@@ -80,6 +80,7 @@ fun BlockEntity.Content.toDomain(): Block.Content = when (this) {
     is BlockEntity.Content.Layout -> toDomain()
     is BlockEntity.Content.Image -> toDomain()
     is BlockEntity.Content.Link -> toDomain()
+    is BlockEntity.Content.Divider -> toDomain()
 }
 
 fun BlockEntity.Content.Text.toDomain(): Block.Content.Text {
@@ -130,6 +131,8 @@ fun BlockEntity.Content.Image.toDomain(): Block.Content.Image {
     )
 }
 
+fun BlockEntity.Content.Divider.toDomain() = Block.Content.Divider
+
 fun Block.Content.Image.toEntity(): BlockEntity.Content.Image {
     return BlockEntity.Content.Image(
         path = path
@@ -160,6 +163,7 @@ fun Block.Content.toEntity(): BlockEntity.Content = when (this) {
     is Block.Content.Layout -> toEntity()
     is Block.Content.Image -> toEntity()
     is Block.Content.Link -> toEntity()
+    is Block.Content.Divider -> toEntity()
 }
 
 fun Block.Content.Text.toEntity(): BlockEntity.Content.Text {
@@ -189,6 +193,8 @@ fun Block.Content.Link.toEntity(): BlockEntity.Content.Link {
         fields = BlockEntity.Fields(map = fields.map.toMutableMap())
     )
 }
+
+fun Block.Content.Divider.toEntity() = BlockEntity.Content.Divider
 
 fun Block.Content.Text.Mark.toEntity(): BlockEntity.Content.Text.Mark {
     return BlockEntity.Content.Text.Mark(
@@ -346,4 +352,5 @@ fun Block.Prototype.toEntity(): BlockEntity.Prototype = when (this) {
             style = BlockEntity.Content.Page.Style.valueOf(this.style.name)
         )
     }
+    Block.Prototype.Divider -> BlockEntity.Prototype.Divider
 }

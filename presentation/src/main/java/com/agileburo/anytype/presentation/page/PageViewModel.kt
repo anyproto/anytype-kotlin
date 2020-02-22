@@ -307,6 +307,7 @@ class PageViewModel(
                             block.toView()
                         }
                         is Content.Link -> block.toView()
+                        is Content.Divider -> block.toView()
                         else -> null
                     }
                 }
@@ -559,6 +560,26 @@ class PageViewModel(
         }
     }
 
+    private fun proceedWithCreatingNewDividerBlock(
+        id: String,
+        position: Position = Position.BOTTOM
+    ) {
+        createBlock.invoke(
+            scope = viewModelScope,
+            params = CreateBlock.Params(
+                context = pageId,
+                target = id,
+                position = position,
+                prototype = Prototype.Divider
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while creating a divider block") },
+                fnR = { Timber.d("Request to create a divider block has been dispatched") }
+            )
+        }
+    }
+
     fun onMarkupActionClicked(markup: Markup.Type) {
         viewModelScope.launch {
             markupActionChannel.send(MarkupAction(type = markup))
@@ -705,6 +726,11 @@ class PageViewModel(
 
     fun onTurnIntoStyleClicked(style: Content.Text.Style) {
         proceedWithUpdatingTextStyle(style, focusChannel.value)
+    }
+
+    fun onOptionOtherActionClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
+        proceedWithCreatingNewDividerBlock(id = focusChannel.value)
     }
 
     private fun proceedWithUpdatingTextStyle(

@@ -44,6 +44,7 @@ data class Block(
         fun asText() = this as Text
         fun asLink() = this as Link
         fun asDashboard() = this as Dashboard
+        fun asDivider() = this as Divider
 
         /**
          * Textual block.
@@ -136,6 +137,8 @@ data class Block(
         ) : Content() {
             enum class Type { PAGE, DATA_VIEW, DASHBOARD, ARCHIVE }
         }
+
+        object Divider : Content()
     }
 
     /**
@@ -153,5 +156,7 @@ data class Block(
         data class Page(
             val style: Content.Page.Style
         ) : Prototype()
+
+        object Divider : Prototype()
     }
 }

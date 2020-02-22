@@ -314,6 +314,7 @@ public class Middleware {
 
         Models.Block.Content.Text textBlockModel = null;
         Models.Block.Content.Page pageBlockModel = null;
+        Models.Block.Content.Div dividerBlockModel = null;
 
         if (prototype instanceof BlockEntity.Prototype.Text) {
 
@@ -394,6 +395,11 @@ public class Middleware {
                     .newBuilder()
                     .setStyle(Models.Block.Content.Page.Style.Empty)
                     .build();
+        } else if (prototype instanceof BlockEntity.Prototype.Divider) {
+            dividerBlockModel = Models.Block.Content.Div
+                    .newBuilder()
+                    .setStyle(Models.Block.Content.Div.Style.Line)
+                    .build();
         }
 
         Models.Block blockModel = null;
@@ -407,6 +413,11 @@ public class Middleware {
             blockModel = Models.Block
                     .newBuilder()
                     .setPage(pageBlockModel)
+                    .build();
+        } else if (dividerBlockModel != null) {
+            blockModel = Models.Block
+                    .newBuilder()
+                    .setDiv(dividerBlockModel)
                     .build();
         }
 

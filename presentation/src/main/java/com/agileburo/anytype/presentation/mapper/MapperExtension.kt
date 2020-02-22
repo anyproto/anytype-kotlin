@@ -90,6 +90,11 @@ fun Block.toView(
             text = if (content.fields.hasName()) content.fields.name else null
         )
     }
+    is Block.Content.Divider -> {
+        BlockView.Divider(
+            id = id
+        )
+    }
     else -> TODO()
 }
 

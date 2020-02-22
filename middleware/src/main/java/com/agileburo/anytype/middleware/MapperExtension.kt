@@ -213,6 +213,8 @@ fun Block.link(): BlockEntity.Content.Link = BlockEntity.Content.Link(
     }
 )
 
+fun Block.divider(): BlockEntity.Content.Divider = BlockEntity.Content.Divider
+
 fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
     when (block.contentCase) {
         Block.ContentCase.DASHBOARD -> {
@@ -253,6 +255,14 @@ fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
                 children = block.childrenIdsList,
                 fields = block.fields(),
                 content = block.link()
+            )
+        }
+        Block.ContentCase.DIV -> {
+            BlockEntity(
+                id = block.id,
+                children = emptyList(),
+                fields = block.fields(),
+                content = block.divider()
             )
         }
         else -> {

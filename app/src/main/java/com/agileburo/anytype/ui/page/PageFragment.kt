@@ -265,6 +265,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                     else -> toast(NOT_IMPLEMENTED_MESSAGE)
                 }
             }
+            is Option.Other -> vm.onOptionOtherActionClicked()
         }
     }
 

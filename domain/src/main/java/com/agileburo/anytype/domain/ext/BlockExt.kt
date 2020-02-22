@@ -23,7 +23,8 @@ fun Map<String, List<Block>>.asRender(anchor: String): List<Block> {
     val children = getValue(anchor)
     val result = mutableListOf<Block>()
     children.forEach { child ->
-        if (child.content is Content.Text || child.content is Content.Image || child.content is Content.Link) {
+        if (child.content is Content.Text || child.content is Content.Image
+            || child.content is Content.Link || child.content is Content.Divider) {
             result.add(child)
             result.addAll(asRender(child.id))
         } else if (child.content is Content.Layout)

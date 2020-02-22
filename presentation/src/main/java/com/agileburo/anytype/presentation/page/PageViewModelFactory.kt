@@ -3,10 +3,13 @@ package com.agileburo.anytype.presentation.page
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.block.interactor.*
+import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
+import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
+import com.agileburo.anytype.presentation.common.StateReducer
 
 open class PageViewModelFactory(
     private val openPage: OpenPage,
@@ -24,7 +27,8 @@ open class PageViewModelFactory(
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
     private val mergeBlocks: MergeBlocks,
-    private val splitBlock: SplitBlock
+    private val splitBlock: SplitBlock,
+    private val documentEventReducer: StateReducer<List<Block>, Event>
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -45,7 +49,8 @@ open class PageViewModelFactory(
             removeLinkMark = removeLinkMark,
             mergeBlocks = mergeBlocks,
             splitBlock = splitBlock,
-            createPage = createPage
+            createPage = createPage,
+            documentExternalEventReducer = documentEventReducer
         ) as T
     }
 }

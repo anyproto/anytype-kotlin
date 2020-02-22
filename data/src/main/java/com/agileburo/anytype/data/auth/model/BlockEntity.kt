@@ -68,7 +68,7 @@ data class BlockEntity(
             enum class Type { PAGE, DATA_VIEW, DASHBOARD, ARCHIVE }
         }
 
-        object Divider: Content()
+        object Divider : Content()
     }
 
     sealed class Prototype {
@@ -80,6 +80,6 @@ data class BlockEntity(
             val style: Content.Page.Style
         ) : Prototype()
 
-        object Divider: Prototype()
+        object Divider : Prototype()
     }
 }

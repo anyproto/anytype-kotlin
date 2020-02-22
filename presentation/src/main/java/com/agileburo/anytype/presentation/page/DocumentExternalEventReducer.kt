@@ -1,0 +1,49 @@
+package com.agileburo.anytype.presentation.page
+
+import com.agileburo.anytype.core_utils.ext.replace
+import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.event.model.Event
+import com.agileburo.anytype.domain.ext.content
+import com.agileburo.anytype.presentation.common.StateReducer
+
+/**
+ * Reduces external events (coming not from user, but from outside) to state.
+ */
+class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
+
+    override val function: suspend (List<Block>, Event) -> List<Block>
+        get() = { state, event ->
+            reduce(
+                state,
+                event
+            )
+        }
+
+    override suspend fun reduce(state: List<Block>, event: Event): List<Block> = when (event) {
+        is Event.Command.ShowBlock -> event.blocks
+        is Event.Command.AddBlock -> state + event.blocks
+        is Event.Command.UpdateStructure -> state.replace(
+            replacement = { target ->
+                target.copy(children = event.children)
+            },
+            target = { block -> block.id == event.id }
+        )
+        is Event.Command.DeleteBlock -> state.filter { !event.targets.contains(it.id) }
+        is Event.Command.GranularChange -> state.replace(
+            replacement = { block ->
+                val content = block.content<Block.Content.Text>()
+                block.copy(
+                    content = content.copy(
+                        style = event.style ?: content.style,
+                        color = event.color ?: content.color,
+                        backgroundColor = event.backgroundColor ?: content.backgroundColor,
+                        text = event.text ?: content.text,
+                        marks = event.marks ?: content.marks
+                    )
+                )
+            },
+            target = { block -> block.id == event.id }
+        )
+        else -> state
+    }
+}

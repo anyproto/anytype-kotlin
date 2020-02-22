@@ -294,7 +294,7 @@ public class Middleware {
         service.blockSetTextBackgroundColor(request);
     }
 
-    public void createBlock(
+    public String createBlock(
             String contextId,
             String targetId,
             PositionEntity position,
@@ -447,7 +447,9 @@ public class Middleware {
 
         Timber.d("Creating block with the following request:\n%s", request.toString());
 
-        service.blockCreate(request);
+        Block.Create.Response response = service.blockCreate(request);
+
+        return response.getBlockId();
     }
 
     public void dnd(CommandEntity.Dnd command) throws Exception {

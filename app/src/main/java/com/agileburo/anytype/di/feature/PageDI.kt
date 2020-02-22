@@ -8,6 +8,7 @@ import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
+import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.page.PageFragment
 import dagger.Module
@@ -49,7 +50,8 @@ class PageModule {
         updateBackgroundColor: UpdateBackgroundColor,
         mergeBlocks: MergeBlocks,
         splitBlock: SplitBlock,
-        createPage: CreatePage
+        createPage: CreatePage,
+        documentExternalEventReducer: DocumentExternalEventReducer
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -66,7 +68,8 @@ class PageModule {
         updateLinkMarks = updateLinkMarks,
         removeLinkMark = removeLinkMark,
         mergeBlocks = mergeBlocks,
-        splitBlock = splitBlock
+        splitBlock = splitBlock,
+        documentEventReducer = documentExternalEventReducer
     )
 
     @Provides
@@ -189,4 +192,9 @@ class PageModule {
     ): CreatePage = CreatePage(
         repo = repo
     )
+
+    @Provides
+    @PerScreen
+    fun provideDocumentExternalEventReducer(): DocumentExternalEventReducer =
+        DocumentExternalEventReducer()
 }

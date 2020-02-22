@@ -15,7 +15,7 @@ import com.agileburo.anytype.domain.common.Id
  */
 open class CreateBlock(
     private val repo: BlockRepository
-) : BaseUseCase<Unit, Params>() {
+) : BaseUseCase<Id, Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.create(

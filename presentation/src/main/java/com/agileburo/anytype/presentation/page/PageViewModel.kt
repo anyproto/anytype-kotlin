@@ -22,6 +22,7 @@ import com.agileburo.anytype.domain.ext.*
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
+import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
@@ -48,9 +49,11 @@ class PageViewModel(
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
     private val mergeBlocks: MergeBlocks,
-    private val splitBlock: SplitBlock
+    private val splitBlock: SplitBlock,
+    private val documentExternalEventReducer: StateReducer<List<Block>, Event>
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
-    SupportNavigation<EventWrapper<AppNavigation.Command>> {
+    SupportNavigation<EventWrapper<AppNavigation.Command>>,
+    StateReducer<List<Block>, Event> by documentExternalEventReducer {
 
     private val controlPanelInteractor = Interactor(viewModelScope)
     val controlPanelViewState = MutableLiveData<ControlPanelState>()
@@ -105,7 +108,8 @@ class PageViewModel(
             interceptEvents
                 .build()
                 .filter { events -> events.any { it.context == context } }
-                .collect { event -> handleEvents(event) }
+                .map { events -> events.forEach { event -> blocks = reduce(blocks, event) } }
+                .collect { viewModelScope.launch { renderingChannel.send(blocks) } }
         }
     }
 
@@ -116,53 +120,6 @@ class PageViewModel(
                 .distinctUntilChanged()
                 .collect { controlPanelViewState.postValue(it) }
         }
-    }
-
-    private fun handleEvents(events: List<Event>) {
-
-        events.forEach { event ->
-            Timber.d("Handling event: $event")
-            when (event) {
-                is Event.Command.ShowBlock -> {
-                    blocks = event.blocks
-                }
-                is Event.Command.AddBlock -> {
-                    blocks = blocks + event.blocks
-                    viewModelScope.launch { focusChannel.send(event.blocks.last().id) }
-                }
-                is Event.Command.UpdateStructure -> {
-                    blocks = blocks.map { block ->
-                        if (block.id == event.id)
-                            block.copy(children = event.children)
-                        else
-                            block
-                    }
-                }
-                is Event.Command.DeleteBlock -> {
-                    blocks = blocks.filter { !event.targets.contains(it.id) }
-                }
-                is Event.Command.GranularChange -> {
-                    blocks = blocks.map { block ->
-                        if (block.id == event.id) {
-                            val content = block.content.asText()
-                            block.copy(
-                                content = content.copy(
-                                    style = event.style ?: content.style,
-                                    color = event.color ?: content.color,
-                                    backgroundColor = event.backgroundColor
-                                        ?: content.backgroundColor,
-                                    text = event.text ?: content.text,
-                                    marks = event.marks ?: content.marks
-                                )
-                            )
-                        } else
-                            block
-                    }
-                }
-            }
-        }
-
-        viewModelScope.launch { renderingChannel.send(blocks) }
     }
 
     private fun processMarkupChanges() {
@@ -208,8 +165,8 @@ class PageViewModel(
             UpdateLinkMarks.Params(marks = marks, newMark = linkMark)
         ) { result ->
             result.either(
-                fnL = {
-                    throwable -> Timber.e("Error update marks:${throwable.message}")
+                fnL = { throwable ->
+                    Timber.e("Error update marks:${throwable.message}")
                 },
                 fnR = {
                     val newContent = targetContent.copy(marks = it)
@@ -280,13 +237,12 @@ class PageViewModel(
 
     private fun rerenderingBlocks(block: Block) =
         viewModelScope.launch {
-            val update = blocks.map {
+            blocks = blocks.map {
                 if (it.id != block.id)
                     it
                 else
                     block
             }
-            blocks = update
             renderingChannel.send(blocks)
         }
 
@@ -327,7 +283,7 @@ class PageViewModel(
             .debounce(TEXT_CHANGES_DEBOUNCE_DURATION)
             .map { (id, text, marks) ->
 
-                val update = blocks.map { block ->
+                blocks = blocks.map { block ->
                     if (block.id == id) {
                         block.copy(
                             content = block.content.asText().copy(
@@ -338,8 +294,6 @@ class PageViewModel(
                     } else
                         block
                 }
-
-                blocks = update
 
                 UpdateBlock.Params(
                     contextId = context,
@@ -437,7 +391,7 @@ class PageViewModel(
     fun onBlockFocusChanged(id: String, hasFocus: Boolean) {
         Timber.d("Focus changed ($hasFocus): $id")
         if (hasFocus) {
-            viewModelScope.launch { focusChannel.send(id) }
+            updateFocus(id)
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.OnFocusChanged(
                     id = id,
@@ -558,9 +512,13 @@ class PageViewModel(
         ) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while creating a block") },
-                fnR = { Timber.d("Request to create a block has been dispatched") }
+                fnR = { id -> updateFocus(id) }
             )
         }
+    }
+
+    private fun updateFocus(id: Id) {
+        viewModelScope.launch { focusChannel.send(id) }
     }
 
     private fun proceedWithCreatingNewDividerBlock(
@@ -578,7 +536,7 @@ class PageViewModel(
         ) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while creating a divider block") },
-                fnR = { Timber.d("Request to create a divider block has been dispatched") }
+                fnR = { id -> updateFocus(id) }
             )
         }
     }
@@ -669,6 +627,21 @@ class PageViewModel(
     }
 
     private fun proceedWithUnlinking(target: String) {
+
+        // TODO support nested blocks
+
+        val root = blocks.first { it.id == context }
+
+        val index = root.children.indexOf(target)
+
+        val previous = index.dec().let { prev ->
+            if (prev != -1) root.children[prev] else null
+        }
+
+        val next = index.inc().let { nxt ->
+            if (nxt <= root.children.lastIndex) root.children[nxt] else null
+        }
+
         unlinkBlocks.invoke(
             scope = viewModelScope,
             params = UnlinkBlocks.Params(
@@ -678,11 +651,15 @@ class PageViewModel(
         ) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while unlinking block with id: $target") },
-                fnR = { Timber.d("Succesfully unlinked block with id: $target") }
+                fnR = {
+                    if (previous != null)
+                        updateFocus(id = previous)
+                    else if (next != null)
+                        updateFocus(id = next)
+                }
             )
         }
     }
-
 
     fun onActionDuplicateClicked() {
         viewModelScope.launch {

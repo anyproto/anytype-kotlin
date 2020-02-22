@@ -47,11 +47,11 @@ inline fun <reified T> List<*>.typeOf(): List<T> {
 /**
  * A function for replacing a value of immutable list.
  * @param replacement a replacement operation (takes an old element, returns a new element)
- * @param block checks whether an element should be replaced or not.
+ * @param target checks whether an element should be replaced or not.
  * @return an updated list
  */
-inline fun <T> List<T>.replace(replacement: (T) -> T, block: (T) -> Boolean): List<T> {
-    return map { if (block(it)) replacement(it) else it }
+inline fun <T> List<T>.replace(replacement: (T) -> T, target: (T) -> Boolean): List<T> {
+    return map { if (target(it)) replacement(it) else it }
 }
 
 fun Context.toast(msg: CharSequence) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()

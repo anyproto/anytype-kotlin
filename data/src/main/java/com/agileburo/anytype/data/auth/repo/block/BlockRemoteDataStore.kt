@@ -43,9 +43,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         remote.updateCheckbox(command)
     }
 
-    override suspend fun create(command: CommandEntity.Create) {
-        remote.create(command)
-    }
+    override suspend fun create(command: CommandEntity.Create): String = remote.create(command)
 
     override suspend fun dnd(command: CommandEntity.Dnd) {
         remote.dnd(command)

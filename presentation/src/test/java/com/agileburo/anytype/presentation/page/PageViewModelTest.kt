@@ -8,7 +8,6 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
-import com.agileburo.anytype.domain.config.MainConfig
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.content
@@ -366,7 +365,8 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(200)
 
-        val expected = ViewState.Success(listOf(page.last().toView(), added.toView(focused = true)))
+        val expected =
+            ViewState.Success(listOf(page.last().toView(), added.toView(focused = false)))
 
         vm.state.test().assertValue(expected)
     }
@@ -2606,11 +2606,7 @@ class PageViewModelTest {
 
         verify(createPage, times(1)).invoke(
             scope = any(),
-            params = eq(
-                CreatePage.Params(
-                    id = MainConfig.HOME_DASHBOARD_ID
-                )
-            ),
+            params = eq(CreatePage.Params.insideDashboard()),
             onResult = any()
         )
     }
@@ -2682,7 +2678,8 @@ class PageViewModelTest {
             updateLinkMarks = updateLinkMark,
             removeLinkMark = removeLinkMark,
             mergeBlocks = mergeBlocks,
-            splitBlock = splitBlock
+            splitBlock = splitBlock,
+            documentExternalEventReducer = DocumentExternalEventReducer()
         )
     }
 }

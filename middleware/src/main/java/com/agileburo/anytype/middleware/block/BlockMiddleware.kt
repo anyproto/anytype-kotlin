@@ -63,14 +63,12 @@ class BlockMiddleware(
         )
     }
 
-    override suspend fun create(command: CommandEntity.Create) {
-        middleware.createBlock(
-            command.context,
-            command.target,
-            command.position,
-            command.prototype
-        )
-    }
+    override suspend fun create(command: CommandEntity.Create): String = middleware.createBlock(
+        command.context,
+        command.target,
+        command.position,
+        command.prototype
+    )
 
     override suspend fun dnd(command: CommandEntity.Dnd) {
         middleware.dnd(command)

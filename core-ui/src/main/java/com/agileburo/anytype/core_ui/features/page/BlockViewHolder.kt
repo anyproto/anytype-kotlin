@@ -698,6 +698,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_HIGHLIGHT = 17
         const val HOLDER_FOOTER = 18
 
-        const val FOCUS_TIMEOUT_MILLIS = 60L
+        const val FOCUS_TIMEOUT_MILLIS = 16L
     }
 }

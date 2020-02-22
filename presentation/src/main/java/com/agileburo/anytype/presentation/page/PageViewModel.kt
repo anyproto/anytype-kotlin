@@ -567,7 +567,7 @@ class PageViewModel(
         createBlock.invoke(
             scope = viewModelScope,
             params = CreateBlock.Params(
-                context = pageId,
+                context = context,
                 target = id,
                 position = position,
                 prototype = Prototype.Divider

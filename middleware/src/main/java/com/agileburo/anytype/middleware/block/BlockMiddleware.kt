@@ -85,7 +85,5 @@ class BlockMiddleware(
         middleware.merge(command)
     }
 
-    override suspend fun split(command: CommandEntity.Split) {
-        middleware.split(command)
-    }
+    override suspend fun split(command: CommandEntity.Split): String = middleware.split(command)
 }

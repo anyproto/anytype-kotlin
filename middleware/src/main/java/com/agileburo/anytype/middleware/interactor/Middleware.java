@@ -528,7 +528,7 @@ public class Middleware {
         service.blockMerge(request);
     }
 
-    public void split(CommandEntity.Split command) throws Exception {
+    public String split(CommandEntity.Split command) throws Exception {
         Block.Split.Request request = Block.Split.Request
                 .newBuilder()
                 .setBlockId(command.getTarget())
@@ -538,6 +538,8 @@ public class Middleware {
 
         Timber.d("Splitting the target block with the following request:\n%s", request.toString());
 
-        service.blockSplit(request);
+        Block.Split.Response response = service.blockSplit(request);
+
+        return response.getBlockId();
     }
 }

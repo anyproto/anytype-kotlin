@@ -9,7 +9,7 @@ import com.agileburo.anytype.domain.common.Id
 /**
  * Use-case for splitting the target block into two blocks based on cursor position.
  */
-class SplitBlock(private val repo: BlockRepository) : BaseUseCase<Unit, SplitBlock.Params>() {
+class SplitBlock(private val repo: BlockRepository) : BaseUseCase<String, SplitBlock.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.split(

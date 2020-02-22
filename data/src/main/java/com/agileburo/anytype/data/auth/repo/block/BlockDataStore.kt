@@ -14,7 +14,7 @@ interface BlockDataStore {
     suspend fun dnd(command: CommandEntity.Dnd)
     suspend fun duplicate(command: CommandEntity.Duplicate): Id
     suspend fun merge(command: CommandEntity.Merge)
-    suspend fun split(command: CommandEntity.Split)
+    suspend fun split(command: CommandEntity.Split): Id
     suspend fun unlink(command: CommandEntity.Unlink)
     suspend fun getConfig(): ConfigEntity
     suspend fun createPage(parentId: String): String

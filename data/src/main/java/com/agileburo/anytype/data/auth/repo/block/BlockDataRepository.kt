@@ -66,7 +66,5 @@ class BlockDataRepository(
         factory.remote.merge(command.toEntity())
     }
 
-    override suspend fun split(command: Command.Split) {
-        factory.remote.split(command.toEntity())
-    }
+    override suspend fun split(command: Command.Split) = factory.remote.split(command.toEntity())
 }

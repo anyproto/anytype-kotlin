@@ -130,7 +130,6 @@ class PageViewModel(
                     .filter { (_, selection) -> selection.first != selection.last }
             ) { a, b -> Pair(a, b) }
             .onEach { (action, selection) ->
-
                 when (action.type) {
                     Markup.Type.LINK -> {
                         val block = blocks.first { it.id == selection.first }
@@ -414,7 +413,10 @@ class PageViewModel(
         val index = page.children.indexOf(id)
         if (index > 1) {
             val previous = page.children[index.dec()]
-            proceedWithMergingBlocks(previous, id)
+            proceedWithMergingBlocks(
+                previous = previous,
+                id = id
+            )
         } else {
             Timber.d("Skipping merge on non-empty-block-backspace-pressed event")
         }
@@ -425,12 +427,12 @@ class PageViewModel(
             scope = viewModelScope,
             params = MergeBlocks.Params(
                 context = context,
-                pair = Pair(id, previous)
+                pair = Pair(previous, id)
             )
         ) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while merging blocks: $id, $previous") },
-                fnR = { Timber.d("Succesfully merged $id and $previous") }
+                fnR = { updateFocus(previous) }
             )
         }
     }
@@ -449,7 +451,7 @@ class PageViewModel(
         ) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while splitting the target block with id: $id") },
-                fnR = { Timber.d("Succesfully split the target block with id: $id") }
+                fnR = { id -> updateFocus(id) }
             )
         }
     }
@@ -518,6 +520,7 @@ class PageViewModel(
     }
 
     private fun updateFocus(id: Id) {
+        Timber.d("Updating focus: $id")
         viewModelScope.launch { focusChannel.send(id) }
     }
 

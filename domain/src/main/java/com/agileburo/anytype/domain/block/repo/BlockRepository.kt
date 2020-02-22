@@ -8,9 +8,21 @@ interface BlockRepository {
     suspend fun dnd(command: Command.Dnd)
     suspend fun duplicate(command: Command.Duplicate): Id
     suspend fun unlink(command: Command.Unlink)
+
+    /**
+     * Creates a new block.
+     * @return id of the created block.
+     */
     suspend fun create(command: Command.Create): Id
+
     suspend fun merge(command: Command.Merge)
-    suspend fun split(command: Command.Split)
+
+    /**
+     * Splits one block into two blocks.
+     * @return id of the block, created as a result of splitting.
+     */
+    suspend fun split(command: Command.Split): Id
+
     suspend fun updateText(command: Command.UpdateText)
     suspend fun updateTextStyle(command: Command.UpdateStyle)
     suspend fun updateTextColor(command: Command.UpdateTextColor)

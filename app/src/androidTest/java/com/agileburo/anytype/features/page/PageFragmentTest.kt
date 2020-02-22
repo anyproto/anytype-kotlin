@@ -34,6 +34,7 @@ import com.agileburo.anytype.mocking.MockUiTests.BLOCK_PARAGRAPH_1
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_QUOTE
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_TITLE
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_TOGGLE
+import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.page.PageFragment
@@ -101,6 +102,7 @@ class PageFragmentTest {
 
     private lateinit var splitBlock: SplitBlock
     private lateinit var createPage: CreatePage
+    private lateinit var updateBackgroundColor: UpdateBackgroundColor
 
     private lateinit var actionToolbar: ViewInteraction
     private lateinit var optionToolbar: ViewInteraction
@@ -116,6 +118,7 @@ class PageFragmentTest {
 
         splitBlock = SplitBlock(repo)
         createPage = CreatePage(repo)
+        updateBackgroundColor = UpdateBackgroundColor(repo)
 
         TestPageFragment.testViewModelFactory = PageViewModelFactory(
             openPage = openPage,
@@ -132,7 +135,9 @@ class PageFragmentTest {
             removeLinkMark = removeLinkMark,
             mergeBlocks = mergeBlocks,
             splitBlock = splitBlock,
-            createPage = createPage
+            createPage = createPage,
+            documentEventReducer = DocumentExternalEventReducer(),
+            updateBackgroundColor = updateBackgroundColor
         )
     }
 
@@ -470,6 +475,117 @@ class PageFragmentTest {
         }
         onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)).apply {
             check(matches(withText("Bar")))
+        }
+    }
+
+    @Test
+    fun shouldCreateDividerBlockAfterFirstBlock() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val delayBeforeGettingEvents = 100L
+        val delayBeforeAddingDivider = 100L
+
+        val paragraphBefore = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Block before divider",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val paragraphAfter = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Block after divider",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(paragraphBefore.id, paragraphAfter.id)
+            ),
+            paragraphBefore,
+            paragraphAfter
+        )
+
+        val divider = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Divider
+        )
+
+        stubEvents(
+            events = flow {
+                delay(delayBeforeGettingEvents)
+                emit(
+                    listOf(
+                        Event.Command.ShowBlock(
+                            rootId = root,
+                            blocks = page,
+                            context = root
+                        )
+                    )
+                )
+                delay(delayBeforeAddingDivider)
+                emit(
+                    listOf(
+                        Event.Command.GranularChange(
+                            context = root,
+                            id = paragraphBefore.id,
+                            text = "Block before divider, get focus and add divider"
+                        ),
+                        Event.Command.UpdateStructure(
+                            context = root,
+                            id = page.first().id,
+                            children = listOf(paragraphBefore.id, divider.id, paragraphAfter.id)
+                        ),
+                        Event.Command.AddBlock(
+                            context = root,
+                            blocks = listOf(divider)
+                        )
+                    )
+                )
+            }
+        )
+
+        launchFragment(args)
+
+        // TESTING
+
+        advance(delayBeforeGettingEvents)
+
+        val target1 = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent))
+        val target2 = onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent))
+
+        target1.check(matches(withText(paragraphBefore.content.asText().text)))
+        target2.check(matches(withText(paragraphAfter.content.asText().text)))
+
+        advance(delayBeforeAddingDivider)
+
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent)).apply {
+            check(matches(withText("Block before divider, get focus and add divider")))
+        }
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.divider)).apply {
+            check(matches(isDisplayed()))
+        }
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, R.id.textContent)).apply {
+            check(matches(withText("Block after divider")))
         }
     }
 

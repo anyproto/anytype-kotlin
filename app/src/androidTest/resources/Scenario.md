@@ -7,3 +7,4 @@
 - [x] simulate block split behavior by mocking appropriate events
 - [ ] create a page with one title and one paragraph, simulate a new paragraph creation by mocking appropriate event flow
 - [ ] create a page with one title and one paragraph, simulate event flow where this paragraph should be deleted
+- [x] create a page with one title and two paragraph, simulate event flow where divider block is added after first paragraph

@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/default_page_item_padding_start"
+    android:paddingEnd="@dimen/default_page_item_padding_end">
 
     <TextView
         android:id="@+id/logo"

@@ -1339,4 +1339,58 @@ class ControlPanelStateReducerTest {
             actual = actual
         )
     }
+
+    @Test
+    fun `should hide color toolbar on block-background-color-selected event`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true,
+                selectedAction = ControlPanelState.Toolbar.Block.Action.COLOR
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = true
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = false
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnBlockBackgroundColorSelected
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            blockToolbar = given.blockToolbar.copy(
+                isVisible = true,
+                selectedAction = null
+            ),
+            colorToolbar = given.colorToolbar.copy(
+                isVisible = false
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
 }

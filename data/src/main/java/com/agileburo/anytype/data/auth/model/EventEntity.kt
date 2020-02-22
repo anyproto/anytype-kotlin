@@ -29,6 +29,7 @@ sealed class EventEntity {
             val text: String? = null,
             val style: BlockEntity.Content.Text.Style? = null,
             val color: String? = null,
+            val backgroundColor: String? = null,
             val marks: List<BlockEntity.Content.Text.Mark>? = null
         ) : Command()
 

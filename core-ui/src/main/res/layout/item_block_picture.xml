@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:background="@drawable/rectangle_debug"
+    android:paddingStart="@dimen/default_page_item_padding_start"
+    android:paddingEnd="@dimen/default_page_item_padding_end"
     android:orientation="vertical">
 
     <TextView

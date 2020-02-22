@@ -69,6 +69,10 @@ class MiddlewareEventChannel(
                             event.blockSetText.color.value
                         else
                             null,
+                        backgroundColor = if (event.blockSetText.hasBackgroundColor())
+                            event.blockSetText.backgroundColor.value
+                        else
+                            null,
                         marks = if (event.blockSetText.hasMarks())
                             event.blockSetText.marks.value.marksList.marks()
                         else

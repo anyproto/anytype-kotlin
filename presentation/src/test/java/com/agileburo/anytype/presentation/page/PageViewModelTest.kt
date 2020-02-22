@@ -8,6 +8,7 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
+import com.agileburo.anytype.domain.config.MainConfig
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.content
@@ -86,6 +87,9 @@ class PageViewModelTest {
 
     @Mock
     lateinit var createPage: CreatePage
+
+    @Mock
+    lateinit var updateBackgroundColor: UpdateBackgroundColor
 
     private lateinit var vm: PageViewModel
 
@@ -2604,7 +2608,7 @@ class PageViewModelTest {
             scope = any(),
             params = eq(
                 CreatePage.Params(
-                    id = root
+                    id = MainConfig.HOME_DASHBOARD_ID
                 )
             ),
             onResult = any()
@@ -2674,6 +2678,7 @@ class PageViewModelTest {
             duplicateBlock = duplicateBlock,
             updateTextStyle = updateTextStyle,
             updateTextColor = updateTextColor,
+            updateBackgroundColor = updateBackgroundColor,
             updateLinkMarks = updateLinkMark,
             removeLinkMark = removeLinkMark,
             mergeBlocks = mergeBlocks,

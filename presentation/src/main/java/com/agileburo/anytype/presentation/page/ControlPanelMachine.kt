@@ -100,6 +100,11 @@ sealed class ControlPanelMachine {
         object OnBlockTextColorSelected : Event()
 
         /**
+         * Represents an event when user selected block background color on [Toolbar.Color] toolbar.
+         */
+        object OnBlockBackgroundColorSelected : Event()
+
+        /**
          * Represents an event when user selected an action toolbar on [Toolbar.Block]
          */
         object OnActionToolbarClicked : Event()
@@ -182,6 +187,14 @@ sealed class ControlPanelMachine {
                 )
             )
             is Event.OnBlockTextColorSelected -> state.copy(
+                colorToolbar = state.colorToolbar.copy(
+                    isVisible = false
+                ),
+                blockToolbar = state.blockToolbar.copy(
+                    selectedAction = null
+                )
+            )
+            is Event.OnBlockBackgroundColorSelected -> state.copy(
                 colorToolbar = state.colorToolbar.copy(
                     isVisible = false
                 ),

@@ -41,6 +41,8 @@ public interface MiddlewareService {
 
     Block.Set.Text.Color.Response blockSetTextColor(Block.Set.Text.Color.Request request) throws Exception;
 
+    Block.Set.Text.BackgroundColor.Response blockSetTextBackgroundColor(Block.Set.Text.BackgroundColor.Request request) throws Exception;
+
     Block.Set.Text.Style.Response blockSetTextStyle(Block.Set.Text.Style.Request request) throws Exception;
 
     BlockList.Move.Response blockListMove(BlockList.Move.Request request) throws Exception;

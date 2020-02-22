@@ -43,6 +43,7 @@ sealed class Event {
          * @property text new text (considered updated if not null)
          * @property style new style (considered updated if not null)
          * @property color new color of the whole block (considered updated if not null)
+         * @property backgroundColor background color of the whole block (considered updated if not null)
          */
         data class GranularChange(
             override val context: String,
@@ -50,6 +51,7 @@ sealed class Event {
             val text: String? = null,
             val style: Text.Style? = null,
             val color: String? = null,
+            val backgroundColor: String? = null,
             val marks: List<Text.Mark>? = null
         ) : Command()
 

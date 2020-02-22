@@ -46,6 +46,7 @@ class PageModule {
         duplicateBlock: DuplicateBlock,
         updateTextStyle: UpdateTextStyle,
         updateTextColor: UpdateTextColor,
+        updateBackgroundColor: UpdateBackgroundColor,
         mergeBlocks: MergeBlocks,
         splitBlock: SplitBlock,
         createPage: CreatePage
@@ -61,6 +62,7 @@ class PageModule {
         duplicateBlock = duplicateBlock,
         updateTextStyle = updateTextStyle,
         updateTextColor = updateTextColor,
+        updateBackgroundColor = updateBackgroundColor,
         updateLinkMarks = updateLinkMarks,
         removeLinkMark = removeLinkMark,
         mergeBlocks = mergeBlocks,
@@ -169,6 +171,14 @@ class PageModule {
     fun provideUpdateTextColorUseCase(
         repo: BlockRepository
     ): UpdateTextColor = UpdateTextColor(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideUpdateBackgroundColorUseCase(
+        repo: BlockRepository
+    ): UpdateBackgroundColor = UpdateBackgroundColor(
         repo = repo
     )
 

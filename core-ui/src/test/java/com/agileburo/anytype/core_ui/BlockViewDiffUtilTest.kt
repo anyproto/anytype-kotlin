@@ -240,7 +240,7 @@ class BlockViewDiffUtilTest {
     }
 
     @Test
-    fun `there should a number change detected`() {
+    fun `there should be a number change detected`() {
 
         val index = 0
 
@@ -277,5 +277,44 @@ class BlockViewDiffUtilTest {
             expected = expected,
             actual = payload
         )
+    }
+
+    fun `should return change payload containing background-color update`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val text = MockDataFactory.randomString()
+
+        val oldBlock = BlockView.Paragraph(
+            id = id,
+            text = text,
+            marks = emptyList(),
+            focused = MockDataFactory.randomBoolean(),
+            backgroundColor = null
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            backgroundColor = MockDataFactory.randomString()
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.BACKGROUND_COLOR_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+
     }
 }

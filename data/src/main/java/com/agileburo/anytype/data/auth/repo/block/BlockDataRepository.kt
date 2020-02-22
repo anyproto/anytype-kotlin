@@ -41,6 +41,10 @@ class BlockDataRepository(
         factory.remote.updateTextColor(command.toEntity())
     }
 
+    override suspend fun updateBackgroundColor(command: Command.UpdateBackgroundColor) {
+        factory.remote.updateBackroundColor(command.toEntity())
+    }
+
     override suspend fun updateCheckbox(command: Command.UpdateCheckbox) {
         factory.remote.updateCheckbox(command.toEntity())
     }

@@ -18,22 +18,26 @@ fun Block.toView(
                 text = content.text,
                 marks = mapMarks(content),
                 focused = focused,
-                color = content.color
+                color = content.color,
+                backgroundColor = content.backgroundColor
             )
             Style.H1 -> BlockView.HeaderOne(
                 id = id,
                 text = content.text,
-                color = content.color
+                color = content.color,
+                backgroundColor = content.backgroundColor
             )
             Style.H2 -> BlockView.HeaderTwo(
                 id = id,
                 text = content.text,
-                color = content.color
+                color = content.color,
+                backgroundColor = content.backgroundColor
             )
             Style.H3, Style.H4 -> BlockView.HeaderThree(
                 id = id,
                 text = content.text,
-                color = content.color
+                color = content.color,
+                backgroundColor = content.backgroundColor
             )
             Style.TITLE -> BlockView.Title(
                 id = id,
@@ -53,13 +57,16 @@ fun Block.toView(
                 indent = 0,
                 marks = mapMarks(content),
                 focused = focused,
-                color = content.color
+                color = content.color,
+                backgroundColor = content.backgroundColor
             )
             Style.NUMBERED -> BlockView.Numbered(
                 id = id,
                 text = content.text,
                 number = numbers[id].toString(),
                 focused = focused,
+                color = content.color,
+                backgroundColor = content.backgroundColor,
                 indent = 0
             )
             Style.CHECKBOX -> BlockView.Checkbox(
@@ -67,6 +74,8 @@ fun Block.toView(
                 text = content.text,
                 marks = mapMarks(content),
                 isChecked = content.isChecked == true,
+                color = content.color,
+                backgroundColor = content.backgroundColor,
                 focused = focused
             )
             Style.TOGGLE -> BlockView.Toggle(

@@ -42,6 +42,8 @@ class BlockViewDiffUtil(
                 changes.add(TEXT_CHANGED)
             if (newBlock.color != oldBlock.color)
                 changes.add(TEXT_COLOR_CHANGED)
+            if (newBlock.backgroundColor != oldBlock.backgroundColor)
+                changes.add(BACKGROUND_COLOR_CHANGED)
         }
 
         if (newBlock is Markup && oldBlock is Markup) {
@@ -75,6 +77,7 @@ class BlockViewDiffUtil(
         fun textChanged() = changes.contains(TEXT_CHANGED)
         fun textColorChanged() = changes.contains(TEXT_COLOR_CHANGED)
         fun focusChanged() = changes.contains(FOCUS_CHANGED)
+        fun backgroundColorChanged() = changes.contains(BACKGROUND_COLOR_CHANGED)
     }
 
     companion object {
@@ -83,5 +86,6 @@ class BlockViewDiffUtil(
         const val FOCUS_CHANGED = 3
         const val TEXT_COLOR_CHANGED = 4
         const val NUMBER_CHANGED = 5
+        const val BACKGROUND_COLOR_CHANGED = 6
     }
 }

@@ -89,7 +89,8 @@ fun BlockEntity.Content.Text.toDomain(): Block.Content.Text {
         marks = marks.map { it.toDomain() },
         style = Block.Content.Text.Style.valueOf(style.name),
         isChecked = isChecked,
-        color = color
+        color = color,
+        backgroundColor = backgroundColor
     )
 }
 
@@ -232,6 +233,13 @@ fun Command.UpdateTextColor.toEntity(): CommandEntity.UpdateTextColor =
         color = color
     )
 
+fun Command.UpdateBackgroundColor.toEntity(): CommandEntity.UpdateBackgroundColor =
+    CommandEntity.UpdateBackgroundColor(
+        context = context,
+        target = target,
+        color = color
+    )
+
 fun Command.UpdateCheckbox.toEntity(): CommandEntity.UpdateCheckbox = CommandEntity.UpdateCheckbox(
     context = context,
     target = target,
@@ -327,6 +335,7 @@ fun EventEntity.toDomain(): Event {
                 else
                     null,
                 color = color,
+                backgroundColor = backgroundColor,
                 marks = marks?.map { it.toDomain() }
             )
         }

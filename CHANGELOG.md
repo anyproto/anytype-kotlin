@@ -5,6 +5,7 @@
 ### New features 🚀
 
 * Allow users to split blocks (#229)
+* Allow users to set background color to block layouts (#244)
 
 ### Fixes & tech 🚒
 
@@ -14,6 +15,7 @@
 ### Middleware ⚙️
 
 * Added `blockSplit` command (#229)
+* Added `blockSetTextBackgroundColor` command (#244)
 
 ## Version 0.0.19
 

@@ -2,6 +2,7 @@ package com.agileburo.anytype.core_ui
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.text.Editable
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,6 +11,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.BACKGROUND_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
@@ -170,6 +172,56 @@ class BlockAdapterTest {
         assertEquals(
             expected = updated.text,
             actual = holder.content.text.toString()
+        )
+    }
+
+    @Test
+    fun `should update paragraph background color`() {
+
+        // Setup
+
+        val paragraph = BlockView.Paragraph(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid()
+        )
+
+        val updated = paragraph.copy(
+            backgroundColor = Color.RED.hexColorCode()
+        )
+
+        val views = listOf(paragraph)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Paragraph)
+
+        // Testing
+
+        assertEquals(
+            expected = paragraph.text,
+            actual = holder.content.text.toString()
+        )
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(BACKGROUND_COLOR_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = Color.parseColor(updated.backgroundColor),
+            actual = (holder.root.background as ColorDrawable).color
         )
     }
 
@@ -780,7 +832,8 @@ class BlockAdapterTest {
             onFocusChanged = onFocusChanged,
             onSelectionChanged = { _, _ -> },
             onFooterClicked = {},
-            onPageClicked = {}
+            onPageClicked = {},
+            onTextInputClicked = {}
         )
     }
 }

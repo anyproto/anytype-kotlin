@@ -18,7 +18,8 @@ data class BlockEntity(
             val style: Style,
             val marks: List<Mark>,
             val isChecked: Boolean? = null,
-            val color: String? = null
+            val color: String? = null,
+            val backgroundColor: String? = null
         ) : Content() {
 
             data class Mark(

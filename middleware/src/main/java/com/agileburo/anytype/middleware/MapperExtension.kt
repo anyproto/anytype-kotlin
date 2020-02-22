@@ -136,7 +136,8 @@ fun Block.text(): BlockEntity.Content.Text = BlockEntity.Content.Text(
     marks = text.marks.marksList.marks(),
     style = text.style.entity(),
     isChecked = text.checked,
-    color = if (text.color.isNotEmpty()) text.color else null
+    color = if (text.color.isNotEmpty()) text.color else null,
+    backgroundColor = if (text.backgroundColor.isNotEmpty()) text.backgroundColor else null
 )
 
 fun List<Block.Content.Text.Mark>.marks(): List<BlockEntity.Content.Text.Mark> = map { mark ->

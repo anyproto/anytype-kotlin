@@ -41,9 +41,16 @@ sealed class BlockView : ViewType {
     interface Text {
 
         /**
-         * Base text color for this text. If not present, default color will be applied.
+         * Base text color for the text.
+         * If not present, default color will be applied.
          */
         val color: String?
+
+        /**
+         * Background color for the whole block as opposed to text highlight background.
+         * If not present, default color will be applied.
+         */
+        val backgroundColor: String?
 
         /**
          * Textual block's text.
@@ -64,7 +71,8 @@ sealed class BlockView : ViewType {
         override val text: String,
         override val marks: List<Markup.Mark> = emptyList(),
         override var focused: Boolean = false,
-        override val color: String? = null
+        override val color: String? = null,
+        override val backgroundColor: String? = null
     ) : BlockView(), Markup, Focusable, Text {
         override fun getViewType() = HOLDER_PARAGRAPH
         override val body: String = text
@@ -93,7 +101,8 @@ sealed class BlockView : ViewType {
     data class HeaderOne(
         override val id: String,
         override val text: String,
-        override val color: String? = null
+        override val color: String? = null,
+        override val backgroundColor: String? = null
     ) : BlockView(), Text {
         override fun getViewType() = HOLDER_HEADER_ONE
     }
@@ -107,7 +116,8 @@ sealed class BlockView : ViewType {
     data class HeaderTwo(
         override val id: String,
         override val color: String? = null,
-        override val text: String
+        override val text: String,
+        override val backgroundColor: String? = null
     ) : BlockView(), Text {
         override fun getViewType() = HOLDER_HEADER_TWO
     }
@@ -121,7 +131,8 @@ sealed class BlockView : ViewType {
     data class HeaderThree(
         override val id: String,
         override val color: String? = null,
-        override val text: String
+        override val text: String,
+        override val backgroundColor: String? = null
     ) : BlockView(), Text {
         override fun getViewType() = HOLDER_HEADER_THREE
     }
@@ -162,6 +173,7 @@ sealed class BlockView : ViewType {
         override val focused: Boolean = false,
         override val text: String,
         override val color: String? = null,
+        override val backgroundColor: String? = null,
         override val isChecked: Boolean = false
     ) : BlockView(), Markup, Focusable, Text, Checkable {
         override fun getViewType() = HOLDER_CHECKBOX
@@ -194,6 +206,7 @@ sealed class BlockView : ViewType {
         override val marks: List<Markup.Mark> = emptyList(),
         override val focused: Boolean = false,
         override val color: String? = null,
+        override val backgroundColor: String? = null,
         override val text: String,
         val indent: Int
     ) : BlockView(), Markup, Focusable, Text {
@@ -214,6 +227,7 @@ sealed class BlockView : ViewType {
         override val marks: List<Markup.Mark> = emptyList(),
         override val focused: Boolean = false,
         override val color: String? = null,
+        override val backgroundColor: String? = null,
         val number: String,
         val indent: Int
     ) : BlockView(), Markup, Focusable, Text {

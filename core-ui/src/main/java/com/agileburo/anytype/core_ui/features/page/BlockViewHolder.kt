@@ -48,6 +48,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     interface TextHolder {
 
         /**
+         * Block's parent view.
+         */
+        val root: View
+
+        /**
          * Block's content widget.
          * Common behavior is applied to this widget.
          */
@@ -96,6 +101,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun setTextColor(color: Int) {
             content.setTextColor(color)
+        }
+
+        fun setBackgroundColor(color: String? = null) {
+            Timber.d("Setting background color: $color")
+            if (color != null) {
+                root.setBackgroundColor(Color.parseColor(color))
+            } else {
+                root.background = null
+            }
         }
 
         fun setFocus(item: Focusable) {
@@ -154,6 +168,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 if (payload.textColorChanged()) {
                     item.color?.let { setTextColor(it) }
                 }
+
+                if (payload.backgroundColorChanged()) {
+                    setBackgroundColor(item.backgroundColor)
+                }
             }
 
             if (item is Focusable) {
@@ -165,6 +183,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Paragraph(view: View) : BlockViewHolder(view), TextHolder {
 
+        override val root: View = itemView
         override val content: TextInputWidget = itemView.textContent
 
         init {
@@ -205,6 +224,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Title(view: View) : BlockViewHolder(view), TextHolder {
 
+        override val root: View = itemView
         override val content: TextInputWidget = itemView.title
 
         init {
@@ -249,6 +269,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     class HeaderOne(view: View) : BlockViewHolder(view), TextHolder {
 
         private val header = itemView.headerOne
+        override val root: View = itemView
         override val content: TextInputWidget
             get() = header
 
@@ -283,6 +304,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val header = itemView.headerTwo
         override val content: TextInputWidget
             get() = header
+        override val root: View = itemView
 
         fun bind(
             item: BlockView.HeaderTwo,
@@ -316,6 +338,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val header = itemView.headerThree
         override val content: TextInputWidget
             get() = header
+        override val root: View = itemView
 
         fun bind(
             item: BlockView.HeaderThree,
@@ -357,6 +380,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val checkbox = itemView.checkboxIcon
         override val content: TextInputWidget = itemView.checkboxContent
+        override val root: View = itemView
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
@@ -418,6 +442,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val bullet = itemView.bullet
         override val content: TextInputWidget = itemView.bulletedListContent
+        override val root: View = itemView
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
@@ -476,6 +501,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val number = itemView.number
         override val content: TextInputWidget = itemView.numberedListContent
+        override val root: View = itemView
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
@@ -616,6 +642,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     class Highlight(view: View) : BlockViewHolder(view), TextHolder {
 
         override val content: TextInputWidget = itemView.highlightContent
+        override val root: View = itemView
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())

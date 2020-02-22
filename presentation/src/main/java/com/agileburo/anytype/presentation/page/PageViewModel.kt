@@ -44,6 +44,7 @@ class PageViewModel(
     private val duplicateBlock: DuplicateBlock,
     private val updateTextStyle: UpdateTextStyle,
     private val updateTextColor: UpdateTextColor,
+    private val updateBackgroundColor: UpdateBackgroundColor,
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
     private val mergeBlocks: MergeBlocks,
@@ -148,6 +149,8 @@ class PageViewModel(
                                 content = content.copy(
                                     style = event.style ?: content.style,
                                     color = event.color ?: content.color,
+                                    backgroundColor = event.backgroundColor
+                                        ?: content.backgroundColor,
                                     text = event.text ?: content.text,
                                     marks = event.marks ?: content.marks
                                 )
@@ -630,7 +633,27 @@ class PageViewModel(
     }
 
     fun onBlockBackgroundColorAction(color: String) {
-        Timber.e("Not implemented")
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockBackgroundColorSelected)
+        focusChannel.value.let { focus ->
+            updateBackgroundColor.invoke(
+                scope = viewModelScope,
+                params = UpdateBackgroundColor.Params(
+                    context = context,
+                    target = focus,
+                    color = color
+                )
+            ) { result ->
+                result.either(
+                    fnL = {
+                        Timber.e(
+                            it,
+                            "Error while updating background color for the block: $focus"
+                        )
+                    },
+                    fnR = { Timber.d("Background color ($color) has been succesfully updated for the block: $focus") }
+                )
+            }
+        }
     }
 
     fun onMarkupToolbarColorClicked() {

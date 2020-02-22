@@ -24,6 +24,12 @@ class CommandEntity {
         val color: String
     )
 
+    data class UpdateBackgroundColor(
+        val context: String,
+        val target: String,
+        val color: String
+    )
+
     class UpdateCheckbox(
         val context: String,
         val target: String,

@@ -413,6 +413,14 @@ class BlockAdapter(
 
         if (holder is BlockViewHolder.TextHolder) {
 
+            val block = blocks[position]
+
+            if (block is BlockView.Text) {
+                holder.setBackgroundColor(
+                    color = block.backgroundColor
+                )
+            }
+
             holder.enableEnterKeyDetector(
                 onEndLineEnterClicked = { editable ->
                     onEndLineEnterClicked(blocks[holder.adapterPosition].id, editable)

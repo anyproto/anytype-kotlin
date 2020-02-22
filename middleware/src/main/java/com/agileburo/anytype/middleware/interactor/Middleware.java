@@ -269,7 +269,6 @@ public class Middleware {
     }
 
     public void updateTextColor(CommandEntity.UpdateTextColor command) throws Exception {
-
         Block.Set.Text.Color.Request request = Block.Set.Text.Color.Request
                 .newBuilder()
                 .setContextId(command.getContext())
@@ -280,6 +279,19 @@ public class Middleware {
         Timber.d("Updating text color with the following request:\n%s", request.toString());
 
         service.blockSetTextColor(request);
+    }
+
+    public void updateBackgroundColor(CommandEntity.UpdateBackgroundColor command) throws Exception {
+        Block.Set.Text.BackgroundColor.Request request = Block.Set.Text.BackgroundColor.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .setBlockId(command.getTarget())
+                .setColor(command.getColor())
+                .build();
+
+        Timber.d("Updating background color with the following request:\n%s", request.toString());
+
+        service.blockSetTextBackgroundColor(request);
     }
 
     public void createBlock(

@@ -30,6 +30,18 @@ sealed class Command {
     )
 
     /**
+     * Command for updating background color for the whole block.
+     * @property context context id
+     * @property target id of the target block, whose background color we need to update.
+     * @property color new color (hex)
+     */
+    data class UpdateBackgroundColor(
+        val context: Id,
+        val target: Id,
+        val color: String
+    )
+
+    /**
      * @property context context id
      * @property target id of the target checkbox block
      * @property isChecked new checked/unchecked state for this checkbox block

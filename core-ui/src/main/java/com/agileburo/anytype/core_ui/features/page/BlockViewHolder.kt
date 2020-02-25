@@ -160,7 +160,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                         else
                             content.setText(item.text)
                     }
-                    content.setSelection(cursor)
+                    try {
+                        content.setSelection(cursor)
+                    } catch (e: Throwable) {
+                        Timber.e(e, "Error while setting focus: ")
+                    }
                 } else if (payload.markupChanged()) {
                     if (item is Markup) setMarkup(item)
                 }

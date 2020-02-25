@@ -1,16 +1,27 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.20 (WIP)
+## Version 0.0.20
 
 ### New features 🚀
 
-* Allow users to split blocks (#229)
+* Allow users to split blocks (not stable yet) (#229)
 * Allow users to set background color to block layouts (#244)
+* Allow users to create new pages on home dashboard by pressing plus-button on page screen (#191)
+* Allow users to add divider blocks (#234)
+* Enable sub-page navigation (naive implementation) (#235)
+* Implemented new back navigation: closing pages on swipe-down gesture (#231)
+
+### Design 🔳
+
+* One-line (ellipsized) page titles on home dashboard screen (#233)
 
 ### Fixes & tech 🚒
 
 * Turn-into panel is still visible when system opens virtual keyboard on focus (#169)
+* Missing diff-util implementation for headers results in app crash (#227)
 * Option toolbars (`add-block`, `turn-into`, `color`, `action`) are still visible when system opens virtual keyboard on focus (#102)
+* Default text color and default background color from app ressources aren't converted correctly to hex color code (#204)
+* Added scenarios for UI-testing (#241)
 
 ### Middleware ⚙️
 

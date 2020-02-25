@@ -589,6 +589,115 @@ class PageFragmentTest {
         }
     }
 
+    @Test
+    fun shouldCreateNewEmptyParagraph() {
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val delayBeforeGettingEvents = 100L
+        val delayBeforeAddingNewBlock = 100L
+
+        val paragraph1 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "First block",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val paragraph2 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Second block",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(paragraph1.id, paragraph2.id)
+            ),
+            paragraph1,
+            paragraph2
+        )
+
+        val paragraphNew = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        stubEvents(
+            events = flow {
+                delay(delayBeforeGettingEvents)
+                emit(
+                    listOf(
+                        Event.Command.ShowBlock(
+                            rootId = root,
+                            blocks = page,
+                            context = root
+                        )
+                    )
+                )
+                delay(delayBeforeAddingNewBlock)
+                emit(
+                    listOf(
+                        Event.Command.UpdateStructure(
+                            context = root,
+                            id = page.first().id,
+                            children = listOf(paragraph1.id, paragraphNew.id, paragraph2.id)
+                        ),
+                        Event.Command.AddBlock(
+                            context = root,
+                            blocks = listOf(paragraphNew)
+                        )
+                    )
+                )
+            }
+        )
+
+        launchFragment(args)
+
+        //TESTING
+
+        advance(delayBeforeGettingEvents)
+
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent)).apply {
+            perform(click())
+        }
+
+        advance(delayBeforeAddingNewBlock)
+
+        Thread.sleep(1500)
+
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent)).apply {
+            check(matches(withText("First block")))
+        }
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)).apply {
+            check(matches(withText("")))
+            check(matches(isDisplayed()))
+        }
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, R.id.textContent)).apply {
+            check(matches(withText("Second block")))
+        }
+    }
+
     /*
     @Test
     fun shouldHideOptionToolbarsOnEmptyBlockClick() {

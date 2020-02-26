@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="debug">#F44336</color>
     <color name="orange">#FFBB2C</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#2C2B27</color>
+    <color name="emoji_color">#FFFFFF</color>
 
     <color name="default_bottom_detail_toolbar_background_color">#F3F2EC</color>
     <color name="chapter_default">#FFFFFF</color>

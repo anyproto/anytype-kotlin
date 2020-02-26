@@ -15,6 +15,7 @@
         android:gravity="center"
         android:layout_marginTop="45dp"
         android:text="✍️"
+        android:textColor="@color/emoji_color"
         android:textSize="28sp" />
 
     <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget

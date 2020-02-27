@@ -81,6 +81,37 @@ fun BlockEntity.Content.toDomain(): Block.Content = when (this) {
     is BlockEntity.Content.Image -> toDomain()
     is BlockEntity.Content.Link -> toDomain()
     is BlockEntity.Content.Divider -> toDomain()
+    is BlockEntity.Content.File -> toDomain()
+}
+
+fun BlockEntity.Content.File.toDomain(): Block.Content.File {
+    return Block.Content.File(
+        hash = hash,
+        name = name,
+        mime = mime,
+        added = addedAt,
+        size = size,
+        type = type.toDomain(),
+        state = state.toDomain()
+    )
+}
+
+fun BlockEntity.Content.File.Type.toDomain(): Block.Content.File.Type {
+    return when (this) {
+        BlockEntity.Content.File.Type.NONE -> Block.Content.File.Type.NONE
+        BlockEntity.Content.File.Type.FILE -> Block.Content.File.Type.FILE
+        BlockEntity.Content.File.Type.IMAGE -> Block.Content.File.Type.IMAGE
+        BlockEntity.Content.File.Type.VIDEO -> Block.Content.File.Type.VIDEO
+    }
+}
+
+fun BlockEntity.Content.File.State.toDomain(): Block.Content.File.State {
+    return when (this) {
+        BlockEntity.Content.File.State.EMPTY -> Block.Content.File.State.EMPTY
+        BlockEntity.Content.File.State.UPLOADING -> Block.Content.File.State.UPLOADING
+        BlockEntity.Content.File.State.DONE -> Block.Content.File.State.DONE
+        BlockEntity.Content.File.State.ERROR -> Block.Content.File.State.ERROR
+    }
 }
 
 fun BlockEntity.Content.Text.toDomain(): Block.Content.Text {
@@ -165,6 +196,37 @@ fun Block.Content.toEntity(): BlockEntity.Content = when (this) {
     is Block.Content.Image -> toEntity()
     is Block.Content.Link -> toEntity()
     is Block.Content.Divider -> toEntity()
+    is Block.Content.File -> toEntity()
+}
+
+fun Block.Content.File.toEntity(): BlockEntity.Content.File {
+    return BlockEntity.Content.File(
+        hash = hash,
+        name = name,
+        mime = mime,
+        addedAt = added,
+        size = size,
+        type = type.toEntity(),
+        state = state.toEntity()
+    )
+}
+
+fun Block.Content.File.Type.toEntity(): BlockEntity.Content.File.Type {
+    return when (this) {
+        Block.Content.File.Type.NONE -> BlockEntity.Content.File.Type.NONE
+        Block.Content.File.Type.FILE -> BlockEntity.Content.File.Type.FILE
+        Block.Content.File.Type.IMAGE -> BlockEntity.Content.File.Type.IMAGE
+        Block.Content.File.Type.VIDEO -> BlockEntity.Content.File.Type.VIDEO
+    }
+}
+
+fun Block.Content.File.State.toEntity(): BlockEntity.Content.File.State {
+    return when (this) {
+        Block.Content.File.State.EMPTY -> BlockEntity.Content.File.State.EMPTY
+        Block.Content.File.State.UPLOADING -> BlockEntity.Content.File.State.UPLOADING
+        Block.Content.File.State.DONE -> BlockEntity.Content.File.State.DONE
+        Block.Content.File.State.ERROR -> BlockEntity.Content.File.State.ERROR
+    }
 }
 
 fun Block.Content.Text.toEntity(): BlockEntity.Content.Text {

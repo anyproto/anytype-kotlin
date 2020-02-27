@@ -68,6 +68,19 @@ data class BlockEntity(
             enum class Type { PAGE, DATA_VIEW, DASHBOARD, ARCHIVE }
         }
 
+        data class File(
+            val hash: String,
+            val name: String,
+            val type: Type,
+            val mime: String,
+            val size: Long,
+            val addedAt: Long,
+            val state: State
+        ) : Content() {
+            enum class Type { NONE, FILE, IMAGE, VIDEO }
+            enum class State { EMPTY, UPLOADING, DONE, ERROR }
+        }
+
         object Divider : Content()
     }
 

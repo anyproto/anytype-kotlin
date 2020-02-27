@@ -2,6 +2,7 @@ package com.agileburo.anytype.middleware.interactor;
 
 import com.agileburo.anytype.data.auth.model.BlockEntity;
 import com.agileburo.anytype.data.auth.model.CommandEntity;
+import com.agileburo.anytype.data.auth.model.ConfigEntity;
 import com.agileburo.anytype.data.auth.model.PositionEntity;
 import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
@@ -26,10 +27,11 @@ public class Middleware {
         this.service = service;
     }
 
-    public String provideHomeDashboardId() throws Exception {
+    public ConfigEntity getConfig() throws Exception {
         Config.Get.Request request = Config.Get.Request.newBuilder().build();
         Config.Get.Response response = service.configGet(request);
-        return response.getHomeBlockId();
+        Timber.d("Got config:\n%s", response.toString());
+        return new ConfigEntity(response.getHomeBlockId(), response.getGatewayUrl());
     }
 
     public CreateWalletResponse createWallet(String path) throws Exception {

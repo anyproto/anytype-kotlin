@@ -269,7 +269,8 @@ fun Block.Content.Text.Mark.toEntity(): BlockEntity.Content.Text.Mark {
 
 fun ConfigEntity.toDomain(): Config {
     return Config(
-        home = homeId
+        home = home,
+        gateway = gateway
     )
 }
 

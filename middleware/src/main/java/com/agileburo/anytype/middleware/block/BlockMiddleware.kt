@@ -10,11 +10,7 @@ class BlockMiddleware(
     private val middleware: Middleware
 ) : BlockRemote {
 
-    override suspend fun getConfig(): ConfigEntity {
-        return ConfigEntity(
-            homeId = middleware.provideHomeDashboardId()
-        )
-    }
+    override suspend fun getConfig(): ConfigEntity = middleware.config
 
     override suspend fun openDashboard(contextId: String, id: String) {
         middleware.openDashboard(contextId, id)

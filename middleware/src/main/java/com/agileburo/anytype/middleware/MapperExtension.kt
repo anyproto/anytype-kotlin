@@ -216,6 +216,28 @@ fun Block.link(): BlockEntity.Content.Link = BlockEntity.Content.Link(
 
 fun Block.divider(): BlockEntity.Content.Divider = BlockEntity.Content.Divider
 
+fun Block.file(): BlockEntity.Content.File = BlockEntity.Content.File(
+    hash = file.hash,
+    name = file.name,
+    size = file.size,
+    added = file.addedAt,
+    mime = file.mime,
+    type = when (file.type) {
+        Block.Content.File.Type.File -> BlockEntity.Content.File.Type.FILE
+        Block.Content.File.Type.Image -> BlockEntity.Content.File.Type.IMAGE
+        Block.Content.File.Type.Video -> BlockEntity.Content.File.Type.VIDEO
+        Block.Content.File.Type.None -> BlockEntity.Content.File.Type.NONE
+        else -> throw IllegalStateException("Unexpected file type: $file.type")
+    },
+    state = when (file.state) {
+        Block.Content.File.State.Done -> BlockEntity.Content.File.State.DONE
+        Block.Content.File.State.Empty -> BlockEntity.Content.File.State.EMPTY
+        Block.Content.File.State.Uploading -> BlockEntity.Content.File.State.UPLOADING
+        Block.Content.File.State.Error -> BlockEntity.Content.File.State.ERROR
+        else -> throw IllegalStateException("Unexpected file state: ${file.state}")
+    }
+)
+
 fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
     when (block.contentCase) {
         Block.ContentCase.DASHBOARD -> {
@@ -264,6 +286,14 @@ fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
                 children = emptyList(),
                 fields = block.fields(),
                 content = block.divider()
+            )
+        }
+        Block.ContentCase.FILE -> {
+            BlockEntity(
+                id = block.id,
+                children = block.childrenIdsList,
+                fields = block.fields(),
+                content = block.file()
             )
         }
         else -> {

@@ -74,7 +74,7 @@ data class BlockEntity(
             val type: Type,
             val mime: String,
             val size: Long,
-            val addedAt: Long,
+            val added: Long,
             val state: State
         ) : Content() {
             enum class Type { NONE, FILE, IMAGE, VIDEO }

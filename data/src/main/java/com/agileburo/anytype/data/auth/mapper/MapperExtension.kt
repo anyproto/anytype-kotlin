@@ -89,7 +89,7 @@ fun BlockEntity.Content.File.toDomain(): Block.Content.File {
         hash = hash,
         name = name,
         mime = mime,
-        added = addedAt,
+        added = added,
         size = size,
         type = type.toDomain(),
         state = state.toDomain()
@@ -204,7 +204,7 @@ fun Block.Content.File.toEntity(): BlockEntity.Content.File {
         hash = hash,
         name = name,
         mime = mime,
-        addedAt = added,
+        added = added,
         size = size,
         type = type.toEntity(),
         state = state.toEntity()

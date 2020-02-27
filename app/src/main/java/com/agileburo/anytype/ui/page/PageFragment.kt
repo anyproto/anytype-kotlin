@@ -122,8 +122,10 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                 object : BottomSheetBehavior.BottomSheetCallback() {
                     override fun onSlide(bottomSheet: View, slideOffset: Float) {}
                     override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        if (newState == BottomSheetBehavior.STATE_HIDDEN)
+                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                            activity?.hideSoftInput()
                             vm.onBottomSheetHidden()
+                        }
                     }
                 }
             )

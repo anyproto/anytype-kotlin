@@ -5,11 +5,13 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content.Text.Style
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.presentation.desktop.DashboardView
 
 fun Block.toView(
     focused: Boolean = false,
-    numbers: Map<String, Int> = emptyMap()
+    numbers: Map<String, Int> = emptyMap(),
+    urlBuilder: UrlBuilder
 ): BlockView = when (val content = this.content) {
     is Block.Content.Text -> {
         when (content.style) {
@@ -86,10 +88,20 @@ fun Block.toView(
             )
         }
     }
-    is Block.Content.Image -> {
-        BlockView.Picture(
-            id = id
-        )
+    is Block.Content.File -> {
+        when (content.type) {
+            Block.Content.File.Type.IMAGE -> BlockView.Picture(
+                id = id,
+                url = urlBuilder.image(content.hash)
+            )
+            Block.Content.File.Type.FILE -> BlockView.File(
+                id = id,
+                size = content.size,
+                name = content.name,
+                mime = content.mime
+            )
+            else -> TODO()
+        }
     }
     is Block.Content.Link -> {
         BlockView.Page(

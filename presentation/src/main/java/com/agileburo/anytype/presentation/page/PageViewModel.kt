@@ -19,6 +19,7 @@ import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.*
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
@@ -50,7 +51,8 @@ class PageViewModel(
     private val removeLinkMark: RemoveLinkMark,
     private val mergeBlocks: MergeBlocks,
     private val splitBlock: SplitBlock,
-    private val documentExternalEventReducer: StateReducer<List<Block>, Event>
+    private val documentExternalEventReducer: StateReducer<List<Block>, Event>,
+    private val urlBuilder: UrlBuilder
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     StateReducer<List<Block>, Event> by documentExternalEventReducer {
@@ -258,14 +260,26 @@ class PageViewModel(
                         is Content.Text -> {
                             block.toView(
                                 focused = block.id == focus,
-                                numbers = numbers
+                                numbers = numbers,
+                                urlBuilder = urlBuilder
                             )
                         }
                         is Content.Image -> {
-                            block.toView()
+                            block.toView(
+                                urlBuilder = urlBuilder
+                            )
                         }
-                        is Content.Link -> block.toView()
-                        is Content.Divider -> block.toView()
+                        is Content.File -> {
+                            block.toView(
+                                urlBuilder = urlBuilder
+                            )
+                        }
+                        is Content.Link -> block.toView(
+                            urlBuilder = urlBuilder
+                        )
+                        is Content.Divider -> block.toView(
+                            urlBuilder = urlBuilder
+                        )
                         else -> null
                     }
                 }

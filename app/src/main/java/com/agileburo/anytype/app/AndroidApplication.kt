@@ -4,10 +4,7 @@ import android.app.Application
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.core_utils.tools.CrashlyticsTree
 import com.agileburo.anytype.di.common.ComponentManager
-import com.agileburo.anytype.di.main.ContextModule
-import com.agileburo.anytype.di.main.DaggerMainComponent
-import com.agileburo.anytype.di.main.DataModule
-import com.agileburo.anytype.di.main.MainComponent
+import com.agileburo.anytype.di.main.*
 import com.facebook.stetho.Stetho
 import timber.log.Timber
 
@@ -18,6 +15,8 @@ class AndroidApplication : Application() {
             .builder()
             .contextModule(ContextModule(this))
             .dataModule(DataModule())
+            .configModule(ConfigModule())
+            .utilModule(UtilModule())
             .build()
     }
 

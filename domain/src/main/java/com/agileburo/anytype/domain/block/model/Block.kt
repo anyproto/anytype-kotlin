@@ -140,6 +140,15 @@ data class Block(
             enum class Type { PAGE, DATA_VIEW, DASHBOARD, ARCHIVE }
         }
 
+        /**
+         * File block.
+         * @property hash file hash
+         * @property name filename
+         * @property mime mime type
+         * @property size file size (in bytes)
+         * @property type file type
+         * @property state file state
+         */
         data class File(
             val hash: String,
             val name: String,

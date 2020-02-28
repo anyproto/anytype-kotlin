@@ -10,7 +10,9 @@ import javax.inject.Singleton
         ContextModule::class,
         DataModule::class,
         EventModule::class,
-        ImageModule::class
+        ImageModule::class,
+        ConfigModule::class,
+        UtilModule::class
     ]
 )
 interface MainComponent {

@@ -269,12 +269,14 @@ sealed class BlockView : ViewType {
      * UI-model for blocks containing files.
      * @property id block's id
      * @property size a file's size
-     * @property filename a filename
+     * @property name a name
+     * @property size file size (in bytes)
      */
     data class File(
         override val id: String,
-        val size: String,
-        val filename: String
+        val size: Long,
+        val name: String,
+        val mime: String
     ) : BlockView() {
         override fun getViewType() = HOLDER_FILE
     }
@@ -330,9 +332,11 @@ sealed class BlockView : ViewType {
     /**
      * UI-model for a picture block
      * @property id block's id
+     * @property url url of the image file
      */
     data class Picture(
-        override val id: String
+        override val id: String,
+        val url: String
     ) : BlockView() {
         override fun getViewType() = HOLDER_PICTURE
     }

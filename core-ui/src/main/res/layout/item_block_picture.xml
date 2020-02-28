@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
+    android:layout_height="match_parent"
     android:background="@drawable/rectangle_debug"
-    android:paddingStart="@dimen/default_page_item_padding_start"
-    android:paddingEnd="@dimen/default_page_item_padding_end"
     android:orientation="vertical">
 
-    <TextView
+    <ImageView
+        android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:fontFamily="monospace"
-        android:gravity="center"
-        android:text="picture"
-        android:textColor="@color/orange"
-        android:textSize="12sp" />
+        android:layout_height="match_parent" />
+
 </FrameLayout>

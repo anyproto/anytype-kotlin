@@ -5,6 +5,7 @@ import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.event.interactor.EventChannel
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
@@ -51,7 +52,8 @@ class PageModule {
         mergeBlocks: MergeBlocks,
         splitBlock: SplitBlock,
         createPage: CreatePage,
-        documentExternalEventReducer: DocumentExternalEventReducer
+        documentExternalEventReducer: DocumentExternalEventReducer,
+        urlBuilder: UrlBuilder
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -69,7 +71,8 @@ class PageModule {
         removeLinkMark = removeLinkMark,
         mergeBlocks = mergeBlocks,
         splitBlock = splitBlock,
-        documentEventReducer = documentExternalEventReducer
+        documentEventReducer = documentExternalEventReducer,
+        urlBuilder = urlBuilder
     )
 
     @Provides

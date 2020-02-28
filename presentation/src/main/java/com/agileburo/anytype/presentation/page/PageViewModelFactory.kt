@@ -6,6 +6,7 @@ import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
@@ -28,7 +29,8 @@ open class PageViewModelFactory(
     private val removeLinkMark: RemoveLinkMark,
     private val mergeBlocks: MergeBlocks,
     private val splitBlock: SplitBlock,
-    private val documentEventReducer: StateReducer<List<Block>, Event>
+    private val documentEventReducer: StateReducer<List<Block>, Event>,
+    private val urlBuilder: UrlBuilder
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -50,7 +52,8 @@ open class PageViewModelFactory(
             mergeBlocks = mergeBlocks,
             splitBlock = splitBlock,
             createPage = createPage,
-            documentExternalEventReducer = documentEventReducer
+            documentExternalEventReducer = documentEventReducer,
+            urlBuilder = urlBuilder
         ) as T
     }
 }

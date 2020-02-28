@@ -15,8 +15,10 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+import com.agileburo.anytype.core_utils.const.MimeTypes
 import com.agileburo.anytype.core_utils.text.BackspaceKeyDetector
 import com.agileburo.anytype.core_utils.text.DefaultEnterKeyDetector
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -29,11 +31,13 @@ import kotlinx.android.synthetic.main.item_block_header_two.view.*
 import kotlinx.android.synthetic.main.item_block_highlight.view.*
 import kotlinx.android.synthetic.main.item_block_numbered.view.*
 import kotlinx.android.synthetic.main.item_block_page.view.*
+import kotlinx.android.synthetic.main.item_block_picture.view.*
 import kotlinx.android.synthetic.main.item_block_task.view.*
 import kotlinx.android.synthetic.main.item_block_text.view.*
 import kotlinx.android.synthetic.main.item_block_title.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import timber.log.Timber
+import android.text.format.Formatter as FileSizeFormatter
 
 /**
  * Viewholder for rendering different type of blocks (i.e its UI-models).
@@ -593,9 +597,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val name = itemView.filename
 
         fun bind(item: BlockView.File) {
-            name.text = item.filename
-            size.text = item.size
-            // TODO set file icon.
+            name.text = item.name
+            size.text = FileSizeFormatter.formatFileSize(itemView.context, item.size)
+            when (MimeTypes.category(item.mime)) {
+                MimeTypes.Category.PDF -> icon.setImageResource(R.drawable.ic_mime_pdf)
+                else -> {
+                    // TODO add images when they are ready.
+                }
+            }
         }
     }
 
@@ -636,8 +645,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Picture(view: View) : BlockViewHolder(view) {
 
+        private val image = itemView.image
+
         fun bind(item: BlockView.Picture) {
-            // TODO
+            Glide.with(image).load(item.url).into(image)
         }
     }
 

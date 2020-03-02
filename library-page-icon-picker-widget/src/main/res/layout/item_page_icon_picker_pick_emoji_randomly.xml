@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/divider_color" />
+
+    <TextView
+        style="@style/PageIconPickerActionTitleStyle"
+        android:text="@string/page_icon_picker_pick_emoji_randomly" />
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:contentDescription="@string/content_description_upload_photo"
+        android:src="@drawable/ic_page_icon_picker_random_emoji" />
+
+</FrameLayout>

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Page Icon Widget</string>
+    <string name="page_icon_picker_upload_photo">Upload photo</string>
+    <string name="content_description_upload_photo">Upload photo image</string>
+    <string name="page_icon_picker_pick_emoji_randomly">Pick emoji randomly</string>
+    <string name="page_icon_picker_choose_emoji">Choose emoji</string>
+    <string name="page_icon_picker_emoji_filter">Filter</string>
+    <string name="content_description_loop_icon">Loop icon</string>
+    <string name="page_icon">Page icon</string>
+    <string name="page_icon_picker_remove_text">Remove</string>
+</resources>

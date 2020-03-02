@@ -8,4 +8,5 @@ include ':app',
         ':data',
         ':presentation',
         ':core-ui',
-        ':library-kanban-widget'
+        ':library-kanban-widget',
+        ':library-page-icon-picker-widget'

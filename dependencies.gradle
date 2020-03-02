@@ -159,4 +159,8 @@ ext {
             annotations:        "androidx.room:room-compiler:$room_version",
             roomTesting:        "androidx.room:room-testing:$room_version"
     ]
+
+    libraryPageIconPicker = [
+            emojiJava:          "com.vdurmont:emoji-java:5.1.1"
+    ]
 }

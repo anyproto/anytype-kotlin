@@ -1,0 +1,57 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    def config = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion compile_sdk
+
+    defaultConfig {
+        minSdkVersion config["min_sdk"]
+        targetSdkVersion config["target_sdk"]
+        versionCode config["version_code"]
+        versionName config["version_name"]
+
+        testInstrumentationRunner config["test_runner"]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
+dependencies {
+    def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
+    def lib = rootProject.ext.libraryPageIconPicker
+
+    implementation lib.emojiJava
+
+    implementation project(':core-utils')
+    implementation project(':core-ui')
+
+    implementation applicationDependencies.appcompat
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutines
+    implementation applicationDependencies.androidxCore
+
+    implementation applicationDependencies.design
+    implementation applicationDependencies.recyclerView
+    implementation applicationDependencies.constraintLayout
+    implementation applicationDependencies.timber
+
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.robolectric
+    testImplementation unitTestDependencies.androidXTestCore
+}

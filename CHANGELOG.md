@@ -1,5 +1,24 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.21
+
+### New features 🚀
+
+* Render file and picture blocks (#255)
+
+### Design 🔳
+
+* Added page-icon-picker widgets: layout, adapters, etc. (#243)
+
+### Fixes & tech 🚒
+
+* Should hide keyboard when closing a page (#263)
+* Fixed emoji transparency issue (#261)
+* New models for files in `domain` and `data` modules + mappers (#269)
+* Provide config object for the whole app (#272)
+* Added `UrlBuilder` for building urls for file and pictures (#272)
+* Updated middleware config model to include gateway url (#270)
+
 ## Version 0.0.20
 
 ### New features 🚀

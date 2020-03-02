@@ -8,9 +8,11 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
+import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.content
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
@@ -125,6 +127,13 @@ class PageViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
+        val builder = UrlBuilder(
+            config = Config(
+                home = root,
+                gateway = MockDataFactory.randomUuid()
+            )
+        )
+
         val page = listOf(
             Block(
                 id = root,
@@ -173,13 +182,13 @@ class PageViewModelTest {
             }
         }
 
-        buildViewModel()
+        buildViewModel(builder)
 
         vm.open(root)
 
         coroutineTestRule.advanceTime(1001)
 
-        val expected = ViewState.Success(blocks = listOf(page.last().toView()))
+        val expected = ViewState.Success(blocks = listOf(page.last().toView(urlBuilder = builder)))
         vm.state.test().assertValue(expected)
     }
 
@@ -294,6 +303,13 @@ class PageViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
+        val builder = UrlBuilder(
+            config = Config(
+                home = root,
+                gateway = MockDataFactory.randomUuid()
+            )
+        )
+
         val page = listOf(
             Block(
                 id = root,
@@ -360,13 +376,18 @@ class PageViewModelTest {
         )
 
         stubOpenPage()
-        buildViewModel()
+        buildViewModel(builder)
         vm.open(root)
 
         coroutineTestRule.advanceTime(200)
 
         val expected =
-            ViewState.Success(listOf(page.last().toView(), added.toView(focused = false)))
+            ViewState.Success(
+                listOf(
+                    page.last().toView(urlBuilder = builder),
+                    added.toView(focused = false, urlBuilder = builder)
+                )
+            )
 
         vm.state.test().assertValue(expected)
     }
@@ -383,6 +404,13 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
+
+        val builder = UrlBuilder(
+            config = Config(
+                home = root,
+                gateway = MockDataFactory.randomUuid()
+            )
+        )
 
         val page = listOf(
             Block(
@@ -433,14 +461,18 @@ class PageViewModelTest {
         }
 
         stubOpenPage()
-        buildViewModel()
+        buildViewModel(builder)
 
         vm.open(root)
 
         coroutineTestRule.advanceTime(100)
 
         val beforeUpdate = ViewState.Success(
-            listOf(page.last().toView())
+            listOf(
+                page.last().toView(
+                    urlBuilder = builder
+                )
+            )
         )
 
         vm.state.test().assertValue(beforeUpdate)
@@ -475,6 +507,13 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
+
+        val builder = UrlBuilder(
+            config = Config(
+                home = root,
+                gateway = MockDataFactory.randomUuid()
+            )
+        )
 
         val paragraph = Block(
             id = child,
@@ -518,7 +557,7 @@ class PageViewModelTest {
 
         stubOpenPage()
 
-        buildViewModel()
+        buildViewModel(builder)
 
         vm.open(root)
 
@@ -553,7 +592,7 @@ class PageViewModelTest {
                             )
                         )
                     )
-                    .toView(focused = true)
+                    .toView(focused = true, urlBuilder = builder)
             )
         )
 
@@ -591,7 +630,7 @@ class PageViewModelTest {
                             )
                         )
                     )
-                    .toView(focused = true)
+                    .toView(focused = true, urlBuilder = builder)
             )
         )
 
@@ -606,6 +645,13 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
+
+        val builder = UrlBuilder(
+            config = Config(
+                home = root,
+                gateway = MockDataFactory.randomUuid()
+            )
+        )
 
         val paragraph = Block(
             id = child,
@@ -647,7 +693,7 @@ class PageViewModelTest {
 
         stubObserveEvents(events)
         stubOpenPage()
-        buildViewModel()
+        buildViewModel(builder)
 
         vm.open(root)
 
@@ -682,7 +728,7 @@ class PageViewModelTest {
                             )
                         )
                     )
-                    .toView(focused = true)
+                    .toView(focused = true, urlBuilder = builder)
             )
         )
 
@@ -725,7 +771,7 @@ class PageViewModelTest {
                             )
                         )
                     )
-                    .toView(focused = true)
+                    .toView(focused = true, urlBuilder = builder)
             )
         )
 
@@ -740,6 +786,13 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
+
+        val builder = UrlBuilder(
+            config = Config(
+                home = root,
+                gateway = MockDataFactory.randomUuid()
+            )
+        )
 
         val paragraph = Block(
             id = child,
@@ -825,6 +878,13 @@ class PageViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
+        val builder = UrlBuilder(
+            config = Config(
+                home = root,
+                gateway = MockDataFactory.randomUuid()
+            )
+        )
+
         val paragraph = Block(
             id = child,
             fields = Block.Fields(emptyMap()),
@@ -865,7 +925,7 @@ class PageViewModelTest {
 
         stubObserveEvents(events)
         stubOpenPage()
-        buildViewModel()
+        buildViewModel(builder)
 
         val testObserver = vm.state.test()
 
@@ -876,7 +936,9 @@ class PageViewModelTest {
         coroutineTestRule.advanceTime(100)
 
         val state = ViewState.Success(
-            listOf(paragraph.toView())
+            listOf(
+                paragraph.toView(urlBuilder = builder)
+            )
         )
 
         testObserver
@@ -1424,6 +1486,13 @@ class PageViewModelTest {
         val child = MockDataFactory.randomUuid()
         val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
 
+        val builder = UrlBuilder(
+            config = Config(
+                home = root,
+                gateway = MockDataFactory.randomUuid()
+            )
+        )
+
         val style = Block.Content.Text.Style.H1
 
         val new = Block(
@@ -1471,7 +1540,7 @@ class PageViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage()
 
-        buildViewModel()
+        buildViewModel(builder)
 
         vm.open(root)
 
@@ -1481,7 +1550,7 @@ class PageViewModelTest {
 
         testObserver.assertValue(
             ViewState.Success(
-                blocks = listOf(page.last().toView(false))
+                blocks = listOf(page.last().toView(focused = false, urlBuilder = builder))
             )
         )
 
@@ -1490,8 +1559,11 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    page.last().toView(focused = false),
-                    new.toView(focused = true)
+                    page.last().toView(
+                        focused = false,
+                        urlBuilder = builder
+                    ),
+                    new.toView(focused = true, urlBuilder = builder)
                 )
             )
         )
@@ -1646,6 +1718,13 @@ class PageViewModelTest {
             secondChild = secondChild
         )
 
+        val builder = UrlBuilder(
+            config = Config(
+                home = root,
+                gateway = MockDataFactory.randomUuid()
+            )
+        )
+
         val events: Flow<List<Event.Command>> = flow {
             delay(pageOpenedDelay)
             emit(
@@ -1670,7 +1749,7 @@ class PageViewModelTest {
 
         stubOpenPage()
         stubObserveEvents(events)
-        buildViewModel()
+        buildViewModel(builder)
 
         vm.open(root)
 
@@ -1681,8 +1760,8 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    page[1].toView(focused = false),
-                    page.last().toView(focused = false)
+                    page[1].toView(focused = false, urlBuilder = builder),
+                    page.last().toView(focused = false, urlBuilder = builder)
                 )
             )
         )
@@ -1699,7 +1778,10 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    page.last().toView(focused = false)
+                    page.last().toView(
+                        focused = false,
+                        urlBuilder = builder
+                    )
                 )
             )
         )
@@ -2661,7 +2743,14 @@ class PageViewModelTest {
         }
     }
 
-    private fun buildViewModel() {
+    private fun buildViewModel(
+        urlBuilder: UrlBuilder = UrlBuilder(
+            config = Config(
+                home = MockDataFactory.randomUuid(),
+                gateway = MockDataFactory.randomUuid()
+            )
+        )
+    ) {
         vm = PageViewModel(
             openPage = openPage,
             closePage = closePage,
@@ -2679,7 +2768,8 @@ class PageViewModelTest {
             removeLinkMark = removeLinkMark,
             mergeBlocks = mergeBlocks,
             splitBlock = splitBlock,
-            documentExternalEventReducer = DocumentExternalEventReducer()
+            documentExternalEventReducer = DocumentExternalEventReducer(),
+            urlBuilder = urlBuilder
         )
     }
 }

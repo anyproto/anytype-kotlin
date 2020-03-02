@@ -94,7 +94,8 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should only start getting config when view model is initialized`() {
 
-        val config = Config(home = MockDataFactory.randomUuid())
+        val config =
+            Config(home = MockDataFactory.randomUuid(), gateway = MockDataFactory.randomUuid())
         val response = Either.Right(config)
 
         stubGetConfig(response)
@@ -111,7 +112,8 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should start observing events after receiving config`() {
 
-        val config = Config(home = MockDataFactory.randomUuid())
+        val config =
+            Config(home = MockDataFactory.randomUuid(), gateway = MockDataFactory.randomUuid())
         val response = Either.Right(config)
 
         val params = InterceptEvents.Params(context = null)
@@ -128,7 +130,8 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should start observing home dashboard after receiving config`() {
 
-        val config = Config(home = MockDataFactory.randomUuid())
+        val config =
+            Config(home = MockDataFactory.randomUuid(), gateway = MockDataFactory.randomUuid())
         val response = Either.Right(config)
 
         stubGetConfig(response)
@@ -145,7 +148,8 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should emit loading state when home dashboard loading started`() {
 
-        val config = Config(home = MockDataFactory.randomUuid())
+        val config =
+            Config(home = MockDataFactory.randomUuid(), gateway = MockDataFactory.randomUuid())
 
         stubGetConfig(Either.Right(config))
         stubObserveEvents(params = InterceptEvents.Params(context = null))
@@ -167,7 +171,8 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should emit view state with dashboard when home dashboard loading started`() {
 
-        val config = Config(home = MockDataFactory.randomUuid())
+        val config =
+            Config(home = MockDataFactory.randomUuid(), gateway = MockDataFactory.randomUuid())
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
@@ -237,7 +242,8 @@ class HomeDashboardViewModelTest {
     @Test
     fun `block dragging events do not alter overall state`() {
 
-        val config = Config(home = MockDataFactory.randomUuid())
+        val config =
+            Config(home = MockDataFactory.randomUuid(), gateway = MockDataFactory.randomUuid())
 
         val pages = listOf(
             Block(
@@ -331,7 +337,8 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should start dispatching drag-and-drop actions when the dragged item is dropped`() {
 
-        val config = Config(home = MockDataFactory.randomUuid())
+        val config =
+            Config(home = MockDataFactory.randomUuid(), gateway = MockDataFactory.randomUuid())
 
         val pages = listOf(
             Block(
@@ -412,7 +419,8 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should proceed with getting account and opening dashboard when view is created`() {
 
-        val config = Config(home = MockDataFactory.randomUuid())
+        val config =
+            Config(home = MockDataFactory.randomUuid(), gateway = MockDataFactory.randomUuid())
         stubGetConfig(Either.Right(config))
         stubObserveEvents(params = InterceptEvents.Params(context = null))
 
@@ -555,7 +563,7 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should update state when a new block is added without updating dashboard children structure`() {
 
-        val config = Config(home = "HOME_ID")
+        val config = Config(home = "HOME_ID", gateway = MockDataFactory.randomUuid())
 
         val page = Block(
             id = "FIRST_PAGE_ID",

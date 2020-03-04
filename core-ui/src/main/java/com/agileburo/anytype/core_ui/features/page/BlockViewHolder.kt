@@ -1,6 +1,7 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.view.View
 import android.widget.TextView.BufferType
@@ -8,7 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.extensions.color
+import com.agileburo.anytype.core_ui.extensions.invisible
 import com.agileburo.anytype.core_ui.extensions.tint
+import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.NUMBER_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
@@ -19,6 +22,10 @@ import com.agileburo.anytype.core_utils.const.MimeTypes
 import com.agileburo.anytype.core_utils.text.BackspaceKeyDetector
 import com.agileburo.anytype.core_utils.text.DefaultEnterKeyDetector
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -646,9 +653,34 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     class Picture(view: View) : BlockViewHolder(view) {
 
         private val image = itemView.image
+        private val error = itemView.error
+
+        private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
+
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<Drawable>?,
+                isFirstResource: Boolean
+            ): Boolean {
+                error.visible()
+                return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable?,
+                model: Any?,
+                target: Target<Drawable>?,
+                dataSource: DataSource?,
+                isFirstResource: Boolean
+            ): Boolean {
+                error.invisible()
+                return false
+            }
+        }
 
         fun bind(item: BlockView.Picture) {
-            Glide.with(image).load(item.url).into(image)
+            Glide.with(image).load(item.url).listener(listener).into(image)
         }
     }
 

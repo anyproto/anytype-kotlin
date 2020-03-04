@@ -123,5 +123,7 @@
     <string name="hint_numbered_list">Numbered list item</string>
 
     <string name="untitled">Untitled</string>
+    <string name="error_while_loading_picture">Error while loading picture</string>
+    <string name="block_with_a_picture">Block with a picture</string>
 
 </resources>

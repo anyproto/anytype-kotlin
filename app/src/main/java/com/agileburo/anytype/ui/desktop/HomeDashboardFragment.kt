@@ -8,9 +8,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.tools.DefaultDragAndDropBehavior
+import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ext.invisible
 import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.core_utils.ext.visible
+import com.agileburo.anytype.core_utils.ui.EqualSpacingItemDecoration
+import com.agileburo.anytype.core_utils.ui.EqualSpacingItemDecoration.Companion.GRID
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.State
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModel
@@ -21,7 +24,6 @@ import com.agileburo.anytype.ui.base.ViewStateFragment
 import kotlinx.android.synthetic.main.fragment_desktop.*
 import timber.log.Timber
 import javax.inject.Inject
-
 
 class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop) {
 
@@ -101,11 +103,23 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     }
 
     private fun setup() {
+
+        val spacing = requireContext().dimen(R.dimen.default_dashboard_item_spacing).toInt()
+        val decoration = EqualSpacingItemDecoration(
+            topSpacing = spacing,
+            leftSpacing = spacing,
+            rightSpacing = spacing,
+            bottomSpacing = 0,
+            displayMode = GRID
+        )
+
         desktopRecycler.apply {
             layoutManager = GridLayoutManager(context, COLUMN_COUNT)
             adapter = dashboardAdapter
             ItemTouchHelper(dndBehavior).attachToRecyclerView(this)
+            addItemDecoration(decoration)
         }
+
         fab.setOnClickListener { vm.onAddNewDocumentClicked() }
         avatar.setOnClickListener { vm.onProfileClicked() }
     }

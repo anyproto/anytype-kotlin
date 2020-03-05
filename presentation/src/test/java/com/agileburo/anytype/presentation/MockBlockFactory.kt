@@ -30,6 +30,32 @@ object MockBlockFactory {
         )
     )
 
+    fun makeFileBlock(): Block = Block(
+        id = MockDataFactory.randomUuid(),
+        fields = Block.Fields(emptyMap()),
+        content = Block.Content.File(
+            hash = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            state = Block.Content.File.State.DONE,
+            added = MockDataFactory.randomLong(),
+            mime = MockDataFactory.randomString(),
+            size = MockDataFactory.randomLong(),
+            type = Block.Content.File.Type.FILE
+        ),
+        children = emptyList()
+    )
+
+    fun makeTitleBlock(): Block = Block(
+        id = MockDataFactory.randomUuid(),
+        fields = Block.Fields(emptyMap()),
+        content = Block.Content.Text(
+            text = MockDataFactory.randomString(),
+            marks = emptyList(),
+            style = Block.Content.Text.Style.TITLE
+        ),
+        children = emptyList()
+    )
+
     fun makeOnePageWithTwoTextBlocks(
         root: String,
         firstChild: String,

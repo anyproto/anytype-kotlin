@@ -16,6 +16,7 @@ import com.agileburo.anytype.domain.block.model.Block.Content
 import com.agileburo.anytype.domain.block.model.Block.Prototype
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.*
@@ -51,6 +52,7 @@ class PageViewModel(
     private val removeLinkMark: RemoveLinkMark,
     private val mergeBlocks: MergeBlocks,
     private val splitBlock: SplitBlock,
+    private val downloadFile: DownloadFile,
     private val documentExternalEventReducer: StateReducer<List<Block>, Event>,
     private val urlBuilder: UrlBuilder
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
@@ -835,6 +837,23 @@ class PageViewModel(
             result.either(
                 fnL = { Timber.e(it, "Error while creating a new page on home dashboard") },
                 fnR = { id -> proceedWithOpeningPage(id) }
+            )
+        }
+    }
+
+    fun onDownloadFileClicked(id: String) {
+        val block = blocks.first { it.id == id }
+        val file = block.content<Content.File>()
+        downloadFile.invoke(
+            scope = viewModelScope,
+            params = DownloadFile.Params(
+                url = urlBuilder.file(file.hash),
+                name = file.name
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while trying to download file: $file") },
+                fnR = { Timber.d("Started download file: $file") }
             )
         }
     }

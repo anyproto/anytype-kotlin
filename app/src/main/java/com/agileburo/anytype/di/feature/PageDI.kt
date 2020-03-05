@@ -3,6 +3,8 @@ package com.agileburo.anytype.di.feature
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.download.DownloadFile
+import com.agileburo.anytype.domain.download.Downloader
 import com.agileburo.anytype.domain.event.interactor.EventChannel
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.misc.UrlBuilder
@@ -53,7 +55,8 @@ class PageModule {
         splitBlock: SplitBlock,
         createPage: CreatePage,
         documentExternalEventReducer: DocumentExternalEventReducer,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        downloadFile: DownloadFile
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -72,7 +75,8 @@ class PageModule {
         mergeBlocks = mergeBlocks,
         splitBlock = splitBlock,
         documentEventReducer = documentExternalEventReducer,
-        urlBuilder = urlBuilder
+        urlBuilder = urlBuilder,
+        downloadFile = downloadFile
     )
 
     @Provides
@@ -194,6 +198,15 @@ class PageModule {
         repo: BlockRepository
     ): CreatePage = CreatePage(
         repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideDownloadFileUseCase(
+        downloader: Downloader
+    ): DownloadFile = DownloadFile(
+        downloader = downloader,
+        context = Dispatchers.Main
     )
 
     @Provides

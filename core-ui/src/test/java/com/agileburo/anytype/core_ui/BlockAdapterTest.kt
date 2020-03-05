@@ -846,7 +846,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onFooterClicked = {},
             onPageClicked = {},
-            onTextInputClicked = {}
+            onTextInputClicked = {},
+            onDownloadFileClicked = {}
         )
     }
 }

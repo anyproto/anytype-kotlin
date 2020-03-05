@@ -98,7 +98,8 @@ fun Block.toView(
                 id = id,
                 size = content.size,
                 name = content.name,
-                mime = content.mime
+                mime = content.mime,
+                url = urlBuilder.file(content.hash)
             )
             else -> TODO()
         }

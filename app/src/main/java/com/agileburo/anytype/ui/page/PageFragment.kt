@@ -89,7 +89,8 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             onNonEmptyBlockBackspaceClicked = vm::onNonEmptyBlockBackspaceClicked,
             onFooterClicked = vm::onOutsideClicked,
             onPageClicked = vm::onPageClicked,
-            onTextInputClicked = vm::onTextInputClicked
+            onTextInputClicked = vm::onTextInputClicked,
+            onDownloadFileClicked = vm::onDownloadFileClicked
         )
     }
 

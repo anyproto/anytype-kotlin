@@ -17,6 +17,7 @@ class AndroidApplication : Application() {
             .dataModule(DataModule())
             .configModule(ConfigModule())
             .utilModule(UtilModule())
+            .deviceModule(DeviceModule())
             .build()
     }
 

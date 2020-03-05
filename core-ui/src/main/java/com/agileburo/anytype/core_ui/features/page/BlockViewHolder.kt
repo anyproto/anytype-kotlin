@@ -603,7 +603,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val size = itemView.fileSize
         private val name = itemView.filename
 
-        fun bind(item: BlockView.File) {
+        fun bind(
+            item: BlockView.File,
+            onDownloadFileClicked: (String) -> Unit
+        ) {
             name.text = item.name
             size.text = FileSizeFormatter.formatFileSize(itemView.context, item.size)
             when (MimeTypes.category(item.mime)) {
@@ -612,6 +615,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     // TODO add images when they are ready.
                 }
             }
+            itemView.setOnClickListener { onDownloadFileClicked(item.id) }
         }
     }
 

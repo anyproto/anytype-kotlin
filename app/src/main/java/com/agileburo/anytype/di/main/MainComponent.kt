@@ -12,6 +12,7 @@ import javax.inject.Singleton
         EventModule::class,
         ImageModule::class,
         ConfigModule::class,
+        DeviceModule::class,
         UtilModule::class
     ]
 )

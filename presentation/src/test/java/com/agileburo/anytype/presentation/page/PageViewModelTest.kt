@@ -9,6 +9,7 @@ import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.content
@@ -91,6 +92,9 @@ class PageViewModelTest {
 
     @Mock
     lateinit var updateBackgroundColor: UpdateBackgroundColor
+
+    @Mock
+    lateinit var downloadFile: DownloadFile
 
     private lateinit var vm: PageViewModel
 
@@ -2693,6 +2697,72 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should start downloading file`() {
+
+        val root = MockDataFactory.randomUuid()
+        val file = MockBlockFactory.makeFileBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id, file.id)
+            ),
+            title,
+            file
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        val builder = UrlBuilder(
+            config = Config(
+                home = MockDataFactory.randomUuid(),
+                gateway = MockDataFactory.randomString()
+            )
+        )
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel(builder)
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.onDownloadFileClicked(id = file.id)
+
+        verify(downloadFile, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                DownloadFile.Params(
+                    name = file.content<Block.Content.File>().name,
+                    url = builder.file(
+                        hash = file.content<Block.Content.File>().hash
+                    )
+                )
+            ),
+            onResult = any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()
@@ -2769,7 +2839,8 @@ class PageViewModelTest {
             mergeBlocks = mergeBlocks,
             splitBlock = splitBlock,
             documentExternalEventReducer = DocumentExternalEventReducer(),
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            downloadFile = downloadFile
         )
     }
 }

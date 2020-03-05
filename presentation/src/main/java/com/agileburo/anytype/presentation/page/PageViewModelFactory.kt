@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.misc.UrlBuilder
@@ -30,7 +31,8 @@ open class PageViewModelFactory(
     private val mergeBlocks: MergeBlocks,
     private val splitBlock: SplitBlock,
     private val documentEventReducer: StateReducer<List<Block>, Event>,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val downloadFile: DownloadFile
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -53,7 +55,8 @@ open class PageViewModelFactory(
             splitBlock = splitBlock,
             createPage = createPage,
             documentExternalEventReducer = documentEventReducer,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            downloadFile = downloadFile
         ) as T
     }
 }

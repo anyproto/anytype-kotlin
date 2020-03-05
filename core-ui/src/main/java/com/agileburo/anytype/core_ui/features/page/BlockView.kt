@@ -271,12 +271,14 @@ sealed class BlockView : ViewType {
      * @property size a file's size
      * @property name a name
      * @property size file size (in bytes)
+     * @property url file url
      */
     data class File(
         override val id: String,
         val size: Long,
         val name: String,
-        val mime: String
+        val mime: String,
+        val url: String
     ) : BlockView() {
         override fun getViewType() = HOLDER_FILE
     }

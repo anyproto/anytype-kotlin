@@ -1,5 +1,26 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.22
+
+### New features 🚀
+
+* User can download files on phone (#256)
+* User can set an emoji as page icon (#280)
+
+### Fixes & tech 🚒
+
+* Update Kotlin to 1.3.70 (#278)
+
+### Design 🔳
+
+* Fix home dashboard list item spacing (#258)
+* Different icons for different mime types for file blocks (#288)
+* Page icon picker (#280)
+
+### Middleware ⚙️
+
+* Added `blockSetIconName` command (#280)
+
 ## Version 0.0.21
 
 ### New features 🚀

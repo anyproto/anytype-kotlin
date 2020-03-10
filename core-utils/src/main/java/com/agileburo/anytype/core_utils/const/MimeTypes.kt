@@ -8,13 +8,18 @@ object MimeTypes {
         "image/jpeg"
     )
 
+    private val TEXTS = listOf(
+        "text/plain"
+    )
+
     enum class Category {
-        IMAGE, PDF, PICTURE, DOC, AUDIO, VIDEO, ZIP, OTHER
+        IMAGE, PDF, TEXT, AUDIO, VIDEO, ARCHIVE, OTHER, TABLE, PRESENTATION
     }
 
     fun category(mime: String): Category = when {
         mime == PDF -> Category.PDF
         IMAGES.contains(mime) -> Category.IMAGE
+        TEXTS.contains(mime) -> Category.TEXT
         else -> Category.OTHER
     }
 }

@@ -10,21 +10,21 @@
 
     <ImageView
         android:id="@+id/fileIcon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp"
         android:contentDescription="@string/content_description_file_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:background="@color/orange" />
+        tools:background="@drawable/ic_mime_image" />
 
     <TextView
         android:id="@+id/filename"
         style="@style/BlockFileFilenameContentStyle"
         android:layout_width="0dp"
-        android:layout_marginStart="6dp"
+        android:layout_marginStart="7dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/fileSize"

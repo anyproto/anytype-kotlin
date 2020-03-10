@@ -620,9 +620,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             size.text = FileSizeFormatter.formatFileSize(itemView.context, item.size)
             when (MimeTypes.category(item.mime)) {
                 MimeTypes.Category.PDF -> icon.setImageResource(R.drawable.ic_mime_pdf)
-                else -> {
-                    // TODO add images when they are ready.
-                }
+                MimeTypes.Category.IMAGE -> icon.setImageResource(R.drawable.ic_mime_image)
+                MimeTypes.Category.AUDIO -> icon.setImageResource(R.drawable.ic_mime_music)
+                MimeTypes.Category.TEXT -> icon.setImageResource(R.drawable.ic_mime_text)
+                MimeTypes.Category.VIDEO -> icon.setImageResource(R.drawable.ic_mime_video)
+                MimeTypes.Category.ARCHIVE -> icon.setImageResource(R.drawable.ic_mime_archive)
+                MimeTypes.Category.TABLE -> icon.setImageResource(R.drawable.ic_mime_table)
+                MimeTypes.Category.PRESENTATION -> icon.setImageResource(R.drawable.ic_mime_presentation)
+                MimeTypes.Category.OTHER -> icon.setImageResource(R.drawable.ic_mime_other)
             }
             itemView.setOnClickListener { onDownloadFileClicked(item.id) }
         }

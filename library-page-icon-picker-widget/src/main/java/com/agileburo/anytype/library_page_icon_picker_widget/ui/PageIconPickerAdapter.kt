@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.agileburo.anytype.R
+import com.agileburo.anytype.library_page_icon_picker_widget.R
 import com.agileburo.anytype.library_page_icon_picker_widget.model.PageIconPickerView
 import com.agileburo.anytype.library_page_icon_picker_widget.model.PageIconPickerViewDiffUtil
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.PageIconPickerViewHolder.Companion.HOLDER_CHOOSE_EMOJI

@@ -544,4 +544,17 @@ public class Middleware {
 
         return response.getBlockId();
     }
+
+    public void setIconName(CommandEntity.SetIconName command) throws Exception {
+        Block.Set.Icon.Name.Request request = Block.Set.Icon.Name.Request
+                .newBuilder()
+                .setBlockId(command.getTarget())
+                .setContextId(command.getContext())
+                .setName(command.getName())
+                .build();
+
+        Timber.d("Setting icon name with the following request:\n%s", request.toString());
+
+        service.blockSetIconName(request);
+    }
 }

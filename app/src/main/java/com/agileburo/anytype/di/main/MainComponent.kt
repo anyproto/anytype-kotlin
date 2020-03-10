@@ -13,7 +13,8 @@ import javax.inject.Singleton
         ImageModule::class,
         ConfigModule::class,
         DeviceModule::class,
-        UtilModule::class
+        UtilModule::class,
+        EmojiModule::class
     ]
 )
 interface MainComponent {
@@ -32,4 +33,5 @@ interface MainComponent {
     fun detailsReorderBuilder(): DetailsReorderSubComponent.Builder
     fun pageComponentBuilder(): PageSubComponent.Builder
     fun linkAddComponentBuilder(): LinkSubComponent.Builder
+    fun pageIconPickerBuilder(): PageIconPickerSubComponent.Builder
 }

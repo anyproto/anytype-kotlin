@@ -54,4 +54,6 @@ public interface MiddlewareService {
     Block.Split.Response blockSplit(Block.Split.Request request) throws Exception;
 
     BlockList.Duplicate.Response blockListDuplicate(BlockList.Duplicate.Request request) throws Exception;
+
+    Block.Set.Icon.Name.Response blockSetIconName(Block.Set.Icon.Name.Request request) throws Exception;
 }

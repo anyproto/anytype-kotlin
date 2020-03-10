@@ -1,4 +1,4 @@
-include ':app',
+include ':app', ':library-emojifier',
         ':sample',
         ':core-utils',
         ':middleware',

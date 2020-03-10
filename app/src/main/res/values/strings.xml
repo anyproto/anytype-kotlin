@@ -91,4 +91,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="button_unlink">Unlink</string>
     <string name="button_link">Link</string>
 
+    <string name="page_icon">Page icon</string>
+    <string name="page_icon_picker_remove_text">Remove</string>
+
 </resources>

@@ -251,4 +251,15 @@ public class DefaultMiddlewareService implements MiddlewareService {
             return response;
         }
     }
+
+    @Override
+    public Block.Set.Icon.Name.Response blockSetIconName(Block.Set.Icon.Name.Request request) throws Exception {
+        byte[] encoded = Lib.blockSetIconName(request.toByteArray());
+        Block.Set.Icon.Name.Response response = Block.Set.Icon.Name.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Block.Set.Icon.Name.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
 }

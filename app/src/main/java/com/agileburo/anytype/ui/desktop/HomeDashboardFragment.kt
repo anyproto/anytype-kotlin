@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.agileburo.anytype.R
@@ -15,6 +16,7 @@ import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.core_utils.ui.EqualSpacingItemDecoration
 import com.agileburo.anytype.core_utils.ui.EqualSpacingItemDecoration.Companion.GRID
 import com.agileburo.anytype.di.common.componentManager
+import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.State
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModel
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModelFactory
@@ -22,6 +24,9 @@ import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.profile.ProfileView
 import com.agileburo.anytype.ui.base.ViewStateFragment
 import kotlinx.android.synthetic.main.fragment_desktop.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -62,6 +67,9 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     @Inject
     lateinit var factory: HomeDashboardViewModelFactory
 
+    @Inject
+    lateinit var emojifier: Emojifier
+
     private val dashboardAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
@@ -97,7 +105,13 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             state.dashboard != null -> {
                 progress.invisible()
                 fab.visible()
-                state.dashboard?.let { dashboardAdapter.update(it.toView()) }
+                state.dashboard?.let { dashboard ->
+                    lifecycleScope.launch {
+                        val result =
+                            withContext(Dispatchers.IO) { dashboard.toView(emojifier = emojifier) }
+                        dashboardAdapter.update(result)
+                    }
+                }
             }
         }
     }

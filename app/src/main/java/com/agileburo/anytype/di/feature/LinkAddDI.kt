@@ -3,7 +3,7 @@ package com.agileburo.anytype.di.feature
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.page.CheckForUnlink
 import com.agileburo.anytype.presentation.page.LinkAddViewModelFactory
-import com.agileburo.anytype.ui.page.modals.LinkFragment
+import com.agileburo.anytype.ui.page.modals.SetLinkFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -18,7 +18,7 @@ interface LinkSubComponent {
         fun build(): LinkSubComponent
     }
 
-    fun inject(fragment: LinkFragment)
+    fun inject(fragment: SetLinkFragment)
 }
 
 @Module

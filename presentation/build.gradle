@@ -26,9 +26,13 @@ dependencies {
     implementation project(':domain')
     implementation project(':core-utils')
     implementation project(':core-ui')
+    implementation project(':library-page-icon-picker-widget')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
+    def lib = rootProject.ext.libraryPageIconPicker
+
+    implementation lib.emojiJava
 
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines
@@ -49,5 +53,4 @@ dependencies {
     testImplementation unitTestDependencies.archCoreTesting
 
     androidTestImplementation 'androidx.test:core:1.2.0'
-
 }

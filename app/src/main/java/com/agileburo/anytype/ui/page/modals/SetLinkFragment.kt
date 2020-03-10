@@ -18,7 +18,7 @@ import com.agileburo.anytype.ui.page.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.fragment_link.*
 import javax.inject.Inject
 
-class LinkFragment : BaseBottomSheetFragment() {
+class SetLinkFragment : BaseBottomSheetFragment() {
 
     companion object {
         const val ARG_URL = "arg.link.url"
@@ -34,7 +34,7 @@ class LinkFragment : BaseBottomSheetFragment() {
             rangeEnd: Int,
             blockId: String
         ) =
-            LinkFragment().apply {
+            SetLinkFragment().apply {
                 arguments = bundleOf(
                     ARG_TEXT to text,
                     ARG_URL to initUrl,

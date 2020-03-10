@@ -22,7 +22,8 @@ class MiddlewareEventChannel(
         Events.Event.Message.ValueCase.BLOCKSETTEXT,
         Events.Event.Message.ValueCase.BLOCKSETCHILDRENIDS,
         Events.Event.Message.ValueCase.BLOCKDELETE,
-        Events.Event.Message.ValueCase.BLOCKSETLINK
+        Events.Event.Message.ValueCase.BLOCKSETLINK,
+        Events.Event.Message.ValueCase.BLOCKSETFIELDS
     )
 
     override fun observeEvents(
@@ -101,6 +102,13 @@ class MiddlewareEventChannel(
                             event.blockSetLink.fields.value.fields()
                         else
                             null
+                    )
+                }
+                Events.Event.Message.ValueCase.BLOCKSETFIELDS -> {
+                    EventEntity.Command.UpdateFields(
+                        context = context,
+                        target = event.blockSetFields.id,
+                        fields = event.blockSetFields.fields.fields()
                     )
                 }
                 else -> null

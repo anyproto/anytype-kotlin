@@ -19,6 +19,8 @@ class DashboardAdapter(
 
     companion object {
         const val VIEW_TYPE_DOCUMENT = 0
+        const val UNEXPECTED_TYPE_ERROR_MESSAGE = "Unexpected type"
+        const val EMPTY_EMOJI = ""
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -36,7 +38,7 @@ class DashboardAdapter(
     override fun getItemViewType(position: Int): Int {
         return when (data[position]) {
             is DashboardView.Document -> VIEW_TYPE_DOCUMENT
-            else -> throw IllegalStateException("Unexpected type")
+            else -> throw IllegalStateException(UNEXPECTED_TYPE_ERROR_MESSAGE)
         }
     }
 
@@ -60,7 +62,7 @@ class DashboardAdapter(
             fun bind(doc: DashboardView.Document, onClick: (DashboardView.Document) -> Unit) {
                 itemView.setOnClickListener { onClick(doc) }
                 itemView.title.text = doc.title
-                itemView.emoji.text = if (doc.emoji.isNotEmpty()) doc.emoji else "🎬"
+                itemView.emoji.text = doc.emoji ?: EMPTY_EMOJI
             }
         }
     }

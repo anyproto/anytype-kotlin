@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.download.DownloadFile
+import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.misc.UrlBuilder
@@ -32,7 +33,8 @@ open class PageViewModelFactory(
     private val splitBlock: SplitBlock,
     private val documentEventReducer: StateReducer<List<Block>, Event>,
     private val urlBuilder: UrlBuilder,
-    private val downloadFile: DownloadFile
+    private val downloadFile: DownloadFile,
+    private val emojifier: Emojifier
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -56,7 +58,8 @@ open class PageViewModelFactory(
             createPage = createPage,
             documentExternalEventReducer = documentEventReducer,
             urlBuilder = urlBuilder,
-            downloadFile = downloadFile
+            downloadFile = downloadFile,
+            emojifier = emojifier
         ) as T
     }
 }

@@ -216,6 +216,10 @@ fun Block.link(): BlockEntity.Content.Link = BlockEntity.Content.Link(
 
 fun Block.divider(): BlockEntity.Content.Divider = BlockEntity.Content.Divider
 
+fun Block.icon(): BlockEntity.Content.Icon = BlockEntity.Content.Icon(
+    name = icon.name
+)
+
 fun Block.file(): BlockEntity.Content.File = BlockEntity.Content.File(
     hash = file.hash,
     name = file.name,
@@ -294,6 +298,14 @@ fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
                 children = block.childrenIdsList,
                 fields = block.fields(),
                 content = block.file()
+            )
+        }
+        Block.ContentCase.ICON -> {
+            BlockEntity(
+                id = block.id,
+                children = block.childrenIdsList,
+                fields = block.fields(),
+                content = block.icon()
             )
         }
         else -> {

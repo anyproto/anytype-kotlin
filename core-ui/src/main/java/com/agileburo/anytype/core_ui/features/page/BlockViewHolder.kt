@@ -239,6 +239,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Title(view: View) : BlockViewHolder(view), TextHolder {
 
+        private val icon = itemView.logo
+
         override val root: View = itemView
         override val content: TextInputWidget = itemView.title
 
@@ -249,7 +251,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
             item: BlockView.Title,
             onTextChanged: (String, Editable) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit,
+            onPageIconClicked: () -> Unit
         ) {
             content.clearTextWatchers()
             content.setOnFocusChangeListener { _, hasFocus ->
@@ -257,6 +260,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
             content.setText(item.text, BufferType.EDITABLE)
             setupTextWatcher(onTextChanged, item)
+            icon.text = item.emoji ?: EMPTY_EMOJI
+            icon.setOnClickListener { onPageIconClicked() }
         }
 
         fun processPayloads(
@@ -279,6 +284,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onEmptyBlockBackspaceClicked: () -> Unit,
             onNonEmptyBlockBackspaceClicked: () -> Unit
         ) = Unit
+
+        companion object {
+            private const val EMPTY_EMOJI = ""
+        }
     }
 
     class HeaderOne(view: View) : BlockViewHolder(view), TextHolder {

@@ -10,6 +10,7 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.download.DownloadFile
+import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.content
@@ -95,6 +96,9 @@ class PageViewModelTest {
 
     @Mock
     lateinit var downloadFile: DownloadFile
+
+    @Mock
+    lateinit var emojifier: Emojifier
 
     private lateinit var vm: PageViewModel
 
@@ -2840,7 +2844,8 @@ class PageViewModelTest {
             splitBlock = splitBlock,
             documentExternalEventReducer = DocumentExternalEventReducer(),
             urlBuilder = urlBuilder,
-            downloadFile = downloadFile
+            downloadFile = downloadFile,
+            emojifier = emojifier
         )
     }
 }

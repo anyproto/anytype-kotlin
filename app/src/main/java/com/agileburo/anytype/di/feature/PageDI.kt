@@ -5,6 +5,7 @@ import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.download.Downloader
+import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.EventChannel
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.misc.UrlBuilder
@@ -56,7 +57,8 @@ class PageModule {
         createPage: CreatePage,
         documentExternalEventReducer: DocumentExternalEventReducer,
         urlBuilder: UrlBuilder,
-        downloadFile: DownloadFile
+        downloadFile: DownloadFile,
+        emojifier: Emojifier
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -76,7 +78,8 @@ class PageModule {
         splitBlock = splitBlock,
         documentEventReducer = documentExternalEventReducer,
         urlBuilder = urlBuilder,
-        downloadFile = downloadFile
+        downloadFile = downloadFile,
+        emojifier = emojifier
     )
 
     @Provides

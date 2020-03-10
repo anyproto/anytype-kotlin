@@ -9,7 +9,7 @@ data class BlockEntity(
     val content: Content,
     val fields: Fields
 ) {
-    data class Fields(val map: MutableMap<String, Any?> = mutableMapOf())
+    data class Fields(val map: MutableMap<String?, Any?> = mutableMapOf())
 
     sealed class Content {
 
@@ -50,6 +50,10 @@ data class BlockEntity(
 
         data class Image(
             val path: String
+        ) : Content()
+
+        data class Icon(
+            val name: String
         ) : Content()
 
         data class Dashboard(val type: Type) : Content() {

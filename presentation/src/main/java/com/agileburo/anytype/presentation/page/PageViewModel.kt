@@ -17,6 +17,7 @@ import com.agileburo.anytype.domain.block.model.Block.Prototype
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.download.DownloadFile
+import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.*
@@ -25,6 +26,7 @@ import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.common.StateReducer
+import com.agileburo.anytype.presentation.common.SupportCommand
 import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
@@ -54,9 +56,11 @@ class PageViewModel(
     private val splitBlock: SplitBlock,
     private val downloadFile: DownloadFile,
     private val documentExternalEventReducer: StateReducer<List<Block>, Event>,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val emojifier: Emojifier
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
+    SupportCommand<PageViewModel.Command>,
     StateReducer<List<Block>, Event> by documentExternalEventReducer {
 
     private val controlPanelInteractor = Interactor(viewModelScope)
@@ -91,6 +95,7 @@ class PageViewModel(
     val focus: LiveData<Id> = _focus
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
+    override val commands = MutableLiveData<EventWrapper<Command>>()
 
     init {
         startHandlingTextChanges()
@@ -255,16 +260,30 @@ class PageViewModel(
 
                 val render = models.asMap().asRender(context)
 
+                val page = models.first { it.id == context }
+
                 val numbers = render.numbers()
 
                 render.mapNotNull { block ->
-                    when (block.content) {
+                    when (val content = block.content) {
                         is Content.Text -> {
-                            block.toView(
-                                focused = block.id == focus,
-                                numbers = numbers,
-                                urlBuilder = urlBuilder
-                            )
+                            if (content.style == Content.Text.Style.TITLE)
+                                BlockView.Title(
+                                    id = block.id,
+                                    text = content.text,
+                                    emoji = page.fields.icon?.let { name ->
+                                        if (name.isNotEmpty())
+                                            emojifier.fromShortName(name).unicode
+                                        else
+                                            null
+                                    }
+                                )
+                            else
+                                block.toView(
+                                    focused = block.id == focus,
+                                    numbers = numbers,
+                                    urlBuilder = urlBuilder
+                                )
                         }
                         is Content.Image -> {
                             block.toView(
@@ -841,6 +860,11 @@ class PageViewModel(
         }
     }
 
+    fun onPageIconClicked() {
+        val target = blocks.first { it.content is Content.Icon }.id
+        dispatch(Command.OpenPagePicker(target))
+    }
+
     fun onDownloadFileClicked(id: String) {
         val block = blocks.first { it.id == id }
         val file = block.content<Content.File>()
@@ -874,8 +898,17 @@ class PageViewModel(
         object Loading : ViewState()
         data class Success(val blocks: List<BlockView>) : ViewState()
         data class Error(val message: String) : ViewState()
-        data class OpenLinkScreen(val pageId: String, val block: Block, val range: IntRange) :
-            ViewState()
+        data class OpenLinkScreen(
+            val pageId: String,
+            val block: Block,
+            val range: IntRange
+        ) : ViewState()
+    }
+
+    sealed class Command {
+        data class OpenPagePicker(
+            val target: String
+        ) : Command()
     }
 
     companion object {

@@ -5,8 +5,10 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content.Text.Style
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
+import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.presentation.desktop.DashboardView
+import com.vdurmont.emoji.EmojiManager
 
 fun Block.toView(
     focused: Boolean = false,
@@ -43,7 +45,15 @@ fun Block.toView(
             )
             Style.TITLE -> BlockView.Title(
                 id = id,
-                text = content.text
+                text = content.text,
+                emoji = fields.icon?.let { name ->
+                    EmojiManager.getForAlias(
+                        name.substring(
+                            1,
+                            name.lastIndex
+                        )
+                    ).unicode
+                }
             )
             Style.QUOTE -> BlockView.Highlight(
                 id = id,
@@ -179,8 +189,9 @@ private fun mapMarks(content: Block.Content.Text): List<Markup.Mark> =
         }
     }
 
-fun HomeDashboard.toView(
-    defaultTitle: String = "Untitled"
+suspend fun HomeDashboard.toView(
+    defaultTitle: String = "Untitled",
+    emojifier: Emojifier
 ): List<DashboardView.Document> = children.mapNotNull { id ->
     blocks.find { block -> block.id == id }?.let { model ->
         when (val content = model.content) {
@@ -188,7 +199,13 @@ fun HomeDashboard.toView(
                 if (content.type == Block.Content.Link.Type.PAGE) {
                     DashboardView.Document(
                         id = content.target,
-                        title = if (content.fields.hasName()) content.fields.name else defaultTitle
+                        title = if (content.fields.hasName()) content.fields.name else defaultTitle,
+                        emoji = content.fields.icon?.let { name ->
+                            if (name.isNotEmpty())
+                                emojifier.fromShortName(name).unicode
+                            else
+                                null
+                        }
                     )
                 } else {
                     null

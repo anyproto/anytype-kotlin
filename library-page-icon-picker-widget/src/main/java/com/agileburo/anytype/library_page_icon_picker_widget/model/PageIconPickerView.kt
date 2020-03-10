@@ -14,7 +14,7 @@ sealed class PageIconPickerView : ViewType {
      * @property alias short name or convenient name for an emoji.
      */
     data class Emoji(
-        val alias: String = "",
+        val alias: String,
         val unicode: String
     ) : PageIconPickerView() {
         override fun getViewType() = HOLDER_EMOJI_ITEM

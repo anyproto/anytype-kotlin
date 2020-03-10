@@ -22,16 +22,15 @@ data class Block(
      * Block fields containing useful block properties.
      * @property map map containing fields
      */
-    data class Fields(val map: Map<String, Any?>) {
+    data class Fields(val map: Map<String?, Any?>) {
 
         val name: String by map
-        val icon: String by map
+        val icon: String? by map
 
         fun hasName() = map.containsKey(NAME_KEY)
 
         companion object {
             fun empty(): Fields = Fields(emptyMap())
-
             const val NAME_KEY = "name"
         }
     }
@@ -139,6 +138,14 @@ data class Block(
         ) : Content() {
             enum class Type { PAGE, DATA_VIEW, DASHBOARD, ARCHIVE }
         }
+
+        /**
+         * Page icon.
+         * @property name conventional emoji short name.
+         */
+        data class Icon(
+            val name: String
+        ) : Content()
 
         /**
          * File block.

@@ -115,6 +115,13 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val pageIconPickerSubComponent = Component {
+        main
+            .pageIconPickerBuilder()
+            .pageIconPickerModule(PageIconPickerModule())
+            .build()
+    }
+
     class Component<T>(private val builder: () -> T) {
 
         private var instance: T? = null

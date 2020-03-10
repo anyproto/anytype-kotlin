@@ -48,6 +48,7 @@ class BlockAdapter(
     private val onFooterClicked: () -> Unit,
     private val onPageClicked: (String) -> Unit,
     private val onTextInputClicked: () -> Unit,
+    private val onPageIconClicked: () -> Unit,
     private val onDownloadFileClicked: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
@@ -310,7 +311,8 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Title,
                     onTextChanged = onTextChanged,
-                    onFocusChanged = onFocusChanged
+                    onFocusChanged = onFocusChanged,
+                    onPageIconClicked = onPageIconClicked
                 )
             }
             is BlockViewHolder.HeaderOne -> {

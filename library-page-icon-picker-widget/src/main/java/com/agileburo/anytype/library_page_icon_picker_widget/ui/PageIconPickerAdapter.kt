@@ -3,9 +3,11 @@ package com.agileburo.anytype.library_page_icon_picker_widget.ui
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.library_page_icon_picker_widget.model.PageIconPickerView
+import com.agileburo.anytype.library_page_icon_picker_widget.model.PageIconPickerViewDiffUtil
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.PageIconPickerViewHolder.Companion.HOLDER_CHOOSE_EMOJI
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.PageIconPickerViewHolder.Companion.HOLDER_EMOJI_CATEGORY_HEADER
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.PageIconPickerViewHolder.Companion.HOLDER_EMOJI_FILTER
@@ -18,7 +20,8 @@ class PageIconPickerAdapter(
     private var views: List<PageIconPickerView>,
     private val onUploadPhotoClicked: () -> Unit,
     private val onSetRandomEmojiClicked: () -> Unit,
-    private val onFilterQueryChanged: (String) -> Unit
+    private val onFilterQueryChanged: (String) -> Unit,
+    private val onEmojiClicked: (String, String) -> Unit
 ) : RecyclerView.Adapter<PageIconPickerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageIconPickerViewHolder {
@@ -88,8 +91,22 @@ class PageIconPickerAdapter(
                 holder.bind(views[position] as PageIconPickerView.GroupHeader)
             }
             is PageIconPickerViewHolder.EmojiItem -> {
-                holder.bind(views[position] as PageIconPickerView.Emoji)
+                holder.bind(
+                    item = views[position] as PageIconPickerView.Emoji,
+                    onEmojiClicked = onEmojiClicked
+                )
             }
         }
+    }
+
+    fun update(update: List<PageIconPickerView>) {
+        val result = DiffUtil.calculateDiff(
+            PageIconPickerViewDiffUtil(
+                old = views,
+                new = update
+            )
+        )
+        views = update
+        result.dispatchUpdatesTo(this)
     }
 }

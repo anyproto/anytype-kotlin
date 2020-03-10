@@ -31,6 +31,7 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionC
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HIGHLIGHTED
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_TEXT
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TOOL_PAGE
+import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.gone
 import com.agileburo.anytype.core_utils.ext.hexColorCode
 import com.agileburo.anytype.core_utils.ext.hideSoftInput
@@ -44,7 +45,8 @@ import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.base.NavigationFragment
-import com.agileburo.anytype.ui.page.modals.LinkFragment
+import com.agileburo.anytype.ui.page.modals.PageIconPickerFragment
+import com.agileburo.anytype.ui.page.modals.SetLinkFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_page.*
 import kotlinx.coroutines.delay
@@ -90,7 +92,8 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             onFooterClicked = vm::onOutsideClicked,
             onPageClicked = vm::onPageClicked,
             onTextInputClicked = vm::onTextInputClicked,
-            onDownloadFileClicked = vm::onDownloadFileClicked
+            onDownloadFileClicked = vm::onDownloadFileClicked,
+            onPageIconClicked = vm::onPageIconClicked
         )
     }
 
@@ -329,6 +332,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         vm.controlPanelViewState.observe(viewLifecycleOwner, Observer { render(it) })
         vm.focus.observe(viewLifecycleOwner, Observer { handleFocus(it) })
+        vm.commands.observe(viewLifecycleOwner, Observer { execute(it) })
     }
 
     private fun handleFocus(focus: Id) {
@@ -342,13 +346,26 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
         }
     }
 
+    private fun execute(event: EventWrapper<PageViewModel.Command>) {
+        event.getContentIfNotHandled()?.let { command ->
+            when (command) {
+                is PageViewModel.Command.OpenPagePicker -> {
+                    PageIconPickerFragment.newInstance(
+                        context = requireArguments().getString(ID_KEY, ID_EMPTY_VALUE),
+                        target = command.target
+                    ).show(childFragmentManager, null)
+                }
+            }
+        }
+    }
+
     private fun render(state: PageViewModel.ViewState) {
         when (state) {
             is PageViewModel.ViewState.Success -> {
                 pageAdapter.updateWithDiffUtil(state.blocks)
             }
             is PageViewModel.ViewState.OpenLinkScreen -> {
-                LinkFragment.newInstance(
+                SetLinkFragment.newInstance(
                     blockId = state.block.id,
                     initUrl = state.block.getFirstLinkMarkupParam(state.range),
                     text = state.block.getSubstring(state.range),

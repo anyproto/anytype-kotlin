@@ -14,7 +14,6 @@
         android:background="@drawable/rectangle_default_page_logo_background"
         android:gravity="center"
         android:layout_marginTop="45dp"
-        android:text="✍️"
         android:textColor="@color/emoji_color"
         android:textSize="28sp" />
 

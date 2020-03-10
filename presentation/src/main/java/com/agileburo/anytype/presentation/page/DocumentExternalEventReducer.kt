@@ -5,6 +5,7 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.presentation.common.StateReducer
+import timber.log.Timber
 
 /**
  * Reduces external events (coming not from user, but from outside) to state.
@@ -44,6 +45,10 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
             },
             target = { block -> block.id == event.id }
         )
-        else -> state
+        is Event.Command.UpdateFields -> state.replace(
+            replacement = { block -> block.copy(fields = event.fields) },
+            target = { block -> block.id == event.target }
+        )
+        else -> state.also { Timber.d("Ignoring event: $event") }
     }
 }

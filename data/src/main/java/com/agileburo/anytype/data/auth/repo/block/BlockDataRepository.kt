@@ -67,4 +67,7 @@ class BlockDataRepository(
     }
 
     override suspend fun split(command: Command.Split) = factory.remote.split(command.toEntity())
+
+    override suspend fun setIconName(command: Command.SetIconName) =
+        factory.remote.setIconName(command.toEntity())
 }

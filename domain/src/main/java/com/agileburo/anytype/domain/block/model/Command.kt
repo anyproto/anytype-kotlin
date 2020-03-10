@@ -127,4 +127,10 @@ sealed class Command {
         val target: Id,
         val index: Int
     )
+
+    data class SetIconName(
+        val context: Id,
+        val target: Id,
+        val name: String
+    )
 }

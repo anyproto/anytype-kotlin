@@ -16,6 +16,8 @@ import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.toHomeDashboard
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
+import com.agileburo.anytype.domain.emoji.Emoji
+import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.image.LoadImage
@@ -32,6 +34,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -70,6 +73,9 @@ class HomeDashboardViewModelTest {
 
     @Mock
     lateinit var dnd: DragAndDrop
+
+    @Mock
+    lateinit var emojifier: Emojifier
 
     private lateinit var vm: HomeDashboardViewModel
 
@@ -242,8 +248,15 @@ class HomeDashboardViewModelTest {
     @Test
     fun `block dragging events do not alter overall state`() {
 
-        val config =
-            Config(home = MockDataFactory.randomUuid(), gateway = MockDataFactory.randomUuid())
+        val config = Config(
+            home = MockDataFactory.randomUuid(),
+            gateway = MockDataFactory.randomUuid()
+        )
+
+        val emoji = Emoji(
+            unicode = MockDataFactory.randomString(),
+            alias = MockDataFactory.randomString()
+        )
 
         val pages = listOf(
             Block(
@@ -253,7 +266,12 @@ class HomeDashboardViewModelTest {
                 content = Block.Content.Link(
                     target = MockDataFactory.randomUuid(),
                     type = Block.Content.Link.Type.PAGE,
-                    fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString()))
+                    fields = Block.Fields(
+                        map = mapOf(
+                            "name" to MockDataFactory.randomString(),
+                            "icon" to MockDataFactory.randomString()
+                        )
+                    )
                 )
             ),
             Block(
@@ -263,7 +281,12 @@ class HomeDashboardViewModelTest {
                 content = Block.Content.Link(
                     target = MockDataFactory.randomUuid(),
                     type = Block.Content.Link.Type.PAGE,
-                    fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString()))
+                    fields = Block.Fields(
+                        map = mapOf(
+                            "name" to MockDataFactory.randomString(),
+                            "icon" to emoji.name
+                        )
+                    )
                 )
             )
         )
@@ -274,7 +297,8 @@ class HomeDashboardViewModelTest {
                 type = Block.Content.Dashboard.Type.MAIN_SCREEN
             ),
             children = pages.map { page -> page.id },
-            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString()))
+
+            fields = Block.Fields.empty()
         )
 
         val delayInMillis = 100L
@@ -290,6 +314,10 @@ class HomeDashboardViewModelTest {
                     )
                 )
             )
+        }
+
+        emojifier.stub {
+            onBlocking { fromShortName(any()) } doReturn emoji
         }
 
         stubGetConfig(Either.Right(config))
@@ -316,8 +344,15 @@ class HomeDashboardViewModelTest {
             error = null
         )
 
-        val views =
-            listOf(dashboard, pages.first(), pages.last()).toHomeDashboard(dashboard.id).toView()
+        val views = runBlocking {
+            listOf(
+                dashboard,
+                pages.first(),
+                pages.last()
+            ).toHomeDashboard(dashboard.id).toView(
+                emojifier = emojifier
+            )
+        }
 
         val from = 0
         val to = 1
@@ -337,8 +372,15 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should start dispatching drag-and-drop actions when the dragged item is dropped`() {
 
-        val config =
-            Config(home = MockDataFactory.randomUuid(), gateway = MockDataFactory.randomUuid())
+        val config = Config(
+            home = MockDataFactory.randomUuid(),
+            gateway = MockDataFactory.randomUuid()
+        )
+
+        val emoji = Emoji(
+            unicode = MockDataFactory.randomString(),
+            alias = MockDataFactory.randomString()
+        )
 
         val pages = listOf(
             Block(
@@ -348,7 +390,12 @@ class HomeDashboardViewModelTest {
                 content = Block.Content.Link(
                     type = Block.Content.Link.Type.PAGE,
                     target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields.empty()
+                    fields = Block.Fields(
+                        map = mapOf(
+                            "name" to MockDataFactory.randomString(),
+                            "icon" to emoji.name
+                        )
+                    )
                 )
             ),
             Block(
@@ -358,7 +405,12 @@ class HomeDashboardViewModelTest {
                 content = Block.Content.Link(
                     type = Block.Content.Link.Type.PAGE,
                     target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields.empty()
+                    fields = Block.Fields(
+                        map = mapOf(
+                            "name" to MockDataFactory.randomString(),
+                            "icon" to emoji.name
+                        )
+                    )
                 )
             )
         )
@@ -378,6 +430,10 @@ class HomeDashboardViewModelTest {
             emit(dashboard)
         }
 
+        emojifier.stub {
+            onBlocking { fromShortName(any()) } doReturn emoji
+        }
+
         stubGetConfig(Either.Right(config))
         stubObserveEvents(params = InterceptEvents.Params(context = null))
         stubOpenDashboard()
@@ -388,7 +444,11 @@ class HomeDashboardViewModelTest {
 
         coroutineTestRule.advanceTime(delayInMillis)
 
-        val views = dashboard.toView()
+        val views = runBlocking {
+            dashboard.toView(
+                emojifier = emojifier
+            )
+        }
 
         val from = 0
         val to = 1

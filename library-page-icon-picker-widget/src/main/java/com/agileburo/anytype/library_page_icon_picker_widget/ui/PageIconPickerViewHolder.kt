@@ -29,9 +29,11 @@ sealed class PageIconPickerViewHolder(view: View) : RecyclerView.ViewHolder(view
         private val emoji = itemView.emoji
 
         fun bind(
-            item: PageIconPickerView.Emoji
+            item: PageIconPickerView.Emoji,
+            onEmojiClicked: (String, String) -> Unit
         ) {
             emoji.text = item.unicode
+            itemView.setOnClickListener { onEmojiClicked(item.unicode, item.alias) }
         }
     }
 

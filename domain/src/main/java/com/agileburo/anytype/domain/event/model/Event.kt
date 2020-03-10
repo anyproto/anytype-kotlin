@@ -80,5 +80,11 @@ sealed class Event {
             val id: Id,
             val children: List<Id>
         ) : Command()
+
+        data class UpdateFields(
+            override val context: Id,
+            val target: Id,
+            val fields: Block.Fields
+        ) : Command()
     }
 }

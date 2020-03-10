@@ -82,6 +82,7 @@ fun BlockEntity.Content.toDomain(): Block.Content = when (this) {
     is BlockEntity.Content.Link -> toDomain()
     is BlockEntity.Content.Divider -> toDomain()
     is BlockEntity.Content.File -> toDomain()
+    is BlockEntity.Content.Icon -> toDomain()
 }
 
 fun BlockEntity.Content.File.toDomain(): Block.Content.File {
@@ -95,6 +96,10 @@ fun BlockEntity.Content.File.toDomain(): Block.Content.File {
         state = state.toDomain()
     )
 }
+
+fun BlockEntity.Content.Icon.toDomain(): Block.Content.Icon = Block.Content.Icon(
+    name = name
+)
 
 fun BlockEntity.Content.File.Type.toDomain(): Block.Content.File.Type {
     return when (this) {
@@ -197,6 +202,7 @@ fun Block.Content.toEntity(): BlockEntity.Content = when (this) {
     is Block.Content.Link -> toEntity()
     is Block.Content.Divider -> toEntity()
     is Block.Content.File -> toEntity()
+    is Block.Content.Icon -> toEntity()
 }
 
 fun Block.Content.File.toEntity(): BlockEntity.Content.File {
@@ -210,6 +216,10 @@ fun Block.Content.File.toEntity(): BlockEntity.Content.File {
         state = state.toEntity()
     )
 }
+
+fun Block.Content.Icon.toEntity(): BlockEntity.Content.Icon = BlockEntity.Content.Icon(
+    name = name
+)
 
 fun Block.Content.File.Type.toEntity(): BlockEntity.Content.File.Type {
     return when (this) {
@@ -349,6 +359,12 @@ fun Command.Split.toEntity(): CommandEntity.Split = CommandEntity.Split(
     index = index
 )
 
+fun Command.SetIconName.toEntity() = CommandEntity.SetIconName(
+    target = target,
+    context = context,
+    name = name
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }
@@ -408,6 +424,13 @@ fun EventEntity.toDomain(): Event {
                 id = id,
                 target = target,
                 fields = fields?.let { Block.Fields(it.map) }
+            )
+        }
+        is EventEntity.Command.UpdateFields -> {
+            Event.Command.UpdateFields(
+                context = context,
+                target = target,
+                fields = Block.Fields(fields.map)
             )
         }
     }

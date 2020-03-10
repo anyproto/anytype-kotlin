@@ -71,4 +71,10 @@ class CommandEntity {
         val target: String,
         val index: Int
     )
+
+    data class SetIconName(
+        val context: String,
+        val target: String,
+        val name: String
+    )
 }

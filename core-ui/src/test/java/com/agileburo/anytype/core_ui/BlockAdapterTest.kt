@@ -848,7 +848,10 @@ class BlockAdapterTest {
             onPageClicked = {},
             onTextInputClicked = {},
             onDownloadFileClicked = {},
-            onPageIconClicked = {}
+            onPageIconClicked = {},
+            onAddLocalVideoClick = {},
+            onAddUrlClick = { _, _ -> },
+            strVideoError = "Error"
         )
     }
 }

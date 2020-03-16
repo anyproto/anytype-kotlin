@@ -37,7 +37,6 @@ object MockBlockFactory {
             hash = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
             state = Block.Content.File.State.DONE,
-            added = MockDataFactory.randomLong(),
             mime = MockDataFactory.randomString(),
             size = MockDataFactory.randomLong(),
             type = Block.Content.File.Type.FILE

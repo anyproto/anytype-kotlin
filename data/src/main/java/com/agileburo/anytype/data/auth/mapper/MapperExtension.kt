@@ -91,10 +91,9 @@ fun BlockEntity.Content.File.toDomain(): Block.Content.File {
         hash = hash,
         name = name,
         mime = mime,
-        added = added,
         size = size,
-        type = type.toDomain(),
-        state = state.toDomain()
+        type = type?.toDomain(),
+        state = state?.toDomain()
     )
 }
 
@@ -222,10 +221,9 @@ fun Block.Content.File.toEntity(): BlockEntity.Content.File {
         hash = hash,
         name = name,
         mime = mime,
-        added = added,
         size = size,
-        type = type.toEntity(),
-        state = state.toEntity()
+        type = type?.toEntity(),
+        state = state?.toEntity()
     )
 }
 
@@ -387,6 +385,13 @@ fun Command.SetIconName.toEntity() = CommandEntity.SetIconName(
     name = name
 )
 
+fun Command.UploadVideoBlockUrl.toEntity(): CommandEntity.UploadBlock = CommandEntity.UploadBlock(
+    contextId = contextId,
+    blockId = blockId,
+    url = url,
+    filePath = filePath
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }
@@ -455,6 +460,18 @@ fun EventEntity.toDomain(): Event {
                 fields = Block.Fields(fields.map)
             )
         }
+        is EventEntity.Command.UpdateBlockFile -> {
+            Event.Command.UpdateFileBlock(
+                context = context,
+                id = id,
+                type = type?.toDomain(),
+                state = state?.toDomain(),
+                size = size,
+                mime = mime,
+                hash = hash,
+                name = name
+            )
+        }
     }
 }
 
@@ -470,4 +487,10 @@ fun Block.Prototype.toEntity(): BlockEntity.Prototype = when (this) {
         )
     }
     Block.Prototype.Divider -> BlockEntity.Prototype.Divider
+    is Block.Prototype.File -> {
+        BlockEntity.Prototype.File(
+            type = BlockEntity.Content.File.Type.valueOf(this.type.name),
+            state = BlockEntity.Content.File.State.valueOf(this.state.name)
+        )
+    }
 }

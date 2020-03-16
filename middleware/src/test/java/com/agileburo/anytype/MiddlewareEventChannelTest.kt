@@ -2,7 +2,9 @@ package com.agileburo.anytype
 
 import anytype.Events.Event
 import anytype.Events.Event.Message
+import anytype.model.Models
 import com.agileburo.anytype.common.MockDataFactory
+import com.agileburo.anytype.data.auth.model.BlockEntity
 import com.agileburo.anytype.data.auth.model.EventEntity
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.interactor.MiddlewareEventChannel
@@ -138,6 +140,111 @@ class MiddlewareEventChannelTest {
                 rootId = context,
                 blocks = emptyList(),
                 context = context
+            )
+        )
+
+        runBlocking {
+            channel.observeEvents(context = context).collect { events ->
+                assertEquals(
+                    expected = expected,
+                    actual = events
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `should return UpdateBlockFile event`() {
+
+        val hash = "785687346534hfjdbsjfbds"
+        val name = "video1.mp4"
+        val mime = "video/*"
+        val size = 999111L
+        val state = Models.Block.Content.File.State.Done
+        val type = Models.Block.Content.File.Type.Video
+
+        val context = MockDataFactory.randomUuid()
+        val id = MockDataFactory.randomUuid()
+
+        val msg = Message
+            .newBuilder()
+            .blockSetFileBuilder
+            .setId(id)
+            .setHash(Event.Block.Set.File.Hash.newBuilder().setValue(hash).build())
+            .setMime(Event.Block.Set.File.Mime.newBuilder().setValue(mime).build())
+            .setSize(Event.Block.Set.File.Size.newBuilder().setValue(size).build())
+            .setType(Event.Block.Set.File.Type.newBuilder().setValue(type).build())
+            .setState(Event.Block.Set.File.State.newBuilder().setValue(state).build())
+            .setName(Event.Block.Set.File.Name.newBuilder().setValue(name).build())
+            .build()
+
+        val message = Message
+            .newBuilder()
+            .setBlockSetFile(msg)
+
+        val event = Event
+            .newBuilder()
+            .setContextId(context)
+            .addMessages(message)
+            .build()
+
+        proxy.stub {
+            on { flow() } doReturn flowOf(event)
+        }
+
+        val expected = listOf(
+            EventEntity.Command.UpdateBlockFile(
+                context = context,
+                id = id,
+                hash = hash,
+                mime = mime,
+                size = size,
+                type = BlockEntity.Content.File.Type.VIDEO,
+                state = BlockEntity.Content.File.State.DONE,
+                name = name
+            )
+        )
+
+        runBlocking {
+            channel.observeEvents(context = context).collect { events ->
+                assertEquals(
+                    expected = expected,
+                    actual = events
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `should return UpdateBlockFile event with nullable values`() {
+
+        val context = MockDataFactory.randomUuid()
+        val id = MockDataFactory.randomUuid()
+
+        val msg = Message
+            .newBuilder()
+            .blockSetFileBuilder
+            .setId(id)
+            .build()
+
+        val message = Message
+            .newBuilder()
+            .setBlockSetFile(msg)
+
+        val event = Event
+            .newBuilder()
+            .setContextId(context)
+            .addMessages(message)
+            .build()
+
+        proxy.stub {
+            on { flow() } doReturn flowOf(event)
+        }
+
+        val expected = listOf(
+            EventEntity.Command.UpdateBlockFile(
+                context = context,
+                id = id
             )
         )
 

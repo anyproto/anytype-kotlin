@@ -128,6 +128,20 @@ sealed class Command {
         val index: Int
     )
 
+    /**
+     * Command for updating video block url
+     * @property contextId context id
+     * @property blockId id of the video block
+     * @property url new valid url
+     * @property filePath file uri
+     */
+    data class UploadVideoBlockUrl(
+        val contextId: Id,
+        val blockId: Id,
+        val url: String,
+        val filePath: String
+    )
+
     data class SetIconName(
         val context: Id,
         val target: Id,

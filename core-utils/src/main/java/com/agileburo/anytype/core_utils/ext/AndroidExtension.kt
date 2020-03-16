@@ -1,9 +1,11 @@
 package com.agileburo.anytype.core_utils.ext
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Rect
 import android.net.Uri
+import android.os.Environment
 import android.provider.MediaStore
 import android.text.Annotation
 import android.text.Editable
@@ -49,6 +51,8 @@ fun Throwable.timber() = Timber.e("Get error : ${this.message}")
 const val DATE_FORMAT_MMMdYYYY = "MMM d, yyyy"
 const val KEY_ROUNDED = "key"
 const val VALUE_ROUNDED = "rounded"
+const val MIME_VIDEO_ALL = "video/*"
+const val MIME_IMAGE_ALL = "image/*"
 
 fun Long.formatToDateString(pattern: String, locale: Locale): String {
     val formatter = SimpleDateFormat(pattern, locale)
@@ -103,4 +107,19 @@ fun Editable.removeRoundedSpans(): Editable {
         if (span.key == KEY_ROUNDED && span.value == VALUE_ROUNDED) removeSpan(span)
     }
     return this
+}
+
+fun getVideoFileIntent(mediaType: String): Intent {
+    val intent =
+        if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
+            Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+        } else {
+            Intent(Intent.ACTION_PICK, MediaStore.Video.Media.INTERNAL_CONTENT_URI)
+        }
+    return intent.apply {
+        type = mediaType
+        action = Intent.ACTION_GET_CONTENT
+        putExtra("return-data", true)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
 }

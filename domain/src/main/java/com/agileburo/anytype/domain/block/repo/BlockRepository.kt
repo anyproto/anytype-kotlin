@@ -35,5 +35,10 @@ interface BlockRepository {
     suspend fun openDashboard(contextId: String, id: String)
     suspend fun closeDashboard(id: String)
 
+    /**
+     * Upload url for video block.
+     */
+    suspend fun uploadUrl(command: Command.UploadVideoBlockUrl)
+
     suspend fun setIconName(command: Command.SetIconName)
 }

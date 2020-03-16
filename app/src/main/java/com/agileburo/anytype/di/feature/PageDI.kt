@@ -55,6 +55,7 @@ class PageModule {
         mergeBlocks: MergeBlocks,
         splitBlock: SplitBlock,
         createPage: CreatePage,
+        uploadUrl: UploadUrl,
         documentExternalEventReducer: DocumentExternalEventReducer,
         urlBuilder: UrlBuilder,
         downloadFile: DownloadFile,
@@ -75,6 +76,7 @@ class PageModule {
         updateLinkMarks = updateLinkMarks,
         removeLinkMark = removeLinkMark,
         mergeBlocks = mergeBlocks,
+        uploadUrl = uploadUrl,
         splitBlock = splitBlock,
         documentEventReducer = documentExternalEventReducer,
         urlBuilder = urlBuilder,
@@ -160,6 +162,14 @@ class PageModule {
     fun provideSplitBlockUseCase(
         repo: BlockRepository
     ): SplitBlock = SplitBlock(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideUploadUrl(
+        repo: BlockRepository
+    ): UploadUrl = UploadUrl(
         repo = repo
     )
 

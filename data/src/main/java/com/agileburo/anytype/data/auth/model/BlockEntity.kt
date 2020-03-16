@@ -73,13 +73,12 @@ data class BlockEntity(
         }
 
         data class File(
-            val hash: String,
-            val name: String,
-            val type: Type,
-            val mime: String,
-            val size: Long,
-            val added: Long,
-            val state: State
+            val hash: String? = null,
+            val name: String? = null,
+            val type: Type? = null,
+            val mime: String? = null,
+            val size: Long? = null,
+            val state: State? = null
         ) : Content() {
             enum class Type { NONE, FILE, IMAGE, VIDEO }
             enum class State { EMPTY, UPLOADING, DONE, ERROR }
@@ -106,5 +105,10 @@ data class BlockEntity(
         ) : Prototype()
 
         object Divider : Prototype()
+
+        data class File(
+            val state: Content.File.State,
+            val type: Content.File.Type
+        ) : Prototype()
     }
 }

@@ -23,7 +23,8 @@ class MiddlewareEventChannel(
         Events.Event.Message.ValueCase.BLOCKSETCHILDRENIDS,
         Events.Event.Message.ValueCase.BLOCKDELETE,
         Events.Event.Message.ValueCase.BLOCKSETLINK,
-        Events.Event.Message.ValueCase.BLOCKSETFIELDS
+        Events.Event.Message.ValueCase.BLOCKSETFIELDS,
+        Events.Event.Message.ValueCase.BLOCKSETFILE
     )
 
     override fun observeEvents(
@@ -110,6 +111,20 @@ class MiddlewareEventChannel(
                         target = event.blockSetFields.id,
                         fields = event.blockSetFields.fields.fields()
                     )
+                }
+                Events.Event.Message.ValueCase.BLOCKSETFILE -> {
+                    with(event.blockSetFile) {
+                        EventEntity.Command.UpdateBlockFile(
+                            context = context,
+                            id = id,
+                            state = if (hasState()) state.value.entity() else null,
+                            type = if (hasType()) type.value.entity() else null,
+                            name = if (hasName()) name.value else null,
+                            hash = if (hasHash()) hash.value else null,
+                            mime = if (hasMime()) mime.value else null,
+                            size = if (hasSize()) size.value else null
+                        )
+                    }
                 }
                 else -> null
             }

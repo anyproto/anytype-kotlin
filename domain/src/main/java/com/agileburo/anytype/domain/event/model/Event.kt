@@ -86,5 +86,19 @@ sealed class Event {
             val target: Id,
             val fields: Block.Fields
         ) : Command()
+
+        /**
+         * Command to update file block content
+         */
+        data class UpdateFileBlock(
+            override val context: String,
+            val id: Id,
+            val state: Block.Content.File.State? = null,
+            val type: Block.Content.File.Type? = null,
+            val name: String? = null,
+            val hash: String? = null,
+            val mime: String? = null,
+            val size: Long? = null
+        ) : Command()
     }
 }

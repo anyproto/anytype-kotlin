@@ -43,6 +43,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         remote.updateCheckbox(command)
     }
 
+    override suspend fun uploadUrl(command: CommandEntity.UploadBlock) {
+        remote.uploadUrl(command)
+    }
+
     override suspend fun create(command: CommandEntity.Create): String = remote.create(command)
 
     override suspend fun dnd(command: CommandEntity.Dnd) {

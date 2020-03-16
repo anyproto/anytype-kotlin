@@ -49,6 +49,24 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
             replacement = { block -> block.copy(fields = event.fields) },
             target = { block -> block.id == event.target }
         )
+
+        is Event.Command.UpdateFileBlock -> state.replace(
+            replacement = { block ->
+                val content = block.content<Block.Content.File>()
+                block.copy(
+                    content = content.copy(
+                        hash = event.hash ?: content.hash,
+                        name = event.name ?: content.name,
+                        mime = event.mime ?: content.mime,
+                        size = event.size ?: content.size,
+                        type = event.type ?: content.type,
+                        state = event.state ?: content.state
+                    )
+                )
+            },
+            target = { block -> block.id == event.id }
+        )
+
         else -> state.also { Timber.d("Ignoring event: $event") }
     }
 }

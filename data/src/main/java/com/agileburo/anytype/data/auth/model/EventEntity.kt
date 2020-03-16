@@ -56,5 +56,16 @@ sealed class EventEntity {
             val target: String,
             val fields: BlockEntity.Fields
         ) : Command()
+
+        data class UpdateBlockFile(
+            override val context: String,
+            val id: String,
+            val type: BlockEntity.Content.File.Type? = null,
+            val state: BlockEntity.Content.File.State? = null,
+            val hash: String? = null,
+            val name: String? = null,
+            val size: Long? = null,
+            val mime: String? = null
+        ) : Command()
     }
 }

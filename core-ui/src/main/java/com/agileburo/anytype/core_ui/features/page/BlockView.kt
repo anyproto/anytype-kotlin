@@ -23,6 +23,10 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TASK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_EMPTY
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_ERROR
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 
 /**
  * UI-models for different types of blocks.
@@ -275,12 +279,60 @@ sealed class BlockView : ViewType {
      */
     data class File(
         override val id: String,
-        val size: Long,
-        val name: String,
-        val mime: String,
+        val size: Long?,
+        val name: String?,
+        val mime: String?,
         val url: String
     ) : BlockView() {
         override fun getViewType() = HOLDER_FILE
+    }
+
+    /**
+     * UI-model for blocks containing videos, with state DONE.
+     * @property id block's id
+     * @property size a file's size
+     * @property name a name
+     * @property size file size (in bytes)
+     */
+    data class Video(
+        override val id: String,
+        val size: Long?,
+        val name: String?,
+        val mime: String?,
+        val hash: String?,
+        val url: String
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_VIDEO
+    }
+
+    /**
+     * UI-model for blocks containing videos, with state UPLOADING.
+     * @property id block's id
+     */
+    data class VideoUpload(
+        override val id: String
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_VIDEO_UPLOAD
+    }
+
+    /**
+     * UI-model for blocks containing videos, with state EMPTY.
+     * @property id block's id
+     */
+    data class VideoEmpty(
+        override val id: String
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_VIDEO_EMPTY
+    }
+
+    /**
+     * UI-model for blocks containing videos, with state ERROR.
+     * @property id block's id
+     */
+    data class VideoError(
+        override val id: String
+    ) : BlockView() {
+        override fun getViewType() = HOLDER_VIDEO_ERROR
     }
 
     /**

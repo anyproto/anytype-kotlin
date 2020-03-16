@@ -1,11 +1,17 @@
 package com.agileburo.anytype.ui.page
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import androidx.activity.addCallback
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
@@ -25,6 +31,7 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.Option
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_BULLETED_LIST
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_CHECKBOX
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_NUMBERED_LIST
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_VIDEO
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_ONE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_THREE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_TWO
@@ -32,10 +39,7 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionC
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_TEXT
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TOOL_PAGE
 import com.agileburo.anytype.core_utils.common.EventWrapper
-import com.agileburo.anytype.core_utils.ext.gone
-import com.agileburo.anytype.core_utils.ext.hexColorCode
-import com.agileburo.anytype.core_utils.ext.hideSoftInput
-import com.agileburo.anytype.core_utils.ext.toast
+import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.domain.block.model.Block.Content.Text
 import com.agileburo.anytype.domain.common.Id
@@ -48,23 +52,30 @@ import com.agileburo.anytype.ui.base.NavigationFragment
 import com.agileburo.anytype.ui.page.modals.PageIconPickerFragment
 import com.agileburo.anytype.ui.page.modals.SetLinkFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.hbisoft.pickit.PickiT
+import com.hbisoft.pickit.PickiTCallbacks
 import kotlinx.android.synthetic.main.fragment_page.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import permissions.dispatcher.*
 import timber.log.Timber
 import javax.inject.Inject
 
 
+const val REQUEST_FILE_CODE = 745
+
+@RuntimePermissions
 open class PageFragment : NavigationFragment(R.layout.fragment_page),
-    OnFragmentInteractionListener {
+    OnFragmentInteractionListener, PickiTCallbacks {
 
     private val vm by lazy {
         ViewModelProviders
             .of(this, factory)
             .get(PageViewModel::class.java)
     }
+    private lateinit var pickiT: PickiT
 
     private val pageAdapter by lazy {
         BlockAdapter(
@@ -93,8 +104,78 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             onPageClicked = vm::onPageClicked,
             onTextInputClicked = vm::onTextInputClicked,
             onDownloadFileClicked = vm::onDownloadFileClicked,
-            onPageIconClicked = vm::onPageIconClicked
+            onPageIconClicked = vm::onPageIconClicked,
+            onAddUrlClick = vm::onAddVideoUrlClicked,
+            onAddLocalVideoClick = vm::onAddLocalVideoClicked,
+            strVideoError = getString(R.string.error)
         )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_FILE_CODE -> {
+                    data?.data?.let {
+                        pickiT.getPath(it, Build.VERSION.SDK_INT)
+                    } ?: run {
+                        toast("Error while getting file")
+                    }
+                }
+                else -> toast("Unknown Request Code:$requestCode")
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        onRequestPermissionsResult(requestCode, grantResults)
+    }
+
+    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+    fun openGallery(type: String) {
+        startActivityForResult(getVideoFileIntent(type), REQUEST_FILE_CODE)
+    }
+
+    @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
+    fun showRationaleForRead(request: PermissionRequest) {
+        showRationaleDialog(R.string.permission_read_rationale, request)
+    }
+
+    @OnPermissionDenied(Manifest.permission.READ_EXTERNAL_STORAGE)
+    fun onReadDenied() {
+        toast(getString(R.string.permission_read_denied))
+    }
+
+    @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE)
+    fun onReadNeverAskAgain() {
+        toast(getString(R.string.permission_read_never_ask_again))
+    }
+
+    override fun PickiTonProgressUpdate(progress: Int) {
+        Timber.d("PickiTonProgressUpdate progress:$progress")
+    }
+
+    override fun PickiTonStartListener() {
+        vm.onChooseVideoFileFromMedia()
+        Timber.d("PickiTonStartListener")
+    }
+
+    override fun PickiTonCompleteListener(
+        path: String?,
+        wasDriveFile: Boolean,
+        wasUnknownProvider: Boolean,
+        wasSuccessful: Boolean,
+        Reason: String?
+    ) {
+        Timber.d("PickiTonCompleteListener  path:$path, wasDriveFile$wasDriveFile, " +
+                "wasUnknownProvider:$wasUnknownProvider, wasSuccessful:$wasSuccessful, reason:$Reason")
+        vm.onAddVideoFileClicked(filePath = path)
     }
 
     @Inject
@@ -103,6 +184,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vm.open(requireArguments().getString(ID_KEY, ID_EMPTY_VALUE))
+        pickiT = PickiT(requireContext(), this)
         setupOnBackPressedDispatcher()
     }
 
@@ -271,6 +353,12 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                     else -> toast(NOT_IMPLEMENTED_MESSAGE)
                 }
             }
+            is Option.Media -> {
+                when (option.type) {
+                    OPTION_MEDIA_VIDEO -> vm.onAddVideoBlockClicked()
+                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
+                }
+            }
             is Option.Other -> vm.onOptionOtherActionClicked()
         }
     }
@@ -355,6 +443,9 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                         target = command.target
                     ).show(childFragmentManager, null)
                 }
+                is PageViewModel.Command.OpenGallery -> {
+                    openGalleryWithPermissionCheck(command.mediaType)
+                }
             }
         }
     }
@@ -373,6 +464,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                     rangeStart = state.range.first
                 ).show(childFragmentManager, null)
             }
+            is PageViewModel.ViewState.Error -> toast(state.message)
         }
     }
 
@@ -443,6 +535,15 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
     private fun hideKeyboard() {
         Timber.d("Hiding keyboard")
         hideSoftInput()
+    }
+
+    private fun showRationaleDialog(@StringRes messageResId: Int, request: PermissionRequest) {
+        AlertDialog.Builder(requireContext())
+            .setPositiveButton(R.string.button_allow) { _, _ -> request.proceed() }
+            .setNegativeButton(R.string.button_deny) { _, _ -> request.cancel() }
+            .setCancelable(false)
+            .setMessage(messageResId)
+            .show()
     }
 
     override fun injectDependencies() {

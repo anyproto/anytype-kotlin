@@ -70,4 +70,8 @@ class BlockDataRepository(
 
     override suspend fun setIconName(command: Command.SetIconName) =
         factory.remote.setIconName(command.toEntity())
+
+    override suspend fun uploadUrl(command: Command.UploadVideoBlockUrl) {
+        factory.remote.uploadUrl(command.toEntity())
+    }
 }

@@ -25,6 +25,10 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TASK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_EMPTY
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_ERROR
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 import com.agileburo.anytype.core_utils.ext.typeOf
 import timber.log.Timber
 
@@ -48,6 +52,9 @@ class BlockAdapter(
     private val onFooterClicked: () -> Unit,
     private val onPageClicked: (String) -> Unit,
     private val onTextInputClicked: () -> Unit,
+    private val onAddUrlClick: (String, String) -> Unit,
+    private val onAddLocalVideoClick : (String) -> Unit,
+    private val strVideoError: String,
     private val onPageIconClicked: () -> Unit,
     private val onDownloadFileClicked: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
@@ -169,6 +176,42 @@ class BlockAdapter(
                 BlockViewHolder.File(
                     view = inflater.inflate(
                         R.layout.item_block_file,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_VIDEO -> {
+                BlockViewHolder.Video(
+                    view = inflater.inflate(
+                        R.layout.item_block_video,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_VIDEO_EMPTY -> {
+                BlockViewHolder.VideoEmpty(
+                    view = inflater.inflate(
+                        R.layout.item_block_video_empty,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_VIDEO_UPLOAD -> {
+                BlockViewHolder.VideoUpload(
+                    view = inflater.inflate(
+                        R.layout.item_block_video_uploading,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_VIDEO_ERROR -> {
+                BlockViewHolder.VideoError(
+                    view = inflater.inflate(
+                        R.layout.item_block_video_error,
                         parent,
                         false
                     )
@@ -385,6 +428,22 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.File,
                     onDownloadFileClicked = onDownloadFileClicked
+                )
+            }
+            is BlockViewHolder.Video -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Video
+                )
+            }
+            is BlockViewHolder.VideoError -> {
+                holder.bind(
+                    msg = strVideoError
+                )
+            }
+            is BlockViewHolder.VideoEmpty -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.VideoEmpty,
+                    onAddLocalVideoClick = onAddLocalVideoClick
                 )
             }
             is BlockViewHolder.Page -> {

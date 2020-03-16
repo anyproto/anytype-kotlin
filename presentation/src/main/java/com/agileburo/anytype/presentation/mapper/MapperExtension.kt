@@ -111,6 +111,12 @@ fun Block.toView(
                 mime = content.mime,
                 url = urlBuilder.file(content.hash)
             )
+            Block.Content.File.Type.VIDEO -> content.toVideoView(
+                id = id,
+                urlBuilder = urlBuilder
+            )
+            Block.Content.File.Type.NONE ->
+                throw UnsupportedOperationException("File block type None, not implemented")
             else -> TODO()
         }
     }
@@ -129,6 +135,22 @@ fun Block.toView(
     }
     else -> TODO()
 }
+
+fun Block.Content.File.toVideoView(id: String, urlBuilder: UrlBuilder): BlockView =
+    when (this.state) {
+        Block.Content.File.State.EMPTY -> BlockView.VideoEmpty(id = id)
+        Block.Content.File.State.UPLOADING -> BlockView.VideoUpload(id = id)
+        Block.Content.File.State.DONE -> BlockView.Video(
+            id = id,
+            size = size,
+            name = name,
+            mime = mime,
+            hash = hash,
+            url = urlBuilder.video(hash)
+        )
+        Block.Content.File.State.ERROR -> BlockView.VideoError(id = id)
+        null -> throw NotImplementedError("File block state, should not be null")
+    }
 
 private fun mapMarks(content: Block.Content.Text): List<Markup.Mark> =
     content.marks.mapNotNull { mark ->

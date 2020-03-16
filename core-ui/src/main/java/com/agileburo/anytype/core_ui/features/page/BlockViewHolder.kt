@@ -1,11 +1,13 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.graphics.Color
+import android.net.Uri
 import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.view.View
 import android.widget.TextView.BufferType
 import androidx.recyclerview.widget.RecyclerView
+import com.agileburo.anytype.core_ui.BuildConfig
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.extensions.color
@@ -26,6 +28,10 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -43,6 +49,8 @@ import kotlinx.android.synthetic.main.item_block_task.view.*
 import kotlinx.android.synthetic.main.item_block_text.view.*
 import kotlinx.android.synthetic.main.item_block_title.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
+import kotlinx.android.synthetic.main.item_block_video.view.*
+import kotlinx.android.synthetic.main.item_block_video_error.view.*
 import timber.log.Timber
 import android.text.format.Formatter as FileSizeFormatter
 
@@ -617,8 +625,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onDownloadFileClicked: (String) -> Unit
         ) {
             name.text = item.name
-            size.text = FileSizeFormatter.formatFileSize(itemView.context, item.size)
-            when (MimeTypes.category(item.mime)) {
+            item.size?.let {
+                size.text = FileSizeFormatter.formatFileSize(itemView.context, it)
+            }
+            when (item.mime?.let { MimeTypes.category(it) }) {
                 MimeTypes.Category.PDF -> icon.setImageResource(R.drawable.ic_mime_pdf)
                 MimeTypes.Category.IMAGE -> icon.setImageResource(R.drawable.ic_mime_image)
                 MimeTypes.Category.AUDIO -> icon.setImageResource(R.drawable.ic_mime_music)
@@ -628,8 +638,54 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 MimeTypes.Category.TABLE -> icon.setImageResource(R.drawable.ic_mime_table)
                 MimeTypes.Category.PRESENTATION -> icon.setImageResource(R.drawable.ic_mime_presentation)
                 MimeTypes.Category.OTHER -> icon.setImageResource(R.drawable.ic_mime_other)
+
             }
             itemView.setOnClickListener { onDownloadFileClicked(item.id) }
+        }
+    }
+
+    class Video(view: View) : BlockViewHolder(view) {
+
+        private val icon = itemView.fileIcon
+        private val size = itemView.fileSize
+        private val name = itemView.filename
+
+        fun bind(item: BlockView.Video) {
+            initPlayer(item.url)
+        }
+
+        private fun initPlayer(path: String) {
+
+            itemView.playerView.visibility = View.VISIBLE
+            val player = SimpleExoPlayer.Builder(itemView.context).build()
+            val source = DefaultDataSourceFactory(
+                itemView.context,
+                Util.getUserAgent(itemView.context, BuildConfig.LIBRARY_PACKAGE_NAME)
+            )
+            val mediaSource =
+                ProgressiveMediaSource.Factory(source).createMediaSource(Uri.parse(path))
+            player.playWhenReady = false
+            player.seekTo(0)
+            player.prepare(mediaSource, false, false)
+            itemView.playerView.player = player
+        }
+    }
+
+    class VideoUpload(view: View) : BlockViewHolder(view)
+
+    class VideoError(view: View) : BlockViewHolder(view) {
+
+        fun bind(msg: String) {
+            itemView.tvError.text = msg
+        }
+    }
+
+    class VideoEmpty(view: View) : BlockViewHolder(view) {
+
+        fun bind(item: BlockView.VideoEmpty, onAddLocalVideoClick: (String) -> Unit) {
+            itemView.setOnClickListener {
+                onAddLocalVideoClick(item.id)
+            }
         }
     }
 
@@ -799,6 +855,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_DIVIDER = 16
         const val HOLDER_HIGHLIGHT = 17
         const val HOLDER_FOOTER = 18
+        const val HOLDER_VIDEO = 19
+        const val HOLDER_VIDEO_UPLOAD = 20
+        const val HOLDER_VIDEO_EMPTY = 21
+        const val HOLDER_VIDEO_ERROR = 22
 
         const val FOCUS_TIMEOUT_MILLIS = 16L
     }

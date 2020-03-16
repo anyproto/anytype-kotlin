@@ -224,23 +224,26 @@ fun Block.file(): BlockEntity.Content.File = BlockEntity.Content.File(
     hash = file.hash,
     name = file.name,
     size = file.size,
-    added = file.addedAt,
     mime = file.mime,
-    type = when (file.type) {
-        Block.Content.File.Type.File -> BlockEntity.Content.File.Type.FILE
-        Block.Content.File.Type.Image -> BlockEntity.Content.File.Type.IMAGE
-        Block.Content.File.Type.Video -> BlockEntity.Content.File.Type.VIDEO
-        Block.Content.File.Type.None -> BlockEntity.Content.File.Type.NONE
-        else -> throw IllegalStateException("Unexpected file type: $file.type")
-    },
-    state = when (file.state) {
-        Block.Content.File.State.Done -> BlockEntity.Content.File.State.DONE
-        Block.Content.File.State.Empty -> BlockEntity.Content.File.State.EMPTY
-        Block.Content.File.State.Uploading -> BlockEntity.Content.File.State.UPLOADING
-        Block.Content.File.State.Error -> BlockEntity.Content.File.State.ERROR
-        else -> throw IllegalStateException("Unexpected file state: ${file.state}")
-    }
+    type = file.type.entity(),
+    state = file.state.entity()
 )
+
+fun Block.Content.File.Type.entity(): BlockEntity.Content.File.Type = when (this) {
+    Block.Content.File.Type.File -> BlockEntity.Content.File.Type.FILE
+    Block.Content.File.Type.Image -> BlockEntity.Content.File.Type.IMAGE
+    Block.Content.File.Type.Video -> BlockEntity.Content.File.Type.VIDEO
+    Block.Content.File.Type.None -> BlockEntity.Content.File.Type.NONE
+    else -> throw IllegalStateException("Unexpected file type: $this")
+}
+
+fun Block.Content.File.State.entity(): BlockEntity.Content.File.State = when (this) {
+    Block.Content.File.State.Done -> BlockEntity.Content.File.State.DONE
+    Block.Content.File.State.Empty -> BlockEntity.Content.File.State.EMPTY
+    Block.Content.File.State.Uploading -> BlockEntity.Content.File.State.UPLOADING
+    Block.Content.File.State.Error -> BlockEntity.Content.File.State.ERROR
+    else -> throw IllegalStateException("Unexpected file state: $this")
+}
 
 fun Block.bookmark(): BlockEntity.Content.Bookmark = BlockEntity.Content.Bookmark(
     url = bookmark.url,

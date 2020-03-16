@@ -6,6 +6,7 @@ import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
 import anytype.Commands.Rpc.Ipfs.Image;
 import anytype.Commands.Rpc.Wallet;
+import anytype.Events;
 
 /**
  * Service for interacting with the backend.
@@ -56,4 +57,6 @@ public interface MiddlewareService {
     BlockList.Duplicate.Response blockListDuplicate(BlockList.Duplicate.Request request) throws Exception;
 
     Block.Set.Icon.Name.Response blockSetIconName(Block.Set.Icon.Name.Request request) throws Exception;
+
+    Block.Upload.Response blockUpload(Block.Upload.Request request) throws Exception;
 }

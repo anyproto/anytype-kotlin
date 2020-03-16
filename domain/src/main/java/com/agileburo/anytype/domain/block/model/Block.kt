@@ -46,6 +46,7 @@ data class Block(
         fun asLink() = this as Link
         fun asDashboard() = this as Dashboard
         fun asDivider() = this as Divider
+        fun asFile() = this as File
 
         /**
          * Textual block.
@@ -159,13 +160,12 @@ data class Block(
          * @property state file state
          */
         data class File(
-            val hash: String,
-            val name: String,
-            val mime: String,
-            val size: Long,
-            val added: Long,
-            val type: Type,
-            val state: State
+            val hash: String? = null,
+            val name: String? = null,
+            val mime: String? = null,
+            val size: Long? = null,
+            val type: Type? = null,
+            val state: State? = null
         ) : Content() {
             enum class Type { NONE, FILE, IMAGE, VIDEO }
             enum class State { EMPTY, UPLOADING, DONE, ERROR }
@@ -206,5 +206,10 @@ data class Block(
         ) : Prototype()
 
         object Divider : Prototype()
+
+        data class File(
+            val type: Content.File.Type,
+            val state: Content.File.State
+        ) : Prototype()
     }
 }

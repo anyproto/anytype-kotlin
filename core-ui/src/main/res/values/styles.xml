@@ -177,6 +177,15 @@
         <item name="android:layout_marginBottom">3dp</item>
     </style>
 
+    <style name="BlockVideoStyle">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:inputType">textUri</item>
+        <item name="android:textColorHint">#ACA996</item>
+        <item name="android:background">@null</item>
+        <item name="android:fontFamily">@font/graphik_regular</item>
+    </style>
+
     <style name="BlockContactContentStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

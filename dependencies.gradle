@@ -23,6 +23,7 @@ ext {
     navigation_version = '2.2.0-rc01'
 
     // Third party libraries
+    exoplayer_version = '2.11.3'
     glide_version = '4.9.0'
     dagger_version = '2.11'
     javaxAnnotations_version = '1.0'
@@ -36,6 +37,8 @@ ext {
     better_link_method_version = '2.2.0'
     table_view_version = '0.8.8'
     rxbinding_version = '3.0.0'
+    permission_disp_version = '4.6.0'
+    pickt_version = "0.1.9"
 
     // Unit Testing
     robolectric_version = '4.3.1'
@@ -107,6 +110,10 @@ ext {
             moshiKotlin:                "com.squareup.moshi:moshi-kotlin:$moshi_version",
             tableView:                  "com.evrencoskun.library:tableview:$table_view_version",
             rxBinding:                  "com.jakewharton.rxbinding3:rxbinding:$rxbinding_version",
+            exoPlayer:                  "com.google.android.exoplayer:exoplayer:$exoplayer_version",
+            permissionDisp:             "org.permissionsdispatcher:permissionsdispatcher:$permission_disp_version",
+            permissionDispCompiler:     "org.permissionsdispatcher:permissionsdispatcher-processor:$permission_disp_version",
+            pickT:                      "com.github.HBiSoft:PickiT:$pickt_version",
 
             crashlytics:                "com.crashlytics.sdk.android:crashlytics:$crashlytics_version",
             firebaseCore:              "com.google.firebase:firebase-core:$firebase_core_version"

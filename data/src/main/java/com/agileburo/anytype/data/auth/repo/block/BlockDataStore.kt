@@ -11,6 +11,7 @@ interface BlockDataStore {
     suspend fun updateTextColor(command: CommandEntity.UpdateTextColor)
     suspend fun updateBackroundColor(command: CommandEntity.UpdateBackgroundColor)
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
+    suspend fun uploadUrl(command: CommandEntity.UploadBlock)
     suspend fun dnd(command: CommandEntity.Dnd)
     suspend fun duplicate(command: CommandEntity.Duplicate): Id
     suspend fun merge(command: CommandEntity.Merge)

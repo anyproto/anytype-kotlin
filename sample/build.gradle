@@ -32,17 +32,27 @@ android {
 
 dependencies {
 
+    def applicationDependencies = rootProject.ext.mainApplication
+
+    implementation 'com.github.HBiSoft:PickiT:0.1.9'
+
     implementation 'com.vdurmont:emoji-java:5.1.1'
 
     implementation project(':core-utils')
     implementation project(':core-ui')
     implementation project(':library-page-icon-picker-widget')
 
+    implementation applicationDependencies.timber
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.core:core-ktx:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
+    implementation applicationDependencies.permissionDisp
+    kapt applicationDependencies.permissionDispCompiler
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'

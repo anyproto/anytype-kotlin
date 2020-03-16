@@ -23,4 +23,5 @@ interface BlockRemote {
     suspend fun openDashboard(contextId: String, id: String)
     suspend fun closeDashboard(id: String)
     suspend fun setIconName(command: CommandEntity.SetIconName)
+    suspend fun uploadUrl(command: CommandEntity.UploadBlock)
 }

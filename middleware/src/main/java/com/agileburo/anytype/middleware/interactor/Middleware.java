@@ -296,15 +296,162 @@ public class Middleware {
         service.blockSetTextBackgroundColor(request);
     }
 
-    public String createBlock(
-            String contextId,
-            String targetId,
-            PositionEntity position,
-            BlockEntity.Prototype prototype
-    ) throws Exception {
+    public void uploadMediaBlockContent(CommandEntity.UploadBlock command) throws Exception {
+        Block.Upload.Request request = Block.Upload.Request
+                .newBuilder()
+                .setFilePath(command.getFilePath())
+                .setUrl(command.getUrl())
+                .setContextId(command.getContextId())
+                .setBlockId(command.getBlockId())
+                .build();
+        
+        Timber.d("Upload video block url with the following request:\n%s", request.toString());
 
+        service.blockUpload(request);
+    }
+
+    private Models.Block.Content.Text createTextBlock(
+            BlockEntity.Content.Text.Style style
+    ) {
+
+        Models.Block.Content.Text textBlockModel = null;
+
+        switch (style) {
+            case P:
+                textBlockModel = Models.Block.Content.Text
+                        .newBuilder()
+                        .setStyle(Models.Block.Content.Text.Style.Paragraph)
+                        .build();
+                break;
+            case H1:
+                textBlockModel = Models.Block.Content.Text
+                        .newBuilder()
+                        .setStyle(Models.Block.Content.Text.Style.Header1)
+                        .build();
+                break;
+            case H2:
+                textBlockModel = Models.Block.Content.Text
+                        .newBuilder()
+                        .setStyle(Models.Block.Content.Text.Style.Header2)
+                        .build();
+                break;
+            case H3:
+                textBlockModel = Models.Block.Content.Text
+                        .newBuilder()
+                        .setStyle(Models.Block.Content.Text.Style.Header3)
+                        .build();
+                break;
+            case H4:
+                throw new IllegalStateException("Unexpected prototype text style");
+            case TITLE:
+                textBlockModel = Models.Block.Content.Text
+                        .newBuilder()
+                        .setStyle(Models.Block.Content.Text.Style.Title)
+                        .build();
+                break;
+            case QUOTE:
+                textBlockModel = Models.Block.Content.Text
+                        .newBuilder()
+                        .setStyle(Models.Block.Content.Text.Style.Quote)
+                        .build();
+                break;
+            case CODE_SNIPPET:
+                textBlockModel = Models.Block.Content.Text
+                        .newBuilder()
+                        .setStyle(Models.Block.Content.Text.Style.Code)
+                        .build();
+                break;
+            case BULLET:
+                textBlockModel = Models.Block.Content.Text
+                        .newBuilder()
+                        .setStyle(Models.Block.Content.Text.Style.Marked)
+                        .build();
+                break;
+            case CHECKBOX:
+                textBlockModel = Models.Block.Content.Text
+                        .newBuilder()
+                        .setStyle(Models.Block.Content.Text.Style.Checkbox)
+                        .build();
+                break;
+            case NUMBERED:
+                textBlockModel = Models.Block.Content.Text
+                        .newBuilder()
+                        .setStyle(Models.Block.Content.Text.Style.Numbered)
+                        .build();
+                break;
+            case TOGGLE:
+                textBlockModel = Models.Block.Content.Text
+                        .newBuilder()
+                        .setStyle(Models.Block.Content.Text.Style.Toggle)
+                        .build();
+                break;
+        }
+
+        return textBlockModel;
+    }
+
+    private Models.Block.Content.Page createPageBlock() {
+        return Models.Block.Content.Page
+                .newBuilder()
+                .setStyle(Models.Block.Content.Page.Style.Empty)
+                .build();
+    }
+
+    private Models.Block.Content.Div createDivLineBlock() {
+        return Models.Block.Content.Div
+                .newBuilder()
+                .setStyle(Models.Block.Content.Div.Style.Line)
+                .build();
+    }
+
+    private Models.Block.Content.Div createDivDotsBlock() {
+        return Models.Block.Content.Div
+                .newBuilder()
+                .setStyle(Models.Block.Content.Div.Style.Dots)
+                .build();
+    }
+
+    private Models.Block.Content.File.State getState(BlockEntity.Content.File.State state) {
+        switch (state) {
+            case EMPTY:
+                return Models.Block.Content.File.State.Empty;
+            case UPLOADING:
+                return Models.Block.Content.File.State.Uploading;
+            case DONE:
+                return Models.Block.Content.File.State.Done;
+            case ERROR:
+                return Models.Block.Content.File.State.Error;
+            default:
+                throw new IllegalStateException("Unexpected value: " + state);
+        }
+    }
+
+    private Models.Block.Content.File.Type getType(BlockEntity.Content.File.Type type) {
+        switch (type) {
+            case NONE:
+                return Models.Block.Content.File.Type.None;
+            case FILE:
+                return Models.Block.Content.File.Type.File;
+            case IMAGE:
+                return Models.Block.Content.File.Type.Image;
+            case VIDEO:
+                return Models.Block.Content.File.Type.Video;
+            default:
+                throw new IllegalStateException("Unexpected value: " + type);
+        }
+    }
+
+    private Models.Block.Content.File createBlock(BlockEntity.Content.File.Type type,
+                                                                BlockEntity.Content.File.State state) {
+        return Models.Block.Content.File
+                .newBuilder()
+                .setState(getState(state))
+                .setType(getType(type))
+                .build();
+    }
+
+    private Models.Block.Position createPosition(PositionEntity position) {
         Models.Block.Position positionModel = null;
-
         switch (position) {
             case NONE:
                 positionModel = Models.Block.Position.None;
@@ -325,119 +472,96 @@ public class Middleware {
                 positionModel = Models.Block.Position.Inner;
                 break;
         }
+        return positionModel;
+    }
 
-        Models.Block.Content.Text textBlockModel = null;
-        Models.Block.Content.Page pageBlockModel = null;
-        Models.Block.Content.Div dividerBlockModel = null;
+    private Models.Block createBlock(Models.Block.Content.Text textBlockModel) {
+        return Models.Block
+                .newBuilder()
+                .setText(textBlockModel)
+                .build();
+    }
 
-        if (prototype instanceof BlockEntity.Prototype.Text) {
+    private Models.Block createBlock(Models.Block.Content.Page pageBlockModel) {
+        return Models.Block
+                .newBuilder()
+                .setPage(pageBlockModel)
+                .build();
+    }
 
-            BlockEntity.Content.Text.Style style = ((BlockEntity.Prototype.Text) prototype).getStyle();
+    private Models.Block createBlock(Models.Block.Content.Div dividerBlockModel) {
+        return Models.Block
+                .newBuilder()
+                .setDiv(dividerBlockModel)
+                .build();
+    }
 
-            switch (style) {
-                case P:
-                    textBlockModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Paragraph)
-                            .build();
-                    break;
-                case H1:
-                    textBlockModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Header1)
-                            .build();
-                    break;
-                case H2:
-                    textBlockModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Header2)
-                            .build();
-                    break;
-                case H3:
-                    textBlockModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Header3)
-                            .build();
-                    break;
-                case H4:
-                    throw new IllegalStateException("Unexpected prototype text style");
-                case TITLE:
-                    textBlockModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Title)
-                            .build();
-                    break;
-                case QUOTE:
-                    textBlockModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Quote)
-                            .build();
-                    break;
-                case CODE_SNIPPET:
-                    textBlockModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Code)
-                            .build();
-                    break;
-                case BULLET:
-                    textBlockModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Marked)
-                            .build();
-                    break;
-                case CHECKBOX:
-                    textBlockModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Checkbox)
-                            .build();
-                    break;
-                case NUMBERED:
-                    textBlockModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Numbered)
-                            .build();
-                    break;
-                case TOGGLE:
-                    textBlockModel = Models.Block.Content.Text
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Text.Style.Toggle)
-                            .build();
-                    break;
-            }
-        } else if (prototype instanceof BlockEntity.Prototype.Page) {
-            pageBlockModel = Models.Block.Content.Page
-                    .newBuilder()
-                    .setStyle(Models.Block.Content.Page.Style.Empty)
-                    .build();
-        } else if (prototype instanceof BlockEntity.Prototype.Divider) {
-            dividerBlockModel = Models.Block.Content.Div
-                    .newBuilder()
-                    .setStyle(Models.Block.Content.Div.Style.Line)
-                    .build();
-        }
+    private Models.Block createBlock(Models.Block.Content.File fileBlockModel) {
+        return Models.Block
+                .newBuilder()
+                .setFile(fileBlockModel)
+                .build();
+    }
 
+    private Models.Block createBlock(Models.Block.Content.Text textBlockModel,
+                                     Models.Block.Content.Page pageBlockModel,
+                                     Models.Block.Content.Div dividerBlockModel,
+                                     Models.Block.Content.File fileBlockModel,
+                                     BlockEntity.Prototype prototype) {
         Models.Block blockModel = null;
 
         if (textBlockModel != null) {
-            blockModel = Models.Block
-                    .newBuilder()
-                    .setText(textBlockModel)
-                    .build();
+            blockModel = createBlock(textBlockModel);
         } else if (pageBlockModel != null) {
-            blockModel = Models.Block
-                    .newBuilder()
-                    .setPage(pageBlockModel)
-                    .build();
+            blockModel = createBlock(pageBlockModel);
         } else if (dividerBlockModel != null) {
-            blockModel = Models.Block
-                    .newBuilder()
-                    .setDiv(dividerBlockModel)
-                    .build();
+            blockModel = createBlock(dividerBlockModel);
+        } else if (fileBlockModel != null) {
+            blockModel = createBlock(fileBlockModel);
         }
 
         if (blockModel == null) {
             throw new IllegalStateException("Could not create content from the following prototype: " + prototype.toString());
         }
+
+        return blockModel;
+    }
+
+    public String createBlock(
+            String contextId,
+            String targetId,
+            PositionEntity position,
+            BlockEntity.Prototype prototype
+    ) throws Exception {
+
+        Models.Block.Position positionModel = createPosition(position);
+
+        Models.Block.Content.Text textBlockModel = null;
+        Models.Block.Content.Page pageBlockModel = null;
+        Models.Block.Content.Div dividerBlockModel = null;
+        Models.Block.Content.File fileBlockModel = null;
+
+        if (prototype instanceof BlockEntity.Prototype.Text) {
+
+            textBlockModel = createTextBlock(((BlockEntity.Prototype.Text) prototype).getStyle());
+
+        } else if (prototype instanceof BlockEntity.Prototype.Page) {
+
+            pageBlockModel = createPageBlock();
+
+        } else if (prototype instanceof BlockEntity.Prototype.Divider) {
+
+            dividerBlockModel = createDivLineBlock();
+
+        } else if (prototype instanceof BlockEntity.Prototype.File) {
+
+            fileBlockModel = createBlock(
+                    ((BlockEntity.Prototype.File) prototype).getType(),
+                    ((BlockEntity.Prototype.File) prototype).getState());
+        }
+
+        Models.Block blockModel = createBlock(textBlockModel, pageBlockModel,
+                dividerBlockModel, fileBlockModel, prototype);
 
         Block.Create.Request request = Block.Create.Request
                 .newBuilder()

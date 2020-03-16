@@ -95,6 +95,7 @@ dependencies {
     //Compile time dependencies
     kapt applicationDependencies.daggerCompiler
     kapt applicationDependencies.glideCompiler
+    kapt applicationDependencies.permissionDispCompiler
     compileOnly applicationDependencies.javaxAnnotation
     compileOnly applicationDependencies.javaxInject
 
@@ -113,6 +114,8 @@ dependencies {
     implementation applicationDependencies.gson
     implementation applicationDependencies.rxRelay
     implementation applicationDependencies.tableView
+    implementation applicationDependencies.permissionDisp
+    implementation applicationDependencies.pickT
 
     implementation applicationDependencies.viewModel
     implementation applicationDependencies.viewModelExtensions

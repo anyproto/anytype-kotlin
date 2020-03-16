@@ -56,6 +56,7 @@ dependencies {
     implementation applicationDependencies.glide
     implementation applicationDependencies.timber
     implementation applicationDependencies.betterLinkMovement
+    implementation applicationDependencies.exoPlayer
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

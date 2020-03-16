@@ -12,16 +12,17 @@ class UrlBuilder(val config: Config) {
     /**
      * Builds image url for given [hash]
      */
-    fun image(hash: String): Url {
-        return config.gateway + IMAGE_PATH + hash
-    }
+    fun image(hash: String?): Url = config.gateway + IMAGE_PATH + hash
 
     /**
      * Builds file url for given [hash]
      */
-    fun file(hash: String): Url {
-        return config.gateway + FILE_PATH + hash
-    }
+    fun file(hash: String?): Url = config.gateway + FILE_PATH + hash
+
+    /**
+     * Builds video url for given [hash]
+     */
+    fun video(hash: String?): Url = config.gateway + FILE_PATH + hash
 
     companion object {
         const val IMAGE_PATH = "/image/"

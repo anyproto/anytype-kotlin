@@ -36,6 +36,13 @@ class CommandEntity {
         val isChecked: Boolean
     )
 
+    class UploadBlock(
+        val contextId: String,
+        val blockId: String,
+        val url: String,
+        val filePath: String
+    )
+
     class Create(
         val context: String,
         val target: String,

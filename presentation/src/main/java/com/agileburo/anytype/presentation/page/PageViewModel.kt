@@ -7,6 +7,7 @@ import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_utils.common.EventWrapper
+import com.agileburo.anytype.core_utils.ext.MIME_VIDEO_ALL
 import com.agileburo.anytype.core_utils.ext.replace
 import com.agileburo.anytype.core_utils.ext.withLatestFrom
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
@@ -37,6 +38,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+const val EMPTY_PATH = ""
+
 class PageViewModel(
     private val openPage: OpenPage,
     private val closePage: ClosePage,
@@ -55,6 +58,7 @@ class PageViewModel(
     private val mergeBlocks: MergeBlocks,
     private val splitBlock: SplitBlock,
     private val downloadFile: DownloadFile,
+    private val uploadUrl: UploadUrl,
     private val documentExternalEventReducer: StateReducer<List<Block>, Event>,
     private val urlBuilder: UrlBuilder,
     private val emojifier: Emojifier
@@ -93,6 +97,11 @@ class PageViewModel(
 
     private val _focus: MutableLiveData<Id> = MutableLiveData()
     val focus: LiveData<Id> = _focus
+
+    /**
+     * Open gallery and search media files for block with that id
+     */
+    private var mediaBlockId = ""
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
@@ -737,6 +746,52 @@ class PageViewModel(
         )
     }
 
+    fun onAddVideoBlockClicked() {
+        proceedWithCreatingEmptyFileBlock(
+            id = focusChannel.value,
+            type = Content.File.Type.VIDEO
+        )
+    }
+
+    fun onAddLocalVideoClicked(blockId: String) {
+        mediaBlockId = blockId
+        dispatch(Command.OpenGallery(mediaType = MIME_VIDEO_ALL))
+    }
+
+    fun onAddImageBlockClicked() {
+        proceedWithCreatingEmptyFileBlock(
+            id = focusChannel.value,
+            type = Content.File.Type.IMAGE
+        )
+    }
+
+    fun onAddFileBlockClicked() {
+        proceedWithCreatingEmptyFileBlock(
+            id = focusChannel.value,
+            type = Content.File.Type.FILE
+        )
+    }
+
+    private fun proceedWithCreatingEmptyFileBlock(id: String,
+                                                  type: Content.File.Type,
+                                                  state: Content.File.State = Content.File.State.EMPTY,
+                                                  position: Position = Position.BOTTOM) {
+        createBlock.invoke(
+            scope = viewModelScope,
+            params = CreateBlock.Params(
+                context = context,
+                target = id,
+                position = position,
+                prototype = Prototype.File(type = type, state = state)
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while creating a block") },
+                fnR = { id -> updateFocus(id) }
+            )
+        }
+    }
+
     fun onCheckboxClicked(id: String) {
         val target = blocks.first { it.id == id }
 
@@ -868,6 +923,58 @@ class PageViewModel(
         }
     }
 
+    fun onAddVideoUrlClicked(blockId: String, url: String) {
+        //Todo add url validation
+        uploadUrl.invoke(
+            scope = viewModelScope,
+            params = UploadUrl.Params(
+                contextId = context,
+                blockId = blockId,
+                url = url,
+                filePath = EMPTY_PATH
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while upload new url for video block") },
+                fnR = { Timber.d("Upload Url Success") }
+            )
+        }
+    }
+
+    fun onAddVideoFileClicked(filePath: String?) {
+        if (filePath == null) {
+            Timber.d("Error while getting filePath")
+            return
+        }
+        uploadUrl.invoke(
+            scope = viewModelScope,
+            params = UploadUrl.Params(
+                contextId = context,
+                blockId = mediaBlockId,
+                url = "",
+                filePath = filePath
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while upload new file path for video block") },
+                fnR = { Timber.d("Upload File Path Success") }
+            )
+        }
+    }
+
+    fun onChooseVideoFileFromMedia() {
+        try {
+            val targetBlock = blocks.first { it.id == mediaBlockId }
+            val targetContent = targetBlock.content as Content.File
+            val newContent = targetContent.copy(state = Content.File.State.UPLOADING)
+            val newBlock = targetBlock.copy(content = newContent)
+            rerenderingBlocks(newBlock)
+        } catch (e: Exception) {
+            Timber.e(e, "Error while update block:$mediaBlockId state to Uploading")
+            stateData.value = ViewState.Error("Can't load video for this block")
+        }
+    }
+
     fun onPageIconClicked() {
         val target = blocks.first { it.content is Content.Icon }.id
         dispatch(Command.OpenPagePicker(target))
@@ -880,7 +987,7 @@ class PageViewModel(
             scope = viewModelScope,
             params = DownloadFile.Params(
                 url = urlBuilder.file(file.hash),
-                name = file.name
+                name = file.name.orEmpty()
             )
         ) { result ->
             result.either(
@@ -916,6 +1023,10 @@ class PageViewModel(
     sealed class Command {
         data class OpenPagePicker(
             val target: String
+        ) : Command()
+
+        data class OpenGallery(
+            val mediaType: String
         ) : Command()
     }
 

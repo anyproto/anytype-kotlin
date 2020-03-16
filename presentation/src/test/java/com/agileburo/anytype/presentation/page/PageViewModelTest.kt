@@ -98,6 +98,9 @@ class PageViewModelTest {
     lateinit var downloadFile: DownloadFile
 
     @Mock
+    lateinit var uploadUrl: UploadUrl
+
+    @Mock
     lateinit var emojifier: Emojifier
 
     private lateinit var vm: PageViewModel
@@ -2757,7 +2760,7 @@ class PageViewModelTest {
             scope = any(),
             params = eq(
                 DownloadFile.Params(
-                    name = file.content<Block.Content.File>().name,
+                    name = file.content<Block.Content.File>().name.orEmpty(),
                     url = builder.file(
                         hash = file.content<Block.Content.File>().hash
                     )
@@ -2845,7 +2848,8 @@ class PageViewModelTest {
             documentExternalEventReducer = DocumentExternalEventReducer(),
             urlBuilder = urlBuilder,
             downloadFile = downloadFile,
-            emojifier = emojifier
+            emojifier = emojifier,
+            uploadUrl = uploadUrl
         )
     }
 }

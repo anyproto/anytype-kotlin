@@ -1,5 +1,17 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.23
+
+### New features 🚀
+
+* Bookmark block rendering (#290)
+* User can add video blocks (#142)
+* User can watch video from video blocks (#142)
+
+### Fixes & tech 🚒
+
+* Refactored create-block requests (#142)
+
 ## Version 0.0.22
 
 ### New features 🚀

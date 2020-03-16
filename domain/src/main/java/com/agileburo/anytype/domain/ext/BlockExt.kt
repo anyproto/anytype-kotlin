@@ -28,6 +28,7 @@ fun Map<String, List<Block>>.asRender(anchor: String): List<Block> {
             is Content.Image,
             is Content.Link,
             is Content.Divider,
+            is Content.Bookmark,
             is Content.File -> {
                 result.add(child)
                 result.addAll(asRender(child.id))

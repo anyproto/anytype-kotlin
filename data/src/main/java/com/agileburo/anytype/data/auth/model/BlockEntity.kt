@@ -85,6 +85,14 @@ data class BlockEntity(
             enum class State { EMPTY, UPLOADING, DONE, ERROR }
         }
 
+        data class Bookmark(
+            val url: String,
+            val title: String?,
+            val description: String?,
+            val image: String?,
+            val favicon: String?
+        ) : Content()
+
         object Divider : Content()
     }
 

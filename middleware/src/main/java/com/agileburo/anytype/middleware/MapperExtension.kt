@@ -242,6 +242,14 @@ fun Block.file(): BlockEntity.Content.File = BlockEntity.Content.File(
     }
 )
 
+fun Block.bookmark(): BlockEntity.Content.Bookmark = BlockEntity.Content.Bookmark(
+    url = bookmark.url,
+    description = bookmark.description.ifEmpty { null },
+    title = bookmark.title.ifEmpty { null },
+    image = bookmark.imageHash.ifEmpty { null },
+    favicon = bookmark.faviconHash.ifEmpty { null }
+)
+
 fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
     when (block.contentCase) {
         Block.ContentCase.DASHBOARD -> {
@@ -306,6 +314,14 @@ fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
                 children = block.childrenIdsList,
                 fields = block.fields(),
                 content = block.icon()
+            )
+        }
+        Block.ContentCase.BOOKMARK -> {
+            BlockEntity(
+                id = block.id,
+                children = block.childrenIdsList,
+                fields = block.fields(),
+                content = block.bookmark()
             )
         }
         else -> {

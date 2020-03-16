@@ -2,7 +2,9 @@ package com.agileburo.anytype.domain.block.model
 
 import com.agileburo.anytype.domain.block.model.Block.Content.Text.Mark
 import com.agileburo.anytype.domain.block.model.Block.Content.Text.Style
+import com.agileburo.anytype.domain.common.Hash
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.common.Url
 
 /**
  * Represents block as basic data structure.
@@ -168,6 +170,21 @@ data class Block(
             enum class Type { NONE, FILE, IMAGE, VIDEO }
             enum class State { EMPTY, UPLOADING, DONE, ERROR }
         }
+
+        /**
+         * @property url url associated with this bookmark
+         * @property title optional bookmark title
+         * @property description optional bookmark's content description
+         * @property image optional hash of bookmark's image
+         * @property favicon optional hash of bookmark's favicon
+         */
+        data class Bookmark(
+            val url: Url,
+            val title: String?,
+            val description: String?,
+            val image: Hash?,
+            val favicon: Hash?
+        ) : Content()
 
         object Divider : Content()
     }

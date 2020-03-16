@@ -317,16 +317,16 @@ sealed class BlockView : ViewType {
      * @property title website's title
      * @property title website's content description
      * @property url website's url
-     * @property logoUrl website's logo url
-     * @property logoUrl content's main image url
+     * @property faviconUrl website's favicon url
+     * @property imageUrl content's main image url
      */
     data class Bookmark(
         override val id: String,
-        val title: String,
-        val description: String,
         val url: String,
-        val logoUrl: String,
-        val imageUrl: String
+        val title: String?,
+        val description: String?,
+        val faviconUrl: String?,
+        val imageUrl: String?
     ) : BlockView() {
         override fun getViewType() = HOLDER_BOOKMARK
     }

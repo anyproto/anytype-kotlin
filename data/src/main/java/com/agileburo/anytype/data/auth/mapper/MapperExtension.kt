@@ -83,6 +83,7 @@ fun BlockEntity.Content.toDomain(): Block.Content = when (this) {
     is BlockEntity.Content.Divider -> toDomain()
     is BlockEntity.Content.File -> toDomain()
     is BlockEntity.Content.Icon -> toDomain()
+    is BlockEntity.Content.Bookmark -> toDomain()
 }
 
 fun BlockEntity.Content.File.toDomain(): Block.Content.File {
@@ -94,6 +95,16 @@ fun BlockEntity.Content.File.toDomain(): Block.Content.File {
         size = size,
         type = type.toDomain(),
         state = state.toDomain()
+    )
+}
+
+fun BlockEntity.Content.Bookmark.toDomain(): Block.Content.Bookmark {
+    return Block.Content.Bookmark(
+        url = url,
+        title = title,
+        description = description,
+        image = image,
+        favicon = favicon
     )
 }
 
@@ -203,6 +214,7 @@ fun Block.Content.toEntity(): BlockEntity.Content = when (this) {
     is Block.Content.Divider -> toEntity()
     is Block.Content.File -> toEntity()
     is Block.Content.Icon -> toEntity()
+    is Block.Content.Bookmark -> toEntity()
 }
 
 fun Block.Content.File.toEntity(): BlockEntity.Content.File {
@@ -214,6 +226,16 @@ fun Block.Content.File.toEntity(): BlockEntity.Content.File {
         size = size,
         type = type.toEntity(),
         state = state.toEntity()
+    )
+}
+
+fun Block.Content.Bookmark.toEntity(): BlockEntity.Content.Bookmark {
+    return BlockEntity.Content.Bookmark(
+        url = url,
+        title = title,
+        description = description,
+        image = image,
+        favicon = favicon
     )
 }
 

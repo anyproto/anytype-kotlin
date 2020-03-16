@@ -64,5 +64,17 @@
             app:layout_constraintTop_toTopOf="@id/bookmarkUrl"
             tools:background="@color/orange" />
 
+        <TextView
+            android:id="@+id/loadBookmarkPictureError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="@string/error_while_loading_picture"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/bookmarkImage"
+            app:layout_constraintEnd_toEndOf="@+id/bookmarkImage"
+            app:layout_constraintStart_toStartOf="@+id/bookmarkImage"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

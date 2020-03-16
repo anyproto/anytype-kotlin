@@ -659,12 +659,49 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val url = itemView.bookmarkUrl
         private val image = itemView.bookmarkImage
         private val logo = itemView.bookmarkLogo
+        private val error = itemView.loadBookmarkPictureError
+
+        private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
+
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<Drawable>?,
+                isFirstResource: Boolean
+            ): Boolean {
+                error.visible()
+                return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable?,
+                model: Any?,
+                target: Target<Drawable>?,
+                dataSource: DataSource?,
+                isFirstResource: Boolean
+            ): Boolean {
+                error.invisible()
+                return false
+            }
+        }
 
         fun bind(item: BlockView.Bookmark) {
             title.text = item.title
             description.text = item.description
             url.text = item.url
-            // TODO set logo icon and website's image
+
+            item.imageUrl?.let { url ->
+                Glide.with(image)
+                    .load(url)
+                    .listener(listener)
+                    .into(image)
+            }
+            item.faviconUrl?.let { url ->
+                Glide.with(logo)
+                    .load(url)
+                    .listener(listener)
+                    .into(logo)
+            }
         }
     }
 

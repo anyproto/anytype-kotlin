@@ -301,6 +301,14 @@ class PageViewModel(
                         is Content.Divider -> block.toView(
                             urlBuilder = urlBuilder
                         )
+                        is Content.Bookmark -> BlockView.Bookmark(
+                            id = block.id,
+                            url = content.url,
+                            title = content.title,
+                            description = content.description,
+                            imageUrl = content.image?.let { urlBuilder.image(it) },
+                            faviconUrl = content.favicon?.let { urlBuilder.image(it) }
+                        )
                         else -> null
                     }
                 }

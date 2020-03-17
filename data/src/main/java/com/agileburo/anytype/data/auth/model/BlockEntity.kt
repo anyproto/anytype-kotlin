@@ -85,7 +85,7 @@ data class BlockEntity(
         }
 
         data class Bookmark(
-            val url: String,
+            val url: String?,
             val title: String?,
             val description: String?,
             val image: String?,
@@ -104,11 +104,12 @@ data class BlockEntity(
             val style: Content.Page.Style
         ) : Prototype()
 
-        object Divider : Prototype()
-
         data class File(
             val state: Content.File.State,
             val type: Content.File.Type
         ) : Prototype()
+
+        object Divider : Prototype()
+        object Bookmark : Prototype()
     }
 }

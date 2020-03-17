@@ -84,4 +84,10 @@ class CommandEntity {
         val target: String,
         val name: String
     )
+
+    data class SetupBookmark(
+        val context: String,
+        val target: String,
+        val url: String
+    )
 }

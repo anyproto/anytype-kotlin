@@ -40,6 +40,16 @@ sealed class EventEntity {
             val fields: BlockEntity.Fields?
         ) : Command()
 
+        data class BookmarkGranularChange(
+            override val context: String,
+            val target: String,
+            val url: String?,
+            val title: String?,
+            val description: String?,
+            val imageHash: String?,
+            val faviconHash: String?
+        ) : Command()
+
         data class UpdateStructure(
             override val context: String,
             val id: String,

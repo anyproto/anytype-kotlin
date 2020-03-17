@@ -65,6 +65,11 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun split(command: CommandEntity.Split): String = remote.split(command)
 
-    override suspend fun setIconName(command: CommandEntity.SetIconName) =
-        remote.setIconName(command)
+    override suspend fun setIconName(
+        command: CommandEntity.SetIconName
+    ) = remote.setIconName(command)
+
+    override suspend fun setupBookmark(
+        command: CommandEntity.SetupBookmark
+    ) = remote.setupBookmark(command)
 }

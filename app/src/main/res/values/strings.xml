@@ -100,5 +100,7 @@ Do the computation of an expensive paragraph of text on a background thread:
 
     <string name="page_icon">Page icon</string>
     <string name="page_icon_picker_remove_text">Remove</string>
+    <string name="create_bookmark">Create bookmark</string>
+    <string name="hint_paste_or_type_a_url">Paste or type a URL</string>
 
 </resources>

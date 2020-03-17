@@ -41,4 +41,6 @@ interface BlockRepository {
     suspend fun uploadUrl(command: Command.UploadVideoBlockUrl)
 
     suspend fun setIconName(command: Command.SetIconName)
+
+    suspend fun setupBookmark(command: Command.SetupBookmark)
 }

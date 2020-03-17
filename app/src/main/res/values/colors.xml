@@ -15,5 +15,6 @@
     <color name="blue">#3F51B5</color>
 
     <color name="auth_divider">#DFDDD0</color>
+    <color name="hint_color">#ACA996</color>
 
 </resources>

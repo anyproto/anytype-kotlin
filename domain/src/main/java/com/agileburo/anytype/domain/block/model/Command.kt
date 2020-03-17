@@ -147,4 +147,16 @@ sealed class Command {
         val target: Id,
         val name: String
     )
+
+    /**
+     * Command for setting up a bookmark from [url]
+     * @property context id of the context
+     * @property target id of the target block (future bookmark block)
+     * @property url bookmark url
+     */
+    data class SetupBookmark(
+        val context: Id,
+        val target: Id,
+        val url: String
+    )
 }

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BULLET
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CHECKBOX
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CODE_SNIPPET
@@ -53,10 +54,11 @@ class BlockAdapter(
     private val onPageClicked: (String) -> Unit,
     private val onTextInputClicked: () -> Unit,
     private val onAddUrlClick: (String, String) -> Unit,
-    private val onAddLocalVideoClick : (String) -> Unit,
+    private val onAddLocalVideoClick: (String) -> Unit,
     private val strVideoError: String,
     private val onPageIconClicked: () -> Unit,
-    private val onDownloadFileClicked: (String) -> Unit
+    private val onDownloadFileClicked: (String) -> Unit,
+    private val onBookmarkPlaceholderClicked: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -230,6 +232,15 @@ class BlockAdapter(
                 BlockViewHolder.Bookmark(
                     view = inflater.inflate(
                         R.layout.item_block_bookmark,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_BOOKMARK_PLACEHOLDER -> {
+                BlockViewHolder.Bookmark.Placeholder(
+                    view = inflater.inflate(
+                        R.layout.item_block_bookmark_placeholder,
                         parent,
                         false
                     )
@@ -454,7 +465,13 @@ class BlockAdapter(
             }
             is BlockViewHolder.Bookmark -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Bookmark
+                    item = blocks[position] as BlockView.Bookmark.View
+                )
+            }
+            is BlockViewHolder.Bookmark.Placeholder -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Bookmark.Placeholder,
+                    onBookmarkPlaceholderClicked = onBookmarkPlaceholderClicked
                 )
             }
             is BlockViewHolder.Picture -> {

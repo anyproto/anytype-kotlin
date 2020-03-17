@@ -310,14 +310,20 @@ class PageViewModel(
                         is Content.Divider -> block.toView(
                             urlBuilder = urlBuilder
                         )
-                        is Content.Bookmark -> BlockView.Bookmark(
-                            id = block.id,
-                            url = content.url,
-                            title = content.title,
-                            description = content.description,
-                            imageUrl = content.image?.let { urlBuilder.image(it) },
-                            faviconUrl = content.favicon?.let { urlBuilder.image(it) }
-                        )
+                        is Content.Bookmark -> {
+                            content.url?.let { url ->
+                                BlockView.Bookmark.View(
+                                    id = block.id,
+                                    url = url,
+                                    title = content.title,
+                                    description = content.description,
+                                    imageUrl = content.image?.let { urlBuilder.image(it) },
+                                    faviconUrl = content.favicon?.let { urlBuilder.image(it) }
+                                )
+                            } ?: BlockView.Bookmark.Placeholder(
+                                id = block.id
+                            )
+                        }
                         else -> null
                     }
                 }
@@ -772,10 +778,12 @@ class PageViewModel(
         )
     }
 
-    private fun proceedWithCreatingEmptyFileBlock(id: String,
-                                                  type: Content.File.Type,
-                                                  state: Content.File.State = Content.File.State.EMPTY,
-                                                  position: Position = Position.BOTTOM) {
+    private fun proceedWithCreatingEmptyFileBlock(
+        id: String,
+        type: Content.File.Type,
+        state: Content.File.State = Content.File.State.EMPTY,
+        position: Position = Position.BOTTOM
+    ) {
         createBlock.invoke(
             scope = viewModelScope,
             params = CreateBlock.Params(
@@ -866,6 +874,9 @@ class PageViewModel(
                     is Content.Link -> {
                         addNewBlockAtTheEnd()
                     }
+                    is Content.Bookmark -> {
+                        addNewBlockAtTheEnd()
+                    }
                     else -> {
                         Timber.d("Outside-click has been ignored.")
                     }
@@ -889,7 +900,6 @@ class PageViewModel(
     }
 
     fun onAddNewPageClicked() {
-
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
         val params = CreateBlock.Params(
@@ -905,6 +915,33 @@ class PageViewModel(
                 fnR = { Timber.d("Page created!") }
             )
         }
+    }
+
+    fun onAddBookmarkClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
+
+        val params = CreateBlock.Params(
+            context = context,
+            position = Position.BOTTOM,
+            target = focusChannel.value,
+            prototype = Prototype.Bookmark
+        )
+
+        createBlock.invoke(scope = viewModelScope, params = params) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while creating a bookmark with params: $params") },
+                fnR = { Timber.d("Bookmark created!") }
+            )
+        }
+    }
+
+    fun onBookmarkPlaceholderClicked(target: String) {
+        dispatch(
+            command = Command.OpenBookmarkSetter(
+                context = context,
+                target = target
+            )
+        )
     }
 
     fun onTextInputClicked() {
@@ -1027,6 +1064,11 @@ class PageViewModel(
 
         data class OpenGallery(
             val mediaType: String
+        ) : Command()
+
+        data class OpenBookmarkSetter(
+            val target: String,
+            val context: String
         ) : Command()
     }
 

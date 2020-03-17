@@ -2,6 +2,8 @@ package com.agileburo.anytype
 
 import anytype.Commands.Rpc.Account
 import com.agileburo.anytype.middleware.interactor.Middleware
+import com.agileburo.anytype.middleware.interactor.MiddlewareFactory
+import com.agileburo.anytype.middleware.interactor.MiddlewareMapper
 import com.agileburo.anytype.middleware.service.MiddlewareService
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -18,10 +20,13 @@ class MiddlewareTest {
 
     private lateinit var middleware: Middleware
 
+    private val mapper = MiddlewareMapper()
+    private val factory = MiddlewareFactory()
+
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        middleware = Middleware(service)
+        middleware = Middleware(service, factory, mapper)
     }
 
     @Test

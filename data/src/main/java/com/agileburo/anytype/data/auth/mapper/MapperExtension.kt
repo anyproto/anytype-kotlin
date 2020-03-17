@@ -392,6 +392,12 @@ fun Command.UploadVideoBlockUrl.toEntity(): CommandEntity.UploadBlock = CommandE
     filePath = filePath
 )
 
+fun Command.SetupBookmark.toEntity() = CommandEntity.SetupBookmark(
+    target = target,
+    context = context,
+    url = url
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }
@@ -453,6 +459,17 @@ fun EventEntity.toDomain(): Event {
                 fields = fields?.let { Block.Fields(it.map) }
             )
         }
+        is EventEntity.Command.BookmarkGranularChange -> {
+            Event.Command.BookmarkGranularChange(
+                context = context,
+                target = target,
+                url = url,
+                title = title,
+                description = description,
+                favicon = faviconHash,
+                image = imageHash
+            )
+        }
         is EventEntity.Command.UpdateFields -> {
             Event.Command.UpdateFields(
                 context = context,
@@ -486,7 +503,8 @@ fun Block.Prototype.toEntity(): BlockEntity.Prototype = when (this) {
             style = BlockEntity.Content.Page.Style.valueOf(this.style.name)
         )
     }
-    Block.Prototype.Divider -> BlockEntity.Prototype.Divider
+    is Block.Prototype.Bookmark -> BlockEntity.Prototype.Bookmark
+    is Block.Prototype.Divider -> BlockEntity.Prototype.Divider
     is Block.Prototype.File -> {
         BlockEntity.Prototype.File(
             type = BlockEntity.Content.File.Type.valueOf(this.type.name),

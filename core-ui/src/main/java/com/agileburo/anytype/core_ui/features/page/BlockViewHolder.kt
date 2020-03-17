@@ -1,8 +1,8 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.graphics.Color
-import android.net.Uri
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.text.Editable
 import android.view.View
 import android.widget.TextView.BufferType
@@ -638,7 +638,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 MimeTypes.Category.TABLE -> icon.setImageResource(R.drawable.ic_mime_table)
                 MimeTypes.Category.PRESENTATION -> icon.setImageResource(R.drawable.ic_mime_presentation)
                 MimeTypes.Category.OTHER -> icon.setImageResource(R.drawable.ic_mime_other)
-
             }
             itemView.setOnClickListener { onDownloadFileClicked(item.id) }
         }
@@ -741,7 +740,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        fun bind(item: BlockView.Bookmark) {
+        fun bind(item: BlockView.Bookmark.View) {
             title.text = item.title
             description.text = item.description
             url.text = item.url
@@ -757,6 +756,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     .load(url)
                     .listener(listener)
                     .into(logo)
+            }
+        }
+
+        class Placeholder(view: View) : BlockViewHolder(view) {
+
+            fun bind(
+                item: BlockView.Bookmark.Placeholder,
+                onBookmarkPlaceholderClicked: (String) -> Unit
+            ) {
+                itemView.setOnClickListener { onBookmarkPlaceholderClicked(item.id) }
             }
         }
     }
@@ -859,6 +868,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_VIDEO_UPLOAD = 20
         const val HOLDER_VIDEO_EMPTY = 21
         const val HOLDER_VIDEO_ERROR = 22
+        const val HOLDER_BOOKMARK_PLACEHOLDER = 23
 
         const val FOCUS_TIMEOUT_MILLIS = 16L
     }

@@ -87,6 +87,11 @@ class BlockMiddleware(
 
     override suspend fun split(command: CommandEntity.Split): String = middleware.split(command)
 
-    override suspend fun setIconName(command: CommandEntity.SetIconName) =
-        middleware.setIconName(command)
+    override suspend fun setIconName(
+        command: CommandEntity.SetIconName
+    ) = middleware.setIconName(command)
+
+    override suspend fun setupBookmark(
+        command: CommandEntity.SetupBookmark
+    ) = middleware.setupBookmark(command)
 }

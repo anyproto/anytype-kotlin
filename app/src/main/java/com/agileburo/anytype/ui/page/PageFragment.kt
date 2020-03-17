@@ -31,6 +31,7 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.Option
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_BULLETED_LIST
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_CHECKBOX
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_NUMBERED_LIST
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_BOOKMARK
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_VIDEO
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_ONE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_THREE
@@ -49,6 +50,7 @@ import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.base.NavigationFragment
+import com.agileburo.anytype.ui.page.modals.CreateBookmarkFragment
 import com.agileburo.anytype.ui.page.modals.PageIconPickerFragment
 import com.agileburo.anytype.ui.page.modals.SetLinkFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -107,7 +109,8 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             onPageIconClicked = vm::onPageIconClicked,
             onAddUrlClick = vm::onAddVideoUrlClicked,
             onAddLocalVideoClick = vm::onAddLocalVideoClicked,
-            strVideoError = getString(R.string.error)
+            strVideoError = getString(R.string.error),
+            onBookmarkPlaceholderClicked = vm::onBookmarkPlaceholderClicked
         )
     }
 
@@ -173,8 +176,10 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
         wasSuccessful: Boolean,
         Reason: String?
     ) {
-        Timber.d("PickiTonCompleteListener  path:$path, wasDriveFile$wasDriveFile, " +
-                "wasUnknownProvider:$wasUnknownProvider, wasSuccessful:$wasSuccessful, reason:$Reason")
+        Timber.d(
+            "PickiTonCompleteListener  path:$path, wasDriveFile$wasDriveFile, " +
+                    "wasUnknownProvider:$wasUnknownProvider, wasSuccessful:$wasSuccessful, reason:$Reason"
+        )
         vm.onAddVideoFileClicked(filePath = path)
     }
 
@@ -356,6 +361,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             is Option.Media -> {
                 when (option.type) {
                     OPTION_MEDIA_VIDEO -> vm.onAddVideoBlockClicked()
+                    OPTION_MEDIA_BOOKMARK -> vm.onAddBookmarkClicked()
                     else -> toast(NOT_IMPLEMENTED_MESSAGE)
                 }
             }
@@ -440,6 +446,12 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                 is PageViewModel.Command.OpenPagePicker -> {
                     PageIconPickerFragment.newInstance(
                         context = requireArguments().getString(ID_KEY, ID_EMPTY_VALUE),
+                        target = command.target
+                    ).show(childFragmentManager, null)
+                }
+                is PageViewModel.Command.OpenBookmarkSetter -> {
+                    CreateBookmarkFragment.newInstance(
+                        context = command.context,
                         target = command.target
                     ).show(childFragmentManager, null)
                 }

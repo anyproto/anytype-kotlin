@@ -2,7 +2,9 @@ package com.agileburo.anytype.domain.event.model
 
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content.Text
+import com.agileburo.anytype.domain.common.Hash
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.common.Url
 
 sealed class Event {
 
@@ -60,13 +62,33 @@ sealed class Event {
          * @property context update's context
          * @property id id of the link
          * @property target id of the linked block
-         * @property fields link's fields (considered update if not null)
+         * @property fields link's fields (considered updated if not null)
          */
         data class LinkGranularChange(
             override val context: String,
             val id: Id,
             val target: Id,
             val fields: Block.Fields?
+        ) : Command()
+
+        /**
+         * Command to update bookmark
+         * @property context id of the context
+         * @property target id of the bookmark block
+         * @property url bookmark's url (considered updated if not null)
+         * @property title bookmark's title (considered updated if not null)
+         * @property description bookmark's description (considered updated if not null)
+         * @property image bookmark's image hash (considered updated if not null)
+         * @property favicon bookmark's favicon hash (considered updated if not null)
+         */
+        data class BookmarkGranularChange(
+            override val context: Id,
+            val target: Id,
+            val url: Url?,
+            val title: String?,
+            val description: String?,
+            val image: Hash?,
+            val favicon: Hash?
         ) : Command()
 
         /**

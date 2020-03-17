@@ -16,6 +16,8 @@ import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.auth.AuthMiddleware
 import com.agileburo.anytype.middleware.block.BlockMiddleware
 import com.agileburo.anytype.middleware.interactor.Middleware
+import com.agileburo.anytype.middleware.interactor.MiddlewareFactory
+import com.agileburo.anytype.middleware.interactor.MiddlewareMapper
 import com.agileburo.anytype.middleware.service.DefaultMiddlewareService
 import com.agileburo.anytype.middleware.service.MiddlewareService
 import com.agileburo.anytype.persistence.db.AnytypeDatabase
@@ -149,8 +151,18 @@ class DataModule {
     @Provides
     @Singleton
     fun provideMiddleware(
-        service: MiddlewareService
-    ): Middleware = Middleware(service)
+        service: MiddlewareService,
+        factory: MiddlewareFactory,
+        mapper: MiddlewareMapper
+    ): Middleware = Middleware(service, factory, mapper)
+
+    @Provides
+    @Singleton
+    fun provideMiddlewareFactory(): MiddlewareFactory = MiddlewareFactory()
+
+    @Provides
+    @Singleton
+    fun provideMiddlewareMapper(): MiddlewareMapper = MiddlewareMapper()
 
     @Provides
     @Singleton

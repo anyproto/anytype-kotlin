@@ -5,6 +5,7 @@ import com.agileburo.anytype.core_ui.common.Focusable
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.ViewType
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BULLET
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CHECKBOX
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CODE_SNIPPET
@@ -366,21 +367,36 @@ sealed class BlockView : ViewType {
     /**
      * UI-model for a bookmark block
      * @property id block's id
-     * @property title website's title
-     * @property title website's content description
-     * @property url website's url
-     * @property faviconUrl website's favicon url
-     * @property imageUrl content's main image url
      */
-    data class Bookmark(
-        override val id: String,
-        val url: String,
-        val title: String?,
-        val description: String?,
-        val faviconUrl: String?,
-        val imageUrl: String?
+    sealed class Bookmark(
+        override val id: String
     ) : BlockView() {
-        override fun getViewType() = HOLDER_BOOKMARK
+
+        /**
+         * UI-model for a bookmark placeholder (used when bookmark url is not set)
+         */
+        data class Placeholder(override val id: String) : Bookmark(id = id) {
+            override fun getViewType() = HOLDER_BOOKMARK_PLACEHOLDER
+        }
+
+        /**
+         * UI-model for a bookmark view.
+         * @property title website's title
+         * @property description website's content description
+         * @property url website's url
+         * @property faviconUrl website's favicon url
+         * @property imageUrl content's main image url
+         */
+        data class View(
+            override val id: String,
+            val url: String,
+            val title: String?,
+            val description: String?,
+            val faviconUrl: String?,
+            val imageUrl: String?
+        ) : Bookmark(id = id) {
+            override fun getViewType() = HOLDER_BOOKMARK
+        }
     }
 
     /**

@@ -273,4 +273,15 @@ public class DefaultMiddlewareService implements MiddlewareService {
             return response;
         }
     }
+
+    @Override
+    public Block.Bookmark.Fetch.Response blockBookmarkFetch(Block.Bookmark.Fetch.Request request) throws Exception {
+        byte[] encoded = Lib.blockBookmarkFetch(request.toByteArray());
+        Block.Bookmark.Fetch.Response response = Block.Bookmark.Fetch.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Block.Bookmark.Fetch.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
 }

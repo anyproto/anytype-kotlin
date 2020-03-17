@@ -2,10 +2,13 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:paddingStart="@dimen/default_page_item_padding_start"
-    android:paddingEnd="@dimen/default_page_item_padding_end"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="6dp"
+    app:cardCornerRadius="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
@@ -34,10 +37,10 @@
 
         <TextView
             android:id="@+id/bookmarkUrl"
+            style="@style/BlockBookmarkUrlStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
-            style="@style/BlockBookmarkUrlStyle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/bookmarkLogo"
             app:layout_constraintTop_toBottomOf="@+id/bookmarkDescription"
@@ -45,12 +48,12 @@
 
         <ImageView
             android:id="@+id/bookmarkImage"
-            android:layout_height="200dp"
             android:layout_width="0dp"
-            app:layout_constraintWidth_default="percent"
+            android:layout_height="200dp"
             android:contentDescription="@string/content_description_bookmark_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_default="percent"
             tools:background="@color/black" />
 
         <ImageView
@@ -74,6 +77,16 @@
             app:layout_constraintBottom_toBottomOf="@+id/bookmarkImage"
             app:layout_constraintEnd_toEndOf="@+id/bookmarkImage"
             app:layout_constraintStart_toStartOf="@+id/bookmarkImage"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/bookmarkMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_bookmark_menu"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

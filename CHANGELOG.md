@@ -1,5 +1,20 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.24 (WIP)
+
+### New features 🚀
+
+* User can add bookmark placeholder and create bookmark from url (#140)
+
+### Fixes & tech 🚒
+
+* Refactored block creation in `Middleware` (introduced factory to create a block from a block prototype) (#140)
+* New mappers (from middleware layer entity to data layer entity) (#140)
+
+### Middleware ⚙️
+
+* Added `blockBookmarkFetch` command (#140)
+
 ## Version 0.0.23
 
 ### New features 🚀

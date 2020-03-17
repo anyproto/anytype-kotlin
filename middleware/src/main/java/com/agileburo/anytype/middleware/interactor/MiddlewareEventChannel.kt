@@ -23,8 +23,9 @@ class MiddlewareEventChannel(
         Events.Event.Message.ValueCase.BLOCKSETCHILDRENIDS,
         Events.Event.Message.ValueCase.BLOCKDELETE,
         Events.Event.Message.ValueCase.BLOCKSETLINK,
+        Events.Event.Message.ValueCase.BLOCKSETFILE,
         Events.Event.Message.ValueCase.BLOCKSETFIELDS,
-        Events.Event.Message.ValueCase.BLOCKSETFILE
+        Events.Event.Message.ValueCase.BLOCKSETBOOKMARK
     )
 
     override fun observeEvents(
@@ -125,6 +126,31 @@ class MiddlewareEventChannel(
                             size = if (hasSize()) size.value else null
                         )
                     }
+                }
+                Events.Event.Message.ValueCase.BLOCKSETBOOKMARK -> {
+                    EventEntity.Command.BookmarkGranularChange(
+                        context = context,
+                        target = event.blockSetBookmark.id,
+                        url = if (event.blockSetBookmark.hasUrl())
+                            event.blockSetBookmark.url.value
+                        else null,
+                        title = if (event.blockSetBookmark.hasTitle())
+                            event.blockSetBookmark.title.value
+                        else
+                            null,
+                        description = if (event.blockSetBookmark.hasDescription())
+                            event.blockSetBookmark.description.value
+                        else
+                            null,
+                        imageHash = if (event.blockSetBookmark.hasImageHash())
+                            event.blockSetBookmark.imageHash.value
+                        else
+                            null,
+                        faviconHash = if (event.blockSetBookmark.hasFaviconHash())
+                            event.blockSetBookmark.faviconHash.value
+                        else
+                            null
+                    )
                 }
                 else -> null
             }

@@ -66,6 +66,21 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
             },
             target = { block -> block.id == event.id }
         )
+        is Event.Command.BookmarkGranularChange -> state.replace(
+            replacement = { block ->
+                val content = block.content<Block.Content.Bookmark>()
+                block.copy(
+                    content = content.copy(
+                        url = event.url ?: content.url,
+                        title = event.title ?: content.title,
+                        description = event.description ?: content.description,
+                        image = event.image ?: content.image,
+                        favicon = event.favicon ?: content.favicon
+                    )
+                )
+            },
+            target = { block -> block.id == event.target }
+        )
 
         else -> state.also { Timber.d("Ignoring event: $event") }
     }

@@ -7,4 +7,5 @@ import androidx.lifecycle.ViewModel
 open class ViewStateViewModel<VS> : ViewModel() {
     protected val stateData = MutableLiveData<VS>()
     val state: LiveData<VS> = stateData
+    fun update(update: VS) = stateData.postValue(update)
 }

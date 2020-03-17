@@ -179,7 +179,7 @@ data class Block(
          * @property favicon optional hash of bookmark's favicon
          */
         data class Bookmark(
-            val url: Url,
+            val url: Url?,
             val title: String?,
             val description: String?,
             val image: Hash?,
@@ -205,11 +205,12 @@ data class Block(
             val style: Content.Page.Style
         ) : Prototype()
 
-        object Divider : Prototype()
-
         data class File(
             val type: Content.File.Type,
             val state: Content.File.State
         ) : Prototype()
+
+        object Divider : Prototype()
+        object Bookmark : Prototype()
     }
 }

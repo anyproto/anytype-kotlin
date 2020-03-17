@@ -6,6 +6,7 @@ import anytype.model.Models.Account
 import anytype.model.Models.Block
 import com.agileburo.anytype.data.auth.model.AccountEntity
 import com.agileburo.anytype.data.auth.model.BlockEntity
+import com.agileburo.anytype.data.auth.model.PositionEntity
 import com.google.protobuf.Struct
 import com.google.protobuf.Value
 
@@ -246,7 +247,7 @@ fun Block.Content.File.State.entity(): BlockEntity.Content.File.State = when (th
 }
 
 fun Block.bookmark(): BlockEntity.Content.Bookmark = BlockEntity.Content.Bookmark(
-    url = bookmark.url,
+    url = bookmark.url.ifEmpty { null },
     description = bookmark.description.ifEmpty { null },
     title = bookmark.title.ifEmpty { null },
     image = bookmark.imageHash.ifEmpty { null },
@@ -345,4 +346,41 @@ fun Block.Content.Text.Style.entity(): BlockEntity.Content.Text.Style = when (th
     Block.Content.Text.Style.Toggle -> BlockEntity.Content.Text.Style.TOGGLE
     Block.Content.Text.Style.Checkbox -> BlockEntity.Content.Text.Style.CHECKBOX
     else -> throw IllegalStateException("Unexpected text style: $this")
+}
+
+fun BlockEntity.Content.Text.Style.toMiddleware(): Block.Content.Text.Style = when (this) {
+    BlockEntity.Content.Text.Style.P -> Block.Content.Text.Style.Paragraph
+    BlockEntity.Content.Text.Style.H1 -> Block.Content.Text.Style.Header1
+    BlockEntity.Content.Text.Style.H2 -> Block.Content.Text.Style.Header2
+    BlockEntity.Content.Text.Style.H3 -> Block.Content.Text.Style.Header3
+    BlockEntity.Content.Text.Style.TITLE -> Block.Content.Text.Style.Title
+    BlockEntity.Content.Text.Style.QUOTE -> Block.Content.Text.Style.Quote
+    BlockEntity.Content.Text.Style.BULLET -> Block.Content.Text.Style.Marked
+    BlockEntity.Content.Text.Style.NUMBERED -> Block.Content.Text.Style.Numbered
+    BlockEntity.Content.Text.Style.TOGGLE -> Block.Content.Text.Style.Toggle
+    BlockEntity.Content.Text.Style.CHECKBOX -> Block.Content.Text.Style.Checkbox
+    else -> throw IllegalStateException("Unexpected text style: $this")
+}
+
+fun BlockEntity.Content.File.State.toMiddleware(): Block.Content.File.State = when (this) {
+    BlockEntity.Content.File.State.EMPTY -> Block.Content.File.State.Empty
+    BlockEntity.Content.File.State.ERROR -> Block.Content.File.State.Error
+    BlockEntity.Content.File.State.UPLOADING -> Block.Content.File.State.Uploading
+    BlockEntity.Content.File.State.DONE -> Block.Content.File.State.Done
+}
+
+fun BlockEntity.Content.File.Type.toMiddleware(): Block.Content.File.Type = when (this) {
+    BlockEntity.Content.File.Type.NONE -> Block.Content.File.Type.None
+    BlockEntity.Content.File.Type.FILE -> Block.Content.File.Type.File
+    BlockEntity.Content.File.Type.IMAGE -> Block.Content.File.Type.Image
+    BlockEntity.Content.File.Type.VIDEO -> Block.Content.File.Type.Video
+}
+
+fun PositionEntity.toMiddleware(): Block.Position = when (this) {
+    PositionEntity.NONE -> Block.Position.None
+    PositionEntity.LEFT -> Block.Position.Left
+    PositionEntity.RIGHT -> Block.Position.Right
+    PositionEntity.TOP -> Block.Position.Top
+    PositionEntity.BOTTOM -> Block.Position.Bottom
+    PositionEntity.INNER -> Block.Position.Inner
 }

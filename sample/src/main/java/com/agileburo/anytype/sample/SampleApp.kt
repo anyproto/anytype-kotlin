@@ -4,7 +4,7 @@ import android.app.Application
 import com.agileburo.anytype.core_utils.tools.CrashlyticsTree
 import timber.log.Timber
 
-class SampleApp : Application(){
+class SampleApp : Application() {
 
 
     override fun onCreate() {

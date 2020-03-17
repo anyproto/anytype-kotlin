@@ -746,8 +746,7 @@ class PageViewModel(
     fun onAddTextBlockClicked(style: Content.Text.Style) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
         proceedWithCreatingNewTextBlock(
-            id = "",
-            position = Position.INNER,
+            id = focusChannel.value,
             style = style
         )
     }
@@ -837,7 +836,7 @@ class PageViewModel(
         proceedWithUpdatingTextStyle(style, focusChannel.value)
     }
 
-    fun onOptionOtherActionClicked() {
+    fun onAddDividerBlockClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
         proceedWithCreatingNewDividerBlock(id = focusChannel.value)
     }

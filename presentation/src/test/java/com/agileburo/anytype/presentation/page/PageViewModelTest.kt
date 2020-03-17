@@ -2770,6 +2770,282 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should create a new text block after currently focused block`() {
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    map = mapOf("icon" to "")
+                ),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id, paragraph.id)
+            ),
+            title,
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.onBlockFocusChanged(
+            id = title.id,
+            hasFocus = true
+        )
+
+        vm.onAddBlockToolbarClicked()
+
+        vm.onAddTextBlockClicked(
+            style = Block.Content.Text.Style.P
+        )
+
+        verify(createBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                CreateBlock.Params(
+                    context = root,
+                    target = title.id,
+                    position = Position.BOTTOM,
+                    prototype = Block.Prototype.Text(Block.Content.Text.Style.P)
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should create a new page block after currently focused block`() {
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    map = mapOf("icon" to "")
+                ),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id, paragraph.id)
+            ),
+            title,
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.onBlockFocusChanged(
+            id = title.id,
+            hasFocus = true
+        )
+
+        vm.onAddBlockToolbarClicked()
+
+        vm.onAddNewPageClicked()
+
+        verify(createBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                CreateBlock.Params(
+                    context = root,
+                    target = title.id,
+                    position = Position.BOTTOM,
+                    prototype = Block.Prototype.Page(
+                        style = Block.Content.Page.Style.EMPTY
+                    )
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should create a new bookmark block after currently focused block`() {
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    map = mapOf("icon" to "")
+                ),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id, paragraph.id)
+            ),
+            title,
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.onBlockFocusChanged(
+            id = title.id,
+            hasFocus = true
+        )
+
+        vm.onAddBlockToolbarClicked()
+
+        vm.onAddBookmarkClicked()
+
+        verify(createBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                CreateBlock.Params(
+                    context = root,
+                    target = title.id,
+                    position = Position.BOTTOM,
+                    prototype = Block.Prototype.Bookmark
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should create a new divider block after currently focused block`() {
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    map = mapOf("icon" to "")
+                ),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id, paragraph.id)
+            ),
+            title,
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.onBlockFocusChanged(
+            id = title.id,
+            hasFocus = true
+        )
+
+        vm.onAddBlockToolbarClicked()
+
+        vm.onAddDividerBlockClicked()
+
+        verify(createBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                CreateBlock.Params(
+                    context = root,
+                    target = title.id,
+                    position = Position.BOTTOM,
+                    prototype = Block.Prototype.Divider
+                )
+            ),
+            onResult = any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()

@@ -33,6 +33,7 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionC
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_NUMBERED_LIST
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_BOOKMARK
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_VIDEO
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_OTHER_DIVIDER
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_ONE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_THREE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_TWO
@@ -365,7 +366,12 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                     else -> toast(NOT_IMPLEMENTED_MESSAGE)
                 }
             }
-            is Option.Other -> vm.onOptionOtherActionClicked()
+            is Option.Other -> {
+                when (option.type) {
+                    OPTION_OTHER_DIVIDER -> vm.onAddDividerBlockClicked()
+                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
+                }
+            }
         }
     }
 

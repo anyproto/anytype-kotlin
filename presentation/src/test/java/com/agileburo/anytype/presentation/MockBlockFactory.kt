@@ -55,6 +55,17 @@ object MockBlockFactory {
         children = emptyList()
     )
 
+    fun makeParagraphBlock(): Block = Block(
+        id = MockDataFactory.randomUuid(),
+        fields = Block.Fields.empty(),
+        content = Block.Content.Text(
+            text = MockDataFactory.randomString(),
+            marks = emptyList(),
+            style = Block.Content.Text.Style.P
+        ),
+        children = emptyList()
+    )
+
     fun makeOnePageWithTwoTextBlocks(
         root: String,
         firstChild: String,

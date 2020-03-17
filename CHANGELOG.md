@@ -8,6 +8,7 @@
 
 ### Fixes & tech 🚒
 
+* Should create a new block after the target block when user adds a new block via add-block toolbar (#305)
 * Refactored block creation in `Middleware` (introduced factory to create a block from a block prototype) (#140)
 * New mappers (from middleware layer entity to data layer entity) (#140)
 

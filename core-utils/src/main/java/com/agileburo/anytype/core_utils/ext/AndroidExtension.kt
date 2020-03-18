@@ -14,6 +14,8 @@ import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.TouchDelegate
 import android.view.View
+import androidx.annotation.DimenRes
+import androidx.fragment.app.Fragment
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -21,6 +23,12 @@ import java.util.*
 fun Context.dimen(res: Int): Float {
     return resources
         .getDimension(res)
+}
+
+fun Fragment.dimen(@DimenRes res: Int): Int = resources.getDimension(res).toInt()
+
+fun View.height(spec: Int = View.MeasureSpec.UNSPECIFIED): Int {
+    return measure(spec, spec).let { measuredHeight }
 }
 
 fun Uri.parsePath(context: Context): String {

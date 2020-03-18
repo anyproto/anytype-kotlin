@@ -12,6 +12,8 @@ import android.widget.LinearLayout
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
@@ -410,23 +412,39 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
     }
 
     private fun showColorToolbar() {
-        colorToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-        colorToolbar.visible()
+        if (!colorToolbar.isVisible) {
+            colorToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            colorToolbar.visible()
+            recycler.updatePadding(
+                bottom = colorToolbar.height() + dimen(R.dimen.default_toolbar_height)
+            )
+        }
     }
 
     private fun showOptionToolbar() {
-        optionToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-        optionToolbar.visible()
+        if (!optionToolbar.isVisible) {
+            optionToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            optionToolbar.visible()
+            recycler.updatePadding(
+                bottom = optionToolbar.height() + dimen(R.dimen.default_toolbar_height)
+            )
+        }
     }
 
     private fun hideColorToolbar() {
-        colorToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, 0)
-        colorToolbar.invisible()
+        if (colorToolbar.isVisible) {
+            colorToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, 0)
+            colorToolbar.invisible()
+            recycler.updatePadding(bottom = dimen(R.dimen.default_toolbar_height))
+        }
     }
 
     private fun hideOptionToolbar() {
-        optionToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, 0)
-        optionToolbar.invisible()
+        if (optionToolbar.isVisible) {
+            optionToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, 0)
+            optionToolbar.invisible()
+            recycler.updatePadding(bottom = dimen(R.dimen.default_toolbar_height))
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -504,6 +522,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             }
             if (isVisible) {
                 hideKeyboard()
+
                 lifecycleScope.launch {
                     delay(300)
                     showColorToolbar()
@@ -541,15 +560,26 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             }
         }
 
-        with(state.actionToolbar) {
+        state.actionToolbar.apply {
             if (isVisible) {
                 hideKeyboard()
                 lifecycleScope.launch {
                     delay(300)
-                    actionToolbar.show()
+                    if (!actionToolbar.isVisible) {
+                        actionToolbar.show()
+                        recycler.updatePadding(
+                            bottom = actionToolbar.height() + dimen(R.dimen.default_toolbar_height)
+                        )
+                    }
                 }
-            } else
-                actionToolbar.hide()
+            } else {
+                if (actionToolbar.isVisible) {
+                    actionToolbar.hide()
+                    recycler.updatePadding(
+                        bottom = dimen(R.dimen.default_toolbar_height)
+                    )
+                }
+            }
         }
     }
 

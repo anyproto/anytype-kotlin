@@ -22,11 +22,10 @@
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:layout_height="match_parent"
             android:layout_marginTop="16dp"
             android:id="@+id/recycler"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:minHeight="100dp"
             android:paddingBottom="48dp" />
 
     </FrameLayout>

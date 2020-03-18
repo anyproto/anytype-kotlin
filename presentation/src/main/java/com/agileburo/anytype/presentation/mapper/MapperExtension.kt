@@ -100,9 +100,9 @@ fun Block.toView(
     }
     is Block.Content.File -> {
         when (content.type) {
-            Block.Content.File.Type.IMAGE -> BlockView.Picture(
+            Block.Content.File.Type.IMAGE -> content.toPictureView(
                 id = id,
-                url = urlBuilder.image(content.hash)
+                urlBuilder = urlBuilder
             )
             Block.Content.File.Type.FILE -> BlockView.File(
                 id = id,
@@ -136,11 +136,11 @@ fun Block.toView(
     else -> TODO()
 }
 
-fun Block.Content.File.toVideoView(id: String, urlBuilder: UrlBuilder): BlockView =
+fun Block.Content.File.toPictureView(id: String, urlBuilder: UrlBuilder): BlockView =
     when (this.state) {
-        Block.Content.File.State.EMPTY -> BlockView.VideoEmpty(id = id)
-        Block.Content.File.State.UPLOADING -> BlockView.VideoUpload(id = id)
-        Block.Content.File.State.DONE -> BlockView.Video(
+        Block.Content.File.State.EMPTY -> BlockView.Picture.Placeholder(id = id)
+        Block.Content.File.State.UPLOADING -> BlockView.Picture.Upload(id = id)
+        Block.Content.File.State.DONE -> BlockView.Picture.View(
             id = id,
             size = size,
             name = name,
@@ -148,7 +148,24 @@ fun Block.Content.File.toVideoView(id: String, urlBuilder: UrlBuilder): BlockVie
             hash = hash,
             url = urlBuilder.video(hash)
         )
-        Block.Content.File.State.ERROR -> BlockView.VideoError(id = id)
+        Block.Content.File.State.ERROR -> BlockView.Picture.Error(id = id, msg = null)
+        null -> throw NotImplementedError("File block state, should not be null")
+    }
+
+
+fun Block.Content.File.toVideoView(id: String, urlBuilder: UrlBuilder): BlockView =
+    when (this.state) {
+        Block.Content.File.State.EMPTY -> BlockView.Video.Placeholder(id = id)
+        Block.Content.File.State.UPLOADING -> BlockView.Video.Upload(id = id)
+        Block.Content.File.State.DONE -> BlockView.Video.View(
+            id = id,
+            size = size,
+            name = name,
+            mime = mime,
+            hash = hash,
+            url = urlBuilder.video(hash)
+        )
+        Block.Content.File.State.ERROR -> BlockView.Video.Error(id = id)
         null -> throw NotImplementedError("File block state, should not be null")
     }
 

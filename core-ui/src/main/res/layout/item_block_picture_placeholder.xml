@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginStart="@dimen/default_page_item_padding_start"
     android:layout_marginTop="6dp"
     android:layout_marginEnd="@dimen/default_page_item_padding_end"
@@ -13,7 +12,7 @@
     android:paddingBottom="1dp">
 
     <ImageView
-        android:id="@+id/icVideo"
+        android:id="@+id/icPicture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -23,20 +22,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_video" />
+        app:srcCompat="@drawable/ic_file_light" />
 
     <TextView
-        android:id="@+id/tvError"
+        android:id="@+id/editUrl"
+        style="@style/BlockVideoStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="24dp"
-        android:textColor="@android:color/holo_red_dark"
-        tools:text="Error"
-        app:layout_constraintBottom_toBottomOf="@+id/icVideo"
+        android:inputType="none"
+        android:text="@string/hint_upload_image"
+        android:textColor="#ACA996"
+        app:layout_constraintBottom_toBottomOf="@+id/icPicture"
         app:layout_constraintEnd_toStartOf="@+id/icMore"
-        app:layout_constraintStart_toEndOf="@+id/icVideo"
-        app:layout_constraintTop_toTopOf="@+id/icVideo" />
+        app:layout_constraintStart_toEndOf="@+id/icPicture"
+        app:layout_constraintTop_toTopOf="@+id/icPicture" />
 
     <ImageView
         android:id="@+id/icMore"
@@ -44,6 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="12dp"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_block_more" />

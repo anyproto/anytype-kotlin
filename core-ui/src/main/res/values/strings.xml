@@ -121,6 +121,7 @@
     <string name="hint_checkbox">Checkbox</string>
     <string name="hint_video">Enter video URL</string>
     <string name="hint_upload">Upload a video</string>
+    <string name="hint_upload_image">Upload image</string>
     <string name="hint_bullet">Bulleted list item</string>
     <string name="hint_numbered_list">Numbered list item</string>
 

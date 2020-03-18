@@ -32,6 +32,7 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionC
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_CHECKBOX
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_NUMBERED_LIST
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_BOOKMARK
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_PICTURE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_VIDEO
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_OTHER_DIVIDER
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_ONE
@@ -111,7 +112,8 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             onAddUrlClick = vm::onAddVideoUrlClicked,
             onAddLocalVideoClick = vm::onAddLocalVideoClicked,
             strVideoError = getString(R.string.error),
-            onBookmarkPlaceholderClicked = vm::onBookmarkPlaceholderClicked
+            onBookmarkPlaceholderClicked = vm::onBookmarkPlaceholderClicked,
+            onAddLocalPictureClick = vm::onAddLocalPictureClicked
         )
     }
 
@@ -361,6 +363,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             }
             is Option.Media -> {
                 when (option.type) {
+                    OPTION_MEDIA_PICTURE -> vm.onAddImageBlockClicked()
                     OPTION_MEDIA_VIDEO -> vm.onAddVideoBlockClicked()
                     OPTION_MEDIA_BOOKMARK -> vm.onAddBookmarkClicked()
                     else -> toast(NOT_IMPLEMENTED_MESSAGE)

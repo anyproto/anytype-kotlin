@@ -21,8 +21,6 @@ import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
-import com.agileburo.anytype.core_utils.text.BackspaceKeyDetector
-import com.agileburo.anytype.core_utils.text.DefaultEnterKeyDetector
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -51,7 +49,6 @@ import kotlinx.android.synthetic.main.item_block_title.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import kotlinx.android.synthetic.main.item_block_video.view.*
 import kotlinx.android.synthetic.main.item_block_video_error.view.*
-import timber.log.Timber
 import android.text.format.Formatter as FileSizeFormatter
 
 /**
@@ -60,149 +57,6 @@ import android.text.format.Formatter as FileSizeFormatter
  * @see BlockAdapter
  */
 sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-    /**
-     * Provides default implementation for common behavior for text blocks.
-     */
-    interface TextHolder {
-
-        /**
-         * Block's parent view.
-         */
-        val root: View
-
-        /**
-         * Block's content widget.
-         * Common behavior is applied to this widget.
-         */
-        val content: TextInputWidget
-
-        fun enableEnterKeyDetector(
-            onEndLineEnterClicked: (Editable) -> Unit,
-            onSplitLineEnterClicked: (Int) -> Unit
-        ) {
-            content.filters = arrayOf(
-                DefaultEnterKeyDetector(
-                    onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onEndLineEnterClicked = { onEndLineEnterClicked(content.editableText) }
-                )
-            )
-        }
-
-        fun setOnClickListener(onTextInputClicked: () -> Unit) {
-            content.setOnClickListener { onTextInputClicked() }
-        }
-
-        fun enableBackspaceDetector(
-            onEmptyBlockBackspaceClicked: () -> Unit,
-            onNonEmptyBlockBackspaceClicked: () -> Unit
-        ) {
-            content.setOnKeyListener(
-                BackspaceKeyDetector {
-                    if (content.text.toString().isEmpty()) {
-                        // Refactoring needed, there are cases when we shouldn't clear text watchers
-                        //content.clearTextWatchers()
-                        //content.setOnKeyListener(null)
-                        onEmptyBlockBackspaceClicked()
-                    } else {
-                        // Refactoring needed, there are cases when we shouldn't clear text watchers
-                        //content.clearTextWatchers()
-                        //content.setOnKeyListener(null)
-                        onNonEmptyBlockBackspaceClicked()
-                    }
-                }
-            )
-        }
-
-        fun setTextColor(color: String) {
-            content.setTextColor(Color.parseColor(color))
-        }
-
-        fun setTextColor(color: Int) {
-            content.setTextColor(color)
-        }
-
-        fun setBackgroundColor(color: String? = null) {
-            Timber.d("Setting background color: $color")
-            if (color != null) {
-                root.setBackgroundColor(Color.parseColor(color))
-            } else {
-                root.background = null
-            }
-        }
-
-        fun setFocus(item: Focusable) {
-            if (item.focused && !content.hasFocus())
-                focus()
-            else
-                content.clearFocus()
-        }
-
-        fun setMarkup(markup: Markup) {
-            content.text?.setMarkup(markup)
-        }
-
-        fun setupTextWatcher(
-            onTextChanged: (String, Editable) -> Unit,
-            item: BlockView
-        ) {
-            content.addTextChangedListener(
-                DefaultTextWatcher { text ->
-                    onTextChanged(item.id, text)
-                }
-            )
-        }
-
-        private fun focus() {
-            content.apply {
-                postDelayed(
-                    { requestFocus() }
-                    , FOCUS_TIMEOUT_MILLIS
-                )
-            }
-        }
-
-        fun processChangePayload(
-            payloads: List<Payload>,
-            item: BlockView
-        ) = payloads.forEach { payload ->
-
-            Timber.d("Processing $payload for new view:\n$item")
-
-            if (item is BlockView.Text) {
-
-                if (payload.textChanged()) {
-                    val cursor = content.selectionEnd
-                    content.pauseTextWatchers {
-                        if (item is Markup)
-                            content.setText(item.toSpannable(), BufferType.SPANNABLE)
-                        else
-                            content.setText(item.text)
-                    }
-                    try {
-                        content.setSelection(cursor)
-                    } catch (e: Throwable) {
-                        Timber.e(e, "Error while setting focus: ")
-                    }
-                } else if (payload.markupChanged()) {
-                    if (item is Markup) setMarkup(item)
-                }
-
-                if (payload.textColorChanged()) {
-                    item.color?.let { setTextColor(it) }
-                }
-
-                if (payload.backgroundColorChanged()) {
-                    setBackgroundColor(item.backgroundColor)
-                }
-            }
-
-            if (item is Focusable) {
-                if (payload.focusChanged())
-                    setFocus(item)
-            }
-        }
-    }
 
     class Paragraph(view: View) : BlockViewHolder(view), TextHolder {
 
@@ -645,11 +499,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Video(view: View) : BlockViewHolder(view) {
 
-        private val icon = itemView.fileIcon
-        private val size = itemView.fileSize
-        private val name = itemView.filename
-
-        fun bind(item: BlockView.Video) {
+        fun bind(item: BlockView.Video.View) {
             initPlayer(item.url)
         }
 
@@ -668,24 +518,24 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             player.prepare(mediaSource, false, false)
             itemView.playerView.player = player
         }
-    }
 
-    class VideoUpload(view: View) : BlockViewHolder(view)
+        class Placeholder(view: View) : BlockViewHolder(view) {
 
-    class VideoError(view: View) : BlockViewHolder(view) {
-
-        fun bind(msg: String) {
-            itemView.tvError.text = msg
-        }
-    }
-
-    class VideoEmpty(view: View) : BlockViewHolder(view) {
-
-        fun bind(item: BlockView.VideoEmpty, onAddLocalVideoClick: (String) -> Unit) {
-            itemView.setOnClickListener {
-                onAddLocalVideoClick(item.id)
+            fun bind(item: BlockView.Video.Placeholder, onAddLocalVideoClick: (String) -> Unit) {
+                itemView.setOnClickListener {
+                    onAddLocalVideoClick(item.id)
+                }
             }
         }
+
+        class Error(view: View) : BlockViewHolder(view) {
+
+            fun bind(msg: String) {
+                itemView.tvError.text = msg
+            }
+        }
+
+        class Upload(view: View) : BlockViewHolder(view)
     }
 
     class Page(view: View) : BlockViewHolder(view) {
@@ -799,9 +649,27 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        fun bind(item: BlockView.Picture) {
+        fun bind(item: BlockView.Picture.View) {
             Glide.with(image).load(item.url).listener(listener).into(image)
         }
+
+        class Placeholder(view: View): BlockViewHolder(view) {
+
+            fun bind(item: BlockView.Picture.Placeholder, onAddLocalPictureClick: (String) -> Unit) {
+                itemView.setOnClickListener {
+                    onAddLocalPictureClick(item.id)
+                }
+            }
+        }
+
+        class Error(view: View): BlockViewHolder(view) {
+
+            fun bind(item: BlockView.Picture.Error) {
+                itemView.tvError.text = item.msg ?: "Error"
+            }
+        }
+
+        class Upload(view: View): BlockViewHolder(view)
     }
 
     class Divider(view: View) : BlockViewHolder(view)
@@ -859,16 +727,22 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_CONTACT = 11
         const val HOLDER_FILE = 12
         const val HOLDER_PAGE = 13
-        const val HOLDER_BOOKMARK = 14
-        const val HOLDER_PICTURE = 15
         const val HOLDER_DIVIDER = 16
         const val HOLDER_HIGHLIGHT = 17
         const val HOLDER_FOOTER = 18
+
         const val HOLDER_VIDEO = 19
-        const val HOLDER_VIDEO_UPLOAD = 20
-        const val HOLDER_VIDEO_EMPTY = 21
+        const val HOLDER_VIDEO_PLACEHOLDER = 20
+        const val HOLDER_VIDEO_UPLOAD = 21
         const val HOLDER_VIDEO_ERROR = 22
-        const val HOLDER_BOOKMARK_PLACEHOLDER = 23
+
+        const val HOLDER_PICTURE = 24
+        const val HOLDER_PICTURE_PLACEHOLDER = 25
+        const val HOLDER_PICTURE_UPLOAD = 26
+        const val HOLDER_PICTURE_ERROR = 27
+
+        const val HOLDER_BOOKMARK = 28
+        const val HOLDER_BOOKMARK_PLACEHOLDER = 29
 
         const val FOCUS_TIMEOUT_MILLIS = 16L
     }

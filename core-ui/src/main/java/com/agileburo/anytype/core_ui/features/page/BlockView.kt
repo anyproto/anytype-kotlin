@@ -21,11 +21,14 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PARAGRAPH
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_ERROR
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_PLACEHOLDER
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_UPLOAD
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TASK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_EMPTY
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 
@@ -273,10 +276,6 @@ sealed class BlockView : ViewType {
     /**
      * UI-model for blocks containing files.
      * @property id block's id
-     * @property size a file's size
-     * @property name a name
-     * @property size file size (in bytes)
-     * @property url file url
      */
     data class File(
         override val id: String,
@@ -289,51 +288,56 @@ sealed class BlockView : ViewType {
     }
 
     /**
-     * UI-model for blocks containing videos, with state DONE.
-     * @property id block's id
-     * @property size a file's size
-     * @property name a name
-     * @property size file size (in bytes)
-     */
-    data class Video(
-        override val id: String,
-        val size: Long?,
-        val name: String?,
-        val mime: String?,
-        val hash: String?,
-        val url: String
-    ) : BlockView() {
-        override fun getViewType() = HOLDER_VIDEO
-    }
-
-    /**
-     * UI-model for blocks containing videos, with state UPLOADING.
+     * UI-model for blocks containing videos.
      * @property id block's id
      */
-    data class VideoUpload(
+    sealed class Video(
         override val id: String
     ) : BlockView() {
-        override fun getViewType() = HOLDER_VIDEO_UPLOAD
-    }
 
-    /**
-     * UI-model for blocks containing videos, with state EMPTY.
-     * @property id block's id
-     */
-    data class VideoEmpty(
-        override val id: String
-    ) : BlockView() {
-        override fun getViewType() = HOLDER_VIDEO_EMPTY
-    }
+        /**
+         * UI-model for blocks containing videos, with state DONE.
+         */
+        data class View(
+            override val id: String,
+            val size: Long?,
+            val name: String?,
+            val mime: String?,
+            val hash: String?,
+            val url: String
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_VIDEO
+        }
 
-    /**
-     * UI-model for blocks containing videos, with state ERROR.
-     * @property id block's id
-     */
-    data class VideoError(
-        override val id: String
-    ) : BlockView() {
-        override fun getViewType() = HOLDER_VIDEO_ERROR
+        /**
+         * UI-model for blocks containing videos, with state UPLOADING.
+         * @property id block's id
+         */
+        data class Upload(
+            override val id: String
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_VIDEO_UPLOAD
+        }
+
+        /**
+         * UI-model for blocks containing videos, with state EMPTY.
+         * @property id block's id
+         */
+        data class Placeholder(
+            override val id: String
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_VIDEO_PLACEHOLDER
+        }
+
+        /**
+         * UI-model for blocks containing videos, with state ERROR.
+         * @property id block's id
+         */
+        data class Error(
+            override val id: String
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_VIDEO_ERROR
+        }
     }
 
     /**
@@ -400,15 +404,54 @@ sealed class BlockView : ViewType {
     }
 
     /**
-     * UI-model for a picture block
+     * UI-model for block containing image
      * @property id block's id
-     * @property url url of the image file
      */
-    data class Picture(
-        override val id: String,
-        val url: String
+    sealed class Picture(
+        override val id: String
     ) : BlockView() {
-        override fun getViewType() = HOLDER_PICTURE
+
+        /**
+         * UI-model for block containing image, with state DONE.
+         */
+        data class View(
+            override val id: String,
+            val size: Long?,
+            val name: String?,
+            val mime: String?,
+            val hash: String?,
+            val url: String
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_PICTURE
+        }
+
+        /**
+         * UI-model for block containing image, with state EMPTY.
+         */
+        data class Placeholder(
+            override val id: String
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_PICTURE_PLACEHOLDER
+        }
+
+        /**
+         * UI-model for block containing image, with state ERROR.
+         */
+        data class Error(
+            override val id: String,
+            val msg: String?
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_PICTURE_ERROR
+        }
+
+        /**
+         * UI-model for block containing image, with state UPLOADING.
+         */
+        data class Upload(
+            override val id: String
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_PICTURE_UPLOAD
+        }
     }
 
     /**

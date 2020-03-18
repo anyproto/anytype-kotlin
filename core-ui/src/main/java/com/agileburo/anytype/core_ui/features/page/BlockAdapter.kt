@@ -23,11 +23,14 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PARAGRAPH
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_ERROR
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_PLACEHOLDER
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_UPLOAD
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TASK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_EMPTY
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 import com.agileburo.anytype.core_utils.ext.typeOf
@@ -55,6 +58,7 @@ class BlockAdapter(
     private val onTextInputClicked: () -> Unit,
     private val onAddUrlClick: (String, String) -> Unit,
     private val onAddLocalVideoClick: (String) -> Unit,
+    private val onAddLocalPictureClick: (String) -> Unit,
     private val strVideoError: String,
     private val onPageIconClicked: () -> Unit,
     private val onDownloadFileClicked: (String) -> Unit,
@@ -192,8 +196,8 @@ class BlockAdapter(
                     )
                 )
             }
-            HOLDER_VIDEO_EMPTY -> {
-                BlockViewHolder.VideoEmpty(
+            HOLDER_VIDEO_PLACEHOLDER -> {
+                BlockViewHolder.Video.Placeholder(
                     view = inflater.inflate(
                         R.layout.item_block_video_empty,
                         parent,
@@ -202,7 +206,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_VIDEO_UPLOAD -> {
-                BlockViewHolder.VideoUpload(
+                BlockViewHolder.Video.Upload(
                     view = inflater.inflate(
                         R.layout.item_block_video_uploading,
                         parent,
@@ -211,7 +215,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_VIDEO_ERROR -> {
-                BlockViewHolder.VideoError(
+                BlockViewHolder.Video.Error(
                     view = inflater.inflate(
                         R.layout.item_block_video_error,
                         parent,
@@ -250,6 +254,33 @@ class BlockAdapter(
                 BlockViewHolder.Picture(
                     view = inflater.inflate(
                         R.layout.item_block_picture,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_PICTURE_PLACEHOLDER -> {
+                BlockViewHolder.Picture.Placeholder(
+                    view = inflater.inflate(
+                        R.layout.item_block_picture_placeholder,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_PICTURE_UPLOAD -> {
+                BlockViewHolder.Picture.Upload(
+                    view = inflater.inflate(
+                        R.layout.item_block_picture_uploading,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_PICTURE_ERROR -> {
+                BlockViewHolder.Picture.Error(
+                    view = inflater.inflate(
+                        R.layout.item_block_picture_error,
                         parent,
                         false
                     )
@@ -443,17 +474,17 @@ class BlockAdapter(
             }
             is BlockViewHolder.Video -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Video
+                    item = blocks[position] as BlockView.Video.View
                 )
             }
-            is BlockViewHolder.VideoError -> {
+            is BlockViewHolder.Video.Error -> {
                 holder.bind(
                     msg = strVideoError
                 )
             }
-            is BlockViewHolder.VideoEmpty -> {
+            is BlockViewHolder.Video.Placeholder -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.VideoEmpty,
+                    item = blocks[position] as BlockView.Video.Placeholder,
                     onAddLocalVideoClick = onAddLocalVideoClick
                 )
             }
@@ -476,7 +507,16 @@ class BlockAdapter(
             }
             is BlockViewHolder.Picture -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Picture
+                    item = blocks[position] as BlockView.Picture.View
+                )
+            }
+            is BlockViewHolder.Picture.Error -> {
+                holder.bind(item = blocks[position] as BlockView.Picture.Error)
+            }
+            is BlockViewHolder.Picture.Placeholder -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Picture.Placeholder,
+                    onAddLocalPictureClick = onAddLocalPictureClick
                 )
             }
             is BlockViewHolder.Highlight -> {
@@ -491,7 +531,7 @@ class BlockAdapter(
             }
         }
 
-        if (holder is BlockViewHolder.TextHolder) {
+        if (holder is TextHolder) {
 
             val block = blocks[position]
 

@@ -12,7 +12,7 @@ class BlockViewTest {
 
         val block = BlockView.VideoEmpty(id = ID)
 
-        assertEquals(BlockViewHolder.HOLDER_VIDEO_EMPTY, block.getViewType())
+        assertEquals(BlockViewHolder.HOLDER_VIDEO_PLACEHOLDER, block.getViewType())
     }
 
     @Test

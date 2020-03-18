@@ -7,6 +7,7 @@ import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_utils.common.EventWrapper
+import com.agileburo.anytype.core_utils.ext.MIME_IMAGE_ALL
 import com.agileburo.anytype.core_utils.ext.MIME_VIDEO_ALL
 import com.agileburo.anytype.core_utils.ext.replace
 import com.agileburo.anytype.core_utils.ext.withLatestFrom
@@ -761,6 +762,11 @@ class PageViewModel(
     fun onAddLocalVideoClicked(blockId: String) {
         mediaBlockId = blockId
         dispatch(Command.OpenGallery(mediaType = MIME_VIDEO_ALL))
+    }
+
+    fun onAddLocalPictureClicked(blockId: String) {
+        mediaBlockId = blockId
+        dispatch(Command.OpenGallery(mediaType = MIME_IMAGE_ALL))
     }
 
     fun onAddImageBlockClicked() {

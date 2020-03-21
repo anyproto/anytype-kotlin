@@ -5,6 +5,8 @@
 ### New features 🚀
 
 * User can add bookmark placeholder and create bookmark from url (#140)
+* User can add image blocks (#139)
+* User can add file blocks (#295)
 
 ### Fixes & tech 🚒
 

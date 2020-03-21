@@ -10,10 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.BuildConfig
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.*
-import com.agileburo.anytype.core_ui.extensions.color
-import com.agileburo.anytype.core_ui.extensions.invisible
-import com.agileburo.anytype.core_ui.extensions.tint
-import com.agileburo.anytype.core_ui.extensions.visible
+import com.agileburo.anytype.core_ui.extensions.*
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.NUMBER_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
@@ -49,6 +46,7 @@ import kotlinx.android.synthetic.main.item_block_title.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import kotlinx.android.synthetic.main.item_block_video.view.*
 import kotlinx.android.synthetic.main.item_block_video_error.view.*
+import kotlinx.android.synthetic.main.item_block_video_error.view.icMore
 import android.text.format.Formatter as FileSizeFormatter
 
 /**
@@ -475,7 +473,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val name = itemView.filename
 
         fun bind(
-            item: BlockView.File,
+            item: BlockView.File.View,
             onDownloadFileClicked: (String) -> Unit
         ) {
             name.text = item.name
@@ -495,6 +493,27 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
             itemView.setOnClickListener { onDownloadFileClicked(item.id) }
         }
+
+        class Placeholder(view: View) : BlockViewHolder(view) {
+
+            fun bind(item: BlockView.File.Placeholder, onAddLocalFileClick: (String) -> Unit) {
+                itemView.setOnClickListener {
+                    onAddLocalFileClick(item.id)
+                }
+                itemView.icMore.setOnClickListener {
+                    it.context.toast("Not implemented yet!")
+                }
+            }
+        }
+
+        class Error(view: View) : BlockViewHolder(view) {
+
+            fun bind(msg: String) {
+                itemView.tvError.text = msg
+            }
+        }
+
+        class Upload(view: View) : BlockViewHolder(view)
     }
 
     class Video(view: View) : BlockViewHolder(view) {
@@ -662,13 +681,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        class Error(view: View): BlockViewHolder(view) {
-
-            fun bind(item: BlockView.Picture.Error) {
-                itemView.tvError.text = item.msg ?: "Error"
-            }
-        }
-
+        class Error(view: View): BlockViewHolder(view)
         class Upload(view: View): BlockViewHolder(view)
     }
 
@@ -725,7 +738,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_NUMBERED = 9
         const val HOLDER_TOGGLE = 10
         const val HOLDER_CONTACT = 11
-        const val HOLDER_FILE = 12
         const val HOLDER_PAGE = 13
         const val HOLDER_DIVIDER = 16
         const val HOLDER_HIGHLIGHT = 17
@@ -743,6 +755,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         const val HOLDER_BOOKMARK = 28
         const val HOLDER_BOOKMARK_PLACEHOLDER = 29
+
+        const val HOLDER_FILE = 30
+        const val HOLDER_FILE_PLACEHOLDER = 31
+        const val HOLDER_FILE_UPLOAD = 32
+        const val HOLDER_FILE_ERROR = 33
 
         const val FOCUS_TIMEOUT_MILLIS = 16L
     }

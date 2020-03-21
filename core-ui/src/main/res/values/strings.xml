@@ -122,10 +122,12 @@
     <string name="hint_video">Enter video URL</string>
     <string name="hint_upload">Upload a video</string>
     <string name="hint_upload_image">Upload image</string>
+    <string name="hint_upload_file">Upload file</string>
     <string name="hint_bullet">Bulleted list item</string>
     <string name="hint_numbered_list">Numbered list item</string>
 
     <string name="untitled">Untitled</string>
+    <string name="error_while_loading">Error while loading</string>
     <string name="error_while_loading_picture">Error while loading picture</string>
     <string name="block_with_a_picture">Block with a picture</string>
     <string name="tap_here_to_insert_a_bookmark_url">Tap here to insert a bookmark url</string>

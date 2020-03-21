@@ -7,10 +7,7 @@ import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_utils.common.EventWrapper
-import com.agileburo.anytype.core_utils.ext.MIME_IMAGE_ALL
-import com.agileburo.anytype.core_utils.ext.MIME_VIDEO_ALL
-import com.agileburo.anytype.core_utils.ext.replace
-import com.agileburo.anytype.core_utils.ext.withLatestFrom
+import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
@@ -769,6 +766,11 @@ class PageViewModel(
         dispatch(Command.OpenGallery(mediaType = MIME_IMAGE_ALL))
     }
 
+    fun onAddLocalFileClicked(blockId: String) {
+        mediaBlockId = blockId
+        dispatch(Command.OpenGallery(mediaType = MIME_FILE_ALL))
+    }
+
     fun onAddImageBlockClicked() {
         proceedWithCreatingEmptyFileBlock(
             id = focusChannel.value,
@@ -1023,6 +1025,10 @@ class PageViewModel(
     }
 
     fun onDownloadFileClicked(id: String) {
+        dispatch(Command.RequestDownloadPermission(id))
+    }
+
+    fun startDownloadFile(id: String) {
         val block = blocks.first { it.id == id }
         val file = block.content<Content.File>()
         downloadFile.invoke(
@@ -1074,6 +1080,10 @@ class PageViewModel(
         data class OpenBookmarkSetter(
             val target: String,
             val context: String
+        ) : Command()
+
+        data class RequestDownloadPermission(
+            val id: String
         ) : Command()
     }
 

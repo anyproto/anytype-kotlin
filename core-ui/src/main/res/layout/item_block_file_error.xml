@@ -13,7 +13,7 @@
     android:paddingBottom="1dp">
 
     <ImageView
-        android:id="@+id/icVideo"
+        android:id="@+id/icFile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -23,21 +23,23 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_video" />
+        app:srcCompat="@drawable/ic_file_light" />
 
     <TextView
-        android:id="@+id/tvError"
+        android:id="@+id/editUrl"
+        style="@style/BlockVideoStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="24dp"
-        android:textColor="@android:color/holo_red_dark"
+        android:inputType="none"
         android:text="@string/error_while_loading"
         tools:text="@string/error_while_loading"
-        app:layout_constraintBottom_toBottomOf="@+id/icVideo"
+        android:textColor="@android:color/holo_red_dark"
+        app:layout_constraintBottom_toBottomOf="@+id/icFile"
         app:layout_constraintEnd_toStartOf="@+id/icMore"
-        app:layout_constraintStart_toEndOf="@+id/icVideo"
-        app:layout_constraintTop_toTopOf="@+id/icVideo" />
+        app:layout_constraintStart_toEndOf="@+id/icFile"
+        app:layout_constraintTop_toTopOf="@+id/icFile" />
 
     <ImageView
         android:id="@+id/icMore"
@@ -45,6 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="12dp"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_block_more" />

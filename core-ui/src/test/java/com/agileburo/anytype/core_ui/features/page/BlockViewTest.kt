@@ -10,7 +10,7 @@ class BlockViewTest {
     @Test
     fun `should return video block with view type Empty`() {
 
-        val block = BlockView.VideoEmpty(id = ID)
+        val block = BlockView.Video.Placeholder(id = ID)
 
         assertEquals(BlockViewHolder.HOLDER_VIDEO_PLACEHOLDER, block.getViewType())
     }
@@ -18,7 +18,7 @@ class BlockViewTest {
     @Test
     fun `should return video block with view type Error`() {
 
-        val block = BlockView.VideoError(id = ID)
+        val block = BlockView.Video.Error(id = ID)
 
         assertEquals(BlockViewHolder.HOLDER_VIDEO_ERROR, block.getViewType())
     }
@@ -26,7 +26,8 @@ class BlockViewTest {
     @Test
     fun `should return video block with view type Done`() {
 
-        val block = BlockView.Video(id = ID, hash = "", url = "", size = 0L, mime = "", name = "")
+        val block =
+            BlockView.Video.View(id = ID, hash = "", url = "", size = 0L, mime = "", name = "")
 
         assertEquals(BlockViewHolder.HOLDER_VIDEO, block.getViewType())
     }
@@ -34,7 +35,7 @@ class BlockViewTest {
     @Test
     fun `should return video block with view type Uploading`() {
 
-        val block = BlockView.VideoUpload(id = ID)
+        val block = BlockView.Video.Upload(id = ID)
 
         assertEquals(BlockViewHolder.HOLDER_VIDEO_UPLOAD, block.getViewType())
     }

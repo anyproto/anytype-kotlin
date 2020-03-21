@@ -12,6 +12,9 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CONTACT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_ERROR
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_PLACEHOLDER
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_UPLOAD
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FOOTER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_ONE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_THREE
@@ -274,21 +277,61 @@ sealed class BlockView : ViewType {
     }
 
     /**
-     * UI-model for blocks containing files.
+     * UI-models for blocks containing files.
      * @property id block's id
      */
-    data class File(
-        override val id: String,
-        val size: Long?,
-        val name: String?,
-        val mime: String?,
-        val url: String
+    sealed class File(
+        override val id: String
     ) : BlockView() {
-        override fun getViewType() = HOLDER_FILE
+
+        /**
+         * UI-model for block containing file, with state DONE.
+         * @property id block's id
+         */
+        data class View(
+            override val id: String,
+            val size: Long?,
+            val name: String?,
+            val mime: String?,
+            val hash: String?,
+            val url: String
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_FILE
+        }
+
+        /**
+         * UI-model for block containing file, with state UPLOADING.
+         * @property id block's id
+         */
+        data class Upload(
+            override val id: String
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_FILE_UPLOAD
+        }
+
+        /**
+         * UI-model for block containing file, with state EMPTY.
+         * @property id block's id
+         */
+        data class Placeholder(
+            override val id: String
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_FILE_PLACEHOLDER
+        }
+
+        /**
+         * UI-model for block containing file, with state ERROR.
+         * @property id block's id
+         */
+        data class Error(
+            override val id: String
+        ) : BlockView() {
+            override fun getViewType() = HOLDER_FILE_ERROR
+        }
     }
 
     /**
-     * UI-model for blocks containing videos.
+     * UI-models for blocks containing videos.
      * @property id block's id
      */
     sealed class Video(
@@ -296,7 +339,7 @@ sealed class BlockView : ViewType {
     ) : BlockView() {
 
         /**
-         * UI-model for blocks containing videos, with state DONE.
+         * UI-model for block containing video, with state DONE.
          */
         data class View(
             override val id: String,
@@ -310,7 +353,7 @@ sealed class BlockView : ViewType {
         }
 
         /**
-         * UI-model for blocks containing videos, with state UPLOADING.
+         * UI-model for block containing video, with state UPLOADING.
          * @property id block's id
          */
         data class Upload(
@@ -320,7 +363,7 @@ sealed class BlockView : ViewType {
         }
 
         /**
-         * UI-model for blocks containing videos, with state EMPTY.
+         * UI-model for block containing video, with state EMPTY.
          * @property id block's id
          */
         data class Placeholder(
@@ -330,7 +373,7 @@ sealed class BlockView : ViewType {
         }
 
         /**
-         * UI-model for blocks containing videos, with state ERROR.
+         * UI-model for block containing video, with state ERROR.
          * @property id block's id
          */
         data class Error(
@@ -404,7 +447,7 @@ sealed class BlockView : ViewType {
     }
 
     /**
-     * UI-model for block containing image
+     * UI-models for blocks containing images
      * @property id block's id
      */
     sealed class Picture(
@@ -438,8 +481,7 @@ sealed class BlockView : ViewType {
          * UI-model for block containing image, with state ERROR.
          */
         data class Error(
-            override val id: String,
-            val msg: String?
+            override val id: String
         ) : BlockView() {
             override fun getViewType() = HOLDER_PICTURE_ERROR
         }

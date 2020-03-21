@@ -104,12 +104,9 @@ fun Block.toView(
                 id = id,
                 urlBuilder = urlBuilder
             )
-            Block.Content.File.Type.FILE -> BlockView.File(
+            Block.Content.File.Type.FILE -> content.toFileView(
                 id = id,
-                size = content.size,
-                name = content.name,
-                mime = content.mime,
-                url = urlBuilder.file(content.hash)
+                urlBuilder = urlBuilder
             )
             Block.Content.File.Type.VIDEO -> content.toVideoView(
                 id = id,
@@ -148,7 +145,7 @@ fun Block.Content.File.toPictureView(id: String, urlBuilder: UrlBuilder): BlockV
             hash = hash,
             url = urlBuilder.video(hash)
         )
-        Block.Content.File.State.ERROR -> BlockView.Picture.Error(id = id, msg = null)
+        Block.Content.File.State.ERROR -> BlockView.Picture.Error(id = id)
         null -> throw NotImplementedError("File block state, should not be null")
     }
 
@@ -166,6 +163,22 @@ fun Block.Content.File.toVideoView(id: String, urlBuilder: UrlBuilder): BlockVie
             url = urlBuilder.video(hash)
         )
         Block.Content.File.State.ERROR -> BlockView.Video.Error(id = id)
+        null -> throw NotImplementedError("File block state, should not be null")
+    }
+
+fun Block.Content.File.toFileView(id: String, urlBuilder: UrlBuilder): BlockView =
+    when (this.state) {
+        Block.Content.File.State.EMPTY -> BlockView.File.Placeholder(id = id)
+        Block.Content.File.State.UPLOADING -> BlockView.File.Upload(id = id)
+        Block.Content.File.State.DONE -> BlockView.File.View(
+            id = id,
+            size = size,
+            name = name,
+            mime = mime,
+            hash = hash,
+            url = urlBuilder.video(hash)
+        )
+        Block.Content.File.State.ERROR -> BlockView.File.Error(id = id)
         null -> throw NotImplementedError("File block state, should not be null")
     }
 

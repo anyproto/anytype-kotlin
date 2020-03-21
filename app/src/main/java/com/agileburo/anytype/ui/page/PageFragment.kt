@@ -34,6 +34,7 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionC
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_CHECKBOX
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_NUMBERED_LIST
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_BOOKMARK
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_FILE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_PICTURE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_VIDEO
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_OTHER_DIVIDER
@@ -113,9 +114,9 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             onPageIconClicked = vm::onPageIconClicked,
             onAddUrlClick = vm::onAddVideoUrlClicked,
             onAddLocalVideoClick = vm::onAddLocalVideoClicked,
-            strVideoError = getString(R.string.error),
             onBookmarkPlaceholderClicked = vm::onBookmarkPlaceholderClicked,
-            onAddLocalPictureClick = vm::onAddLocalPictureClicked
+            onAddLocalPictureClick = vm::onAddLocalPictureClicked,
+            onAddLocalFileClick = vm::onAddLocalFileClicked
         )
     }
 
@@ -145,24 +146,44 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
         onRequestPermissionsResult(requestCode, grantResults)
     }
 
+    @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    fun startDownload(id: String) {
+        vm.startDownloadFile(id)
+    }
+
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     fun openGallery(type: String) {
         startActivityForResult(getVideoFileIntent(type), REQUEST_FILE_CODE)
     }
 
     @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun showRationaleForRead(request: PermissionRequest) {
+    fun showRationaleForReadExternalStoragePermission(request: PermissionRequest) {
         showRationaleDialog(R.string.permission_read_rationale, request)
     }
 
     @OnPermissionDenied(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun onReadDenied() {
+    fun onReadExternalStoragePermissionDenied() {
         toast(getString(R.string.permission_read_denied))
     }
 
     @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun onReadNeverAskAgain() {
+    fun onReadExternalStoragePermissionNeverAskAgain() {
         toast(getString(R.string.permission_read_never_ask_again))
+    }
+
+    @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    fun showRationaleForWriteExternalStoragePermission(request: PermissionRequest) {
+        showRationaleDialog(R.string.permission_write_rationale, request)
+    }
+
+    @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    fun onWriteExternalStoragePermissionDenied() {
+        toast(getString(R.string.permission_write_denied))
+    }
+
+    @OnNeverAskAgain(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    fun onWriteExternalStoragePermissionNeverAskAgain() {
+        toast(getString(R.string.permission_write_never_ask_again))
     }
 
     override fun PickiTonProgressUpdate(progress: Int) {
@@ -368,6 +389,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                     OPTION_MEDIA_PICTURE -> vm.onAddImageBlockClicked()
                     OPTION_MEDIA_VIDEO -> vm.onAddVideoBlockClicked()
                     OPTION_MEDIA_BOOKMARK -> vm.onAddBookmarkClicked()
+                    OPTION_MEDIA_FILE -> vm.onAddFileBlockClicked()
                     else -> toast(NOT_IMPLEMENTED_MESSAGE)
                 }
             }
@@ -484,6 +506,9 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                 }
                 is PageViewModel.Command.OpenGallery -> {
                     openGalleryWithPermissionCheck(command.mediaType)
+                }
+                is PageViewModel.Command.RequestDownloadPermission -> {
+                    startDownloadWithPermissionCheck(command.id)
                 }
             }
         }

@@ -61,6 +61,7 @@ const val KEY_ROUNDED = "key"
 const val VALUE_ROUNDED = "rounded"
 const val MIME_VIDEO_ALL = "video/*"
 const val MIME_IMAGE_ALL = "image/*"
+const val MIME_FILE_ALL = "*/*"
 
 fun Long.formatToDateString(pattern: String, locale: Locale): String {
     val formatter = SimpleDateFormat(pattern, locale)
@@ -131,3 +132,10 @@ fun getVideoFileIntent(mediaType: String): Intent {
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
 }
+
+fun String.getFileName(mime: String?): String =
+    if (mime != null) {
+        "$this.${mime.substringAfter("/")}"
+    } else {
+        this
+    }

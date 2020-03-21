@@ -11,6 +11,104 @@ import kotlin.test.assertEquals
 class MapperExtensionKtTest {
 
     @Test
+    fun `should return file block view`() {
+
+        val id = MockDataFactory.randomUuid()
+        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val name = "name"
+        val size = 10000L
+        val mime = "*/txt"
+        val hash = "647tyhfgehf7ru"
+        val state = Block.Content.File.State.DONE
+        val type = Block.Content.File.Type.FILE
+
+        val block = Block.Content.File(
+            name = name,
+            size = size,
+            mime = mime,
+            hash = hash,
+            state = state,
+            type = type
+
+        )
+
+        val expected = BlockView.File.View(
+            id = id,
+            name = name,
+            size = size,
+            mime = mime,
+            hash = hash,
+            url = urlBuilder.video(hash)
+        )
+        val actual = block.toFileView(id, urlBuilder)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should return placeholder file block view`() {
+
+        val id = MockDataFactory.randomUuid()
+        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val state = Block.Content.File.State.EMPTY
+        val type = Block.Content.File.Type.FILE
+
+        val block = Block.Content.File(
+            state = state,
+            type = type
+
+        )
+
+        val expected = BlockView.File.Placeholder(id = id)
+        val actual = block.toFileView(id, urlBuilder)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should return error file block view`() {
+
+        val id = MockDataFactory.randomUuid()
+        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val state = Block.Content.File.State.ERROR
+        val type = Block.Content.File.Type.FILE
+
+        val block = Block.Content.File(
+            state = state,
+            type = type
+
+        )
+
+        val expected = BlockView.File.Error(id = id)
+        val actual = block.toFileView(id, urlBuilder)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should return upload file block view`() {
+
+        val id = MockDataFactory.randomUuid()
+        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val state = Block.Content.File.State.UPLOADING
+        val type = Block.Content.File.Type.FILE
+
+        val block = Block.Content.File(
+            state = state,
+            type = type
+        )
+
+        val expected = BlockView.File.Upload(id = id)
+        val actual = block.toFileView(id, urlBuilder)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun `should return picture block view`() {
 
         val id = MockDataFactory.randomUuid()

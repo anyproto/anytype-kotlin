@@ -14,6 +14,9 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CONTACT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_ERROR
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_PLACEHOLDER
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_UPLOAD
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FOOTER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_ONE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_THREE
@@ -59,7 +62,7 @@ class BlockAdapter(
     private val onAddUrlClick: (String, String) -> Unit,
     private val onAddLocalVideoClick: (String) -> Unit,
     private val onAddLocalPictureClick: (String) -> Unit,
-    private val strVideoError: String,
+    private val onAddLocalFileClick: (String) -> Unit,
     private val onPageIconClicked: () -> Unit,
     private val onDownloadFileClicked: (String) -> Unit,
     private val onBookmarkPlaceholderClicked: (String) -> Unit
@@ -182,6 +185,33 @@ class BlockAdapter(
                 BlockViewHolder.File(
                     view = inflater.inflate(
                         R.layout.item_block_file,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_FILE_PLACEHOLDER -> {
+                BlockViewHolder.File.Placeholder(
+                    view = inflater.inflate(
+                        R.layout.item_block_file_placeholder,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_FILE_UPLOAD -> {
+                BlockViewHolder.File.Upload(
+                    view = inflater.inflate(
+                        R.layout.item_block_file_uploading,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_FILE_ERROR -> {
+                BlockViewHolder.File.Error(
+                    view = inflater.inflate(
+                        R.layout.item_block_file_error,
                         parent,
                         false
                     )
@@ -468,18 +498,19 @@ class BlockAdapter(
             }
             is BlockViewHolder.File -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.File,
+                    item = blocks[position] as BlockView.File.View,
                     onDownloadFileClicked = onDownloadFileClicked
+                )
+            }
+            is BlockViewHolder.File.Placeholder -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.File.Placeholder,
+                    onAddLocalFileClick = onAddLocalFileClick
                 )
             }
             is BlockViewHolder.Video -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Video.View
-                )
-            }
-            is BlockViewHolder.Video.Error -> {
-                holder.bind(
-                    msg = strVideoError
                 )
             }
             is BlockViewHolder.Video.Placeholder -> {
@@ -509,9 +540,6 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Picture.View
                 )
-            }
-            is BlockViewHolder.Picture.Error -> {
-                holder.bind(item = blocks[position] as BlockView.Picture.Error)
             }
             is BlockViewHolder.Picture.Placeholder -> {
                 holder.bind(

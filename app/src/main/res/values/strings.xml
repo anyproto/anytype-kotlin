@@ -94,6 +94,9 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="permission_read_rationale">Read permission is needed to load file to media block.</string>
     <string name="permission_read_denied">Read permission was denied. Please consider granting it in order to load files to media blocks!</string>
     <string name="permission_read_never_ask_again">Read permission was denied with never ask again.</string>
+    <string name="permission_write_rationale">Write permission is needed to load file to device.</string>
+    <string name="permission_write_denied">Write permission was denied. Please consider granting it in order to load files to device!</string>
+    <string name="permission_write_never_ask_again">Write permission was denied with never ask again.</string>
     <string name="button_allow">Allow</string>
     <string name="button_deny">Deny</string>
     <string name="error">Error</string>

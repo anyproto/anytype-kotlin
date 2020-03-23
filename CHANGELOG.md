@@ -1,22 +1,27 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.24 (WIP)
+## Version 0.0.24
 
 ### New features 🚀
 
 * User can add bookmark placeholder and create bookmark from url (#140)
 * User can add image blocks (#139)
 * User can add file blocks (#295)
+* User can add toggle blocks and change expanded/collapsed state (#313)
+* Added support nested blocks rendering (#313)
 
 ### Fixes & tech 🚒
 
+* Toolbars should not prevent user from scrolling page to its end (#310)
 * Should create a new block after the target block when user adds a new block via add-block toolbar (#305)
-* Refactored block creation in `Middleware` (introduced factory to create a block from a block prototype) (#140)
+* Refactored block creation in `Middleware` and reduced code duplication (introduced factory to create a block from a block prototype) (#140)
 * New mappers (from middleware layer entity to data layer entity) (#140)
+* Introduced new rendering converter (from business tree-like data structures to flattened view data structures) ($313)
 
 ### Middleware ⚙️
 
 * Added `blockBookmarkFetch` command (#140)
+* Added `blockUpload` command (#295)
 
 ## Version 0.0.23
 

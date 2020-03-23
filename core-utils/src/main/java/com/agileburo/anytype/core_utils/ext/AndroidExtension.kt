@@ -16,6 +16,7 @@ import android.view.TouchDelegate
 import android.view.View
 import androidx.annotation.DimenRes
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,6 +30,10 @@ fun Fragment.dimen(@DimenRes res: Int): Int = resources.getDimension(res).toInt(
 
 fun View.height(spec: Int = View.MeasureSpec.UNSPECIFIED): Int {
     return measure(spec, spec).let { measuredHeight }
+}
+
+fun RecyclerView.ViewHolder.dimen(@DimenRes res: Int): Int {
+    return itemView.context.resources.getDimension(res).toInt()
 }
 
 fun Uri.parsePath(context: Context): String {

@@ -1,42 +1,49 @@
 package com.agileburo.anytype.core_ui.features.page
 
+import com.agileburo.anytype.core_ui.MockDataFactory
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class BlockViewTest {
 
-    val ID = "123"
-
     @Test
     fun `should return video block with view type Empty`() {
-
-        val block = BlockView.Video.Placeholder(id = ID)
-
+        val block = BlockView.Video.Placeholder(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
         assertEquals(BlockViewHolder.HOLDER_VIDEO_PLACEHOLDER, block.getViewType())
     }
 
     @Test
     fun `should return video block with view type Error`() {
-
-        val block = BlockView.Video.Error(id = ID)
-
+        val block = BlockView.Video.Error(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
         assertEquals(BlockViewHolder.HOLDER_VIDEO_ERROR, block.getViewType())
     }
 
     @Test
     fun `should return video block with view type Done`() {
-
-        val block =
-            BlockView.Video.View(id = ID, hash = "", url = "", size = 0L, mime = "", name = "")
-
+        val block = BlockView.Video.View(
+            id = MockDataFactory.randomUuid(),
+            hash = MockDataFactory.randomString(),
+            url = MockDataFactory.randomString(),
+            size = MockDataFactory.randomLong(),
+            mime = MockDataFactory.randomString(),
+            name = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt()
+        )
         assertEquals(BlockViewHolder.HOLDER_VIDEO, block.getViewType())
     }
 
     @Test
     fun `should return video block with view type Uploading`() {
-
-        val block = BlockView.Video.Upload(id = ID)
-
+        val block = BlockView.Video.Upload(
+            id = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt()
+        )
         assertEquals(BlockViewHolder.HOLDER_VIDEO_UPLOAD, block.getViewType())
     }
 }

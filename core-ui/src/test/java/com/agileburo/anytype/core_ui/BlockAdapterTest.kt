@@ -5,6 +5,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.text.Editable
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.marginLeft
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
@@ -17,7 +19,24 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.T
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.FOCUS_TIMEOUT_MILLIS
+import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ext.hexColorCode
+import kotlinx.android.synthetic.main.item_block_bookmark.view.*
+import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
+import kotlinx.android.synthetic.main.item_block_checkbox.view.*
+import kotlinx.android.synthetic.main.item_block_file_error.view.*
+import kotlinx.android.synthetic.main.item_block_file_placeholder.view.*
+import kotlinx.android.synthetic.main.item_block_file_uploading.view.*
+import kotlinx.android.synthetic.main.item_block_page.view.*
+import kotlinx.android.synthetic.main.item_block_picture.view.*
+import kotlinx.android.synthetic.main.item_block_picture_error.view.*
+import kotlinx.android.synthetic.main.item_block_picture_placeholder.view.*
+import kotlinx.android.synthetic.main.item_block_picture_uploading.view.*
+import kotlinx.android.synthetic.main.item_block_toggle.view.*
+import kotlinx.android.synthetic.main.item_block_video.view.*
+import kotlinx.android.synthetic.main.item_block_video_empty.view.*
+import kotlinx.android.synthetic.main.item_block_video_error.view.*
+import kotlinx.android.synthetic.main.item_block_video_uploading.view.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -829,6 +848,619 @@ class BlockAdapterTest {
         )
     }
 
+    @Test
+    fun `should apply indent to paragraph view`() {
+
+        val paragraph = BlockView.Paragraph(
+            id = MockDataFactory.randomUuid(),
+            text = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(paragraph)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Paragraph)
+
+        val actual = holder.content.paddingLeft
+
+        val expected = paragraph.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to header-one view`() {
+
+        val view = BlockView.HeaderOne(
+            id = MockDataFactory.randomUuid(),
+            text = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.HeaderOne)
+
+        val actual = holder.content.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to header-two view`() {
+
+        val view = BlockView.HeaderTwo(
+            id = MockDataFactory.randomUuid(),
+            text = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.HeaderTwo)
+
+        val actual = holder.content.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to header-three view`() {
+
+        val view = BlockView.HeaderThree(
+            id = MockDataFactory.randomUuid(),
+            text = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.HeaderThree)
+
+        val actual = holder.content.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to checkbox view`() {
+
+        val view = BlockView.Checkbox(
+            id = MockDataFactory.randomUuid(),
+            text = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Checkbox)
+
+        val actual = holder.itemView.checkboxIcon.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to toggle view`() {
+
+        val view = BlockView.Toggle(
+            id = MockDataFactory.randomUuid(),
+            text = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt(),
+            toggled = MockDataFactory.randomBoolean(),
+            backgroundColor = null,
+            color = null,
+            focused = false,
+            marks = emptyList()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TOGGLE)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Toggle)
+
+        val actual =
+            (holder.itemView.guideline.layoutParams as ConstraintLayout.LayoutParams).guideBegin
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to file placeholder view`() {
+
+        val view = BlockView.File.Placeholder(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE_PLACEHOLDER)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.File.Placeholder)
+
+        val actual = holder.itemView.filePlaceholderRoot.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to file error view`() {
+
+        val view = BlockView.File.Error(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE_ERROR)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.File.Error)
+
+        val actual = holder.itemView.fileErrorPlaceholderRoot.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to file upload view`() {
+
+        val view = BlockView.File.Upload(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE_UPLOAD)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.File.Upload)
+
+        val actual = holder.itemView.fileUploadingPlaceholderRoot.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to video view`() {
+
+        val view = BlockView.Video.View(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt(),
+            hash = MockDataFactory.randomString(),
+            url = MockDataFactory.randomString(),
+            mime = MockDataFactory.randomString(),
+            name = MockDataFactory.randomString(),
+            size = MockDataFactory.randomLong()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_VIDEO)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Video)
+
+        val actual = holder.itemView.playerView.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to video placeholder view`() {
+
+        val view = BlockView.Video.Placeholder(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_VIDEO_PLACEHOLDER)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Video.Placeholder)
+
+        val actual = holder.itemView.videoPlaceholderRoot.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to video upload view`() {
+
+        val view = BlockView.Video.Upload(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_VIDEO_UPLOAD)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Video.Upload)
+
+        val actual = holder.itemView.videoUploadingPlaceholderRoot.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to video error view`() {
+
+        val view = BlockView.Video.Error(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_VIDEO_ERROR)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Video.Error)
+
+        val actual = holder.itemView.videoErrorRoot.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to page view`() {
+
+        val view = BlockView.Page(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt(),
+            emoji = null,
+            isEmpty = MockDataFactory.randomBoolean(),
+            isArchived = MockDataFactory.randomBoolean()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PAGE)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Page)
+
+        val actual =
+            (holder.itemView.pageGuideline.layoutParams as ConstraintLayout.LayoutParams).guideBegin
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to bookmark view`() {
+
+        val view = BlockView.Bookmark.View(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt(),
+            description = MockDataFactory.randomString(),
+            title = MockDataFactory.randomString(),
+            faviconUrl = MockDataFactory.randomString(),
+            imageUrl = MockDataFactory.randomString(),
+            url = MockDataFactory.randomString()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BOOKMARK)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Bookmark)
+
+        val actual = (holder.itemView.bookmarkRoot).marginLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent) + holder.dimen(R.dimen.dp_16)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to bookmark placeholder view`() {
+
+        val view = BlockView.Bookmark.Placeholder(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder =
+            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BOOKMARK_PLACEHOLDER)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Bookmark.Placeholder)
+
+        val actual = holder.itemView.bookmarkPlaceholderRoot.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to picture view`() {
+
+        val view = BlockView.Picture.View(
+            id = MockDataFactory.randomUuid(),
+            hash = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt(),
+            mime = MockDataFactory.randomString(),
+            name = MockDataFactory.randomString(),
+            size = MockDataFactory.randomLong(),
+            url = MockDataFactory.randomString()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PICTURE)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Picture)
+
+        val actual = holder.itemView.pictureRootLayout.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to picture placeholder view`() {
+
+        val view = BlockView.Picture.Placeholder(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder =
+            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PICTURE_PLACEHOLDER)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Picture.Placeholder)
+
+        val actual = holder.itemView.picturePlaceholderRoot.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to picture error view`() {
+
+        val view = BlockView.Picture.Error(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PICTURE_ERROR)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Picture.Error)
+
+        val actual = holder.itemView.pictureErrorRoot.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should apply indent to picture upload view`() {
+
+        val view = BlockView.Picture.Upload(
+            id = MockDataFactory.randomUuid(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(view)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val adapter = buildAdapter(views)
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PICTURE_UPLOAD)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Picture.Upload)
+
+        val actual = holder.itemView.pictureUploadRoot.paddingLeft
+
+        val expected = view.indent * holder.dimen(R.dimen.indent)
+
+        assertEquals(expected, actual)
+    }
+
     private fun buildAdapter(
         views: List<BlockView>,
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
@@ -853,7 +1485,9 @@ class BlockAdapterTest {
             onAddLocalPictureClick = {},
             onAddLocalVideoClick = {},
             onAddUrlClick = { _, _ -> },
-            onBookmarkPlaceholderClicked = {}
+            onBookmarkPlaceholderClicked = {},
+            onTogglePlaceholderClicked = {},
+            onToggleClicked = {}
         )
     }
 }

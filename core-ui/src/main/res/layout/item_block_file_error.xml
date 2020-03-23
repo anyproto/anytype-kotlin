@@ -1,55 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fileErrorPlaceholderRoot"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginStart="@dimen/default_page_item_padding_start"
-    android:layout_marginTop="6dp"
-    android:layout_marginEnd="@dimen/default_page_item_padding_end"
-    android:layout_marginBottom="6dp"
-    android:background="@drawable/rectangle_block_media_background"
-    android:paddingTop="1dp"
-    android:paddingBottom="1dp">
+    android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/icFile"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        android:contentDescription="@string/content_description_file_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_file_light" />
+        android:layout_marginStart="@dimen/default_page_item_padding_start"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="@dimen/default_page_item_padding_end"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/rectangle_block_media_background"
+        android:paddingTop="1dp"
+        android:paddingBottom="1dp">
 
-    <TextView
-        android:id="@+id/editUrl"
-        style="@style/BlockVideoStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="24dp"
-        android:inputType="none"
-        android:text="@string/error_while_loading"
-        tools:text="@string/error_while_loading"
-        android:textColor="@android:color/holo_red_dark"
-        app:layout_constraintBottom_toBottomOf="@+id/icFile"
-        app:layout_constraintEnd_toStartOf="@+id/icMore"
-        app:layout_constraintStart_toEndOf="@+id/icFile"
-        app:layout_constraintTop_toTopOf="@+id/icFile" />
+        <ImageView
+            android:id="@+id/icFile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:contentDescription="@string/content_description_file_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_file_light" />
 
-    <ImageView
-        android:id="@+id/icMore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_block_more" />
+        <TextView
+            android:id="@+id/errorMessage"
+            style="@style/BlockVideoStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="24dp"
+            android:inputType="none"
+            android:text="@string/error_while_loading"
+            android:textColor="@android:color/holo_red_dark"
+            app:layout_constraintBottom_toBottomOf="@+id/icFile"
+            app:layout_constraintEnd_toStartOf="@+id/icMore"
+            app:layout_constraintStart_toEndOf="@+id/icFile"
+            app:layout_constraintTop_toTopOf="@+id/icFile"
+            tools:text="@string/error_while_loading" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/icMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_block_more" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

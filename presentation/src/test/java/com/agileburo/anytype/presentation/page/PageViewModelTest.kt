@@ -3,7 +3,9 @@ package com.agileburo.anytype.presentation.page
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.state.ControlPanelState
+import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
@@ -19,9 +21,10 @@ import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.MockBlockFactory
-import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.page.PageViewModel.ViewState
+import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
+import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.*
@@ -145,6 +148,17 @@ class PageViewModelTest {
             )
         )
 
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
         val page = listOf(
             Block(
                 id = root,
@@ -154,16 +168,7 @@ class PageViewModelTest {
                 ),
                 children = listOf(child)
             ),
-            Block(
-                id = child,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Text(
-                    text = MockDataFactory.randomString(),
-                    marks = emptyList(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList()
-            )
+            paragraph
         )
 
         openPage.stub {
@@ -199,7 +204,17 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(1001)
 
-        val expected = ViewState.Success(blocks = listOf(page.last().toView(urlBuilder = builder)))
+
+        val expected = ViewState.Success(
+            blocks = listOf(
+                BlockView.Paragraph(
+                    id = paragraph.id,
+                    text = paragraph.content<Block.Content.Text>().text,
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                )
+            )
+        )
+
         vm.state.test().assertValue(expected)
     }
 
@@ -321,6 +336,17 @@ class PageViewModelTest {
             )
         )
 
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
         val page = listOf(
             Block(
                 id = root,
@@ -330,16 +356,7 @@ class PageViewModelTest {
                 ),
                 children = listOf(child)
             ),
-            Block(
-                id = child,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Text(
-                    text = MockDataFactory.randomString(),
-                    marks = emptyList(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList()
-            )
+            paragraph
         )
 
         val added = Block(
@@ -395,8 +412,16 @@ class PageViewModelTest {
         val expected =
             ViewState.Success(
                 listOf(
-                    page.last().toView(urlBuilder = builder),
-                    added.toView(focused = false, urlBuilder = builder)
+                    BlockView.Paragraph(
+                        id = paragraph.id,
+                        text = paragraph.content.asText().text,
+                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                    ),
+                    BlockView.Paragraph(
+                        id = added.id,
+                        text = added.content.asText().text,
+                        backgroundColor = added.content<Block.Content.Text>().backgroundColor
+                    )
                 )
             )
 
@@ -423,6 +448,17 @@ class PageViewModelTest {
             )
         )
 
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
         val page = listOf(
             Block(
                 id = root,
@@ -432,16 +468,7 @@ class PageViewModelTest {
                 ),
                 children = listOf(child)
             ),
-            Block(
-                id = child,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Text(
-                    text = MockDataFactory.randomString(),
-                    marks = emptyList(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList()
-            )
+            paragraph
         )
 
         val text = MockDataFactory.randomString()
@@ -480,8 +507,10 @@ class PageViewModelTest {
 
         val beforeUpdate = ViewState.Success(
             listOf(
-                page.last().toView(
-                    urlBuilder = builder
+                BlockView.Paragraph(
+                    id = paragraph.id,
+                    text = paragraph.content.asText().text,
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
                 )
             )
         )
@@ -591,19 +620,20 @@ class PageViewModelTest {
 
         val firstTimeExpected = ViewState.Success(
             listOf(
-                paragraph
-                    .copy(
-                        content = (paragraph.content as Block.Content.Text).copy(
-                            marks = listOf(
-                                Block.Content.Text.Mark(
-                                    type = Block.Content.Text.Mark.Type.BOLD,
-                                    param = null,
-                                    range = firstTimeRange
-                                )
-                            )
+                BlockView.Paragraph(
+                    focused = true,
+                    id = paragraph.id,
+                    text = paragraph.content.asText().text,
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                    marks = listOf(
+                        Markup.Mark(
+                            type = Markup.Type.BOLD,
+                            param = null,
+                            from = firstTimeRange.first(),
+                            to = firstTimeRange.last()
                         )
                     )
-                    .toView(focused = true, urlBuilder = builder)
+                )
             )
         )
 
@@ -624,24 +654,26 @@ class PageViewModelTest {
 
         val secondTimeExpected = ViewState.Success(
             listOf(
-                paragraph
-                    .copy(
-                        content = (paragraph.content as Block.Content.Text).copy(
-                            marks = listOf(
-                                Block.Content.Text.Mark(
-                                    type = Block.Content.Text.Mark.Type.BOLD,
-                                    param = null,
-                                    range = firstTimeRange
-                                ),
-                                Block.Content.Text.Mark(
-                                    type = Block.Content.Text.Mark.Type.ITALIC,
-                                    param = null,
-                                    range = secondTimeRange
-                                )
-                            )
+                BlockView.Paragraph(
+                    focused = true,
+                    id = paragraph.id,
+                    text = paragraph.content.asText().text,
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                    marks = listOf(
+                        Markup.Mark(
+                            type = Markup.Type.BOLD,
+                            param = null,
+                            from = firstTimeRange.first(),
+                            to = firstTimeRange.last()
+                        ),
+                        Markup.Mark(
+                            type = Markup.Type.ITALIC,
+                            param = null,
+                            from = secondTimeRange.first(),
+                            to = secondTimeRange.last()
                         )
                     )
-                    .toView(focused = true, urlBuilder = builder)
+                )
             )
         )
 
@@ -727,19 +759,20 @@ class PageViewModelTest {
 
         val firstTimeExpected = ViewState.Success(
             listOf(
-                paragraph
-                    .copy(
-                        content = (paragraph.content as Block.Content.Text).copy(
-                            marks = listOf(
-                                Block.Content.Text.Mark(
-                                    type = Block.Content.Text.Mark.Type.BOLD,
-                                    param = null,
-                                    range = firstTimeRange
-                                )
-                            )
+                BlockView.Paragraph(
+                    focused = true,
+                    id = paragraph.id,
+                    text = paragraph.content.asText().text,
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                    marks = listOf(
+                        Markup.Mark(
+                            type = Markup.Type.BOLD,
+                            param = null,
+                            from = firstTimeRange.first(),
+                            to = firstTimeRange.last()
                         )
                     )
-                    .toView(focused = true, urlBuilder = builder)
+                )
             )
         )
 
@@ -770,19 +803,20 @@ class PageViewModelTest {
 
         val secondTimeExpected = ViewState.Success(
             listOf(
-                paragraph
-                    .copy(
-                        content = (paragraph.content as Block.Content.Text).copy(
-                            marks = listOf(
-                                Block.Content.Text.Mark(
-                                    type = Block.Content.Text.Mark.Type.BOLD,
-                                    param = null,
-                                    range = secondTimeRange
-                                )
-                            )
+                BlockView.Paragraph(
+                    focused = true,
+                    id = paragraph.id,
+                    text = paragraph.content.asText().text,
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                    marks = listOf(
+                        Markup.Mark(
+                            type = Markup.Type.BOLD,
+                            param = null,
+                            from = secondTimeRange.first(),
+                            to = secondTimeRange.last()
                         )
                     )
-                    .toView(focused = true, urlBuilder = builder)
+                )
             )
         )
 
@@ -797,13 +831,6 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-
-        val builder = UrlBuilder(
-            config = Config(
-                home = root,
-                gateway = MockDataFactory.randomUuid()
-            )
-        )
 
         val paragraph = Block(
             id = child,
@@ -948,7 +975,11 @@ class PageViewModelTest {
 
         val state = ViewState.Success(
             listOf(
-                paragraph.toView(urlBuilder = builder)
+                BlockView.Paragraph(
+                    id = paragraph.id,
+                    text = paragraph.content.asText().text,
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                )
             )
         )
 
@@ -1286,7 +1317,26 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
+
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            ),
+            children = listOf(child)
+        )
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(1000)
@@ -1294,7 +1344,7 @@ class PageViewModelTest {
                 listOf(
                     Event.Command.ShowBlock(
                         rootId = root,
-                        blocks = page,
+                        blocks = listOf(page, paragraph),
                         context = root
                     )
                 )
@@ -1495,7 +1545,26 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
+
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            ),
+            children = listOf(child)
+        )
 
         val builder = UrlBuilder(
             config = Config(
@@ -1523,7 +1592,7 @@ class PageViewModelTest {
                 listOf(
                     Event.Command.ShowBlock(
                         rootId = root,
-                        blocks = page,
+                        blocks = listOf(page, paragraph),
                         context = root
                     )
                 )
@@ -1561,7 +1630,13 @@ class PageViewModelTest {
 
         testObserver.assertValue(
             ViewState.Success(
-                blocks = listOf(page.last().toView(focused = false, urlBuilder = builder))
+                blocks = listOf(
+                    BlockView.Paragraph(
+                        id = paragraph.id,
+                        text = paragraph.content<Block.Content.Text>().text,
+                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                    )
+                )
             )
         )
 
@@ -1570,11 +1645,17 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    page.last().toView(
-                        focused = false,
-                        urlBuilder = builder
+                    BlockView.Paragraph(
+                        id = paragraph.id,
+                        text = paragraph.content<Block.Content.Text>().text,
+                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
                     ),
-                    new.toView(focused = true, urlBuilder = builder)
+                    BlockView.HeaderOne(
+                        id = new.id,
+                        text = new.content<Block.Content.Text>().text,
+                        backgroundColor = new.content<Block.Content.Text>().backgroundColor,
+                        indent = 0
+                    )
                 )
             )
         )
@@ -1723,6 +1804,7 @@ class PageViewModelTest {
         val root = MockDataFactory.randomUuid()
         val firstChild = MockDataFactory.randomUuid()
         val secondChild = MockDataFactory.randomUuid()
+
         val page = MockBlockFactory.makeOnePageWithTwoTextBlocks(
             root = root,
             firstChild = firstChild,
@@ -1771,8 +1853,16 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    page[1].toView(focused = false, urlBuilder = builder),
-                    page.last().toView(focused = false, urlBuilder = builder)
+                    BlockView.Paragraph(
+                        id = page[1].id,
+                        text = page[1].content<Block.Content.Text>().text,
+                        backgroundColor = page[1].content<Block.Content.Text>().backgroundColor
+                    ),
+                    BlockView.Paragraph(
+                        id = page.last().id,
+                        text = page.last().content<Block.Content.Text>().text,
+                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor
+                    )
                 )
             )
         )
@@ -1789,9 +1879,10 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    page.last().toView(
-                        focused = false,
-                        urlBuilder = builder
+                    BlockView.Paragraph(
+                        id = page.last().id,
+                        text = page.last().content<Block.Content.Text>().text,
+                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor
                     )
                 )
             )
@@ -2754,7 +2845,7 @@ class PageViewModelTest {
 
         // TESTING
 
-        vm.onDownloadFileClicked(id = file.id)
+        vm.startDownloadingFile(id = file.id)
 
         verify(downloadFile, times(1)).invoke(
             scope = any(),
@@ -3124,8 +3215,13 @@ class PageViewModelTest {
             documentExternalEventReducer = DocumentExternalEventReducer(),
             urlBuilder = urlBuilder,
             downloadFile = downloadFile,
-            emojifier = emojifier,
-            uploadUrl = uploadUrl
+            uploadUrl = uploadUrl,
+            counter = Counter.Default(),
+            renderer = DefaultBlockViewRenderer(
+                urlBuilder = urlBuilder,
+                emojifier = emojifier,
+                toggleStateHolder = ToggleStateHolder.Default()
+            )
         )
     }
 }

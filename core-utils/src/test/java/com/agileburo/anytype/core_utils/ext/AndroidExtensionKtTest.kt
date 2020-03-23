@@ -1,8 +1,7 @@
 package com.agileburo.anytype.core_utils.ext
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 
 class AndroidExtensionKtTest {
 

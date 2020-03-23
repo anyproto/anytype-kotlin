@@ -1,6 +1,7 @@
 package com.agileburo.anytype.di.feature
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
+import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.download.DownloadFile
@@ -14,6 +15,8 @@ import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
+import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
+import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
 import com.agileburo.anytype.ui.page.PageFragment
 import dagger.Module
 import dagger.Provides
@@ -59,7 +62,8 @@ class PageModule {
         documentExternalEventReducer: DocumentExternalEventReducer,
         urlBuilder: UrlBuilder,
         downloadFile: DownloadFile,
-        emojifier: Emojifier
+        renderer: DefaultBlockViewRenderer,
+        counter: Counter
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -81,7 +85,8 @@ class PageModule {
         documentEventReducer = documentExternalEventReducer,
         urlBuilder = urlBuilder,
         downloadFile = downloadFile,
-        emojifier = emojifier
+        renderer = renderer,
+        counter = counter
     )
 
     @Provides
@@ -221,6 +226,26 @@ class PageModule {
         downloader = downloader,
         context = Dispatchers.Main
     )
+
+    @Provides
+    @PerScreen
+    fun provideDefaultBlockViewRenderer(
+        emojifier: Emojifier,
+        urlBuilder: UrlBuilder,
+        toggleStateHolder: ToggleStateHolder
+    ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
+        urlBuilder = urlBuilder,
+        emojifier = emojifier,
+        toggleStateHolder = toggleStateHolder
+    )
+
+    @Provides
+    @PerScreen
+    fun provideToggler(): ToggleStateHolder = ToggleStateHolder.Default()
+
+    @Provides
+    @PerScreen
+    fun provideCounter(): Counter = Counter.Default()
 
     @Provides
     @PerScreen

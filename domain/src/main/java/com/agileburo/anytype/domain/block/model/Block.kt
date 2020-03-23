@@ -26,8 +26,10 @@ data class Block(
      */
     data class Fields(val map: Map<String?, Any?>) {
 
-        val name: String by map
-        val icon: String? by map
+        private val default = map.withDefault { null }
+
+        val name: String by default
+        val icon: String? by default
 
         fun hasName() = map.containsKey(NAME_KEY)
 

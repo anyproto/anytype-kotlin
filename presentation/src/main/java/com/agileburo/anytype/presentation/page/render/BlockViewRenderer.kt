@@ -1,0 +1,27 @@
+package com.agileburo.anytype.presentation.page.render
+
+import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_utils.tools.Counter
+import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.common.Id
+
+/**
+ * Converts business tree-like data structures to flattened view data structures.
+ */
+interface BlockViewRenderer {
+
+    /**
+     * Ext. function for recursively converting map to flattened view data structure.
+     * @param root root block, from which rendering starts
+     * @param focus id of the current focus
+     * @param anchor id of the current anchor (current rendering node)
+     * @param indent current indent at this rendering node.
+     */
+    suspend fun Map<Id, List<Block>>.render(
+        root: Block,
+        focus: Id,
+        anchor: Id,
+        indent: Int,
+        counter: Counter
+    ): List<BlockView>
+}

@@ -125,6 +125,9 @@
     <string name="hint_upload_file">Upload file</string>
     <string name="hint_bullet">Bulleted list item</string>
     <string name="hint_numbered_list">Numbered list item</string>
+    <string name="hint_toggle">Toggle block</string>
+
+    <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
 
     <string name="untitled">Untitled</string>
     <string name="error_while_loading">Error while loading</string>

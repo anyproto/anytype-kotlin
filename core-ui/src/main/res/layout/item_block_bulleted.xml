@@ -8,6 +8,11 @@
     android:orientation="horizontal">
 
     <View
+        android:id="@+id/bulletIndent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <View
         android:id="@+id/bullet"
         android:layout_width="6dp"
         android:layout_height="6dp"

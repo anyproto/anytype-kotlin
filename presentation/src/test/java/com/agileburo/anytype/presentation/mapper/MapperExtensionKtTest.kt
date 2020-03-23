@@ -15,6 +15,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val name = "name"
         val size = 10000L
@@ -39,9 +40,10 @@ class MapperExtensionKtTest {
             size = size,
             mime = mime,
             hash = hash,
-            url = urlBuilder.video(hash)
+            url = urlBuilder.video(hash),
+            indent = indent
         )
-        val actual = block.toFileView(id, urlBuilder)
+        val actual = block.toFileView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -51,6 +53,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.EMPTY
         val type = Block.Content.File.Type.FILE
@@ -61,8 +64,8 @@ class MapperExtensionKtTest {
 
         )
 
-        val expected = BlockView.File.Placeholder(id = id)
-        val actual = block.toFileView(id, urlBuilder)
+        val expected = BlockView.File.Placeholder(id = id, indent = indent)
+        val actual = block.toFileView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -72,6 +75,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.ERROR
         val type = Block.Content.File.Type.FILE
@@ -82,8 +86,8 @@ class MapperExtensionKtTest {
 
         )
 
-        val expected = BlockView.File.Error(id = id)
-        val actual = block.toFileView(id, urlBuilder)
+        val expected = BlockView.File.Error(id = id, indent = indent)
+        val actual = block.toFileView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -93,6 +97,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.UPLOADING
         val type = Block.Content.File.Type.FILE
@@ -102,8 +107,8 @@ class MapperExtensionKtTest {
             type = type
         )
 
-        val expected = BlockView.File.Upload(id = id)
-        val actual = block.toFileView(id, urlBuilder)
+        val expected = BlockView.File.Upload(id = id, indent = indent)
+        val actual = block.toFileView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -113,6 +118,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val name = "name"
         val size = 10000L
@@ -137,9 +143,11 @@ class MapperExtensionKtTest {
             size = size,
             mime = mime,
             hash = hash,
-            url = urlBuilder.video(hash)
+            url = urlBuilder.video(hash),
+            indent = indent
         )
-        val actual = block.toPictureView(id, urlBuilder)
+
+        val actual = block.toPictureView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -149,6 +157,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.EMPTY
         val type = Block.Content.File.Type.IMAGE
@@ -159,8 +168,8 @@ class MapperExtensionKtTest {
 
         )
 
-        val expected = BlockView.Picture.Placeholder(id = id)
-        val actual = block.toPictureView(id, urlBuilder)
+        val expected = BlockView.Picture.Placeholder(id = id, indent = indent)
+        val actual = block.toPictureView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -170,6 +179,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.ERROR
         val type = Block.Content.File.Type.IMAGE
@@ -182,9 +192,10 @@ class MapperExtensionKtTest {
 
         val expected = BlockView.Picture.Error(
             id = id,
-            msg = null
+            indent = indent
         )
-        val actual = block.toPictureView(id, urlBuilder)
+
+        val actual = block.toPictureView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -194,6 +205,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.UPLOADING
         val type = Block.Content.File.Type.IMAGE
@@ -203,8 +215,8 @@ class MapperExtensionKtTest {
             type = type
         )
 
-        val expected = BlockView.Picture.Upload(id = id)
-        val actual = block.toPictureView(id, urlBuilder)
+        val expected = BlockView.Picture.Upload(id = id, indent = indent)
+        val actual = block.toPictureView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -214,6 +226,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val name = "name"
         val size = 10000L
@@ -229,7 +242,6 @@ class MapperExtensionKtTest {
             hash = hash,
             state = state,
             type = type
-
         )
 
         val expected = BlockView.Video.View(
@@ -238,10 +250,11 @@ class MapperExtensionKtTest {
             size = size,
             mime = mime,
             hash = hash,
-            url = urlBuilder.video(hash)
+            url = urlBuilder.video(hash),
+            indent = indent
         )
 
-        val actual = block.toVideoView(id, urlBuilder)
+        val actual = block.toVideoView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -251,6 +264,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.DONE
         val type = Block.Content.File.Type.VIDEO
@@ -271,10 +285,11 @@ class MapperExtensionKtTest {
             size = null,
             mime = null,
             hash = null,
-            url = urlBuilder.video(null)
+            url = urlBuilder.video(null),
+            indent = indent
         )
 
-        val actual = block.toVideoView(id, urlBuilder)
+        val actual = block.toVideoView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -284,6 +299,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.EMPTY
         val type = Block.Content.File.Type.VIDEO
@@ -298,10 +314,11 @@ class MapperExtensionKtTest {
         )
 
         val expected = BlockView.Video.Placeholder(
-            id = id
+            id = id,
+            indent = indent
         )
 
-        val actual = block.toVideoView(id, urlBuilder)
+        val actual = block.toVideoView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -311,6 +328,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.UPLOADING
         val type = Block.Content.File.Type.VIDEO
@@ -325,10 +343,11 @@ class MapperExtensionKtTest {
         )
 
         val expected = BlockView.Video.Upload(
-            id = id
+            id = id,
+            indent = indent
         )
 
-        val actual = block.toVideoView(id, urlBuilder)
+        val actual = block.toVideoView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
@@ -338,6 +357,7 @@ class MapperExtensionKtTest {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.ERROR
         val type = Block.Content.File.Type.VIDEO
@@ -352,19 +372,21 @@ class MapperExtensionKtTest {
         )
 
         val expected = BlockView.Video.Error(
-            id = id
+            id = id,
+            indent = indent
         )
 
-        val actual = block.toVideoView(id, urlBuilder)
+        val actual = block.toVideoView(id, urlBuilder, indent)
 
         assertEquals(expected, actual)
     }
 
-    @Test(expected = NotImplementedError::class)
-    fun `should throw NotImplementedError when state null`() {
+    @Test(expected = IllegalStateException::class)
+    fun `should throw exceptions when state not set`() {
 
         val id = MockDataFactory.randomUuid()
         val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+        val indent = MockDataFactory.randomInt()
 
         val type = Block.Content.File.Type.VIDEO
 
@@ -377,6 +399,7 @@ class MapperExtensionKtTest {
             type = type
         )
 
-        block.toVideoView(id, urlBuilder)
+
+        block.toVideoView(id, urlBuilder, indent)
     }
 }

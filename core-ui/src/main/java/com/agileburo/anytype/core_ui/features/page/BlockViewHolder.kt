@@ -5,19 +5,26 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.Editable
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView.BufferType
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.BuildConfig
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.common.*
+import com.agileburo.anytype.core_ui.common.isLinksPresent
+import com.agileburo.anytype.core_ui.common.toSpannable
 import com.agileburo.anytype.core_ui.extensions.*
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.NUMBER_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TOGGLE_EMPTY_STATE_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
+import com.agileburo.anytype.core_utils.ext.dimen
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -28,11 +35,15 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
+import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
 import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import kotlinx.android.synthetic.main.item_block_contact.view.*
 import kotlinx.android.synthetic.main.item_block_file.view.*
+import kotlinx.android.synthetic.main.item_block_file_error.view.*
+import kotlinx.android.synthetic.main.item_block_file_placeholder.view.*
+import kotlinx.android.synthetic.main.item_block_file_uploading.view.*
 import kotlinx.android.synthetic.main.item_block_header_one.view.*
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
@@ -40,13 +51,18 @@ import kotlinx.android.synthetic.main.item_block_highlight.view.*
 import kotlinx.android.synthetic.main.item_block_numbered.view.*
 import kotlinx.android.synthetic.main.item_block_page.view.*
 import kotlinx.android.synthetic.main.item_block_picture.view.*
+import kotlinx.android.synthetic.main.item_block_picture_error.view.*
+import kotlinx.android.synthetic.main.item_block_picture_placeholder.view.*
+import kotlinx.android.synthetic.main.item_block_picture_uploading.view.*
 import kotlinx.android.synthetic.main.item_block_task.view.*
 import kotlinx.android.synthetic.main.item_block_text.view.*
 import kotlinx.android.synthetic.main.item_block_title.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import kotlinx.android.synthetic.main.item_block_video.view.*
+import kotlinx.android.synthetic.main.item_block_video_empty.view.*
 import kotlinx.android.synthetic.main.item_block_video_error.view.*
 import kotlinx.android.synthetic.main.item_block_video_error.view.icMore
+import kotlinx.android.synthetic.main.item_block_video_uploading.view.*
 import android.text.format.Formatter as FileSizeFormatter
 
 /**
@@ -56,7 +72,11 @@ import android.text.format.Formatter as FileSizeFormatter
  */
 sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    class Paragraph(view: View) : BlockViewHolder(view), TextHolder {
+    interface IndentableHolder {
+        fun indentize(item: BlockView.Indentable)
+    }
+
+    class Paragraph(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         override val root: View = itemView
         override val content: TextInputWidget = itemView.textContent
@@ -71,6 +91,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
+            indentize(item)
+
             content.clearTextWatchers()
 
             if (item.marks.isLinksPresent()) {
@@ -94,6 +116,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 onFocusChanged(item.id, focused)
             }
             content.selectionDetector = { onSelectionChanged(item.id, it) }
+        }
+
+        override fun indentize(item: BlockView.Indentable) {
+            content.updatePadding(
+                left = item.indent * dimen(R.dimen.indent)
+            )
         }
     }
 
@@ -139,7 +167,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        override fun processChangePayload(payloads: List<Payload>, item: BlockView) {}
+        override fun processChangePayload(
+            payloads: List<Payload>, item: BlockView
+        ) = Unit
+
         override fun enableBackspaceDetector(
             onEmptyBlockBackspaceClicked: () -> Unit,
             onNonEmptyBlockBackspaceClicked: () -> Unit
@@ -150,7 +181,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class HeaderOne(view: View) : BlockViewHolder(view), TextHolder {
+    class HeaderOne(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val header = itemView.headerOne
         override val root: View = itemView
@@ -167,6 +198,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             header.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
             }
+
+            indentize(item)
+
             header.setText(item.text)
 
             if (item.color != null) {
@@ -181,9 +215,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
             )
         }
+
+        override fun indentize(item: BlockView.Indentable) {
+            header.updatePadding(
+                left = item.indent * dimen(R.dimen.indent)
+            )
+        }
     }
 
-    class HeaderTwo(view: View) : BlockViewHolder(view), TextHolder {
+    class HeaderTwo(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val header = itemView.headerTwo
         override val content: TextInputWidget
@@ -196,7 +236,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onFocusChanged: (String, Boolean) -> Unit
         ) {
             header.clearTextWatchers()
-
+            indentize(item)
             header.setText(item.text)
 
             if (item.color != null) {
@@ -215,9 +255,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 onFocusChanged(item.id, hasFocus)
             }
         }
+
+        override fun indentize(item: BlockView.Indentable) {
+            header.updatePadding(
+                left = item.indent * dimen(R.dimen.indent)
+            )
+        }
     }
 
-    class HeaderThree(view: View) : BlockViewHolder(view), TextHolder {
+    class HeaderThree(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val header = itemView.headerThree
         override val content: TextInputWidget
@@ -230,7 +276,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onFocusChanged: (String, Boolean) -> Unit
         ) {
             header.clearTextWatchers()
-
+            indentize(item)
             header.setText(item.text)
 
             if (item.color != null) {
@@ -247,6 +293,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 DefaultTextWatcher { text ->
                     onTextChanged(item.id, text)
                 }
+            )
+        }
+
+        override fun indentize(item: BlockView.Indentable) {
+            header.updatePadding(
+                left = item.indent * dimen(R.dimen.indent)
             )
         }
     }
@@ -260,7 +312,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Checkbox(view: View) : BlockViewHolder(view), TextHolder {
+    class Checkbox(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val checkbox = itemView.checkboxIcon
         override val content: TextInputWidget = itemView.checkboxContent
@@ -278,7 +330,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onFocusChanged: (String, Boolean) -> Unit
         ) {
             content.clearTextWatchers()
-
+            indentize(item)
             checkbox.isSelected = item.isChecked
 
             if (item.marks.isLinksPresent()) {
@@ -309,6 +361,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             content.selectionDetector = { onSelectionChanged(item.id, it) }
         }
+
+        override fun indentize(item: BlockView.Indentable) {
+            checkbox.updatePadding(
+                left = item.indent * dimen(R.dimen.indent)
+            )
+        }
     }
 
     class Task(view: View) : BlockViewHolder(view) {
@@ -322,8 +380,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Bulleted(view: View) : BlockViewHolder(view), TextHolder {
+    class Bulleted(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
+        private val indent = itemView.bulletIndent
         private val bullet = itemView.bullet
         override val content: TextInputWidget = itemView.bulletedListContent
         override val root: View = itemView
@@ -339,6 +398,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onFocusChanged: (String, Boolean) -> Unit
         ) {
             content.clearTextWatchers()
+            indentize(item)
 
             if (item.marks.isLinksPresent()) {
                 content.setLinksClickable()
@@ -379,9 +439,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             super.setTextColor(color)
             bullet.tint(content.context.color(R.color.black))
         }
+
+        override fun indentize(item: BlockView.Indentable) {
+            indent.updateLayoutParams {
+                width = item.indent * dimen(R.dimen.indent)
+            }
+        }
     }
 
-    class Numbered(view: View) : BlockViewHolder(view), TextHolder {
+    class Numbered(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val number = itemView.number
         override val content: TextInputWidget = itemView.numberedListContent
@@ -398,7 +464,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onFocusChanged: (String, Boolean) -> Unit
         ) {
             content.clearTextWatchers()
-
+            indentize(item)
             number.text = item.number
 
             content.setText(item.toSpannable(), BufferType.SPANNABLE)
@@ -431,16 +497,79 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     number.text = (item as BlockView.Numbered).number
             }
         }
+
+        override fun indentize(item: BlockView.Indentable) {
+            number.updatePadding(
+                left = item.indent * dimen(R.dimen.indent)
+            )
+        }
     }
 
-    class Toggle(view: View) : BlockViewHolder(view) {
+    class Toggle(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val toggle = itemView.toggle
-        private val content = itemView.toggleContent
+        private val line = itemView.guideline
+        private val placeholder = itemView.togglePlaceholder
+        override val content: TextInputWidget = itemView.toggleContent
+        override val root: View = itemView
 
-        fun bind(item: BlockView.Toggle) {
-            content.text = item.text
-            toggle.rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
+        }
+
+        fun bind(
+            item: BlockView.Toggle,
+            onTextChanged: (String, Editable) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit,
+            onToggleClicked: (String) -> Unit,
+            onTogglePlaceholderClicked: (String) -> Unit
+        ) {
+            content.clearTextWatchers()
+            content.setText(item.toSpannable(), BufferType.SPANNABLE)
+
+            if (item.color != null) {
+                setTextColor(item.color)
+            } else {
+                setTextColor(content.context.color(R.color.black))
+            }
+
+            indentize(item)
+
+            setFocus(item)
+
+            setupTextWatcher(onTextChanged, item)
+
+            content.setOnFocusChangeListener { _, focused ->
+                item.focused = focused
+                onFocusChanged(item.id, focused)
+            }
+            content.selectionDetector = { onSelectionChanged(item.id, it) }
+
+            toggle.apply {
+                rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
+                setOnClickListener { onToggleClicked(item.id) }
+            }
+
+            placeholder.apply {
+                isVisible = item.isEmpty && item.toggled
+                setOnClickListener { onTogglePlaceholderClicked(item.id) }
+            }
+        }
+
+        override fun indentize(item: BlockView.Indentable) {
+            line.setGuidelineBegin(
+                item.indent * dimen(R.dimen.indent)
+            )
+        }
+
+        override fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+            check(item is BlockView.Toggle) { "Expected a toggle block, but was: $item" }
+            super.processChangePayload(payloads, item)
+            payloads.forEach { payload ->
+                if (payload.changes.contains(TOGGLE_EMPTY_STATE_CHANGED))
+                    placeholder.isVisible = item.isEmpty
+            }
         }
 
         companion object {
@@ -466,16 +595,18 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class File(view: View) : BlockViewHolder(view) {
+    class File(view: View) : BlockViewHolder(view), IndentableHolder {
 
         private val icon = itemView.fileIcon
         private val size = itemView.fileSize
         private val name = itemView.filename
+        private val guideline = itemView.fileGuideline
 
         fun bind(
             item: BlockView.File.View,
             onDownloadFileClicked: (String) -> Unit
         ) {
+            indentize(item)
             name.text = item.name
             item.size?.let {
                 size.text = FileSizeFormatter.formatFileSize(itemView.context, it)
@@ -494,9 +625,21 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             itemView.setOnClickListener { onDownloadFileClicked(item.id) }
         }
 
-        class Placeholder(view: View) : BlockViewHolder(view) {
+        override fun indentize(item: BlockView.Indentable) {
+            guideline.setGuidelineBegin(
+                item.indent * itemView.context.dimen(R.dimen.indent).toInt()
+            )
+        }
 
-            fun bind(item: BlockView.File.Placeholder, onAddLocalFileClick: (String) -> Unit) {
+        class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val root = itemView.filePlaceholderRoot
+
+            fun bind(
+                item: BlockView.File.Placeholder,
+                onAddLocalFileClick: (String) -> Unit
+            ) {
+                indentize(item)
                 itemView.setOnClickListener {
                     onAddLocalFileClick(item.id)
                 }
@@ -504,26 +647,55 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     it.context.toast("Not implemented yet!")
                 }
             }
-        }
 
-        class Error(view: View) : BlockViewHolder(view) {
-
-            fun bind(msg: String) {
-                itemView.tvError.text = msg
+            override fun indentize(item: BlockView.Indentable) {
+                root.updatePadding(
+                    left = item.indent * dimen(R.dimen.indent)
+                )
             }
         }
 
-        class Upload(view: View) : BlockViewHolder(view)
+        class Error(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val root = itemView.fileErrorPlaceholderRoot
+
+            fun bind(item: BlockView.File.Error) {
+                indentize(item)
+            }
+
+            override fun indentize(item: BlockView.Indentable) {
+                root.updatePadding(
+                    left = item.indent * dimen(R.dimen.indent)
+                )
+            }
+        }
+
+        class Upload(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val root = itemView.fileUploadingPlaceholderRoot
+
+            fun bind(item: BlockView.File.Upload) {
+                indentize(item)
+            }
+
+            override fun indentize(item: BlockView.Indentable) {
+                root.updatePadding(
+                    left = item.indent * dimen(R.dimen.indent)
+                )
+            }
+        }
     }
 
-    class Video(view: View) : BlockViewHolder(view) {
+    class Video(view: View) : BlockViewHolder(view), IndentableHolder {
+
+        private val player = itemView.playerView
 
         fun bind(item: BlockView.Video.View) {
+            indentize(item)
             initPlayer(item.url)
         }
 
         private fun initPlayer(path: String) {
-
             itemView.playerView.visibility = View.VISIBLE
             val player = SimpleExoPlayer.Builder(itemView.context).build()
             val source = DefaultDataSourceFactory(
@@ -538,35 +710,73 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             itemView.playerView.player = player
         }
 
-        class Placeholder(view: View) : BlockViewHolder(view) {
+        override fun indentize(item: BlockView.Indentable) {
+            player.updatePadding(
+                left = item.indent * dimen(R.dimen.indent)
+            )
+        }
+
+        class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val root = itemView.videoPlaceholderRoot
 
             fun bind(item: BlockView.Video.Placeholder, onAddLocalVideoClick: (String) -> Unit) {
+                indentize(item)
                 itemView.setOnClickListener {
                     onAddLocalVideoClick(item.id)
                 }
             }
-        }
 
-        class Error(view: View) : BlockViewHolder(view) {
-
-            fun bind(msg: String) {
-                itemView.tvError.text = msg
+            override fun indentize(item: BlockView.Indentable) {
+                root.updatePadding(
+                    left = item.indent * dimen(R.dimen.indent)
+                )
             }
         }
 
-        class Upload(view: View) : BlockViewHolder(view)
+        class Error(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val root = itemView.videoErrorRoot
+
+            fun bind(item: BlockView.Video.Error) {
+                indentize(item)
+            }
+
+            override fun indentize(item: BlockView.Indentable) {
+                root.updatePadding(
+                    left = item.indent * dimen(R.dimen.indent)
+                )
+            }
+        }
+
+        class Upload(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val root = itemView.videoUploadingPlaceholderRoot
+
+            fun bind(item: BlockView.Video.Upload) {
+                indentize(item)
+            }
+
+            override fun indentize(item: BlockView.Indentable) {
+                root.updatePadding(
+                    left = item.indent * dimen(R.dimen.indent)
+                )
+            }
+        }
     }
 
-    class Page(view: View) : BlockViewHolder(view) {
+    class Page(view: View) : BlockViewHolder(view), IndentableHolder {
 
         private val untitled = itemView.resources.getString(R.string.untitled)
         private val icon = itemView.pageIcon
         private val title = itemView.pageTitle
+        private val guideline = itemView.pageGuideline
 
         fun bind(
             item: BlockView.Page,
             onPageClicked: (String) -> Unit
         ) {
+            indentize(item)
             title.text = item.text ?: untitled
             if (item.isEmpty)
                 icon.setImageResource(R.drawable.ic_block_empty_page)
@@ -574,9 +784,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 icon.setBackgroundResource(R.drawable.ic_block_page_without_emoji)
             title.setOnClickListener { onPageClicked(item.id) }
         }
+
+        override fun indentize(item: BlockView.Indentable) {
+            guideline.setGuidelineBegin(
+                item.indent * dimen(R.dimen.indent)
+            )
+        }
     }
 
-    class Bookmark(view: View) : BlockViewHolder(view) {
+    class Bookmark(view: View) : BlockViewHolder(view), IndentableHolder {
 
         private val title = itemView.bookmarkTitle
         private val description = itemView.bookmarkDescription
@@ -584,6 +800,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val image = itemView.bookmarkImage
         private val logo = itemView.bookmarkLogo
         private val error = itemView.loadBookmarkPictureError
+        private val card = itemView.bookmarkRoot
 
         private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
 
@@ -610,6 +827,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         fun bind(item: BlockView.Bookmark.View) {
+            indentize(item)
             title.text = item.title
             description.text = item.description
             url.text = item.url
@@ -628,20 +846,38 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        class Placeholder(view: View) : BlockViewHolder(view) {
+        override fun indentize(item: BlockView.Indentable) {
+            (card.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                val default = dimen(R.dimen.dp_16)
+                val extra = item.indent * dimen(R.dimen.indent)
+                leftMargin = default + extra
+            }
+        }
+
+        class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val root = itemView.bookmarkPlaceholderRoot
 
             fun bind(
                 item: BlockView.Bookmark.Placeholder,
                 onBookmarkPlaceholderClicked: (String) -> Unit
             ) {
+                indentize(item)
                 itemView.setOnClickListener { onBookmarkPlaceholderClicked(item.id) }
+            }
+
+            override fun indentize(item: BlockView.Indentable) {
+                root.updatePadding(
+                    left = item.indent * dimen(R.dimen.indent)
+                )
             }
         }
     }
 
-    class Picture(view: View) : BlockViewHolder(view) {
+    class Picture(view: View) : BlockViewHolder(view), IndentableHolder {
 
         private val image = itemView.image
+        private val root = itemView.pictureRootLayout
         private val error = itemView.error
 
         private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
@@ -669,28 +905,72 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         fun bind(item: BlockView.Picture.View) {
+            indentize(item)
             Glide.with(image).load(item.url).listener(listener).into(image)
         }
 
-        class Placeholder(view: View): BlockViewHolder(view) {
+        override fun indentize(item: BlockView.Indentable) {
+            root.updatePadding(
+                left = item.indent * dimen(R.dimen.indent)
+            )
+        }
+
+        class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val root = itemView.picturePlaceholderRoot
 
             fun bind(item: BlockView.Picture.Placeholder, onAddLocalPictureClick: (String) -> Unit) {
+                indentize(item)
                 itemView.setOnClickListener {
                     onAddLocalPictureClick(item.id)
                 }
             }
+
+            override fun indentize(item: BlockView.Indentable) {
+                root.updatePadding(
+                    left = item.indent * dimen(R.dimen.indent)
+                )
+            }
         }
 
-        class Error(view: View): BlockViewHolder(view)
-        class Upload(view: View): BlockViewHolder(view)
+        class Error(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val root = itemView.pictureErrorRoot
+
+            fun bind(item: BlockView.Picture.Error) {
+                indentize(item)
+            }
+
+            override fun indentize(item: BlockView.Indentable) {
+                root.updatePadding(
+                    left = item.indent * dimen(R.dimen.indent)
+                )
+            }
+        }
+
+        class Upload(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val root = itemView.pictureUploadRoot
+
+            fun bind(item: BlockView.Picture.Upload) {
+                indentize(item)
+            }
+
+            override fun indentize(item: BlockView.Indentable) {
+                root.updatePadding(
+                    left = item.indent * dimen(R.dimen.indent)
+                )
+            }
+        }
     }
 
     class Divider(view: View) : BlockViewHolder(view)
 
-    class Highlight(view: View) : BlockViewHolder(view), TextHolder {
+    class Highlight(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         override val content: TextInputWidget = itemView.highlightContent
         override val root: View = itemView
+        private val indent = itemView.highlightIndent
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
@@ -701,6 +981,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit
         ) {
+            indentize(item)
             content.clearTextWatchers()
             content.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
@@ -711,6 +992,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onTextChanged(item.id, text)
                 }
             )
+        }
+
+        override fun indentize(item: BlockView.Indentable) {
+            indent.updateLayoutParams {
+                width = item.indent * dimen(R.dimen.indent)
+            }
         }
     }
 

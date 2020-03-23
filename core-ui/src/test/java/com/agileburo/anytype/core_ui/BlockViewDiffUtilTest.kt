@@ -64,18 +64,21 @@ class BlockViewDiffUtilTest {
     fun `two blocks should be considered different based only on their UI-representation`() {
 
         val index = 0
+        val indent = 0
 
         val id = MockDataFactory.randomUuid()
         val text = MockDataFactory.randomString()
 
         val oldBlock = BlockView.Paragraph(
             id = id,
-            text = text
+            text = text,
+            indent = indent
         )
 
         val newBlock = BlockView.HeaderOne(
             id = id,
-            text = text
+            text = text,
+            indent = indent
         )
 
         val old = listOf(oldBlock)
@@ -216,16 +219,20 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
+        val indent = 0
+
         val text = MockDataFactory.randomString()
 
         val oldBlock: BlockView = BlockView.HeaderOne(
             id = id,
-            text = text
+            text = text,
+            indent = indent
         )
 
         val newBlock: BlockView = BlockView.HeaderOne(
             id = id,
-            text = text
+            text = text,
+            indent = indent
         )
 
         val old = listOf(oldBlock)
@@ -279,6 +286,7 @@ class BlockViewDiffUtilTest {
         )
     }
 
+    @Test
     fun `should return change payload containing background-color update`() {
 
         val index = 0
@@ -315,6 +323,88 @@ class BlockViewDiffUtilTest {
             expected = expected,
             actual = payload
         )
+    }
 
+    @Test
+    fun `should detect indent change for a paragraph`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val text = MockDataFactory.randomString()
+
+        val oldBlock = BlockView.Paragraph(
+            id = id,
+            text = text,
+            marks = emptyList(),
+            indent = 0,
+            focused = MockDataFactory.randomBoolean(),
+            backgroundColor = null,
+            color = null
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            indent = 1
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.INDENT_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect toggle empty state change for a paragraph`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val text = MockDataFactory.randomString()
+
+        val oldBlock = BlockView.Toggle(
+            id = id,
+            text = text,
+            marks = emptyList(),
+            indent = 0,
+            focused = MockDataFactory.randomBoolean(),
+            backgroundColor = null,
+            color = null,
+            isEmpty = true
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            isEmpty = false
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.TOGGLE_EMPTY_STATE_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
     }
 }

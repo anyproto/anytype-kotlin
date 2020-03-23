@@ -33,6 +33,7 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.Option
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_BULLETED_LIST
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_CHECKBOX
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_NUMBERED_LIST
+import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_TOGGLE_LIST
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_BOOKMARK
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_FILE
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_PICTURE
@@ -116,7 +117,9 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             onAddLocalVideoClick = vm::onAddLocalVideoClicked,
             onBookmarkPlaceholderClicked = vm::onBookmarkPlaceholderClicked,
             onAddLocalPictureClick = vm::onAddLocalPictureClicked,
-            onAddLocalFileClick = vm::onAddLocalFileClicked
+            onAddLocalFileClick = vm::onAddLocalFileClicked,
+            onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
+            onToggleClicked = vm::onToggleClicked
         )
     }
 
@@ -147,8 +150,8 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
     }
 
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun startDownload(id: String) {
-        vm.startDownloadFile(id)
+    fun startDownloadWithPermissionCheck(id: String) {
+        vm.startDownloadingFile(id)
     }
 
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -375,6 +378,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                     OPTION_LIST_BULLETED_LIST -> vm.onAddTextBlockClicked(Text.Style.BULLET)
                     OPTION_LIST_CHECKBOX -> vm.onAddTextBlockClicked(Text.Style.CHECKBOX)
                     OPTION_LIST_NUMBERED_LIST -> vm.onAddTextBlockClicked(Text.Style.NUMBERED)
+                    OPTION_LIST_TOGGLE_LIST -> vm.onAddTextBlockClicked(Text.Style.TOGGLE)
                     else -> toast(NOT_IMPLEMENTED_MESSAGE)
                 }
             }

@@ -3,6 +3,7 @@ package com.agileburo.anytype.core_ui.features.page
 import androidx.recyclerview.widget.DiffUtil
 import com.agileburo.anytype.core_ui.common.Focusable
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.features.page.BlockView.Indentable
 
 class BlockViewDiffUtil(
     private val old: List<BlockView>,
@@ -56,9 +57,19 @@ class BlockViewDiffUtil(
                 changes.add(FOCUS_CHANGED)
         }
 
+        if (newBlock is Indentable && oldBlock is Indentable) {
+            if (newBlock.indent != oldBlock.indent)
+                changes.add(INDENT_CHANGED)
+        }
+
         if (newBlock is BlockView.Numbered && oldBlock is BlockView.Numbered) {
             if (newBlock.number != oldBlock.number)
                 changes.add(NUMBER_CHANGED)
+        }
+
+        if (newBlock is BlockView.Toggle && oldBlock is BlockView.Toggle) {
+            if (newBlock.isEmpty != oldBlock.isEmpty)
+                changes.add(TOGGLE_EMPTY_STATE_CHANGED)
         }
 
         return if (changes.isNotEmpty())
@@ -87,5 +98,7 @@ class BlockViewDiffUtil(
         const val TEXT_COLOR_CHANGED = 4
         const val NUMBER_CHANGED = 5
         const val BACKGROUND_COLOR_CHANGED = 6
+        const val INDENT_CHANGED = 7
+        const val TOGGLE_EMPTY_STATE_CHANGED = 8
     }
 }

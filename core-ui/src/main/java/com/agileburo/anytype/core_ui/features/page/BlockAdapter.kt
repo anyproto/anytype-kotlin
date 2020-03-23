@@ -33,8 +33,8 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_ERROR
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 import com.agileburo.anytype.core_utils.ext.typeOf
 import timber.log.Timber
@@ -65,7 +65,9 @@ class BlockAdapter(
     private val onAddLocalFileClick: (String) -> Unit,
     private val onPageIconClicked: () -> Unit,
     private val onDownloadFileClicked: (String) -> Unit,
-    private val onBookmarkPlaceholderClicked: (String) -> Unit
+    private val onBookmarkPlaceholderClicked: (String) -> Unit,
+    private val onTogglePlaceholderClicked: (String) -> Unit,
+    private val onToggleClicked: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -408,6 +410,12 @@ class BlockAdapter(
                         item = blocks[position]
                     )
                 }
+                is BlockViewHolder.Toggle -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
                 else -> throw IllegalStateException("Unexpected view holder: $holder")
             }
     }
@@ -488,7 +496,12 @@ class BlockAdapter(
             }
             is BlockViewHolder.Toggle -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Toggle
+                    item = blocks[position] as BlockView.Toggle,
+                    onTextChanged = onTextChanged,
+                    onFocusChanged = onFocusChanged,
+                    onSelectionChanged = onSelectionChanged,
+                    onTogglePlaceholderClicked = onTogglePlaceholderClicked,
+                    onToggleClicked = onToggleClicked
                 )
             }
             is BlockViewHolder.Contact -> {
@@ -502,6 +515,16 @@ class BlockAdapter(
                     onDownloadFileClicked = onDownloadFileClicked
                 )
             }
+            is BlockViewHolder.File.Error -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.File.Error
+                )
+            }
+            is BlockViewHolder.File.Upload -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.File.Upload
+                )
+            }
             is BlockViewHolder.File.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.File.Placeholder,
@@ -513,10 +536,20 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Video.View
                 )
             }
+            is BlockViewHolder.Video.Upload -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Video.Upload
+                )
+            }
             is BlockViewHolder.Video.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Video.Placeholder,
                     onAddLocalVideoClick = onAddLocalVideoClick
+                )
+            }
+            is BlockViewHolder.Video.Error -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Video.Error
                 )
             }
             is BlockViewHolder.Page -> {
@@ -545,6 +578,16 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Picture.Placeholder,
                     onAddLocalPictureClick = onAddLocalPictureClick
+                )
+            }
+            is BlockViewHolder.Picture.Error -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Picture.Error
+                )
+            }
+            is BlockViewHolder.Picture.Upload -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Picture.Upload
                 )
             }
             is BlockViewHolder.Highlight -> {

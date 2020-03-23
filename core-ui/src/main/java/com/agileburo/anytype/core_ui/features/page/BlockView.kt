@@ -31,8 +31,8 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_ERROR
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 
 /**
@@ -70,6 +70,13 @@ sealed class BlockView : ViewType {
     }
 
     /**
+     * Views implementing this interface would have an indent.
+     */
+    interface Indentable {
+        val indent: Int
+    }
+
+    /**
      * UI-model for a basic paragraph block.
      * @property id block's id
      * @property text block's content text
@@ -83,8 +90,9 @@ sealed class BlockView : ViewType {
         override val marks: List<Markup.Mark> = emptyList(),
         override var focused: Boolean = false,
         override val color: String? = null,
-        override val backgroundColor: String? = null
-    ) : BlockView(), Markup, Focusable, Text {
+        override val backgroundColor: String? = null,
+        override val indent: Int = 0
+    ) : BlockView(), Markup, Focusable, Text, Indentable {
         override fun getViewType() = HOLDER_PARAGRAPH
         override val body: String = text
     }
@@ -113,8 +121,9 @@ sealed class BlockView : ViewType {
         override val id: String,
         override val text: String,
         override val color: String? = null,
-        override val backgroundColor: String? = null
-    ) : BlockView(), Text {
+        override val backgroundColor: String? = null,
+        override val indent: Int
+    ) : BlockView(), Text, Indentable {
         override fun getViewType() = HOLDER_HEADER_ONE
     }
 
@@ -128,8 +137,9 @@ sealed class BlockView : ViewType {
         override val id: String,
         override val color: String? = null,
         override val text: String,
-        override val backgroundColor: String? = null
-    ) : BlockView(), Text {
+        override val backgroundColor: String? = null,
+        override val indent: Int
+    ) : BlockView(), Text, Indentable {
         override fun getViewType() = HOLDER_HEADER_TWO
     }
 
@@ -143,8 +153,9 @@ sealed class BlockView : ViewType {
         override val id: String,
         override val color: String? = null,
         override val text: String,
-        override val backgroundColor: String? = null
-    ) : BlockView(), Text {
+        override val backgroundColor: String? = null,
+        override val indent: Int
+    ) : BlockView(), Text, Indentable {
         override fun getViewType() = HOLDER_HEADER_THREE
     }
 
@@ -155,8 +166,9 @@ sealed class BlockView : ViewType {
      */
     data class Highlight(
         override val id: String,
-        val text: String
-    ) : BlockView() {
+        val text: String,
+        override val indent: Int
+    ) : BlockView(), Indentable {
         override fun getViewType() = HOLDER_HIGHLIGHT
     }
 
@@ -185,8 +197,9 @@ sealed class BlockView : ViewType {
         override val text: String,
         override val color: String? = null,
         override val backgroundColor: String? = null,
-        override val isChecked: Boolean = false
-    ) : BlockView(), Markup, Focusable, Text, Checkable {
+        override val isChecked: Boolean = false,
+        override val indent: Int
+    ) : BlockView(), Markup, Focusable, Text, Checkable, Indentable {
         override fun getViewType() = HOLDER_CHECKBOX
         override val body: String = text
     }
@@ -219,8 +232,8 @@ sealed class BlockView : ViewType {
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val text: String,
-        val indent: Int
-    ) : BlockView(), Markup, Focusable, Text {
+        override val indent: Int
+    ) : BlockView(), Markup, Focusable, Text, Indentable {
         override fun getViewType() = HOLDER_BULLET
         override val body: String = text
     }
@@ -239,9 +252,9 @@ sealed class BlockView : ViewType {
         override val focused: Boolean = false,
         override val color: String? = null,
         override val backgroundColor: String? = null,
-        val number: String,
-        val indent: Int
-    ) : BlockView(), Markup, Focusable, Text {
+        override val indent: Int,
+        val number: String
+    ) : BlockView(), Markup, Focusable, Text, Indentable {
         override fun getViewType() = HOLDER_NUMBERED
         override val body: String = text
     }
@@ -255,11 +268,17 @@ sealed class BlockView : ViewType {
      */
     data class Toggle(
         override val id: String,
-        val text: String,
-        val indent: Int,
-        val toggled: Boolean = false
-    ) : BlockView() {
+        override val text: String,
+        override val marks: List<Markup.Mark>,
+        override var focused: Boolean,
+        override val color: String?,
+        override val backgroundColor: String?,
+        override val indent: Int,
+        val toggled: Boolean = false,
+        val isEmpty: Boolean = false
+    ) : BlockView(), Markup, Focusable, Text, Indentable {
         override fun getViewType() = HOLDER_TOGGLE
+        override val body: String = text
     }
 
     /**
@@ -282,7 +301,7 @@ sealed class BlockView : ViewType {
      */
     sealed class File(
         override val id: String
-    ) : BlockView() {
+    ) : BlockView(), Indentable {
 
         /**
          * UI-model for block containing file, with state DONE.
@@ -290,12 +309,13 @@ sealed class BlockView : ViewType {
          */
         data class View(
             override val id: String,
+            override val indent: Int,
             val size: Long?,
             val name: String?,
             val mime: String?,
             val hash: String?,
             val url: String
-        ) : BlockView() {
+        ) : BlockView.File(id) {
             override fun getViewType() = HOLDER_FILE
         }
 
@@ -304,8 +324,9 @@ sealed class BlockView : ViewType {
          * @property id block's id
          */
         data class Upload(
-            override val id: String
-        ) : BlockView() {
+            override val id: String,
+            override val indent: Int
+        ) : BlockView.File(id) {
             override fun getViewType() = HOLDER_FILE_UPLOAD
         }
 
@@ -314,8 +335,9 @@ sealed class BlockView : ViewType {
          * @property id block's id
          */
         data class Placeholder(
-            override val id: String
-        ) : BlockView() {
+            override val id: String,
+            override val indent: Int
+        ) : BlockView.File(id) {
             override fun getViewType() = HOLDER_FILE_PLACEHOLDER
         }
 
@@ -324,8 +346,9 @@ sealed class BlockView : ViewType {
          * @property id block's id
          */
         data class Error(
-            override val id: String
-        ) : BlockView() {
+            override val id: String,
+            override val indent: Int
+        ) : BlockView.File(id) {
             override fun getViewType() = HOLDER_FILE_ERROR
         }
     }
@@ -336,19 +359,20 @@ sealed class BlockView : ViewType {
      */
     sealed class Video(
         override val id: String
-    ) : BlockView() {
+    ) : BlockView(), Indentable {
 
         /**
          * UI-model for block containing video, with state DONE.
          */
         data class View(
             override val id: String,
+            override val indent: Int,
             val size: Long?,
             val name: String?,
             val mime: String?,
             val hash: String?,
             val url: String
-        ) : BlockView() {
+        ) : BlockView.Video(id) {
             override fun getViewType() = HOLDER_VIDEO
         }
 
@@ -357,8 +381,9 @@ sealed class BlockView : ViewType {
          * @property id block's id
          */
         data class Upload(
-            override val id: String
-        ) : BlockView() {
+            override val id: String,
+            override val indent: Int
+        ) : BlockView.Video(id) {
             override fun getViewType() = HOLDER_VIDEO_UPLOAD
         }
 
@@ -367,8 +392,9 @@ sealed class BlockView : ViewType {
          * @property id block's id
          */
         data class Placeholder(
-            override val id: String
-        ) : BlockView() {
+            override val id: String,
+            override val indent: Int
+        ) : BlockView.Video(id) {
             override fun getViewType() = HOLDER_VIDEO_PLACEHOLDER
         }
 
@@ -377,8 +403,9 @@ sealed class BlockView : ViewType {
          * @property id block's id
          */
         data class Error(
-            override val id: String
-        ) : BlockView() {
+            override val id: String,
+            override val indent: Int
+        ) : BlockView.Video(id) {
             override fun getViewType() = HOLDER_VIDEO_ERROR
         }
     }
@@ -393,11 +420,12 @@ sealed class BlockView : ViewType {
      */
     data class Page(
         override val id: String,
+        override val indent: Int,
         val text: String? = null,
         val emoji: String?,
         val isEmpty: Boolean = false,
         val isArchived: Boolean = false
-    ) : BlockView() {
+    ) : BlockView(), Indentable {
         override fun getViewType() = HOLDER_PAGE
     }
 
@@ -417,12 +445,15 @@ sealed class BlockView : ViewType {
      */
     sealed class Bookmark(
         override val id: String
-    ) : BlockView() {
+    ) : BlockView(), Indentable {
 
         /**
          * UI-model for a bookmark placeholder (used when bookmark url is not set)
          */
-        data class Placeholder(override val id: String) : Bookmark(id = id) {
+        data class Placeholder(
+            override val id: String,
+            override val indent: Int
+        ) : Bookmark(id = id) {
             override fun getViewType() = HOLDER_BOOKMARK_PLACEHOLDER
         }
 
@@ -436,6 +467,7 @@ sealed class BlockView : ViewType {
          */
         data class View(
             override val id: String,
+            override val indent: Int,
             val url: String,
             val title: String?,
             val description: String?,
@@ -452,19 +484,20 @@ sealed class BlockView : ViewType {
      */
     sealed class Picture(
         override val id: String
-    ) : BlockView() {
+    ) : BlockView(), Indentable {
 
         /**
          * UI-model for block containing image, with state DONE.
          */
         data class View(
             override val id: String,
+            override val indent: Int,
             val size: Long?,
             val name: String?,
             val mime: String?,
             val hash: String?,
             val url: String
-        ) : BlockView() {
+        ) : BlockView.Picture(id) {
             override fun getViewType() = HOLDER_PICTURE
         }
 
@@ -472,8 +505,9 @@ sealed class BlockView : ViewType {
          * UI-model for block containing image, with state EMPTY.
          */
         data class Placeholder(
-            override val id: String
-        ) : BlockView() {
+            override val id: String,
+            override val indent: Int
+        ) : BlockView.Picture(id) {
             override fun getViewType() = HOLDER_PICTURE_PLACEHOLDER
         }
 
@@ -481,8 +515,9 @@ sealed class BlockView : ViewType {
          * UI-model for block containing image, with state ERROR.
          */
         data class Error(
-            override val id: String
-        ) : BlockView() {
+            override val id: String,
+            override val indent: Int
+        ) : BlockView.Picture(id) {
             override fun getViewType() = HOLDER_PICTURE_ERROR
         }
 
@@ -490,8 +525,9 @@ sealed class BlockView : ViewType {
          * UI-model for block containing image, with state UPLOADING.
          */
         data class Upload(
-            override val id: String
-        ) : BlockView() {
+            override val id: String,
+            override val indent: Int
+        ) : BlockView.Picture(id) {
             override fun getViewType() = HOLDER_PICTURE_UPLOAD
         }
     }

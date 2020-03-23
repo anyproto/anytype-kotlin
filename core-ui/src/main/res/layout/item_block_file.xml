@@ -8,6 +8,13 @@
     android:paddingStart="@dimen/default_page_item_padding_start"
     android:paddingEnd="@dimen/default_page_item_padding_end">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/fileGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="0dp" />
+
     <ImageView
         android:id="@+id/fileIcon"
         android:layout_width="24dp"
@@ -16,7 +23,7 @@
         android:layout_marginBottom="3dp"
         android:contentDescription="@string/content_description_file_icon"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/fileGuideline"
         app:layout_constraintTop_toTopOf="parent"
         tools:background="@drawable/ic_mime_image" />
 

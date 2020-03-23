@@ -8,6 +8,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.*
+import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
@@ -16,20 +17,24 @@ import com.agileburo.anytype.domain.block.model.Block.Prototype
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.download.DownloadFile
-import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
-import com.agileburo.anytype.domain.ext.*
+import com.agileburo.anytype.domain.ext.addMark
+import com.agileburo.anytype.domain.ext.asMap
+import com.agileburo.anytype.domain.ext.content
+import com.agileburo.anytype.domain.ext.textStyle
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.common.SupportCommand
-import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
 import com.agileburo.anytype.presentation.page.ControlPanelMachine.Interactor
+import com.agileburo.anytype.presentation.page.render.BlockViewRenderer
+import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
+import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
@@ -59,10 +64,13 @@ class PageViewModel(
     private val uploadUrl: UploadUrl,
     private val documentExternalEventReducer: StateReducer<List<Block>, Event>,
     private val urlBuilder: UrlBuilder,
-    private val emojifier: Emojifier
+    private val renderer: DefaultBlockViewRenderer,
+    private val counter: Counter
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<PageViewModel.Command>,
+    BlockViewRenderer by renderer,
+    ToggleStateHolder by renderer,
     StateReducer<List<Block>, Event> by documentExternalEventReducer {
 
     private val controlPanelInteractor = Interactor(viewModelScope)
@@ -125,7 +133,7 @@ class PageViewModel(
                 .build()
                 .filter { events -> events.any { it.context == context } }
                 .map { events -> events.forEach { event -> blocks = reduce(blocks, event) } }
-                .collect { viewModelScope.launch { renderingChannel.send(blocks) } }
+                .collect { viewModelScope.launch { refresh() } }
         }
     }
 
@@ -238,7 +246,7 @@ class PageViewModel(
 
         blocks = update
 
-        renderingChannel.send(blocks)
+        refresh()
 
         proceedWithUpdatingBlock(
             params = UpdateBlock.Params(
@@ -258,73 +266,19 @@ class PageViewModel(
                 else
                     block
             }
-            renderingChannel.send(blocks)
+            refresh()
         }
 
     private fun processRendering() {
         viewModelScope.launch {
             renderings.withLatestFrom(focusChanges) { models, focus ->
-
-                val render = models.asMap().asRender(context)
-
-                val page = models.first { it.id == context }
-
-                val numbers = render.numbers()
-
-                render.mapNotNull { block ->
-                    when (val content = block.content) {
-                        is Content.Text -> {
-                            if (content.style == Content.Text.Style.TITLE)
-                                BlockView.Title(
-                                    id = block.id,
-                                    text = content.text,
-                                    emoji = page.fields.icon?.let { name ->
-                                        if (name.isNotEmpty())
-                                            emojifier.fromShortName(name).unicode
-                                        else
-                                            null
-                                    }
-                                )
-                            else
-                                block.toView(
-                                    focused = block.id == focus,
-                                    numbers = numbers,
-                                    urlBuilder = urlBuilder
-                                )
-                        }
-                        is Content.Image -> {
-                            block.toView(
-                                urlBuilder = urlBuilder
-                            )
-                        }
-                        is Content.File -> {
-                            block.toView(
-                                urlBuilder = urlBuilder
-                            )
-                        }
-                        is Content.Link -> block.toView(
-                            urlBuilder = urlBuilder
-                        )
-                        is Content.Divider -> block.toView(
-                            urlBuilder = urlBuilder
-                        )
-                        is Content.Bookmark -> {
-                            content.url?.let { url ->
-                                BlockView.Bookmark.View(
-                                    id = block.id,
-                                    url = url,
-                                    title = content.title,
-                                    description = content.description,
-                                    imageUrl = content.image?.let { urlBuilder.image(it) },
-                                    faviconUrl = content.favicon?.let { urlBuilder.image(it) }
-                                )
-                            } ?: BlockView.Bookmark.Placeholder(
-                                id = block.id
-                            )
-                        }
-                        else -> null
-                    }
-                }
+                models.asMap().render(
+                    indent = INITIAL_INDENT,
+                    anchor = context,
+                    focus = focus,
+                    root = models.first { it.id == context },
+                    counter = counter
+                )
             }.collect { dispatchToUI(it) }
         }
     }
@@ -689,16 +643,16 @@ class PageViewModel(
 
         // TODO support nested blocks
 
-        val root = blocks.first { it.id == context }
+        val parent = blocks.first { it.children.contains(target) }
 
-        val index = root.children.indexOf(target)
+        val index = parent.children.indexOf(target)
 
         val previous = index.dec().let { prev ->
-            if (prev != -1) root.children[prev] else null
+            if (prev != -1) parent.children[prev] else null
         }
 
         val next = index.inc().let { nxt ->
-            if (nxt <= root.children.lastIndex) root.children[nxt] else null
+            if (nxt <= parent.children.lastIndex) parent.children[nxt] else null
         }
 
         unlinkBlocks.invoke(
@@ -764,6 +718,30 @@ class PageViewModel(
     fun onAddLocalPictureClicked(blockId: String) {
         mediaBlockId = blockId
         dispatch(Command.OpenGallery(mediaType = MIME_IMAGE_ALL))
+    }
+
+    fun onTogglePlaceholderClicked(target: Id) {
+        createBlock.invoke(
+            scope = viewModelScope,
+            params = CreateBlock.Params(
+                target = target,
+                position = Position.INNER,
+                context = context,
+                prototype = Prototype.Text(
+                    style = Content.Text.Style.P
+                )
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while creating a paragraph inside toggle block") },
+                fnR = { id -> updateFocus(id) }
+            )
+        }
+    }
+
+    fun onToggleClicked(target: Id) {
+        onToggleChanged(target)
+        viewModelScope.launch { refresh() }
     }
 
     fun onAddLocalFileClicked(blockId: String) {
@@ -895,9 +873,13 @@ class PageViewModel(
     fun onHideKeyboardClicked() {
         viewModelScope.launch {
             focusChannel.send(EMPTY_FOCUS_ID)
-            renderingChannel.send(blocks)
+            refresh()
         }
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
+    }
+
+    private suspend fun refresh() {
+        renderingChannel.send(blocks)
     }
 
     fun onPageClicked(id: String) {
@@ -1028,7 +1010,7 @@ class PageViewModel(
         dispatch(Command.RequestDownloadPermission(id))
     }
 
-    fun startDownloadFile(id: String) {
+    fun startDownloadingFile(id: String) {
         val block = blocks.first { it.id == id }
         val file = block.content<Content.File>()
         downloadFile.invoke(
@@ -1090,6 +1072,7 @@ class PageViewModel(
     companion object {
         const val EMPTY_FOCUS_ID = ""
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
+        const val INITIAL_INDENT = 0
     }
 
     data class MarkupAction(

@@ -2,10 +2,10 @@ package com.agileburo.anytype.presentation.page
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.download.DownloadFile
-import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.misc.UrlBuilder
@@ -13,6 +13,7 @@ import com.agileburo.anytype.domain.page.ClosePage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.common.StateReducer
+import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
 
 open class PageViewModelFactory(
     private val openPage: OpenPage,
@@ -35,7 +36,8 @@ open class PageViewModelFactory(
     private val documentEventReducer: StateReducer<List<Block>, Event>,
     private val urlBuilder: UrlBuilder,
     private val downloadFile: DownloadFile,
-    private val emojifier: Emojifier
+    private val renderer: DefaultBlockViewRenderer,
+    private val counter: Counter
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -61,7 +63,8 @@ open class PageViewModelFactory(
             documentExternalEventReducer = documentEventReducer,
             urlBuilder = urlBuilder,
             downloadFile = downloadFile,
-            emojifier = emojifier
+            renderer = renderer,
+            counter = counter
         ) as T
     }
 }

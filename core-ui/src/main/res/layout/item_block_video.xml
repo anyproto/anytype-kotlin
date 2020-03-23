@@ -12,6 +12,6 @@
         android:id="@+id/playerView"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
 </FrameLayout>

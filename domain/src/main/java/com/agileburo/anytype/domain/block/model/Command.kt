@@ -159,4 +159,16 @@ sealed class Command {
         val target: Id,
         val url: String
     )
+
+    /**
+     * Command for undoing latest changes in document
+     * @property context id of the context
+     */
+    data class Undo(val context: Id)
+
+    /**
+     * Command for redoing latest changes in document
+     * @property context id of the context
+     */
+    data class Redo(val context: Id)
 }

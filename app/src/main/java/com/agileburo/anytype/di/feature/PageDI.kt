@@ -10,9 +10,7 @@ import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.EventChannel
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.misc.UrlBuilder
-import com.agileburo.anytype.domain.page.ClosePage
-import com.agileburo.anytype.domain.page.CreatePage
-import com.agileburo.anytype.domain.page.OpenPage
+import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
@@ -44,6 +42,8 @@ class PageModule {
     fun providePageViewModelFactory(
         openPage: OpenPage,
         closePage: ClosePage,
+        undo: Undo,
+        redo: Redo,
         updateBlock: UpdateBlock,
         createBlock: CreateBlock,
         interceptEvents: InterceptEvents,
@@ -86,7 +86,9 @@ class PageModule {
         urlBuilder = urlBuilder,
         downloadFile = downloadFile,
         renderer = renderer,
-        counter = counter
+        counter = counter,
+        undo = undo,
+        redo = redo
     )
 
     @Provides
@@ -251,4 +253,20 @@ class PageModule {
     @PerScreen
     fun provideDocumentExternalEventReducer(): DocumentExternalEventReducer =
         DocumentExternalEventReducer()
+
+    @Provides
+    @PerScreen
+    fun provideUndoUseCase(
+        repo: BlockRepository
+    ): Undo = Undo(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideRedoUseCase(
+        repo: BlockRepository
+    ): Redo = Redo(
+        repo = repo
+    )
 }

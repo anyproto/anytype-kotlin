@@ -400,4 +400,26 @@ public class Middleware {
 
         service.blockBookmarkFetch(request);
     }
+
+    public void undo(CommandEntity.Undo command) throws Exception {
+        Block.Undo.Request request = Block.Undo.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .build();
+
+        Timber.d("Undoing changes with the following request:\n%s", request.toString());
+
+        service.blockUndo(request);
+    }
+
+    public void redo(CommandEntity.Redo command) throws Exception {
+        Block.Redo.Request request = Block.Redo.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .build();
+
+        Timber.d("Redoing changes with the following request:\n%s", request.toString());
+
+        service.blockRedo(request);
+    }
 }

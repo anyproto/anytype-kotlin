@@ -284,4 +284,26 @@ public class DefaultMiddlewareService implements MiddlewareService {
             return response;
         }
     }
+
+    @Override
+    public Block.Undo.Response blockUndo(Block.Undo.Request request) throws Exception {
+        byte[] encoded = Lib.blockUndo(request.toByteArray());
+        Block.Undo.Response response = Block.Undo.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Block.Undo.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
+    public Block.Redo.Response blockRedo(Block.Redo.Request request) throws Exception {
+        byte[] encoded = Lib.blockRedo(request.toByteArray());
+        Block.Redo.Response response = Block.Redo.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Block.Redo.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
 }

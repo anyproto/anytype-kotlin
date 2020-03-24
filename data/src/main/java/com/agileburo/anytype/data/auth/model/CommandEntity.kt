@@ -90,4 +90,8 @@ class CommandEntity {
         val target: String,
         val url: String
     )
+
+    data class Undo(val context: String)
+
+    data class Redo(val context: String)
 }

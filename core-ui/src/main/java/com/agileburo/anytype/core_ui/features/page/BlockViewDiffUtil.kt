@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.agileburo.anytype.core_ui.common.Focusable
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView.Indentable
+import timber.log.Timber
 
 class BlockViewDiffUtil(
     private val old: List<BlockView>,
@@ -73,7 +74,7 @@ class BlockViewDiffUtil(
         }
 
         return if (changes.isNotEmpty())
-            Payload(changes)
+            Payload(changes).also { Timber.d("Returning payload: $it") }
         else
             super.getChangePayload(oldItemPosition, newItemPosition)
     }

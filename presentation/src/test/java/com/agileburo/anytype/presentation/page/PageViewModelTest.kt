@@ -17,9 +17,7 @@ import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.domain.misc.UrlBuilder
-import com.agileburo.anytype.domain.page.ClosePage
-import com.agileburo.anytype.domain.page.CreatePage
-import com.agileburo.anytype.domain.page.OpenPage
+import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.presentation.MockBlockFactory
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.page.PageViewModel.ViewState
@@ -105,6 +103,12 @@ class PageViewModelTest {
 
     @Mock
     lateinit var emojifier: Emojifier
+
+    @Mock
+    lateinit var undo: Undo
+
+    @Mock
+    lateinit var redo: Redo
 
     private lateinit var vm: PageViewModel
 
@@ -3137,6 +3141,118 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should proceed with undo`() {
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    map = mapOf("icon" to "")
+                ),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id, paragraph.id)
+            ),
+            title,
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.onActionUndoClicked()
+
+        verify(undo, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                Undo.Params(context = root)
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should proceed with redo`() {
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    map = mapOf("icon" to "")
+                ),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id, paragraph.id)
+            ),
+            title,
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.onActionRedoClicked()
+
+        verify(redo, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                Redo.Params(context = root)
+            ),
+            onResult = any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()
@@ -3200,6 +3316,8 @@ class PageViewModelTest {
             closePage = closePage,
             createPage = createPage,
             updateBlock = updateBlock,
+            undo = undo,
+            redo = redo,
             interceptEvents = interceptEvents,
             createBlock = createBlock,
             updateCheckbox = updateCheckbox,

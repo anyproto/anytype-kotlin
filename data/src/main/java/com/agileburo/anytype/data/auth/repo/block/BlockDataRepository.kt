@@ -79,4 +79,8 @@ class BlockDataRepository(
     override suspend fun uploadUrl(command: Command.UploadVideoBlockUrl) {
         factory.remote.uploadUrl(command.toEntity())
     }
+
+    override suspend fun undo(command: Command.Undo) = factory.remote.undo(command.toEntity())
+
+    override suspend fun redo(command: Command.Redo) = factory.remote.redo(command.toEntity())
 }

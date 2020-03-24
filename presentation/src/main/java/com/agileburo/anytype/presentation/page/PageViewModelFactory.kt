@@ -9,9 +9,7 @@ import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.misc.UrlBuilder
-import com.agileburo.anytype.domain.page.ClosePage
-import com.agileburo.anytype.domain.page.CreatePage
-import com.agileburo.anytype.domain.page.OpenPage
+import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
 
@@ -19,6 +17,8 @@ open class PageViewModelFactory(
     private val openPage: OpenPage,
     private val closePage: ClosePage,
     private val createPage: CreatePage,
+    private val redo: Redo,
+    private val undo: Undo,
     private val updateBlock: UpdateBlock,
     private val createBlock: CreateBlock,
     private val interceptEvents: InterceptEvents,
@@ -45,6 +45,8 @@ open class PageViewModelFactory(
         return PageViewModel(
             openPage = openPage,
             closePage = closePage,
+            undo = undo,
+            redo = redo,
             updateBlock = updateBlock,
             createBlock = createBlock,
             interceptEvents = interceptEvents,

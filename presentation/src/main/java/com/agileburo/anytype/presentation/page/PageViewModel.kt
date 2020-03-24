@@ -24,9 +24,7 @@ import com.agileburo.anytype.domain.ext.asMap
 import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.domain.ext.textStyle
 import com.agileburo.anytype.domain.misc.UrlBuilder
-import com.agileburo.anytype.domain.page.ClosePage
-import com.agileburo.anytype.domain.page.CreatePage
-import com.agileburo.anytype.domain.page.OpenPage
+import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.common.SupportCommand
 import com.agileburo.anytype.presentation.navigation.AppNavigation
@@ -47,6 +45,8 @@ class PageViewModel(
     private val openPage: OpenPage,
     private val closePage: ClosePage,
     private val createPage: CreatePage,
+    private val undo: Undo,
+    private val redo: Redo,
     private val updateBlock: UpdateBlock,
     private val createBlock: CreateBlock,
     private val interceptEvents: InterceptEvents,
@@ -692,6 +692,34 @@ class PageViewModel(
                         )
                     }
                 }
+        }
+    }
+
+    fun onActionUndoClicked() {
+        undo.invoke(
+            scope = viewModelScope,
+            params = Undo.Params(
+                context = context
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while un-doing user actions") },
+                fnR = { Timber.d("Undo operation completed sucessfully") }
+            )
+        }
+    }
+
+    fun onActionRedoClicked() {
+        redo.invoke(
+            scope = viewModelScope,
+            params = Redo.Params(
+                context = context
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while re-doing user actions") },
+                fnR = { Timber.d("Redo operation completed sucessfully") }
+            )
         }
     }
 

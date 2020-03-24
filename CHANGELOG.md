@@ -1,5 +1,18 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.25 (WIP)
+
+### New features 🚀
+
+* Undo/redo changes in document (unstable) (#284)
+
+### Fixes & tech 🚒
+
+### Middleware ⚙️
+
+* Added `blockUndo` command (#284)
+* Added `blockRedo` command (#284)
+
 ## Version 0.0.24
 
 ### New features 🚀
@@ -8,7 +21,7 @@
 * User can add image blocks (#139)
 * User can add file blocks (#295)
 * User can add toggle blocks and change expanded/collapsed state (#313)
-* Added support nested blocks rendering (#313)
+* Added support for nested blocks rendering (#313)
 
 ### Fixes & tech 🚒
 
@@ -16,7 +29,7 @@
 * Should create a new block after the target block when user adds a new block via add-block toolbar (#305)
 * Refactored block creation in `Middleware` and reduced code duplication (introduced factory to create a block from a block prototype) (#140)
 * New mappers (from middleware layer entity to data layer entity) (#140)
-* Introduced new rendering converter (from business tree-like data structures to flattened view data structures) ($313)
+* Introduced new rendering converter (from business tree-like data structures to flattened view data structures) (#313)
 
 ### Middleware ⚙️
 

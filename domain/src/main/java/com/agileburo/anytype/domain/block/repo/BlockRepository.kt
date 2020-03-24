@@ -43,4 +43,7 @@ interface BlockRepository {
     suspend fun setIconName(command: Command.SetIconName)
 
     suspend fun setupBookmark(command: Command.SetupBookmark)
+
+    suspend fun undo(command: Command.Undo)
+    suspend fun redo(command: Command.Redo)
 }

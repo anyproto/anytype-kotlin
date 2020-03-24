@@ -25,4 +25,6 @@ interface BlockRemote {
     suspend fun setIconName(command: CommandEntity.SetIconName)
     suspend fun uploadUrl(command: CommandEntity.UploadBlock)
     suspend fun setupBookmark(command: CommandEntity.SetupBookmark)
+    suspend fun undo(command: CommandEntity.Undo)
+    suspend fun redo(command: CommandEntity.Redo)
 }

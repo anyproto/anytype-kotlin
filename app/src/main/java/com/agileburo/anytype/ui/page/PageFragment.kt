@@ -27,6 +27,8 @@ import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DELETE
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DUPLICATE
+import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_REDO
+import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_UNDO
 import com.agileburo.anytype.core_ui.widgets.toolbar.ColorToolbarWidget
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget
 import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.Option
@@ -331,6 +333,8 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                 when (action.type) {
                     ACTION_DELETE -> vm.onActionDeleteClicked()
                     ACTION_DUPLICATE -> vm.onActionDuplicateClicked()
+                    ACTION_UNDO -> vm.onActionUndoClicked()
+                    ACTION_REDO -> vm.onActionRedoClicked()
                     else -> toast(NOT_IMPLEMENTED_MESSAGE)
                 }
             }

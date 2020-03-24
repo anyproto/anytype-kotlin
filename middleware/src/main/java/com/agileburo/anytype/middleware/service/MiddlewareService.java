@@ -60,4 +60,8 @@ public interface MiddlewareService {
     Block.Bookmark.Fetch.Response blockBookmarkFetch(Block.Bookmark.Fetch.Request request) throws Exception;
 
     Block.Upload.Response blockUpload(Block.Upload.Request request) throws Exception;
+
+    Block.Undo.Response blockUndo(Block.Undo.Request request) throws Exception;
+
+    Block.Redo.Response blockRedo(Block.Redo.Request request) throws Exception;
 }

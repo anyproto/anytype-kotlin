@@ -398,6 +398,14 @@ fun Command.SetupBookmark.toEntity() = CommandEntity.SetupBookmark(
     url = url
 )
 
+fun Command.Undo.toEntity() = CommandEntity.Undo(
+    context = context
+)
+
+fun Command.Redo.toEntity() = CommandEntity.Redo(
+    context = context
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }

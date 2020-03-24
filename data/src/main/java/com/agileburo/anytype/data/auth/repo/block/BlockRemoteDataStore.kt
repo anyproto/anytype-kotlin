@@ -72,4 +72,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun setupBookmark(
         command: CommandEntity.SetupBookmark
     ) = remote.setupBookmark(command)
+
+    override suspend fun undo(command: CommandEntity.Undo) = remote.undo(command)
+
+    override suspend fun redo(command: CommandEntity.Redo) = remote.redo(command)
 }

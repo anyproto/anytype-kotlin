@@ -102,6 +102,7 @@ dependencies {
     //Application dependencies
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines
+    implementation applicationDependencies.fragment
     implementation applicationDependencies.navigation
     implementation applicationDependencies.navigationUi
     implementation applicationDependencies.appcompat

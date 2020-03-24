@@ -17,6 +17,7 @@ ext {
     recyclerview_version = '1.0.0'
     cardview_version = '1.0.0'
     material_version = '1.1.0-beta02'
+    fragment_version = "1.2.3"
 
     // Architecture Components
     lifecycle_version = '2.1.0'
@@ -55,7 +56,6 @@ ext {
     espresso_version = '3.1.0'
     android_junit_version = '1.1.0'
     disable_animation_version = '2.0.0'
-    fragment_test_version = '1.2.1'
 
     // Development
     leakCanaryVersion = '1.5'
@@ -80,6 +80,7 @@ ext {
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             coroutines:                 "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version",
             androidxCore:               "androidx.core:core-ktx:$androidx_core_version",
+            fragment:                   "androidx.fragment:fragment-ktx:$fragment_version",
             navigation:                 "androidx.navigation:navigation-fragment-ktx:$navigation_version",
             navigationUi:               "androidx.navigation:navigation-ui-ktx:$navigation_version",
             viewModel:                  "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version",
@@ -146,7 +147,7 @@ ext {
             mockitoKotlin:      "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockito_kotlin_version",
             mockitoAndroid:     "org.mockito:mockito-android:$mockito_android_version",
             disableAnimation:   "com.bartoszlipinski:disable-animations-rule:$disable_animation_version",
-            fragmentTesting:    "androidx.fragment:fragment-testing:$fragment_test_version"
+            fragmentTesting:    "androidx.fragment:fragment-testing:$fragment_version"
     ]
 
     development = [

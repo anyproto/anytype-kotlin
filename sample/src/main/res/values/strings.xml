@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Sample</string>
+
+    <string name="keyboard_text">Restrictions on non-SDK interfaces
+Starting in Android 9 (API level 28), the platform restricts which non-SDK interfaces your app can use. These restrictions apply whenever an app references a non-SDK interface or attempts to obtain its handle using reflection or JNI.
+    </string>
 </resources>

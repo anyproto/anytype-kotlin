@@ -67,7 +67,8 @@ class BlockAdapter(
     private val onDownloadFileClicked: (String) -> Unit,
     private val onBookmarkPlaceholderClicked: (String) -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
-    private val onToggleClicked: (String) -> Unit
+    private val onToggleClicked: (String) -> Unit,
+    private val onMediaBlockMenuClick:(String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -512,12 +513,14 @@ class BlockAdapter(
             is BlockViewHolder.File -> {
                 holder.bind(
                     item = blocks[position] as BlockView.File.View,
-                    onDownloadFileClicked = onDownloadFileClicked
+                    onDownloadFileClicked = onDownloadFileClicked,
+                    menuClick = onMediaBlockMenuClick
                 )
             }
             is BlockViewHolder.File.Error -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.File.Error
+                    item = blocks[position] as BlockView.File.Error,
+                    menuClick = onMediaBlockMenuClick
                 )
             }
             is BlockViewHolder.File.Upload -> {
@@ -528,12 +531,14 @@ class BlockAdapter(
             is BlockViewHolder.File.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.File.Placeholder,
-                    onAddLocalFileClick = onAddLocalFileClick
+                    onAddLocalFileClick = onAddLocalFileClick,
+                    menuClick = onMediaBlockMenuClick
                 )
             }
             is BlockViewHolder.Video -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Video.View
+                    item = blocks[position] as BlockView.Video.View,
+                    menuClick = onMediaBlockMenuClick
                 )
             }
             is BlockViewHolder.Video.Upload -> {
@@ -544,12 +549,14 @@ class BlockAdapter(
             is BlockViewHolder.Video.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Video.Placeholder,
-                    onAddLocalVideoClick = onAddLocalVideoClick
+                    onAddLocalVideoClick = onAddLocalVideoClick,
+                    menuClick = onMediaBlockMenuClick
                 )
             }
             is BlockViewHolder.Video.Error -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Video.Error
+                    item = blocks[position] as BlockView.Video.Error,
+                    menuClick = onMediaBlockMenuClick
                 )
             }
             is BlockViewHolder.Page -> {
@@ -571,18 +578,21 @@ class BlockAdapter(
             }
             is BlockViewHolder.Picture -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Picture.View
+                    item = blocks[position] as BlockView.Picture.View,
+                    menuClick = onMediaBlockMenuClick
                 )
             }
             is BlockViewHolder.Picture.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Picture.Placeholder,
-                    onAddLocalPictureClick = onAddLocalPictureClick
+                    onAddLocalPictureClick = onAddLocalPictureClick,
+                    menuClick = onMediaBlockMenuClick
                 )
             }
             is BlockViewHolder.Picture.Error -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Picture.Error
+                    item = blocks[position] as BlockView.Picture.Error,
+                    menuClick = onMediaBlockMenuClick
                 )
             }
             is BlockViewHolder.Picture.Upload -> {

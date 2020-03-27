@@ -41,12 +41,12 @@
             android:textColor="#ACA996"
 
             app:layout_constraintBottom_toBottomOf="@+id/icVideo"
-            app:layout_constraintEnd_toStartOf="@+id/icMore"
+            app:layout_constraintEnd_toStartOf="@+id/btnVideoPlaceholderMenu"
             app:layout_constraintStart_toEndOf="@+id/icVideo"
             app:layout_constraintTop_toTopOf="@+id/icVideo" />
 
         <ImageView
-            android:id="@+id/icMore"
+            android:id="@+id/btnVideoPlaceholderMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

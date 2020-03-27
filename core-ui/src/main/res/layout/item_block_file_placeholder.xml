@@ -40,12 +40,12 @@
             android:text="@string/hint_upload_file"
             android:textColor="#ACA996"
             app:layout_constraintBottom_toBottomOf="@+id/icFile"
-            app:layout_constraintEnd_toStartOf="@+id/icMore"
+            app:layout_constraintEnd_toStartOf="@+id/btnFilePlaceholderMenu"
             app:layout_constraintStart_toEndOf="@+id/icFile"
             app:layout_constraintTop_toTopOf="@+id/icFile" />
 
         <ImageView
-            android:id="@+id/icMore"
+            android:id="@+id/btnFilePlaceholderMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

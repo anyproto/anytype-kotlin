@@ -43,7 +43,7 @@
             app:layout_constraintTop_toTopOf="@+id/icPicture" />
 
         <ImageView
-            android:id="@+id/icMore"
+            android:id="@+id/btnPicUploadMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

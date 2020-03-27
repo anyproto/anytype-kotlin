@@ -121,7 +121,8 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             onAddLocalPictureClick = vm::onAddLocalPictureClicked,
             onAddLocalFileClick = vm::onAddLocalFileClicked,
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
-            onToggleClicked = vm::onToggleClicked
+            onToggleClicked = vm::onToggleClicked,
+            onMediaBlockMenuClick = vm::onMediaBlockMenuClicked
         )
     }
 

@@ -1055,6 +1055,11 @@ class PageViewModel(
         }
     }
 
+    fun onMediaBlockMenuClicked(id: String) {
+        updateFocus(id)
+        onActionToolbarClicked()
+    }
+
     private fun addNewBlockAtTheEnd() {
         proceedWithCreatingNewTextBlock(
             id = "",

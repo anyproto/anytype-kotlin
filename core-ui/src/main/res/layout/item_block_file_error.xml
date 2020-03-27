@@ -40,13 +40,13 @@
             android:text="@string/error_while_loading"
             android:textColor="@android:color/holo_red_dark"
             app:layout_constraintBottom_toBottomOf="@+id/icFile"
-            app:layout_constraintEnd_toStartOf="@+id/icMore"
+            app:layout_constraintEnd_toStartOf="@+id/btnFileErrorMenu"
             app:layout_constraintStart_toEndOf="@+id/icFile"
             app:layout_constraintTop_toTopOf="@+id/icFile"
             tools:text="@string/error_while_loading" />
 
         <ImageView
-            android:id="@+id/icMore"
+            android:id="@+id/btnFileErrorMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

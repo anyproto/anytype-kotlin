@@ -15,7 +15,10 @@ import com.agileburo.anytype.core_ui.BuildConfig
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.isLinksPresent
 import com.agileburo.anytype.core_ui.common.toSpannable
-import com.agileburo.anytype.core_ui.extensions.*
+import com.agileburo.anytype.core_ui.extensions.color
+import com.agileburo.anytype.core_ui.extensions.invisible
+import com.agileburo.anytype.core_ui.extensions.tint
+import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.NUMBER_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TOGGLE_EMPTY_STATE_CHANGED
@@ -61,7 +64,6 @@ import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import kotlinx.android.synthetic.main.item_block_video.view.*
 import kotlinx.android.synthetic.main.item_block_video_empty.view.*
 import kotlinx.android.synthetic.main.item_block_video_error.view.*
-import kotlinx.android.synthetic.main.item_block_video_error.view.icMore
 import kotlinx.android.synthetic.main.item_block_video_uploading.view.*
 import android.text.format.Formatter as FileSizeFormatter
 
@@ -601,10 +603,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val size = itemView.fileSize
         private val name = itemView.filename
         private val guideline = itemView.fileGuideline
+        private val btnMenu = itemView.btnFileMenu
 
         fun bind(
             item: BlockView.File.View,
-            onDownloadFileClicked: (String) -> Unit
+            onDownloadFileClicked: (String) -> Unit,
+            menuClick: (String) -> Unit
         ) {
             indentize(item)
             name.text = item.name
@@ -622,6 +626,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 MimeTypes.Category.PRESENTATION -> icon.setImageResource(R.drawable.ic_mime_presentation)
                 MimeTypes.Category.OTHER -> icon.setImageResource(R.drawable.ic_mime_other)
             }
+            btnMenu.setOnClickListener { menuClick(item.id) }
             itemView.setOnClickListener { onDownloadFileClicked(item.id) }
         }
 
@@ -634,18 +639,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
 
             private val root = itemView.filePlaceholderRoot
+            private val btnMenu = itemView.btnFilePlaceholderMenu
 
             fun bind(
                 item: BlockView.File.Placeholder,
-                onAddLocalFileClick: (String) -> Unit
+                onAddLocalFileClick: (String) -> Unit,
+                menuClick: (String) -> Unit
             ) {
                 indentize(item)
-                itemView.setOnClickListener {
-                    onAddLocalFileClick(item.id)
-                }
-                itemView.icMore.setOnClickListener {
-                    it.context.toast("Not implemented yet!")
-                }
+                btnMenu.setOnClickListener { menuClick(item.id) }
+                itemView.setOnClickListener { onAddLocalFileClick(item.id) }
             }
 
             override fun indentize(item: BlockView.Indentable) {
@@ -658,8 +661,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class Error(view: View) : BlockViewHolder(view), IndentableHolder {
 
             private val root = itemView.fileErrorPlaceholderRoot
+            private val btnMenu = itemView.btnFileErrorMenu
 
-            fun bind(item: BlockView.File.Error) {
+            fun bind(item: BlockView.File.Error, menuClick: (String) -> Unit) {
+                btnMenu.setOnClickListener { menuClick(item.id) }
                 indentize(item)
             }
 
@@ -689,8 +694,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     class Video(view: View) : BlockViewHolder(view), IndentableHolder {
 
         private val player = itemView.playerView
+        private val btnMenu = itemView.btnVideoMenu
 
-        fun bind(item: BlockView.Video.View) {
+        fun bind(item: BlockView.Video.View, menuClick: (String) -> Unit) {
+            btnMenu.setOnClickListener { menuClick(item.id) }
             indentize(item)
             initPlayer(item.url)
         }
@@ -719,12 +726,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
 
             private val root = itemView.videoPlaceholderRoot
+            private val btnMenu = itemView.btnVideoPlaceholderMenu
 
-            fun bind(item: BlockView.Video.Placeholder, onAddLocalVideoClick: (String) -> Unit) {
+            fun bind(item: BlockView.Video.Placeholder,
+                     onAddLocalVideoClick: (String) -> Unit,
+                     menuClick: (String) -> Unit) {
                 indentize(item)
-                itemView.setOnClickListener {
-                    onAddLocalVideoClick(item.id)
-                }
+                btnMenu.setOnClickListener { menuClick(item.id) }
+                itemView.setOnClickListener { onAddLocalVideoClick(item.id) }
             }
 
             override fun indentize(item: BlockView.Indentable) {
@@ -737,8 +746,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class Error(view: View) : BlockViewHolder(view), IndentableHolder {
 
             private val root = itemView.videoErrorRoot
+            private val btnMenu = itemView.btnVideoErrorMenu
 
-            fun bind(item: BlockView.Video.Error) {
+            fun bind(item: BlockView.Video.Error, menuClick: (String) -> Unit) {
+                btnMenu.setOnClickListener { menuClick(item.id) }
                 indentize(item)
             }
 
@@ -879,6 +890,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val image = itemView.image
         private val root = itemView.pictureRootLayout
         private val error = itemView.error
+        private val btnMenu = itemView.btnPicMenu
 
         private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
 
@@ -904,8 +916,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        fun bind(item: BlockView.Picture.View) {
+        fun bind(item: BlockView.Picture.View, menuClick: (String) -> Unit) {
             indentize(item)
+            btnMenu.setOnClickListener {
+                menuClick(item.id)
+            }
             Glide.with(image).load(item.url).listener(listener).into(image)
         }
 
@@ -918,9 +933,17 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
 
             private val root = itemView.picturePlaceholderRoot
+            private val btnMore = itemView.btnPicPlaceholderMenu
 
-            fun bind(item: BlockView.Picture.Placeholder, onAddLocalPictureClick: (String) -> Unit) {
+            fun bind(
+                item: BlockView.Picture.Placeholder,
+                onAddLocalPictureClick: (String) -> Unit,
+                menuClick: (String) -> Unit
+            ) {
                 indentize(item)
+                btnMore.setOnClickListener {
+                    menuClick(item.id)
+                }
                 itemView.setOnClickListener {
                     onAddLocalPictureClick(item.id)
                 }
@@ -936,9 +959,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class Error(view: View) : BlockViewHolder(view), IndentableHolder {
 
             private val root = itemView.pictureErrorRoot
+            private val btnMore = itemView.btnPicErrorMenu
 
-            fun bind(item: BlockView.Picture.Error) {
+            fun bind(item: BlockView.Picture.Error, menuClick: (String) -> Unit) {
                 indentize(item)
+                btnMore.setOnClickListener {
+                    menuClick(item.id)
+                }
             }
 
             override fun indentize(item: BlockView.Indentable) {

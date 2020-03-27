@@ -44,12 +44,12 @@
         android:id="@+id/fileSize"
         style="@style/BlockFileFileSizeContentStyle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/fileMenuButton"
+        app:layout_constraintEnd_toStartOf="@+id/btnFileMenu"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="2.1 MB" />
 
     <ImageView
-        android:id="@+id/fileMenuButton"
+        android:id="@+id/btnFileMenu"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginTop="3dp"

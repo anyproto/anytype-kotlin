@@ -70,6 +70,10 @@ class BlockMiddleware(
         command.prototype
     )
 
+    override suspend fun createDocument(
+        command: CommandEntity.CreateDocument
+    ): Pair<String, String> = middleware.createDocument(command)
+
     override suspend fun dnd(command: CommandEntity.Dnd) {
         middleware.dnd(command)
     }

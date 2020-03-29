@@ -13,6 +13,10 @@
 
 ### Fixes & tech 🚒
 
+* Should open new page after its creation on some other page (#283)
+* Should update link block titles when corresponding page titles have been updated (#283)
+* Should set "Untitled" as link's title if it's not set or blank (#283)
+
 ### Middleware ⚙️
 
 * Added `blockUndo` command (#284)

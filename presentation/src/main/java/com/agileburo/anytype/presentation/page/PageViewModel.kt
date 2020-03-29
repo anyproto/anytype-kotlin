@@ -45,6 +45,7 @@ class PageViewModel(
     private val openPage: OpenPage,
     private val closePage: ClosePage,
     private val createPage: CreatePage,
+    private val createDocument: CreateDocument,
     private val archiveDocument: ArchiveDocument,
     private val undo: Undo,
     private val redo: Redo,
@@ -922,19 +923,20 @@ class PageViewModel(
     }
 
     fun onAddNewPageClicked() {
+
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
-        val params = CreateBlock.Params(
+        val params = CreateDocument.Params(
             context = context,
             position = Position.BOTTOM,
             target = focusChannel.value,
             prototype = Prototype.Page(style = Content.Page.Style.EMPTY)
         )
 
-        createBlock.invoke(scope = viewModelScope, params = params) { result ->
+        createDocument.invoke(scope = viewModelScope, params = params) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while creating new page with params: $params") },
-                fnR = { Timber.d("Page created!") }
+                fnR = { (_, target) -> proceedWithOpeningPage(target) }
             )
         }
     }

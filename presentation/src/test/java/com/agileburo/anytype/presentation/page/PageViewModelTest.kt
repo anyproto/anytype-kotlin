@@ -111,6 +111,9 @@ class PageViewModelTest {
     lateinit var redo: Redo
 
     @Mock
+    lateinit var createDocument: CreateDocument
+
+    @Mock
     lateinit var archiveDocument: ArchiveDocument
 
     private lateinit var vm: PageViewModel
@@ -2992,10 +2995,10 @@ class PageViewModelTest {
 
         vm.onAddNewPageClicked()
 
-        verify(createBlock, times(1)).invoke(
+        verify(createDocument, times(1)).invoke(
             scope = any(),
             params = eq(
-                CreateBlock.Params(
+                CreateDocument.Params(
                     context = root,
                     target = title.id,
                     position = Position.BOTTOM,
@@ -3477,7 +3480,8 @@ class PageViewModelTest {
                 emojifier = emojifier,
                 toggleStateHolder = ToggleStateHolder.Default()
             ),
-            archiveDocument = archiveDocument
+            archiveDocument = archiveDocument,
+            createDocument = createDocument
         )
     }
 }

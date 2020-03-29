@@ -58,6 +58,7 @@ class PageModule {
         mergeBlocks: MergeBlocks,
         splitBlock: SplitBlock,
         createPage: CreatePage,
+        createDocument: CreateDocument,
         uploadUrl: UploadUrl,
         documentExternalEventReducer: DocumentExternalEventReducer,
         urlBuilder: UrlBuilder,
@@ -69,6 +70,7 @@ class PageModule {
         openPage = openPage,
         closePage = closePage,
         createPage = createPage,
+        createDocument = createDocument,
         updateBlock = updateBlock,
         createBlock = createBlock,
         interceptEvents = interceptEvents,
@@ -269,6 +271,14 @@ class PageModule {
     fun provideRedoUseCase(
         repo: BlockRepository
     ): Redo = Redo(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideCreateDocumentUseCase(
+        repo: BlockRepository
+    ): CreateDocument = CreateDocument(
         repo = repo
     )
 

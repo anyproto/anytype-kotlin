@@ -81,6 +81,17 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
             },
             target = { block -> block.id == event.target }
         )
+        is Event.Command.LinkGranularChange -> state.replace(
+            replacement = { block ->
+                val content = block.content<Block.Content.Link>()
+                block.copy(
+                    content = content.copy(
+                        fields = event.fields ?: content.fields
+                    )
+                )
+            },
+            target = { block -> block.id == event.id }
+        )
 
         else -> state.also { Timber.d("Ignoring event: $event") }
     }

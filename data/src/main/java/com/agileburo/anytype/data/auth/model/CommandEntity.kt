@@ -55,6 +55,13 @@ class CommandEntity {
         val prototype: BlockEntity.Prototype
     )
 
+    class CreateDocument(
+        val context: String,
+        val target: String,
+        val position: PositionEntity,
+        val prototype: BlockEntity.Prototype.Page
+    )
+
     class Dnd(
         val contextId: String,
         val dropTargetId: String,

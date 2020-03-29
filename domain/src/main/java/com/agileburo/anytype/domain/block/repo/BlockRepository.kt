@@ -17,6 +17,12 @@ interface BlockRepository {
      */
     suspend fun create(command: Command.Create): Id
 
+    /**
+     * Creates a new document / page.
+     * @return pair of values, where the first one is block id and the second one is target id.
+     */
+    suspend fun createDocument(command: Command.CreateDocument): Pair<Id, Id>
+
     suspend fun merge(command: Command.Merge)
 
     /**
@@ -31,7 +37,10 @@ interface BlockRepository {
     suspend fun updateBackgroundColor(command: Command.UpdateBackgroundColor)
     suspend fun updateCheckbox(command: Command.UpdateCheckbox)
     suspend fun getConfig(): Config
+
+    @Deprecated("Should be replaced by createDocument() command")
     suspend fun createPage(parentId: String): Id
+
     suspend fun openPage(id: String)
     suspend fun closePage(id: String)
     suspend fun openDashboard(contextId: String, id: String)

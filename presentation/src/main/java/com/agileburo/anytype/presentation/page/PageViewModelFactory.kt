@@ -17,6 +17,7 @@ open class PageViewModelFactory(
     private val openPage: OpenPage,
     private val closePage: ClosePage,
     private val createPage: CreatePage,
+    private val createDocument: CreateDocument,
     private val archiveDocument: ArchiveDocument,
     private val redo: Redo,
     private val undo: Undo,
@@ -68,7 +69,8 @@ open class PageViewModelFactory(
             urlBuilder = urlBuilder,
             downloadFile = downloadFile,
             renderer = renderer,
-            counter = counter
+            counter = counter,
+            createDocument = createDocument
         ) as T
     }
 }

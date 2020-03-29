@@ -24,49 +24,49 @@
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <ImageView
-            android:contentDescription="@string/content_description_back_button_icon"
             android:id="@+id/backButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
+            android:contentDescription="@string/content_description_back_button_icon"
             android:src="@drawable/ic_back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:visibility="invisible"
-            android:textColor="@color/emoji_color"
             android:id="@+id/emoji"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
+            android:textColor="@color/emoji_color"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/backButton"
             app:layout_constraintStart_toEndOf="@+id/backButton"
             app:layout_constraintTop_toTopOf="@+id/backButton"
             tools:text="🌗" />
 
         <TextView
-            android:visibility="invisible"
-            android:textColor="#6C6A5F"
-            android:textSize="15sp"
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
+            android:textColor="#6C6A5F"
+            android:textSize="15sp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/emoji"
             app:layout_constraintStart_toEndOf="@+id/emoji"
             app:layout_constraintTop_toTopOf="@+id/emoji"
             tools:text="Title" />
 
         <ImageView
-            android:contentDescription="@string/content_description_menu_icon"
             android:id="@+id/menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
+            android:contentDescription="@string/content_description_menu_icon"
             android:src="@drawable/ic_more"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

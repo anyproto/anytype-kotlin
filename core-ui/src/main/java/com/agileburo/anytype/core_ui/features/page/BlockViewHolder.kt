@@ -788,7 +788,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onPageClicked: (String) -> Unit
         ) {
             indentize(item)
-            title.text = item.text ?: untitled
+            title.text = if (item.text.isNullOrEmpty()) untitled else item.text
             if (item.isEmpty)
                 icon.setImageResource(R.drawable.ic_block_empty_page)
             else if (item.emoji == null)

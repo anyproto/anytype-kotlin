@@ -411,6 +411,13 @@ fun Command.ArchiveDocument.toEntity() = CommandEntity.ArchiveDocument(
     target = target
 )
 
+fun Command.CreateDocument.toEntity() = CommandEntity.CreateDocument(
+    context = context,
+    target = target,
+    prototype = prototype.toEntity(),
+    position = position.toEntity()
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }
@@ -525,3 +532,7 @@ fun Block.Prototype.toEntity(): BlockEntity.Prototype = when (this) {
         )
     }
 }
+
+fun Block.Prototype.Page.toEntity() = BlockEntity.Prototype.Page(
+    style = BlockEntity.Content.Page.Style.valueOf(style.name)
+)

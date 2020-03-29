@@ -17,6 +17,7 @@ import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
 import anytype.Commands.Rpc.Wallet;
 import anytype.model.Models;
+import kotlin.Pair;
 import timber.log.Timber;
 
 public class Middleware {
@@ -303,6 +304,35 @@ public class Middleware {
         Block.Create.Response response = service.blockCreate(request);
 
         return response.getBlockId();
+    }
+
+    public Pair<String, String> createDocument(CommandEntity.CreateDocument command) throws Exception {
+
+        Models.Block.Position position = mapper.toMiddleware(command.getPosition());
+
+        Models.Block.Content.Page page = Models.Block.Content.Page
+                .newBuilder()
+                .setStyle(Models.Block.Content.Page.Style.Empty)
+                .build();
+
+        Models.Block block = Models.Block
+                .newBuilder()
+                .setPage(page)
+                .build();
+
+        Block.CreatePage.Request request = Block.CreatePage.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .setTargetId(command.getTarget())
+                .setPosition(position)
+                .setBlock(block)
+                .build();
+
+        Timber.d("Creating new document with the following request:\n%s", request.toString());
+
+        Block.CreatePage.Response response = service.blockCreatePage(request);
+
+        return new Pair<>(response.getBlockId(), response.getTargetId());
     }
 
     public void dnd(CommandEntity.Dnd command) throws Exception {

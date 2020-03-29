@@ -51,6 +51,10 @@ class BlockDataRepository(
 
     override suspend fun create(command: Command.Create) = factory.remote.create(command.toEntity())
 
+    override suspend fun createDocument(
+        command: Command.CreateDocument
+    ) = factory.remote.createDocument(command.toEntity())
+
     override suspend fun dnd(command: Command.Dnd) {
         factory.remote.dnd(command.toEntity())
     }

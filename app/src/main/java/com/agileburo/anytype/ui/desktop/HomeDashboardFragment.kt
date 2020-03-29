@@ -107,8 +107,9 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
                 fab.visible()
                 state.dashboard?.let { dashboard ->
                     lifecycleScope.launch {
-                        val result =
-                            withContext(Dispatchers.IO) { dashboard.toView(emojifier = emojifier) }
+                        val result = withContext(Dispatchers.IO) {
+                            dashboard.toView(emojifier = emojifier)
+                        }
                         dashboardAdapter.update(result)
                     }
                 }

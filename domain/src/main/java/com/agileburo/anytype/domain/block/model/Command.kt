@@ -5,6 +5,16 @@ import com.agileburo.anytype.domain.common.Id
 sealed class Command {
 
     /**
+     * Command for archiving a document
+     * @property context id of the context
+     * @property target id of the target (document we want to close)
+     */
+    class ArchiveDocument(
+        val context: Id,
+        val target: Id
+    )
+
+    /**
      * @property contextId context id
      * @property blockId target block id
      * @property text updated text

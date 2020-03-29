@@ -45,6 +45,7 @@ class PageViewModel(
     private val openPage: OpenPage,
     private val closePage: ClosePage,
     private val createPage: CreatePage,
+    private val archiveDocument: ArchiveDocument,
     private val undo: Undo,
     private val redo: Redo,
     private val updateBlock: UpdateBlock,
@@ -371,6 +372,10 @@ class PageViewModel(
     }
 
     fun onSystemBackPressed() {
+        proceedWithExiting()
+    }
+
+    fun onBackButtonPressed() {
         proceedWithExiting()
     }
 
@@ -932,6 +937,22 @@ class PageViewModel(
                 fnR = { Timber.d("Page created!") }
             )
         }
+    }
+
+    fun onArchiveThisPageClicked() {
+        archiveDocument.invoke(
+            scope = viewModelScope,
+            params = ArchiveDocument.Params(
+                context = context,
+                target = context
+            ),
+            onResult = { result ->
+                result.either(
+                    fnL = { Timber.e(it, "Error while archiving page") },
+                    fnR = { proceedWithExiting() }
+                )
+            }
+        )
     }
 
     fun onAddBookmarkClicked() {

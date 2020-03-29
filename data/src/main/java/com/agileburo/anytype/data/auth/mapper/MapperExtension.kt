@@ -406,6 +406,11 @@ fun Command.Redo.toEntity() = CommandEntity.Redo(
     context = context
 )
 
+fun Command.ArchiveDocument.toEntity() = CommandEntity.ArchiveDocument(
+    context = context,
+    target = target
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }

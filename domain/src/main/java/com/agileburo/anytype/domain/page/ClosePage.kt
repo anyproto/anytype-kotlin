@@ -25,7 +25,7 @@ open class ClosePage(
     /**
      * @property id page's id
      */
-    class Params(val id: String) {
+    data class Params(val id: String) {
         companion object {
             fun reference() = Params(id = MainConfig.REFERENCE_PAGE_ID)
         }

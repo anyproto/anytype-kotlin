@@ -422,4 +422,17 @@ public class Middleware {
 
         service.blockRedo(request);
     }
+
+    public void archiveDocument(CommandEntity.ArchiveDocument command) throws Exception {
+        Block.Set.Page.IsArchived.Request request = Block.Set.Page.IsArchived.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .setBlockId(command.getTarget())
+                .setIsArchived(true)
+                .build();
+
+        Timber.d("Archiving document with the following request:\n%s", request.toString());
+
+        service.blockSetPageIsArchived(request);
+    }
 }

@@ -100,6 +100,7 @@ fun Struct.fields(): BlockEntity.Fields = BlockEntity.Fields().also { result ->
         result.map[key] = when (val case = value.kindCase) {
             Value.KindCase.NUMBER_VALUE -> value.numberValue
             Value.KindCase.STRING_VALUE -> value.stringValue
+            Value.KindCase.BOOL_VALUE -> value.boolValue
             else -> throw IllegalStateException("$case is not supported.")
         }
     }
@@ -209,6 +210,7 @@ fun Block.link(): BlockEntity.Content.Link = BlockEntity.Content.Link(
             result.map[key] = when (val case = value.kindCase) {
                 Value.KindCase.NUMBER_VALUE -> value.numberValue
                 Value.KindCase.STRING_VALUE -> value.stringValue
+                Value.KindCase.BOOL_VALUE -> value.boolValue
                 else -> throw IllegalStateException("$case is not supported.")
             }
         }

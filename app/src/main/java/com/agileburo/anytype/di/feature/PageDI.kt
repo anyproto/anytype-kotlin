@@ -63,7 +63,8 @@ class PageModule {
         urlBuilder: UrlBuilder,
         downloadFile: DownloadFile,
         renderer: DefaultBlockViewRenderer,
-        counter: Counter
+        counter: Counter,
+        archiveDocument: ArchiveDocument
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -88,7 +89,8 @@ class PageModule {
         renderer = renderer,
         counter = counter,
         undo = undo,
-        redo = redo
+        redo = redo,
+        archiveDocument = archiveDocument
     )
 
     @Provides
@@ -267,6 +269,14 @@ class PageModule {
     fun provideRedoUseCase(
         repo: BlockRepository
     ): Redo = Redo(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideArchiveDocumentUseCase(
+        repo: BlockRepository
+    ): ArchiveDocument = ArchiveDocument(
         repo = repo
     )
 }

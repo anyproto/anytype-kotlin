@@ -6,7 +6,6 @@ import com.agileburo.anytype.data.auth.repo.AuthCache
 import com.agileburo.anytype.persistence.db.AnytypeDatabase
 import com.agileburo.anytype.persistence.mapper.toEntity
 import com.agileburo.anytype.persistence.mapper.toTable
-import timber.log.Timber
 
 class DefaultAuthCache(
     private val db: AnytypeDatabase,
@@ -32,7 +31,6 @@ class DefaultAuthCache(
     }
 
     override suspend fun saveMnemonic(mnemonic: String) {
-        Timber.d("Saving mnemonic: $mnemonic")
         prefs.edit().putString(MNEMONIC_KEY, mnemonic).apply()
     }
 

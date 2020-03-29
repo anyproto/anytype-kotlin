@@ -64,4 +64,6 @@ public interface MiddlewareService {
     Block.Undo.Response blockUndo(Block.Undo.Request request) throws Exception;
 
     Block.Redo.Response blockRedo(Block.Redo.Request request) throws Exception;
+
+    Block.Set.Page.IsArchived.Response blockSetPageIsArchived(Block.Set.Page.IsArchived.Request request) throws Exception;
 }

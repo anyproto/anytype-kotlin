@@ -98,4 +98,8 @@ class BlockMiddleware(
     override suspend fun undo(command: CommandEntity.Undo) = middleware.undo(command)
 
     override suspend fun redo(command: CommandEntity.Redo) = middleware.redo(command)
+
+    override suspend fun archiveDocument(
+        command: CommandEntity.ArchiveDocument
+    ) = middleware.archiveDocument(command)
 }

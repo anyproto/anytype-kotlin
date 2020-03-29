@@ -5,6 +5,11 @@ package com.agileburo.anytype.data.auth.model
  */
 class CommandEntity {
 
+    class ArchiveDocument(
+        val context: String,
+        val target: String
+    )
+
     class UpdateText(
         val contextId: String,
         val blockId: String,

@@ -134,16 +134,23 @@ suspend fun HomeDashboard.toView(
         when (val content = model.content) {
             is Block.Content.Link -> {
                 if (content.type == Block.Content.Link.Type.PAGE) {
-                    DashboardView.Document(
-                        id = content.target,
-                        title = if (content.fields.hasName()) content.fields.name else defaultTitle,
-                        emoji = content.fields.icon?.let { name ->
-                            if (name.isNotEmpty())
-                                emojifier.fromShortName(name).unicode
+                    if (content.fields.isArchived != true) {
+                        DashboardView.Document(
+                            id = content.target,
+                            title = if (content.fields.hasName())
+                                content.fields.name.ifEmpty { defaultTitle }
                             else
-                                null
-                        }
-                    )
+                                defaultTitle,
+                            emoji = content.fields.icon?.let { name ->
+                                if (name.isNotEmpty())
+                                    emojifier.fromShortName(name).unicode
+                                else
+                                    null
+                            }
+                        )
+                    } else {
+                        null
+                    }
                 } else {
                     null
                 }

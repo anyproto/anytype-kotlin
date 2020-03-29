@@ -22,8 +22,11 @@ import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.extensions.invisible
 import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
+import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.menu.DocumentPopUpMenu
 import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_ui.state.ControlPanelState
+import com.agileburo.anytype.core_ui.tools.FirstItemInvisibilityDetector
 import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DELETE
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DUPLICATE
@@ -124,6 +127,18 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             onToggleClicked = vm::onToggleClicked,
             onMediaBlockMenuClick = vm::onMediaBlockMenuClicked
         )
+    }
+
+    private val titleVisibilityDetector by lazy {
+        FirstItemInvisibilityDetector { isVisible ->
+            if (isVisible) {
+                title.invisible()
+                emoji.invisible()
+            } else {
+                title.visible()
+                emoji.visible()
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -258,6 +273,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
             adapter = pageAdapter
+            addOnScrollListener(titleVisibilityDetector)
         }
 
         toolbar
@@ -342,6 +358,16 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             .launchIn(lifecycleScope)
 
         fab.clicks().onEach { vm.onPlusButtonPressed() }.launchIn(lifecycleScope)
+        menu.clicks().onEach { showToolbarMenu() }.launchIn(lifecycleScope)
+        backButton.clicks().onEach { vm.onBackButtonPressed() }.launchIn(lifecycleScope)
+    }
+
+    private fun showToolbarMenu() {
+        DocumentPopUpMenu(
+            requireContext(),
+            menu,
+            vm::onArchiveThisPageClicked
+        ).show()
     }
 
     private fun handleTextColorClick(click: ColorToolbarWidget.Click.OnTextColorClicked) =
@@ -527,6 +553,7 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
         when (state) {
             is PageViewModel.ViewState.Success -> {
                 pageAdapter.updateWithDiffUtil(state.blocks)
+                resetDocumentTitle(state)
             }
             is PageViewModel.ViewState.OpenLinkScreen -> {
                 SetLinkFragment.newInstance(
@@ -538,6 +565,15 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                 ).show(childFragmentManager, null)
             }
             is PageViewModel.ViewState.Error -> toast(state.message)
+        }
+    }
+
+    private fun resetDocumentTitle(state: PageViewModel.ViewState.Success) {
+        state.blocks.firstOrNull { view ->
+            view is BlockView.Title
+        }?.let { view ->
+            title.text = (view as BlockView.Title).text
+            emoji.text = view.emoji
         }
     }
 

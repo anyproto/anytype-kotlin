@@ -27,4 +27,5 @@ interface BlockDataStore {
     suspend fun setupBookmark(command: CommandEntity.SetupBookmark)
     suspend fun undo(command: CommandEntity.Undo)
     suspend fun redo(command: CommandEntity.Redo)
+    suspend fun archiveDocument(command: CommandEntity.ArchiveDocument)
 }

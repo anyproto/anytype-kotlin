@@ -50,7 +50,7 @@ class KeychainLoginViewModel(
                 fnR = { proceedWithSavingMnemonic(chain) },
                 fnL = {
                     state.postValue(ViewState.Error(it.localizedMessage))
-                    Timber.e(it, "Error while recovering wallet with the following mnemonic: $chain")
+                    Timber.e(it, "Error while recovering wallet")
                 }
             )
         }
@@ -67,7 +67,7 @@ class KeychainLoginViewModel(
                 fnR = {
                     navigation.postValue(EventWrapper(AppNavigation.Command.SelectAccountScreen))
                 },
-                fnL = { Timber.e(it, "Error while saving mnemonic: $mnemonic") }
+                fnL = { Timber.e(it, "Error while saving mnemonic") }
             )
         }
     }

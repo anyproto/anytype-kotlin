@@ -81,7 +81,7 @@ Do the computation of an expensive paragraph of text on a background thread:
 
     <string name="greet">Hi, %1$s!</string>
     <string name="organize_everything">Organize everything</string>
-    <string name="setting_up_the_wallet">Setting up the wallet...</string>
+    <string name="setting_up_the_wallet">Setting up the wallet…</string>
     <string name="sign_clock">⏳</string>
     <string name="back">Back</string>
     <string name="create_a_new_profile">Create a new profile</string>
@@ -105,5 +105,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="page_icon_picker_remove_text">Remove</string>
     <string name="create_bookmark">Create bookmark</string>
     <string name="hint_paste_or_type_a_url">Paste or type a URL</string>
+    <string name="content_description_menu_icon">Menu icon</string>
 
 </resources>

@@ -83,4 +83,8 @@ class BlockDataRepository(
     override suspend fun undo(command: Command.Undo) = factory.remote.undo(command.toEntity())
 
     override suspend fun redo(command: Command.Redo) = factory.remote.redo(command.toEntity())
+
+    override suspend fun archiveDocument(
+        command: Command.ArchiveDocument
+    ) = factory.remote.archiveDocument(command.toEntity())
 }

@@ -5,6 +5,11 @@
 ### New features 🚀
 
 * Undo/redo changes in document (unstable) (#284)
+* User can archive documents (#293)
+
+### Design 🔳
+
+* Added navigation bar with title and icon for pages (#293)
 
 ### Fixes & tech 🚒
 
@@ -12,6 +17,7 @@
 
 * Added `blockUndo` command (#284)
 * Added `blockRedo` command (#284)
+* Added `blockSetPageIsArchived` command (#293)
 
 ## Version 0.0.24
 

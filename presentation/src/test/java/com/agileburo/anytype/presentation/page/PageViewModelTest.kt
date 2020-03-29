@@ -110,6 +110,9 @@ class PageViewModelTest {
     @Mock
     lateinit var redo: Redo
 
+    @Mock
+    lateinit var archiveDocument: ArchiveDocument
+
     private lateinit var vm: PageViewModel
 
     @Before
@@ -3253,6 +3256,140 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should start archiving document on on-archive-this-page-clicked event`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    map = mapOf("icon" to "")
+                ),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id)
+            ),
+            title
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.onArchiveThisPageClicked()
+
+        verify(archiveDocument, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                ArchiveDocument.Params(
+                    context = root,
+                    target = root
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should start closing page after succesful archive operation`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    map = mapOf("icon" to "")
+                ),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id)
+            ),
+            title
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        archiveDocument.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
+            }
+        }
+
+        // TESTING
+
+        vm.onArchiveThisPageClicked()
+
+        verify(archiveDocument, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                ArchiveDocument.Params(
+                    context = root,
+                    target = root
+                )
+            ),
+            onResult = any()
+        )
+
+        verify(closePage, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                ClosePage.Params(
+                    id = root
+                )
+            ),
+            onResult = any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()
@@ -3339,7 +3476,8 @@ class PageViewModelTest {
                 urlBuilder = urlBuilder,
                 emojifier = emojifier,
                 toggleStateHolder = ToggleStateHolder.Default()
-            )
+            ),
+            archiveDocument = archiveDocument
         )
     }
 }

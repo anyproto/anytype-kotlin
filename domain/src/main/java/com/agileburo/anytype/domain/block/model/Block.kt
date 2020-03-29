@@ -30,12 +30,14 @@ data class Block(
 
         val name: String by default
         val icon: String? by default
+        val isArchived: Boolean? by default
 
         fun hasName() = map.containsKey(NAME_KEY)
 
         companion object {
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"
+            const val IS_ARCHIVED_KEY = "isArchived"
         }
     }
 

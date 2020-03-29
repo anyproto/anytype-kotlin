@@ -306,4 +306,15 @@ public class DefaultMiddlewareService implements MiddlewareService {
             return response;
         }
     }
+
+    @Override
+    public Block.Set.Page.IsArchived.Response blockSetPageIsArchived(Block.Set.Page.IsArchived.Request request) throws Exception {
+        byte[] encoded = Lib.blockSetPageIsArchived(request.toByteArray());
+        Block.Set.Page.IsArchived.Response response = Block.Set.Page.IsArchived.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Block.Set.Page.IsArchived.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
 }

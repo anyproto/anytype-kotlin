@@ -76,4 +76,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun undo(command: CommandEntity.Undo) = remote.undo(command)
 
     override suspend fun redo(command: CommandEntity.Redo) = remote.redo(command)
+
+    override suspend fun archiveDocument(
+        command: CommandEntity.ArchiveDocument
+    ) = remote.archiveDocument(command)
 }

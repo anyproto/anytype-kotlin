@@ -9,6 +9,8 @@ interface BlockRepository {
     suspend fun duplicate(command: Command.Duplicate): Id
     suspend fun unlink(command: Command.Unlink)
 
+    suspend fun archiveDocument(command: Command.ArchiveDocument)
+
     /**
      * Creates a new block.
      * @return id of the created block.

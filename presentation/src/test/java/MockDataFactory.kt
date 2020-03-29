@@ -11,7 +11,6 @@ object MockDataFactory {
         return randomUuid()
     }
 
-
     fun randomInt(): Int {
         return ThreadLocalRandom.current().nextInt(0, 1000 + 1)
     }

@@ -61,6 +61,7 @@ import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.base.NavigationFragment
+import com.agileburo.anytype.ui.page.modals.AddBlockFragment
 import com.agileburo.anytype.ui.page.modals.CreateBookmarkFragment
 import com.agileburo.anytype.ui.page.modals.PageIconPickerFragment
 import com.agileburo.anytype.ui.page.modals.SetLinkFragment
@@ -293,7 +294,10 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
 
         toolbar
             .addButtonClicks()
-            .onEach { vm.onAddBlockToolbarClicked() }
+            .onEach {
+                //vm.onAddBlockToolbarClicked()
+                AddBlockFragment().show(childFragmentManager, null)
+            }
             .launchIn(lifecycleScope)
 
         toolbar

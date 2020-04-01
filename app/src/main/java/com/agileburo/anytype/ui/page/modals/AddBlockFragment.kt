@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter
+import com.agileburo.anytype.core_ui.layout.SpacingItemDecoration
+import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.core_utils.ui.BaseBottomSheetFragment
 import kotlinx.android.synthetic.main.fragment_add_block.*
@@ -28,12 +30,19 @@ class AddBlockFragment : BaseBottomSheetFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
+        close.setOnClickListener { dismiss() }
     }
 
     private fun setupAdapter() {
         recycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = addBlockOrTurnIntoAdapter
+            setHasFixedSize(true)
+            addItemDecoration(
+                SpacingItemDecoration(
+                    firstItemSpacingTop = dimen(R.dimen.dp_16) * 3
+                )
+            )
         }
     }
 

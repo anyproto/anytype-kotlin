@@ -24,7 +24,13 @@ import com.agileburo.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapt
 import com.agileburo.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter.AddBlockConfig.OPTION_TEXT_HEADER_TWO
 import com.agileburo.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter.AddBlockConfig.OPTION_TEXT_HIGHLIGHTED
 import com.agileburo.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter.AddBlockConfig.OPTION_TEXT_TEXT
+import com.agileburo.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter.AddBlockConfig.SECTION_LIST
+import com.agileburo.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter.AddBlockConfig.SECTION_OBJECTS
+import com.agileburo.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter.AddBlockConfig.SECTION_OTHER
+import com.agileburo.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter.AddBlockConfig.SECTION_PAGE
+import com.agileburo.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter.AddBlockConfig.SECTION_TEXT
 import kotlinx.android.synthetic.main.item_add_block_or_turn_into_item.view.*
+import kotlinx.android.synthetic.main.item_add_block_or_turn_into_section.view.*
 
 class AddBlockOrTurnIntoAdapter(
     val views: List<AddBlockView>
@@ -63,8 +69,16 @@ class AddBlockOrTurnIntoAdapter(
 
         class Section(view: View) : ViewHolder(view) {
 
-            fun bind(section: AddBlockView.Section) {
+            private val title = itemView.section
 
+            fun bind(section: AddBlockView.Section) {
+                when (section.type) {
+                    SECTION_TEXT -> title.setText(R.string.toolbar_section_text)
+                    SECTION_LIST -> title.setText(R.string.toolbar_section_list)
+                    SECTION_PAGE -> title.setText(R.string.toolbar_section_page)
+                    SECTION_OBJECTS -> title.setText(R.string.toolbar_section_objects)
+                    SECTION_OTHER -> title.setText(R.string.toolbar_section_other)
+                }
             }
         }
 
@@ -215,8 +229,5 @@ class AddBlockOrTurnIntoAdapter(
     companion object {
         const val VIEW_HOLDER_SECTION = 0
         const val VIEW_HOLDER_ITEM = 1
-
-        const val ITEM_TEXT_TEXT = 1
-        const val ITEM_TEXT_HEADER_ONE = 1
     }
 }

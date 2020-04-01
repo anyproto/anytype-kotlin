@@ -75,9 +75,11 @@
 
     <string name="toolbar_section_text">Text</string>
     <string name="toolbar_section_list">List</string>
+    <string name="toolbar_section_page">Page</string>
     <string name="toolbar_section_other">Other</string>
     <string name="toolbar_section_tool">Tool</string>
     <string name="toolbar_section_media">Media</string>
+    <string name="toolbar_section_objects">Objects</string>
 
     <string name="toolbar_action_delete">Delete</string>
     <string name="toolbar_action_duplicate">Duplicate</string>

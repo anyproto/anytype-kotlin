@@ -17,7 +17,14 @@ class AddBlockAdapter(
         return when (viewType) {
             VIEW_HOLDER_ITEM -> ViewHolder.Item(
                 view = inflater.inflate(
-                    R.layout.item_add_block,
+                    R.layout.item_add_block_or_turn_into_item,
+                    parent,
+                    false
+                )
+            )
+            VIEW_HOLDER_SECTION -> ViewHolder.Section(
+                view = inflater.inflate(
+                    R.layout.item_add_block_or_turn_into_item,
                     parent,
                     false
                 )

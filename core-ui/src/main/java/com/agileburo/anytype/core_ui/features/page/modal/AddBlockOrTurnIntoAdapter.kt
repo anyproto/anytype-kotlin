@@ -175,7 +175,6 @@ class AddBlockOrTurnIntoAdapter(
                 itemView.setOnClickListener { onUiBlockClicked(item.type) }
             }
         }
-
     }
 
     sealed class AddBlockView : ViewType {

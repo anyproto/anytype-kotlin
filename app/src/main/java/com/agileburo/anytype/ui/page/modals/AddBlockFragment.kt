@@ -8,17 +8,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter
 import com.agileburo.anytype.core_ui.layout.SpacingItemDecoration
+import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_utils.ext.dimen
-import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.core_utils.ui.BaseBottomSheetFragment
 import kotlinx.android.synthetic.main.fragment_add_block.*
 
 class AddBlockFragment : BaseBottomSheetFragment() {
 
+    companion object {
+        fun newInstance(): AddBlockFragment = AddBlockFragment()
+    }
+
     private val addBlockOrTurnIntoAdapter = AddBlockOrTurnIntoAdapter(
-        onOptionClicked = {
-            toast("Option clicked")
-        }
+        onUiBlockClicked = { type -> dispatchAndExit(type) }
     )
 
     override fun onCreateView(
@@ -46,10 +48,15 @@ class AddBlockFragment : BaseBottomSheetFragment() {
         }
     }
 
-    override fun injectDependencies() {
-
+    private fun dispatchAndExit(block: UiBlock) {
+        (parentFragment as? AddBlockActionReceiver)?.onAddBlockClicked(block)
+        dismiss()
     }
 
-    override fun releaseDependencies() {
+    override fun injectDependencies() {}
+    override fun releaseDependencies() {}
+
+    interface AddBlockActionReceiver {
+        fun onAddBlockClicked(block: UiBlock)
     }
 }

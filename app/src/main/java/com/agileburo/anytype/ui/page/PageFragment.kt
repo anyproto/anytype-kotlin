@@ -24,6 +24,7 @@ import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.menu.DocumentPopUpMenu
+import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.tools.FirstItemInvisibilityDetector
@@ -61,6 +62,7 @@ import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.base.NavigationFragment
+import com.agileburo.anytype.ui.page.modals.AddBlockFragment
 import com.agileburo.anytype.ui.page.modals.CreateBookmarkFragment
 import com.agileburo.anytype.ui.page.modals.PageIconPickerFragment
 import com.agileburo.anytype.ui.page.modals.SetLinkFragment
@@ -80,8 +82,11 @@ import javax.inject.Inject
 const val REQUEST_FILE_CODE = 745
 
 @RuntimePermissions
-open class PageFragment : NavigationFragment(R.layout.fragment_page),
-    OnFragmentInteractionListener, PickiTCallbacks {
+open class PageFragment :
+    NavigationFragment(R.layout.fragment_page),
+    OnFragmentInteractionListener,
+    AddBlockFragment.AddBlockActionReceiver,
+    PickiTCallbacks {
 
     private val vm by lazy {
         ViewModelProviders
@@ -381,16 +386,38 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
             else -> toast(NOT_IMPLEMENTED_MESSAGE)
         }
 
-    private fun handleBackgroundColorClicked(click: ColorToolbarWidget.Click.OnBackgroundColorClicked) =
-        when (colorToolbar.state) {
-            ColorToolbarWidget.State.SELECTION -> {
-                vm.onMarkupBackgroundColorAction(click.color.hexColorCode())
-            }
-            ColorToolbarWidget.State.BLOCK -> {
-                vm.onBlockBackgroundColorAction(click.color.hexColorCode())
-            }
+    private fun handleBackgroundColorClicked(
+        click: ColorToolbarWidget.Click.OnBackgroundColorClicked
+    ) = when (colorToolbar.state) {
+        ColorToolbarWidget.State.SELECTION -> {
+            vm.onMarkupBackgroundColorAction(click.color.hexColorCode())
+        }
+        ColorToolbarWidget.State.BLOCK -> {
+            vm.onBlockBackgroundColorAction(click.color.hexColorCode())
+        }
+        else -> toast(NOT_IMPLEMENTED_MESSAGE)
+    }
+
+    override fun onAddBlockClicked(block: UiBlock) {
+        when (block) {
+            UiBlock.TEXT -> vm.onAddTextBlockClicked(Text.Style.P)
+            UiBlock.HEADER_ONE -> vm.onAddTextBlockClicked(Text.Style.H1)
+            UiBlock.HEADER_TWO -> vm.onAddTextBlockClicked(Text.Style.H2)
+            UiBlock.HEADER_THREE -> vm.onAddTextBlockClicked(Text.Style.H3)
+            UiBlock.HIGHLIGHTED -> vm.onAddTextBlockClicked(Text.Style.QUOTE)
+            UiBlock.CHECKBOX -> vm.onAddTextBlockClicked(Text.Style.CHECKBOX)
+            UiBlock.BULLETED -> vm.onAddTextBlockClicked(Text.Style.BULLET)
+            UiBlock.NUMBERED -> vm.onAddTextBlockClicked(Text.Style.NUMBERED)
+            UiBlock.TOGGLE -> vm.onAddTextBlockClicked(Text.Style.TOGGLE)
+            UiBlock.PAGE -> vm.onAddNewPageClicked()
+            UiBlock.FILE -> vm.onAddFileBlockClicked()
+            UiBlock.IMAGE -> vm.onAddImageBlockClicked()
+            UiBlock.VIDEO -> vm.onAddVideoBlockClicked()
+            UiBlock.BOOKMARK -> vm.onAddBookmarkClicked()
+            UiBlock.LINE_DIVIDER -> vm.onAddDividerBlockClicked()
             else -> toast(NOT_IMPLEMENTED_MESSAGE)
         }
+    }
 
     private fun handleAddBlockToolbarOptionClicked(option: Option) {
         when (option) {
@@ -532,6 +559,9 @@ open class PageFragment : NavigationFragment(R.layout.fragment_page),
                         context = requireArguments().getString(ID_KEY, ID_EMPTY_VALUE),
                         target = command.target
                     ).show(childFragmentManager, null)
+                }
+                is PageViewModel.Command.OpenAddBlockPanel -> {
+                    AddBlockFragment.newInstance().show(childFragmentManager, null)
                 }
                 is PageViewModel.Command.OpenBookmarkSetter -> {
                     CreateBookmarkFragment.newInstance(

@@ -837,7 +837,7 @@ class PageViewModel(
     }
 
     fun onAddBlockToolbarClicked() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarToggleClicked)
+        dispatch(Command.OpenAddBlockPanel)
     }
 
     fun onActionToolbarClicked() {
@@ -1119,6 +1119,8 @@ class PageViewModel(
             val target: String,
             val context: String
         ) : Command()
+
+        object OpenAddBlockPanel : Command()
 
         data class RequestDownloadPermission(
             val id: String

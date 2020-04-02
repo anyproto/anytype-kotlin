@@ -39,6 +39,7 @@
 
     <string name="option_tool_task">Task</string>
     <string name="option_tool_page">Page</string>
+    <string name="option_tool_existing_page">Existing page</string>
     <string name="option_tool_database">Database</string>
     <string name="option_tool_set">Set</string>
     <string name="option_tool_contact">Contact</string>
@@ -51,12 +52,34 @@
     <string name="option_media_code">Code</string>
 
     <string name="option_other_divider">Divider</string>
+    <string name="option_other_dots">Dots</string>
+
+    <string name="add_block_or_turn_into_subtitle_text">Just start writing with a plain text</string>
+    <string name="add_block_or_turn_into_subtitle_header_one">Big section heading</string>
+    <string name="add_block_or_turn_into_subtitle_header_two">Medium section heading</string>
+    <string name="add_block_or_turn_into_subtitle_header_three">Small section heading</string>
+    <string name="add_block_or_turn_into_subtitle_highlighted">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_checkbox">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_bulleted">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_numbered">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_toggle">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_page">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_existing_page">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_file">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_image">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_video">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_bookmark">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_code">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_line_divider">Lorem ipsum dolor sit amet, consectetur</string>
+    <string name="add_block_or_turn_into_subtitle_dots">Lorem ipsum dolor sit amet, consectetur</string>
 
     <string name="toolbar_section_text">Text</string>
     <string name="toolbar_section_list">List</string>
+    <string name="toolbar_section_page">Page</string>
     <string name="toolbar_section_other">Other</string>
     <string name="toolbar_section_tool">Tool</string>
     <string name="toolbar_section_media">Media</string>
+    <string name="toolbar_section_objects">Objects</string>
 
     <string name="toolbar_action_delete">Delete</string>
     <string name="toolbar_action_duplicate">Duplicate</string>
@@ -136,5 +159,6 @@
     <string name="tap_here_to_insert_a_bookmark_url">Tap here to insert a bookmark url</string>
     <string name="add_a_web_bookmark">Add a web bookmark</string>
     <string name="archive">Archive</string>
+    <string name="add_block_option_icon">Add block option icon</string>
 
 </resources>

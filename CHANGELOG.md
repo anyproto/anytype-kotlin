@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.26 (WIP)
+
+### Design 🔳
+
+* Redesigned add-block panel (using new bottom sheet design) (#329)
+
 ## Version 0.0.25
 
 ### New features 🚀

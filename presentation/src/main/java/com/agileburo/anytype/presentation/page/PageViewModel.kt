@@ -134,8 +134,28 @@ class PageViewModel(
             interceptEvents
                 .build()
                 .filter { events -> events.any { it.context == context } }
-                .map { events -> events.forEach { event -> blocks = reduce(blocks, event) } }
+                .map { events ->
+                    events.forEach { event -> blocks = reduce(blocks, event) }
+                    proceedWithInitialFocusing(events)
+                }
                 .collect { viewModelScope.launch { refresh() } }
+        }
+    }
+
+    @Deprecated("Will be removed")
+    private fun proceedWithInitialFocusing(events: List<Event>) {
+        val event = events.find { event -> event is Event.Command.ShowBlock }
+        if (event is Event.Command.ShowBlock) {
+            val title = event.blocks.first { block ->
+                block.content is Content.Text
+                        && block.content<Content.Text>().style == Content.Text.Style.TITLE
+            }
+            updateFocus(title.id)
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.OnFocusChanged(
+                    id = title.id, style = Content.Text.Style.TITLE
+                )
+            )
         }
     }
 

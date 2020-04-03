@@ -564,7 +564,8 @@ class BlockAdapterTest {
 
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid()
+            id = MockDataFactory.randomUuid(),
+            focused = MockDataFactory.randomBoolean()
         )
 
         val views = listOf(title)
@@ -590,7 +591,8 @@ class BlockAdapterTest {
 
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid()
+            id = MockDataFactory.randomUuid(),
+            focused = MockDataFactory.randomBoolean()
         )
 
         val views = listOf(title)
@@ -624,7 +626,8 @@ class BlockAdapterTest {
 
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid()
+            id = MockDataFactory.randomUuid(),
+            focused = MockDataFactory.randomBoolean()
         )
 
         val updated = title.copy(
@@ -674,7 +677,8 @@ class BlockAdapterTest {
 
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid()
+            id = MockDataFactory.randomUuid(),
+            focused = MockDataFactory.randomBoolean()
         )
 
         val views = listOf(title)
@@ -717,7 +721,8 @@ class BlockAdapterTest {
 
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid()
+            id = MockDataFactory.randomUuid(),
+            focused = MockDataFactory.randomBoolean()
         )
 
         val views = listOf(title)
@@ -760,7 +765,8 @@ class BlockAdapterTest {
 
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid()
+            id = MockDataFactory.randomUuid(),
+            focused = MockDataFactory.randomBoolean()
         )
 
         val views = listOf(title)
@@ -1461,6 +1467,108 @@ class BlockAdapterTest {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun `should apply focus to title block with payload change`() {
+
+        // Setup
+
+        val title = BlockView.Title(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            focused = false
+        )
+
+        val updated = title.copy(
+            focused = true
+        )
+
+        val views = listOf(title)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Title)
+
+        // Testing
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.hasFocus()
+        )
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(FOCUS_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.hasFocus()
+        )
+    }
+
+    @Test
+    fun `should remove focus from title block with payload change`() {
+
+        // Setup
+
+        val title = BlockView.Title(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            focused = true
+        )
+
+        val updated = title.copy(
+            focused = false
+        )
+
+        val views = listOf(title)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Title)
+
+        // Testing
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.hasFocus()
+        )
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(FOCUS_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.hasFocus()
+        )
+    }
+
     private fun buildAdapter(
         views: List<BlockView>,
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
@@ -1487,7 +1595,8 @@ class BlockAdapterTest {
             onAddUrlClick = { _, _ -> },
             onBookmarkPlaceholderClicked = {},
             onTogglePlaceholderClicked = {},
-            onToggleClicked = {}
+            onToggleClicked = {},
+            onMediaBlockMenuClick = {}
         )
     }
 }

@@ -18,6 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.main.MainActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter android:label="filter">

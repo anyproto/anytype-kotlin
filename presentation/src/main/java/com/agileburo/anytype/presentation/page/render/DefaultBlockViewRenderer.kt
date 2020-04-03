@@ -39,7 +39,7 @@ class DefaultBlockViewRenderer(
                     when (content.style) {
                         Content.Text.Style.TITLE -> {
                             counter.reset()
-                            result.add(title(block, content, root))
+                            result.add(title(block, content, root, focus))
                         }
                         Content.Text.Style.P -> {
                             counter.reset()
@@ -306,7 +306,8 @@ class DefaultBlockViewRenderer(
     private suspend fun title(
         block: Block,
         content: Content.Text,
-        root: Block
+        root: Block,
+        focus: Id
     ): BlockView.Title = BlockView.Title(
         id = block.id,
         text = content.text,
@@ -315,7 +316,8 @@ class DefaultBlockViewRenderer(
                 emojifier.fromShortName(name).unicode
             else
                 null
-        }
+        },
+        focused = block.id == focus
     )
 
     private fun page(

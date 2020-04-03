@@ -6,6 +6,10 @@
 
 * Redesigned add-block panel (using new bottom sheet design) (#329)
 
+### Fixes & tech 🚒
+
+* Should focus title block after page creation (#323)
+
 ## Version 0.0.25
 
 ### New features 🚀

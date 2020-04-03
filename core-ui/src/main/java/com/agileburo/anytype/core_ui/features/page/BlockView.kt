@@ -105,9 +105,10 @@ sealed class BlockView : ViewType {
      */
     data class Title(
         override val id: String,
+        override val focused: Boolean,
         val text: String,
         val emoji: String? = null
-    ) : BlockView() {
+    ) : BlockView(), Focusable {
         override fun getViewType() = HOLDER_TITLE
     }
 

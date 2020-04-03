@@ -14,6 +14,7 @@ import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.TouchDelegate
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.DimenRes
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +25,14 @@ import java.util.*
 fun Context.dimen(res: Int): Float {
     return resources
         .getDimension(res)
+}
+
+fun Context.imm(): InputMethodManager {
+    return getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+}
+
+fun RecyclerView.ViewHolder.imm(): InputMethodManager {
+    return itemView.context.imm()
 }
 
 fun Fragment.dimen(@DimenRes res: Int): Int = resources.getDimension(res).toInt()

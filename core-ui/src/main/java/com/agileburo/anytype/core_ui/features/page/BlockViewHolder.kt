@@ -8,10 +8,12 @@ import android.text.Editable
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.TextView.BufferType
 import androidx.core.view.isVisible
+import androidx.core.view.postDelayed
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
@@ -32,6 +34,7 @@ import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
 import com.agileburo.anytype.core_utils.ext.dimen
+import com.agileburo.anytype.core_utils.ext.imm
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -149,13 +152,22 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onPageIconClicked: () -> Unit
         ) {
             content.clearTextWatchers()
+            focus(item.focused)
+            content.setText(item.text, BufferType.EDITABLE)
+            if (item.text.isNotEmpty()) content.setSelection(item.text.length)
+            setupTextWatcher(onTextChanged, item)
             content.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
+                if (hasFocus) showKeyboard()
             }
-            content.setText(item.text, BufferType.EDITABLE)
-            setupTextWatcher(onTextChanged, item)
             icon.text = item.emoji ?: EMPTY_EMOJI
             icon.setOnClickListener { onPageIconClicked() }
+        }
+
+        private fun showKeyboard() {
+            content.postDelayed(KEYBOARD_SHOW_DELAY) {
+                imm().showSoftInput(content, SHOW_IMPLICIT)
+            }
         }
 
         fun processPayloads(
@@ -173,9 +185,24 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
+        fun focus(focused: Boolean) {
+            if (focused) {
+                content.requestFocus()
+                showKeyboard()
+            }
+            else
+                content.clearFocus()
+        }
+
         override fun processChangePayload(
             payloads: List<Payload>, item: BlockView
-        ) = Unit
+        ) {
+            check(item is BlockView.Title)
+            payloads.forEach { payload ->
+                if (payload.focusChanged())
+                    focus(item.focused)
+            }
+        }
 
         override fun enableBackspaceDetector(
             onEmptyBlockBackspaceClicked: () -> Unit,
@@ -1109,5 +1136,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_FILE_ERROR = 33
 
         const val FOCUS_TIMEOUT_MILLIS = 16L
+        const val KEYBOARD_SHOW_DELAY = 16L
     }
 }

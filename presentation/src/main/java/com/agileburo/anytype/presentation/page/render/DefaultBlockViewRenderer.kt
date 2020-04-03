@@ -251,7 +251,7 @@ class DefaultBlockViewRenderer(
     ): BlockView.Numbered = BlockView.Numbered(
         id = block.id,
         text = content.text,
-        number = number.toString(),
+        number = number,
         focused = block.id == focus,
         color = content.color,
         backgroundColor = content.backgroundColor,

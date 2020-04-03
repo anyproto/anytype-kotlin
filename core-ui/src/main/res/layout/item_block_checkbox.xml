@@ -21,7 +21,6 @@
         android:hint="@string/hint_checkbox"
         android:id="@+id/checkboxContent"
         style="@style/BlockCheckboxContentStyle"
-        android:layout_marginTop="3dp"
         tools:text="New front-end based on design" />
 
 </LinearLayout>

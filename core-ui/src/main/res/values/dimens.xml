@@ -86,6 +86,8 @@
 
     <dimen name="default_dashboard_item_spacing">10dp</dimen>
 
-    <dimen name="indent">24dp</dimen>
+    <dimen name="indent">28dp</dimen>
+
+    <dimen name="default_block_type_width">24dp</dimen>
 
 </resources>

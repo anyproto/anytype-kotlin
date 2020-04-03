@@ -1,11 +1,15 @@
 package com.agileburo.anytype.core_ui.features.page
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.Editable
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.TextView.BufferType
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -335,6 +339,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             indentize(item)
             checkbox.isSelected = item.isChecked
 
+            updateTextColor(
+                context = itemView.context,
+                view = content,
+                isSelected = checkbox.isSelected
+            )
+
             if (item.marks.isLinksPresent()) {
                 content.setLinksClickable()
             }
@@ -348,6 +358,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             checkbox.setOnClickListener {
                 checkbox.isSelected = !checkbox.isSelected
+                updateTextColor(
+                    context = itemView.context,
+                    view = content,
+                    isSelected = checkbox.isSelected
+                )
                 onCheckboxClicked(item.id)
             }
 
@@ -369,6 +384,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 left = item.indent * dimen(R.dimen.indent)
             )
         }
+
+        private fun updateTextColor(context: Context, view: TextView, isSelected: Boolean) =
+            view.setTextColor(
+                context.color(
+                    if (isSelected) R.color.grey_50 else R.color.black
+                )
+            )
     }
 
     class Task(view: View) : BlockViewHolder(view) {
@@ -467,7 +489,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         ) {
             content.clearTextWatchers()
             indentize(item)
-            number.text = item.number
+            number.gravity = when (item.number) {
+                in 1..19 -> Gravity.CENTER_HORIZONTAL
+                else -> Gravity.START
+            }
+            number.text = item.number.addDot()
 
             content.setText(item.toSpannable(), BufferType.SPANNABLE)
 
@@ -496,15 +522,22 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             super.processChangePayload(payloads, item)
             payloads.forEach { payload ->
                 if (payload.changes.contains(NUMBER_CHANGED))
-                    number.text = (item as BlockView.Numbered).number
+                    number.text = "${(item as BlockView.Numbered).number}"
             }
         }
 
         override fun indentize(item: BlockView.Indentable) {
-            number.updatePadding(
-                left = item.indent * dimen(R.dimen.indent)
-            )
+            number.updateLayoutParams<LinearLayout.LayoutParams> {
+                setMargins(
+                    item.indent * dimen(R.dimen.indent),
+                    0,
+                    0,
+                    0
+                )
+            }
         }
+
+        private fun Int.addDot(): String = "$this."
     }
 
     class Toggle(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {

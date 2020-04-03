@@ -259,13 +259,13 @@ class BlockViewDiffUtilTest {
             id = id,
             text = text,
             marks = emptyList(),
-            number = "1",
+            number = 1,
             focused = MockDataFactory.randomBoolean(),
             indent = MockDataFactory.randomInt()
         )
 
         val newBlock: BlockView = oldBlock.copy(
-            number = "2"
+            number = 2
         )
 
         val old = listOf(oldBlock)

@@ -3,22 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="horizontal"
     android:paddingStart="@dimen/default_page_item_padding_start"
-    android:paddingEnd="@dimen/default_page_item_padding_end"
-    android:orientation="horizontal">
+    android:paddingEnd="@dimen/default_page_item_padding_end">
 
     <TextView
-        android:textColor="@color/black"
-        android:textSize="15sp"
         android:id="@+id/number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="9dp"
-        tools:text="1.1" />
+        android:gravity="center"
+        android:minWidth="@dimen/default_block_type_width"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:visibility="visible"
+        tools:text="19." />
 
     <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/numberedListContent"
         style="@style/BlockNumberedContentStyle"
+        android:layout_marginStart="4dp"
         android:hint="@string/hint_numbered_list"
         tools:text="@string/default_text_placeholder" />
 

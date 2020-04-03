@@ -253,7 +253,7 @@ sealed class BlockView : ViewType {
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val indent: Int,
-        val number: String
+        val number: Int
     ) : BlockView(), Markup, Focusable, Text, Indentable {
         override fun getViewType() = HOLDER_NUMBERED
         override val body: String = text

@@ -5,6 +5,7 @@
     <color name="orange">#FFBB2C</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#2C2B27</color>
+    <color name="grey_50">#ACA996</color>
     <color name="emoji_color">#FFFFFF</color>
 
     <color name="default_bottom_detail_toolbar_background_color">#F3F2EC</color>

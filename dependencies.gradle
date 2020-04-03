@@ -18,6 +18,7 @@ ext {
     cardview_version = '1.0.0'
     material_version = '1.1.0-beta02'
     fragment_version = "1.2.3"
+    ktx_core_version = "1.2.0"
 
     // Architecture Components
     lifecycle_version = '2.1.0'
@@ -94,6 +95,7 @@ ext {
             design:                     "com.google.android.material:material:$material_version",
             androidAnnotations:         "androidx.annotation:annotation:$appcompat_version",
             betterLinkMovement:         "me.saket:better-link-movement-method:$better_link_method_version",
+            ktxCore:                    "androidx.core:core-ktx:$ktx_core_version",
 
             glide:                      "com.github.bumptech.glide:glide:$glide_version",
             glideCompiler:              "com.github.bumptech.glide:compiler:$glide_version",

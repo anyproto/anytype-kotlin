@@ -26,10 +26,12 @@ interface AppNavigation {
     fun openKanban()
     fun openGoals()
     fun exit()
+    fun exitToDesktop()
 
     sealed class Command {
 
         object Exit : Command()
+        object ExitToDesktop : Command()
 
         object OpenStartLoginScreen : Command()
         object OpenCreateAccount : Command()

@@ -2,9 +2,16 @@
 
 ## Version 0.0.26 (WIP)
 
+### New features 🚀
+
+* Navigation to desktop from any page on bottom-swipe gesture (#316)
+
 ### Design 🔳
 
 * Redesigned add-block panel (using new bottom sheet design) (#329)
+* Design fixes for list-item blocks (alignment, padding, etc.) (#328)
+* Update checkbox's text color in checked-state (#328)
+* Image block scaling-related fixes (#326)
 
 ### Fixes & tech 🚒
 

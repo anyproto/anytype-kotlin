@@ -116,6 +116,10 @@ class Navigator : AppNavigation {
         navController?.popBackStack()
     }
 
+    override fun exitToDesktop() {
+        navController?.popBackStack(R.id.desktopScreen, false)
+    }
+
     fun bind(navController: NavController) {
         this.navController = navController
     }

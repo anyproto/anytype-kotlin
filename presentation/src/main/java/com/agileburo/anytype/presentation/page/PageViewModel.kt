@@ -401,13 +401,22 @@ class PageViewModel(
     }
 
     fun onBottomSheetHidden() {
-        proceedWithExiting()
+        proceedWithExitingToDesktop()
     }
 
     private fun proceedWithExiting() {
         closePage.invoke(viewModelScope, ClosePage.Params(context)) { result ->
             result.either(
                 fnR = { navigation.postValue(EventWrapper(AppNavigation.Command.Exit)) },
+                fnL = { Timber.e(it, "Error while closing the test page") }
+            )
+        }
+    }
+
+    private fun proceedWithExitingToDesktop() {
+        closePage.invoke(viewModelScope, ClosePage.Params(context)) { result ->
+            result.either(
+                fnR = { navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop)) },
                 fnL = { Timber.e(it, "Error while closing the test page") }
             )
         }

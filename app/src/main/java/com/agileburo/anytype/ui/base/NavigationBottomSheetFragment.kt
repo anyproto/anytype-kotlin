@@ -38,6 +38,7 @@ abstract class NavigationBottomSheetFragment : BaseBottomSheetFragment() {
             is AppNavigation.Command.OpenContactsScreen -> navigation.openContacts()
             is AppNavigation.Command.OpenCustomizeDisplayView -> navigation.openCustomizeDisplayView()
             is AppNavigation.Command.Exit -> navigation.exit()
+            is AppNavigation.Command.ExitToDesktop -> navigation.exitToDesktop()
         }
     }
 

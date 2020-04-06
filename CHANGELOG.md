@@ -16,6 +16,7 @@
 ### Fixes & tech 🚒
 
 * Should focus title block after page creation (#323)
+* Should close keyboard when exiting page via toolbar's back button (#338)
 
 ## Version 0.0.25
 

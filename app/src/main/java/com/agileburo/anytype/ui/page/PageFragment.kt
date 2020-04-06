@@ -364,7 +364,10 @@ open class PageFragment :
 
         fab.clicks().onEach { vm.onPlusButtonPressed() }.launchIn(lifecycleScope)
         menu.clicks().onEach { showToolbarMenu() }.launchIn(lifecycleScope)
-        backButton.clicks().onEach { vm.onBackButtonPressed() }.launchIn(lifecycleScope)
+        backButton.clicks().onEach {
+            hideKeyboard()
+            vm.onBackButtonPressed()
+        }.launchIn(lifecycleScope)
     }
 
     private fun showToolbarMenu() {

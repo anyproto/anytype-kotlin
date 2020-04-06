@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.features.page.pattern.Matcher
+import com.agileburo.anytype.core_ui.features.page.pattern.Pattern
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.*
@@ -30,6 +32,7 @@ import com.agileburo.anytype.presentation.common.SupportCommand
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
 import com.agileburo.anytype.presentation.page.ControlPanelMachine.Interactor
+import com.agileburo.anytype.presentation.page.model.TextUpdate
 import com.agileburo.anytype.presentation.page.render.BlockViewRenderer
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
@@ -49,8 +52,9 @@ class PageViewModel(
     private val archiveDocument: ArchiveDocument,
     private val undo: Undo,
     private val redo: Redo,
-    private val updateBlock: UpdateBlock,
+    private val updateText: UpdateText,
     private val createBlock: CreateBlock,
+    private val replaceBlock: ReplaceBlock,
     private val interceptEvents: InterceptEvents,
     private val updateCheckbox: UpdateCheckbox,
     private val unlinkBlocks: UnlinkBlocks,
@@ -67,7 +71,8 @@ class PageViewModel(
     private val documentExternalEventReducer: StateReducer<List<Block>, Event>,
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
-    private val counter: Counter
+    private val counter: Counter,
+    private val patternMatcher: Matcher<Pattern>
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<PageViewModel.Command>,
@@ -79,13 +84,16 @@ class PageViewModel(
     val controlPanelViewState = MutableLiveData<ControlPanelState>()
 
     private val renderingChannel = Channel<List<Block>>()
+
     private val renderings = renderingChannel.consumeAsFlow()
 
     private val focusChannel = ConflatedBroadcastChannel(EMPTY_FOCUS_ID)
     private val focusChanges = focusChannel.asFlow()
 
-    private val textChannel = Channel<Triple<Id, String, List<Content.Text.Mark>>>()
+    private val textChannel = Channel<TextUpdate>()
+    private val textUpdateChannel = Channel<TextUpdate>()
     private val textChanges = textChannel.consumeAsFlow()
+    private val textUpdateChanges = textUpdateChannel.consumeAsFlow()
 
     private val selectionChannel = Channel<Pair<Id, IntRange>>()
     private val selectionsChanges = selectionChannel.consumeAsFlow()
@@ -146,16 +154,17 @@ class PageViewModel(
     private fun proceedWithInitialFocusing(events: List<Event>) {
         val event = events.find { event -> event is Event.Command.ShowBlock }
         if (event is Event.Command.ShowBlock) {
-            val title = event.blocks.first { block ->
+            event.blocks.find { block ->
                 block.content is Content.Text
                         && block.content<Content.Text>().style == Content.Text.Style.TITLE
-            }
-            updateFocus(title.id)
-            controlPanelInteractor.onEvent(
-                ControlPanelMachine.Event.OnFocusChanged(
-                    id = title.id, style = Content.Text.Style.TITLE
+            }?.let { title ->
+                updateFocus(title.id)
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnFocusChanged(
+                        id = title.id, style = Content.Text.Style.TITLE
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -217,8 +226,8 @@ class PageViewModel(
                     val newContent = targetContent.copy(marks = it)
                     val newBlock = targetBlock.copy(content = newContent)
                     rerenderingBlocks(newBlock)
-                    proceedWithUpdatingBlock(
-                        params = UpdateBlock.Params(
+                    proceedWithUpdatingText(
+                        params = UpdateText.Params(
                             contextId = context,
                             text = newBlock.content.asText().text,
                             blockId = targetBlock.id,
@@ -270,8 +279,8 @@ class PageViewModel(
 
         refresh()
 
-        proceedWithUpdatingBlock(
-            params = UpdateBlock.Params(
+        proceedWithUpdatingText(
+            params = UpdateText.Params(
                 contextId = context,
                 blockId = newBlock.id,
                 text = newContent.text,
@@ -311,40 +320,121 @@ class PageViewModel(
 
     private fun startHandlingTextChanges() {
         textChanges
+            .onEach { update ->
+                when {
+                    update.patterns.isEmpty() -> textUpdateChannel.send(update)
+                    update.patterns.contains(Pattern.NUMBERED) -> replaceBy(
+                        target = update.target,
+                        prototype = Prototype.Text(
+                            style = Content.Text.Style.NUMBERED
+                        )
+                    )
+                    update.patterns.contains(Pattern.DIVIDER) -> replaceBy(
+                        target = update.target,
+                        prototype = Prototype.Divider
+                    )
+                    update.patterns.contains(Pattern.CHECKBOX) -> replaceBy(
+                        target = update.target,
+                        prototype = Prototype.Text(
+                            style = Content.Text.Style.CHECKBOX
+                        )
+                    )
+                    update.patterns.contains(Pattern.BULLET) -> replaceBy(
+                        target = update.target,
+                        prototype = Prototype.Text(
+                            style = Content.Text.Style.BULLET
+                        )
+                    )
+                    update.patterns.contains(Pattern.H1) -> replaceBy(
+                        target = update.target,
+                        prototype = Prototype.Text(
+                            style = Content.Text.Style.H1
+                        )
+                    )
+                    update.patterns.contains(Pattern.H2) -> replaceBy(
+                        target = update.target,
+                        prototype = Prototype.Text(
+                            style = Content.Text.Style.H2
+                        )
+                    )
+                    update.patterns.contains(Pattern.H3) -> replaceBy(
+                        target = update.target,
+                        prototype = Prototype.Text(
+                            style = Content.Text.Style.H3
+                        )
+                    )
+                    update.patterns.contains(Pattern.QUOTE) -> replaceBy(
+                        target = update.target,
+                        prototype = Prototype.Text(
+                            style = Content.Text.Style.QUOTE
+                        )
+                    )
+                    update.patterns.contains(Pattern.TOGGLE) -> replaceBy(
+                        target = update.target,
+                        prototype = Prototype.Text(
+                            style = Content.Text.Style.TOGGLE
+                        )
+                    )
+                    else -> textUpdateChannel.send(update)
+                }
+            }
+            .launchIn(viewModelScope)
+
+        textUpdateChanges
             .debounce(TEXT_CHANGES_DEBOUNCE_DURATION)
-            .map { (id, text, marks) ->
+            .map { update ->
 
                 blocks = blocks.map { block ->
-                    if (block.id == id) {
+                    if (block.id == update.target) {
                         block.copy(
                             content = block.content.asText().copy(
-                                text = text,
-                                marks = marks.filter { it.range.first != it.range.last }
+                                text = update.text,
+                                marks = update.markup.filter { it.range.first != it.range.last }
                             )
                         )
                     } else
                         block
                 }
 
-                UpdateBlock.Params(
+                UpdateText.Params(
                     contextId = context,
-                    blockId = id,
-                    text = text,
-                    marks = marks.filter { it.range.first != it.range.last }
+                    blockId = update.target,
+                    text = update.text,
+                    marks = update.markup.filter { it.range.first != it.range.last }
                 )
             }
-            .onEach { params -> proceedWithUpdatingBlock(params) }
+            .onEach { params -> proceedWithUpdatingText(params) }
             .launchIn(viewModelScope)
     }
 
-    private fun proceedWithUpdatingBlock(params: UpdateBlock.Params) {
+    private fun proceedWithUpdatingText(params: UpdateText.Params) {
         Timber.d("Starting updating block with params: $params")
-        updateBlock.invoke(viewModelScope, params) { result ->
+        updateText.invoke(viewModelScope, params) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while updating text: $params") },
                 fnR = { Timber.d("Text has been updated") }
             )
         }
+    }
+
+    private fun replaceBy(
+        target: Id,
+        prototype: Prototype
+    ) {
+        replaceBlock.invoke(
+            scope = viewModelScope,
+            params = ReplaceBlock.Params(
+                context = context,
+                target = target,
+                prototype = prototype
+            ),
+            onResult = { result ->
+                result.either(
+                    fnL = { Timber.e(it, "Error while converting $target to: $prototype") },
+                    fnR = { id -> updateFocus(id) }
+                )
+            }
+        )
     }
 
     fun open(id: String) {
@@ -356,7 +446,7 @@ class PageViewModel(
         openPage.invoke(viewModelScope, OpenPage.Params(id)) { result ->
             result.either(
                 fnR = { Timber.d("Page with id $id has been opened") },
-                fnL = { Timber.e(it, "Error while openining page with id: $id") }
+                fnL = { Timber.e(it, "Error while opening page with id: $id") }
             )
         }
     }
@@ -379,8 +469,8 @@ class PageViewModel(
                     val newContent = targetContent.copy(marks = it)
                     val newBlock = targetBlock.copy(content = newContent)
                     rerenderingBlocks(newBlock)
-                    proceedWithUpdatingBlock(
-                        params = UpdateBlock.Params(
+                    proceedWithUpdatingText(
+                        params = UpdateText.Params(
                             contextId = context,
                             text = newBlock.content.asText().text,
                             blockId = targetBlock.id,
@@ -422,9 +512,29 @@ class PageViewModel(
         }
     }
 
-    fun onTextChanged(id: String, text: String, marks: List<Content.Text.Mark>) {
-        Timber.d("onTextChanged: $id\nNew text: $text\nMarks: $marks")
-        viewModelScope.launch { textChannel.send(Triple(id, text, marks)) }
+    fun onTextChanged(
+        id: String,
+        text: String,
+        marks: List<Content.Text.Mark>
+    ) {
+        val update = TextUpdate(target = id, text = text, markup = marks, patterns = emptyList())
+        Timber.d("onTextChanged: $update")
+        viewModelScope.launch { textChannel.send(update) }
+    }
+
+    fun onParagraphTextChanged(
+        id: String,
+        text: String,
+        marks: List<Content.Text.Mark>
+    ) {
+        val update = TextUpdate(
+            target = id,
+            text = text,
+            markup = marks,
+            patterns = patternMatcher.match(text)
+        )
+        Timber.d("onParagraphTextChanged: $update")
+        viewModelScope.launch { textChannel.send(update) }
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {

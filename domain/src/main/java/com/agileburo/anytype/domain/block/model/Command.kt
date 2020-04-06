@@ -25,6 +25,18 @@ sealed class Command {
         val blockId: Id,
         val text: String,
         val marks: List<Block.Content.Text.Mark>
+    ) : Command()
+
+    /**
+     * Command for replacing target block by a new block (created from prototype)
+     * @property context id of the context
+     * @property target id of the block, which we need to replace
+     * @property prototype prototype of the new block
+     */
+    data class Replace(
+        val context: Id,
+        val target: Id,
+        val prototype: Block.Prototype
     )
 
     /**

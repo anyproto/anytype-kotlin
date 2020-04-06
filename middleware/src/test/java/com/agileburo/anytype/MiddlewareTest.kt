@@ -95,4 +95,50 @@ class MiddlewareTest {
             actual = target
         )
     }
+
+    @Test
+    fun `should create a request for replacing target block and return id of the new block`() {
+
+        val command = CommandEntity.Replace(
+            context = MockDataFactory.randomUuid(),
+            target = MockDataFactory.randomUuid(),
+            prototype = BlockEntity.Prototype.Text(
+                style = BlockEntity.Content.Text.Style.NUMBERED
+            )
+        )
+
+        val response = Block.Create.Response
+            .newBuilder()
+            .setBlockId(MockDataFactory.randomUuid())
+            .build()
+
+        val model = Models.Block
+            .newBuilder()
+            .setText(
+                Models.Block.Content.Text
+                    .newBuilder()
+                    .setStyle(Models.Block.Content.Text.Style.Numbered)
+            )
+
+        val request = Block.Create.Request
+            .newBuilder()
+            .setContextId(command.context)
+            .setTargetId(command.target)
+            .setPosition(Models.Block.Position.Replace)
+            .setBlock(model)
+            .build()
+
+        service.stub {
+            on { blockCreate(any()) } doReturn response
+        }
+
+        val result = middleware.replace(command)
+
+        verify(service, times(1)).blockCreate(request)
+
+        assertEquals(
+            expected = response.blockId,
+            actual = result
+        )
+    }
 }

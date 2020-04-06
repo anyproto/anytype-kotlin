@@ -6,9 +6,9 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 
-open class UpdateBlock(
+open class UpdateText(
     private val repo: BlockRepository
-) : BaseUseCase<Unit, UpdateBlock.Params>() {
+) : BaseUseCase<Unit, UpdateText.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.updateText(

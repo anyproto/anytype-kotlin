@@ -106,4 +106,10 @@ class CommandEntity {
     data class Undo(val context: String)
 
     data class Redo(val context: String)
+
+    data class Replace(
+        val context: String,
+        val target: String,
+        val prototype: BlockEntity.Prototype
+    )
 }

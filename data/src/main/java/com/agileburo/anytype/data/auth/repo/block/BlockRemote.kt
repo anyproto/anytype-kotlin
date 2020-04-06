@@ -10,7 +10,7 @@ interface BlockRemote {
     suspend fun updateText(command: CommandEntity.UpdateText)
     suspend fun updateTextStyle(command: CommandEntity.UpdateStyle)
     suspend fun updateTextColor(command: CommandEntity.UpdateTextColor)
-    suspend fun updateBackroundColor(command: CommandEntity.UpdateBackgroundColor)
+    suspend fun updateBackgroundColor(command: CommandEntity.UpdateBackgroundColor)
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun dnd(command: CommandEntity.Dnd)
     suspend fun merge(command: CommandEntity.Merge)
@@ -29,4 +29,5 @@ interface BlockRemote {
     suspend fun undo(command: CommandEntity.Undo)
     suspend fun redo(command: CommandEntity.Redo)
     suspend fun archiveDocument(command: CommandEntity.ArchiveDocument)
+    suspend fun replace(command: CommandEntity.Replace): Id
 }

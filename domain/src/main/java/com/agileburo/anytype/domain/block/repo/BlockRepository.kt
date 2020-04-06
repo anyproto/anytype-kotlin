@@ -31,6 +31,13 @@ interface BlockRepository {
      */
     suspend fun split(command: Command.Split): Id
 
+    /**
+     * Replaces target block by a new block (created from prototype).
+     * @see Command.Replace for details
+     * @return id of the new block
+     */
+    suspend fun replace(command: Command.Replace): Id
+
     suspend fun updateText(command: Command.UpdateText)
     suspend fun updateTextStyle(command: Command.UpdateStyle)
     suspend fun updateTextColor(command: Command.UpdateTextColor)

@@ -1,5 +1,6 @@
 package com.agileburo.anytype.di.feature
 
+import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.block.interactor.*
@@ -44,7 +45,7 @@ class PageModule {
         closePage: ClosePage,
         undo: Undo,
         redo: Redo,
-        updateBlock: UpdateBlock,
+        updateText: UpdateText,
         createBlock: CreateBlock,
         interceptEvents: InterceptEvents,
         updateCheckbox: UpdateCheckbox,
@@ -65,13 +66,15 @@ class PageModule {
         downloadFile: DownloadFile,
         renderer: DefaultBlockViewRenderer,
         counter: Counter,
-        archiveDocument: ArchiveDocument
+        archiveDocument: ArchiveDocument,
+        replaceBlock: ReplaceBlock,
+        patternMatcher: DefaultPatternMatcher
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
         createPage = createPage,
         createDocument = createDocument,
-        updateBlock = updateBlock,
+        updateText = updateText,
         createBlock = createBlock,
         interceptEvents = interceptEvents,
         updateCheckbox = updateCheckbox,
@@ -92,7 +95,9 @@ class PageModule {
         counter = counter,
         undo = undo,
         redo = redo,
-        archiveDocument = archiveDocument
+        archiveDocument = archiveDocument,
+        replaceBlock = replaceBlock,
+        patternMatcher = patternMatcher
     )
 
     @Provides
@@ -115,7 +120,7 @@ class PageModule {
     @PerScreen
     fun provideUpdateBlockUseCase(
         repo: BlockRepository
-    ): UpdateBlock = UpdateBlock(
+    ): UpdateText = UpdateText(
         repo = repo
     )
 
@@ -289,4 +294,16 @@ class PageModule {
     ): ArchiveDocument = ArchiveDocument(
         repo = repo
     )
+
+    @Provides
+    @PerScreen
+    fun provideReplaceBlockUseCase(
+        repo: BlockRepository
+    ): ReplaceBlock = ReplaceBlock(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun providePatternMatcher(): DefaultPatternMatcher = DefaultPatternMatcher()
 }

@@ -671,48 +671,6 @@ class BlockAdapterTest {
     }
 
     @Test
-    fun `should not request title focus after delay of 60 ms`() {
-
-        // Setup
-
-        val title = BlockView.Title(
-            text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid(),
-            focused = MockDataFactory.randomBoolean()
-        )
-
-        val views = listOf(title)
-
-        val adapter = buildAdapter(views)
-
-        val recycler = RecyclerView(context).apply {
-            layoutManager = LinearLayoutManager(context)
-        }
-
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
-
-        adapter.onBindViewHolder(holder, 0)
-
-        check(holder is BlockViewHolder.Title)
-
-        // Testing
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.hasFocus()
-        )
-
-        Robolectric.getForegroundThreadScheduler().apply {
-            advanceBy(FOCUS_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
-        }
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.hasFocus()
-        )
-    }
-
-    @Test
     fun `should call back when title view gets focused`() {
 
         // Setup
@@ -722,7 +680,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = MockDataFactory.randomBoolean()
+            focused = false
         )
 
         val views = listOf(title)
@@ -745,6 +703,11 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Title)
 
         // Testing
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.hasFocus()
+        )
 
         holder.content.requestFocus()
 
@@ -1596,7 +1559,8 @@ class BlockAdapterTest {
             onBookmarkPlaceholderClicked = {},
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
-            onMediaBlockMenuClick = {}
+            onMediaBlockMenuClick = {},
+            onParagraphTextChanged = { _, _ -> }
         )
     }
 }

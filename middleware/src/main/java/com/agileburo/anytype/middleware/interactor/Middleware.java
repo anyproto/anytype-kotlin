@@ -306,6 +306,24 @@ public class Middleware {
         return response.getBlockId();
     }
 
+    public String replace(CommandEntity.Replace command) throws Exception {
+        Models.Block model = factory.create(command.getPrototype());
+
+        Block.Create.Request request = Block.Create.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .setTargetId(command.getTarget())
+                .setPosition(Models.Block.Position.Replace)
+                .setBlock(model)
+                .build();
+
+        Timber.d("Replacing block with the following request:\n%s", request.toString());
+
+        Block.Create.Response response = service.blockCreate(request);
+
+        return response.getBlockId();
+    }
+
     public Pair<String, String> createDocument(CommandEntity.CreateDocument command) throws Exception {
 
         Models.Block.Position position = mapper.toMiddleware(command.getPosition());

@@ -29,4 +29,5 @@ interface BlockDataStore {
     suspend fun undo(command: CommandEntity.Undo)
     suspend fun redo(command: CommandEntity.Redo)
     suspend fun archiveDocument(command: CommandEntity.ArchiveDocument)
+    suspend fun replace(command: CommandEntity.Replace): Id
 }

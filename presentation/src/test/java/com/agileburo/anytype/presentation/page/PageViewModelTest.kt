@@ -4,6 +4,7 @@ import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.base.Either
@@ -60,7 +61,7 @@ class PageViewModelTest {
     lateinit var createBlock: CreateBlock
 
     @Mock
-    lateinit var updateBlock: UpdateBlock
+    lateinit var updateText: UpdateText
 
     @Mock
     lateinit var updateCheckbox: UpdateCheckbox
@@ -115,6 +116,9 @@ class PageViewModelTest {
 
     @Mock
     lateinit var archiveDocument: ArchiveDocument
+
+    @Mock
+    lateinit var replaceBlock: ReplaceBlock
 
     private lateinit var vm: PageViewModel
 
@@ -297,7 +301,7 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verify(updateBlock, times(1)).invoke(
+        verify(updateText, times(1)).invoke(
             any(),
             argThat { this.contextId == pageId && this.blockId == blockId && this.text == text },
             any()
@@ -326,7 +330,7 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verify(updateBlock, times(2)).invoke(
+        verify(updateText, times(2)).invoke(
             any(),
             argThat { this.contextId == pageId && this.blockId == blockId && this.text == text },
             any()
@@ -906,10 +910,10 @@ class PageViewModelTest {
             )
         )
 
-        verify(updateBlock, times(1)).invoke(
+        verify(updateText, times(1)).invoke(
             scope = any(),
             params = eq(
-                UpdateBlock.Params(
+                UpdateText.Params(
                     blockId = paragraph.id,
                     marks = marks,
                     contextId = page.id,
@@ -1174,10 +1178,10 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verify(updateBlock, times(1)).invoke(
+        verify(updateText, times(1)).invoke(
             scope = any(),
             params = eq(
-                UpdateBlock.Params(
+                UpdateText.Params(
                     blockId = paragraph.id,
                     text = userInput,
                     marks = marks,
@@ -1196,7 +1200,9 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `add-block-or-turn-into panel should be opened on add-block-toolbar-clicked event`() {
+    fun `should dispatch open-add-block-panel command on add-block-toolbar-clicked event`() {
+
+        // SETUP
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
@@ -1223,39 +1229,23 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(1001)
 
+        // TESTING
+
         vm.onBlockFocusChanged(
             id = child,
             hasFocus = true
         )
+
+        val commands = vm.commands.test()
+
         vm.onAddBlockToolbarClicked()
 
-        val expected = ControlPanelState(
-            colorToolbar = ControlPanelState.Toolbar.Color(
-                isVisible = false
-            ),
-            blockToolbar = ControlPanelState.Toolbar.Block(
-                isVisible = true,
-                selectedAction = ControlPanelState.Toolbar.Block.Action.ADD
-            ),
-            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
-                isVisible = true
-            ),
-            markupToolbar = ControlPanelState.Toolbar.Markup(
-                isVisible = false
-            ),
-            actionToolbar = ControlPanelState.Toolbar.BlockAction(
-                isVisible = false
-            ),
-            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
-                isVisible = false
-            ),
-            focus = ControlPanelState.Focus(
-                id = child,
-                type = ControlPanelState.Focus.Type.P
-            )
-        )
+        val result = commands.value()
 
-        vm.controlPanelViewState.test().assertValue(expected)
+        assertEquals(
+            expected = PageViewModel.Command.OpenAddBlockPanel,
+            actual = result.peekContent()
+        )
     }
 
     @Test
@@ -3319,7 +3309,7 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should start closing page after succesful archive operation`() {
+    fun `should start closing page after successful archive operation`() {
 
         // SETUP
 
@@ -3393,6 +3383,232 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should convert paragraph to numbered list without any delay when regex matches`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id, paragraph.id)
+            ),
+            title,
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        val update = "1. "
+
+        vm.onParagraphTextChanged(
+            id = paragraph.id,
+            marks = paragraph.content<Block.Content.Text>().marks,
+            text = update
+        )
+
+        verify(replaceBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                ReplaceBlock.Params(
+                    context = root,
+                    target = paragraph.id,
+                    prototype = Block.Prototype.Text(
+                        style = Block.Content.Text.Style.NUMBERED
+                    )
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should ignore create-numbered-list-item pattern and update text with delay`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val numbered = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            ),
+            children = emptyList()
+        )
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id, numbered.id)
+            ),
+            title,
+            numbered
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        val update = "1. "
+
+        vm.onTextChanged(
+            id = numbered.id,
+            marks = numbered.content<Block.Content.Text>().marks,
+            text = update
+        )
+
+        verify(updateText, never()).invoke(
+            scope = any(),
+            params = any(),
+            onResult = any()
+        )
+
+        verify(replaceBlock, never()).invoke(
+            scope = any(),
+            params = any(),
+            onResult = any()
+        )
+
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        verify(replaceBlock, never()).invoke(
+            scope = any(),
+            params = any(),
+            onResult = any()
+        )
+
+        verify(updateText, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                UpdateText.Params(
+                    contextId = root,
+                    blockId = numbered.id,
+                    marks = numbered.content<Block.Content.Text>().marks,
+                    text = update
+                )
+            ),
+            onResult = any()
+        )
+    }
+
+    @Test
+    fun `should not update text while processing paragraph-to-numbered-list editor pattern`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id, paragraph.id)
+            ),
+            title,
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        rootId = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        val update = "1. "
+
+        vm.onParagraphTextChanged(
+            id = paragraph.id,
+            marks = paragraph.content<Block.Content.Text>().marks,
+            text = update
+        )
+
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        verify(updateText, never()).invoke(
+            scope = any(),
+            params = any(),
+            onResult = any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()
@@ -3455,7 +3671,7 @@ class PageViewModelTest {
             openPage = openPage,
             closePage = closePage,
             createPage = createPage,
-            updateBlock = updateBlock,
+            updateText = updateText,
             undo = undo,
             redo = redo,
             interceptEvents = interceptEvents,
@@ -3481,7 +3697,9 @@ class PageViewModelTest {
                 toggleStateHolder = ToggleStateHolder.Default()
             ),
             archiveDocument = archiveDocument,
-            createDocument = createDocument
+            createDocument = createDocument,
+            replaceBlock = replaceBlock,
+            patternMatcher = DefaultPatternMatcher()
         )
     }
 }

@@ -51,7 +51,7 @@ class BlockMiddleware(
         middleware.updateTextColor(command)
     }
 
-    override suspend fun updateBackroundColor(command: CommandEntity.UpdateBackgroundColor) {
+    override suspend fun updateBackgroundColor(command: CommandEntity.UpdateBackgroundColor) {
         middleware.updateBackgroundColor(command)
     }
 
@@ -106,4 +106,8 @@ class BlockMiddleware(
     override suspend fun archiveDocument(
         command: CommandEntity.ArchiveDocument
     ) = middleware.archiveDocument(command)
+
+    override suspend fun replace(
+        command: CommandEntity.Replace
+    ): String = middleware.replace(command)
 }

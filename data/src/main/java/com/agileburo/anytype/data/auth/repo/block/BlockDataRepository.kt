@@ -4,6 +4,7 @@ import com.agileburo.anytype.data.auth.mapper.toDomain
 import com.agileburo.anytype.data.auth.mapper.toEntity
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.common.Id
 
 class BlockDataRepository(
     private val factory: BlockDataStoreFactory
@@ -91,4 +92,8 @@ class BlockDataRepository(
     override suspend fun archiveDocument(
         command: Command.ArchiveDocument
     ) = factory.remote.archiveDocument(command.toEntity())
+
+    override suspend fun replace(
+        command: Command.Replace
+    ): Id = factory.remote.replace(command.toEntity())
 }

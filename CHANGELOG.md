@@ -5,6 +5,7 @@
 ### New features 🚀
 
 * Navigation to desktop from any page on bottom-swipe gesture (#316)
+* Hot keys for patterns (`bullet`, `numbered`, `h1`, `h2`, `h3`, `quote`, `toggle`, `checkbox`, `divider`)  (#340)
 
 ### Design 🔳
 

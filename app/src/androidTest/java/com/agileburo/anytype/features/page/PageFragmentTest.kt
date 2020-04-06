@@ -75,7 +75,7 @@ class PageFragmentTest {
     @Mock
     lateinit var closePage: ClosePage
     @Mock
-    lateinit var updateBlock: UpdateBlock
+    lateinit var updateText: UpdateText
     @Mock
     lateinit var createBlock: CreateBlock
     @Mock
@@ -123,7 +123,7 @@ class PageFragmentTest {
         TestPageFragment.testViewModelFactory = PageViewModelFactory(
             openPage = openPage,
             closePage = closePage,
-            updateBlock = updateBlock,
+            updateText = updateText,
             createBlock = createBlock,
             interceptEvents = interceptEvents,
             updateCheckbox = updateCheckbox,

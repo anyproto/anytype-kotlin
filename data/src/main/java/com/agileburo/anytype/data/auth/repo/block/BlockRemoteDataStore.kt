@@ -1,6 +1,7 @@
 package com.agileburo.anytype.data.auth.repo.block
 
 import com.agileburo.anytype.data.auth.model.CommandEntity
+import com.agileburo.anytype.domain.common.Id
 
 class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
@@ -36,7 +37,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     }
 
     override suspend fun updateBackroundColor(command: CommandEntity.UpdateBackgroundColor) {
-        remote.updateBackroundColor(command)
+        remote.updateBackgroundColor(command)
     }
 
     override suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox) {
@@ -84,4 +85,6 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun archiveDocument(
         command: CommandEntity.ArchiveDocument
     ) = remote.archiveDocument(command)
+
+    override suspend fun replace(command: CommandEntity.Replace): Id = remote.replace(command)
 }

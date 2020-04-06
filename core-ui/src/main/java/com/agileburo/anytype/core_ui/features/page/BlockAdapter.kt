@@ -48,6 +48,7 @@ import timber.log.Timber
  */
 class BlockAdapter(
     private var blocks: List<BlockView>,
+    private val onParagraphTextChanged: (String, Editable) -> Unit,
     private val onTextChanged: (String, Editable) -> Unit,
     private val onSelectionChanged: (String, IntRange) -> Unit,
     private val onCheckboxClicked: (String) -> Unit,
@@ -426,7 +427,7 @@ class BlockAdapter(
             is BlockViewHolder.Paragraph -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Paragraph,
-                    onTextChanged = onTextChanged,
+                    onTextChanged = onParagraphTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged
                 )

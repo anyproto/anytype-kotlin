@@ -2,6 +2,8 @@ package com.agileburo.anytype.presentation.page
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.agileburo.anytype.core_ui.features.page.pattern.Matcher
+import com.agileburo.anytype.core_ui.features.page.pattern.Pattern
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
@@ -21,8 +23,9 @@ open class PageViewModelFactory(
     private val archiveDocument: ArchiveDocument,
     private val redo: Redo,
     private val undo: Undo,
-    private val updateBlock: UpdateBlock,
+    private val updateText: UpdateText,
     private val createBlock: CreateBlock,
+    private val replaceBlock: ReplaceBlock,
     private val interceptEvents: InterceptEvents,
     private val updateCheckbox: UpdateCheckbox,
     private val unlinkBlocks: UnlinkBlocks,
@@ -39,7 +42,8 @@ open class PageViewModelFactory(
     private val urlBuilder: UrlBuilder,
     private val downloadFile: DownloadFile,
     private val renderer: DefaultBlockViewRenderer,
-    private val counter: Counter
+    private val counter: Counter,
+    private val patternMatcher: Matcher<Pattern>
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -49,7 +53,7 @@ open class PageViewModelFactory(
             closePage = closePage,
             undo = undo,
             redo = redo,
-            updateBlock = updateBlock,
+            updateText = updateText,
             createBlock = createBlock,
             archiveDocument = archiveDocument,
             interceptEvents = interceptEvents,
@@ -70,7 +74,9 @@ open class PageViewModelFactory(
             downloadFile = downloadFile,
             renderer = renderer,
             counter = counter,
-            createDocument = createDocument
+            createDocument = createDocument,
+            replaceBlock = replaceBlock,
+            patternMatcher = patternMatcher
         ) as T
     }
 }

@@ -418,6 +418,12 @@ fun Command.CreateDocument.toEntity() = CommandEntity.CreateDocument(
     position = position.toEntity()
 )
 
+fun Command.Replace.toEntity() = CommandEntity.Replace(
+    context = context,
+    target = target,
+    prototype = prototype.toEntity()
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }

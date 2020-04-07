@@ -2075,50 +2075,6 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should not create a new paragraph on outside-clicked event if page already contains one paragraph`() {
-
-        val root = MockDataFactory.randomUuid()
-        val firstChild = MockDataFactory.randomUuid()
-        val secondChild = MockDataFactory.randomUuid()
-        val page = MockBlockFactory.makeOnePageWithTwoTextBlocks(
-            root = root,
-            firstChild = firstChild,
-            firstChildStyle = Block.Content.Text.Style.TITLE,
-            secondChild = secondChild,
-            secondChildStyle = Block.Content.Text.Style.P
-        )
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.open(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        vm.onOutsideClicked()
-
-        verify(createBlock, never()).invoke(
-            scope = any(),
-            params = any(),
-            onResult = any()
-        )
-    }
-
-    @Test
     fun `should start updating text style of the focused block on turn-into-option-clicked event`() {
 
         val root = MockDataFactory.randomUuid()

@@ -820,24 +820,19 @@ class PageViewModel(
     }
 
     fun onActionDuplicateClicked() {
-        viewModelScope.launch {
-            focusChanges
-                .take(1)
-                .collect { focus ->
-                    duplicateBlock.invoke(
-                        scope = this,
-                        params = DuplicateBlock.Params(
-                            context = context,
-                            original = focus
-                        )
-                    ) { result ->
-                        result.either(
-                            fnL = { Timber.e(it, "Error while duplicating block with id: $focus") },
-                            fnR = { Timber.d("Succesfully duplicated block with id: $focus") }
-                        )
-                    }
-                }
-        }
+        duplicateBlock.invoke(
+            scope = viewModelScope,
+            params = DuplicateBlock.Params(
+                context = context,
+                original = focusChannel.value
+            ),
+            onResult = { result ->
+                result.either(
+                    fnL = { Timber.e(it, "Error while duplicating block with id: $focus") },
+                    fnR = { id -> updateFocus(id) }
+                )
+            }
+        )
     }
 
     fun onActionUndoClicked() {

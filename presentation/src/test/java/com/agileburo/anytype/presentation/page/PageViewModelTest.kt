@@ -3609,6 +3609,83 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should update focus after block duplication`() {
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.makeParagraphBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(paragraph.id)
+            ),
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        val newBlockId = MockDataFactory.randomUuid()
+
+        duplicateBlock.stub {
+            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
+                answer.getArgument<(Either<Throwable, String>) -> Unit>(2)(Either.Right(newBlockId))
+            }
+        }
+
+        val focus = vm.focus.test()
+
+        focus.assertValue { id -> id.isEmpty() }
+
+        vm.onBlockFocusChanged(
+            id = paragraph.id,
+            hasFocus = true
+        )
+
+        focus.assertValue { id -> id == paragraph.id }
+
+        vm.onActionDuplicateClicked()
+
+        verify(duplicateBlock, times(1)).invoke(
+            scope = any(),
+            params = eq(
+                DuplicateBlock.Params(
+                    context = root,
+                    original = paragraph.id
+                )
+            ),
+            onResult = any()
+        )
+        verifyNoMoreInteractions(duplicateBlock)
+
+        focus.assertValue { id -> id == newBlockId }
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()

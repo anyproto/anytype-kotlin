@@ -12,7 +12,8 @@
 
 ### Fixes & tech 🚒
 
-* Duplicate-platform-classes issue caused by `emoji-java` library breaks Github Actions CI (#357)
+* Duplicate action should transfer the carriage to a new block (#352)
+* Duplicated-platform-classes issue caused by `emoji-java` library breaks Github Actions CI (#357)
 
 ### Middleware ⚙️
 

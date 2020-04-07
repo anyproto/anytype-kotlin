@@ -59,7 +59,7 @@ class MiddlewareEventChannelTest {
 
         val expected = listOf(
             EventEntity.Command.ShowBlock(
-                rootId = context,
+                root = context,
                 blocks = emptyList(),
                 context = context
             )
@@ -137,7 +137,7 @@ class MiddlewareEventChannelTest {
 
         val expected = listOf(
             EventEntity.Command.ShowBlock(
-                rootId = context,
+                root = context,
                 blocks = emptyList(),
                 context = context
             )
@@ -245,6 +245,52 @@ class MiddlewareEventChannelTest {
             EventEntity.Command.UpdateBlockFile(
                 context = context,
                 id = id
+            )
+        )
+
+        runBlocking {
+            channel.observeEvents(context = context).collect { events ->
+                assertEquals(
+                    expected = expected,
+                    actual = events
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `should return granular change with background colour`() {
+
+        val context = MockDataFactory.randomUuid()
+        val id = MockDataFactory.randomUuid()
+        val color = MockDataFactory.randomString()
+
+        val msg = Message
+            .newBuilder()
+            .blockSetBackgroundColorBuilder
+            .setId(id)
+            .setBackgroundColor(color)
+            .build()
+
+        val message = Message
+            .newBuilder()
+            .setBlockSetBackgroundColor(msg)
+
+        val event = Event
+            .newBuilder()
+            .setContextId(context)
+            .addMessages(message)
+            .build()
+
+        proxy.stub {
+            on { flow() } doReturn flowOf(event)
+        }
+
+        val expected = listOf(
+            EventEntity.Command.GranularChange(
+                context = context,
+                id = id,
+                backgroundColor = color
             )
         )
 

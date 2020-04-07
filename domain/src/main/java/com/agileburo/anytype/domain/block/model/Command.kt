@@ -54,12 +54,12 @@ sealed class Command {
     /**
      * Command for updating background color for the whole block.
      * @property context context id
-     * @property target id of the target block, whose background color we need to update.
+     * @property targets id of the target blocks, whose background color we need to update.
      * @property color new color (hex)
      */
     data class UpdateBackgroundColor(
         val context: Id,
-        val target: Id,
+        val targets: List<Id>,
         val color: String
     )
 

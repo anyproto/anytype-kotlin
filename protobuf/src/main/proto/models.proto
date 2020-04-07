@@ -4,12 +4,25 @@ option go_package = "github.com/anytypeio/go-anytype-library/pb/model";
 
 import "google/protobuf/struct.proto";
 
+message SmartBlock {
+    string id = 1;
+    Type type = 2;
+    enum Type {
+        Dashboard = 0;
+        Page = 1;
+        Archive = 2;
+        Breadcrumbs = 3;
+        Dataview = 4;
+    }
+}
+
 message Block {
     string id = 1;
     google.protobuf.Struct fields = 2;
     Restrictions restrictions = 3;
     repeated string childrenIds = 4;
-
+    string backgroundColor = 5;
+    Align align = 6;
 
     oneof content {
         Content.Dashboard dashboard = 11;
@@ -42,6 +55,12 @@ message Block {
         Right = 4;
         Inner = 5;
         Replace = 6;
+    }
+
+    enum Align {
+        AlignLeft = 0;
+        AlignCenter = 1;
+        AlignRight = 2;
     }
 
     message Content {
@@ -125,7 +144,6 @@ message Block {
             Marks marks = 3; // list of marks to apply to the text
             bool checked = 4;
             string color = 5;
-            string backgroundColor = 6;
 
             message Marks {
                 repeated Mark marks = 1;
@@ -194,7 +212,10 @@ message Block {
                 Empty = 0; // Ordinary page, without additional fields
                 Task = 1; // Page with a task fields
                 Set = 2; // Page, that organize a set of blocks by a specific criterio
-                Breadcrumbs = 3;
+                Profile = 3;
+
+                Breadcrumbs = 101;
+
                 // ...
             }
 

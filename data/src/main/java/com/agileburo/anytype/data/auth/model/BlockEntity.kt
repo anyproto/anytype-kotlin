@@ -10,6 +10,7 @@ data class BlockEntity(
     val fields: Fields
 ) {
     data class Fields(val map: MutableMap<String?, Any?> = mutableMapOf())
+    data class Details(val details: Map<String, Fields>)
 
     sealed class Content {
 

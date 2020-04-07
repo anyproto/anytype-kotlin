@@ -85,7 +85,7 @@ class HomeDashboardViewModel(
                             )
                         )
                         is Event.Command.ShowBlock -> {
-                            if (event.rootId == context) {
+                            if (event.root == context) {
                                 machine.onEvent(
                                     Machine.Event.OnDashboardLoaded(
                                         dashboard = event.blocks.toHomeDashboard(id = context)

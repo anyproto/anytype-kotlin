@@ -11,6 +11,7 @@ import com.agileburo.anytype.middleware.interactor.Middleware
 import com.agileburo.anytype.middleware.interactor.MiddlewareFactory
 import com.agileburo.anytype.middleware.interactor.MiddlewareMapper
 import com.agileburo.anytype.middleware.service.MiddlewareService
+import com.google.protobuf.Value
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
 import org.junit.Test
@@ -67,14 +68,6 @@ class MiddlewareTest {
             .setContextId(command.context)
             .setTargetId(command.target)
             .setPosition(Models.Block.Position.Inner)
-            .setBlock(
-                Models.Block.newBuilder()
-                    .setPage(
-                        Models.Block.Content.Page
-                            .newBuilder()
-                            .setStyle(Models.Block.Content.Page.Style.Empty)
-                    )
-            )
             .build()
 
         service.stub {
@@ -140,5 +133,39 @@ class MiddlewareTest {
             expected = response.blockId,
             actual = result
         )
+    }
+
+    @Test
+    fun `should set emoji icon by updating document details`() {
+
+        val command = CommandEntity.SetIconName(
+            context = MockDataFactory.randomUuid(),
+            target = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString()
+        )
+
+        val response = Block.Set.Details.Response.getDefaultInstance()
+
+        val key = "icon"
+
+        val value = Value.newBuilder().setStringValue(command.name)
+
+        val details = Block.Set.Details.Detail.newBuilder()
+            .setKey(key)
+            .setValue(value)
+
+        val request = Block.Set.Details.Request.newBuilder()
+            .setContextId(command.context)
+            .addDetails(details)
+            .build()
+
+        service.stub {
+            on { blockSetDetails(any()) } doReturn response
+        }
+
+        middleware.setIconName(command)
+
+        verify(service, times(1)).blockSetDetails(request)
+        verifyNoMoreInteractions(service)
     }
 }

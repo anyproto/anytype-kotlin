@@ -31,7 +31,7 @@ class CommandEntity {
 
     data class UpdateBackgroundColor(
         val context: String,
-        val target: String,
+        val targets: List<String>,
         val color: String
     )
 

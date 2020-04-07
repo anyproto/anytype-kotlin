@@ -8,6 +8,7 @@ import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
 import com.agileburo.anytype.middleware.model.SelectAccountResponse;
 import com.agileburo.anytype.middleware.service.MiddlewareService;
+import com.google.protobuf.Value;
 
 import java.util.List;
 
@@ -21,6 +22,8 @@ import kotlin.Pair;
 import timber.log.Timber;
 
 public class Middleware {
+
+    private final String iconKey = "icon";
 
     private final MiddlewareService service;
     private final MiddlewareFactory factory;
@@ -142,20 +145,9 @@ public class Middleware {
     }
 
     public String createPage(String parentId) throws Exception {
-        Models.Block.Content.Page page = Models.Block.Content.Page
-                .newBuilder()
-                .setStyle(Models.Block.Content.Page.Style.Empty)
-                .build();
-
-        Models.Block block = Models.Block
-                .newBuilder()
-                .setPage(page)
-                .build();
-
         Block.CreatePage.Request request = Block.CreatePage.Request
                 .newBuilder()
                 .setContextId(parentId)
-                .setBlock(block)
                 .setPosition(Models.Block.Position.Inner)
                 .build();
 
@@ -254,10 +246,10 @@ public class Middleware {
     }
 
     public void updateBackgroundColor(CommandEntity.UpdateBackgroundColor command) throws Exception {
-        Block.Set.Text.BackgroundColor.Request request = Block.Set.Text.BackgroundColor.Request
+        BlockList.Set.BackgroundColor.Request request = BlockList.Set.BackgroundColor.Request
                 .newBuilder()
                 .setContextId(command.getContext())
-                .setBlockId(command.getTarget())
+                .addAllBlockIds(command.getTargets())
                 .setColor(command.getColor())
                 .build();
 
@@ -328,22 +320,11 @@ public class Middleware {
 
         Models.Block.Position position = mapper.toMiddleware(command.getPosition());
 
-        Models.Block.Content.Page page = Models.Block.Content.Page
-                .newBuilder()
-                .setStyle(Models.Block.Content.Page.Style.Empty)
-                .build();
-
-        Models.Block block = Models.Block
-                .newBuilder()
-                .setPage(page)
-                .build();
-
         Block.CreatePage.Request request = Block.CreatePage.Request
                 .newBuilder()
                 .setContextId(command.getContext())
                 .setTargetId(command.getTarget())
                 .setPosition(position)
-                .setBlock(block)
                 .build();
 
         Timber.d("Creating new document with the following request:\n%s", request.toString());
@@ -424,16 +405,24 @@ public class Middleware {
     }
 
     public void setIconName(CommandEntity.SetIconName command) throws Exception {
-        Block.Set.Icon.Name.Request request = Block.Set.Icon.Name.Request
+
+        Value value = Value.newBuilder().setStringValue(command.getName()).build();
+
+        Block.Set.Details.Detail details = Block.Set.Details.Detail
                 .newBuilder()
-                .setBlockId(command.getTarget())
-                .setContextId(command.getContext())
-                .setName(command.getName())
+                .setKey(iconKey)
+                .setValue(value)
                 .build();
 
-        Timber.d("Setting icon name with the following request:\n%s", request.toString());
+        Block.Set.Details.Request request = Block.Set.Details.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .addDetails(details)
+                .build();
 
-        service.blockSetIconName(request);
+        Timber.d("Setting icon details with the following request:\n%s", request.toString());
+
+        service.blockSetDetails(request);
     }
 
     public void setupBookmark(CommandEntity.SetupBookmark command) throws Exception {

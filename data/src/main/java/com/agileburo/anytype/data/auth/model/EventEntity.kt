@@ -8,7 +8,8 @@ sealed class EventEntity {
 
         data class ShowBlock(
             override val context: String,
-            val rootId: String,
+            val root: String,
+            val details: BlockEntity.Details = BlockEntity.Details(emptyMap()),
             val blocks: List<BlockEntity>
         ) : Command()
 

@@ -4,7 +4,6 @@ import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
-import anytype.Commands.Rpc.Ipfs.Image;
 import anytype.Commands.Rpc.Wallet;
 import lib.Lib;
 
@@ -81,17 +80,6 @@ public class DefaultMiddlewareService implements MiddlewareService {
         byte[] encoded = Lib.accountSelect(request.toByteArray());
         Account.Select.Response response = Account.Select.Response.parseFrom(encoded);
         if (response.getError() != null && response.getError().getCode() != Account.Select.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        } else {
-            return response;
-        }
-    }
-
-    @Override
-    public Image.Get.Blob.Response imageGet(Image.Get.Blob.Request request) throws Exception {
-        byte[] encoded = Lib.imageGetBlob(request.toByteArray());
-        Image.Get.Blob.Response response = Image.Get.Blob.Response.parseFrom(encoded);
-        if (response.getError() != null && response.getError().getCode() != Image.Get.Blob.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return response;
@@ -187,10 +175,10 @@ public class DefaultMiddlewareService implements MiddlewareService {
     }
 
     @Override
-    public Block.Set.Text.BackgroundColor.Response blockSetTextBackgroundColor(Block.Set.Text.BackgroundColor.Request request) throws Exception {
-        byte[] encoded = Lib.blockSetTextBackgroundColor(request.toByteArray());
-        Block.Set.Text.BackgroundColor.Response response = Block.Set.Text.BackgroundColor.Response.parseFrom(encoded);
-        if (response.getError() != null && response.getError().getCode() != Block.Set.Text.BackgroundColor.Response.Error.Code.NULL) {
+    public BlockList.Set.BackgroundColor.Response blockSetTextBackgroundColor(BlockList.Set.BackgroundColor.Request request) throws Exception {
+        byte[] encoded = Lib.blockListSetBackgroundColor(request.toByteArray());
+        BlockList.Set.BackgroundColor.Response response = BlockList.Set.BackgroundColor.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != BlockList.Set.BackgroundColor.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return response;
@@ -264,17 +252,6 @@ public class DefaultMiddlewareService implements MiddlewareService {
     }
 
     @Override
-    public Block.Set.Icon.Name.Response blockSetIconName(Block.Set.Icon.Name.Request request) throws Exception {
-        byte[] encoded = Lib.blockSetIconName(request.toByteArray());
-        Block.Set.Icon.Name.Response response = Block.Set.Icon.Name.Response.parseFrom(encoded);
-        if (response.getError() != null && response.getError().getCode() != Block.Set.Icon.Name.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
-        } else {
-            return response;
-        }
-    }
-
-    @Override
     public Block.Bookmark.Fetch.Response blockBookmarkFetch(Block.Bookmark.Fetch.Request request) throws Exception {
         byte[] encoded = Lib.blockBookmarkFetch(request.toByteArray());
         Block.Bookmark.Fetch.Response response = Block.Bookmark.Fetch.Response.parseFrom(encoded);
@@ -312,6 +289,17 @@ public class DefaultMiddlewareService implements MiddlewareService {
         byte[] encoded = Lib.blockSetPageIsArchived(request.toByteArray());
         Block.Set.Page.IsArchived.Response response = Block.Set.Page.IsArchived.Response.parseFrom(encoded);
         if (response.getError() != null && response.getError().getCode() != Block.Set.Page.IsArchived.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
+    public Block.Set.Details.Response blockSetDetails(Block.Set.Details.Request request) throws Exception {
+        byte[] encoded = Lib.blockSetDetails(request.toByteArray());
+        Block.Set.Details.Response response = Block.Set.Details.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Block.Set.Details.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return response;

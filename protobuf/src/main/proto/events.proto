@@ -25,12 +25,14 @@ message Event {
             Block.Set.Fields blockSetFields = 6;
             Block.Set.ChildrenIds blockSetChildrenIds = 7;
             Block.Set.Restrictions blockSetRestrictions = 8;
+            Block.Set.BackgroundColor blockSetBackgroundColor = 9;
 
             Block.Set.Text blockSetText = 10;
             Block.Set.File blockSetFile = 11;
-            Block.Set.Icon blockSetIcon = 12;
             Block.Set.Link blockSetLink = 13;
             Block.Set.Bookmark blockSetBookmark = 14;
+            Block.Set.Align blockSetAlign = 15;
+            Block.Set.Details blockSetDetails = 16;
 
             Block.Show blockShow = 20;
             User.Block.Join userBlockJoin = 21;
@@ -39,6 +41,10 @@ message Event {
             User.Block.TextRange userBlockTextRange = 24;
 
             Ping ping = 100;
+
+            Process.New processNew = 101;
+            Process.Update processUpdate = 102;
+            Process.Done processDone = 103;
         }
     }
 
@@ -75,6 +81,7 @@ message Event {
         message Show {
             string rootId = 1; // Root block id
             repeated anytype.model.Block blocks = 2; // dependent blocks (descendants)
+            repeated Block.Set.Details details = 3; // details for current and dependent smart blocks
         }
 
         /**
@@ -86,7 +93,6 @@ message Event {
         message FilesUpload {
             string blockId = 1; // if empty => create new blocks
             repeated string filePath = 2; // filepaths to the files
-
         }
 
         /*
@@ -101,6 +107,11 @@ message Event {
         }
 
         message Set {
+
+            message Details {
+                string id = 1;
+                google.protobuf.Struct details = 2;
+            }
 
             message Fields {
                 string id = 1;
@@ -117,6 +128,16 @@ message Event {
                 anytype.model.Block.Restrictions restrictions = 2;
             }
 
+            message BackgroundColor {
+                string id = 1;
+                string backgroundColor = 2;
+            }
+
+            message Align {
+                string id = 1;
+                anytype.model.Block.Align align = 2;
+            }
+
 
             message Text {
                 string id = 1;
@@ -125,7 +146,6 @@ message Event {
                 Marks marks = 4;
                 Checked checked = 5;
                 Color color = 6;
-                BackgroundColor backgroundColor = 7;
 
                 message TText {
                     string value = 1;
@@ -147,9 +167,6 @@ message Event {
                     string value = 1;
                 }
 
-                message BackgroundColor {
-                    string value = 1;
-                }
             }
 
             message File {
@@ -190,14 +207,6 @@ message Event {
                 }
             }
 
-            message Icon {
-                string id = 1;
-                Name name = 2;
-
-                message Name {
-                    string value = 1;
-                }
-            }
 
             message Link {
                 string id = 1;
@@ -306,5 +315,44 @@ message Event {
 
     message Ping {
         int32 index = 1;
+    }
+
+    message Process {
+        message New {
+            Model.Process process = 1;
+        }
+        message Update {
+            Model.Process process = 1;
+        }
+        message Done {
+            Model.Process process = 1;
+        }
+    }
+
+}
+
+message Model {
+    message Process {
+        string id = 1;
+        Type type = 2;
+        State state = 3;
+        Progress progress = 4;
+
+        enum Type {
+            DropFiles = 0;
+        }
+
+        enum State {
+            None = 0;
+            Running = 1;
+            Done = 2;
+            Canceled = 3;
+            Error = 4;
+        }
+
+        message Progress {
+            int64 total = 1;
+            int64 done = 2;
+        }
     }
 }

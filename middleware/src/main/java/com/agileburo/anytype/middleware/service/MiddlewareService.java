@@ -4,7 +4,6 @@ import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
-import anytype.Commands.Rpc.Ipfs.Image;
 import anytype.Commands.Rpc.Wallet;
 
 /**
@@ -25,8 +24,6 @@ public interface MiddlewareService {
 
     Account.Stop.Response accountStop(Account.Stop.Request request) throws Exception;
 
-    Image.Get.Blob.Response imageGet(Image.Get.Blob.Request request) throws Exception;
-
     Block.Open.Response blockOpen(Block.Open.Request request) throws Exception;
 
     Block.Close.Response blockClose(Block.Close.Request request) throws Exception;
@@ -41,7 +38,7 @@ public interface MiddlewareService {
 
     Block.Set.Text.Color.Response blockSetTextColor(Block.Set.Text.Color.Request request) throws Exception;
 
-    Block.Set.Text.BackgroundColor.Response blockSetTextBackgroundColor(Block.Set.Text.BackgroundColor.Request request) throws Exception;
+    BlockList.Set.BackgroundColor.Response blockSetTextBackgroundColor(BlockList.Set.BackgroundColor.Request request) throws Exception;
 
     Block.Set.Text.Style.Response blockSetTextStyle(Block.Set.Text.Style.Request request) throws Exception;
 
@@ -55,8 +52,6 @@ public interface MiddlewareService {
 
     BlockList.Duplicate.Response blockListDuplicate(BlockList.Duplicate.Request request) throws Exception;
 
-    Block.Set.Icon.Name.Response blockSetIconName(Block.Set.Icon.Name.Request request) throws Exception;
-
     Block.Bookmark.Fetch.Response blockBookmarkFetch(Block.Bookmark.Fetch.Request request) throws Exception;
 
     Block.Upload.Response blockUpload(Block.Upload.Request request) throws Exception;
@@ -66,4 +61,6 @@ public interface MiddlewareService {
     Block.Redo.Response blockRedo(Block.Redo.Request request) throws Exception;
 
     Block.Set.Page.IsArchived.Response blockSetPageIsArchived(Block.Set.Page.IsArchived.Request request) throws Exception;
+
+    Block.Set.Details.Response blockSetDetails(Block.Set.Details.Request request) throws Exception;
 }

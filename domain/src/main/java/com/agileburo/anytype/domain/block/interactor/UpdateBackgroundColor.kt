@@ -17,7 +17,7 @@ open class UpdateBackgroundColor(
         repo.updateBackgroundColor(
             command = Command.UpdateBackgroundColor(
                 context = params.context,
-                target = params.target,
+                targets = params.targets,
                 color = params.color
             )
         ).let {
@@ -30,12 +30,12 @@ open class UpdateBackgroundColor(
     /**
      * Params for updating background color for the whole block.
      * @property context context id
-     * @property target id of the target block, whose background color we need to update.
+     * @property targets id of the target block, whose background color we need to update.
      * @property color new color (hex)
      */
     data class Params(
         val context: Id,
-        val target: Id,
+        val targets: List<Id>,
         val color: String
     )
 }

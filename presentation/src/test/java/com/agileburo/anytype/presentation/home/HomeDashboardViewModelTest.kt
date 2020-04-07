@@ -205,7 +205,7 @@ class HomeDashboardViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = config.home,
+                        root = config.home,
                         context = config.home,
                         blocks = listOf(dashboard, page)
                     )
@@ -308,7 +308,7 @@ class HomeDashboardViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = config.home,
+                        root = config.home,
                         context = config.home,
                         blocks = listOf(dashboard) + pages
                     )
@@ -655,7 +655,7 @@ class HomeDashboardViewModelTest {
         )
 
         val showDashboardEvent = Event.Command.ShowBlock(
-            rootId = config.home,
+            root = config.home,
             context = config.home,
             blocks = listOf(dashboard, page)
         )

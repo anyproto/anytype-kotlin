@@ -1,5 +1,24 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.27 (WIP)
+
+### New features 🚀
+
+*
+
+### Design 🔳
+
+*
+
+### Fixes & tech 🚒
+
+*
+
+### Middleware ⚙️
+
+* Updated middleware to `0.5.0` (#339)
+* Added `blockSetDetails` command (#339)
+
 ## Version 0.0.26
 
 ### New features 🚀

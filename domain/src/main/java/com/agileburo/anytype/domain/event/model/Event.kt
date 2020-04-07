@@ -13,8 +13,9 @@ sealed class Event {
     sealed class Command : Event() {
 
         data class ShowBlock(
-            override val context: String,
-            val rootId: Id,
+            override val context: Id,
+            val root: Id,
+            val details: Block.Details = Block.Details(emptyMap()),
             val blocks: List<Block>
         ) : Command()
 

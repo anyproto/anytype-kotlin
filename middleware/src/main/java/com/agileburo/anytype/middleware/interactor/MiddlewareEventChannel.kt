@@ -2,6 +2,7 @@ package com.agileburo.anytype.middleware.interactor
 
 import anytype.Events
 import com.agileburo.anytype.data.auth.event.EventRemoteChannel
+import com.agileburo.anytype.data.auth.model.BlockEntity
 import com.agileburo.anytype.data.auth.model.EventEntity
 import com.agileburo.anytype.middleware.*
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,7 @@ class MiddlewareEventChannel(
         Events.Event.Message.ValueCase.BLOCKADD,
         Events.Event.Message.ValueCase.BLOCKSETTEXT,
         Events.Event.Message.ValueCase.BLOCKSETCHILDRENIDS,
+        Events.Event.Message.ValueCase.BLOCKSETBACKGROUNDCOLOR,
         Events.Event.Message.ValueCase.BLOCKDELETE,
         Events.Event.Message.ValueCase.BLOCKSETLINK,
         Events.Event.Message.ValueCase.BLOCKSETFILE,
@@ -53,8 +55,13 @@ class MiddlewareEventChannel(
                 Events.Event.Message.ValueCase.BLOCKSHOW -> {
                     EventEntity.Command.ShowBlock(
                         context = context,
-                        rootId = event.blockShow.rootId,
-                        blocks = event.blockShow.blocksList.blocks()
+                        root = event.blockShow.rootId,
+                        blocks = event.blockShow.blocksList.blocks(),
+                        details = BlockEntity.Details(
+                            event.blockShow.detailsList.associate { details ->
+                                details.id to details.details.fields()
+                            }
+                        )
                     )
                 }
                 Events.Event.Message.ValueCase.BLOCKSETTEXT -> {
@@ -72,14 +79,17 @@ class MiddlewareEventChannel(
                             event.blockSetText.color.value
                         else
                             null,
-                        backgroundColor = if (event.blockSetText.hasBackgroundColor())
-                            event.blockSetText.backgroundColor.value
-                        else
-                            null,
                         marks = if (event.blockSetText.hasMarks())
                             event.blockSetText.marks.value.marksList.marks()
                         else
                             null
+                    )
+                }
+                Events.Event.Message.ValueCase.BLOCKSETBACKGROUNDCOLOR -> {
+                    EventEntity.Command.GranularChange(
+                        context = context,
+                        id = event.blockSetBackgroundColor.id,
+                        backgroundColor = event.blockSetBackgroundColor.backgroundColor
                     )
                 }
                 Events.Event.Message.ValueCase.BLOCKDELETE -> {

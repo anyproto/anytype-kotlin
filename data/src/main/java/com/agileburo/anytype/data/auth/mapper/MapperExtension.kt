@@ -73,6 +73,10 @@ fun BlockEntity.toDomain(): Block {
     )
 }
 
+fun BlockEntity.Details.toDomain(): Block.Details = Block.Details(
+    details = details.map { (id, fields) -> id to Block.Fields(map = fields.map) }.toMap()
+)
+
 fun BlockEntity.Content.toDomain(): Block.Content = when (this) {
     is BlockEntity.Content.Text -> toDomain()
     is BlockEntity.Content.Dashboard -> toDomain()
@@ -329,7 +333,7 @@ fun Command.UpdateTextColor.toEntity(): CommandEntity.UpdateTextColor =
 fun Command.UpdateBackgroundColor.toEntity(): CommandEntity.UpdateBackgroundColor =
     CommandEntity.UpdateBackgroundColor(
         context = context,
-        target = target,
+        targets = targets,
         color = color
     )
 
@@ -432,9 +436,10 @@ fun EventEntity.toDomain(): Event {
     return when (this) {
         is EventEntity.Command.ShowBlock -> {
             Event.Command.ShowBlock(
-                rootId = rootId,
+                root = root,
                 blocks = blocks.map { it.toDomain() },
-                context = context
+                context = context,
+                details = details.toDomain()
             )
         }
         is EventEntity.Command.AddBlock -> {

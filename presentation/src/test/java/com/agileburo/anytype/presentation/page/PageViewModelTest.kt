@@ -196,7 +196,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -390,7 +390,7 @@ class PageViewModelTest {
                 emit(
                     listOf(
                         Event.Command.ShowBlock(
-                            rootId = root,
+                            root = root,
                             blocks = page,
                             context = root
                         )
@@ -493,7 +493,7 @@ class PageViewModelTest {
                 emit(
                     listOf(
                         Event.Command.ShowBlock(
-                            rootId = root,
+                            root = root,
                             blocks = page,
                             context = root
                         )
@@ -600,7 +600,7 @@ class PageViewModelTest {
                 emit(
                     listOf(
                         Event.Command.ShowBlock(
-                            rootId = root,
+                            root = root,
                             blocks = blocks,
                             context = root
                         )
@@ -740,7 +740,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = blocks,
                         context = root
                     )
@@ -876,7 +876,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = blocks,
                         context = root
                     )
@@ -967,7 +967,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = blocks,
                         context = root
                     )
@@ -1065,7 +1065,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = blocks,
                         context = root
                     )
@@ -1149,7 +1149,7 @@ class PageViewModelTest {
                 emit(
                     listOf(
                         Event.Command.ShowBlock(
-                            rootId = root,
+                            root = root,
                             blocks = blocks,
                             context = root
                         )
@@ -1213,7 +1213,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -1260,7 +1260,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -1343,7 +1343,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = listOf(page, paragraph),
                         context = root
                     )
@@ -1413,7 +1413,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -1480,7 +1480,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -1591,7 +1591,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = listOf(page, paragraph),
                         context = root
                     )
@@ -1678,7 +1678,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -1721,7 +1721,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -1764,7 +1764,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -1823,7 +1823,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -1901,7 +1901,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -1947,7 +1947,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -1988,7 +1988,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2040,7 +2040,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2093,7 +2093,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2137,7 +2137,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2191,7 +2191,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2238,7 +2238,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2294,7 +2294,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2355,7 +2355,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2416,7 +2416,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2479,7 +2479,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2534,7 +2534,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2592,7 +2592,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2657,7 +2657,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2709,7 +2709,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2768,7 +2768,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2820,7 +2820,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2888,7 +2888,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -2958,7 +2958,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -3028,7 +3028,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -3096,7 +3096,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -3164,7 +3164,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -3220,7 +3220,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -3276,7 +3276,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -3335,7 +3335,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -3410,7 +3410,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -3487,7 +3487,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -3574,7 +3574,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )
@@ -3620,7 +3620,7 @@ class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.ShowBlock(
-                        rootId = root,
+                        root = root,
                         blocks = page,
                         context = root
                     )

@@ -755,7 +755,7 @@ class PageViewModel(
                 scope = viewModelScope,
                 params = UpdateBackgroundColor.Params(
                     context = context,
-                    target = focus,
+                    targets = listOf(focus),
                     color = color
                 )
             ) { result ->
@@ -1039,6 +1039,8 @@ class PageViewModel(
                         Timber.d("Outside-click has been ignored.")
                     }
                 }
+            } else {
+                addNewBlockAtTheEnd()
             }
         }
     }

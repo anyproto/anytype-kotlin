@@ -12,6 +12,7 @@
 
 ### Fixes & tech 🚒
 
+* Add-block bottom sheet has incorrect fonts in title and subtitle (#361)
 * Do not show main toolbar when no block is focused on a page (#103)
 * Create the block when user taps under all types of non-empty blocks (#350)
 * Duplicate action should transfer the carriage to a new block (#352)

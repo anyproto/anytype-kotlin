@@ -42,5 +42,7 @@ android {
 dependencies {
     implementation project(':domain')
     def lib = rootProject.ext.libraryPageIconPicker
-    implementation lib.emojiJava
+    implementation(lib.emojiJava) {
+        exclude group: 'org.json', module: 'json'
+    }
 }

@@ -12,7 +12,7 @@
 
 ### Fixes & tech 🚒
 
-*
+* Duplicate-platform-classes issue caused by `emoji-java` library breaks Github Actions CI (#357)
 
 ### Middleware ⚙️
 

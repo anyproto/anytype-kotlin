@@ -32,7 +32,9 @@ dependencies {
     def unitTestDependencies = rootProject.ext.unitTesting
     def lib = rootProject.ext.libraryPageIconPicker
 
-    implementation lib.emojiJava
+    implementation(lib.emojiJava) {
+        exclude group: 'org.json', module: 'json'
+    }
 
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines

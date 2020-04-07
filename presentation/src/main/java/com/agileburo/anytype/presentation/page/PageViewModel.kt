@@ -1020,8 +1020,10 @@ class PageViewModel(
                 val last = blocks.first { it.id == page.children.last() }
                 when (val content = last.content) {
                     is Content.Text -> {
-                        if (content.style == Content.Text.Style.TITLE) {
-                            addNewBlockAtTheEnd()
+                        when {
+                            content.style == Content.Text.Style.TITLE -> addNewBlockAtTheEnd()
+                            content.text.isNotEmpty() -> addNewBlockAtTheEnd()
+                            else -> Timber.d("Outside-click has been ignored.")
                         }
                     }
                     is Content.Link -> {

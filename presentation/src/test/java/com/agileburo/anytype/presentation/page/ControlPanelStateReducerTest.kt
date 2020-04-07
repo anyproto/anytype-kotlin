@@ -149,6 +149,58 @@ class ControlPanelStateReducerTest {
     }
 
     @Test
+    fun `should not show toolbar after focus is cleared and selections continue to change`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            blockToolbar = ControlPanelState.Toolbar.Block(
+                isVisible = true
+            ),
+            addBlockToolbar = ControlPanelState.Toolbar.AddBlock(
+                isVisible = false
+            ),
+            turnIntoToolbar = ControlPanelState.Toolbar.TurnInto(
+                isVisible = false
+            ),
+            colorToolbar = ControlPanelState.Toolbar.Color(
+                isVisible = false
+            ),
+            actionToolbar = ControlPanelState.Toolbar.BlockAction(
+                isVisible = false
+            ),
+            markupToolbar = ControlPanelState.Toolbar.Markup(
+                isVisible = false
+            )
+        )
+
+        val cleared = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = ControlPanelMachine.Event.OnClearFocusClicked
+            )
+        }
+
+        val result = runBlocking {
+            reducer.reduce(
+                state = cleared,
+                event = ControlPanelMachine.Event.OnSelectionChanged(
+                    selection = 0..0
+                )
+            )
+        }
+
+        val expected = ControlPanelState.init()
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
     fun `should show add-block toolbar and hide turn-into toolbar on add-block-toolbar-toggle-clicked event`() {
 
         val given = ControlPanelState(

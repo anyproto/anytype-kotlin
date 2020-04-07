@@ -144,29 +144,34 @@ sealed class ControlPanelMachine {
             }
 
         override suspend fun reduce(state: ControlPanelState, event: Event) = when (event) {
-            is Event.OnSelectionChanged -> state.copy(
-                markupToolbar = state.markupToolbar.copy(
-                    isVisible = event.selection.first != event.selection.last,
-                    selectedAction = if (event.selection.first != event.selection.last)
-                        state.markupToolbar.selectedAction
-                    else
-                        null
-                ),
-                blockToolbar = state.blockToolbar.copy(
-                    selectedAction = null,
-                    isVisible = (event.selection.first == event.selection.last)
-                ),
-                actionToolbar = state.actionToolbar.copy(
-                    isVisible = false
-                ),
-                addBlockToolbar = state.addBlockToolbar.copy(
-                    isVisible = false
-                ),
-                colorToolbar = if (event.selection.first != event.selection.last)
-                    state.colorToolbar.copy()
+            is Event.OnSelectionChanged -> {
+                if (state.focus == null)
+                    state.copy()
                 else
-                    state.colorToolbar.copy(isVisible = false)
-            )
+                    state.copy(
+                        markupToolbar = state.markupToolbar.copy(
+                            isVisible = event.selection.first != event.selection.last,
+                            selectedAction = if (event.selection.first != event.selection.last)
+                                state.markupToolbar.selectedAction
+                            else
+                                null
+                        ),
+                        blockToolbar = state.blockToolbar.copy(
+                            selectedAction = null,
+                            isVisible = (event.selection.first == event.selection.last)
+                        ),
+                        actionToolbar = state.actionToolbar.copy(
+                            isVisible = false
+                        ),
+                        addBlockToolbar = state.addBlockToolbar.copy(
+                            isVisible = false
+                        ),
+                        colorToolbar = if (event.selection.first != event.selection.last)
+                            state.colorToolbar.copy()
+                        else
+                            state.colorToolbar.copy(isVisible = false)
+                    )
+            }
             is Event.OnMarkupToolbarColorClicked -> state.copy(
                 colorToolbar = state.colorToolbar.copy(
                     isVisible = !state.colorToolbar.isVisible

@@ -45,6 +45,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
+import kotlinx.android.synthetic.main.item_block_bookmark_error.view.*
 import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
 import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -872,6 +873,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val logo = itemView.bookmarkLogo
         private val error = itemView.loadBookmarkPictureError
         private val card = itemView.bookmarkRoot
+        private val menu = itemView.bookmarkMenu
 
         private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
 
@@ -897,7 +899,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        fun bind(item: BlockView.Bookmark.View) {
+        fun bind(
+            item: BlockView.Bookmark.View,
+            onBookmarkMenuClicked: (String) -> Unit
+        ) {
             indentize(item)
             title.text = item.title
             description.text = item.description
@@ -915,6 +920,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     .listener(listener)
                     .into(logo)
             }
+
+            menu.setOnClickListener { onBookmarkMenuClicked(item.id) }
         }
 
         override fun indentize(item: BlockView.Indentable) {
@@ -941,6 +948,30 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 root.updatePadding(
                     left = item.indent * dimen(R.dimen.indent)
                 )
+            }
+        }
+
+        class Error(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val menu = itemView.errorBookmarkMenu
+            private val root = itemView.bookmarkErrorRoot
+            private val url = itemView.errorBookmarkUrl
+
+            fun bind(
+                item: BlockView.Bookmark.Error,
+                onErrorBookmarkMenuClicked: (String) -> Unit
+            ) {
+                indentize(item)
+                url.text = item.url
+                menu.setOnClickListener { onErrorBookmarkMenuClicked(item.id) }
+            }
+
+            override fun indentize(item: BlockView.Indentable) {
+                root.updateLayoutParams {
+                    (this as RecyclerView.LayoutParams).apply {
+                        leftMargin = dimen(R.dimen.dp_16) + item.indent * dimen(R.dimen.indent)
+                    }
+                }
             }
         }
     }
@@ -1129,11 +1160,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         const val HOLDER_BOOKMARK = 28
         const val HOLDER_BOOKMARK_PLACEHOLDER = 29
+        const val HOLDER_BOOKMARK_ERROR = 30
 
-        const val HOLDER_FILE = 30
-        const val HOLDER_FILE_PLACEHOLDER = 31
-        const val HOLDER_FILE_UPLOAD = 32
-        const val HOLDER_FILE_ERROR = 33
+        const val HOLDER_FILE = 31
+        const val HOLDER_FILE_PLACEHOLDER = 32
+        const val HOLDER_FILE_UPLOAD = 33
+        const val HOLDER_FILE_ERROR = 34
 
         const val FOCUS_TIMEOUT_MILLIS = 16L
         const val KEYBOARD_SHOW_DELAY = 16L

@@ -110,6 +110,11 @@ sealed class ControlPanelMachine {
         object OnActionToolbarClicked : Event()
 
         /**
+         * Represents an event when user clicked on toolbar menu
+         */
+        object OnBookmarkMenuClicked : Event()
+
+        /**
          * Represents an event when user cleares the current focus by closing keyboard.
          */
         object OnClearFocusClicked : Event()
@@ -291,7 +296,7 @@ sealed class ControlPanelMachine {
                     selectedAction = null
                 )
             )
-            is Event.OnActionToolbarClicked -> state.copy(
+            is Event.OnActionToolbarClicked, Event.OnBookmarkMenuClicked -> state.copy(
                 colorToolbar = state.colorToolbar.copy(
                     isVisible = false
                 ),

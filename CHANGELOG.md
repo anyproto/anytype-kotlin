@@ -8,10 +8,11 @@
 
 ### Design 🔳
 
-*
+* Rendering bookmark in error / failed-to-load state (#351)
 
 ### Fixes & tech 🚒
 
+* Wire bookmark menu with action toolbar (#351)
 * Add-block bottom sheet has incorrect fonts in title and subtitle (#361)
 * Do not show main toolbar when no block is focused on a page (#103)
 * Create the block when user taps under all types of non-empty blocks (#350)

@@ -1532,10 +1532,55 @@ class BlockAdapterTest {
         )
     }
 
+    @Test
+    fun `should trigger event on bookmark-menu-clicked event`() {
+
+        // Setup
+
+        var triggered = false
+
+        val bookmark = BlockView.Bookmark.View(
+            id = MockDataFactory.randomUuid(),
+            indent = 0,
+            imageUrl = MockDataFactory.randomString(),
+            faviconUrl = MockDataFactory.randomString(),
+            description = MockDataFactory.randomString(),
+            title = MockDataFactory.randomString(),
+            url = MockDataFactory.randomString()
+        )
+
+        val views = listOf(bookmark)
+
+        val adapter = buildAdapter(
+            views = views,
+            onBookmarkMenuClicked = { triggered = true }
+        )
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BOOKMARK)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Bookmark)
+
+        // Testing
+
+        holder.itemView.bookmarkMenu.performClick()
+
+        assertEquals(
+            expected = true,
+            actual = triggered
+        )
+    }
+
     private fun buildAdapter(
         views: List<BlockView>,
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
-        onTextChanged: (String, Editable) -> Unit = { _, _ -> }
+        onTextChanged: (String, Editable) -> Unit = { _, _ -> },
+        onBookmarkMenuClicked: (String) -> Unit = {}
     ): BlockAdapter {
         return BlockAdapter(
             blocks = views,
@@ -1560,7 +1605,8 @@ class BlockAdapterTest {
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
             onMediaBlockMenuClick = {},
-            onParagraphTextChanged = { _, _ -> }
+            onParagraphTextChanged = { _, _ -> },
+            onBookmarkMenuClicked = onBookmarkMenuClicked
         )
     }
 }

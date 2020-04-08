@@ -137,7 +137,8 @@ open class PageFragment :
             onAddLocalFileClick = vm::onAddLocalFileClicked,
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
-            onMediaBlockMenuClick = vm::onMediaBlockMenuClicked
+            onMediaBlockMenuClick = vm::onMediaBlockMenuClicked,
+            onBookmarkMenuClicked = vm::onBookmarkMenuClicked
         )
     }
 

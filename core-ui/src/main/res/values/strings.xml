@@ -160,5 +160,6 @@
     <string name="add_a_web_bookmark">Add a web bookmark</string>
     <string name="archive">Archive</string>
     <string name="add_block_option_icon">Add block option icon</string>
+    <string name="bookmark_error_menu_button">Bookmark error menu button</string>
 
 </resources>

@@ -1122,6 +1122,11 @@ class PageViewModel(
         )
     }
 
+    fun onBookmarkMenuClicked(target: Id) {
+        updateFocus(target)
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBookmarkMenuClicked)
+    }
+
     fun onTextInputClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
     }

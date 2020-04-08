@@ -5,6 +5,7 @@ import com.agileburo.anytype.core_ui.common.Focusable
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.ViewType
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BULLET
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CHECKBOX
@@ -476,6 +477,18 @@ sealed class BlockView : ViewType {
             val imageUrl: String?
         ) : Bookmark(id = id) {
             override fun getViewType() = HOLDER_BOOKMARK
+        }
+
+        /**
+         * UI-model for a bookmark view in error state
+         * @property url url originally entered by user to create a bookmark
+         */
+        data class Error(
+            override val id: String,
+            override val indent: Int,
+            val url: String
+        ) : Bookmark(id = id) {
+            override fun getViewType(): Int = HOLDER_BOOKMARK_ERROR
         }
     }
 

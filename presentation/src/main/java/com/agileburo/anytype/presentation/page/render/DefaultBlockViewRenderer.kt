@@ -264,15 +264,23 @@ class DefaultBlockViewRenderer(
         block: Block,
         indent: Int
     ): BlockView = content.url?.let { url ->
-        BlockView.Bookmark.View(
-            id = block.id,
-            url = url,
-            title = content.title,
-            description = content.description,
-            imageUrl = content.image?.let { urlBuilder.image(it) },
-            faviconUrl = content.favicon?.let { urlBuilder.image(it) },
-            indent = indent
-        )
+        if (content.title != null && content.description != null) {
+            BlockView.Bookmark.View(
+                id = block.id,
+                url = url,
+                title = content.title,
+                description = content.description,
+                imageUrl = content.image?.let { urlBuilder.image(it) },
+                faviconUrl = content.favicon?.let { urlBuilder.image(it) },
+                indent = indent
+            )
+        } else {
+            BlockView.Bookmark.Error(
+                id = block.id,
+                url = url,
+                indent = indent
+            )
+        }
     } ?: BlockView.Bookmark.Placeholder(
         id = block.id,
         indent = indent

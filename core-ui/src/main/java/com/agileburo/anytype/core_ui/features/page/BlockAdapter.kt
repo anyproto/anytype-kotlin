@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BULLET
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CHECKBOX
@@ -69,7 +70,8 @@ class BlockAdapter(
     private val onBookmarkPlaceholderClicked: (String) -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
-    private val onMediaBlockMenuClick:(String) -> Unit
+    private val onMediaBlockMenuClick: (String) -> Unit,
+    private val onBookmarkMenuClicked: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -279,6 +281,15 @@ class BlockAdapter(
                 BlockViewHolder.Bookmark.Placeholder(
                     view = inflater.inflate(
                         R.layout.item_block_bookmark_placeholder,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_BOOKMARK_ERROR -> {
+                BlockViewHolder.Bookmark.Error(
+                    view = inflater.inflate(
+                        R.layout.item_block_bookmark_error,
                         parent,
                         false
                     )
@@ -568,13 +579,20 @@ class BlockAdapter(
             }
             is BlockViewHolder.Bookmark -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Bookmark.View
+                    item = blocks[position] as BlockView.Bookmark.View,
+                    onBookmarkMenuClicked = onBookmarkMenuClicked
                 )
             }
             is BlockViewHolder.Bookmark.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Bookmark.Placeholder,
                     onBookmarkPlaceholderClicked = onBookmarkPlaceholderClicked
+                )
+            }
+            is BlockViewHolder.Bookmark.Error -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Bookmark.Error,
+                    onErrorBookmarkMenuClicked = onBookmarkMenuClicked
                 )
             }
             is BlockViewHolder.Picture -> {

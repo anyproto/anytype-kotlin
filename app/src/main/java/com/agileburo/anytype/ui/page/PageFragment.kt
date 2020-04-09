@@ -138,7 +138,8 @@ open class PageFragment :
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
             onMediaBlockMenuClick = vm::onMediaBlockMenuClicked,
-            onBookmarkMenuClicked = vm::onBookmarkMenuClicked
+            onBookmarkMenuClicked = vm::onBookmarkMenuClicked,
+            onMarkupActionClicked = vm::onMarkupActionClicked
         )
     }
 

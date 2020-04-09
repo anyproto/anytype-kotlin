@@ -1606,7 +1606,8 @@ class BlockAdapterTest {
             onToggleClicked = {},
             onMediaBlockMenuClick = {},
             onParagraphTextChanged = { _, _ -> },
-            onBookmarkMenuClicked = onBookmarkMenuClicked
+            onBookmarkMenuClicked = onBookmarkMenuClicked,
+            onMarkupActionClicked = {}
         )
     }
 }

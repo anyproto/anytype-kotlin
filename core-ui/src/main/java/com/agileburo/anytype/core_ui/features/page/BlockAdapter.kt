@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
@@ -71,7 +72,8 @@ class BlockAdapter(
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
     private val onMediaBlockMenuClick: (String) -> Unit,
-    private val onBookmarkMenuClicked: (String) -> Unit
+    private val onBookmarkMenuClicked: (String) -> Unit,
+    private val onMarkupActionClicked:(Markup.Type) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -85,7 +87,8 @@ class BlockAdapter(
                         R.layout.item_block_text,
                         parent,
                         false
-                    )
+                    ),
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_TITLE -> {
@@ -139,7 +142,8 @@ class BlockAdapter(
                         R.layout.item_block_checkbox,
                         parent,
                         false
-                    )
+                    ),
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_TASK -> {
@@ -157,7 +161,8 @@ class BlockAdapter(
                         R.layout.item_block_bulleted,
                         parent,
                         false
-                    )
+                    ),
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_NUMBERED -> {
@@ -166,7 +171,8 @@ class BlockAdapter(
                         R.layout.item_block_numbered,
                         parent,
                         false
-                    )
+                    ),
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_TOGGLE -> {
@@ -175,7 +181,8 @@ class BlockAdapter(
                         R.layout.item_block_toggle,
                         parent,
                         false
-                    )
+                    ),
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_CONTACT -> {

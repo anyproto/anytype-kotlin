@@ -162,4 +162,12 @@
     <string name="add_block_option_icon">Add block option icon</string>
     <string name="bookmark_error_menu_button">Bookmark error menu button</string>
 
+    <string name="menu_item_bold">Bold</string>
+    <string name="menu_item_italic">Italic</string>
+    <string name="menu_item_strike">Strike</string>
+    <string name="menu_item_code">Code</string>
+    <string name="menu_item_link">Link</string>
+    <string name="menu_item_color">Color</string>
+    <string name="menu_item_background">Background</string>
+
 </resources>

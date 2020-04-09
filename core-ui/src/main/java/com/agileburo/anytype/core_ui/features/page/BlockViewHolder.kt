@@ -19,6 +19,7 @@ import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.BuildConfig
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.isLinksPresent
 import com.agileburo.anytype.core_ui.common.toSpannable
 import com.agileburo.anytype.core_ui.extensions.color
@@ -29,6 +30,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.N
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TOGGLE_EMPTY_STATE_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
+import com.agileburo.anytype.core_ui.menu.TextStyleMenu
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
@@ -86,13 +88,18 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun indentize(item: BlockView.Indentable)
     }
 
-    class Paragraph(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class Paragraph(view: View,
+                    onMarkupActionClicked: (Markup.Type) -> Unit)
+        : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         override val root: View = itemView
         override val content: TextInputWidget = itemView.textContent
 
         init {
-            content.setSpannableFactory(DefaultSpannableFactory())
+            with(content) {
+                setSpannableFactory(DefaultSpannableFactory())
+                customSelectionActionModeCallback = TextStyleMenu { onMarkupActionClicked(it) }
+            }
         }
 
         fun bind(
@@ -346,14 +353,19 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Checkbox(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class Checkbox(view: View,
+                   onMarkupActionClicked: (Markup.Type) -> Unit)
+        : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val checkbox = itemView.checkboxIcon
         override val content: TextInputWidget = itemView.checkboxContent
         override val root: View = itemView
 
         init {
-            content.setSpannableFactory(DefaultSpannableFactory())
+            with(content) {
+                setSpannableFactory(DefaultSpannableFactory())
+                customSelectionActionModeCallback = TextStyleMenu { onMarkupActionClicked(it) }
+            }
         }
 
         fun bind(
@@ -432,7 +444,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Bulleted(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class Bulleted(view: View,
+                   onMarkupActionClicked: (Markup.Type) -> Unit)
+        : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val indent = itemView.bulletIndent
         private val bullet = itemView.bullet
@@ -440,7 +454,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            content.setSpannableFactory(DefaultSpannableFactory())
+            with(content) {
+                setSpannableFactory(DefaultSpannableFactory())
+                customSelectionActionModeCallback = TextStyleMenu { onMarkupActionClicked(it) }
+            }
         }
 
         fun bind(
@@ -499,14 +516,19 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Numbered(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class Numbered(view: View,
+                   onMarkupActionClicked: (Markup.Type) -> Unit)
+        : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val number = itemView.number
         override val content: TextInputWidget = itemView.numberedListContent
         override val root: View = itemView
 
         init {
-            content.setSpannableFactory(DefaultSpannableFactory())
+            with(content) {
+                setSpannableFactory(DefaultSpannableFactory())
+                customSelectionActionModeCallback = TextStyleMenu { onMarkupActionClicked(it) }
+            }
         }
 
         fun bind(
@@ -568,7 +590,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private fun Int.addDot(): String = "$this."
     }
 
-    class Toggle(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class Toggle(view: View,
+                 onMarkupActionClicked: (Markup.Type) -> Unit)
+        : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val toggle = itemView.toggle
         private val line = itemView.guideline
@@ -577,7 +601,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            content.setSpannableFactory(DefaultSpannableFactory())
+            with(content) {
+                setSpannableFactory(DefaultSpannableFactory())
+                customSelectionActionModeCallback = TextStyleMenu { onMarkupActionClicked(it) }
+            }
         }
 
         fun bind(

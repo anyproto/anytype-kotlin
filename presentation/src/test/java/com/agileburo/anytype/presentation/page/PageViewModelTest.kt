@@ -120,6 +120,9 @@ class PageViewModelTest {
     @Mock
     lateinit var replaceBlock: ReplaceBlock
 
+    @Mock
+    lateinit var updateTitle: UpdateTitle
+
     private lateinit var vm: PageViewModel
 
     @Before
@@ -218,9 +221,13 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(1001)
 
-
         val expected = ViewState.Success(
             blocks = listOf(
+                BlockView.Title(
+                    focused = false,
+                    id = root,
+                    text = null
+                ),
                 BlockView.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content<Block.Content.Text>().text,
@@ -426,6 +433,11 @@ class PageViewModelTest {
         val expected =
             ViewState.Success(
                 listOf(
+                    BlockView.Title(
+                        focused = false,
+                        id = root,
+                        text = null
+                    ),
                     BlockView.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content.asText().text,
@@ -521,6 +533,11 @@ class PageViewModelTest {
 
         val beforeUpdate = ViewState.Success(
             listOf(
+                BlockView.Title(
+                    focused = false,
+                    id = root,
+                    text = null
+                ),
                 BlockView.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
@@ -634,6 +651,11 @@ class PageViewModelTest {
 
         val firstTimeExpected = ViewState.Success(
             listOf(
+                BlockView.Title(
+                    focused = false,
+                    id = root,
+                    text = null
+                ),
                 BlockView.Paragraph(
                     focused = true,
                     id = paragraph.id,
@@ -668,6 +690,11 @@ class PageViewModelTest {
 
         val secondTimeExpected = ViewState.Success(
             listOf(
+                BlockView.Title(
+                    focused = false,
+                    id = root,
+                    text = null
+                ),
                 BlockView.Paragraph(
                     focused = true,
                     id = paragraph.id,
@@ -773,6 +800,11 @@ class PageViewModelTest {
 
         val firstTimeExpected = ViewState.Success(
             listOf(
+                BlockView.Title(
+                    focused = false,
+                    id = page.id,
+                    text = null
+                ),
                 BlockView.Paragraph(
                     focused = true,
                     id = paragraph.id,
@@ -817,6 +849,11 @@ class PageViewModelTest {
 
         val secondTimeExpected = ViewState.Success(
             listOf(
+                BlockView.Title(
+                    focused = false,
+                    id = page.id,
+                    text = null
+                ),
                 BlockView.Paragraph(
                     focused = true,
                     id = paragraph.id,
@@ -989,6 +1026,11 @@ class PageViewModelTest {
 
         val state = ViewState.Success(
             listOf(
+                BlockView.Title(
+                    focused = false,
+                    id = root,
+                    text = null
+                ),
                 BlockView.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
@@ -1631,6 +1673,11 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
+                    BlockView.Title(
+                        focused = false,
+                        id = root,
+                        text = null
+                    ),
                     BlockView.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
@@ -1645,6 +1692,11 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
+                    BlockView.Title(
+                        focused = false,
+                        id = root,
+                        text = null
+                    ),
                     BlockView.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
@@ -1853,6 +1905,11 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
+                    BlockView.Title(
+                        focused = false,
+                        id = root,
+                        text = null
+                    ),
                     BlockView.Paragraph(
                         id = page[1].id,
                         text = page[1].content<Block.Content.Text>().text,
@@ -1879,6 +1936,11 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
+                    BlockView.Title(
+                        focused = false,
+                        id = root,
+                        text = null
+                    ),
                     BlockView.Paragraph(
                         id = page.last().id,
                         text = page.last().content<Block.Content.Text>().text,
@@ -3642,6 +3704,68 @@ class PageViewModelTest {
         focus.assertValue { id -> id == newBlockId }
     }
 
+    @Test
+    fun `should start updating title on title-text-changed event with delay`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(title.id)
+            ),
+            title
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        val update = MockDataFactory.randomString()
+
+        vm.onTitleTextChanged(update)
+
+        verify(updateTitle, never()).invoke(
+            scope = any(),
+            params = any(),
+            onResult = any()
+        )
+
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        verify(updateTitle, times(1)).invoke(
+            any(),
+            any(),
+            any()
+        )
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()
@@ -3732,7 +3856,8 @@ class PageViewModelTest {
             archiveDocument = archiveDocument,
             createDocument = createDocument,
             replaceBlock = replaceBlock,
-            patternMatcher = DefaultPatternMatcher()
+            patternMatcher = DefaultPatternMatcher(),
+            updateTitle = updateTitle
         )
     }
 }

@@ -23,6 +23,7 @@ class MiddlewareEventChannel(
         Events.Event.Message.ValueCase.BLOCKSETTEXT,
         Events.Event.Message.ValueCase.BLOCKSETCHILDRENIDS,
         Events.Event.Message.ValueCase.BLOCKSETBACKGROUNDCOLOR,
+        Events.Event.Message.ValueCase.BLOCKSETDETAILS,
         Events.Event.Message.ValueCase.BLOCKDELETE,
         Events.Event.Message.ValueCase.BLOCKSETLINK,
         Events.Event.Message.ValueCase.BLOCKSETFILE,
@@ -103,6 +104,13 @@ class MiddlewareEventChannel(
                         context = context,
                         id = event.blockSetChildrenIds.id,
                         children = event.blockSetChildrenIds.childrenIdsList.toList()
+                    )
+                }
+                Events.Event.Message.ValueCase.BLOCKSETDETAILS -> {
+                    EventEntity.Command.UpdateDetails(
+                        context = context,
+                        target = event.blockSetDetails.id,
+                        details = event.blockSetDetails.details.fields()
                     )
                 }
                 Events.Event.Message.ValueCase.BLOCKSETLINK -> {

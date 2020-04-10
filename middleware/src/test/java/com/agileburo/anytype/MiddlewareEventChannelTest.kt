@@ -8,6 +8,8 @@ import com.agileburo.anytype.data.auth.model.BlockEntity
 import com.agileburo.anytype.data.auth.model.EventEntity
 import com.agileburo.anytype.middleware.EventProxy
 import com.agileburo.anytype.middleware.interactor.MiddlewareEventChannel
+import com.google.protobuf.Struct
+import com.google.protobuf.Value
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.flow.collect
@@ -291,6 +293,62 @@ class MiddlewareEventChannelTest {
                 context = context,
                 id = id,
                 backgroundColor = color
+            )
+        )
+
+        runBlocking {
+            channel.observeEvents(context = context).collect { events ->
+                assertEquals(
+                    expected = expected,
+                    actual = events
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `should return update-details event`() {
+
+        val context = MockDataFactory.randomUuid()
+
+        val id = MockDataFactory.randomUuid()
+
+        val icon = Pair("icon", ":package:")
+        val name = Pair("name", "Document I")
+
+        val details = BlockEntity.Fields(map = mutableMapOf(icon, name))
+
+        val msg = Message
+            .newBuilder()
+            .blockSetDetailsBuilder
+            .setId(id)
+            .setDetails(
+                Struct.newBuilder()
+                    .putFields(icon.first, Value.newBuilder().setStringValue(icon.second).build())
+                    .putFields(name.first, Value.newBuilder().setStringValue(name.second).build())
+                    .build()
+            )
+            .build()
+
+        val message = Message
+            .newBuilder()
+            .setBlockSetDetails(msg)
+
+        val event = Event
+            .newBuilder()
+            .setContextId(context)
+            .addMessages(message)
+            .build()
+
+        proxy.stub {
+            on { flow() } doReturn flowOf(event)
+        }
+
+        val expected = listOf(
+            EventEntity.Command.UpdateDetails(
+                context = context,
+                target = id,
+                details = details
             )
         )
 

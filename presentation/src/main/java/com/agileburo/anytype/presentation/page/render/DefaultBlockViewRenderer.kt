@@ -24,12 +24,15 @@ class DefaultBlockViewRenderer(
         focus: Id,
         anchor: Id,
         indent: Int,
-        counter: Counter
+        counter: Counter,
+        details: Block.Details
     ): List<BlockView> {
 
         val children = getValue(anchor)
 
         val result = mutableListOf<BlockView>()
+
+        buildTitle(anchor, root, result, details, focus)
 
         counter.reset()
 
@@ -67,7 +70,8 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        counter = counter
+                                        counter = counter,
+                                        details = details
                                     )
                                 )
                             }
@@ -122,6 +126,30 @@ class DefaultBlockViewRenderer(
         }
 
         return result
+    }
+
+    private suspend fun buildTitle(
+        anchor: Id,
+        root: Block,
+        result: MutableList<BlockView>,
+        details: Block.Details,
+        focus: Id
+    ) {
+        if (anchor == root.id) {
+            result.add(
+                BlockView.Title(
+                    id = anchor,
+                    focused = anchor == focus,
+                    text = details.details[root.id]?.name,
+                    emoji = details.details[root.id]?.icon?.let { name ->
+                        if (name.isNotEmpty())
+                            emojifier.fromShortName(name).unicode
+                        else
+                            null
+                    }
+                )
+            )
+        }
     }
 
     private fun paragraph(

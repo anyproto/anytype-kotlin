@@ -1,6 +1,6 @@
 package com.agileburo.anytype.presentation.desktop
 
 sealed class DashboardView {
-    data class Document(val id: String, val title: String, val emoji: String? = null) :
+    data class Document(val id: String, val title: String?, val emoji: String? = null) :
         DashboardView()
 }

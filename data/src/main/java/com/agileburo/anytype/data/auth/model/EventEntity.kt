@@ -57,6 +57,12 @@ sealed class EventEntity {
             val children: List<String>
         ) : Command()
 
+        data class UpdateDetails(
+            override val context: String,
+            val target: String,
+            val details: BlockEntity.Fields
+        ) : Command()
+
         data class DeleteBlock(
             override val context: String,
             val targets: List<String>

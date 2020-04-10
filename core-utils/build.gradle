@@ -44,6 +44,7 @@ dependencies {
     implementation applicationDependencies.rxAndroid
 
     testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.mockito
 
     implementation applicationDependencies.navigation

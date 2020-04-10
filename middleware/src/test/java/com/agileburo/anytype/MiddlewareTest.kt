@@ -168,4 +168,37 @@ class MiddlewareTest {
         verify(service, times(1)).blockSetDetails(request)
         verifyNoMoreInteractions(service)
     }
+
+    @Test
+    fun `should set document title by updating document details`() {
+
+        val command = CommandEntity.UpdateTitle(
+            context = MockDataFactory.randomUuid(),
+            title = MockDataFactory.randomString()
+        )
+
+        val response = Block.Set.Details.Response.getDefaultInstance()
+
+        val key = "name"
+
+        val value = Value.newBuilder().setStringValue(command.title)
+
+        val details = Block.Set.Details.Detail.newBuilder()
+            .setKey(key)
+            .setValue(value)
+
+        val request = Block.Set.Details.Request.newBuilder()
+            .setContextId(command.context)
+            .addDetails(details)
+            .build()
+
+        service.stub {
+            on { blockSetDetails(any()) } doReturn response
+        }
+
+        middleware.updateDocumentTitle(command)
+
+        verify(service, times(1)).blockSetDetails(request)
+        verifyNoMoreInteractions(service)
+    }
 }

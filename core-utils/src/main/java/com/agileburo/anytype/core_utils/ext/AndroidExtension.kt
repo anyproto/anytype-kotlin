@@ -16,6 +16,7 @@ import android.view.TouchDelegate
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.DimenRes
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import timber.log.Timber
@@ -43,6 +44,10 @@ fun View.height(spec: Int = View.MeasureSpec.UNSPECIFIED): Int {
 
 fun RecyclerView.ViewHolder.dimen(@DimenRes res: Int): Int {
     return itemView.context.resources.getDimension(res).toInt()
+}
+
+fun RecyclerView.ViewHolder.res(@StringRes res: Int): String {
+    return itemView.context.resources.getString(res)
 }
 
 fun Uri.parsePath(context: Context): String {

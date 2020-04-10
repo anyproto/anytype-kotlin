@@ -43,7 +43,8 @@ open class PageViewModelFactory(
     private val downloadFile: DownloadFile,
     private val renderer: DefaultBlockViewRenderer,
     private val counter: Counter,
-    private val patternMatcher: Matcher<Pattern>
+    private val patternMatcher: Matcher<Pattern>,
+    private val updateTitle: UpdateTitle
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -76,7 +77,8 @@ open class PageViewModelFactory(
             counter = counter,
             createDocument = createDocument,
             replaceBlock = replaceBlock,
-            patternMatcher = patternMatcher
+            patternMatcher = patternMatcher,
+            updateTitle = updateTitle
         ) as T
     }
 }

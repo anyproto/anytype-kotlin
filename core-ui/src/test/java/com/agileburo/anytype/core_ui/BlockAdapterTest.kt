@@ -44,6 +44,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -1576,9 +1577,96 @@ class BlockAdapterTest {
         )
     }
 
+    @Test
+    fun `should trigger title-text-changed callback`() {
+
+        // Setup
+
+        val events = mutableListOf<Editable>()
+
+        val title = BlockView.Title(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            focused = true
+        )
+
+        val updated = title.copy(
+            focused = false
+        )
+
+        val views = listOf(title)
+
+        val adapter = buildAdapter(
+            views = views,
+            onTitleTextChanged = { editable ->
+                events.add(editable)
+            }
+        )
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Title)
+
+        // Testing
+
+        assertTrue { events.isEmpty() }
+
+        holder.content.setText(MockDataFactory.randomString())
+
+        assertTrue { events.size == 1 && events.first() == holder.content.text }
+    }
+
+    @Test
+    fun `should trigger enter-end-line-title event`() {
+
+        // Setup
+
+        var triggered = false
+
+        val title = BlockView.Title(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            focused = true
+        )
+
+        val views = listOf(title)
+
+        val adapter = buildAdapter(
+            views = views,
+            onEndLineEnterTitleClicked = { triggered = true }
+        )
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+            this.adapter = adapter
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Title)
+
+        // Testing
+
+        assertTrue { !triggered }
+
+        holder.content.append("\n")
+
+        assertTrue { triggered }
+    }
+
     private fun buildAdapter(
         views: List<BlockView>,
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
+        onTitleTextChanged: (Editable) -> Unit = {},
+        onEndLineEnterTitleClicked: (Editable) -> Unit = {},
         onTextChanged: (String, Editable) -> Unit = { _, _ -> },
         onBookmarkMenuClicked: (String) -> Unit = {}
     ): BlockAdapter {
@@ -1606,6 +1694,8 @@ class BlockAdapterTest {
             onToggleClicked = {},
             onMediaBlockMenuClick = {},
             onParagraphTextChanged = { _, _ -> },
+            onTitleTextChanged = onTitleTextChanged,
+            onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
             onBookmarkMenuClicked = onBookmarkMenuClicked,
             onMarkupActionClicked = {}
         )

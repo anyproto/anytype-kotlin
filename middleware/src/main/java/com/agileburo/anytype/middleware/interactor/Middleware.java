@@ -24,6 +24,7 @@ import timber.log.Timber;
 public class Middleware {
 
     private final String iconKey = "icon";
+    private final String nameKey = "name";
 
     private final MiddlewareService service;
     private final MiddlewareFactory factory;
@@ -175,6 +176,27 @@ public class Middleware {
         Timber.d("Closing dashboard with the following request:\n%s", request.toString());
 
         service.blockClose(request);
+    }
+
+    public void updateDocumentTitle(CommandEntity.UpdateTitle command) throws Exception {
+
+        Value value = Value.newBuilder().setStringValue(command.getTitle()).build();
+
+        Block.Set.Details.Detail details = Block.Set.Details.Detail
+                .newBuilder()
+                .setKey(nameKey)
+                .setValue(value)
+                .build();
+
+        Block.Set.Details.Request request = Block.Set.Details.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .addDetails(details)
+                .build();
+
+        Timber.d("Updating doc. title with the following request:\n%s", request.toString());
+
+        service.blockSetDetails(request);
     }
 
     public void updateText(

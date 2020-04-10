@@ -49,7 +49,7 @@ class DefaultBlockViewRendererTest {
     @Mock
     lateinit var toggleStateHolder: ToggleStateHolder
 
-    lateinit var renderer: DefaultBlockViewRenderer
+    private lateinit var renderer: DefaultBlockViewRenderer
 
     private val config = Config(
         home = MockDataFactory.randomUuid(),
@@ -69,7 +69,7 @@ class DefaultBlockViewRendererTest {
     }
 
     @Test
-    fun `should return paragraph, toggle with its indented inner checkbox`() {
+    fun `should return title, paragraph, toggle with its indented inner checkbox`() {
 
         val paragraph = Block(
             id = MockDataFactory.randomUuid(),
@@ -117,8 +117,6 @@ class DefaultBlockViewRendererTest {
 
         val map = blocks.asMap()
 
-
-
         wrapper = BlockViewRenderWrapper(
             blocks = map,
             renderer = renderer
@@ -138,6 +136,12 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
+            BlockView.Title(
+                id = page.id,
+                focused = false,
+                text = null,
+                emoji = null
+            ),
             BlockView.Paragraph(
                 focused = true,
                 id = paragraph.id,
@@ -163,7 +167,7 @@ class DefaultBlockViewRendererTest {
     }
 
     @Test
-    fun `should return paragraph, toggle without its inner checkbox`() {
+    fun `should return title, paragraph, toggle without its inner checkbox`() {
 
         val paragraph = Block(
             id = MockDataFactory.randomUuid(),
@@ -230,6 +234,12 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
+            BlockView.Title(
+                id = page.id,
+                focused = false,
+                text = null,
+                emoji = null
+            ),
             BlockView.Paragraph(
                 focused = true,
                 id = paragraph.id,

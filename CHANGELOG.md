@@ -2,16 +2,14 @@
 
 ## Version 0.0.27 (WIP)
 
-### New features 🚀
-
-*
-
 ### Design 🔳
 
 * Rendering bookmark in error / failed-to-load state (#351)
+* New markup menu (instead of bottom toolbar) (#348)
 
 ### Fixes & tech 🚒
 
+* Get title and icon from document details (#356)
 * Wire bookmark menu with action toolbar (#351)
 * Add-block bottom sheet has incorrect fonts in title and subtitle (#361)
 * Do not show main toolbar when no block is focused on a page (#103)

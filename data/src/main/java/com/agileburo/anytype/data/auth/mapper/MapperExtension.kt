@@ -428,6 +428,11 @@ fun Command.Replace.toEntity() = CommandEntity.Replace(
     prototype = prototype.toEntity()
 )
 
+fun Command.UpdateTitle.toEntity() = CommandEntity.UpdateTitle(
+    context = context,
+    title = title
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }
@@ -506,6 +511,13 @@ fun EventEntity.toDomain(): Event {
                 context = context,
                 target = target,
                 fields = Block.Fields(fields.map)
+            )
+        }
+        is EventEntity.Command.UpdateDetails -> {
+            Event.Command.UpdateDetails(
+                context = context,
+                target = target,
+                details = Block.Fields(details.map)
             )
         }
         is EventEntity.Command.UpdateBlockFile -> {

@@ -88,9 +88,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun indentize(item: BlockView.Indentable)
     }
 
-    class Paragraph(view: View,
-                    onMarkupActionClicked: (Markup.Type) -> Unit)
-        : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class Paragraph(
+        view: View,
+        onMarkupActionClicked: (Markup.Type) -> Unit
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         override val root: View = itemView
         override val content: TextInputWidget = itemView.textContent
@@ -155,15 +156,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.Title,
-            onTextChanged: (String, Editable) -> Unit,
+            onTitleTextChanged: (Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onPageIconClicked: () -> Unit
         ) {
             content.clearTextWatchers()
             focus(item.focused)
             content.setText(item.text, BufferType.EDITABLE)
-            if (item.text.isNotEmpty()) content.setSelection(item.text.length)
-            setupTextWatcher(onTextChanged, item)
+            if (!item.text.isNullOrEmpty()) content.setSelection(item.text.length)
+            setupTextWatcher({ _, editable -> onTitleTextChanged(editable) }, item)
             content.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
                 if (hasFocus) showKeyboard()
@@ -353,9 +354,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Checkbox(view: View,
-                   onMarkupActionClicked: (Markup.Type) -> Unit)
-        : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class Checkbox(
+        view: View,
+        onMarkupActionClicked: (Markup.Type) -> Unit
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val checkbox = itemView.checkboxIcon
         override val content: TextInputWidget = itemView.checkboxContent
@@ -444,9 +446,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Bulleted(view: View,
-                   onMarkupActionClicked: (Markup.Type) -> Unit)
-        : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class Bulleted(
+        view: View,
+        onMarkupActionClicked: (Markup.Type) -> Unit
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val indent = itemView.bulletIndent
         private val bullet = itemView.bullet
@@ -516,9 +519,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Numbered(view: View,
-                   onMarkupActionClicked: (Markup.Type) -> Unit)
-        : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class Numbered(
+        view: View,
+        onMarkupActionClicked: (Markup.Type) -> Unit
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val number = itemView.number
         override val content: TextInputWidget = itemView.numberedListContent
@@ -590,9 +594,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private fun Int.addDot(): String = "$this."
     }
 
-    class Toggle(view: View,
-                 onMarkupActionClicked: (Markup.Type) -> Unit)
-        : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class Toggle(
+        view: View,
+        onMarkupActionClicked: (Markup.Type) -> Unit
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val toggle = itemView.toggle
         private val line = itemView.guideline

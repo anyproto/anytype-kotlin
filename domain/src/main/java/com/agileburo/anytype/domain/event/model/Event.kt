@@ -111,6 +111,18 @@ sealed class Event {
         ) : Command()
 
         /**
+         * Command to update details (metadata) of the target block
+         * @property context id of the context
+         * @property target id of the target block, whose details we need to update
+         * @property details details of the target block
+         */
+        data class UpdateDetails(
+            override val context: Id,
+            val target: Id,
+            val details: Block.Fields
+        ) : Command()
+
+        /**
          * Command to update file block content
          */
         data class UpdateFileBlock(

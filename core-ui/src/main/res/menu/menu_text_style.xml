@@ -32,16 +32,16 @@
         android:title="@string/menu_item_link"
         app:showAsAction="ifRoom" />
 
-<!--    <item-->
-<!--        android:id="@+id/itemColor"-->
-<!--        android:icon="@drawable/ic_menu_link"-->
-<!--        android:title="@string/menu_item_color"-->
-<!--        app:showAsAction="ifRoom" />-->
+    <!--    <item-->
+    <!--        android:id="@+id/itemColor"-->
+    <!--        android:icon="@drawable/ic_menu_link"-->
+    <!--        android:title="@string/menu_item_color"-->
+    <!--        app:showAsAction="ifRoom" />-->
 
-<!--    <item-->
-<!--        android:id="@+id/itemBackground"-->
-<!--        android:icon="@drawable/ic_menu_link"-->
-<!--        android:title="@string/menu_item_background"-->
-<!--        app:showAsAction="ifRoom" />-->
+    <!--    <item-->
+    <!--        android:id="@+id/itemBackground"-->
+    <!--        android:icon="@drawable/ic_menu_link"-->
+    <!--        android:title="@string/menu_item_background"-->
+    <!--        app:showAsAction="ifRoom" />-->
 
 </menu>

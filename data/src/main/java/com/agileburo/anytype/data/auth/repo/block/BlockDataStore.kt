@@ -7,6 +7,7 @@ import com.agileburo.anytype.domain.common.Id
 interface BlockDataStore {
     suspend fun create(command: CommandEntity.Create): Id
     suspend fun createDocument(command: CommandEntity.CreateDocument): Pair<Id, Id>
+    suspend fun updateDocumentTitle(command: CommandEntity.UpdateTitle)
     suspend fun updateText(command: CommandEntity.UpdateText)
     suspend fun updateTextStyle(command: CommandEntity.UpdateStyle)
     suspend fun updateTextColor(command: CommandEntity.UpdateTextColor)

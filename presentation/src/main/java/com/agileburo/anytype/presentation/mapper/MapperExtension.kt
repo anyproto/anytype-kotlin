@@ -127,7 +127,6 @@ fun Block.Content.Text.marks(): List<Markup.Mark> = marks.mapNotNull { mark ->
 }
 
 suspend fun HomeDashboard.toView(
-    defaultTitle: String = "Untitled",
     emojifier: Emojifier
 ): List<DashboardView.Document> = children.mapNotNull { id ->
     blocks.find { block -> block.id == id }?.let { model ->
@@ -137,11 +136,8 @@ suspend fun HomeDashboard.toView(
                     if (content.fields.isArchived != true) {
                         DashboardView.Document(
                             id = content.target,
-                            title = if (content.fields.hasName())
-                                content.fields.name.ifEmpty { defaultTitle }
-                            else
-                                defaultTitle,
-                            emoji = content.fields.icon?.let { name ->
+                            title = details.details[content.target]?.name,
+                            emoji = details.details[content.target]?.icon?.let { name ->
                                 if (name.isNotEmpty())
                                     emojifier.fromShortName(name).unicode
                                 else

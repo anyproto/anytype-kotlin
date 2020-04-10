@@ -22,6 +22,7 @@ interface BlockViewRenderer {
         focus: Id,
         anchor: Id,
         indent: Int,
-        counter: Counter
+        counter: Counter,
+        details: Block.Details = Block.Details(emptyMap())
     ): List<BlockView>
 }

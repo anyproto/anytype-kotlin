@@ -88,7 +88,10 @@ class HomeDashboardViewModel(
                             if (event.root == context) {
                                 machine.onEvent(
                                     Machine.Event.OnDashboardLoaded(
-                                        dashboard = event.blocks.toHomeDashboard(id = context)
+                                        dashboard = event.blocks.toHomeDashboard(
+                                            id = context,
+                                            details = event.details
+                                        )
                                     )
                                 )
                             } else {

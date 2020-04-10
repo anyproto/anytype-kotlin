@@ -17,6 +17,11 @@ class CommandEntity {
         val marks: List<BlockEntity.Content.Text.Mark>
     )
 
+    class UpdateTitle(
+        val context: String,
+        val title: String
+    )
+
     data class UpdateStyle(
         val context: String,
         val target: String,

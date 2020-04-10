@@ -28,6 +28,16 @@ sealed class Command {
     ) : Command()
 
     /**
+     * Commands for updating document's title
+     * @property context id of the context
+     * @property title new title for the document
+     */
+    class UpdateTitle(
+        val context: Id,
+        val title: String
+    )
+
+    /**
      * Command for replacing target block by a new block (created from prototype)
      * @property context id of the context
      * @property target id of the block, which we need to replace

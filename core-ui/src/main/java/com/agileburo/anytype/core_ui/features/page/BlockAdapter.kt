@@ -52,6 +52,7 @@ class BlockAdapter(
     private var blocks: List<BlockView>,
     private val onParagraphTextChanged: (String, Editable) -> Unit,
     private val onTextChanged: (String, Editable) -> Unit,
+    private val onTitleTextChanged: (Editable) -> Unit,
     private val onSelectionChanged: (String, IntRange) -> Unit,
     private val onCheckboxClicked: (String) -> Unit,
     private val onFocusChanged: (String, Boolean) -> Unit,
@@ -59,6 +60,7 @@ class BlockAdapter(
     private val onNonEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onSplitLineEnterClicked: (String, Int) -> Unit,
     private val onEndLineEnterClicked: (String, Editable) -> Unit,
+    private val onEndLineEnterTitleClicked: (Editable) -> Unit,
     private val onFooterClicked: () -> Unit,
     private val onPageClicked: (String) -> Unit,
     private val onTextInputClicked: () -> Unit,
@@ -73,7 +75,7 @@ class BlockAdapter(
     private val onToggleClicked: (String) -> Unit,
     private val onMediaBlockMenuClick: (String) -> Unit,
     private val onBookmarkMenuClicked: (String) -> Unit,
-    private val onMarkupActionClicked:(Markup.Type) -> Unit
+    private val onMarkupActionClicked: (Markup.Type) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -453,7 +455,7 @@ class BlockAdapter(
             is BlockViewHolder.Title -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Title,
-                    onTextChanged = onTextChanged,
+                    onTitleTextChanged = onTitleTextChanged,
                     onFocusChanged = onFocusChanged,
                     onPageIconClicked = onPageIconClicked
                 )
@@ -648,14 +650,26 @@ class BlockAdapter(
                 )
             }
 
-            holder.enableEnterKeyDetector(
-                onEndLineEnterClicked = { editable ->
-                    onEndLineEnterClicked(blocks[holder.adapterPosition].id, editable)
-                },
-                onSplitLineEnterClicked = { index ->
-                    onSplitLineEnterClicked(blocks[holder.adapterPosition].id, index)
-                }
-            )
+            if (holder is BlockViewHolder.Title) {
+                holder.enableEnterKeyDetector(
+                    onEndLineEnterClicked = { editable ->
+                        onEndLineEnterTitleClicked(editable)
+                    },
+                    onSplitLineEnterClicked = { index ->
+                        onSplitLineEnterClicked(blocks[holder.adapterPosition].id, index)
+                    }
+                )
+            } else {
+                holder.enableEnterKeyDetector(
+                    onEndLineEnterClicked = { editable ->
+                        onEndLineEnterClicked(blocks[holder.adapterPosition].id, editable)
+                    },
+                    onSplitLineEnterClicked = { index ->
+                        onSplitLineEnterClicked(blocks[holder.adapterPosition].id, index)
+                    }
+                )
+            }
+
             holder.enableBackspaceDetector(
                 onEmptyBlockBackspaceClicked = { onEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id) },
                 onNonEmptyBlockBackspaceClicked = { onNonEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id) }

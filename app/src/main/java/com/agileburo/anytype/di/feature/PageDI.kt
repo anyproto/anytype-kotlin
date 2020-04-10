@@ -68,7 +68,8 @@ class PageModule {
         counter: Counter,
         archiveDocument: ArchiveDocument,
         replaceBlock: ReplaceBlock,
-        patternMatcher: DefaultPatternMatcher
+        patternMatcher: DefaultPatternMatcher,
+        updateTitle: UpdateTitle
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -97,7 +98,8 @@ class PageModule {
         redo = redo,
         archiveDocument = archiveDocument,
         replaceBlock = replaceBlock,
-        patternMatcher = patternMatcher
+        patternMatcher = patternMatcher,
+        updateTitle = updateTitle
     )
 
     @Provides
@@ -300,6 +302,14 @@ class PageModule {
     fun provideReplaceBlockUseCase(
         repo: BlockRepository
     ): ReplaceBlock = ReplaceBlock(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideUpdateTitleUseCase(
+        repo: BlockRepository
+    ): UpdateTitle = UpdateTitle(
         repo = repo
     )
 

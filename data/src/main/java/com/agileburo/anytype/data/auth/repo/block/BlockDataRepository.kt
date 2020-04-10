@@ -30,6 +30,10 @@ class BlockDataRepository(
         factory.remote.closePage(id)
     }
 
+    override suspend fun updateDocumentTitle(
+        command: Command.UpdateTitle
+    ) = factory.remote.updateDocumentTitle(command.toEntity())
+
     override suspend fun updateText(command: Command.UpdateText) {
         factory.remote.updateText(command.toEntity())
     }

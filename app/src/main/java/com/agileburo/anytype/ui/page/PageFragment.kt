@@ -98,6 +98,11 @@ open class PageFragment :
     private val pageAdapter by lazy {
         BlockAdapter(
             blocks = mutableListOf(),
+            onTitleTextChanged = { editable ->
+                vm.onTitleTextChanged(
+                    text = editable.toString()
+                )
+            },
             onTextChanged = { id, editable ->
                 vm.onTextChanged(
                     id = id,
@@ -123,6 +128,7 @@ open class PageFragment :
                     marks = editable.extractMarks()
                 )
             },
+            onEndLineEnterTitleClicked = { vm.onEndLineEnterTitleClicked() },
             onEmptyBlockBackspaceClicked = vm::onEmptyBlockBackspaceClicked,
             onNonEmptyBlockBackspaceClicked = vm::onNonEmptyBlockBackspaceClicked,
             onFooterClicked = vm::onOutsideClicked,

@@ -23,7 +23,7 @@ class HomeDashboardViewMapperTest {
     }
 
     @Test
-    fun `shoudl not map archived links`() {
+    fun `should not map archived links`() {
 
         val archived = Block(
             id = MockDataFactory.randomUuid(),
@@ -65,8 +65,7 @@ class HomeDashboardViewMapperTest {
 
         val result = runBlocking {
             dashboard.toView(
-                emojifier = emojifier,
-                defaultTitle = MockDataFactory.randomString()
+                emojifier = emojifier
             )
         }
 

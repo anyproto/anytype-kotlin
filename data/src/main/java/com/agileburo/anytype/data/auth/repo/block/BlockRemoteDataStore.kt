@@ -24,6 +24,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         remote.closePage(id)
     }
 
+    override suspend fun updateDocumentTitle(command: CommandEntity.UpdateTitle) {
+        remote.updateDocumentTitle(command)
+    }
+
     override suspend fun updateText(command: CommandEntity.UpdateText) {
         remote.updateText(command)
     }

@@ -73,7 +73,7 @@ class HomeDashboardViewMapperTest {
             id = MockDataFactory.randomUuid(),
             content = Block.Content.Link(
                 target = MockDataFactory.randomUuid(),
-                fields = Block.Fields(mapOf("icon" to emoji.name)),
+                fields = Block.Fields.empty(),
                 type = Block.Content.Link.Type.PAGE
             ),
             children = emptyList(),
@@ -98,8 +98,8 @@ class HomeDashboardViewMapperTest {
             expected = listOf(
                 DashboardView.Document(
                     id = child.content.asLink().target,
-                    title = "Untitled",
-                    emoji = emoji.unicode
+                    title = null,
+                    emoji = null
                 )
             ),
             actual = view

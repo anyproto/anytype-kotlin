@@ -61,6 +61,7 @@ class PageViewModel(
     private val duplicateBlock: DuplicateBlock,
     private val updateTextStyle: UpdateTextStyle,
     private val updateTextColor: UpdateTextColor,
+    private val updateTitle: UpdateTitle,
     private val updateBackgroundColor: UpdateBackgroundColor,
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
@@ -79,6 +80,9 @@ class PageViewModel(
     BlockViewRenderer by renderer,
     ToggleStateHolder by renderer,
     StateReducer<List<Block>, Event> by documentExternalEventReducer {
+
+    private val detailsChannel = ConflatedBroadcastChannel(Block.Details(emptyMap()))
+    private val detailsChanges = detailsChannel.asFlow()
 
     private val controlPanelInteractor = Interactor(viewModelScope)
     val controlPanelViewState = MutableLiveData<ControlPanelState>()
@@ -100,6 +104,9 @@ class PageViewModel(
 
     private val markupActionChannel = Channel<MarkupAction>()
     private val markupActions = markupActionChannel.consumeAsFlow()
+
+    private val titleChannel = Channel<String>()
+    private val titleChanges = titleChannel.consumeAsFlow()
 
     /**
      * Currently opened page id.
@@ -125,6 +132,7 @@ class PageViewModel(
     init {
         startHandlingTextChanges()
         startProcessingFocusChanges()
+        startProcessingTitleChanges()
         startProcessingControlPanelViewState()
         startObservingEvents()
         processRendering()
@@ -137,34 +145,62 @@ class PageViewModel(
         }
     }
 
+    private fun startProcessingTitleChanges() {
+        titleChanges
+            .debounce(TEXT_CHANGES_DEBOUNCE_DURATION)
+            .onEach { update -> proceedWithUpdatingDocumentTitle(update) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun proceedWithUpdatingDocumentTitle(update: String) {
+        updateTitle.invoke(
+            scope = viewModelScope,
+            params = UpdateTitle.Params(
+                context = context,
+                title = update
+            ),
+            onResult = { result ->
+                result.either(
+                    fnL = { Timber.e(it, "Error while updating title") },
+                    fnR = { Timber.d("Title has been updated") }
+                )
+            }
+        )
+    }
+
     private fun startObservingEvents() {
         viewModelScope.launch {
             interceptEvents
                 .build()
                 .filter { events -> events.any { it.context == context } }
                 .map { events ->
-                    events.forEach { event -> blocks = reduce(blocks, event) }
-                    proceedWithInitialFocusing(events)
+                    Timber.d("Blocks before handling events: $blocks")
+                    Timber.d("Handling events: $events")
+                    events.forEach { event ->
+                        if (event is Event.Command.ShowBlock) {
+                            detailsChannel.offer(event.details)
+                            event.blocks.first { it.id == context }.let { page ->
+                                if (page.children.isEmpty()) {
+                                    updateFocus(page.id)
+                                    controlPanelInteractor.onEvent(
+                                        ControlPanelMachine.Event.OnFocusChanged(
+                                            id = page.id, style = Content.Text.Style.TITLE
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                        if (event is Event.Command.UpdateDetails) {
+                            val details = detailsChannel.value
+                            val map = details.details.toMutableMap()
+                            map[event.target] = event.details
+                            detailsChannel.offer(Block.Details(map))
+                        }
+                        blocks = reduce(blocks, event)
+                    }
+                    Timber.d("Blocks after handling events: $blocks")
                 }
                 .collect { viewModelScope.launch { refresh() } }
-        }
-    }
-
-    @Deprecated("Will be removed")
-    private fun proceedWithInitialFocusing(events: List<Event>) {
-        val event = events.find { event -> event is Event.Command.ShowBlock }
-        if (event is Event.Command.ShowBlock) {
-            event.blocks.find { block ->
-                block.content is Content.Text
-                        && block.content<Content.Text>().style == Content.Text.Style.TITLE
-            }?.let { title ->
-                updateFocus(title.id)
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnFocusChanged(
-                        id = title.id, style = Content.Text.Style.TITLE
-                    )
-                )
-            }
         }
     }
 
@@ -302,15 +338,18 @@ class PageViewModel(
 
     private fun processRendering() {
         viewModelScope.launch {
-            renderings.withLatestFrom(focusChanges) { models, focus ->
-                models.asMap().render(
-                    indent = INITIAL_INDENT,
-                    anchor = context,
-                    focus = focus,
-                    root = models.first { it.id == context },
-                    counter = counter
-                )
-            }.collect { dispatchToUI(it) }
+            renderings.filter { it.isNotEmpty() }
+                .withLatestFrom(focusChanges, detailsChanges) { models, focus, details ->
+                    Timber.d("New rendering: $models, $focus, $details")
+                    models.asMap().render(
+                        indent = INITIAL_INDENT,
+                        anchor = context,
+                        focus = focus,
+                        root = models.first { it.id == context },
+                        counter = counter,
+                        details = details
+                    )
+                }.collect { dispatchToUI(it) }
         }
     }
 
@@ -522,6 +561,10 @@ class PageViewModel(
         viewModelScope.launch { textChannel.send(update) }
     }
 
+    fun onTitleTextChanged(text: String) {
+        viewModelScope.launch { titleChannel.send(text) }
+    }
+
     fun onParagraphTextChanged(
         id: String,
         text: String,
@@ -549,7 +592,10 @@ class PageViewModel(
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.OnFocusChanged(
                     id = id,
-                    style = blocks.first { it.id == id }.textStyle()
+                    style = if (id == context)
+                        Content.Text.Style.TITLE
+                    else
+                        blocks.first { it.id == id }.textStyle()
                 )
             )
         }
@@ -609,6 +655,16 @@ class PageViewModel(
                 fnR = { id -> updateFocus(id) }
             )
         }
+    }
+
+    fun onEndLineEnterTitleClicked() {
+        val page = blocks.first { it.id == context }
+        val next = page.children.getOrElse(0) { "" }
+        proceedWithCreatingNewTextBlock(
+            id = next,
+            style = Content.Text.Style.P,
+            position = Position.TOP
+        )
     }
 
     fun onEndLineEnterClicked(
@@ -1051,6 +1107,7 @@ class PageViewModel(
     }
 
     private suspend fun refresh() {
+        Timber.d("Refreshing: $blocks")
         renderingChannel.send(blocks)
     }
 
@@ -1196,8 +1253,7 @@ class PageViewModel(
     }
 
     fun onPageIconClicked() {
-        val target = blocks.first { it.content is Content.Icon }.id
-        dispatch(Command.OpenPagePicker(target))
+        dispatch(Command.OpenPagePicker(context))
     }
 
     fun onDownloadFileClicked(id: String) {
@@ -1289,5 +1345,6 @@ class PageViewModel(
         selectionChannel.cancel()
         markupActionChannel.cancel()
         controlPanelInteractor.channel.cancel()
+        titleChannel.cancel()
     }
 }

@@ -30,6 +30,10 @@ class BlockMiddleware(
         middleware.closePage(id)
     }
 
+    override suspend fun updateDocumentTitle(command: CommandEntity.UpdateTitle) {
+        middleware.updateDocumentTitle(command)
+    }
+
     override suspend fun updateText(command: CommandEntity.UpdateText) {
         middleware.updateText(
             command.contextId,

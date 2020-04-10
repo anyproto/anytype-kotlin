@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.tools.SupportDragAndDropBehavior
+import com.agileburo.anytype.core_utils.ext.res
 import com.agileburo.anytype.core_utils.ext.shift
 import com.agileburo.anytype.feature_desktop.utils.DesktopDiffUtil
 import com.agileburo.anytype.presentation.desktop.DashboardView
@@ -61,7 +62,7 @@ class DashboardAdapter(
 
             fun bind(doc: DashboardView.Document, onClick: (DashboardView.Document) -> Unit) {
                 itemView.setOnClickListener { onClick(doc) }
-                itemView.title.text = doc.title
+                itemView.title.text = doc.title ?: res(R.string.untitled)
                 itemView.emoji.text = doc.emoji ?: EMPTY_EMOJI
             }
         }

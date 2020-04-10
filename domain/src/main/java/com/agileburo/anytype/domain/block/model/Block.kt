@@ -28,7 +28,7 @@ data class Block(
 
         private val default = map.withDefault { null }
 
-        val name: String by default
+        val name: String? by default
         val icon: String? by default
         val isArchived: Boolean? by default
 

@@ -133,6 +133,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             adapter = dashboardAdapter
             ItemTouchHelper(dndBehavior).attachToRecyclerView(this)
             addItemDecoration(decoration)
+            setHasFixedSize(true)
         }
 
         fab.setOnClickListener { vm.onAddNewDocumentClicked() }

@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<font-family xmlns:android="http://schemas.android.com/apk/res/android"
-    android:fontProviderAuthority="com.google.android.gms.fonts"
-    android:fontProviderCerts="@array/certs"
-    android:fontProviderPackage="com.google.android.gms"
-    android:fontProviderQuery="Graphik Regular">
-
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
     <font
         android:font="@font/graphik_regular"
         android:fontStyle="normal"

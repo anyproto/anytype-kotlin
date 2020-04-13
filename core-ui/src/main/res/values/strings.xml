@@ -170,4 +170,9 @@
     <string name="menu_item_color">Color</string>
     <string name="menu_item_background">Background</string>
 
+    <!-- Non-valid certificate, need update -->
+    <string-array name="certs">
+        <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
+    </string-array>
+
 </resources>

@@ -117,6 +117,7 @@ dependencies {
     implementation applicationDependencies.tableView
     implementation applicationDependencies.permissionDisp
     implementation applicationDependencies.pickT
+    implementation applicationDependencies.emojiCompat
 
     implementation applicationDependencies.viewModel
     implementation applicationDependencies.viewModelExtensions

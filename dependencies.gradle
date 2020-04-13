@@ -19,6 +19,7 @@ ext {
     material_version = '1.1.0-beta02'
     fragment_version = "1.2.3"
     ktx_core_version = "1.2.0"
+    emoji_compat_version = '1.1.0-beta01'
 
     // Architecture Components
     lifecycle_version = '2.1.0'
@@ -96,6 +97,7 @@ ext {
             androidAnnotations:         "androidx.annotation:annotation:$appcompat_version",
             betterLinkMovement:         "me.saket:better-link-movement-method:$better_link_method_version",
             ktxCore:                    "androidx.core:core-ktx:$ktx_core_version",
+            emojiCompat:                "androidx.emoji:emoji-appcompat:$emoji_compat_version",
 
             glide:                      "com.github.bumptech.glide:glide:$glide_version",
             glideCompiler:              "com.github.bumptech.glide:compiler:$glide_version",

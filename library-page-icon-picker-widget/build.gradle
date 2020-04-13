@@ -55,6 +55,7 @@ dependencies {
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines
     implementation applicationDependencies.androidxCore
+    implementation applicationDependencies.emojiCompat
 
     implementation applicationDependencies.design
     implementation applicationDependencies.recyclerView

@@ -1,7 +1,11 @@
 package com.agileburo.anytype.app
 
 import android.app.Application
+import androidx.core.provider.FontRequest
+import androidx.emoji.text.EmojiCompat
+import androidx.emoji.text.FontRequestEmojiCompatConfig
 import com.agileburo.anytype.BuildConfig
+import com.agileburo.anytype.R
 import com.agileburo.anytype.core_utils.tools.CrashlyticsTree
 import com.agileburo.anytype.di.common.ComponentManager
 import com.agileburo.anytype.di.main.*
@@ -27,8 +31,21 @@ class AndroidApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        setupEmojiCompat()
         setupTimber()
         setupStetho()
+    }
+
+    private fun setupEmojiCompat() {
+        val fontRequest = FontRequest(
+            "com.google.android.gms.fonts",
+            "com.google.android.gms",
+            "Graphik Regular",
+            R.array.certs
+        )
+        val config = FontRequestEmojiCompatConfig(this, fontRequest)
+        EmojiCompat.init(config)
     }
 
     private fun setupTimber() {

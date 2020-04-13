@@ -1,9 +1,11 @@
 package com.agileburo.anytype.ui.page.modals
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
@@ -19,6 +21,8 @@ import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModel
 import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModel.Contract
 import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModel.ViewState
 import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModelFactory
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
 import javax.inject.Inject
 
@@ -80,6 +84,12 @@ class PageIconPickerFragment : BaseBottomSheetFragment() {
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_page_icon_picker, container, false)
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        setModalToFullScreenState(dialog)
+        return dialog
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -120,6 +130,11 @@ class PageIconPickerFragment : BaseBottomSheetFragment() {
         vm.state.observe(viewLifecycleOwner, Observer { render(it) })
     }
 
+    override fun onDestroyView() {
+        dialog?.setOnShowListener { null }
+        super.onDestroyView()
+    }
+
     fun render(state: ViewState) {
         when (state) {
             is ViewState.Success -> pageIconPickerAdapter.update(state.views)
@@ -135,6 +150,21 @@ class PageIconPickerFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().pageIconPickerSubComponent.release()
     }
+
+    private fun setModalToFullScreenState(dialog: BottomSheetDialog) =
+        dialog.setOnShowListener { dialogInterface ->
+            (dialogInterface as? BottomSheetDialog)?.let { bottomSheetDialog ->
+                bottomSheetDialog.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
+                    ?.let { bottomSheetView ->
+                        BottomSheetBehavior.from(bottomSheetView).apply {
+                            val lp = bottomSheetView.layoutParams
+                            lp.height = activity?.window?.decorView?.measuredHeight ?: 0
+                            bottomSheetView.layoutParams = lp
+                            state = BottomSheetBehavior.STATE_EXPANDED
+                        }
+                    }
+            }
+        }
 
     companion object {
 

@@ -1,11 +1,12 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.27 (WIP)
+## Version 0.0.27
 
 ### Design 🔳
 
 * Rendering bookmark in error / failed-to-load state (#351)
 * New markup menu (instead of bottom toolbar) (#348)
+* Emoji picker issues (alignment, empty spaces, etc) (#324)
 
 ### Fixes & tech 🚒
 

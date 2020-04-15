@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,77 +10,88 @@
         android:backgroundTint="@color/anytype_text_default"
         android:layout_width="@dimen/block_style_toolbar_circle_size"
         android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_solid_default" />
+        android:background="@drawable/circle_solid_default"
+        tools:ignore="MissingConstraints" />
 
     <View
         android:id="@+id/textColorGrey"
         android:layout_width="@dimen/block_style_toolbar_circle_size"
         android:layout_height="@dimen/block_style_toolbar_circle_size"
         android:background="@drawable/circle_solid_default"
-        android:backgroundTint="@color/anytype_text_grey" />
+        android:backgroundTint="@color/anytype_text_grey"
+        tools:ignore="MissingConstraints" />
 
     <View
         android:id="@+id/textColorYellow"
         android:layout_width="@dimen/block_style_toolbar_circle_size"
         android:layout_height="@dimen/block_style_toolbar_circle_size"
         android:background="@drawable/circle_solid_default"
-        android:backgroundTint="@color/anytype_text_yellow" />
+        android:backgroundTint="@color/anytype_text_yellow"
+        tools:ignore="MissingConstraints" />
 
     <View
         android:id="@+id/textColorOrange"
         android:layout_width="@dimen/block_style_toolbar_circle_size"
         android:layout_height="@dimen/block_style_toolbar_circle_size"
         android:background="@drawable/circle_solid_default"
-        android:backgroundTint="@color/anytype_text_orange" />
+        android:backgroundTint="@color/anytype_text_orange"
+        tools:ignore="MissingConstraints" />
 
     <View
         android:id="@+id/textColorRed"
         android:layout_width="@dimen/block_style_toolbar_circle_size"
         android:layout_height="@dimen/block_style_toolbar_circle_size"
         android:background="@drawable/circle_solid_default"
-        android:backgroundTint="@color/anytype_text_red" />
+        android:backgroundTint="@color/anytype_text_red"
+        tools:ignore="MissingConstraints" />
 
     <View
         android:id="@+id/textColorPink"
         android:layout_width="@dimen/block_style_toolbar_circle_size"
         android:layout_height="@dimen/block_style_toolbar_circle_size"
         android:background="@drawable/circle_solid_default"
-        android:backgroundTint="@color/anytype_text_pink" />
+        android:backgroundTint="@color/anytype_text_pink"
+        tools:ignore="MissingConstraints" />
 
     <View
         android:id="@+id/textColorPurple"
         android:layout_width="@dimen/block_style_toolbar_circle_size"
         android:layout_height="@dimen/block_style_toolbar_circle_size"
         android:background="@drawable/circle_solid_default"
-        android:backgroundTint="@color/anytype_text_purple" />
+        android:backgroundTint="@color/anytype_text_purple"
+        tools:ignore="MissingConstraints" />
 
     <View
         android:id="@+id/textColorBlue"
         android:layout_width="@dimen/block_style_toolbar_circle_size"
         android:layout_height="@dimen/block_style_toolbar_circle_size"
         android:background="@drawable/circle_solid_default"
-        android:backgroundTint="@color/anytype_text_blue" />
+        android:backgroundTint="@color/anytype_text_blue"
+        tools:ignore="MissingConstraints" />
 
     <View
         android:id="@+id/textColorIce"
         android:layout_width="@dimen/block_style_toolbar_circle_size"
         android:layout_height="@dimen/block_style_toolbar_circle_size"
         android:background="@drawable/circle_solid_default"
-        android:backgroundTint="@color/anytype_text_ice" />
+        android:backgroundTint="@color/anytype_text_ice"
+        tools:ignore="MissingConstraints" />
 
     <View
         android:id="@+id/textColorTeal"
         android:layout_width="@dimen/block_style_toolbar_circle_size"
         android:layout_height="@dimen/block_style_toolbar_circle_size"
         android:background="@drawable/circle_solid_default"
-        android:backgroundTint="@color/anytype_text_teal" />
+        android:backgroundTint="@color/anytype_text_teal"
+        tools:ignore="MissingConstraints" />
 
     <View
         android:id="@+id/textColorGreen"
         android:layout_width="@dimen/block_style_toolbar_circle_size"
         android:layout_height="@dimen/block_style_toolbar_circle_size"
         android:background="@drawable/circle_solid_default"
-        android:backgroundTint="@color/anytype_text_green" />
+        android:backgroundTint="@color/anytype_text_green"
+        tools:ignore="MissingConstraints" />
 
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/flow"

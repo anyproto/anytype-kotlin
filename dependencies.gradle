@@ -20,6 +20,7 @@ ext {
     fragment_version = "1.2.3"
     ktx_core_version = "1.2.0"
     emoji_compat_version = '1.1.0-beta01'
+    view_pager_2_version = '1.0.0'
 
     // Architecture Components
     lifecycle_version = '2.1.0'
@@ -93,6 +94,7 @@ ext {
             constraintLayout:           "androidx.constraintlayout:constraintlayout:$constraintLayout_version",
             cardView:                   "androidx.cardview:cardview:$cardview_version",
             recyclerView:               "androidx.recyclerview:recyclerview:$recyclerview_version",
+            viewPager:                  "androidx.viewpager2:viewpager2:$view_pager_2_version",
             design:                     "com.google.android.material:material:$material_version",
             androidAnnotations:         "androidx.annotation:annotation:$appcompat_version",
             betterLinkMovement:         "me.saket:better-link-movement-method:$better_link_method_version",

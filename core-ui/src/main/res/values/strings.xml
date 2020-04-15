@@ -169,6 +169,10 @@
     <string name="menu_item_link">Link</string>
     <string name="menu_item_color">Color</string>
     <string name="menu_item_background">Background</string>
+    <string name="style">Style</string>
+    <string name="color">Color</string>
+    <string name="background">Background</string>
+    <string name="content_description_close_button">Close button</string>
 
     <!-- Non-valid certificate, need update -->
     <string-array name="certs">

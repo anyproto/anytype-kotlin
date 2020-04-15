@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="anytype_text_default">#2C2B27</color>
+    <color name="anytype_text_grey">#ACA996</color>
+    <color name="anytype_text_yellow">#ECD91B</color>
+    <color name="anytype_text_orange">#FFB522</color>
+    <color name="anytype_text_red">#F55522</color>
+    <color name="anytype_text_pink">#E51CA0</color>
+    <color name="anytype_text_purple">#AB50CC</color>
+    <color name="anytype_text_blue">#3E58EB</color>
+    <color name="anytype_text_ice">#2AA7EE</color>
+    <color name="anytype_text_teal">#0FC8BA</color>
+    <color name="anytype_text_green">#57C600</color>
+
+    <color name="anytype_background_default">#FFFFFF</color>
+    <color name="anytype_background_grey">#F3F2EC</color>
+    <color name="anytype_background_yellow">#FEF9CC</color>
+    <color name="anytype_background_orange">#FEF3C5</color>
+    <color name="anytype_background_red">#FFEBE5</color>
+    <color name="anytype_background_pink">#FEE3F5</color>
+    <color name="anytype_background_purple">#F4E3FA</color>
+    <color name="anytype_background_blue">#E4E7FC</color>
+    <color name="anytype_background_ice">#D6EFFD</color>
+    <color name="anytype_background_teal">#D6F5F3</color>
+    <color name="anytype_background_green">#E3F7D0</color>
+
     <color name="debug">#F44336</color>
     <color name="orange">#FFBB2C</color>
     <color name="white">#FFFFFF</color>

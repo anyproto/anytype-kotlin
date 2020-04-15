@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/backgroundColorDefault"
+        android:layout_width="@dimen/block_style_toolbar_circle_size"
+        android:layout_height="@dimen/block_style_toolbar_circle_size"
+        android:background="@drawable/circle_style_white_background_color" />
+
+    <View
+        android:id="@+id/backgroundColorGrey"
+        android:layout_width="@dimen/block_style_toolbar_circle_size"
+        android:layout_height="@dimen/block_style_toolbar_circle_size"
+        android:background="@drawable/circle_solid_default"
+        android:backgroundTint="#F3F2EC" />
+
+    <View
+        android:id="@+id/backgroundColorYellow"
+        android:layout_width="@dimen/block_style_toolbar_circle_size"
+        android:layout_height="@dimen/block_style_toolbar_circle_size"
+        android:background="@drawable/circle_solid_default"
+        android:backgroundTint="#FEF9CC" />
+
+    <View
+        android:id="@+id/backgroundColorOrange"
+        android:layout_width="@dimen/block_style_toolbar_circle_size"
+        android:layout_height="@dimen/block_style_toolbar_circle_size"
+        android:background="@drawable/circle_solid_default"
+        android:backgroundTint="#FEF3C5" />
+
+    <View
+        android:id="@+id/backgroundColorRed"
+        android:layout_width="@dimen/block_style_toolbar_circle_size"
+        android:layout_height="@dimen/block_style_toolbar_circle_size"
+        android:background="@drawable/circle_solid_default"
+        android:backgroundTint="#FFEBE5" />
+
+    <View
+        android:id="@+id/backgroundColorPink"
+        android:layout_width="@dimen/block_style_toolbar_circle_size"
+        android:layout_height="@dimen/block_style_toolbar_circle_size"
+        android:background="@drawable/circle_solid_default"
+        android:backgroundTint="#FEE3F5" />
+
+    <View
+        android:id="@+id/backgroundColorPurple"
+        android:layout_width="@dimen/block_style_toolbar_circle_size"
+        android:layout_height="@dimen/block_style_toolbar_circle_size"
+        android:background="@drawable/circle_solid_default"
+        android:backgroundTint="#F4E3FA" />
+
+    <View
+        android:id="@+id/backgroundColorBlue"
+        android:layout_width="@dimen/block_style_toolbar_circle_size"
+        android:layout_height="@dimen/block_style_toolbar_circle_size"
+        android:background="@drawable/circle_solid_default"
+        android:backgroundTint="#E4E7FC" />
+
+    <View
+        android:id="@+id/backgroundColorIce"
+        android:layout_width="@dimen/block_style_toolbar_circle_size"
+        android:layout_height="@dimen/block_style_toolbar_circle_size"
+        android:background="@drawable/circle_solid_default"
+        android:backgroundTint="#D6EFFD" />
+
+    <View
+        android:id="@+id/backgroundColorTeal"
+        android:layout_width="@dimen/block_style_toolbar_circle_size"
+        android:layout_height="@dimen/block_style_toolbar_circle_size"
+        android:background="@drawable/circle_solid_default"
+        android:backgroundTint="#D6F5F3" />
+
+    <View
+        android:id="@+id/backgroundColorGreen"
+        android:layout_width="@dimen/block_style_toolbar_circle_size"
+        android:layout_height="@dimen/block_style_toolbar_circle_size"
+        android:background="@drawable/circle_solid_default"
+        android:backgroundTint="#E3F7D0" />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        app:constraint_referenced_ids="backgroundColorDefault,backgroundColorGrey,backgroundColorYellow,backgroundColorOrange,backgroundColorRed,backgroundColorPink,backgroundColorPurple,backgroundColorBlue,backgroundColorIce,backgroundColorTeal,backgroundColorGreen"
+        app:flow_horizontalGap="4dp"
+        app:flow_horizontalSeparator="10dp"
+        app:flow_horizontalStyle="packed"
+        app:flow_maxElementsWrap="6"
+        app:flow_verticalGap="4dp"
+        app:flow_wrapMode="chain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

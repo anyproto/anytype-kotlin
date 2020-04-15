@@ -89,5 +89,6 @@
     <dimen name="indent">28dp</dimen>
 
     <dimen name="default_block_type_width">24dp</dimen>
+    <dimen name="block_style_toolbar_circle_size">48dp</dimen>
 
 </resources>

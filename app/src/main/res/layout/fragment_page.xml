@@ -15,7 +15,6 @@
         android:focusable="true"
         android:focusableInTouchMode="true" />
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sheet"
         android:layout_width="match_parent"

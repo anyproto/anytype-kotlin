@@ -685,7 +685,7 @@ class BlockAdapter(
     // https://code.google.com/p/android/issues/detail?id=208169
     override fun onViewAttachedToWindow(holder: BlockViewHolder) {
         super.onViewAttachedToWindow(holder)
-        if (holder is BlockViewHolder.Paragraph) {
+        if (holder is TextHolder) {
             holder.content.isEnabled = false
             holder.content.isEnabled = true
         }

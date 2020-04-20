@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.consumeAsFlow
  * @see Action
  * @see ActionAdapter
  */
+@Deprecated("Legacy design")
 class ActionToolbarWidget : LinearLayout {
 
     private val channel = Channel<Action>()

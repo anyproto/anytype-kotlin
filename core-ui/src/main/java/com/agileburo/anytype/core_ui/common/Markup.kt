@@ -1,6 +1,5 @@
 package com.agileburo.anytype.core_ui.common
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Parcelable
 import android.text.Annotation
@@ -42,7 +41,8 @@ interface Markup {
         val param: String? = null
     ) : Parcelable {
 
-        fun color(): Int = Color.parseColor(param)
+        fun color(): Int = ThemeColor.values().first { color -> color.title == param }.text
+        fun background(): Int = ThemeColor.values().first { color -> color.title == param }.background
 
     }
 
@@ -93,7 +93,7 @@ fun Markup.toSpannable() = SpannableStringBuilder(body).apply {
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.BACKGROUND_COLOR -> setSpan(
-                BackgroundColorSpan(mark.color()),
+                BackgroundColorSpan(mark.background()),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
@@ -122,57 +122,55 @@ fun Markup.toSpannable() = SpannableStringBuilder(body).apply {
 }
 
 fun Editable.setMarkup(markup: Markup) {
-    removeSpans<CharacterStyle>()
+    removeSpans<Span>()
     removeRoundedSpans()
     markup.marks.forEach { mark ->
         when (mark.type) {
             Markup.Type.ITALIC -> setSpan(
-                StyleSpan(Typeface.ITALIC),
+                Span.Italic(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.BOLD -> setSpan(
-                StyleSpan(Typeface.BOLD),
+                Span.Bold(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.STRIKETHROUGH -> setSpan(
-                StrikethroughSpan(),
+                Span.Strikethrough(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.TEXT_COLOR -> setSpan(
-                ForegroundColorSpan(mark.color()),
+                Span.TextColor(mark.color()),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.BACKGROUND_COLOR -> setSpan(
-                BackgroundColorSpan(mark.color()),
+                Span.Highlight(mark.background()),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.LINK -> {
-                setSpan(
-                    URLSpan(mark.param),
-                    mark.from,
-                    mark.to,
-                    Markup.DEFAULT_SPANNABLE_FLAG
-                )
-            }
+            Markup.Type.LINK -> setSpan(
+                Span.Url(mark.param as String),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
             Markup.Type.KEYBOARD -> {
                 setSpan(
-                    TypefaceSpan(Markup.SPAN_MONOSPACE),
+                    Span.Font(Markup.SPAN_MONOSPACE),
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
                 setSpan(
-                    Annotation(KEY_ROUNDED, VALUE_ROUNDED),
+                    Span.Annotate(KEY_ROUNDED, VALUE_ROUNDED),
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG

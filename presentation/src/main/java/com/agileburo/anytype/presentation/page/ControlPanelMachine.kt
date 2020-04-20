@@ -1,5 +1,7 @@
 package com.agileburo.anytype.presentation.page
 
+import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
+import com.agileburo.anytype.core_ui.features.page.styling.StylingType
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar
 import com.agileburo.anytype.domain.block.model.Block
@@ -53,66 +55,32 @@ sealed class ControlPanelMachine {
             val selection: IntRange
         ) : Event()
 
-        /**
-         * Represents an event when user selected a color option on [Toolbar.Markup] toolbar.
-         */
-        object OnMarkupToolbarColorClicked : Event()
 
-        /**
-         * Represents an event when user toggled [Toolbar.AddBlock] toolbar button on [Toolbar.Block].
-         */
-        object OnAddBlockToolbarToggleClicked : Event()
-
-        /**
-         * Represents an event when user toggled [Toolbar.TurnInto] toolbar button on [Toolbar.Block]
-         */
-        object OnTurnIntoToolbarToggleClicked : Event()
-
-        /**
-         * Represents an event when user selected any of the options on [Toolbar.AddBlock] toolbar.
-         */
         object OnAddBlockToolbarOptionSelected : Event()
 
         /**
-         * Represents an event when user selected any of the options on [Toolbar.TurnInto] toolbar.
-         */
-        object OnTurnIntoToolbarOptionSelected : Event()
-
-
-        /**
-         * Represents an event when user toggled [Toolbar.Color] toolbar button on [Toolbar.Block]
-         */
-        object OnColorToolbarToggleClicked : Event()
-
-        /**
-         * Represents an event when user selected a markup text color on [Toolbar.Color] toolbar.
+         * Represents an event when user selected a markup text color on [Toolbar.Styling] toolbar.
          */
         object OnMarkupTextColorSelected : Event()
 
+
+        object OnMarkupContextMenuTextColorClicked : Event()
+        object OnMarkupContextMenuBackgroundColorClicked : Event()
+
         /**
-         * Represents an event when user selected a background color on [Toolbar.Color] toolbar.
+         * Represents an event when user selected a background color on [Toolbar.Styling] toolbar.
          */
         object OnMarkupBackgroundColorSelected : Event()
 
         /**
-         * Represents an event when user selected a block text color on [Toolbar.Color] toolbar.
+         * Represents an event when user selected a block text color on [Toolbar.Styling] toolbar.
          */
         object OnBlockTextColorSelected : Event()
 
         /**
-         * Represents an event when user selected block background color on [Toolbar.Color] toolbar.
+         * Represents an event when user selected block background color on [Toolbar.Styling] toolbar.
          */
         object OnBlockBackgroundColorSelected : Event()
-
-        /**
-         * Represents an event when user selected an action toolbar on [Toolbar.Block]
-         */
-        object OnActionToolbarClicked : Event()
-
-        /**
-         * Represents an event when user clicked on toolbar menu
-         */
-        object OnBookmarkMenuClicked : Event()
 
         /**
          * Represents an event when user cleares the current focus by closing keyboard.
@@ -133,6 +101,8 @@ sealed class ControlPanelMachine {
             val id: String,
             val style: Block.Content.Text.Style
         ) : Event()
+
+        object OnBlockStyleToolbarCloseButtonClicked : Event()
     }
 
     /**
@@ -154,205 +124,67 @@ sealed class ControlPanelMachine {
                     state.copy()
                 else
                     state.copy(
-                        markupToolbar = state.markupToolbar.copy(
-                            isVisible = event.selection.first != event.selection.last,
-                            selectedAction = if (event.selection.first != event.selection.last)
-                                state.markupToolbar.selectedAction
-                            else
-                                null
-                        ),
-                        blockToolbar = state.blockToolbar.copy(
-                            selectedAction = null,
+                        mainToolbar = state.mainToolbar.copy(
                             isVisible = (event.selection.first == event.selection.last)
-                        ),
-                        actionToolbar = state.actionToolbar.copy(
-                            isVisible = false
-                        ),
-                        addBlockToolbar = state.addBlockToolbar.copy(
-                            isVisible = false
-                        ),
-                        colorToolbar = if (event.selection.first != event.selection.last)
-                            state.colorToolbar.copy()
-                        else
-                            state.colorToolbar.copy(isVisible = false)
+                        )
                     )
             }
-            is Event.OnMarkupToolbarColorClicked -> state.copy(
-                colorToolbar = state.colorToolbar.copy(
-                    isVisible = !state.colorToolbar.isVisible
-                ),
-                markupToolbar = state.markupToolbar.copy(
-                    selectedAction = if (!state.colorToolbar.isVisible)
-                        Toolbar.Markup.Action.COLOR
-                    else
-                        null
-                )
-            )
             is Event.OnMarkupTextColorSelected -> state.copy(
-                colorToolbar = state.colorToolbar.copy(
+                stylingToolbar = state.stylingToolbar.copy(
                     isVisible = false
-                ),
-                markupToolbar = state.markupToolbar.copy(
-                    selectedAction = null
                 )
             )
             is Event.OnBlockTextColorSelected -> state.copy(
-                colorToolbar = state.colorToolbar.copy(
+                stylingToolbar = state.stylingToolbar.copy(
                     isVisible = false
-                ),
-                blockToolbar = state.blockToolbar.copy(
-                    selectedAction = null
                 )
             )
             is Event.OnBlockBackgroundColorSelected -> state.copy(
-                colorToolbar = state.colorToolbar.copy(
-                    isVisible = false
-                ),
-                blockToolbar = state.blockToolbar.copy(
-                    selectedAction = null
-                )
-            )
-            is Event.OnAddBlockToolbarToggleClicked -> state.copy(
-                addBlockToolbar = state.addBlockToolbar.copy(
-                    isVisible = !state.addBlockToolbar.isVisible
-                ),
-                blockToolbar = state.blockToolbar.copy(
-                    selectedAction = if (!state.addBlockToolbar.isVisible)
-                        Toolbar.Block.Action.ADD
-                    else
-                        null
-                ),
-                actionToolbar = state.actionToolbar.copy(
-                    isVisible = false
-                ),
-                turnIntoToolbar = state.turnIntoToolbar.copy(
-                    isVisible = false
-                ),
-                colorToolbar = state.colorToolbar.copy(
+                stylingToolbar = state.stylingToolbar.copy(
                     isVisible = false
                 )
             )
-            is Event.OnTurnIntoToolbarToggleClicked -> state.copy(
-                turnIntoToolbar = state.turnIntoToolbar.copy(
-                    isVisible = !state.turnIntoToolbar.isVisible
-                ),
-                blockToolbar = state.blockToolbar.copy(
-                    selectedAction = if (!state.turnIntoToolbar.isVisible)
-                        Toolbar.Block.Action.TURN_INTO
-                    else
-                        null
-                ),
-                addBlockToolbar = state.addBlockToolbar.copy(
-                    isVisible = false
-                ),
-                actionToolbar = state.actionToolbar.copy(
-                    isVisible = false
-                ),
-                colorToolbar = state.colorToolbar.copy(
-                    isVisible = false
-                )
-            )
-            is Event.OnColorToolbarToggleClicked -> state.copy(
-                colorToolbar = state.colorToolbar.copy(
-                    isVisible = !state.colorToolbar.isVisible
-                ),
-                blockToolbar = state.blockToolbar.copy(
-                    selectedAction = if (!state.colorToolbar.isVisible)
-                        Toolbar.Block.Action.COLOR
-                    else
-                        null
-                ),
-                turnIntoToolbar = state.turnIntoToolbar.copy(
-                    isVisible = false
-                ),
-                addBlockToolbar = state.addBlockToolbar.copy(
-                    isVisible = false
-                ),
-                actionToolbar = state.actionToolbar.copy(
-                    isVisible = false
-                )
-            )
-            is Event.OnAddBlockToolbarOptionSelected -> state.copy(
-                addBlockToolbar = state.addBlockToolbar.copy(
-                    isVisible = false
-                ),
-                blockToolbar = state.blockToolbar.copy(
-                    selectedAction = null
-                )
-            )
+            is Event.OnAddBlockToolbarOptionSelected -> state.copy()
             is Event.OnMarkupBackgroundColorSelected -> state.copy(
-                colorToolbar = state.colorToolbar.copy(
+                stylingToolbar = state.stylingToolbar.copy(
                     isVisible = false
-                ),
-                markupToolbar = state.markupToolbar.copy(
-                    selectedAction = null
                 )
             )
-            is Event.OnTurnIntoToolbarOptionSelected -> state.copy(
-                turnIntoToolbar = state.turnIntoToolbar.copy(
-                    isVisible = false
-                ),
-                blockToolbar = state.blockToolbar.copy(
-                    selectedAction = null
+            is Event.OnMarkupContextMenuTextColorClicked -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    isVisible = true,
+                    mode = StylingMode.MARKUP,
+                    type = StylingType.TEXT_COLOR
                 )
             )
-            is Event.OnActionToolbarClicked, Event.OnBookmarkMenuClicked -> state.copy(
-                colorToolbar = state.colorToolbar.copy(
-                    isVisible = false
-                ),
-                addBlockToolbar = state.addBlockToolbar.copy(
-                    isVisible = false
-                ),
-                turnIntoToolbar = state.turnIntoToolbar.copy(
-                    isVisible = false
-                ),
-                actionToolbar = state.actionToolbar.copy(
-                    isVisible = !state.actionToolbar.isVisible
-                ),
-                blockToolbar = state.blockToolbar.copy(
-                    selectedAction = if (state.actionToolbar.isVisible)
-                        null
-                    else Toolbar.Block.Action.BLOCK_ACTION
+            is Event.OnMarkupContextMenuBackgroundColorClicked -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    isVisible = true,
+                    mode = StylingMode.MARKUP,
+                    type = StylingType.BACKGROUND
                 )
             )
             is Event.OnClearFocusClicked -> ControlPanelState.init()
             is Event.OnTextInputClicked -> state.copy(
-                blockToolbar = state.blockToolbar.copy(
-                    selectedAction = null
-                ),
-                markupToolbar = state.markupToolbar.copy(
-                    selectedAction = null
-                ),
-                addBlockToolbar = state.addBlockToolbar.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    isVisible = false
+                )
+            )
+            is Event.OnBlockStyleToolbarCloseButtonClicked -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
                     isVisible = false
                 ),
-                turnIntoToolbar = state.turnIntoToolbar.copy(
-                    isVisible = false
-                ),
-                actionToolbar = state.actionToolbar.copy(
-                    isVisible = false
-                ),
-                colorToolbar = state.colorToolbar.copy(
-                    isVisible = false
+                mainToolbar = state.mainToolbar.copy(
+                    isVisible = true
                 )
             )
             is Event.OnFocusChanged -> {
                 if (state.isNotVisible())
                     state.copy(
-                        blockToolbar = state.blockToolbar.copy(
-                            isVisible = true,
-                            selectedAction = null
+                        mainToolbar = state.mainToolbar.copy(
+                            isVisible = true
                         ),
-                        turnIntoToolbar = state.turnIntoToolbar.copy(
-                            isVisible = false
-                        ),
-                        addBlockToolbar = state.addBlockToolbar.copy(
-                            isVisible = false
-                        ),
-                        actionToolbar = state.actionToolbar.copy(
-                            isVisible = false
-                        ),
-                        colorToolbar = state.colorToolbar.copy(
+                        stylingToolbar = state.stylingToolbar.copy(
                             isVisible = false
                         ),
                         focus = ControlPanelState.Focus(
@@ -364,25 +196,13 @@ sealed class ControlPanelMachine {
                     )
                 else {
                     state.copy(
-                        blockToolbar = state.blockToolbar.copy(
-                            selectedAction = null
-                        ),
                         focus = ControlPanelState.Focus(
                             id = event.id,
                             type = ControlPanelState.Focus.Type.valueOf(
                                 value = event.style.name
                             )
                         ),
-                        addBlockToolbar = state.addBlockToolbar.copy(
-                            isVisible = false
-                        ),
-                        actionToolbar = state.actionToolbar.copy(
-                            isVisible = false
-                        ),
-                        turnIntoToolbar = state.turnIntoToolbar.copy(
-                            isVisible = false
-                        ),
-                        colorToolbar = state.colorToolbar.copy(
+                        stylingToolbar = state.stylingToolbar.copy(
                             isVisible = false
                         )
                     )

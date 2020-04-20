@@ -2,10 +2,10 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:id="@+id/root"
-    android:background="@drawable/background_desktop"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_desktop">
 
     <View
         android:id="@+id/placeholder"
@@ -20,6 +20,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
+        app:behavior_hideable="true"
+        app:behavior_skipCollapsed="true"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <ImageView
@@ -72,65 +74,46 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_marginTop="48dp"
             android:clipToPadding="false"
-            android:paddingBottom="64dp"
+            android:paddingBottom="@dimen/editor_recycler_bottom_padding"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <com.agileburo.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.agileburo.anytype.core_ui.widgets.toolbar.MarkupToolbarWidget
+            android:id="@+id/markupToolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            android:background="@color/white"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.agileburo.anytype.core_ui.widgets.toolbar.BlockStyleToolbarWidget
+            android:id="@+id/styleToolbar"
+            android:layout_width="0dp"
+            android:layout_height="203dp"
+            android:background="@color/white"
+            android:translationY="203dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:id="@+id/toolbars"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <com.agileburo.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/default_toolbar_height"
-                android:visibility="invisible"
-                android:background="@color/white" />
-
-            <com.agileburo.anytype.core_ui.widgets.toolbar.MarkupToolbarWidget
-                android:id="@+id/markupToolbar"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/default_toolbar_height"
-                android:background="@color/white"
-                android:visibility="invisible" />
-
-        </FrameLayout>
-
-        <com.agileburo.anytype.core_ui.widgets.toolbar.ColorToolbarWidget
-            android:id="@+id/colorToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_gravity="bottom"
-            android:visibility="invisible" />
-
-        <com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget
-            android:id="@+id/optionToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_gravity="bottom"
-            android:visibility="invisible" />
-
-        <com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget
-            android:id="@+id/actionToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_gravity="bottom"
-            android:visibility="invisible" />
-
-    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -142,6 +125,7 @@
         android:src="@drawable/ic_add_doc_inside_page"
         android:visibility="invisible"
         app:backgroundTint="@color/white"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
         app:tint="@null" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

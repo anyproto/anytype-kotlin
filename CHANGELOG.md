@@ -1,5 +1,21 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.28 (WIP)
+
+### Design & UX 🔳
+
+* New block-styling toolbar with swiping pages (enabled only for markup/selected text editing) (#366)
+* New block-action toolbar (enabled only on paragraph blocks) (#366)
+* New main toolbar with options: `add-block`, `multi-select` (disabled), `remove-focus` (#370)
+* New behavior for create-new-page (+) button on editor screen: (+) button is hidden while scrolling (#377)
+* Skipping `collapsed` state while closing page bottom sheet (#377)
+
+### Fixes & tech 🚒
+
+* Updated Kotlin to `1.3.72` (#378)
+* Switched from hex color codes to named colors (#377)
+* Refactored markup-related spans to implement custom interface (better control over removing spans from text while updates) (#377)
+
 ## Version 0.0.27
 
 ### Design 🔳
@@ -146,7 +162,7 @@
 
 * Allow users to split blocks (not stable yet) (#229)
 * Allow users to set background color to block layouts (#244)
-* Allow users to create new pages on home dashboard by pressing plus-button on page screen (#191)
+* Allow users to create new pages on home dashboard by pressing (+) button on page screen (#191)
 * Allow users to add divider blocks (#234)
 * Enable sub-page navigation (naive implementation) (#235)
 * Implemented new back navigation: closing pages on swipe-down gesture (#231)

@@ -18,12 +18,9 @@
         android:id="@+id/blockStyle"
         style="@style/StyleToolbarTabStyle"
         android:text="@string/style"
-        app:layout_constraintBottom_toBottomOf="@+id/close"
-        app:layout_constraintEnd_toStartOf="@+id/blockColor"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="packed"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/close" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/blockColor"
@@ -32,6 +29,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/close"
         app:layout_constraintEnd_toStartOf="@+id/blockBackground"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/blockStyle"
         app:layout_constraintTop_toTopOf="@+id/close" />
 
@@ -40,8 +38,7 @@
         style="@style/StyleToolbarTabStyle"
         android:text="@string/background"
         app:layout_constraintBottom_toBottomOf="@+id/close"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toEndOf="@+id/close"
         app:layout_constraintStart_toEndOf="@+id/blockColor"
         app:layout_constraintTop_toTopOf="@+id/close" />
 

@@ -64,6 +64,7 @@ import kotlin.properties.Delegates
  * @see Section
  * @see SectionAdapter
  */
+@Deprecated("Legacy design")
 class OptionToolbarWidget : LinearLayout {
 
     var state: State by Delegates.observable(State.INIT) { _, old, new ->

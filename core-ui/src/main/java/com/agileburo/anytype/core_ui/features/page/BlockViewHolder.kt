@@ -30,13 +30,14 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.N
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TOGGLE_EMPTY_STATE_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
-import com.agileburo.anytype.core_ui.menu.TextStyleMenu
+import com.agileburo.anytype.core_ui.menu.TextBlockContextMenu
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
 import com.agileburo.anytype.core_utils.ext.dimen
+import com.agileburo.anytype.core_utils.ext.hideKeyboard
 import com.agileburo.anytype.core_utils.ext.imm
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -100,7 +101,27 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         init {
             with(content) {
                 setSpannableFactory(DefaultSpannableFactory())
-                customSelectionActionModeCallback = TextStyleMenu { onMarkupActionClicked(it) }
+                customSelectionActionModeCallback = TextBlockContextMenu(
+                    onTextColorClicked = { mode ->
+                        val start = content.selectionStart
+                        val end = content.selectionEnd
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.TEXT_COLOR)
+                        mode.finish()
+                        content.setSelection(start, end)
+                        false
+                    },
+                    onBackgroundColorClicked = { mode ->
+                        val start = content.selectionStart
+                        val end = content.selectionEnd
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR)
+                        mode.finish()
+                        content.setSelection(start, end)
+                        false
+                    },
+                    onMenuItemClicked = { onMarkupActionClicked(it) }
+                )
             }
         }
 
@@ -370,7 +391,27 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         init {
             with(content) {
                 setSpannableFactory(DefaultSpannableFactory())
-                customSelectionActionModeCallback = TextStyleMenu { onMarkupActionClicked(it) }
+                customSelectionActionModeCallback = TextBlockContextMenu(
+                    onTextColorClicked = { mode ->
+                        val start = content.selectionStart
+                        val end = content.selectionEnd
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.TEXT_COLOR)
+                        mode.finish()
+                        content.setSelection(start, end)
+                        false
+                    },
+                    onBackgroundColorClicked = { mode ->
+                        val start = content.selectionStart
+                        val end = content.selectionEnd
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR)
+                        mode.finish()
+                        content.setSelection(start, end)
+                        false
+                    },
+                    onMenuItemClicked = { onMarkupActionClicked(it) }
+                )
             }
         }
 
@@ -463,7 +504,27 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         init {
             with(content) {
                 setSpannableFactory(DefaultSpannableFactory())
-                customSelectionActionModeCallback = TextStyleMenu { onMarkupActionClicked(it) }
+                customSelectionActionModeCallback = TextBlockContextMenu(
+                    onTextColorClicked = { mode ->
+                        val start = content.selectionStart
+                        val end = content.selectionEnd
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.TEXT_COLOR)
+                        mode.finish()
+                        content.setSelection(start, end)
+                        false
+                    },
+                    onBackgroundColorClicked = { mode ->
+                        val start = content.selectionStart
+                        val end = content.selectionEnd
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR)
+                        mode.finish()
+                        content.setSelection(start, end)
+                        false
+                    },
+                    onMenuItemClicked = { onMarkupActionClicked(it) }
+                )
             }
         }
 
@@ -535,7 +596,27 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         init {
             with(content) {
                 setSpannableFactory(DefaultSpannableFactory())
-                customSelectionActionModeCallback = TextStyleMenu { onMarkupActionClicked(it) }
+                customSelectionActionModeCallback = TextBlockContextMenu(
+                    onTextColorClicked = { mode ->
+                        val start = content.selectionStart
+                        val end = content.selectionEnd
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.TEXT_COLOR)
+                        mode.finish()
+                        content.setSelection(start, end)
+                        false
+                    },
+                    onBackgroundColorClicked = { mode ->
+                        val start = content.selectionStart
+                        val end = content.selectionEnd
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR)
+                        mode.finish()
+                        content.setSelection(start, end)
+                        false
+                    },
+                    onMenuItemClicked = { onMarkupActionClicked(it) }
+                )
             }
         }
 
@@ -612,7 +693,27 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         init {
             with(content) {
                 setSpannableFactory(DefaultSpannableFactory())
-                customSelectionActionModeCallback = TextStyleMenu { onMarkupActionClicked(it) }
+                customSelectionActionModeCallback = TextBlockContextMenu(
+                    onTextColorClicked = { mode ->
+                        val start = content.selectionStart
+                        val end = content.selectionEnd
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.TEXT_COLOR)
+                        mode.finish()
+                        content.setSelection(start, end)
+                        false
+                    },
+                    onBackgroundColorClicked = { mode ->
+                        val start = content.selectionStart
+                        val end = content.selectionEnd
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR)
+                        mode.finish()
+                        content.setSelection(start, end)
+                        false
+                    },
+                    onMenuItemClicked = { onMarkupActionClicked(it) }
+                )
             }
         }
 

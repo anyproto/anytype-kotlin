@@ -1,47 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
     <item
         android:id="@+id/itemBold"
         android:icon="@drawable/ic_menu_bold"
         android:title="@string/menu_item_bold"
         app:showAsAction="ifRoom" />
-
     <item
         android:id="@+id/itemItalic"
         android:icon="@drawable/ic_menu_italic"
         android:title="@string/menu_item_italic"
         app:showAsAction="ifRoom" />
-
     <item
         android:id="@+id/itemStrike"
         android:icon="@drawable/ic_menu_strike_through"
         android:title="@string/menu_item_strike"
         app:showAsAction="ifRoom" />
-
     <item
         android:id="@+id/itemCode"
         android:icon="@drawable/ic_menu_code"
         android:title="@string/menu_item_code"
         app:showAsAction="ifRoom" />
-
     <item
         android:id="@+id/itemLink"
         android:icon="@drawable/ic_menu_link"
         android:title="@string/menu_item_link"
         app:showAsAction="ifRoom" />
-
-    <!--    <item-->
-    <!--        android:id="@+id/itemColor"-->
-    <!--        android:icon="@drawable/ic_menu_link"-->
-    <!--        android:title="@string/menu_item_color"-->
-    <!--        app:showAsAction="ifRoom" />-->
-
-    <!--    <item-->
-    <!--        android:id="@+id/itemBackground"-->
-    <!--        android:icon="@drawable/ic_menu_link"-->
-    <!--        android:title="@string/menu_item_background"-->
-    <!--        app:showAsAction="ifRoom" />-->
-
+    <item
+        android:id="@+id/itemColor"
+        android:icon="@drawable/ic_menu_link"
+        android:title="@string/menu_item_color"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/itemBackground"
+        android:icon="@drawable/ic_menu_link"
+        android:title="@string/menu_item_background"
+        app:showAsAction="ifRoom" />
 </menu>

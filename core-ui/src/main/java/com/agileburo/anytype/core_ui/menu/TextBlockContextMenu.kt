@@ -6,7 +6,9 @@ import android.view.MenuItem
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
 
-class TextStyleMenu(
+class TextBlockContextMenu(
+    private val onTextColorClicked: (ActionMode) -> Boolean,
+    private val onBackgroundColorClicked: (ActionMode) -> Boolean,
     private val onMenuItemClicked: (Markup.Type) -> Unit
 ) : ActionMode.Callback2() {
 
@@ -15,44 +17,37 @@ class TextStyleMenu(
         return true
     }
 
-    override fun onActionItemClicked(mode: ActionMode?, item: MenuItem): Boolean =
+    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean =
         when (item.itemId) {
             R.id.itemBold -> {
                 onMenuItemClicked(Markup.Type.BOLD)
-                mode?.finish()
+                mode.finish()
                 true
             }
             R.id.itemItalic -> {
                 onMenuItemClicked(Markup.Type.ITALIC)
-                mode?.finish()
+                mode.finish()
                 true
             }
             R.id.itemStrike -> {
                 onMenuItemClicked(Markup.Type.STRIKETHROUGH)
-                mode?.finish()
+                mode.finish()
                 true
             }
             R.id.itemCode -> {
                 onMenuItemClicked(Markup.Type.KEYBOARD)
-                mode?.finish()
+                mode.finish()
                 true
             }
-//Todo Turn on after new color and background toolbars
-//            R.id.itemColor -> {
-//                onMenuItemClicked(Markup.Type.TEXT_COLOR)
-//                mode?.finish()
-//                true
-//            }
+            R.id.itemColor -> {
+                onTextColorClicked(mode)
+            }
             R.id.itemLink -> {
-                onMenuItemClicked(Markup.Type.LINK)
-                mode?.finish()
                 true
             }
-//            R.id.itemBackground -> {
-//                onMenuItemClicked(Markup.Type.BACKGROUND_COLOR)
-//                mode?.finish()
-//                true
-//            }
+            R.id.itemBackground -> {
+                onBackgroundColorClicked(mode)
+            }
             else -> false
         }
 
@@ -62,3 +57,4 @@ class TextStyleMenu(
 
     override fun onDestroyActionMode(mode: ActionMode?) {}
 }
+

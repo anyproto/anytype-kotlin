@@ -765,13 +765,26 @@ class PageViewModel(
     }
 
     fun onMarkupActionClicked(markup: Markup.Type) {
-        viewModelScope.launch {
-            markupActionChannel.send(MarkupAction(type = markup))
+        when (markup) {
+            Markup.Type.BACKGROUND_COLOR -> {
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnMarkupContextMenuBackgroundColorClicked
+                )
+            }
+            Markup.Type.TEXT_COLOR -> {
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnMarkupContextMenuTextColorClicked
+                )
+            }
+            else -> {
+                viewModelScope.launch {
+                    markupActionChannel.send(MarkupAction(type = markup))
+                }
+            }
         }
     }
 
     fun onMarkupTextColorAction(color: String) {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMarkupTextColorSelected)
         viewModelScope.launch {
             markupActionChannel.send(
                 MarkupAction(
@@ -783,7 +796,6 @@ class PageViewModel(
     }
 
     fun onMarkupBackgroundColorAction(color: String) {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMarkupBackgroundColorSelected)
         viewModelScope.launch {
             markupActionChannel.send(
                 MarkupAction(
@@ -792,6 +804,10 @@ class PageViewModel(
                 )
             )
         }
+    }
+
+    fun onCloseBlockStyleToolbarClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockStyleToolbarCloseButtonClicked)
     }
 
     fun onToolbarTextColorAction(color: String) {
@@ -835,10 +851,6 @@ class PageViewModel(
                 )
             }
         }
-    }
-
-    fun onMarkupToolbarColorClicked() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMarkupToolbarColorClicked)
     }
 
     fun onActionDeleteClicked() {
@@ -1086,18 +1098,6 @@ class PageViewModel(
         dispatch(Command.OpenAddBlockPanel)
     }
 
-    fun onActionToolbarClicked() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnActionToolbarClicked)
-    }
-
-    fun onTurnIntoToolbarToggleClicked() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTurnIntoToolbarToggleClicked)
-    }
-
-    fun onColorToolbarToogleClicked() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnColorToolbarToggleClicked)
-    }
-
     fun onTurnIntoStyleClicked(style: Content.Text.Style) {
         proceedWithUpdatingTextStyle(style, focusChannel.value)
     }
@@ -1237,7 +1237,7 @@ class PageViewModel(
 
     fun onBookmarkMenuClicked(target: Id) {
         updateFocus(target)
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBookmarkMenuClicked)
+        //controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBookmarkMenuClicked)
     }
 
     fun onTextInputClicked() {
@@ -1335,7 +1335,6 @@ class PageViewModel(
 
     fun onMediaBlockMenuClicked(id: String) {
         updateFocus(id)
-        onActionToolbarClicked()
     }
 
     private fun addNewBlockAtTheEnd() {

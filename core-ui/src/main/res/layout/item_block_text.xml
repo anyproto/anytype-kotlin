@@ -7,7 +7,6 @@
     android:paddingEnd="@dimen/default_page_item_padding_end">
 
     <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
-        android:hint="@string/hint_paragraph"
         android:focusable="true"
         android:textIsSelectable="true"
         android:background="@null"

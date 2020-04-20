@@ -1,27 +1,22 @@
 package com.agileburo.anytype.core_ui.state
 
+import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
+import com.agileburo.anytype.core_ui.features.page.styling.StylingType
+
 /**
  * Control panels are UI-elements that allow user to interact with blocks on a page.
  * Each panel is currently represented as a toolbar.
  * @property focus block currently associated with the control panel (if not present, control panel is not active)
- * @property blockToolbar block-toolbar state (main toolbar state)
- * @property markupToolbar markup toolbar state
- * @property colorToolbar color toolbar state
- * @property addBlockToolbar add-block toolbar state
- * @property actionToolbar action-toolbar state
- * @property turnIntoToolbar turn-into tolbar state
+ * @property mainToolbar block-toolbar state (main toolbar state)
+ * @property stylingToolbar styling toolbar state
  */
 data class ControlPanelState(
     val focus: Focus? = null,
-    val blockToolbar: Toolbar.Block,
-    val turnIntoToolbar: Toolbar.TurnInto,
-    val markupToolbar: Toolbar.Markup,
-    val colorToolbar: Toolbar.Color,
-    val addBlockToolbar: Toolbar.AddBlock,
-    val actionToolbar: Toolbar.BlockAction
+    val mainToolbar: Toolbar.Main,
+    val stylingToolbar: Toolbar.Styling
 ) {
 
-    fun isNotVisible(): Boolean = !blockToolbar.isVisible && !markupToolbar.isVisible
+    fun isNotVisible(): Boolean = !mainToolbar.isVisible
 
     sealed class Toolbar {
 
@@ -32,59 +27,20 @@ data class ControlPanelState(
 
         /**
          * Main toolbar allowing user-interface for CRUD-operations on block/page content.
-         * @property selectedAction currently selected [Action], null if nothing is selected.
          * @property isVisible defines whether the toolbar is visible or not
          */
-        data class Block(
-            override val isVisible: Boolean,
-            val selectedAction: Action? = null
-        ) : Toolbar() {
-            /**
-             * Set of actions defined for this toolbar.
-             */
-            enum class Action { ADD, TURN_INTO, COLOR, BLOCK_ACTION }
-        }
-
-        /**
-         * Basic markup toolbar state.
-         * @property isVisible defines whether the toolbar is visible or not
-         * @property selectedAction currently selected [Action], null if nothing is selected.
-         */
-        data class Markup(
-            override val isVisible: Boolean,
-            val selectedAction: Action? = null
-        ) : Toolbar() {
-            enum class Action { COLOR }
-        }
+        data class Main(
+            override val isVisible: Boolean
+        ) : Toolbar()
 
         /**
          * Basic color toolbar state.
          * @property isVisible defines whether the toolbar is visible or not
          */
-        data class Color(
-            override val isVisible: Boolean
-        ) : Toolbar()
-
-        /**
-         * Basic add-block toolbar state.
-         * @property isVisible defines whether the toolbar is visible or not
-         */
-        data class AddBlock(
-            override val isVisible: Boolean
-        ) : Toolbar()
-
-        /**
-         * Basic action (delete, duplicate, undo, redo, etc.) toolbar state
-         */
-        data class BlockAction(
-            override val isVisible: Boolean
-        ) : Toolbar()
-
-        /**
-         * Turn-into (converting one block into another) toolbar state.
-         */
-        data class TurnInto(
-            override val isVisible: Boolean
+        data class Styling(
+            override val isVisible: Boolean,
+            val mode: StylingMode?,
+            val type: StylingType?
         ) : Toolbar()
     }
 
@@ -107,25 +63,13 @@ data class ControlPanelState(
          * Factory function for creating initial state.
          */
         fun init(): ControlPanelState = ControlPanelState(
-            blockToolbar = Toolbar.Block(
+            mainToolbar = Toolbar.Main(
+                isVisible = false
+            ),
+            stylingToolbar = Toolbar.Styling(
                 isVisible = false,
-                selectedAction = null
-            ),
-            markupToolbar = Toolbar.Markup(
-                isVisible = false,
-                selectedAction = null
-            ),
-            turnIntoToolbar = Toolbar.TurnInto(
-                isVisible = false
-            ),
-            colorToolbar = Toolbar.Color(
-                isVisible = false
-            ),
-            addBlockToolbar = Toolbar.AddBlock(
-                isVisible = false
-            ),
-            actionToolbar = Toolbar.BlockAction(
-                isVisible = false
+                type = null,
+                mode = null
             ),
             focus = null
         )

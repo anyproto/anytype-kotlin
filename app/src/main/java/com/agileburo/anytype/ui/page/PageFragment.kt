@@ -6,13 +6,9 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.LinearLayout
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -23,6 +19,7 @@ import com.agileburo.anytype.core_ui.extensions.invisible
 import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
 import com.agileburo.anytype.core_ui.menu.DocumentPopUpMenu
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.reactive.clicks
@@ -30,28 +27,6 @@ import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.tools.FirstItemInvisibilityDetector
 import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
-import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DELETE
-import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DUPLICATE
-import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_REDO
-import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_UNDO
-import com.agileburo.anytype.core_ui.widgets.toolbar.ColorToolbarWidget
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.Option
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_BULLETED_LIST
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_CHECKBOX
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_NUMBERED_LIST
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_LIST_TOGGLE_LIST
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_BOOKMARK
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_FILE
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_PICTURE
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_MEDIA_VIDEO
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_OTHER_DIVIDER
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_ONE
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_THREE
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HEADER_TWO
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_HIGHLIGHTED
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TEXT_TEXT
-import com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget.OptionConfig.OPTION_TOOL_PAGE
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.di.common.componentManager
@@ -69,6 +44,7 @@ import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
 import kotlinx.android.synthetic.main.fragment_page.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -243,8 +219,7 @@ open class PageFragment :
         Reason: String?
     ) {
         Timber.d(
-            "PickiTonCompleteListener  path:$path, wasDriveFile$wasDriveFile, " +
-                    "wasUnknownProvider:$wasUnknownProvider, wasSuccessful:$wasSuccessful, reason:$Reason"
+            "PickiTonCompleteListener path:$path, wasDriveFile:$wasDriveFile, wasUnknownProvider:$wasUnknownProvider, wasSuccessful:$wasSuccessful, reason:$Reason"
         )
         vm.onAddVideoFileClicked(filePath = path)
     }
@@ -254,7 +229,7 @@ open class PageFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        vm.open(requireArguments().getString(ID_KEY, ID_EMPTY_VALUE))
+        vm.open(id = extractDocumentId())
         pickiT = PickiT(requireContext(), this)
         setupOnBackPressedDispatcher()
     }
@@ -297,92 +272,46 @@ open class PageFragment :
         }
 
         toolbar
-            .keyboardClicks()
+            .unfocusClicks()
             .onEach { vm.onHideKeyboardClicked() }
             .launchIn(lifecycleScope)
 
         toolbar
-            .turnIntoClicks()
-            .onEach { vm.onTurnIntoToolbarToggleClicked() }
-            .launchIn(lifecycleScope)
-
-        toolbar
-            .colorClicks()
-            .onEach { vm.onColorToolbarToogleClicked() }
-            .launchIn(lifecycleScope)
-
-        toolbar
-            .addButtonClicks()
+            .addBlockClicks()
             .onEach { vm.onAddBlockToolbarClicked() }
             .launchIn(lifecycleScope)
 
-        toolbar
-            .actionClicks()
-            .onEach { vm.onActionToolbarClicked() }
-            .launchIn(lifecycleScope)
-
-        markupToolbar
-            .markupClicks()
-            .onEach { vm.onMarkupActionClicked(it) }
-            .launchIn(lifecycleScope)
-
-        markupToolbar
-            .hideKeyboardClicks()
-            .onEach { vm.onHideKeyboardClicked() }
-            .launchIn(lifecycleScope)
-
-        markupToolbar
-            .colorClicks()
-            .onEach { vm.onMarkupToolbarColorClicked() }
-            .launchIn(lifecycleScope)
-
-        colorToolbar
-            .observeClicks()
-            .onEach { click ->
-                when (click) {
-                    is ColorToolbarWidget.Click.OnTextColorClicked -> {
-                        handleTextColorClick(click)
-                    }
-                    is ColorToolbarWidget.Click.OnBackgroundColorClicked -> {
-                        handleBackgroundColorClicked(click)
-                    }
-                    else -> {
-                        toast(NOT_IMPLEMENTED_MESSAGE)
-                    }
-
-                }
-            }
-            .launchIn(lifecycleScope)
-
-        optionToolbar
-            .optionClicks()
-            .onEach { option ->
-                if (optionToolbar.state == OptionToolbarWidget.State.ADD_BLOCK)
-                    handleAddBlockToolbarOptionClicked(option)
-                else if (optionToolbar.state == OptionToolbarWidget.State.TURN_INTO)
-                    handleTurnIntoToolbarOptionClicked(option)
-            }
-            .launchIn(lifecycleScope)
-
-        actionToolbar
-            .actionClicks()
-            .onEach { action ->
-                when (action.type) {
-                    ACTION_DELETE -> vm.onActionDeleteClicked()
-                    ACTION_DUPLICATE -> vm.onActionDuplicateClicked()
-                    ACTION_UNDO -> vm.onActionUndoClicked()
-                    ACTION_REDO -> vm.onActionRedoClicked()
-                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
-                }
-            }
-            .launchIn(lifecycleScope)
 
         fab.clicks().onEach { vm.onPlusButtonPressed() }.launchIn(lifecycleScope)
         menu.clicks().onEach { showToolbarMenu() }.launchIn(lifecycleScope)
+
         backButton.clicks().onEach {
-            hideKeyboard()
+            hideSoftInput()
             vm.onBackButtonPressed()
         }.launchIn(lifecycleScope)
+
+        lifecycleScope.launch {
+            styleToolbar.events.collect { event ->
+                when (event) {
+                    is StylingEvent.Coloring.Text -> {
+                        vm.onMarkupTextColorAction(
+                            color = event.color.title
+                        )
+                    }
+                    is StylingEvent.Coloring.Background -> {
+                        vm.onMarkupBackgroundColorAction(
+                            color = event.color.title
+                        )
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            styleToolbar.closeButtonClicks().collect {
+                vm.onCloseBlockStyleToolbarClicked()
+            }
+        }
     }
 
     private fun showToolbarMenu() {
@@ -391,29 +320,6 @@ open class PageFragment :
             menu,
             vm::onArchiveThisPageClicked
         ).show()
-    }
-
-    private fun handleTextColorClick(click: ColorToolbarWidget.Click.OnTextColorClicked) =
-        when (colorToolbar.state) {
-            ColorToolbarWidget.State.SELECTION -> {
-                vm.onMarkupTextColorAction(click.color.hexColorCode())
-            }
-            ColorToolbarWidget.State.BLOCK -> {
-                vm.onToolbarTextColorAction(click.color.hexColorCode())
-            }
-            else -> toast(NOT_IMPLEMENTED_MESSAGE)
-        }
-
-    private fun handleBackgroundColorClicked(
-        click: ColorToolbarWidget.Click.OnBackgroundColorClicked
-    ) = when (colorToolbar.state) {
-        ColorToolbarWidget.State.SELECTION -> {
-            vm.onMarkupBackgroundColorAction(click.color.hexColorCode())
-        }
-        ColorToolbarWidget.State.BLOCK -> {
-            vm.onBlockBackgroundColorAction(click.color.hexColorCode())
-        }
-        else -> toast(NOT_IMPLEMENTED_MESSAGE)
     }
 
     override fun onAddBlockClicked(block: UiBlock) {
@@ -437,116 +343,12 @@ open class PageFragment :
         }
     }
 
-    private fun handleAddBlockToolbarOptionClicked(option: Option) {
-        when (option) {
-            is Option.Text -> {
-                when (option.type) {
-                    OPTION_TEXT_TEXT -> vm.onAddTextBlockClicked(Text.Style.P)
-                    OPTION_TEXT_HEADER_ONE -> vm.onAddTextBlockClicked(Text.Style.H1)
-                    OPTION_TEXT_HEADER_TWO -> vm.onAddTextBlockClicked(Text.Style.H2)
-                    OPTION_TEXT_HEADER_THREE -> vm.onAddTextBlockClicked(Text.Style.H3)
-                    OPTION_TEXT_HIGHLIGHTED -> vm.onAddTextBlockClicked(Text.Style.QUOTE)
-                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
-                }
-            }
-            is Option.List -> {
-                when (option.type) {
-                    OPTION_LIST_BULLETED_LIST -> vm.onAddTextBlockClicked(Text.Style.BULLET)
-                    OPTION_LIST_CHECKBOX -> vm.onAddTextBlockClicked(Text.Style.CHECKBOX)
-                    OPTION_LIST_NUMBERED_LIST -> vm.onAddTextBlockClicked(Text.Style.NUMBERED)
-                    OPTION_LIST_TOGGLE_LIST -> vm.onAddTextBlockClicked(Text.Style.TOGGLE)
-                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
-                }
-            }
-            is Option.Tool -> {
-                when (option.type) {
-                    OPTION_TOOL_PAGE -> vm.onAddNewPageClicked()
-                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
-                }
-            }
-            is Option.Media -> {
-                when (option.type) {
-                    OPTION_MEDIA_PICTURE -> vm.onAddImageBlockClicked()
-                    OPTION_MEDIA_VIDEO -> vm.onAddVideoBlockClicked()
-                    OPTION_MEDIA_BOOKMARK -> vm.onAddBookmarkClicked()
-                    OPTION_MEDIA_FILE -> vm.onAddFileBlockClicked()
-                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
-                }
-            }
-            is Option.Other -> {
-                when (option.type) {
-                    OPTION_OTHER_DIVIDER -> vm.onAddDividerBlockClicked()
-                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
-                }
-            }
-        }
-    }
-
-    private fun handleTurnIntoToolbarOptionClicked(option: Option) {
-        when (option) {
-            is Option.Text -> {
-                when (option.type) {
-                    OPTION_TEXT_TEXT -> vm.onTurnIntoStyleClicked(Text.Style.P)
-                    OPTION_TEXT_HEADER_ONE -> vm.onTurnIntoStyleClicked(Text.Style.H1)
-                    OPTION_TEXT_HEADER_TWO -> vm.onTurnIntoStyleClicked(Text.Style.H2)
-                    OPTION_TEXT_HEADER_THREE -> vm.onTurnIntoStyleClicked(Text.Style.H3)
-                    OPTION_TEXT_HIGHLIGHTED -> vm.onTurnIntoStyleClicked(Text.Style.QUOTE)
-                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
-                }
-            }
-            is Option.List -> {
-                when (option.type) {
-                    OPTION_LIST_BULLETED_LIST -> vm.onTurnIntoStyleClicked(Text.Style.BULLET)
-                    OPTION_LIST_CHECKBOX -> vm.onTurnIntoStyleClicked(Text.Style.CHECKBOX)
-                    OPTION_LIST_NUMBERED_LIST -> vm.onTurnIntoStyleClicked(Text.Style.NUMBERED)
-                    else -> toast(NOT_IMPLEMENTED_MESSAGE)
-                }
-            }
-        }
-    }
-
     override fun onAddMarkupLinkClicked(blockId: String, link: String, range: IntRange) {
         vm.onAddLinkPressed(blockId, link, range)
     }
 
     override fun onRemoveMarkupLinkClicked(blockId: String, range: IntRange) {
         vm.onUnlinkPressed(blockId, range)
-    }
-
-    private fun showColorToolbar() {
-        if (!colorToolbar.isVisible) {
-            colorToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-            colorToolbar.visible()
-            recycler.updatePadding(
-                bottom = colorToolbar.height() + dimen(R.dimen.default_toolbar_height)
-            )
-        }
-    }
-
-    private fun showOptionToolbar() {
-        if (!optionToolbar.isVisible) {
-            optionToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-            optionToolbar.visible()
-            recycler.updatePadding(
-                bottom = optionToolbar.height() + dimen(R.dimen.default_toolbar_height)
-            )
-        }
-    }
-
-    private fun hideColorToolbar() {
-        if (colorToolbar.isVisible) {
-            colorToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, 0)
-            colorToolbar.invisible()
-            recycler.updatePadding(bottom = dimen(R.dimen.default_toolbar_height))
-        }
-    }
-
-    private fun hideOptionToolbar() {
-        if (optionToolbar.isVisible) {
-            optionToolbar.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, 0)
-            optionToolbar.invisible()
-            recycler.updatePadding(bottom = dimen(R.dimen.default_toolbar_height))
-        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -642,76 +444,25 @@ open class PageFragment :
 
     private fun render(state: ControlPanelState) {
         Timber.d("Rendering new control panel state:\n$state")
-        markupToolbar.setState(state.markupToolbar)
-        toolbar.setState(state.blockToolbar)
 
-        state.focus?.let { toolbar.setTurnIntoTarget(it.type) }
+        if (state.mainToolbar.isVisible)
+            toolbar.visible()
+        else
+            toolbar.invisible()
 
-        state.colorToolbar.apply {
-            colorToolbar.state = when {
-                state.blockToolbar.isVisible -> ColorToolbarWidget.State.BLOCK
-                state.markupToolbar.isVisible -> ColorToolbarWidget.State.SELECTION
-                else -> ColorToolbarWidget.State.IDLE
-            }
+        state.stylingToolbar.apply {
             if (isVisible) {
-                hideKeyboard()
-
+                hideSoftInput()
                 lifecycleScope.launch {
                     delay(300)
-                    showColorToolbar()
-                }
-            } else
-                hideColorToolbar()
-        }
-
-        state.addBlockToolbar.apply {
-            if (isVisible) {
-                optionToolbar.state = OptionToolbarWidget.State.ADD_BLOCK
-                hideKeyboard()
-                lifecycleScope.launch {
-                    delay(300)
-                    showOptionToolbar()
+                    mode?.let { styleToolbar.mode = it }
+                    type?.let { styleToolbar.applyStylingType(it) }
+                    styleToolbar.showWithAnimation()
+                    recycler.updatePadding(bottom = dimen(R.dimen.dp_203) + dimen(R.dimen.dp_16))
                 }
             } else {
-                if (!state.turnIntoToolbar.isVisible) {
-                    hideOptionToolbar()
-                }
-            }
-        }
-
-        state.turnIntoToolbar.apply {
-            if (isVisible) {
-                optionToolbar.state = OptionToolbarWidget.State.TURN_INTO
-                hideKeyboard()
-                lifecycleScope.launch {
-                    delay(300)
-                    optionToolbar.show()
-                }
-            } else {
-                if (!state.addBlockToolbar.isVisible)
-                    hideOptionToolbar()
-            }
-        }
-
-        state.actionToolbar.apply {
-            if (isVisible) {
-                hideKeyboard()
-                lifecycleScope.launch {
-                    delay(300)
-                    if (!actionToolbar.isVisible) {
-                        actionToolbar.show()
-                        recycler.updatePadding(
-                            bottom = actionToolbar.height() + dimen(R.dimen.default_toolbar_height)
-                        )
-                    }
-                }
-            } else {
-                if (actionToolbar.isVisible) {
-                    actionToolbar.hide()
-                    recycler.updatePadding(
-                        bottom = dimen(R.dimen.default_toolbar_height)
-                    )
-                }
+                styleToolbar.hideWithAnimation()
+                recycler.updatePadding(bottom = dimen(R.dimen.default_toolbar_height))
             }
         }
     }
@@ -728,6 +479,12 @@ open class PageFragment :
             .setCancelable(false)
             .setMessage(messageResId)
             .show()
+    }
+
+    private fun extractDocumentId(): String {
+        return requireArguments()
+            .getString(ID_KEY)
+            ?: throw IllegalStateException("Document id missing")
     }
 
     override fun injectDependencies() {

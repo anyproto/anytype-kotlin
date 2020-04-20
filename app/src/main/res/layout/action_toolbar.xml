@@ -9,18 +9,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/action_container"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
         android:layout_marginStart="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginEnd="48dp"
         android:layout_marginBottom="16dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_height="200dp"/>
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/action_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            tools:layout_height="200dp" />
+
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/text"
@@ -32,7 +40,7 @@
         android:padding="@dimen/dp_16"
         style="@style/BlockTextContentStyle"
         android:background="@drawable/rounded_text_action_bg"
-        app:layout_constraintBottom_toTopOf="@+id/action_container"
+        app:layout_constraintBottom_toTopOf="@+id/card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_height="200dp" />

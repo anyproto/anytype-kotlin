@@ -5,15 +5,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.common.Color
-import com.agileburo.anytype.core_ui.common.ViewType
-import com.agileburo.anytype.core_ui.features.page.styling.BlockStyleAdapter.Page.*
+import com.agileburo.anytype.core_ui.common.ThemeColor
+import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent.*
+import com.agileburo.anytype.core_ui.features.page.styling.StylingType.*
 import kotlinx.android.synthetic.main.block_style_toolbar_background.view.*
 import kotlinx.android.synthetic.main.block_style_toolbar_color.view.*
 import kotlinx.android.synthetic.main.block_style_toolbar_style.view.*
+import timber.log.Timber
 
 class BlockStyleAdapter(
-    private val pages: List<Page> = listOf(STYLE, COLOR, BACKGROUND),
+    private var pages: List<StylingType> = listOf(STYLE, TEXT_COLOR, BACKGROUND),
     private val onStylingEvent: (StylingEvent) -> Unit
 ) : RecyclerView.Adapter<BlockStyleAdapter.ViewHolder>() {
 
@@ -27,7 +28,7 @@ class BlockStyleAdapter(
                     false
                 )
             )
-            COLOR.ordinal -> ViewHolder.ColorViewHolder(
+            TEXT_COLOR.ordinal -> ViewHolder.ColorViewHolder(
                 view = inflater.inflate(
                     R.layout.block_style_toolbar_color,
                     parent,
@@ -49,6 +50,18 @@ class BlockStyleAdapter(
     override fun getItemViewType(position: Int): Int = pages[position].getViewType()
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(onStylingEvent)
 
+    fun applyMarkupStylingMode() {
+        Timber.d("Applying markup mode")
+        pages = listOf(TEXT_COLOR, BACKGROUND)
+        notifyDataSetChanged()
+    }
+
+    fun applyBlockStylingMode() {
+        Timber.d("Applying block mode")
+        pages = listOf(STYLE, TEXT_COLOR, BACKGROUND)
+        notifyDataSetChanged()
+    }
+
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         abstract fun bind(onStylingEvent: (StylingEvent) -> Unit)
@@ -65,31 +78,31 @@ class BlockStyleAdapter(
 
             override fun bind(onStylingEvent: (StylingEvent) -> Unit) {
                 bold.setOnClickListener {
-                    onStylingEvent(StylingEvent.Markup.Bold)
+                    onStylingEvent(Markup.Bold)
                 }
 
                 italic.setOnClickListener {
-                    onStylingEvent(StylingEvent.Markup.Italic)
+                    onStylingEvent(Markup.Italic)
                 }
 
                 strike.setOnClickListener {
-                    onStylingEvent(StylingEvent.Markup.Strikethrough)
+                    onStylingEvent(Markup.Strikethrough)
                 }
 
                 code.setOnClickListener {
-                    onStylingEvent(StylingEvent.Markup.Code)
+                    onStylingEvent(Markup.Code)
                 }
 
                 left.setOnClickListener {
-                    onStylingEvent(StylingEvent.Alignment.Left)
+                    onStylingEvent(Alignment.Left)
                 }
 
                 middle.setOnClickListener {
-                    onStylingEvent(StylingEvent.Alignment.Center)
+                    onStylingEvent(Alignment.Center)
                 }
 
                 right.setOnClickListener {
-                    onStylingEvent(StylingEvent.Alignment.Right)
+                    onStylingEvent(Alignment.Right)
                 }
             }
         }
@@ -110,37 +123,37 @@ class BlockStyleAdapter(
 
             override fun bind(onStylingEvent: (StylingEvent) -> Unit) {
                 default.setOnClickListener {
-                    onStylingEvent(StylingEvent.TextColor(color = Color.DEFAULT))
+                    onStylingEvent(Coloring.Text(color = ThemeColor.DEFAULT))
                 }
                 grey.setOnClickListener {
-                    onStylingEvent(StylingEvent.TextColor(color = Color.GREY))
+                    onStylingEvent(Coloring.Text(color = ThemeColor.GREY))
                 }
                 yellow.setOnClickListener {
-                    onStylingEvent(StylingEvent.TextColor(color = Color.YELLOW))
+                    onStylingEvent(Coloring.Text(color = ThemeColor.YELLOW))
                 }
                 orange.setOnClickListener {
-                    onStylingEvent(StylingEvent.TextColor(color = Color.ORANGE))
+                    onStylingEvent(Coloring.Text(color = ThemeColor.ORANGE))
                 }
                 red.setOnClickListener {
-                    onStylingEvent(StylingEvent.TextColor(color = Color.RED))
+                    onStylingEvent(Coloring.Text(color = ThemeColor.RED))
                 }
                 pink.setOnClickListener {
-                    onStylingEvent(StylingEvent.TextColor(color = Color.PINK))
+                    onStylingEvent(Coloring.Text(color = ThemeColor.PINK))
                 }
                 purple.setOnClickListener {
-                    onStylingEvent(StylingEvent.TextColor(color = Color.PURPLE))
+                    onStylingEvent(Coloring.Text(color = ThemeColor.PURPLE))
                 }
                 blue.setOnClickListener {
-                    onStylingEvent(StylingEvent.TextColor(color = Color.BLUE))
+                    onStylingEvent(Coloring.Text(color = ThemeColor.BLUE))
                 }
                 ice.setOnClickListener {
-                    onStylingEvent(StylingEvent.TextColor(color = Color.ICE))
+                    onStylingEvent(Coloring.Text(color = ThemeColor.ICE))
                 }
                 teal.setOnClickListener {
-                    onStylingEvent(StylingEvent.TextColor(color = Color.TEAL))
+                    onStylingEvent(Coloring.Text(color = ThemeColor.TEAL))
                 }
                 green.setOnClickListener {
-                    onStylingEvent(StylingEvent.TextColor(color = Color.GREEN))
+                    onStylingEvent(Coloring.Text(color = ThemeColor.GREEN))
                 }
             }
         }
@@ -161,70 +174,39 @@ class BlockStyleAdapter(
 
             override fun bind(onStylingEvent: (StylingEvent) -> Unit) {
                 default.setOnClickListener {
-                    onStylingEvent(StylingEvent.BackgroundColor(color = Color.DEFAULT))
+                    onStylingEvent(Coloring.Background(color = ThemeColor.DEFAULT))
                 }
                 grey.setOnClickListener {
-                    onStylingEvent(StylingEvent.BackgroundColor(color = Color.GREY))
+                    onStylingEvent(Coloring.Background(color = ThemeColor.GREY))
                 }
                 yellow.setOnClickListener {
-                    onStylingEvent(StylingEvent.BackgroundColor(color = Color.YELLOW))
+                    onStylingEvent(Coloring.Background(color = ThemeColor.YELLOW))
                 }
                 orange.setOnClickListener {
-                    onStylingEvent(StylingEvent.BackgroundColor(color = Color.ORANGE))
+                    onStylingEvent(Coloring.Background(color = ThemeColor.ORANGE))
                 }
                 red.setOnClickListener {
-                    onStylingEvent(StylingEvent.BackgroundColor(color = Color.RED))
+                    onStylingEvent(Coloring.Background(color = ThemeColor.RED))
                 }
                 pink.setOnClickListener {
-                    onStylingEvent(StylingEvent.BackgroundColor(color = Color.PINK))
+                    onStylingEvent(Coloring.Background(color = ThemeColor.PINK))
                 }
                 purple.setOnClickListener {
-                    onStylingEvent(StylingEvent.BackgroundColor(color = Color.PURPLE))
+                    onStylingEvent(Coloring.Background(color = ThemeColor.PURPLE))
                 }
                 blue.setOnClickListener {
-                    onStylingEvent(StylingEvent.BackgroundColor(color = Color.BLUE))
+                    onStylingEvent(Coloring.Background(color = ThemeColor.BLUE))
                 }
                 ice.setOnClickListener {
-                    onStylingEvent(StylingEvent.BackgroundColor(color = Color.ICE))
+                    onStylingEvent(Coloring.Background(color = ThemeColor.ICE))
                 }
                 teal.setOnClickListener {
-                    onStylingEvent(StylingEvent.BackgroundColor(color = Color.TEAL))
+                    onStylingEvent(Coloring.Background(color = ThemeColor.TEAL))
                 }
                 green.setOnClickListener {
-                    onStylingEvent(StylingEvent.BackgroundColor(color = Color.GREEN))
+                    onStylingEvent(Coloring.Background(color = ThemeColor.GREEN))
                 }
             }
         }
-    }
-
-    enum class Page : ViewType {
-        STYLE {
-            override fun getViewType(): Int = ordinal
-        },
-        COLOR {
-            override fun getViewType(): Int = ordinal
-        },
-        BACKGROUND {
-            override fun getViewType(): Int = ordinal
-        }
-    }
-
-    sealed class StylingEvent {
-
-        sealed class Alignment : StylingEvent() {
-            object Left : Alignment()
-            object Center : Alignment()
-            object Right : Alignment()
-        }
-
-        sealed class Markup : StylingEvent() {
-            object Bold : Markup()
-            object Italic : Markup()
-            object Strikethrough : Markup()
-            object Code : Markup()
-        }
-
-        data class TextColor(val color: Color) : StylingEvent()
-        data class BackgroundColor(val color: Color) : StylingEvent()
     }
 }

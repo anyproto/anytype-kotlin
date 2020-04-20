@@ -22,5 +22,6 @@
     <dimen name="table_row_header_width">16dp</dimen>
 
     <dimen name="list_margin_start">20dp</dimen>
+    <dimen name="editor_recycler_bottom_padding">64dp</dimen>
 
 </resources>

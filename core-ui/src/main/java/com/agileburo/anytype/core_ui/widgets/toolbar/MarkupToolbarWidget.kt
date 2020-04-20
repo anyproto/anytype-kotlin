@@ -6,17 +6,13 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.extensions.invisible
-import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.reactive.clicks
-import com.agileburo.anytype.core_ui.state.ControlPanelState
-import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar.Markup.Action.COLOR
 import kotlinx.android.synthetic.main.widget_markup_toolbar.view.*
 import kotlinx.coroutines.flow.flattenMerge
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
-
+@Deprecated("Legacy")
 class MarkupToolbarWidget : ConstraintLayout {
 
     constructor(
@@ -56,16 +52,5 @@ class MarkupToolbarWidget : ConstraintLayout {
         data class OnMarkupClicked(val type: Markup.Type) : Event()
         object OnHideKeyboardClicked : Event()
         object OnColorClicked : Event()
-    }
-
-    fun setState(state: ControlPanelState.Toolbar.Markup) {
-        if (state.isVisible) visible() else invisible()
-        if (state.selectedAction == COLOR) {
-            color.isSelected = true
-            keyboard.invisible()
-        } else {
-            color.isSelected = false
-            keyboard.visible()
-        }
     }
 }

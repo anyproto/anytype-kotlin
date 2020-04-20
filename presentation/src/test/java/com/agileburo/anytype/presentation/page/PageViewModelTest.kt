@@ -248,7 +248,7 @@ class PageViewModelTest {
 
         verifyZeroInteractions(closePage)
 
-        vm.onSystemBackPressed()
+        vm.onSystemBackPressed(editorHasChildrenScreens = false)
 
         verify(closePage, times(1)).invoke(any(), any(), any())
     }
@@ -266,7 +266,7 @@ class PageViewModelTest {
 
         verifyZeroInteractions(closePage)
 
-        vm.onSystemBackPressed()
+        vm.onSystemBackPressed(editorHasChildrenScreens = false)
 
         testObserver
             .assertHasValue()
@@ -288,7 +288,7 @@ class PageViewModelTest {
 
         verifyZeroInteractions(closePage)
 
-        vm.onSystemBackPressed()
+        vm.onSystemBackPressed(editorHasChildrenScreens = false)
 
         testObserver.assertNoValue()
     }

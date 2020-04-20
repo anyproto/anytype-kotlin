@@ -681,34 +681,6 @@ class BlockExtensionTest {
         assertNull(result)
     }
 
-    @Test
-    fun `should return nullable markup when link param not string`() {
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            content = Block.Content.Text(
-                marks = listOf(
-                    Block.Content.Text.Mark(
-                        range = IntRange(
-                            start = 0,
-                            endInclusive = 8
-                        ),
-                        type = Block.Content.Text.Mark.Type.LINK,
-                        param = 45678
-                    )
-                ),
-                style = Block.Content.Text.Style.P,
-                text = "Test Bold text"
-            ),
-            children = emptyList()
-        )
-        val range = IntRange(0, 8)
-
-        val result = block.getFirstLinkMarkupParam(range)
-
-        assertNull(result)
-    }
-
     @Test(expected = ClassCastException::class)
     fun `should throw exception when block is not text`() {
         val block = Block(

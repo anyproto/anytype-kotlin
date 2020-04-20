@@ -1697,7 +1697,8 @@ class BlockAdapterTest {
             onTitleTextChanged = onTitleTextChanged,
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
             onBookmarkMenuClicked = onBookmarkMenuClicked,
-            onMarkupActionClicked = {}
+            onMarkupActionClicked = {},
+            onLongClickListener = {}
         )
     }
 }

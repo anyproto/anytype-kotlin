@@ -33,8 +33,5 @@
         <item name="android:windowBackgroundFallback">@color/black</item>
         <item name="android:windowFullscreen">true</item>
     </style>
-
-    <attr name="flow_horizontalGap" format="dimension" />
-    <attr name="flow_horizontalSeparator" format="dimension"/>
-
+    
 </resources>

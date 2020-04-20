@@ -75,9 +75,4 @@
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
-    <!-- resolve linking conflicts between constrain:2.0.0-beta4 and Android Studio 3.6.3 -->
-    <attr name="flow_horizontalGap" format="dimension" />
-    <attr name="flow_horizontalSeparator" format="dimension"/>
-
-
 </resources>

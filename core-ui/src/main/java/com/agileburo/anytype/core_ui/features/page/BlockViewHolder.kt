@@ -33,6 +33,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
 import com.agileburo.anytype.core_ui.menu.TextStyleMenu
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
+import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
 import com.agileburo.anytype.core_utils.ext.dimen
@@ -107,9 +108,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             item: BlockView.Paragraph,
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit,
+            onLongClickListener: (BlockView) -> Unit
         ) {
             indentize(item)
+
+            content.setOnLongClickListener(EditorLongClickListener(item, onLongClickListener))
 
             content.clearTextWatchers()
 

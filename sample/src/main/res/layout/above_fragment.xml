@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:background="@color/chapter_yellow"
+        android:padding="16dp"
+        android:text="To generate a method trace of your app's execution, you can instrument your app using the Debug class. Instrumenting your app this way gives you more control over exactly when the device starts and stops recording tracing information. The device also saves your trace logs using the names you specify, so you can easily identify each log later. You can then view each trace log using the Android Studio CPU Profiler."
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/action_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/action_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_height="300dp">
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

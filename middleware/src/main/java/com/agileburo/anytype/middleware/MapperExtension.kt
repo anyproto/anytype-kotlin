@@ -55,7 +55,7 @@ fun BlockEntity.Content.Text.Mark.toMiddleware(): Block.Content.Text.Mark {
                 .newBuilder()
                 .setType(Block.Content.Text.Mark.Type.TextColor)
                 .setRange(rangeModel)
-                .setParam(param as String)
+                .setParam(param)
                 .build()
         }
         BlockEntity.Content.Text.Mark.Type.LINK -> {
@@ -63,7 +63,7 @@ fun BlockEntity.Content.Text.Mark.toMiddleware(): Block.Content.Text.Mark {
                 .newBuilder()
                 .setType(Block.Content.Text.Mark.Type.Link)
                 .setRange(rangeModel)
-                .setParam(param as String)
+                .setParam(param)
                 .build()
         }
         BlockEntity.Content.Text.Mark.Type.BACKGROUND_COLOR -> {
@@ -71,7 +71,7 @@ fun BlockEntity.Content.Text.Mark.toMiddleware(): Block.Content.Text.Mark {
                 .newBuilder()
                 .setType(Block.Content.Text.Mark.Type.BackgroundColor)
                 .setRange(rangeModel)
-                .setParam(param as String)
+                .setParam(param)
                 .build()
         }
         BlockEntity.Content.Text.Mark.Type.KEYBOARD -> {

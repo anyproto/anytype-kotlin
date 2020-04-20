@@ -103,7 +103,7 @@ data class Block(
             data class Mark(
                 val range: IntRange,
                 val type: Type,
-                val param: Any? = null
+                val param: String? = null
             ) {
                 enum class Type {
                     STRIKETHROUGH,

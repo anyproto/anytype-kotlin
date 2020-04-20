@@ -178,5 +178,16 @@
     <string-array name="certs">
         <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
     </string-array>
+    <string name="action_bar_turn_into">Turn into</string>
+    <string name="action_bar_delete">Delete</string>
+    <string name="action_bar_duplicate">Duplicate</string>
+    <string name="action_bar_move_to">Move to</string>
+    <string name="action_bar_style">Style</string>
+    <string name="action_bar_color">Color</string>
+    <string name="action_bar_background">Background</string>
+    <string name="action_bar_download">Download</string>
+    <string name="action_bar_replace">Replace</string>
+    <string name="action_bar_add_caption">Add caption</string>
+    <string name="action_bar_rename">Rename</string>
 
 </resources>

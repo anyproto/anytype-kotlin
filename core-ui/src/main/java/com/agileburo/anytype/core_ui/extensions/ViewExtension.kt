@@ -3,8 +3,10 @@ package com.agileburo.anytype.core_ui.extensions
 import android.content.Context
 import android.content.res.ColorStateList
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_utils.ext.px
 
 fun View.invisible() {
     this.visibility = View.INVISIBLE
@@ -36,3 +38,18 @@ fun Context.toast(
 fun View.tint(color: Int) {
     backgroundTintList = ColorStateList.valueOf(color)
 }
+
+fun LinearLayout.addVerticalDivider(
+    alpha: Float,
+    height: Int,
+    color: Int
+) = addView(
+    View(context).apply {
+        setBackgroundColor(color)
+        setAlpha(alpha)
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            height
+        )
+    }
+)

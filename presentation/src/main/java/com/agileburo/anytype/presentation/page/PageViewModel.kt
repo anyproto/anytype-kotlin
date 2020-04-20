@@ -8,6 +8,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.pattern.Matcher
 import com.agileburo.anytype.core_ui.features.page.pattern.Pattern
 import com.agileburo.anytype.core_ui.state.ControlPanelState
+import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.core_utils.tools.Counter
@@ -521,8 +522,12 @@ class PageViewModel(
         }
     }
 
-    fun onSystemBackPressed() {
-        proceedWithExiting()
+    fun onSystemBackPressed(editorHasChildrenScreens: Boolean) {
+        if (editorHasChildrenScreens) {
+            dispatch(Command.PopBackStack)
+        } else {
+            proceedWithExiting()
+        }
     }
 
     fun onBackButtonPressed() {
@@ -755,6 +760,10 @@ class PageViewModel(
         }
     }
 
+    fun onBlockLongPressedClicked(block: BlockView) {
+        dispatch(Command.OpenActionBar(block = block))
+    }
+
     fun onMarkupActionClicked(markup: Markup.Type) {
         viewModelScope.launch {
             markupActionChannel.send(MarkupAction(type = markup))
@@ -840,6 +849,49 @@ class PageViewModel(
         }
     }
 
+    fun onActionBarItemClicked(id: String, action: ActionItemType) {
+        when (action) {
+            ActionItemType.TurnInto -> {
+                stateData.value = ViewState.Error("Turn Into not implemented")
+            }
+            ActionItemType.Delete -> {
+                proceedWithUnlinking(target = id)
+                dispatch(Command.PopBackStack)
+            }
+            ActionItemType.Duplicate -> {
+                duplicateBlock(target = id)
+                dispatch(Command.PopBackStack)
+            }
+            ActionItemType.Rename -> {
+                stateData.value = ViewState.Error("Rename not implemented")
+            }
+            ActionItemType.MoveTo -> {
+                stateData.value = ViewState.Error("Move To not implemented")
+            }
+            ActionItemType.Color -> {
+                stateData.value = ViewState.Error("Color not implemented")
+            }
+            ActionItemType.Background -> {
+                stateData.value = ViewState.Error("Background not implemented")
+            }
+            ActionItemType.Style -> {
+                stateData.value = ViewState.Error("Style not implemented")
+            }
+            ActionItemType.Download -> {
+                stateData.value = ViewState.Error("Download not implemented")
+            }
+            ActionItemType.Replace -> {
+                stateData.value = ViewState.Error("Replace not implemented")
+            }
+            ActionItemType.AddCaption -> {
+                stateData.value = ViewState.Error("Add caption not implemented")
+            }
+            ActionItemType.Divider -> {
+                stateData.value = ViewState.Error("not implemented")
+            }
+        }
+    }
+
     private fun proceedWithUnlinking(target: String) {
 
         // TODO support nested blocks
@@ -876,11 +928,15 @@ class PageViewModel(
     }
 
     fun onActionDuplicateClicked() {
+        duplicateBlock(target = focusChannel.value)
+    }
+
+    private fun duplicateBlock(target : String) {
         duplicateBlock.invoke(
             scope = viewModelScope,
             params = DuplicateBlock.Params(
                 context = context,
-                original = focusChannel.value
+                original = target
             ),
             onResult = { result ->
                 result.either(
@@ -1324,6 +1380,12 @@ class PageViewModel(
         data class RequestDownloadPermission(
             val id: String
         ) : Command()
+
+        object PopBackStack : Command()
+
+        data class OpenActionBar(
+            val block: BlockView
+        ) : Command()
     }
 
     companion object {
@@ -1334,7 +1396,7 @@ class PageViewModel(
 
     data class MarkupAction(
         val type: Markup.Type,
-        val param: Any? = null
+        val param: String? = null
     )
 
     override fun onCleared() {

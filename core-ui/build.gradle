@@ -49,7 +49,6 @@ dependencies {
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines
     implementation applicationDependencies.androidxCore
-    implementation applicationDependencies.ktxCore
 
     implementation applicationDependencies.design
     implementation applicationDependencies.recyclerView

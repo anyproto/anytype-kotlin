@@ -2,6 +2,7 @@ package com.agileburo.anytype.core_ui.common
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Parcelable
 import android.text.Annotation
 import android.text.Editable
 import android.text.Spannable
@@ -11,6 +12,7 @@ import com.agileburo.anytype.core_utils.ext.KEY_ROUNDED
 import com.agileburo.anytype.core_utils.ext.VALUE_ROUNDED
 import com.agileburo.anytype.core_utils.ext.removeRoundedSpans
 import com.agileburo.anytype.core_utils.ext.removeSpans
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Classes implementing this interface should support markup rendering.
@@ -32,14 +34,15 @@ interface Markup {
      * @property to caracter index where this markup ends (inclusive)
      * @property type markup's type
      */
+    @Parcelize
     data class Mark(
         val from: Int,
         val to: Int,
         val type: Type,
-        val param: Any? = null
-    ) {
+        val param: String? = null
+    ) : Parcelable {
 
-        fun color(): Int = Color.parseColor(param as String)
+        fun color(): Int = Color.parseColor(param)
 
     }
 
@@ -96,7 +99,7 @@ fun Markup.toSpannable() = SpannableStringBuilder(body).apply {
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.LINK -> setSpan(
-                URLSpan(mark.param as String),
+                URLSpan(mark.param),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
@@ -155,7 +158,7 @@ fun Editable.setMarkup(markup: Markup) {
             )
             Markup.Type.LINK -> {
                 setSpan(
-                    URLSpan(mark.param as String),
+                    URLSpan(mark.param),
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG

@@ -29,6 +29,7 @@ import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.tools.FirstItemInvisibilityDetector
 import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
+import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DELETE
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_DUPLICATE
 import com.agileburo.anytype.core_ui.widgets.toolbar.ActionToolbarWidget.ActionConfig.ACTION_REDO
@@ -62,10 +63,7 @@ import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.base.NavigationFragment
-import com.agileburo.anytype.ui.page.modals.AddBlockFragment
-import com.agileburo.anytype.ui.page.modals.CreateBookmarkFragment
-import com.agileburo.anytype.ui.page.modals.PageIconPickerFragment
-import com.agileburo.anytype.ui.page.modals.SetLinkFragment
+import com.agileburo.anytype.ui.page.modals.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
@@ -145,7 +143,8 @@ open class PageFragment :
             onToggleClicked = vm::onToggleClicked,
             onMediaBlockMenuClick = vm::onMediaBlockMenuClicked,
             onBookmarkMenuClicked = vm::onBookmarkMenuClicked,
-            onMarkupActionClicked = vm::onMarkupActionClicked
+            onMarkupActionClicked = vm::onMarkupActionClicked,
+            onLongClickListener = vm::onBlockLongPressedClicked
         )
     }
 
@@ -260,11 +259,12 @@ open class PageFragment :
         setupOnBackPressedDispatcher()
     }
 
-    private fun setupOnBackPressedDispatcher() {
+    private fun setupOnBackPressedDispatcher() =
         requireActivity()
             .onBackPressedDispatcher
-            .addCallback(this) { vm.onSystemBackPressed() }
-    }
+            .addCallback(this) {
+                vm.onSystemBackPressed(childFragmentManager.backStackEntryCount > 0)
+            }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -558,6 +558,10 @@ open class PageFragment :
         vm.commands.observe(viewLifecycleOwner, Observer { execute(it) })
     }
 
+    override fun onBlockActionClicked(id: String, action: ActionItemType) {
+        vm.onActionBarItemClicked(id, action)
+    }
+
     private fun handleFocus(focus: Id) {
         Timber.d("Handling focus: $focus")
         if (focus.isEmpty()) {
@@ -592,6 +596,17 @@ open class PageFragment :
                 }
                 is PageViewModel.Command.RequestDownloadPermission -> {
                     startDownloadWithPermissionCheck(command.id)
+                }
+                is PageViewModel.Command.PopBackStack -> {
+                    childFragmentManager.popBackStack()
+                }
+                is PageViewModel.Command.OpenActionBar -> {
+                    hideKeyboard()
+                    childFragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.action_bar_enter, R.anim.action_bar_exit)
+                        .add(R.id.root, BlockActionToolbar.newInstance(command.block), null)
+                        .addToBackStack(null)
+                        .commit()
                 }
             }
         }
@@ -728,9 +743,15 @@ open class PageFragment :
         const val ID_EMPTY_VALUE = ""
         const val NOT_IMPLEMENTED_MESSAGE = "Not implemented."
     }
+
+    override fun onDismissBlockActionToolbar() {
+        vm.onSystemBackPressed(childFragmentManager.backStackEntryCount > 0)
+    }
 }
 
 interface OnFragmentInteractionListener {
     fun onAddMarkupLinkClicked(blockId: String, link: String, range: IntRange)
     fun onRemoveMarkupLinkClicked(blockId: String, range: IntRange)
+    fun onBlockActionClicked(id: String, action: ActionItemType)
+    fun onDismissBlockActionToolbar()
 }

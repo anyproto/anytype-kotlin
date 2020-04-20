@@ -54,6 +54,8 @@
 
     <color name="markup_keyboard_bg">#F3F2EC</color>
 
+    <color name="light_grayish">#f3f2ec</color>
+
     <array name="toolbar_color_text_colors">
         <item>#2C2B27</item>
         <item>#ACA996</item>

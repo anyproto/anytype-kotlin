@@ -56,7 +56,14 @@
             android:id="@+id/edtTest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Test1983"
             android:hint="Start typing" />
+
+        <EditText
+            android:id="@+id/edtTest2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Second "/>
 
         <Button
             android:id="@+id/btnTest"

@@ -26,7 +26,7 @@ data class BlockEntity(
             data class Mark(
                 val range: IntRange,
                 val type: Type,
-                val param: Any?
+                val param: String?
             ) {
                 enum class Type {
                     STRIKETHROUGH,

@@ -75,7 +75,8 @@ class BlockAdapter(
     private val onToggleClicked: (String) -> Unit,
     private val onMediaBlockMenuClick: (String) -> Unit,
     private val onBookmarkMenuClicked: (String) -> Unit,
-    private val onMarkupActionClicked: (Markup.Type) -> Unit
+    private val onMarkupActionClicked: (Markup.Type) -> Unit,
+    private val onLongClickListener: (BlockView) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -449,7 +450,8 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Paragraph,
                     onTextChanged = onParagraphTextChanged,
                     onSelectionChanged = onSelectionChanged,
-                    onFocusChanged = onFocusChanged
+                    onFocusChanged = onFocusChanged,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Title -> {

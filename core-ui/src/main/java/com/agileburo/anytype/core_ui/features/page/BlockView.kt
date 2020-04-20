@@ -1,5 +1,6 @@
 package com.agileburo.anytype.core_ui.features.page
 
+import android.os.Parcelable
 import com.agileburo.anytype.core_ui.common.Checkable
 import com.agileburo.anytype.core_ui.common.Focusable
 import com.agileburo.anytype.core_ui.common.Markup
@@ -35,11 +36,13 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
+import kotlinx.android.parcel.IgnoredOnParcel
+import kotlinx.android.parcel.Parcelize
 
 /**
  * UI-models for different types of blocks.
  */
-sealed class BlockView : ViewType {
+sealed class BlockView : ViewType, Parcelable {
 
 
     /**
@@ -85,6 +88,7 @@ sealed class BlockView : ViewType {
      * @property focused whether this block is currently focused or not
      * @property color text color
      */
+    @Parcelize
     data class Paragraph(
         override val id: String,
         override val text: String,
@@ -104,6 +108,7 @@ sealed class BlockView : ViewType {
      * @property text text content (i.e. title text)
      * @property emoji emoji as a page's logo (if present)
      */
+    @Parcelize
     data class Title(
         override val id: String,
         override val focused: Boolean,
@@ -119,6 +124,7 @@ sealed class BlockView : ViewType {
      * @property text header's content (i.e. a header's text)
      * @property color text color
      */
+    @Parcelize
     data class HeaderOne(
         override val id: String,
         override val text: String,
@@ -135,6 +141,7 @@ sealed class BlockView : ViewType {
      * @property text header's content (i.e. a header's text)
      * @property color text color
      */
+    @Parcelize
     data class HeaderTwo(
         override val id: String,
         override val color: String? = null,
@@ -151,6 +158,7 @@ sealed class BlockView : ViewType {
      * @property text header's content (i.e. a header's text)
      * @property color text color
      */
+    @Parcelize
     data class HeaderThree(
         override val id: String,
         override val color: String? = null,
@@ -166,6 +174,7 @@ sealed class BlockView : ViewType {
      * @property id block's id
      * @property text block's content
      */
+    @Parcelize
     data class Highlight(
         override val id: String,
         val text: String,
@@ -179,6 +188,7 @@ sealed class BlockView : ViewType {
      * @property id block's id
      * @property snippet blocks's content (i.e. code snippet)
      */
+    @Parcelize
     data class Code(
         override val id: String,
         val snippet: String
@@ -192,6 +202,7 @@ sealed class BlockView : ViewType {
      * @property text checkbox's content text
      * @property isChecked immutable checkbox state (whether this checkbox is checked or not)
      */
+    @Parcelize
     data class Checkbox(
         override val id: String,
         override val marks: List<Markup.Mark> = emptyList(),
@@ -212,6 +223,7 @@ sealed class BlockView : ViewType {
      * @property text task's content text
      * @property checked immutable taks state (whether this task is completed or not)
      */
+    @Parcelize
     data class Task(
         override val id: String,
         val text: String,
@@ -227,6 +239,7 @@ sealed class BlockView : ViewType {
      * @property indent indentation value
      * @property color text color
      */
+    @Parcelize
     data class Bulleted(
         override val id: String,
         override val marks: List<Markup.Mark> = emptyList(),
@@ -247,6 +260,7 @@ sealed class BlockView : ViewType {
      * @property number number value
      * @property indent indentation value
      */
+    @Parcelize
     data class Numbered(
         override val id: String,
         override val text: String,
@@ -268,6 +282,7 @@ sealed class BlockView : ViewType {
      * @property indent indentation value
      * @property toggled toggle state (whether this toggle is expanded or not)
      */
+    @Parcelize
     data class Toggle(
         override val id: String,
         override val text: String,
@@ -289,6 +304,7 @@ sealed class BlockView : ViewType {
      * @property name a person's name
      * @property avatar a person's avatar image
      */
+    @Parcelize
     data class Contact(
         override val id: String,
         val name: String,
@@ -303,12 +319,13 @@ sealed class BlockView : ViewType {
      */
     sealed class File(
         override val id: String
-    ) : BlockView(), Indentable {
+    ) : BlockView(), Indentable, Parcelable {
 
         /**
          * UI-model for block containing file, with state DONE.
          * @property id block's id
          */
+        @Parcelize
         data class View(
             override val id: String,
             override val indent: Int,
@@ -325,6 +342,7 @@ sealed class BlockView : ViewType {
          * UI-model for block containing file, with state UPLOADING.
          * @property id block's id
          */
+        @Parcelize
         data class Upload(
             override val id: String,
             override val indent: Int
@@ -336,6 +354,7 @@ sealed class BlockView : ViewType {
          * UI-model for block containing file, with state EMPTY.
          * @property id block's id
          */
+        @Parcelize
         data class Placeholder(
             override val id: String,
             override val indent: Int
@@ -347,6 +366,7 @@ sealed class BlockView : ViewType {
          * UI-model for block containing file, with state ERROR.
          * @property id block's id
          */
+        @Parcelize
         data class Error(
             override val id: String,
             override val indent: Int
@@ -361,11 +381,12 @@ sealed class BlockView : ViewType {
      */
     sealed class Video(
         override val id: String
-    ) : BlockView(), Indentable {
+    ) : BlockView(), Indentable, Parcelable {
 
         /**
          * UI-model for block containing video, with state DONE.
          */
+        @Parcelize
         data class View(
             override val id: String,
             override val indent: Int,
@@ -382,6 +403,7 @@ sealed class BlockView : ViewType {
          * UI-model for block containing video, with state UPLOADING.
          * @property id block's id
          */
+        @Parcelize
         data class Upload(
             override val id: String,
             override val indent: Int
@@ -393,6 +415,7 @@ sealed class BlockView : ViewType {
          * UI-model for block containing video, with state EMPTY.
          * @property id block's id
          */
+        @Parcelize
         data class Placeholder(
             override val id: String,
             override val indent: Int
@@ -404,6 +427,7 @@ sealed class BlockView : ViewType {
          * UI-model for block containing video, with state ERROR.
          * @property id block's id
          */
+        @Parcelize
         data class Error(
             override val id: String,
             override val indent: Int
@@ -420,6 +444,7 @@ sealed class BlockView : ViewType {
      * @property isEmpty this property determines whether this page is empty or not
      * @property isArchived this property determines whether this page is archived or not
      */
+    @Parcelize
     data class Page(
         override val id: String,
         override val indent: Int,
@@ -435,6 +460,7 @@ sealed class BlockView : ViewType {
      * UI-model for a divider block.
      * @property id block's id
      */
+    @Parcelize
     data class Divider(
         override val id: String
     ) : BlockView() {
@@ -447,11 +473,12 @@ sealed class BlockView : ViewType {
      */
     sealed class Bookmark(
         override val id: String
-    ) : BlockView(), Indentable {
+    ) : BlockView(), Indentable, Parcelable {
 
         /**
          * UI-model for a bookmark placeholder (used when bookmark url is not set)
          */
+        @Parcelize
         data class Placeholder(
             override val id: String,
             override val indent: Int
@@ -467,6 +494,7 @@ sealed class BlockView : ViewType {
          * @property faviconUrl website's favicon url
          * @property imageUrl content's main image url
          */
+        @Parcelize
         data class View(
             override val id: String,
             override val indent: Int,
@@ -483,6 +511,7 @@ sealed class BlockView : ViewType {
          * UI-model for a bookmark view in error state
          * @property url url originally entered by user to create a bookmark
          */
+        @Parcelize
         data class Error(
             override val id: String,
             override val indent: Int,
@@ -498,11 +527,12 @@ sealed class BlockView : ViewType {
      */
     sealed class Picture(
         override val id: String
-    ) : BlockView(), Indentable {
+    ) : BlockView(), Indentable, Parcelable {
 
         /**
          * UI-model for block containing image, with state DONE.
          */
+        @Parcelize
         data class View(
             override val id: String,
             override val indent: Int,
@@ -518,6 +548,7 @@ sealed class BlockView : ViewType {
         /**
          * UI-model for block containing image, with state EMPTY.
          */
+        @Parcelize
         data class Placeholder(
             override val id: String,
             override val indent: Int
@@ -528,6 +559,7 @@ sealed class BlockView : ViewType {
         /**
          * UI-model for block containing image, with state ERROR.
          */
+        @Parcelize
         data class Error(
             override val id: String,
             override val indent: Int
@@ -538,6 +570,7 @@ sealed class BlockView : ViewType {
         /**
          * UI-model for block containing image, with state UPLOADING.
          */
+        @Parcelize
         data class Upload(
             override val id: String,
             override val indent: Int
@@ -549,7 +582,9 @@ sealed class BlockView : ViewType {
     /**
      * Footer block. Just holds space at the end of the page.
      */
+    @Parcelize
     object Footer : BlockView() {
+        @IgnoredOnParcel
         override val id: String = FOOTER_ID
         override fun getViewType() = HOLDER_FOOTER
     }

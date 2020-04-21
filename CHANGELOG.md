@@ -11,7 +11,8 @@
 
 ### Fixes & tech 🚒
 
-* Fix carriage positioning while `split` / `merge` operations (#353)
+* Fix carriage positioning for `split` / `merge` operations (#353)
+* Main layout optimization (switched to `FragmentContainerView`) (#385)
 
 ## Version 0.0.28
 

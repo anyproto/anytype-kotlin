@@ -40,11 +40,7 @@ class AddBlockFragment : BaseBottomSheetFragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = addBlockOrTurnIntoAdapter
             setHasFixedSize(true)
-            addItemDecoration(
-                SpacingItemDecoration(
-                    firstItemSpacingTop = dimen(R.dimen.dp_16) * 3
-                )
-            )
+            addItemDecoration(SpacingItemDecoration(firstItemSpacingTop = dimen(R.dimen.dp_16)))
         }
     }
 

@@ -1,6 +1,12 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.28 (WIP)
+## Version 0.0.29 (WIP)
+
+### Design & UX 🔳
+
+* Add-block toolbar should have title hidden while scrolling (#374)
+
+## Version 0.0.28
 
 ### Design & UX 🔳
 

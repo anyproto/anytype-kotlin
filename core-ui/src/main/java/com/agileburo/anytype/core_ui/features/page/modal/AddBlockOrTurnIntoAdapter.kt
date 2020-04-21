@@ -33,6 +33,13 @@ class AddBlockOrTurnIntoAdapter(
                     false
                 )
             )
+            VIEW_HOLDER_HEADER -> ViewHolder.Header(
+                view = inflater.inflate(
+                    R.layout.item_add_block_or_turn_into_header,
+                    parent,
+                    false
+                )
+            )
             else -> throw IllegalStateException("Unexpected type: $viewType")
         }
     }
@@ -53,6 +60,8 @@ class AddBlockOrTurnIntoAdapter(
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+        class Header(view: View) : ViewHolder(view)
 
         class Section(view: View) : ViewHolder(view) {
 
@@ -178,10 +187,12 @@ class AddBlockOrTurnIntoAdapter(
     }
 
     sealed class AddBlockView : ViewType {
+        object Header : AddBlockView() {
+            override fun getViewType(): Int = VIEW_HOLDER_HEADER
+        }
         data class Section(val category: UiBlock.Category) : AddBlockView() {
             override fun getViewType(): Int = VIEW_HOLDER_SECTION
         }
-
         data class Item(val type: UiBlock) : AddBlockView() {
             override fun getViewType(): Int = VIEW_HOLDER_ITEM
         }
@@ -190,8 +201,10 @@ class AddBlockOrTurnIntoAdapter(
     companion object {
         const val VIEW_HOLDER_SECTION = 0
         const val VIEW_HOLDER_ITEM = 1
+        const val VIEW_HOLDER_HEADER = 2
 
         fun default(): List<AddBlockView> = listOf(
+            AddBlockView.Header,
             AddBlockView.Section(category = UiBlock.Category.TEXT),
             AddBlockView.Item(type = UiBlock.TEXT),
             AddBlockView.Item(type = UiBlock.HEADER_ONE),

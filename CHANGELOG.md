@@ -4,9 +4,13 @@
 
 ### Design & UX 🔳
 
-* Add-block toolbar should have title hidden while scrolling (#374)
+* Add-block toolbar should have its title hidden while scrolling (#374)
 * Block-styling toolbar in block styling mode (applying text color, background to the whole block) (#379)
 * Enabled style page features in block-styling toolbar (#379)
+
+### Fixes & tech 🚒
+
+* Fix carriage positioning while `split` / `merge` operations (#353)
 
 ## Version 0.0.28
 

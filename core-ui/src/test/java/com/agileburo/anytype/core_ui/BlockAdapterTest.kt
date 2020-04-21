@@ -765,60 +765,6 @@ class BlockAdapterTest {
     }
 
     @Test
-    fun `should preserve cursor position after updating paragraph text`() {
-
-        // Setup
-
-        val title = BlockView.Paragraph(
-            text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid()
-        )
-
-        val updated = title.copy(
-            text = MockDataFactory.randomString()
-        )
-
-        val views = listOf(title)
-
-        val adapter = buildAdapter(views)
-
-        val recycler = RecyclerView(context).apply {
-            layoutManager = LinearLayoutManager(context)
-        }
-
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
-
-        adapter.onBindViewHolder(holder, 0)
-
-        check(holder is BlockViewHolder.Paragraph)
-
-        // Testing
-
-        assertEquals(
-            expected = title.text,
-            actual = holder.content.text.toString()
-        )
-
-        val cursorBeforeUpdate = holder.content.selectionEnd
-
-        holder.processChangePayload(
-            item = updated,
-            payloads = listOf(
-                BlockViewDiffUtil.Payload(
-                    changes = listOf(TEXT_CHANGED)
-                )
-            )
-        )
-
-        val cursorAfterUpdate = holder.content.selectionEnd
-
-        assertEquals(
-            expected = cursorBeforeUpdate,
-            actual = cursorAfterUpdate
-        )
-    }
-
-    @Test
     fun `should apply indent to paragraph view`() {
 
         val paragraph = BlockView.Paragraph(

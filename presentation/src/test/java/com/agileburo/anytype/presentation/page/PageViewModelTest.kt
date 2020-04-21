@@ -2186,58 +2186,6 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should not proceed with merging page title with the first paragraph on non-empty-block-backspace-pressed event`() {
-
-        val root = MockDataFactory.randomUuid()
-        val firstChild = MockDataFactory.randomUuid()
-        val secondChild = MockDataFactory.randomUuid()
-
-        val page = MockBlockFactory.makeOnePageWithTwoTextBlocks(
-            root = root,
-            firstChild = firstChild,
-            secondChild = secondChild,
-            firstChildStyle = Block.Content.Text.Style.TITLE,
-            secondChildStyle = Block.Content.Text.Style.P
-        )
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.open(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        vm.onBlockFocusChanged(
-            id = secondChild,
-            hasFocus = true
-        )
-
-        vm.onNonEmptyBlockBackspaceClicked(
-            id = secondChild
-        )
-
-        verify(mergeBlocks, never()).invoke(
-            scope = any(),
-            params = any(),
-            onResult = any()
-        )
-    }
-
-    @Test
     fun `should proceed with merging the first paragraph with the second on non-empty-block-backspace-pressed event`() {
 
         val root = MockDataFactory.randomUuid()
@@ -2461,7 +2409,7 @@ class PageViewModelTest {
         val index = MockDataFactory.randomInt()
 
         vm.onSplitLineEnterClicked(
-            id = child,
+            target = child,
             index = index
         )
 

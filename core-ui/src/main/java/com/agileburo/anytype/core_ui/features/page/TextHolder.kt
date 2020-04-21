@@ -127,9 +127,8 @@ interface TextHolder {
         Timber.d("Processing $payload for new view:\n$item")
 
         if (item is BlockView.Text) {
-
             if (payload.textChanged()) {
-                val cursor = content.selectionEnd
+                val cursor = content.length()
                 content.pauseTextWatchers {
                     if (item is Markup)
                         content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
@@ -139,7 +138,7 @@ interface TextHolder {
                 try {
                     content.setSelection(cursor)
                 } catch (e: Throwable) {
-                    Timber.e(e, "Error while setting focus: ")
+                    Timber.e(e, "Error while setting selection")
                 }
             } else if (payload.markupChanged()) {
                 if (item is Markup) setMarkup(item)

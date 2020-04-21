@@ -617,7 +617,7 @@ class PageViewModel(
     fun onNonEmptyBlockBackspaceClicked(id: String) {
         val page = blocks.first { it.id == context }
         val index = page.children.indexOf(id)
-        if (index > 1) {
+        if (index > 0) {
             val previous = page.children[index.dec()]
             proceedWithMergingBlocks(
                 previous = previous,
@@ -644,22 +644,23 @@ class PageViewModel(
     }
 
     fun onSplitLineEnterClicked(
-        id: String,
+        target: String,
         index: Int
     ) {
         splitBlock.invoke(
             scope = viewModelScope,
             params = SplitBlock.Params(
                 context = context,
-                target = id,
+                target = target,
                 index = index
-            )
-        ) { result ->
-            result.either(
-                fnL = { Timber.e(it, "Error while splitting the target block with id: $id") },
-                fnR = { id -> updateFocus(id) }
-            )
-        }
+            ),
+            onResult = { result ->
+                result.either(
+                    fnL = { Timber.e(it, "Error while splitting block with id: $target") },
+                    fnR = { updateFocus(target) }
+                )
+            }
+        )
     }
 
     fun onEndLineEnterTitleClicked() {

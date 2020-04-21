@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Transition
-        app:constraintSetEnd="@id/collapsed"
-        app:constraintSetStart="@id/expanded">
+        app:constraintSetEnd="@id/end"
+        app:constraintSetStart="@id/start">
         <OnSwipe
             app:dragDirection="dragUp"
             app:touchAnchorId="@id/desktopRecycler"
             app:touchAnchorSide="top" />
     </Transition>
 
-    <ConstraintSet android:id="@+id/expanded">
+    <ConstraintSet android:id="@+id/start">
         <Constraint
             android:id="@+id/toolbar"
             android:layout_width="0dp"
@@ -21,15 +21,11 @@
             app:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@+id/greeting"
-            android:fontFamily="@font/graphik_semibold"
-            android:scaleX="1.0"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="16dp"
-            android:scaleY="1.0"
-            android:textColor="@color/white"
-            android:textSize="34sp"
+            android:fontFamily="@font/graphik_semibold"
             app:layout_constraintBottom_toBottomOf="@+id/avatar"
             app:layout_constraintEnd_toStartOf="@+id/avatar"
             app:layout_constraintStart_toStartOf="parent"
@@ -43,9 +39,12 @@
             android:background="@drawable/circle_solid_default"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+        <Constraint android:id="@+id/fab">
+            <Transform android:translationY="0dp" />
+        </Constraint>
     </ConstraintSet>
 
-    <ConstraintSet android:id="@+id/collapsed">
+    <ConstraintSet android:id="@+id/end">
         <Constraint
             android:id="@+id/toolbar"
             android:layout_width="0dp"
@@ -59,26 +58,30 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="16dp"
+            android:visibility="invisible"
             android:fontFamily="@font/graphik_semibold"
-            android:scaleX="0.0"
-            android:scaleY="0.0"
-            android:textColor="@color/white"
-            android:textSize="34sp"
             app:layout_constraintBottom_toBottomOf="@+id/avatar"
             app:layout_constraintEnd_toStartOf="@+id/avatar"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/avatar" />
+            app:layout_constraintTop_toTopOf="@+id/avatar">
+            <Transform android:translationY="-100dp" />
+        </Constraint>
         <Constraint
             android:id="@+id/avatar"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_marginTop="0dp"
+            android:layout_marginTop="46dp"
+            android:visibility="invisible"
             android:layout_marginEnd="20dp"
-            android:scaleX="0.0"
-            android:scaleY="0.0"
             android:background="@drawable/circle_solid_default"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+            <Transform android:translationY="-100dp" />
+        </Constraint>
+        <Constraint android:id="@+id/fab">
+            <Transform android:translationY="100dp" />
+        </Constraint>
+
     </ConstraintSet>
 
 </MotionScene>

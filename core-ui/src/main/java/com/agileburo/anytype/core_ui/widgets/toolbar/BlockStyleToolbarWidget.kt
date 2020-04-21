@@ -95,6 +95,10 @@ class BlockStyleToolbarWidget : ConstraintLayout {
                 }
             } else {
                 blockStyleAdapter.applyBlockStylingMode()
+                ConstraintSet().apply {
+                    clone(context, R.layout.widget_block_style_toolbar)
+                    applyTo(root)
+                }
             }
         }
     }
@@ -133,16 +137,16 @@ class BlockStyleToolbarWidget : ConstraintLayout {
     }
 
     fun showWithAnimation() {
-        ObjectAnimator.ofFloat(this, "translationY", 0f).apply {
-            duration = 100
+        ObjectAnimator.ofFloat(this, ANIMATED_PROPERTY, 0f).apply {
+            duration = ANIMATION_DURATION
             interpolator = DecelerateInterpolator()
             start()
         }
     }
 
     fun hideWithAnimation() {
-        ObjectAnimator.ofFloat(this, "translationY", context.dimen(R.dimen.dp_203)).apply {
-            duration = 100
+        ObjectAnimator.ofFloat(this, ANIMATED_PROPERTY, context.dimen(R.dimen.dp_203)).apply {
+            duration = ANIMATION_DURATION
             interpolator = AccelerateInterpolator()
             start()
         }
@@ -172,5 +176,8 @@ class BlockStyleToolbarWidget : ConstraintLayout {
         const val PAGE_STYLE_INDEX = 0
         const val PAGE_COLOR_INDEX = 1
         const val PAGE_BACKGROUND_INDEX = 2
+
+        const val ANIMATION_DURATION = 100L
+        const val ANIMATED_PROPERTY = "translationY"
     }
 }

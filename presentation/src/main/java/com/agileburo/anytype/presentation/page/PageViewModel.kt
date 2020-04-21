@@ -812,34 +812,31 @@ class PageViewModel(
 
     fun onToolbarTextColorAction(color: String) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockTextColorSelected)
-        focusChannel.value.let { focus ->
-            updateTextColor.invoke(
-                scope = viewModelScope,
-                params = UpdateTextColor.Params(
-                    context = context,
-                    target = focus,
-                    color = color
-                )
-            ) { result ->
-                result.either(
-                    fnL = { Timber.e(it, "Error while updating the whole block's text color") },
-                    fnR = { Timber.d("Text color ($color) has been succesfully updated for the block: $focus") }
-                )
-            }
+        updateTextColor.invoke(
+            scope = viewModelScope,
+            params = UpdateTextColor.Params(
+                context = context,
+                target = focusChannel.value,
+                color = color
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while updating the whole block's text color") },
+                fnR = { Timber.d("Text color ($color) has been succesfully updated for the block: $focus") }
+            )
         }
     }
 
     fun onBlockBackgroundColorAction(color: String) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockBackgroundColorSelected)
-        focusChannel.value.let { focus ->
-            updateBackgroundColor.invoke(
-                scope = viewModelScope,
-                params = UpdateBackgroundColor.Params(
-                    context = context,
-                    targets = listOf(focus),
-                    color = color
-                )
-            ) { result ->
+        updateBackgroundColor.invoke(
+            scope = viewModelScope,
+            params = UpdateBackgroundColor.Params(
+                context = context,
+                targets = listOf(focusChannel.value),
+                color = color
+            ),
+            onResult = { result ->
                 result.either(
                     fnL = {
                         Timber.e(
@@ -847,9 +844,56 @@ class PageViewModel(
                             "Error while updating background color for the block: $focus"
                         )
                     },
-                    fnR = { Timber.d("Background color ($color) has been succesfully updated for the block: $focus") }
+                    fnR = { Timber.d("Background color ($color) has been successfully updated for the block: $focus") }
                 )
             }
+        )
+    }
+
+    fun onBlockStyleMarkupActionClicked(action: Markup.Type) {
+
+        val target = blocks.first { it.id == focus.value }
+        val content = target.content as Content.Text
+
+        if (content.text.isNotEmpty()) {
+
+            val mark = Content.Text.Mark(
+                range = 0..content.text.length,
+                type = when (action) {
+                    Markup.Type.BOLD -> Content.Text.Mark.Type.BOLD
+                    Markup.Type.ITALIC -> Content.Text.Mark.Type.ITALIC
+                    Markup.Type.STRIKETHROUGH -> Content.Text.Mark.Type.STRIKETHROUGH
+                    Markup.Type.KEYBOARD -> Content.Text.Mark.Type.KEYBOARD
+                    else -> throw IllegalStateException("Unexpected markup type")
+                },
+                param = null
+            )
+
+            val marks = content.marks.addMark(mark)
+
+            val newContent = content.copy(
+                marks = marks
+            )
+
+            val newBlock = target.copy(content = newContent)
+
+            blocks = blocks.map { block ->
+                if (block.id != target.id)
+                    block
+                else
+                    newBlock
+            }
+
+            viewModelScope.launch { refresh() }
+
+            proceedWithUpdatingText(
+                params = UpdateText.Params(
+                    contextId = context,
+                    blockId = newBlock.id,
+                    text = newContent.text,
+                    marks = newContent.marks
+                )
+            )
         }
     }
 
@@ -881,13 +925,22 @@ class PageViewModel(
                 stateData.value = ViewState.Error("Move To not implemented")
             }
             ActionItemType.Color -> {
-                stateData.value = ViewState.Error("Color not implemented")
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnBlockActionToolbarTextColorClicked
+                )
+                dispatch(Command.PopBackStack)
             }
             ActionItemType.Background -> {
-                stateData.value = ViewState.Error("Background not implemented")
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnBlockActionToolbarBackgroundColorClicked
+                )
+                dispatch(Command.PopBackStack)
             }
             ActionItemType.Style -> {
-                stateData.value = ViewState.Error("Style not implemented")
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked
+                )
+                dispatch(Command.PopBackStack)
             }
             ActionItemType.Download -> {
                 stateData.value = ViewState.Error("Download not implemented")
@@ -943,7 +996,7 @@ class PageViewModel(
         duplicateBlock(target = focusChannel.value)
     }
 
-    private fun duplicateBlock(target : String) {
+    private fun duplicateBlock(target: String) {
         duplicateBlock.invoke(
             scope = viewModelScope,
             params = DuplicateBlock.Params(

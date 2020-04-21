@@ -1,13 +1,9 @@
 package com.agileburo.anytype.core_ui.features.page
 
-import android.graphics.Color
 import android.text.Editable
 import android.view.View
 import android.widget.TextView
-import com.agileburo.anytype.core_ui.common.Focusable
-import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.common.setMarkup
-import com.agileburo.anytype.core_ui.common.toSpannable
+import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.text.BackspaceKeyDetector
@@ -68,7 +64,11 @@ interface TextHolder {
     }
 
     fun setTextColor(color: String) {
-        content.setTextColor(Color.parseColor(color))
+        content.setTextColor(
+            ThemeColor.values().first { value ->
+                value.title == color
+            }.text
+        )
     }
 
     fun setTextColor(color: Int) {
@@ -78,7 +78,11 @@ interface TextHolder {
     fun setBackgroundColor(color: String? = null) {
         Timber.d("Setting background color: $color")
         if (color != null) {
-            root.setBackgroundColor(Color.parseColor(color))
+            root.setBackgroundColor(
+                ThemeColor.values().first { value ->
+                    value.title == color
+                }.background
+            )
         } else {
             root.background = null
         }

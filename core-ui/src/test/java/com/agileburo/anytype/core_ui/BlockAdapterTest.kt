@@ -1,7 +1,6 @@
 package com.agileburo.anytype.core_ui
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.text.Editable
@@ -10,6 +9,7 @@ import androidx.core.view.marginLeft
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
+import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
@@ -131,7 +131,7 @@ class BlockAdapterTest {
         val paragraph = BlockView.Paragraph(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            color = Color.RED.hexColorCode()
+            color = ThemeColor.BLUE.title
         )
 
         val views = listOf(paragraph)
@@ -153,7 +153,7 @@ class BlockAdapterTest {
         val color = holder.content.currentTextColor
 
         assertEquals(
-            expected = Color.RED,
+            expected = ThemeColor.BLUE.text,
             actual = color
         )
     }
@@ -219,7 +219,7 @@ class BlockAdapterTest {
         )
 
         val updated = paragraph.copy(
-            backgroundColor = Color.RED.hexColorCode()
+            backgroundColor = ThemeColor.PURPLE.title
         )
 
         val views = listOf(paragraph)
@@ -253,7 +253,7 @@ class BlockAdapterTest {
         )
 
         assertEquals(
-            expected = Color.parseColor(updated.backgroundColor),
+            expected = ThemeColor.PURPLE.background,
             actual = (holder.root.background as ColorDrawable).color
         )
     }
@@ -266,11 +266,11 @@ class BlockAdapterTest {
         val paragraph = BlockView.Paragraph(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            color = Color.RED.hexColorCode()
+            color = ThemeColor.BLUE.title
         )
 
         val updated = paragraph.copy(
-            color = Color.BLUE.hexColorCode()
+            color = ThemeColor.GREEN.title
         )
 
         val views = listOf(paragraph)
@@ -290,7 +290,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = Color.RED,
+            expected = ThemeColor.BLUE.text,
             actual = holder.content.currentTextColor
         )
 
@@ -304,7 +304,7 @@ class BlockAdapterTest {
         )
 
         assertEquals(
-            expected = Color.BLUE,
+            expected = ThemeColor.GREEN.text,
             actual = holder.content.currentTextColor
         )
     }

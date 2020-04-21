@@ -103,6 +103,10 @@ sealed class ControlPanelMachine {
         ) : Event()
 
         object OnBlockStyleToolbarCloseButtonClicked : Event()
+
+        object OnBlockActionToolbarTextColorClicked : Event()
+        object OnBlockActionToolbarBackgroundColorClicked : Event()
+        object OnBlockActionToolbarStyleClicked : Event()
     }
 
     /**
@@ -134,16 +138,8 @@ sealed class ControlPanelMachine {
                     isVisible = false
                 )
             )
-            is Event.OnBlockTextColorSelected -> state.copy(
-                stylingToolbar = state.stylingToolbar.copy(
-                    isVisible = false
-                )
-            )
-            is Event.OnBlockBackgroundColorSelected -> state.copy(
-                stylingToolbar = state.stylingToolbar.copy(
-                    isVisible = false
-                )
-            )
+            is Event.OnBlockTextColorSelected -> state.copy()
+            is Event.OnBlockBackgroundColorSelected -> state.copy()
             is Event.OnAddBlockToolbarOptionSelected -> state.copy()
             is Event.OnMarkupBackgroundColorSelected -> state.copy(
                 stylingToolbar = state.stylingToolbar.copy(
@@ -176,6 +172,36 @@ sealed class ControlPanelMachine {
                 ),
                 mainToolbar = state.mainToolbar.copy(
                     isVisible = true
+                )
+            )
+            is Event.OnBlockActionToolbarTextColorClicked -> state.copy(
+                mainToolbar = state.mainToolbar.copy(
+                    isVisible = false
+                ),
+                stylingToolbar = state.stylingToolbar.copy(
+                    isVisible = true,
+                    mode = StylingMode.BLOCK,
+                    type = StylingType.TEXT_COLOR
+                )
+            )
+            is Event.OnBlockActionToolbarBackgroundColorClicked -> state.copy(
+                mainToolbar = state.mainToolbar.copy(
+                    isVisible = false
+                ),
+                stylingToolbar = state.stylingToolbar.copy(
+                    isVisible = true,
+                    mode = StylingMode.BLOCK,
+                    type = StylingType.BACKGROUND
+                )
+            )
+            is Event.OnBlockActionToolbarStyleClicked -> state.copy(
+                mainToolbar = state.mainToolbar.copy(
+                    isVisible = false
+                ),
+                stylingToolbar = state.stylingToolbar.copy(
+                    isVisible = true,
+                    mode = StylingMode.BLOCK,
+                    type = StylingType.STYLE
                 )
             )
             is Event.OnFocusChanged -> {

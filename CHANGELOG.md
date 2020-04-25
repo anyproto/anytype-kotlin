@@ -13,6 +13,7 @@
 
 ### Fixes & tech 🚒
 
+* Should close keyboard after document archiving (#395)
 * Should hide archived documents from home dashboard screen (#387)
 * Fix carriage positioning for `split` / `merge` operations (#353)
 * Main layout optimization (switched to `FragmentContainerView`) (#385)

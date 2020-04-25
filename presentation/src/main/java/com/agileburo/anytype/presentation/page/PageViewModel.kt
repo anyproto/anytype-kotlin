@@ -1296,6 +1296,7 @@ class PageViewModel(
     }
 
     fun onArchiveThisPageClicked() {
+        dispatch(command = Command.CloseKeyboard)
         archiveDocument.invoke(
             scope = viewModelScope,
             params = ArchiveDocument.Params(
@@ -1485,6 +1486,8 @@ class PageViewModel(
         ) : Command()
 
         object PopBackStack : Command()
+
+        object CloseKeyboard : Command()
 
         data class OpenActionBar(
             val block: BlockView

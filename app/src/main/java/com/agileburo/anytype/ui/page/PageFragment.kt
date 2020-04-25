@@ -444,6 +444,9 @@ open class PageFragment :
                         .addToBackStack(null)
                         .commit()
                 }
+                is PageViewModel.Command.CloseKeyboard -> {
+                    hideSoftInput()
+                }
             }
         }
     }

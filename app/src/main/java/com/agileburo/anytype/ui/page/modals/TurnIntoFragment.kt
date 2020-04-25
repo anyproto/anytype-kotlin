@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
@@ -12,6 +13,8 @@ import com.agileburo.anytype.core_ui.layout.SpacingItemDecoration
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_add_block.*
 
 class TurnIntoFragment : BaseBottomSheetFragment() {
@@ -35,6 +38,19 @@ class TurnIntoFragment : BaseBottomSheetFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
         close.setOnClickListener { dismiss() }
+        skipCollapsedState()
+    }
+
+    private fun skipCollapsedState() {
+        dialog?.setOnShowListener { dg ->
+            val bottomSheet = (dg as? BottomSheetDialog)?.findViewById<FrameLayout>(
+                com.google.android.material.R.id.design_bottom_sheet
+            )
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                behavior.skipCollapsed = true
+            }
+        }
     }
 
     private fun setupAdapter() {

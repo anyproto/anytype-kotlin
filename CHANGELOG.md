@@ -8,7 +8,8 @@
 * Block-styling toolbar in block styling mode (applying text color, background to the whole block) (#379)
 * Enabled style page features in block-styling toolbar (#379)
 * Fixed collapsing toolbar animation on home-dashboard screen (#384)
-* New turn-into toolbar (#386)
+* New `turn-into` toolbar (#386)
+* Skip collapsed state for bottom sheet dialogs (`add-block`, `turn-into`) (#391)
 
 ### Fixes & tech 🚒
 

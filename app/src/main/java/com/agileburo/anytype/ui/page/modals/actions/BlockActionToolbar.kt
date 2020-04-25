@@ -1,55 +1,65 @@
-package com.agileburo.anytype.ui.page.modals
+package com.agileburo.anytype.ui.page.modals.actions
 
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.method.ScrollingMovementMethod
+import android.view.LayoutInflater
 import android.view.View
-import androidx.core.os.bundleOf
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.agileburo.anytype.R
-import com.agileburo.anytype.core_ui.extensions.color
+import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.extensions.addVerticalDivider
+import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.features.page.BlockView
-import com.agileburo.anytype.core_ui.widgets.BlockActionBarItem
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
+import com.agileburo.anytype.core_ui.widgets.BlockActionBarItem
 import com.agileburo.anytype.ui.page.OnFragmentInteractionListener
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.action_toolbar.*
 
-class BlockActionToolbar : Fragment(R.layout.action_toolbar) {
+abstract class BlockActionToolbar : Fragment() {
 
     companion object {
-
-        val ARG_BLOCK = "arg.block"
-        fun newInstance(block: BlockView): BlockActionToolbar =
-            BlockActionToolbar().apply {
-                arguments = bundleOf(ARG_BLOCK to block)
-            }
+        const val ARG_BLOCK = "arg.block"
     }
 
-    private var block: BlockView? = null
+    abstract fun initUi(view: View)
+    abstract fun getBlock(): BlockView
+    abstract fun blockLayout(): Int
 
     private var actionClick: (ActionItemType) -> Unit = {}
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.action_toolbar, container, false)
+        view.findViewById<FrameLayout>(R.id.block_container).apply {
+            addView(inflater.inflate(blockLayout(), this, false))
+        }
+        return view
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        block = arguments?.getParcelable<BlockView.Paragraph>(ARG_BLOCK)
+
         actionClick = { actionType: ActionItemType ->
             (parentFragment as? OnFragmentInteractionListener)?.onBlockActionClicked(
-                block?.id.orEmpty(),
+                getBlock().id,
                 actionType
             )
         }
+        initUi(view)
 
         container.setOnClickListener {
             (parentFragment as? OnFragmentInteractionListener)?.onDismissBlockActionToolbar()
         }
 
-        text.movementMethod = ScrollingMovementMethod()
-        text.text = (block as? BlockView.Paragraph)?.text
-
-        when (block) {
+        when (getBlock()) {
             is BlockView.Paragraph -> addButtons(ACTIONS.TEXT)
             is BlockView.Title -> addButtons(ACTIONS.TEXT)
             is BlockView.HeaderOne -> addButtons(ACTIONS.TEXT)
@@ -114,6 +124,14 @@ class BlockActionToolbar : Fragment(R.layout.action_toolbar) {
                 }
             }
         }
+
+    fun setBlockTextColor(content: TextView, color: String) {
+        content.setTextColor(
+            ThemeColor.values().first { value ->
+                value.title == color
+            }.text
+        )
+    }
 
     private fun createActionBarItem(
         type: ActionItemType,

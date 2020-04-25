@@ -761,8 +761,11 @@ class PageViewModel(
         }
     }
 
-    fun onBlockLongPressedClicked(block: BlockView) {
-        dispatch(Command.OpenActionBar(block = block))
+    fun onBlockLongPressedClicked(target: String) {
+        val state = stateData.value
+        if (state is ViewState.Success) {
+            dispatch(Command.OpenActionBar(block = state.blocks.first { it.id == target }))
+        }
     }
 
     fun onMarkupActionClicked(markup: Markup.Type) {

@@ -36,6 +36,7 @@ import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
+import com.agileburo.anytype.core_utils.ext.addDot
 import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ext.hideKeyboard
 import com.agileburo.anytype.core_utils.ext.imm
@@ -130,11 +131,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            onLongClickListener: (BlockView) -> Unit
+            onLongClickListener: (String) -> Unit
         ) {
             indentize(item)
 
-            content.setOnLongClickListener(EditorLongClickListener(item, onLongClickListener))
+            content.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener)
+            )
 
             content.clearTextWatchers()
 
@@ -223,8 +228,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             if (focused) {
                 content.requestFocus()
                 showKeyboard()
-            }
-            else
+            } else
                 content.clearFocus()
         }
 
@@ -258,8 +262,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
             item: BlockView.HeaderOne,
             onTextChanged: (String, Editable) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit,
+            onLongClickListener: (String) -> Unit
         ) {
+            header.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener
+                )
+            )
+
             header.clearTextWatchers()
 
             header.setOnFocusChangeListener { _, hasFocus ->
@@ -300,8 +312,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
             item: BlockView.HeaderTwo,
             onTextChanged: (String, Editable) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit,
+            onLongClickListener: (String) -> Unit
         ) {
+            header.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener
+                )
+            )
+
             header.clearTextWatchers()
             indentize(item)
             header.setText(item.text)
@@ -340,8 +360,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
             item: BlockView.HeaderThree,
             onTextChanged: (String, Editable) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit,
+            onLongClickListener: (String) -> Unit
         ) {
+            header.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener
+                )
+            )
+
             header.clearTextWatchers()
             indentize(item)
             header.setText(item.text)
@@ -420,8 +448,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onCheckboxClicked: (String) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit,
+            onLongClickListener: (String) -> Unit
         ) {
+            content.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener
+                )
+            )
+
             content.clearTextWatchers()
             indentize(item)
             checkbox.isSelected = item.isChecked
@@ -532,8 +568,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             item: BlockView.Bulleted,
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit,
+            onLongClickListener: (String) -> Unit
         ) {
+            content.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener
+                )
+            )
+
             content.clearTextWatchers()
             indentize(item)
 
@@ -624,8 +668,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             item: BlockView.Numbered,
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit,
+            onLongClickListener: (String) -> Unit
         ) {
+            content.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener
+                )
+            )
+
             content.clearTextWatchers()
             indentize(item)
             number.gravity = when (item.number) {
@@ -675,8 +727,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 )
             }
         }
-
-        private fun Int.addDot(): String = "$this."
     }
 
     class Toggle(
@@ -723,8 +773,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onToggleClicked: (String) -> Unit,
-            onTogglePlaceholderClicked: (String) -> Unit
+            onTogglePlaceholderClicked: (String) -> Unit,
+            onLongClickListener: (String) -> Unit
         ) {
+            content.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener
+                )
+            )
+
             content.clearTextWatchers()
             content.setText(item.toSpannable(), BufferType.SPANNABLE)
 
@@ -777,6 +835,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
              * Rotation value for a toggle icon for expanded state.
              */
             const val EXPANDED_ROTATION = 90f
+
             /**
              * Rotation value for a toggle icon for collapsed state.
              */
@@ -926,9 +985,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             private val root = itemView.videoPlaceholderRoot
             private val btnMenu = itemView.btnVideoPlaceholderMenu
 
-            fun bind(item: BlockView.Video.Placeholder,
-                     onAddLocalVideoClick: (String) -> Unit,
-                     menuClick: (String) -> Unit) {
+            fun bind(
+                item: BlockView.Video.Placeholder,
+                onAddLocalVideoClick: (String) -> Unit,
+                menuClick: (String) -> Unit
+            ) {
                 indentize(item)
                 btnMenu.setOnClickListener { menuClick(item.id) }
                 itemView.setOnClickListener { onAddLocalVideoClick(item.id) }

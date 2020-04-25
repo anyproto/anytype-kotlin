@@ -9,12 +9,14 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.text.Annotation
 import android.text.Editable
+import android.text.InputType
 import android.text.Spanned
 import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.TouchDelegate
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
@@ -158,3 +160,11 @@ fun String.getFileName(mime: String?): String =
     } else {
         this
     }
+
+fun Int.addDot(): String = "$this."
+
+fun EditText.setReadOnly(value: Boolean, inputType: Int = InputType.TYPE_NULL) {
+    isFocusable = !value
+    isFocusableInTouchMode = !value
+    this.inputType = inputType
+}

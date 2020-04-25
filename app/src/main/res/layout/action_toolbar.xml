@@ -30,15 +30,15 @@
 
     </androidx.cardview.widget.CardView>
 
-    <TextView
-        android:id="@+id/text"
+    <FrameLayout
+        android:id="@+id/block_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:padding="@dimen/dp_16"
-        style="@style/BlockTextContentStyle"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         android:background="@drawable/rounded_text_action_bg"
         app:layout_constraintBottom_toTopOf="@+id/card"
         app:layout_constraintEnd_toEndOf="parent"

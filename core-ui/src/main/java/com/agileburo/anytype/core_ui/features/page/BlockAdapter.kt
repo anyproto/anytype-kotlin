@@ -76,7 +76,7 @@ class BlockAdapter(
     private val onMediaBlockMenuClick: (String) -> Unit,
     private val onBookmarkMenuClicked: (String) -> Unit,
     private val onMarkupActionClicked: (Markup.Type) -> Unit,
-    private val onLongClickListener: (BlockView) -> Unit
+    private val onLongClickListener: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -466,21 +466,24 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.HeaderOne,
                     onTextChanged = onTextChanged,
-                    onFocusChanged = onFocusChanged
+                    onFocusChanged = onFocusChanged,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.HeaderTwo -> {
                 holder.bind(
                     item = blocks[position] as BlockView.HeaderTwo,
                     onTextChanged = onTextChanged,
-                    onFocusChanged = onFocusChanged
+                    onFocusChanged = onFocusChanged,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.HeaderThree -> {
                 holder.bind(
                     item = blocks[position] as BlockView.HeaderThree,
                     onTextChanged = onTextChanged,
-                    onFocusChanged = onFocusChanged
+                    onFocusChanged = onFocusChanged,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Code -> {
@@ -494,7 +497,8 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onCheckboxClicked = onCheckboxClicked,
                     onSelectionChanged = onSelectionChanged,
-                    onFocusChanged = onFocusChanged
+                    onFocusChanged = onFocusChanged,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Task -> {
@@ -507,7 +511,8 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Bulleted,
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
-                    onFocusChanged = onFocusChanged
+                    onFocusChanged = onFocusChanged,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Numbered -> {
@@ -515,7 +520,8 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Numbered,
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
-                    onFocusChanged = onFocusChanged
+                    onFocusChanged = onFocusChanged,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Toggle -> {
@@ -525,7 +531,8 @@ class BlockAdapter(
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
                     onTogglePlaceholderClicked = onTogglePlaceholderClicked,
-                    onToggleClicked = onToggleClicked
+                    onToggleClicked = onToggleClicked,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Contact -> {

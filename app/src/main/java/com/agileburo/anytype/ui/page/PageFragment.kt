@@ -41,6 +41,7 @@ import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.base.NavigationFragment
 import com.agileburo.anytype.ui.page.modals.*
+import com.agileburo.anytype.ui.page.modals.actions.BlockActionToolbarFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
@@ -430,7 +431,7 @@ open class PageFragment :
                     hideKeyboard()
                     childFragmentManager.beginTransaction()
                         .setCustomAnimations(R.anim.action_bar_enter, R.anim.action_bar_exit)
-                        .add(R.id.root, BlockActionToolbar.newInstance(command.block), null)
+                        .add(R.id.root, BlockActionToolbarFactory.newInstance(command.block), null)
                         .addToBackStack(null)
                         .commit()
                 }

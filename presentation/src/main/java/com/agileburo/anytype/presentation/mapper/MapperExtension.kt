@@ -133,7 +133,7 @@ suspend fun HomeDashboard.toView(
         when (val content = model.content) {
             is Block.Content.Link -> {
                 if (content.type == Block.Content.Link.Type.PAGE) {
-                    if (content.fields.isArchived != true) {
+                    if (details.details[content.target]?.isArchived != true) {
                         DashboardView.Document(
                             id = content.target,
                             title = details.details[content.target]?.name,

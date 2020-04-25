@@ -25,16 +25,14 @@ class HomeDashboardViewMapperTest {
     @Test
     fun `should not map archived links`() {
 
+        val target = MockDataFactory.randomUuid()
+
         val archived = Block(
             id = MockDataFactory.randomUuid(),
             content = Block.Content.Link(
                 type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields(
-                    mapOf(
-                        Block.Fields.IS_ARCHIVED_KEY to true
-                    )
-                ),
-                target = MockDataFactory.randomUuid()
+                fields = Block.Fields.empty(),
+                target = target
             ),
             children = emptyList(),
             fields = Block.Fields.empty()
@@ -44,11 +42,7 @@ class HomeDashboardViewMapperTest {
             id = MockDataFactory.randomUuid(),
             content = Block.Content.Link(
                 type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields(
-                    mapOf(
-                        Block.Fields.IS_ARCHIVED_KEY to false
-                    )
-                ),
+                fields = Block.Fields.empty(),
                 target = MockDataFactory.randomUuid()
             ),
             children = emptyList(),
@@ -60,7 +54,16 @@ class HomeDashboardViewMapperTest {
             blocks = listOf(archived, active),
             children = listOf(archived.id, active.id),
             fields = Block.Fields.empty(),
-            type = Block.Content.Dashboard.Type.MAIN_SCREEN
+            type = Block.Content.Dashboard.Type.MAIN_SCREEN,
+            details = Block.Details(
+                details = mapOf(
+                    target to Block.Fields(
+                        mapOf(
+                            Block.Fields.IS_ARCHIVED_KEY to true
+                        )
+                    )
+                )
+            )
         )
 
         val result = runBlocking {

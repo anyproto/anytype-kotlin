@@ -13,6 +13,7 @@
 
 ### Fixes & tech 🚒
 
+* Should hide archived documents from home dashboard screen (#387)
 * Fix carriage positioning for `split` / `merge` operations (#353)
 * Main layout optimization (switched to `FragmentContainerView`) (#385)
 * Refactored custom context menu for text blocks (#393)

@@ -4,8 +4,12 @@ import android.text.Editable
 import android.view.View
 import android.widget.TextView
 import com.agileburo.anytype.core_ui.common.*
+import com.agileburo.anytype.core_ui.extensions.preserveSelection
+import com.agileburo.anytype.core_ui.menu.TextBlockContextMenu
+import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+import com.agileburo.anytype.core_utils.ext.hideKeyboard
 import com.agileburo.anytype.core_utils.text.BackspaceKeyDetector
 import com.agileburo.anytype.core_utils.text.DefaultEnterKeyDetector
 import timber.log.Timber
@@ -25,6 +29,31 @@ interface TextHolder {
      * Common behavior is applied to this widget.
      */
     val content: TextInputWidget
+
+    fun setup(onMarkupActionClicked: (Markup.Type) -> Unit) {
+        with(content) {
+            setSpannableFactory(DefaultSpannableFactory())
+            customSelectionActionModeCallback = TextBlockContextMenu(
+                onTextColorClicked = { mode ->
+                    preserveSelection {
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.TEXT_COLOR)
+                        mode.finish()
+                    }
+                    false
+                },
+                onBackgroundColorClicked = { mode ->
+                    preserveSelection {
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR)
+                        mode.finish()
+                    }
+                    false
+                },
+                onMenuItemClicked = { onMarkupActionClicked(it) }
+            )
+        }
+    }
 
     fun enableEnterKeyDetector(
         onEndLineEnterClicked: (Editable) -> Unit,

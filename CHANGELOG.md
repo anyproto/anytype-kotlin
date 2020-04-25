@@ -8,11 +8,13 @@
 * Block-styling toolbar in block styling mode (applying text color, background to the whole block) (#379)
 * Enabled style page features in block-styling toolbar (#379)
 * Fixed collapsing toolbar animation on home-dashboard screen (#384)
+* New turn-into toolbar (#386)
 
 ### Fixes & tech 🚒
 
 * Fix carriage positioning for `split` / `merge` operations (#353)
 * Main layout optimization (switched to `FragmentContainerView`) (#385)
+* Refactored custom context menu for text blocks (#393)
 
 ## Version 0.0.28
 

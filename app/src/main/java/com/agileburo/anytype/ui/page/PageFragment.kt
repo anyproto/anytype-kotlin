@@ -20,6 +20,7 @@ import com.agileburo.anytype.core_ui.extensions.invisible
 import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.menu.DocumentPopUpMenu
@@ -63,6 +64,7 @@ open class PageFragment :
     NavigationFragment(R.layout.fragment_page),
     OnFragmentInteractionListener,
     AddBlockFragment.AddBlockActionReceiver,
+    TurnIntoActionReceiver,
     PickiTCallbacks {
 
     private val vm by lazy {
@@ -368,6 +370,10 @@ open class PageFragment :
         }
     }
 
+    override fun onTurnIntoBlockClicked(block: UiBlock) {
+        vm.onTurnIntoBlockClicked(block)
+    }
+
     override fun onAddMarkupLinkClicked(blockId: String, link: String, range: IntRange) {
         vm.onAddLinkPressed(blockId, link, range)
     }
@@ -411,6 +417,9 @@ open class PageFragment :
                 }
                 is PageViewModel.Command.OpenAddBlockPanel -> {
                     AddBlockFragment.newInstance().show(childFragmentManager, null)
+                }
+                is PageViewModel.Command.OpenTurnIntoPanel -> {
+                    TurnIntoFragment.newInstance().show(childFragmentManager, null)
                 }
                 is PageViewModel.Command.OpenBookmarkSetter -> {
                     CreateBookmarkFragment.newInstance(

@@ -125,6 +125,7 @@
     <string name="detail_url">URL</string>
     <string name="detail_phone">Phone</string>
     <string name="add_new">Add new</string>
+    <string name="turn_into">Turn into</string>
     <string name="modal_reorder">Reorder</string>
     <string name="modal_done">Done</string>
     <string name="modal_prop_name">Property name</string>

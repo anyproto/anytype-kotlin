@@ -5,8 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.agileburo.anytype.core_ui.features.page.pattern.Matcher
 import com.agileburo.anytype.core_ui.features.page.pattern.Pattern
+import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.core_utils.common.EventWrapper
@@ -80,6 +82,7 @@ class PageViewModel(
     SupportCommand<PageViewModel.Command>,
     BlockViewRenderer by renderer,
     ToggleStateHolder by renderer,
+    TurnIntoActionReceiver,
     StateReducer<List<Block>, Event> by documentExternalEventReducer {
 
     private val detailsChannel = ConflatedBroadcastChannel(Block.Details(emptyMap()))
@@ -912,7 +915,7 @@ class PageViewModel(
     fun onActionBarItemClicked(id: String, action: ActionItemType) {
         when (action) {
             ActionItemType.TurnInto -> {
-                stateData.value = ViewState.Error("Turn Into not implemented")
+                dispatch(Command.OpenTurnIntoPanel)
             }
             ActionItemType.Delete -> {
                 proceedWithUnlinking(target = id)
@@ -1153,6 +1156,49 @@ class PageViewModel(
 
     fun onAddBlockToolbarClicked() {
         dispatch(Command.OpenAddBlockPanel)
+    }
+
+    override fun onTurnIntoBlockClicked(block: UiBlock) {
+        when (block) {
+            UiBlock.TEXT -> proceedWithUpdatingTextStyle(
+                style = Content.Text.Style.P,
+                target = focusChannel.value
+            )
+            UiBlock.HEADER_ONE -> proceedWithUpdatingTextStyle(
+                style = Content.Text.Style.H1,
+                target = focusChannel.value
+            )
+            UiBlock.HEADER_TWO -> proceedWithUpdatingTextStyle(
+                style = Content.Text.Style.H2,
+                target = focusChannel.value
+            )
+            UiBlock.HEADER_THREE -> proceedWithUpdatingTextStyle(
+                style = Content.Text.Style.H3,
+                target = focusChannel.value
+            )
+            UiBlock.HIGHLIGHTED -> proceedWithUpdatingTextStyle(
+                style = Content.Text.Style.QUOTE,
+                target = focusChannel.value
+            )
+            UiBlock.CHECKBOX -> proceedWithUpdatingTextStyle(
+                style = Content.Text.Style.CHECKBOX,
+                target = focusChannel.value
+            )
+            UiBlock.BULLETED -> proceedWithUpdatingTextStyle(
+                style = Content.Text.Style.BULLET,
+                target = focusChannel.value
+            )
+            UiBlock.NUMBERED -> proceedWithUpdatingTextStyle(
+                style = Content.Text.Style.NUMBERED,
+                target = focusChannel.value
+            )
+            UiBlock.TOGGLE -> proceedWithUpdatingTextStyle(
+                style = Content.Text.Style.TOGGLE,
+                target = focusChannel.value
+            )
+            else -> Timber.d("Ignoring conversion.")
+        }
+        dispatch(Command.PopBackStack)
     }
 
     fun onTurnIntoStyleClicked(style: Content.Text.Style) {
@@ -1432,6 +1478,7 @@ class PageViewModel(
         ) : Command()
 
         object OpenAddBlockPanel : Command()
+        object OpenTurnIntoPanel : Command()
 
         data class RequestDownloadPermission(
             val id: String

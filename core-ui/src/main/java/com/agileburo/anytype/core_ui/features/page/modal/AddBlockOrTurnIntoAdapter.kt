@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.item_add_block_or_turn_into_item.view.*
 import kotlinx.android.synthetic.main.item_add_block_or_turn_into_section.view.*
 
 class AddBlockOrTurnIntoAdapter(
-    private val views: List<AddBlockView> = default(),
+    private val views: List<AddBlockOrTurnIntoView>,
     private val onUiBlockClicked: (UiBlock) -> Unit
 ) : RecyclerView.Adapter<AddBlockOrTurnIntoAdapter.ViewHolder>() {
 
@@ -33,7 +33,14 @@ class AddBlockOrTurnIntoAdapter(
                     false
                 )
             )
-            VIEW_HOLDER_HEADER -> ViewHolder.Header(
+            VIEW_HOLDER_ADD_BLOCK_HEADER -> ViewHolder.AddBlockHeader(
+                view = inflater.inflate(
+                    R.layout.item_add_block_or_turn_into_header,
+                    parent,
+                    false
+                )
+            )
+            VIEW_HOLDER_TURN_INTO_HEADER -> ViewHolder.TurnIntoHeader(
                 view = inflater.inflate(
                     R.layout.item_add_block_or_turn_into_header,
                     parent,
@@ -50,10 +57,10 @@ class AddBlockOrTurnIntoAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.Section -> holder.bind(
-                section = views[position] as AddBlockView.Section
+                section = views[position] as AddBlockOrTurnIntoView.Section
             )
             is ViewHolder.Item -> holder.bind(
-                item = views[position] as AddBlockView.Item,
+                item = views[position] as AddBlockOrTurnIntoView.Item,
                 onUiBlockClicked = onUiBlockClicked
             )
         }
@@ -61,13 +68,23 @@ class AddBlockOrTurnIntoAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        class Header(view: View) : ViewHolder(view)
+        class AddBlockHeader(view: View) : ViewHolder(view) {
+            init {
+                itemView.title.setText(R.string.add_new)
+            }
+        }
+
+        class TurnIntoHeader(view: View) : ViewHolder(view) {
+            init {
+                itemView.title.setText(R.string.turn_into)
+            }
+        }
 
         class Section(view: View) : ViewHolder(view) {
 
             private val title = itemView.section
 
-            fun bind(section: AddBlockView.Section) {
+            fun bind(section: AddBlockOrTurnIntoView.Section) {
                 when (section.category) {
                     UiBlock.Category.TEXT -> title.setText(R.string.toolbar_section_text)
                     UiBlock.Category.LIST -> title.setText(R.string.toolbar_section_list)
@@ -85,7 +102,7 @@ class AddBlockOrTurnIntoAdapter(
             private val subtitle = itemView.subtitle
 
             fun bind(
-                item: AddBlockView.Item,
+                item: AddBlockOrTurnIntoView.Item,
                 onUiBlockClicked: (UiBlock) -> Unit
             ) {
                 when (item.type) {
@@ -186,14 +203,20 @@ class AddBlockOrTurnIntoAdapter(
         }
     }
 
-    sealed class AddBlockView : ViewType {
-        object Header : AddBlockView() {
-            override fun getViewType(): Int = VIEW_HOLDER_HEADER
+    sealed class AddBlockOrTurnIntoView : ViewType {
+        object AddBlockHeader : AddBlockOrTurnIntoView() {
+            override fun getViewType(): Int = VIEW_HOLDER_ADD_BLOCK_HEADER
         }
-        data class Section(val category: UiBlock.Category) : AddBlockView() {
+
+        object TurnIntoHeader : AddBlockOrTurnIntoView() {
+            override fun getViewType(): Int = VIEW_HOLDER_TURN_INTO_HEADER
+        }
+
+        data class Section(val category: UiBlock.Category) : AddBlockOrTurnIntoView() {
             override fun getViewType(): Int = VIEW_HOLDER_SECTION
         }
-        data class Item(val type: UiBlock) : AddBlockView() {
+
+        data class Item(val type: UiBlock) : AddBlockOrTurnIntoView() {
             override fun getViewType(): Int = VIEW_HOLDER_ITEM
         }
     }
@@ -201,33 +224,41 @@ class AddBlockOrTurnIntoAdapter(
     companion object {
         const val VIEW_HOLDER_SECTION = 0
         const val VIEW_HOLDER_ITEM = 1
-        const val VIEW_HOLDER_HEADER = 2
+        const val VIEW_HOLDER_ADD_BLOCK_HEADER = 2
+        const val VIEW_HOLDER_TURN_INTO_HEADER = 3
 
-        fun default(): List<AddBlockView> = listOf(
-            AddBlockView.Header,
-            AddBlockView.Section(category = UiBlock.Category.TEXT),
-            AddBlockView.Item(type = UiBlock.TEXT),
-            AddBlockView.Item(type = UiBlock.HEADER_ONE),
-            AddBlockView.Item(type = UiBlock.HEADER_TWO),
-            AddBlockView.Item(type = UiBlock.HEADER_THREE),
-            AddBlockView.Item(type = UiBlock.HIGHLIGHTED),
-            AddBlockView.Section(category = UiBlock.Category.LIST),
-            AddBlockView.Item(type = UiBlock.CHECKBOX),
-            AddBlockView.Item(type = UiBlock.BULLETED),
-            AddBlockView.Item(type = UiBlock.NUMBERED),
-            AddBlockView.Item(type = UiBlock.TOGGLE),
-            AddBlockView.Section(category = UiBlock.Category.PAGE),
-            AddBlockView.Item(type = UiBlock.PAGE),
-            AddBlockView.Item(type = UiBlock.EXISTING_PAGE),
-            AddBlockView.Section(category = UiBlock.Category.OBJECT),
-            AddBlockView.Item(type = UiBlock.FILE),
-            AddBlockView.Item(type = UiBlock.IMAGE),
-            AddBlockView.Item(type = UiBlock.VIDEO),
-            AddBlockView.Item(type = UiBlock.BOOKMARK),
-            AddBlockView.Item(type = UiBlock.CODE),
-            AddBlockView.Section(category = UiBlock.Category.OTHER),
-            AddBlockView.Item(type = UiBlock.LINE_DIVIDER),
-            AddBlockView.Item(type = UiBlock.THREE_DOTS)
+        fun addBlockAdapterData(): List<AddBlockOrTurnIntoView> = listOf(
+            AddBlockOrTurnIntoView.AddBlockHeader
+        ) + items()
+
+        fun turnIntoAdapterData(): List<AddBlockOrTurnIntoView> = listOf(
+            AddBlockOrTurnIntoView.TurnIntoHeader
+        ) + items()
+
+        fun items(): List<AddBlockOrTurnIntoView> = listOf(
+            AddBlockOrTurnIntoView.Section(category = UiBlock.Category.TEXT),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.TEXT),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.HEADER_ONE),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.HEADER_TWO),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.HEADER_THREE),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.HIGHLIGHTED),
+            AddBlockOrTurnIntoView.Section(category = UiBlock.Category.LIST),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.CHECKBOX),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.BULLETED),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.NUMBERED),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.TOGGLE),
+            AddBlockOrTurnIntoView.Section(category = UiBlock.Category.PAGE),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.PAGE),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.EXISTING_PAGE),
+            AddBlockOrTurnIntoView.Section(category = UiBlock.Category.OBJECT),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.FILE),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.IMAGE),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.VIDEO),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.BOOKMARK),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.CODE),
+            AddBlockOrTurnIntoView.Section(category = UiBlock.Category.OTHER),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.LINE_DIVIDER),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.THREE_DOTS)
         )
     }
 }

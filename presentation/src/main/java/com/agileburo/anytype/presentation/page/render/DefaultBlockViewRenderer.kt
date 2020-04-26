@@ -116,7 +116,7 @@ class DefaultBlockViewRenderer(
                 }
                 is Content.Link -> {
                     counter.reset()
-                    result.add(page(block, content, indent))
+                    result.add(page(block, content, indent, details))
                 }
                 is Content.File -> {
                     counter.reset()
@@ -356,15 +356,21 @@ class DefaultBlockViewRenderer(
         focused = block.id == focus
     )
 
-    private fun page(
+    private suspend fun page(
         block: Block,
         content: Content.Link,
-        indent: Int
+        indent: Int,
+        details: Block.Details
     ): BlockView.Page = BlockView.Page(
         id = block.id,
         isEmpty = true,
-        emoji = null,
-        text = if (content.fields.hasName()) content.fields.name else null,
+        emoji = details.details[content.target]?.icon?.let { name ->
+            if (name.isNotEmpty())
+                emojifier.fromShortName(name).unicode
+            else
+                null
+        },
+        text = details.details[content.target]?.name,
         indent = indent
     )
 }

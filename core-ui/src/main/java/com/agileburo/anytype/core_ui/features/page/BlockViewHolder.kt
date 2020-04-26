@@ -113,7 +113,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             content.setOnLongClickListener(
                 EditorLongClickListener(
                     t = item.id,
-                    click = onLongClickListener)
+                    click = onLongClickListener
+                )
             )
 
             content.clearTextWatchers()
@@ -922,6 +923,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val untitled = itemView.resources.getString(R.string.untitled)
         private val icon = itemView.pageIcon
+        private val emoji = itemView.emoji
         private val title = itemView.pageTitle
         private val guideline = itemView.pageGuideline
 
@@ -930,11 +932,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onPageClicked: (String) -> Unit
         ) {
             indentize(item)
+
             title.text = if (item.text.isNullOrEmpty()) untitled else item.text
-            if (item.isEmpty)
-                icon.setImageResource(R.drawable.ic_block_empty_page)
-            else if (item.emoji == null)
-                icon.setBackgroundResource(R.drawable.ic_block_page_without_emoji)
+
+            when {
+                item.emoji != null -> emoji.text = item.emoji
+                item.isEmpty -> icon.setImageResource(R.drawable.ic_block_empty_page)
+                else -> icon.setImageResource(R.drawable.ic_block_page_without_emoji)
+            }
+
             title.setOnClickListener { onPageClicked(item.id) }
         }
 

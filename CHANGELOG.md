@@ -18,6 +18,7 @@
 * Fix carriage positioning for `split` / `merge` operations (#353)
 * Main layout optimization (switched to `FragmentContainerView`) (#385)
 * Refactored custom context menu for text blocks (#393)
+* Title and emoji for inner document link's title and emoji icon taken from details (#389)
 
 ## Version 0.0.28
 

@@ -3,6 +3,7 @@ package com.agileburo.anytype.ui.page
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -124,6 +125,8 @@ open class PageFragment :
             onToggleClicked = vm::onToggleClicked,
             onMediaBlockMenuClick = vm::onMediaBlockMenuClicked,
             onBookmarkMenuClicked = vm::onBookmarkMenuClicked,
+            onBookmarkClicked = vm::onBookmarkClicked,
+            onFailedBookmarkClicked = vm::onFailedBookmarkClicked,
             onMarkupActionClicked = vm::onMarkupActionClicked,
             onLongClickListener = vm::onBlockLongPressedClicked
         )
@@ -448,6 +451,13 @@ open class PageFragment :
                 }
                 is PageViewModel.Command.CloseKeyboard -> {
                     hideSoftInput()
+                }
+                is PageViewModel.Command.Browse -> {
+                    Intent(Intent.ACTION_VIEW).apply {
+                        data = Uri.parse(command.url)
+                    }.let {
+                        startActivity(it)
+                    }
                 }
             }
         }

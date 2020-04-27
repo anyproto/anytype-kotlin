@@ -4,6 +4,7 @@
 
 ### New features 🚀
 
+* Navigation from bookmark block to device browser (#390)
 * New block-action toolbar enabled for all text blocks (#382)
 
 ### Design & UX 🔳
@@ -15,6 +16,7 @@
 * Fixed collapsing toolbar animation on home-dashboard screen (#384)
 * New `turn-into` toolbar (#386)
 * Skip collapsed state for bottom sheet dialogs (`add-block`, `turn-into`) (#391)
+* Ellipsize and reduce bookmark's description to two lines, bookmark's title to one line (#390)
 
 ### Fixes & tech 🚒
 

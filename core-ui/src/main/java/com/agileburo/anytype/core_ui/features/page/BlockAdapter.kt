@@ -75,6 +75,8 @@ class BlockAdapter(
     private val onToggleClicked: (String) -> Unit,
     private val onMediaBlockMenuClick: (String) -> Unit,
     private val onBookmarkMenuClicked: (String) -> Unit,
+    private val onBookmarkClicked: (BlockView.Bookmark.View) -> Unit,
+    private val onFailedBookmarkClicked: (BlockView.Bookmark.Error) -> Unit,
     private val onMarkupActionClicked: (Markup.Type) -> Unit,
     private val onLongClickListener: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
@@ -598,7 +600,8 @@ class BlockAdapter(
             is BlockViewHolder.Bookmark -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Bookmark.View,
-                    onBookmarkMenuClicked = onBookmarkMenuClicked
+                    onBookmarkMenuClicked = onBookmarkMenuClicked,
+                    onBookmarkClicked = onBookmarkClicked
                 )
             }
             is BlockViewHolder.Bookmark.Placeholder -> {
@@ -610,7 +613,8 @@ class BlockAdapter(
             is BlockViewHolder.Bookmark.Error -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Bookmark.Error,
-                    onErrorBookmarkMenuClicked = onBookmarkMenuClicked
+                    onErrorBookmarkMenuClicked = onBookmarkMenuClicked,
+                    onBookmarkClicked = onFailedBookmarkClicked
                 )
             }
             is BlockViewHolder.Picture -> {

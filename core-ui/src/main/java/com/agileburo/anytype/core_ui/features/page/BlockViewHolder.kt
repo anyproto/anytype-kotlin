@@ -988,7 +988,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.Bookmark.View,
-            onBookmarkMenuClicked: (String) -> Unit
+            onBookmarkMenuClicked: (String) -> Unit,
+            onBookmarkClicked: (BlockView.Bookmark.View) -> Unit
         ) {
             indentize(item)
             title.text = item.title
@@ -1009,6 +1010,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
 
             menu.setOnClickListener { onBookmarkMenuClicked(item.id) }
+            card.setOnClickListener { onBookmarkClicked(item) }
         }
 
         override fun indentize(item: BlockView.Indentable) {
@@ -1046,11 +1048,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             fun bind(
                 item: BlockView.Bookmark.Error,
-                onErrorBookmarkMenuClicked: (String) -> Unit
+                onErrorBookmarkMenuClicked: (String) -> Unit,
+                onBookmarkClicked: (BlockView.Bookmark.Error) -> Unit
             ) {
                 indentize(item)
                 url.text = item.url
                 menu.setOnClickListener { onErrorBookmarkMenuClicked(item.id) }
+                root.setOnClickListener { onBookmarkClicked(item) }
             }
 
             override fun indentize(item: BlockView.Indentable) {

@@ -21,6 +21,7 @@ import com.agileburo.anytype.domain.block.model.Block.Content
 import com.agileburo.anytype.domain.block.model.Block.Prototype
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.common.Url
 import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
@@ -1339,6 +1340,22 @@ class PageViewModel(
         )
     }
 
+    fun onBookmarkClicked(view: BlockView.Bookmark.View) {
+        dispatch(
+            command = Command.Browse(
+                url = view.url
+            )
+        )
+    }
+
+    fun onFailedBookmarkClicked(view: BlockView.Bookmark.Error) {
+        dispatch(
+            command = Command.Browse(
+                url = view.url
+            )
+        )
+    }
+
     fun onBookmarkMenuClicked(target: Id) {
         updateFocus(target)
         //controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBookmarkMenuClicked)
@@ -1494,6 +1511,10 @@ class PageViewModel(
 
         data class OpenActionBar(
             val block: BlockView
+        ) : Command()
+
+        data class Browse(
+            val url: Url
         ) : Command()
     }
 

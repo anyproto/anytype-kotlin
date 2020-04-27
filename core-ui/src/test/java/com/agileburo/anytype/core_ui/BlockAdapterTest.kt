@@ -310,48 +310,6 @@ class BlockAdapterTest {
     }
 
     @Test
-    fun `should request paragraph focus after delay of 60 ms`() {
-
-        // Setup
-
-        val paragraph = BlockView.Paragraph(
-            text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid(),
-            focused = true
-        )
-
-        val views = listOf(paragraph)
-
-        val adapter = buildAdapter(views)
-
-        val recycler = RecyclerView(context).apply {
-            layoutManager = LinearLayoutManager(context)
-        }
-
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
-
-        adapter.onBindViewHolder(holder, 0)
-
-        check(holder is BlockViewHolder.Paragraph)
-
-        // Testing
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.hasFocus()
-        )
-
-        Robolectric.getForegroundThreadScheduler().apply {
-            advanceBy(FOCUS_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
-        }
-
-        assertEquals(
-            expected = true,
-            actual = holder.content.hasFocus()
-        )
-    }
-
-    @Test
     fun `should call back when paragraph view gets focused`() {
 
         // Setup
@@ -1635,7 +1593,9 @@ class BlockAdapterTest {
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
             onBookmarkMenuClicked = onBookmarkMenuClicked,
             onMarkupActionClicked = {},
-            onLongClickListener = {}
+            onLongClickListener = {},
+            onBookmarkClicked = {},
+            onFailedBookmarkClicked = {}
         )
     }
 }

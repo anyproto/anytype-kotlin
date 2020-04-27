@@ -448,15 +448,6 @@ class BlockAdapterTest {
         )
 
         assertEquals(
-            expected = false,
-            actual = holder.content.hasFocus()
-        )
-
-        Robolectric.getForegroundThreadScheduler().apply {
-            advanceBy(FOCUS_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
-        }
-
-        assertEquals(
             expected = true,
             actual = holder.content.hasFocus()
         )

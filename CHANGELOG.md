@@ -1,9 +1,14 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.29 (WIP)
+## Version 0.0.29
+
+### New features 🚀
+
+* New block-action toolbar enabled for all text blocks (#382)
 
 ### Design & UX 🔳
 
+* Text block previews in the new block-action toolbar now have the same style as in the editor (#382)
 * Add-block toolbar should have its title hidden while scrolling (#374)
 * Block-styling toolbar in block styling mode (applying text color, background to the whole block) (#379)
 * Enabled style page features in block-styling toolbar (#379)

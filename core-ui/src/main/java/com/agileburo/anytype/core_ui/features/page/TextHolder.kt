@@ -2,6 +2,7 @@ package com.agileburo.anytype.core_ui.features.page
 
 import android.text.Editable
 import android.view.View
+import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
 import android.widget.TextView
 import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.extensions.preserveSelection
@@ -10,6 +11,7 @@ import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.hideKeyboard
+import com.agileburo.anytype.core_utils.ext.imm
 import com.agileburo.anytype.core_utils.text.BackspaceKeyDetector
 import com.agileburo.anytype.core_utils.text.DefaultEnterKeyDetector
 import timber.log.Timber
@@ -141,10 +143,12 @@ interface TextHolder {
 
     private fun focus() {
         content.apply {
-            postDelayed(
-                { requestFocus() }
-                , BlockViewHolder.FOCUS_TIMEOUT_MILLIS
-            )
+            post {
+                if (requestFocus())
+                    context.imm().showSoftInput(this, SHOW_IMPLICIT)
+                else
+                    Timber.d("Couldn't gain focus")
+            }
         }
     }
 

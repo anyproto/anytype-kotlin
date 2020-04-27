@@ -13,6 +13,7 @@
 
 ### Fixes & tech 🚒
 
+* Should open keyboard and focus the target when a new block is added to the document (#388)
 * Should close keyboard after document archiving (#395)
 * Should hide archived documents from home dashboard screen (#387)
 * Fix carriage positioning for `split` / `merge` operations (#353)

@@ -915,7 +915,7 @@ class PageViewModel(
     fun onActionBarItemClicked(id: String, action: ActionItemType) {
         when (action) {
             ActionItemType.TurnInto -> {
-                dispatch(Command.OpenTurnIntoPanel)
+                dispatch(Command.OpenTurnIntoPanel(target = id))
             }
             ActionItemType.Delete -> {
                 proceedWithUnlinking(target = id)
@@ -1158,45 +1158,45 @@ class PageViewModel(
         dispatch(Command.OpenAddBlockPanel)
     }
 
-    override fun onTurnIntoBlockClicked(block: UiBlock) {
+    override fun onTurnIntoBlockClicked(target: String, block: UiBlock) {
         when (block) {
             UiBlock.TEXT -> proceedWithUpdatingTextStyle(
                 style = Content.Text.Style.P,
-                target = focusChannel.value
+                target = target
             )
             UiBlock.HEADER_ONE -> proceedWithUpdatingTextStyle(
                 style = Content.Text.Style.H1,
-                target = focusChannel.value
+                target = target
             )
             UiBlock.HEADER_TWO -> proceedWithUpdatingTextStyle(
                 style = Content.Text.Style.H2,
-                target = focusChannel.value
+                target = target
             )
             UiBlock.HEADER_THREE -> proceedWithUpdatingTextStyle(
                 style = Content.Text.Style.H3,
-                target = focusChannel.value
+                target = target
             )
             UiBlock.HIGHLIGHTED -> proceedWithUpdatingTextStyle(
                 style = Content.Text.Style.QUOTE,
-                target = focusChannel.value
+                target = target
             )
             UiBlock.CHECKBOX -> proceedWithUpdatingTextStyle(
                 style = Content.Text.Style.CHECKBOX,
-                target = focusChannel.value
+                target = target
             )
             UiBlock.BULLETED -> proceedWithUpdatingTextStyle(
                 style = Content.Text.Style.BULLET,
-                target = focusChannel.value
+                target = target
             )
             UiBlock.NUMBERED -> proceedWithUpdatingTextStyle(
                 style = Content.Text.Style.NUMBERED,
-                target = focusChannel.value
+                target = target
             )
             UiBlock.TOGGLE -> proceedWithUpdatingTextStyle(
                 style = Content.Text.Style.TOGGLE,
-                target = focusChannel.value
+                target = target
             )
-            else -> Timber.d("Ignoring conversion.")
+            else -> Timber.d("Ignoring turn-into request")
         }
         dispatch(Command.PopBackStack)
     }
@@ -1479,7 +1479,10 @@ class PageViewModel(
         ) : Command()
 
         object OpenAddBlockPanel : Command()
-        object OpenTurnIntoPanel : Command()
+
+        data class OpenTurnIntoPanel(
+            val target: Id
+        ) : Command()
 
         data class RequestDownloadPermission(
             val id: String

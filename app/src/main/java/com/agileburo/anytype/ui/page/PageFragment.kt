@@ -370,8 +370,8 @@ open class PageFragment :
         }
     }
 
-    override fun onTurnIntoBlockClicked(block: UiBlock) {
-        vm.onTurnIntoBlockClicked(block)
+    override fun onTurnIntoBlockClicked(target: String, block: UiBlock) {
+        vm.onTurnIntoBlockClicked(target, block)
     }
 
     override fun onAddMarkupLinkClicked(blockId: String, link: String, range: IntRange) {
@@ -419,7 +419,9 @@ open class PageFragment :
                     AddBlockFragment.newInstance().show(childFragmentManager, null)
                 }
                 is PageViewModel.Command.OpenTurnIntoPanel -> {
-                    TurnIntoFragment.newInstance().show(childFragmentManager, null)
+                    TurnIntoFragment.newInstance(
+                        target = command.target
+                    ).show(childFragmentManager, null)
                 }
                 is PageViewModel.Command.OpenBookmarkSetter -> {
                     CreateBookmarkFragment.newInstance(

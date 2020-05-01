@@ -309,6 +309,10 @@ open class PageFragment :
             .onEach { vm.onMultiSelectModeDeleteClicked() }
             .launchIn(lifecycleScope)
 
+        bottomMenu
+            .turnIntoClicks()
+            .onEach { vm.onMultiSelectTurnIntoButtonClicked() }
+
         select
             .clicks()
             .onEach { vm.onMultiSelectModeSelectAllClicked() }

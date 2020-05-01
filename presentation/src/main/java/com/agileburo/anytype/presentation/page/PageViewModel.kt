@@ -1243,6 +1243,10 @@ class PageViewModel(
         }
     }
 
+    fun onMultiSelectTurnIntoButtonClicked() {
+        // TODO
+    }
+
     override fun onTurnIntoBlockClicked(target: String, block: UiBlock) {
         when (block) {
             UiBlock.TEXT -> proceedWithUpdatingTextStyle(

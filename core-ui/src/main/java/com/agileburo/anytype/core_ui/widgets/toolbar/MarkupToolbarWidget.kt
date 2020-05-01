@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.flattenMerge
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
-@Deprecated("Legacy")
 class MarkupToolbarWidget : ConstraintLayout {
 
     constructor(

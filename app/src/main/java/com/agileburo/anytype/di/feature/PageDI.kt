@@ -15,6 +15,7 @@ import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
+import com.agileburo.anytype.presentation.page.selection.SelectionStateHolder
 import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
 import com.agileburo.anytype.ui.page.PageFragment
 import dagger.Module
@@ -69,7 +70,8 @@ class PageModule {
         archiveDocument: ArchiveDocument,
         replaceBlock: ReplaceBlock,
         patternMatcher: DefaultPatternMatcher,
-        updateTitle: UpdateTitle
+        updateTitle: UpdateTitle,
+        selectionStateHolder: SelectionStateHolder
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -99,7 +101,8 @@ class PageModule {
         archiveDocument = archiveDocument,
         replaceBlock = replaceBlock,
         patternMatcher = patternMatcher,
-        updateTitle = updateTitle
+        updateTitle = updateTitle,
+        selectionStateHolder = selectionStateHolder
     )
 
     @Provides
@@ -316,4 +319,8 @@ class PageModule {
     @Provides
     @PerScreen
     fun providePatternMatcher(): DefaultPatternMatcher = DefaultPatternMatcher()
+
+    @Provides
+    @PerScreen
+    fun provideSelectionStateHolder(): SelectionStateHolder = SelectionStateHolder.Default()
 }

@@ -13,7 +13,8 @@ import com.agileburo.anytype.core_ui.features.page.styling.StylingType
 data class ControlPanelState(
     val focus: Focus? = null,
     val mainToolbar: Toolbar.Main,
-    val stylingToolbar: Toolbar.Styling
+    val stylingToolbar: Toolbar.Styling,
+    val multiSelect: Toolbar.MultiSelect
 ) {
 
     fun isNotVisible(): Boolean = !mainToolbar.isVisible
@@ -42,6 +43,10 @@ data class ControlPanelState(
             val mode: StylingMode?,
             val type: StylingType?
         ) : Toolbar()
+
+        data class MultiSelect(
+            override val isVisible: Boolean
+        ) : Toolbar()
     }
 
     /**
@@ -64,6 +69,9 @@ data class ControlPanelState(
          */
         fun init(): ControlPanelState = ControlPanelState(
             mainToolbar = Toolbar.Main(
+                isVisible = false
+            ),
+            multiSelect = Toolbar.MultiSelect(
                 isVisible = false
             ),
             stylingToolbar = Toolbar.Styling(

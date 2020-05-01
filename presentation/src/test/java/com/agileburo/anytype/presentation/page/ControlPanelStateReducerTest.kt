@@ -65,6 +65,9 @@ class ControlPanelStateReducerTest {
                 isVisible = false,
                 mode = null,
                 type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
             )
         )
 
@@ -108,6 +111,9 @@ class ControlPanelStateReducerTest {
                 isVisible = false,
                 mode = null,
                 type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
             )
         )
 
@@ -143,6 +149,9 @@ class ControlPanelStateReducerTest {
                 isVisible = false,
                 mode = null,
                 type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
             )
         )
 

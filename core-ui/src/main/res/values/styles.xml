@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="DefaultDocumentContainerStyle">
+        <item name="android:layout_marginTop">@dimen/default_document_item_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/default_document_title_margin_bottom</item>
+        <item name="android:paddingStart">@dimen/default_document_item_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
+    </style>
+
     <style name="BlockTextContentStyle">
         <item name="android:fontFamily">@font/graphik_regular</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:layout_marginTop">4dp</item>
-        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
         <item name="android:lineSpacingExtra">7sp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -13,39 +22,42 @@
     </style>
 
     <style name="BlockHeaderOneContentStyle">
+        <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
         <item name="android:fontFamily">@font/graphik_semibold</item>
         <item name="android:inputType">textMultiLine|textNoSuggestions</item>
         <item name="android:background">@null</item>
-        <item name="android:layout_marginTop">22dp</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">28sp</item>
-        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingTop">26dp</item>
         <item name="android:paddingBottom">2dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="BlockHeaderTwoContentStyle">
+        <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
         <item name="android:fontFamily">@font/graphik_semibold</item>
         <item name="android:inputType">textMultiLine|textNoSuggestions</item>
         <item name="android:background">@null</item>
-        <item name="android:layout_marginTop">14dp</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">22sp</item>
-        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingTop">19dp</item>
         <item name="android:paddingBottom">3dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="BlockHeaderThreeContentStyle">
+        <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
         <item name="android:fontFamily">@font/graphik_semibold</item>
         <item name="android:inputType">textMultiLine|textNoSuggestions</item>
         <item name="android:background">@null</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:layout_marginTop">14dp</item>
         <item name="android:textColor">@color/black</item>
-        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingTop">19dp</item>
         <item name="android:paddingBottom">2dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -139,7 +151,7 @@
 
     <style name="BlockBookmarkTitleStyle">
         <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginTop">12dp</item>
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/black</item>
@@ -147,7 +159,7 @@
 
     <style name="BlockBookmarkDescriptionStyle">
         <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginTop">6dp</item>
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">#6C6A5F</item>
@@ -216,7 +228,7 @@
         <item name="android:lineSpacingExtra">7sp</item>
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:layout_marginBottom">2dp</item>
-        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginStart">15dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -295,6 +307,14 @@
         <item name="android:background">@drawable/bg_toolbar_style_block_right_selector</item>
         <item name="android:layout_width">80dp</item>
         <item name="android:layout_height">48dp</item>
+    </style>
+
+    <style name="BottomMultiSelectToolbarOptionStyle">
+        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
 </resources>

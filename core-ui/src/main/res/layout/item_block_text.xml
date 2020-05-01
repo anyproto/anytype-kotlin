@@ -3,16 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/default_page_item_padding_start"
-    android:paddingEnd="@dimen/default_page_item_padding_end">
+    style="@style/DefaultDocumentContainerStyle">
 
     <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
-        android:focusable="true"
-        android:textIsSelectable="true"
-        android:background="@null"
-        android:inputType="textMultiLine|textNoSuggestions"
+        tools:background="@drawable/item_block_multi_select_selected"
         android:id="@+id/textContent"
         style="@style/BlockTextContentStyle"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        android:focusable="true"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:textIsSelectable="true"
         tools:text="@string/default_text_placeholder" />
 
 </FrameLayout>

@@ -14,6 +14,7 @@ import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
+import com.agileburo.anytype.presentation.page.selection.SelectionStateHolder
 
 open class PageViewModelFactory(
     private val openPage: OpenPage,
@@ -44,7 +45,8 @@ open class PageViewModelFactory(
     private val renderer: DefaultBlockViewRenderer,
     private val counter: Counter,
     private val patternMatcher: Matcher<Pattern>,
-    private val updateTitle: UpdateTitle
+    private val updateTitle: UpdateTitle,
+    private val selectionStateHolder: SelectionStateHolder
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -78,7 +80,8 @@ open class PageViewModelFactory(
             createDocument = createDocument,
             replaceBlock = replaceBlock,
             patternMatcher = patternMatcher,
-            updateTitle = updateTitle
+            updateTitle = updateTitle,
+            selectionStateHolder = selectionStateHolder
         ) as T
     }
 }

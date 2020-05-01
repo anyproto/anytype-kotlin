@@ -1,98 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bookmarkRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="6dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginBottom="6dp"
-    app:cardCornerRadius="8dp">
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="1dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="1dp"
+    android:background="@drawable/item_block_multi_select_mode_selector"
+    tools:background="@drawable/item_block_multi_select_selected">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/bookmarkRoot"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="12dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_marginBottom="6dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="1dp">
 
-        <TextView
-            android:id="@+id/bookmarkTitle"
-            style="@style/BlockBookmarkTitleStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bookmarkImage"
-            tools:text="Bookmark title" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/bookmarkDescription"
-            style="@style/BlockBookmarkDescriptionStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bookmarkTitle"
-            tools:text="@string/default_text_placeholder" />
+            <TextView
+                android:id="@+id/bookmarkTitle"
+                style="@style/BlockBookmarkTitleStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bookmarkImage"
+                tools:text="Bookmark title" />
 
-        <TextView
-            android:id="@+id/bookmarkUrl"
-            style="@style/BlockBookmarkUrlStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/bookmarkLogo"
-            app:layout_constraintTop_toBottomOf="@+id/bookmarkDescription"
-            tools:text="@string/default_url_placeholder" />
+            <TextView
+                android:id="@+id/bookmarkDescription"
+                style="@style/BlockBookmarkDescriptionStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bookmarkTitle"
+                tools:text="@string/default_text_placeholder" />
 
-        <ImageView
-            android:id="@+id/bookmarkImage"
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            android:contentDescription="@string/content_description_bookmark_image"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_default="percent"
-            tools:background="@color/black" />
+            <TextView
+                android:id="@+id/bookmarkUrl"
+                style="@style/BlockBookmarkUrlStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/bookmarkLogo"
+                app:layout_constraintTop_toBottomOf="@+id/bookmarkDescription"
+                tools:text="@string/default_url_placeholder" />
 
-        <ImageView
-            android:id="@+id/bookmarkLogo"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="16dp"
-            android:contentDescription="@string/content_description_bookmark_logo"
-            app:layout_constraintBottom_toBottomOf="@id/bookmarkUrl"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/bookmarkUrl"
-            tools:background="@color/orange" />
+            <ImageView
+                android:id="@+id/bookmarkImage"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                android:contentDescription="@string/content_description_bookmark_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_default="percent"
+                tools:background="@color/black" />
 
-        <TextView
-            android:id="@+id/loadBookmarkPictureError"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:text="@string/error_while_loading_picture"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/bookmarkImage"
-            app:layout_constraintEnd_toEndOf="@+id/bookmarkImage"
-            app:layout_constraintStart_toStartOf="@+id/bookmarkImage"
-            app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:id="@+id/bookmarkLogo"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="16dp"
+                android:contentDescription="@string/content_description_bookmark_logo"
+                app:layout_constraintBottom_toBottomOf="@id/bookmarkUrl"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/bookmarkUrl"
+                tools:background="@color/orange" />
 
-        <ImageView
-            android:id="@+id/bookmarkMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_bookmark_menu"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/loadBookmarkPictureError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text="@string/error_while_loading_picture"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/bookmarkImage"
+                app:layout_constraintEnd_toEndOf="@+id/bookmarkImage"
+                app:layout_constraintStart_toStartOf="@+id/bookmarkImage"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+            <ImageView
+                android:id="@+id/bookmarkMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_bookmark_menu"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

@@ -23,6 +23,7 @@ import com.agileburo.anytype.presentation.MockBlockFactory
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.page.PageViewModel.ViewState
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
+import com.agileburo.anytype.presentation.page.selection.SelectionStateHolder
 import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
@@ -3513,7 +3514,8 @@ class PageViewModelTest {
             createDocument = createDocument,
             replaceBlock = replaceBlock,
             patternMatcher = DefaultPatternMatcher(),
-            updateTitle = updateTitle
+            updateTitle = updateTitle,
+            selectionStateHolder = SelectionStateHolder.Default()
         )
     }
 }

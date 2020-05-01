@@ -73,6 +73,16 @@ class BlockViewDiffUtil(
                 changes.add(TOGGLE_EMPTY_STATE_CHANGED)
         }
 
+        if (newBlock is BlockView.Selectable && oldBlock is BlockView.Selectable) {
+            if (newBlock.isSelected != oldBlock.isSelected)
+                changes.add(SELECTION_CHANGED)
+        }
+
+        if (newBlock is BlockView.Permission && oldBlock is BlockView.Permission) {
+            if (newBlock.mode != oldBlock.mode)
+                changes.add(READ_WRITE_MODE_CHANGED)
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -90,6 +100,8 @@ class BlockViewDiffUtil(
         fun textColorChanged() = changes.contains(TEXT_COLOR_CHANGED)
         fun focusChanged() = changes.contains(FOCUS_CHANGED)
         fun backgroundColorChanged() = changes.contains(BACKGROUND_COLOR_CHANGED)
+        fun readWriteModeChanged() = changes.contains(READ_WRITE_MODE_CHANGED)
+        fun selectionChanged() = changes.contains(SELECTION_CHANGED)
     }
 
     companion object {
@@ -101,5 +113,7 @@ class BlockViewDiffUtil(
         const val BACKGROUND_COLOR_CHANGED = 6
         const val INDENT_CHANGED = 7
         const val TOGGLE_EMPTY_STATE_CHANGED = 8
+        const val READ_WRITE_MODE_CHANGED = 9
+        const val SELECTION_CHANGED = 10
     }
 }

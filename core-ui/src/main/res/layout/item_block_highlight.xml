@@ -1,30 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingTop="6dp"
-    android:paddingStart="@dimen/default_page_item_padding_start"
-    android:paddingEnd="@dimen/default_page_item_padding_end"
-    android:paddingBottom="6dp">
+    style="@style/DefaultDocumentContainerStyle">
 
-    <View
-        android:id="@+id/highlightIndent"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/highlightBlockContentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/default_document_content_padding_start"
+        android:paddingTop="6dp"
+        android:paddingEnd="@dimen/default_document_content_padding_end"
+        android:paddingBottom="6dp"
+        tools:background="@drawable/item_block_multi_select_selected"
+        tools:ignore="UselessParent">
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="2dp"
-        android:layout_height="match_parent"
-        android:layout_marginStart="10dp"
-        android:background="@color/block_higlight_divider" />
+        <View
+            android:id="@+id/highlightIndent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
 
-    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
-        android:hint="@string/hint_quote"
-        android:id="@+id/highlightContent"
-        style="@style/BlockHighlightContentStyle"
-        tools:text="@string/default_text_placeholder" />
+        <View
+            android:id="@+id/divider"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:background="@color/block_higlight_divider" />
 
-</LinearLayout>
+        <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+            android:id="@+id/highlightContent"
+            style="@style/BlockHighlightContentStyle"
+            android:hint="@string/hint_quote"
+            tools:text="@string/default_text_placeholder" />
+
+    </LinearLayout>
+
+</FrameLayout>

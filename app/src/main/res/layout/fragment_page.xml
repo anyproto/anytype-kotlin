@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -24,52 +23,28 @@
         app:behavior_skipCollapsed="true"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
-        <ImageView
-            android:id="@+id/backButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp"
-            android:contentDescription="@string/content_description_back_button_icon"
-            android:src="@drawable/ic_back"
+        <FrameLayout
+            android:id="@+id/select"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:translationY="-48dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.emoji.widget.EmojiTextView
-            android:id="@+id/emoji"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:textColor="@color/emoji_color"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/backButton"
-            app:layout_constraintStart_toEndOf="@+id/backButton"
-            app:layout_constraintTop_toTopOf="@+id/backButton"
-            tools:text="🌗" />
+            <TextView
+                style="@style/EditorMultiSelectSelectAllButtonTextStyle"
+                android:text="@string/select_all" />
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:textColor="#6C6A5F"
-            android:textSize="15sp"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/emoji"
-            app:layout_constraintStart_toEndOf="@+id/emoji"
-            app:layout_constraintTop_toTopOf="@+id/emoji"
-            tools:text="Title" />
+        </FrameLayout>
 
-        <ImageView
-            android:id="@+id/menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="16dp"
-            android:contentDescription="@string/content_description_menu_icon"
-            android:src="@drawable/ic_more"
+        <com.agileburo.anytype.core_ui.widgets.toolbar.DocumentTopToolbar
+            android:id="@+id/topToolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -99,6 +74,16 @@
             android:layout_height="@dimen/default_toolbar_height"
             android:background="@color/white"
             android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.agileburo.anytype.core_ui.widgets.toolbar.MultiSelectBottomToolbarWidget
+            android:id="@+id/bottomMenu"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            android:background="@color/white"
+            android:translationY="@dimen/default_toolbar_height"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

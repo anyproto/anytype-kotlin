@@ -444,4 +444,232 @@ class BlockViewDiffUtilTest {
             actual = payload
         )
     }
+
+    @Test
+    fun `should detect read-write mode changes in paragraph`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val text = MockDataFactory.randomString()
+
+        val oldBlock = BlockView.Paragraph(
+            id = id,
+            text = text,
+            mode = BlockView.Mode.EDIT
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.READ_WRITE_MODE_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect read-write mode changes in title`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val text = MockDataFactory.randomString()
+
+        val oldBlock = BlockView.Title(
+            id = id,
+            text = text,
+            mode = BlockView.Mode.EDIT,
+            focused = false
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.READ_WRITE_MODE_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect selection changes in paragraph`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val text = MockDataFactory.randomString()
+
+        val oldBlock = BlockView.Paragraph(
+            id = id,
+            text = text,
+            isSelected = true
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            isSelected = false
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.SELECTION_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect selection changes in file view`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.File.View(
+            id = id,
+            hash = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt(),
+            mime = MockDataFactory.randomString(),
+            size = MockDataFactory.randomLong(),
+            name = MockDataFactory.randomString(),
+            url = MockDataFactory.randomString(),
+            isSelected = false
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            isSelected = true
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.SELECTION_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect selection changes in page view`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Page(
+            id = id,
+            indent = MockDataFactory.randomInt(),
+            emoji = null,
+            isSelected = false
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            isSelected = true
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.SELECTION_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect selection changes in bookmark view`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Bookmark.View(
+            id = id,
+            description = MockDataFactory.randomString(),
+            faviconUrl = MockDataFactory.randomString(),
+            imageUrl = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt(),
+            title = MockDataFactory.randomString(),
+            url = MockDataFactory.randomString(),
+            isSelected = false
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            isSelected = true
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.SELECTION_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
 }

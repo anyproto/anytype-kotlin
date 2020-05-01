@@ -81,6 +81,20 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     /**
+     * Views implementing this interface can be selected in multi-select mode.
+     */
+    interface Selectable {
+        val isSelected: Boolean
+    }
+
+    /**
+     * Views implementing this interface support read/write mode switch.
+     */
+    interface Permission {
+        val mode: Mode
+    }
+
+    /**
      * UI-model for a basic paragraph block.
      * @property id block's id
      * @property text block's content text
@@ -96,8 +110,10 @@ sealed class BlockView : ViewType, Parcelable {
         override var focused: Boolean = false,
         override val color: String? = null,
         override val backgroundColor: String? = null,
-        override val indent: Int = 0
-    ) : BlockView(), Markup, Focusable, Text, Indentable {
+        override val indent: Int = 0,
+        override val mode: Mode = Mode.EDIT,
+        override val isSelected: Boolean = false
+    ) : BlockView(), Markup, Focusable, Text, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_PARAGRAPH
         override val body: String = text
     }
@@ -113,8 +129,9 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String,
         override val focused: Boolean,
         val text: String?,
-        val emoji: String? = null
-    ) : BlockView(), Focusable {
+        val emoji: String? = null,
+        override val mode: Mode = Mode.EDIT
+    ) : BlockView(), Focusable, Permission {
         override fun getViewType() = HOLDER_TITLE
     }
 
@@ -130,8 +147,10 @@ sealed class BlockView : ViewType, Parcelable {
         override val text: String,
         override val color: String? = null,
         override val backgroundColor: String? = null,
-        override val indent: Int
-    ) : BlockView(), Text, Indentable {
+        override val indent: Int = 0,
+        override val mode: Mode = Mode.EDIT,
+        override val isSelected: Boolean = false
+    ) : BlockView(), Text, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_HEADER_ONE
     }
 
@@ -147,8 +166,10 @@ sealed class BlockView : ViewType, Parcelable {
         override val color: String? = null,
         override val text: String,
         override val backgroundColor: String? = null,
-        override val indent: Int
-    ) : BlockView(), Text, Indentable {
+        override val indent: Int,
+        override val mode: Mode = Mode.EDIT,
+        override val isSelected: Boolean = false
+    ) : BlockView(), Text, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_HEADER_TWO
     }
 
@@ -164,8 +185,10 @@ sealed class BlockView : ViewType, Parcelable {
         override val color: String? = null,
         override val text: String,
         override val backgroundColor: String? = null,
-        override val indent: Int
-    ) : BlockView(), Text, Indentable {
+        override val indent: Int,
+        override val mode: Mode = Mode.EDIT,
+        override val isSelected: Boolean = false
+    ) : BlockView(), Text, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_HEADER_THREE
     }
 
@@ -178,8 +201,10 @@ sealed class BlockView : ViewType, Parcelable {
     data class Highlight(
         override val id: String,
         val text: String,
-        override val indent: Int
-    ) : BlockView(), Indentable {
+        override val indent: Int = 0,
+        override val mode: Mode = Mode.EDIT,
+        override val isSelected: Boolean = false
+    ) : BlockView(), Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_HIGHLIGHT
     }
 
@@ -211,8 +236,10 @@ sealed class BlockView : ViewType, Parcelable {
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val isChecked: Boolean = false,
-        override val indent: Int
-    ) : BlockView(), Markup, Focusable, Text, Checkable, Indentable {
+        override val indent: Int,
+        override val mode: Mode = Mode.EDIT,
+        override val isSelected: Boolean = false
+    ) : BlockView(), Markup, Focusable, Text, Checkable, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_CHECKBOX
         override val body: String = text
     }
@@ -247,8 +274,10 @@ sealed class BlockView : ViewType, Parcelable {
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val text: String,
-        override val indent: Int
-    ) : BlockView(), Markup, Focusable, Text, Indentable {
+        override val indent: Int,
+        override val mode: Mode = Mode.EDIT,
+        override val isSelected: Boolean = false
+    ) : BlockView(), Markup, Focusable, Text, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_BULLET
         override val body: String = text
     }
@@ -269,8 +298,10 @@ sealed class BlockView : ViewType, Parcelable {
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val indent: Int,
+        override val mode: Mode = Mode.EDIT,
+        override val isSelected: Boolean = false,
         val number: Int
-    ) : BlockView(), Markup, Focusable, Text, Indentable {
+    ) : BlockView(), Markup, Focusable, Text, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_NUMBERED
         override val body: String = text
     }
@@ -288,12 +319,14 @@ sealed class BlockView : ViewType, Parcelable {
         override val text: String,
         override val marks: List<Markup.Mark>,
         override var focused: Boolean,
-        override val color: String?,
-        override val backgroundColor: String?,
-        override val indent: Int,
+        override val color: String? = null,
+        override val backgroundColor: String? = null,
+        override val indent: Int = 0,
+        override val mode: Mode = Mode.EDIT,
+        override val isSelected: Boolean = false,
         val toggled: Boolean = false,
         val isEmpty: Boolean = false
-    ) : BlockView(), Markup, Focusable, Text, Indentable {
+    ) : BlockView(), Markup, Focusable, Text, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_TOGGLE
         override val body: String = text
     }
@@ -329,12 +362,13 @@ sealed class BlockView : ViewType, Parcelable {
         data class View(
             override val id: String,
             override val indent: Int,
+            override val isSelected: Boolean = false,
             val size: Long?,
             val name: String?,
             val mime: String?,
             val hash: String?,
             val url: String
-        ) : BlockView.File(id) {
+        ) : BlockView.File(id), Selectable {
             override fun getViewType() = HOLDER_FILE
         }
 
@@ -448,11 +482,12 @@ sealed class BlockView : ViewType, Parcelable {
     data class Page(
         override val id: String,
         override val indent: Int,
+        override val isSelected: Boolean = false,
         val text: String? = null,
         val emoji: String?,
         val isEmpty: Boolean = false,
         val isArchived: Boolean = false
-    ) : BlockView(), Indentable {
+    ) : BlockView(), Indentable, Selectable {
         override fun getViewType() = HOLDER_PAGE
     }
 
@@ -498,12 +533,13 @@ sealed class BlockView : ViewType, Parcelable {
         data class View(
             override val id: String,
             override val indent: Int,
+            override val isSelected: Boolean = false,
             val url: String,
             val title: String?,
             val description: String?,
             val faviconUrl: String?,
             val imageUrl: String?
-        ) : Bookmark(id = id) {
+        ) : Bookmark(id = id), Selectable {
             override fun getViewType() = HOLDER_BOOKMARK
         }
 
@@ -586,8 +622,11 @@ sealed class BlockView : ViewType, Parcelable {
     object Footer : BlockView() {
         @IgnoredOnParcel
         override val id: String = FOOTER_ID
+
         override fun getViewType() = HOLDER_FOOTER
     }
+
+    enum class Mode { READ, EDIT }
 
     companion object {
         const val FOOTER_ID = "FOOTER"

@@ -1,6 +1,7 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.text.Editable
+import android.text.InputType.*
 import android.view.View
 import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
 import android.widget.TextView
@@ -120,7 +121,7 @@ interface TextHolder {
     }
 
     fun setFocus(item: Focusable) {
-        if (item.focused && !content.hasFocus())
+        if (item.focused)
             focus()
         else
             content.clearFocus()
@@ -142,9 +143,10 @@ interface TextHolder {
     }
 
     private fun focus() {
+        Timber.d("Requesting focus")
         content.apply {
             post {
-                if (requestFocus())
+                if (!hasFocus() && requestFocus())
                     context.imm().showSoftInput(this, SHOW_IMPLICIT)
                 else
                     Timber.d("Couldn't gain focus")
@@ -186,9 +188,35 @@ interface TextHolder {
             }
         }
 
-        if (item is Focusable) {
-            if (payload.focusChanged())
-                setFocus(item)
+        if (item is BlockView.Permission && payload.readWriteModeChanged()) {
+            if (item.mode == BlockView.Mode.EDIT)
+                enableEditMode()
+            else
+                enableReadOnlyMode()
         }
+
+        if (item is BlockView.Selectable && payload.selectionChanged()) {
+            select(item)
+        }
+
+        if (item is Focusable && payload.focusChanged()) {
+            setFocus(item)
+        }
+    }
+
+    fun select(item: BlockView.Selectable) {
+        content.isSelected = item.isSelected
+    }
+
+    fun enableReadOnlyMode() {
+        content.selectionDetector = null
+        content.setTextIsSelectable(false)
+        content.clearTextWatchers()
+        content.setRawInputType(TYPE_NULL)
+    }
+
+    fun enableEditMode() {
+        content.setRawInputType(TYPE_TEXT_FLAG_NO_SUGGESTIONS or TYPE_TEXT_FLAG_MULTI_LINE)
+        content.setTextIsSelectable(true)
     }
 }

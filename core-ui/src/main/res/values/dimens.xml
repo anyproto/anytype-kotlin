@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="default_page_item_padding_start">16dp</dimen>
-    <dimen name="default_page_item_padding_end">16dp</dimen>
+    <dimen name="default_document_item_padding_start">8dp</dimen>
+    <dimen name="default_document_item_padding_end">8dp</dimen>
 
     <dimen name="default_toast_top_gravity_offset">16dp</dimen>
     <dimen name="default_container_height">24dp</dimen>
@@ -78,6 +78,8 @@
     <dimen name="dp_6">6dp</dimen>
     <dimen name="dp_8">8dp</dimen>
     <dimen name="dp_16">16dp</dimen>
+    <dimen name="dp_12">12dp</dimen>
+    <dimen name="dp_48">48dp</dimen>
     <dimen name="dp_203">203dp</dimen>
 
     <dimen name="roundedTextBorderRadius">4dp</dimen>
@@ -91,5 +93,9 @@
 
     <dimen name="default_block_type_width">24dp</dimen>
     <dimen name="block_style_toolbar_circle_size">48dp</dimen>
+    <dimen name="default_document_content_padding_start">12dp</dimen>
+    <dimen name="default_document_content_padding_end">12dp</dimen>
+    <dimen name="default_document_item_margin_top">1dp</dimen>
+    <dimen name="default_document_title_margin_bottom">1dp</dimen>
 
 </resources>

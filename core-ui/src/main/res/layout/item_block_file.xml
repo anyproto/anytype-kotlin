@@ -4,9 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingStart="@dimen/default_page_item_padding_start"
-    android:paddingEnd="@dimen/default_page_item_padding_end">
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="1dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="1dp"
+    android:background="@drawable/item_block_multi_select_mode_selector"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    tools:background="@drawable/item_block_multi_select_selected">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/fileGuideline"

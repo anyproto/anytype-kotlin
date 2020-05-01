@@ -2,8 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:paddingStart="@dimen/default_page_item_padding_start"
-    android:paddingEnd="@dimen/default_page_item_padding_end"
+    android:paddingStart="@dimen/default_document_item_padding_start"
+    android:paddingEnd="@dimen/default_document_item_padding_end"
     android:layout_height="wrap_content">
 
     <TextView

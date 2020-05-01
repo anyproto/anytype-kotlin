@@ -39,9 +39,11 @@ import com.agileburo.anytype.presentation.page.ControlPanelMachine.Interactor
 import com.agileburo.anytype.presentation.page.model.TextUpdate
 import com.agileburo.anytype.presentation.page.render.BlockViewRenderer
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
+import com.agileburo.anytype.presentation.page.selection.SelectionStateHolder
 import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -77,14 +79,18 @@ class PageViewModel(
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
     private val counter: Counter,
-    private val patternMatcher: Matcher<Pattern>
+    private val patternMatcher: Matcher<Pattern>,
+    private val selectionStateHolder: SelectionStateHolder
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<PageViewModel.Command>,
     BlockViewRenderer by renderer,
     ToggleStateHolder by renderer,
+    SelectionStateHolder by selectionStateHolder,
     TurnIntoActionReceiver,
     StateReducer<List<Block>, Event> by documentExternalEventReducer {
+
+    private var mode = EditorMode.EDITING
 
     private val detailsChannel = ConflatedBroadcastChannel(Block.Details(emptyMap()))
     private val detailsChanges = detailsChannel.asFlow()
@@ -347,6 +353,7 @@ class PageViewModel(
                 .withLatestFrom(focusChanges, detailsChanges) { models, focus, details ->
                     Timber.d("New rendering: $models, $focus, $details")
                     models.asMap().render(
+                        mode = mode,
                         indent = INITIAL_INDENT,
                         anchor = context,
                         focus = focus,
@@ -359,7 +366,11 @@ class PageViewModel(
     }
 
     private fun dispatchToUI(views: List<BlockView>) {
-        stateData.postValue(ViewState.Success(views))
+        stateData.postValue(
+            ViewState.Success(
+                blocks = views
+            )
+        )
     }
 
     private fun startHandlingTextChanges() {
@@ -1159,6 +1170,79 @@ class PageViewModel(
         dispatch(Command.OpenAddBlockPanel)
     }
 
+    fun onEnterMultiSelectModeClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnEnterMultiSelectModeClicked)
+        mode = EditorMode.MULTI_SELECT
+        viewModelScope.launch {
+            delay(150)
+            refresh()
+        }
+    }
+
+    fun onExitMultiSelectModeClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnExitMultiSelectModeClicked)
+        mode = EditorMode.EDITING
+        clearSelections()
+        viewModelScope.launch {
+            delay(300)
+            focusChannel.send(EMPTY_FOCUS_ID)
+            refresh()
+        }
+    }
+
+    fun onMultiSelectModeDeleteClicked() {
+        unlinkBlocks.invoke(
+            scope = viewModelScope,
+            params = UnlinkBlocks.Params(
+                context = context,
+                targets = currentSelection().toList()
+            )
+        ) { result ->
+            result.either(
+                fnL = { Timber.e(it, "Error while unlinking blocks: ${currentSelection()}") },
+                fnR = { clearSelections() }
+            )
+        }
+    }
+
+    fun onMultiSelectModeSelectAllClicked() {
+        (stateData.value as ViewState.Success).let { state ->
+            val update = state.blocks.map { block ->
+                when (block) {
+                    is BlockView.Paragraph -> block.copy(isSelected = true).also {
+                        select(block.id)
+                    }
+                    is BlockView.HeaderOne -> block.copy(isSelected = true).also {
+                        select(block.id)
+                    }
+                    is BlockView.HeaderTwo -> block.copy(isSelected = true).also {
+                        select(block.id)
+                    }
+                    is BlockView.HeaderThree -> block.copy(isSelected = true).also {
+                        select(block.id)
+                    }
+                    is BlockView.Highlight -> block.copy(isSelected = true).also {
+                        select(block.id)
+                    }
+                    is BlockView.Checkbox -> block.copy(isSelected = true).also {
+                        select(block.id)
+                    }
+                    is BlockView.Bulleted -> block.copy(isSelected = true).also {
+                        select(block.id)
+                    }
+                    is BlockView.Numbered -> block.copy(isSelected = true).also {
+                        select(block.id)
+                    }
+                    is BlockView.Toggle -> block.copy(isSelected = true).also {
+                        select(block.id)
+                    }
+                    else -> block
+                }
+            }
+            stateData.postValue(ViewState.Success(update))
+        }
+    }
+
     override fun onTurnIntoBlockClicked(target: String, block: UiBlock) {
         when (block) {
             UiBlock.TEXT -> proceedWithUpdatingTextStyle(
@@ -1259,6 +1343,10 @@ class PageViewModel(
     }
 
     fun onHideKeyboardClicked() {
+        proceedWithClearingFocus()
+    }
+
+    private fun proceedWithClearingFocus() {
         viewModelScope.launch {
             focusChannel.send(EMPTY_FOCUS_ID)
             refresh()
@@ -1272,9 +1360,22 @@ class PageViewModel(
     }
 
     fun onPageClicked(id: String) {
-        proceedWithOpeningPage(
-            target = blocks.first { it.id == id }.content<Content.Link>().target
-        )
+        if (mode == EditorMode.MULTI_SELECT) {
+            toggleSelection(id)
+            (stateData.value as ViewState.Success).let { state ->
+                val update = state.blocks.map { block ->
+                    if (block.id == id && block is BlockView.Page)
+                        block.copy(isSelected = isSelected(id))
+                    else
+                        block
+                }
+                stateData.postValue(ViewState.Success(update))
+            }
+        } else {
+            proceedWithOpeningPage(
+                target = blocks.first { it.id == id }.content<Content.Link>().target
+            )
+        }
     }
 
     fun onAddNewPageClicked() {
@@ -1341,11 +1442,24 @@ class PageViewModel(
     }
 
     fun onBookmarkClicked(view: BlockView.Bookmark.View) {
-        dispatch(
-            command = Command.Browse(
-                url = view.url
+        if (mode == EditorMode.MULTI_SELECT) {
+            toggleSelection(view.id)
+            (stateData.value as ViewState.Success).let { state ->
+                val update = state.blocks.map { block ->
+                    if (block.id == view.id && block is BlockView.Bookmark.View)
+                        block.copy(isSelected = isSelected(view.id))
+                    else
+                        block
+                }
+                stateData.postValue(ViewState.Success(update))
+            }
+        } else {
+            dispatch(
+                command = Command.Browse(
+                    url = view.url
+                )
             )
-        )
+        }
     }
 
     fun onFailedBookmarkClicked(view: BlockView.Bookmark.Error) {
@@ -1361,8 +1475,36 @@ class PageViewModel(
         //controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBookmarkMenuClicked)
     }
 
-    fun onTextInputClicked() {
+    fun onTitleTextInputClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
+    }
+
+    fun onTextInputClicked(target: Id) {
+        if (mode == EditorMode.MULTI_SELECT) {
+            toggleSelection(target)
+            (stateData.value as ViewState.Success).let { state ->
+                val update = state.blocks.map { block ->
+                    if (block.id == target)
+                        when (block) {
+                            is BlockView.Paragraph -> block.copy(isSelected = isSelected(target))
+                            is BlockView.HeaderOne -> block.copy(isSelected = isSelected(target))
+                            is BlockView.HeaderTwo -> block.copy(isSelected = isSelected(target))
+                            is BlockView.HeaderThree -> block.copy(isSelected = isSelected(target))
+                            is BlockView.Highlight -> block.copy(isSelected = isSelected(target))
+                            is BlockView.Checkbox -> block.copy(isSelected = isSelected(target))
+                            is BlockView.Bulleted -> block.copy(isSelected = isSelected(target))
+                            is BlockView.Numbered -> block.copy(isSelected = isSelected(target))
+                            is BlockView.Toggle -> block.copy(isSelected = isSelected(target))
+                            else -> block
+                        }
+                    else
+                        block
+                }
+                stateData.postValue(ViewState.Success(update))
+            }
+        } else {
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
+        }
     }
 
     fun onPlusButtonPressed() {
@@ -1433,8 +1575,21 @@ class PageViewModel(
         dispatch(Command.OpenPagePicker(context))
     }
 
-    fun onDownloadFileClicked(id: String) {
-        dispatch(Command.RequestDownloadPermission(id))
+    fun onFileClicked(id: String) {
+        if (mode == EditorMode.MULTI_SELECT) {
+            toggleSelection(id)
+            (stateData.value as ViewState.Success).let { state ->
+                val update = state.blocks.map { block ->
+                    if (block.id == id && block is BlockView.File.View)
+                        block.copy(isSelected = isSelected(id))
+                    else
+                        block
+                }
+                stateData.postValue(ViewState.Success(update))
+            }
+        } else {
+            dispatch(Command.RequestDownloadPermission(id))
+        }
     }
 
     fun startDownloadingFile(id: String) {
@@ -1472,7 +1627,10 @@ class PageViewModel(
 
     sealed class ViewState {
         object Loading : ViewState()
-        data class Success(val blocks: List<BlockView>) : ViewState()
+        data class Success(
+            val blocks: List<BlockView>
+        ) : ViewState()
+
         data class Error(val message: String) : ViewState()
         data class OpenLinkScreen(
             val pageId: String,

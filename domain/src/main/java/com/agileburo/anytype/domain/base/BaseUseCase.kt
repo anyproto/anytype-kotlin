@@ -1,9 +1,6 @@
 package com.agileburo.anytype.domain.base
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 abstract class BaseUseCase<out Type, in Params>(
@@ -19,6 +16,10 @@ abstract class BaseUseCase<out Type, in Params>(
     ) {
         val job = scope.async(context) { run(params) }
         scope.launch { onResult(job.await()) }
+    }
+
+    open suspend operator fun invoke(params: Params): Either<Throwable, Type> {
+        return withContext(context) { run(params) }
     }
 
     object None

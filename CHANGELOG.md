@@ -1,5 +1,23 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.30 (WIP)
+
+### New features 🚀
+
+* Multi-select mode: user can enter/exit this mode, select and delete blocks (#404).
+
+### Design & UX 🔳
+
+* Multi-select toolbar (top and bottom) ($404)
+* Basic animations on entering/exiting multi-select mode (#404)
+* Added background state selector for editor blocks (#404)
+* Padding and margin fixes for editor blocks ($404)
+
+### Fixes & tech 🚒
+
+* Read/edit mode switcher for editor (#404)
+* Refactored top navigation bar in document (switched to custom widget implementation) (#406)
+
 ## Version 0.0.29
 
 ### New features 🚀

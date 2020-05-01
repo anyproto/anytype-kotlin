@@ -1,31 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingStart="@dimen/default_page_item_padding_start"
-    android:paddingEnd="@dimen/default_page_item_padding_end">
+    android:layout_marginTop="1dp"
+    android:layout_marginBottom="1dp"
+    android:paddingStart="@dimen/default_document_item_padding_start"
+    android:paddingEnd="@dimen/default_document_item_padding_end">
 
-    <View
-        android:id="@+id/bulletIndent"
-        android:layout_width="0dp"
-        android:layout_height="0dp" />
-
-    <ImageView
-        android:id="@+id/bullet"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:paddingStart="@dimen/default_document_content_padding_start"
+        android:id="@+id/bulletBlockContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:layout_marginBottom="3dp"
-        android:src="@drawable/ic_bulleted" />
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        android:orientation="horizontal"
+        android:paddingEnd="@dimen/default_document_content_padding_end"
+        tools:background="@drawable/item_block_multi_select_selected"
+        tools:ignore="UselessParent">
 
-    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
-        android:id="@+id/bulletedListContent"
-        style="@style/BlockBulletContentStyle"
-        android:layout_marginStart="4dp"
-        android:gravity="center_vertical"
-        android:hint="@string/hint_bullet"
-        tools:text="@string/default_text_placeholder" />
+        <View
+            android:id="@+id/bulletIndent"
+            android:layout_width="0dp"
+            android:layout_height="0dp" />
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/bullet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:src="@drawable/ic_bulleted" />
+
+        <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+            android:id="@+id/bulletedListContent"
+            style="@style/BlockBulletContentStyle"
+            android:layout_marginStart="4dp"
+            android:gravity="center_vertical"
+            android:hint="@string/hint_bullet"
+            tools:text="@string/default_text_placeholder" />
+
+    </LinearLayout>
+
+</FrameLayout>

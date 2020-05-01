@@ -107,6 +107,9 @@ sealed class ControlPanelMachine {
         object OnBlockActionToolbarTextColorClicked : Event()
         object OnBlockActionToolbarBackgroundColorClicked : Event()
         object OnBlockActionToolbarStyleClicked : Event()
+
+        object OnEnterMultiSelectModeClicked : Event()
+        object OnExitMultiSelectModeClicked : Event()
     }
 
     /**
@@ -126,12 +129,13 @@ sealed class ControlPanelMachine {
             is Event.OnSelectionChanged -> {
                 if (state.focus == null)
                     state.copy()
-                else
+                else {
                     state.copy(
                         mainToolbar = state.mainToolbar.copy(
-                            isVisible = (event.selection.first == event.selection.last)
+                            isVisible = (!state.multiSelect.isVisible && event.selection.first == event.selection.last)
                         )
                     )
+                }
             }
             is Event.OnMarkupTextColorSelected -> state.copy(
                 stylingToolbar = state.stylingToolbar.copy(
@@ -204,9 +208,27 @@ sealed class ControlPanelMachine {
                     type = StylingType.STYLE
                 )
             )
+            is Event.OnEnterMultiSelectModeClicked -> state.copy(
+                mainToolbar = state.mainToolbar.copy(
+                    isVisible = false
+                ),
+                multiSelect = state.multiSelect.copy(
+                    isVisible = true
+                )
+            )
+            is Event.OnExitMultiSelectModeClicked -> state.copy(
+                focus = null,
+                multiSelect = state.multiSelect.copy(
+                    isVisible = false
+                ),
+                mainToolbar = state.mainToolbar.copy(
+                    isVisible = false
+                )
+            )
             is Event.OnFocusChanged -> {
-                if (state.isNotVisible())
-                    state.copy(
+                when {
+                    state.multiSelect.isVisible -> state.copy()
+                    !state.mainToolbar.isVisible -> state.copy(
                         mainToolbar = state.mainToolbar.copy(
                             isVisible = true
                         ),
@@ -220,18 +242,19 @@ sealed class ControlPanelMachine {
                             )
                         )
                     )
-                else {
-                    state.copy(
-                        focus = ControlPanelState.Focus(
-                            id = event.id,
-                            type = ControlPanelState.Focus.Type.valueOf(
-                                value = event.style.name
+                    else -> {
+                        state.copy(
+                            focus = ControlPanelState.Focus(
+                                id = event.id,
+                                type = ControlPanelState.Focus.Type.valueOf(
+                                    value = event.style.name
+                                )
+                            ),
+                            stylingToolbar = state.stylingToolbar.copy(
+                                isVisible = false
                             )
-                        ),
-                        stylingToolbar = state.stylingToolbar.copy(
-                            isVisible = false
                         )
-                    )
+                    }
                 }
             }
         }

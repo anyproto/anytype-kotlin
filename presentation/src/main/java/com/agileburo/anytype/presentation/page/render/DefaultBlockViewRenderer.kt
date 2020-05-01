@@ -7,6 +7,7 @@ import com.agileburo.anytype.domain.block.model.Block.Content
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.misc.UrlBuilder
+import com.agileburo.anytype.domain.page.EditorMode
 import com.agileburo.anytype.presentation.mapper.marks
 import com.agileburo.anytype.presentation.mapper.toFileView
 import com.agileburo.anytype.presentation.mapper.toPictureView
@@ -20,6 +21,7 @@ class DefaultBlockViewRenderer(
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
     override suspend fun Map<Id, List<Block>>.render(
+        mode: EditorMode,
         root: Block,
         focus: Id,
         anchor: Id,
@@ -32,7 +34,14 @@ class DefaultBlockViewRenderer(
 
         val result = mutableListOf<BlockView>()
 
-        buildTitle(anchor, root, result, details, focus)
+        buildTitle(
+            mode = mode,
+            anchor = anchor,
+            root = root,
+            result = result,
+            details = details,
+            focus = focus
+        )
 
         counter.reset()
 
@@ -42,20 +51,30 @@ class DefaultBlockViewRenderer(
                     when (content.style) {
                         Content.Text.Style.TITLE -> {
                             counter.reset()
-                            result.add(title(block, content, root, focus))
+                            result.add(title(mode, block, content, root, focus))
                         }
                         Content.Text.Style.P -> {
                             counter.reset()
-                            result.add(paragraph(block, content, focus, indent))
+                            result.add(paragraph(mode, block, content, focus, indent))
                         }
                         Content.Text.Style.NUMBERED -> {
                             counter.inc()
-                            result.add(numbered(block, content, counter.current(), focus, indent))
+                            result.add(
+                                numbered(
+                                    mode,
+                                    block,
+                                    content,
+                                    counter.current(),
+                                    focus,
+                                    indent
+                                )
+                            )
                         }
                         Content.Text.Style.TOGGLE -> {
                             counter.reset()
                             result.add(
                                 toggle(
+                                    mode = mode,
                                     block = block,
                                     content = content,
                                     indent = indent,
@@ -66,6 +85,7 @@ class DefaultBlockViewRenderer(
                             if (toggleStateHolder.isToggled(block.id)) {
                                 result.addAll(
                                     render(
+                                        mode = mode,
                                         focus = focus,
                                         indent = indent.inc(),
                                         anchor = block.id,
@@ -78,19 +98,19 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.H1 -> {
                             counter.reset()
-                            result.add(headerOne(block, content, indent))
+                            result.add(headerOne(mode, block, content, indent))
                         }
                         Content.Text.Style.H2 -> {
                             counter.reset()
-                            result.add(headerTwo(block, content, indent))
+                            result.add(headerTwo(mode, block, content, indent))
                         }
                         Content.Text.Style.H3, Content.Text.Style.H4 -> {
                             counter.reset()
-                            result.add(headerThree(block, content, indent))
+                            result.add(headerThree(mode, block, content, indent))
                         }
                         Content.Text.Style.QUOTE -> {
                             counter.reset()
-                            result.add(highlight(block, content, indent))
+                            result.add(highlight(mode, block, content, indent))
                         }
                         Content.Text.Style.CODE_SNIPPET -> {
                             counter.reset()
@@ -98,11 +118,11 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.BULLET -> {
                             counter.reset()
-                            result.add(bulleted(block, content, focus, indent))
+                            result.add(bulleted(mode, block, content, focus, indent))
                         }
                         Content.Text.Style.CHECKBOX -> {
                             counter.reset()
-                            result.add(checkbox(block, content, focus, indent))
+                            result.add(checkbox(mode, block, content, focus, indent))
                         }
                     }
                 }
@@ -129,6 +149,7 @@ class DefaultBlockViewRenderer(
     }
 
     private suspend fun buildTitle(
+        mode: EditorMode,
         anchor: Id,
         root: Block,
         result: MutableList<BlockView>,
@@ -138,6 +159,7 @@ class DefaultBlockViewRenderer(
         if (anchor == root.id) {
             result.add(
                 BlockView.Title(
+                    mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
                     id = anchor,
                     focused = anchor == focus,
                     text = details.details[root.id]?.name,
@@ -153,11 +175,13 @@ class DefaultBlockViewRenderer(
     }
 
     private fun paragraph(
+        mode: EditorMode,
         block: Block,
         content: Content.Text,
         focus: Id,
         indent: Int
     ): BlockView.Paragraph = BlockView.Paragraph(
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         marks = content.marks(),
@@ -168,10 +192,12 @@ class DefaultBlockViewRenderer(
     )
 
     private fun headerThree(
+        mode: EditorMode,
         block: Block,
         content: Content.Text,
         indent: Int
     ): BlockView.HeaderThree = BlockView.HeaderThree(
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         color = content.color,
@@ -180,10 +206,12 @@ class DefaultBlockViewRenderer(
     )
 
     private fun headerTwo(
+        mode: EditorMode,
         block: Block,
         content: Content.Text,
         indent: Int
     ): BlockView.HeaderTwo = BlockView.HeaderTwo(
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         color = content.color,
@@ -192,10 +220,12 @@ class DefaultBlockViewRenderer(
     )
 
     private fun headerOne(
+        mode: EditorMode,
         block: Block,
         content: Content.Text,
         indent: Int
     ): BlockView.HeaderOne = BlockView.HeaderOne(
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         color = content.color,
@@ -204,11 +234,13 @@ class DefaultBlockViewRenderer(
     )
 
     private fun checkbox(
+        mode: EditorMode,
         block: Block,
         content: Content.Text,
         focus: Id,
         indent: Int
     ): BlockView.Checkbox = BlockView.Checkbox(
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         marks = content.marks(),
@@ -220,11 +252,13 @@ class DefaultBlockViewRenderer(
     )
 
     private fun bulleted(
+        mode: EditorMode,
         block: Block,
         content: Content.Text,
         focus: Id,
         indent: Int
     ): BlockView.Bulleted = BlockView.Bulleted(
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         indent = indent,
@@ -243,22 +277,26 @@ class DefaultBlockViewRenderer(
     )
 
     private fun highlight(
+        mode: EditorMode,
         block: Block,
         content: Content.Text,
         indent: Int
     ): BlockView.Highlight = BlockView.Highlight(
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         indent = indent
     )
 
     private fun toggle(
+        mode: EditorMode,
         block: Block,
         content: Content.Text,
         indent: Int,
         focus: Id,
         isEmpty: Boolean
     ): BlockView.Toggle = BlockView.Toggle(
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         marks = content.marks(),
@@ -271,12 +309,14 @@ class DefaultBlockViewRenderer(
     )
 
     private fun numbered(
+        mode: EditorMode,
         block: Block,
         content: Content.Text,
         number: Int,
         focus: Id,
         indent: Int
     ): BlockView.Numbered = BlockView.Numbered(
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         number = number,
@@ -340,11 +380,13 @@ class DefaultBlockViewRenderer(
     }
 
     private suspend fun title(
+        mode: EditorMode,
         block: Block,
         content: Content.Text,
         root: Block,
         focus: Id
     ): BlockView.Title = BlockView.Title(
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         emoji = root.fields.icon?.let { name ->

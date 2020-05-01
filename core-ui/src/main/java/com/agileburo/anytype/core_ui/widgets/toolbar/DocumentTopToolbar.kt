@@ -3,12 +3,18 @@ package com.agileburo.anytype.core_ui.widgets.toolbar
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.reactive.clicks
-import kotlinx.android.synthetic.main.widget_block_toolbar_new.view.*
+import kotlinx.android.synthetic.main.widget_document_top_toolbar.view.*
 
-class BlockToolbarWidget : ConstraintLayout {
+class DocumentTopToolbar : ConstraintLayout {
+
+    val back: View get() = toolbarBackButton
+    val menu: View get() = toolbarMenu
+    val title: TextView get() = toolbarTitle
+    val icon: TextView get() = toolbarIcon
 
     constructor(
         context: Context
@@ -27,11 +33,7 @@ class BlockToolbarWidget : ConstraintLayout {
         inflate()
     }
 
-    fun unfocusClicks() = unfocus.clicks()
-    fun enterMultiSelectModeClicks() = structure.clicks()
-    fun addBlockClicks() = add.clicks()
-
     private fun inflate() {
-        LayoutInflater.from(context).inflate(R.layout.widget_block_toolbar_new, this)
+        LayoutInflater.from(context).inflate(R.layout.widget_document_top_toolbar, this)
     }
 }

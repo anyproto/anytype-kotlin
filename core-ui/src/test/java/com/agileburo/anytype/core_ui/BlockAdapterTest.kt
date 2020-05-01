@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.text.Editable
+import android.text.InputType
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.marginLeft
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +16,8 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.BACKGROUND_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.READ_WRITE_MODE_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.SELECTION_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
@@ -43,8 +46,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.concurrent.TimeUnit
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -738,7 +740,10 @@ class BlockAdapterTest {
 
         val actual = holder.content.paddingLeft
 
-        val expected = paragraph.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.default_document_content_padding_start) + paragraph.indent * holder.dimen(
+                R.dimen.indent
+            )
 
         assertEquals(expected, actual)
     }
@@ -768,7 +773,10 @@ class BlockAdapterTest {
 
         val actual = holder.content.paddingLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.default_document_content_padding_start) + view.indent * holder.dimen(
+                R.dimen.indent
+            )
 
         assertEquals(expected, actual)
     }
@@ -798,7 +806,10 @@ class BlockAdapterTest {
 
         val actual = holder.content.paddingLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.default_document_content_padding_start) + view.indent * holder.dimen(
+                R.dimen.indent
+            )
 
         assertEquals(expected, actual)
     }
@@ -828,7 +839,10 @@ class BlockAdapterTest {
 
         val actual = holder.content.paddingLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.default_document_content_padding_start) + view.indent * holder.dimen(
+                R.dimen.indent
+            )
 
         assertEquals(expected, actual)
     }
@@ -1169,7 +1183,7 @@ class BlockAdapterTest {
 
         val actual = (holder.itemView.bookmarkRoot).marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent) + holder.dimen(R.dimen.dp_16)
+        val expected = view.indent * holder.dimen(R.dimen.indent) + holder.dimen(R.dimen.dp_12)
 
         assertEquals(expected, actual)
     }
@@ -1485,10 +1499,6 @@ class BlockAdapterTest {
             focused = true
         )
 
-        val updated = title.copy(
-            focused = false
-        )
-
         val views = listOf(title)
 
         val adapter = buildAdapter(
@@ -1557,6 +1567,1678 @@ class BlockAdapterTest {
         assertTrue { triggered }
     }
 
+    @Test
+    fun `paragraph holder should be in read mode`() {
+
+        // Setup
+
+        val paragraph = BlockView.Paragraph(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ
+        )
+
+        val views = listOf(paragraph)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Paragraph)
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `paragraph holder should have its content selected or not based on state`() {
+
+        // Setup
+
+        val firstParagraph = BlockView.Paragraph(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            isSelected = true
+        )
+
+        val secondParagraph = BlockView.Paragraph(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            isSelected = false
+        )
+
+        val views = listOf(firstParagraph, secondParagraph)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val firstHolder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val secondHolder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+
+        // Testing
+
+        adapter.onBindViewHolder(firstHolder, 0)
+        adapter.onBindViewHolder(secondHolder, 1)
+
+        check(firstHolder is BlockViewHolder.Paragraph)
+        check(secondHolder is BlockViewHolder.Paragraph)
+
+        assertTrue { firstHolder.content.isSelected }
+        assertFalse { secondHolder.content.isSelected }
+    }
+
+    @Test
+    fun `paragraph holder should be in edit mode`() {
+
+        // Setup
+
+        val paragraph = BlockView.Paragraph(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT
+        )
+
+        val views = listOf(paragraph)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Paragraph)
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNotNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `paragraph holder should enter read mode after being in edit mode`() {
+
+        // Setup
+
+        val paragraph = BlockView.Paragraph(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT
+        )
+
+        val updated = paragraph.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val views = listOf(paragraph)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Paragraph)
+
+        // Testing
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNotNull(holder.content.selectionDetector)
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(READ_WRITE_MODE_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `title holder should be in read mode`() {
+
+        // Setup
+
+        val title = BlockView.Title(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            focused = false
+        )
+
+        val views = listOf(title)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Title)
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `title holder should be in edit mode`() {
+
+        // Setup
+
+        val title = BlockView.Title(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            focused = false
+        )
+
+        val views = listOf(title)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Title)
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+    }
+
+    @Test
+    fun `title holder should enter read mode after being in edit mode`() {
+
+        // Setup
+
+        val title = BlockView.Title(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            focused = false
+        )
+
+        val updated = title.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val views = listOf(title)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Title)
+
+        // Testing
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(READ_WRITE_MODE_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+    }
+
+    @Test
+    fun `header holders should be in read mode`() {
+
+        // Setup
+
+        val h1 = BlockView.HeaderOne(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            indent = 0
+        )
+
+        val h2 = BlockView.HeaderTwo(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            indent = 0
+        )
+
+        val h3 = BlockView.HeaderThree(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            indent = 0
+        )
+
+        val views: List<BlockView> = listOf(h1, h2, h3)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val h1Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+        val h2Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+        val h3Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+
+        // Testing
+
+        adapter.onBindViewHolder(h1Holder, 0)
+        adapter.onBindViewHolder(h2Holder, 1)
+        adapter.onBindViewHolder(h3Holder, 2)
+
+        check(h1Holder is BlockViewHolder.HeaderOne)
+        check(h2Holder is BlockViewHolder.HeaderTwo)
+        check(h3Holder is BlockViewHolder.HeaderThree)
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = h1Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = h1Holder.content.isTextSelectable
+        )
+
+        assertNull(h1Holder.content.selectionDetector)
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = h2Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = h2Holder.content.isTextSelectable
+        )
+
+        assertNull(h2Holder.content.selectionDetector)
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = h3Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = h3Holder.content.isTextSelectable
+        )
+
+        assertNull(h3Holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `headerHolders holder should have its content selected or not based on state`() {
+
+        // Setup
+
+        val h1Selected = BlockView.HeaderOne(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            isSelected = true,
+            indent = 0
+        )
+
+        val h1Notselected = BlockView.HeaderOne(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            isSelected = false,
+            indent = 0
+        )
+
+        val h2Selected = BlockView.HeaderTwo(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            isSelected = true,
+            indent = 0
+        )
+
+        val h2Notselected = BlockView.HeaderTwo(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            isSelected = false,
+            indent = 0
+        )
+
+        val h3Selected = BlockView.HeaderThree(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            isSelected = true,
+            indent = 0
+        )
+
+        val h3Notselected = BlockView.HeaderThree(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            isSelected = false,
+            indent = 0
+        )
+
+        val views: List<BlockView> = listOf(
+            h1Selected,
+            h1Notselected,
+            h2Selected,
+            h2Notselected,
+            h3Selected,
+            h3Notselected
+        )
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val h1SelectedHolder =
+            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+        val h1NotSelectedHolder =
+            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+        val h2SelectedHolder =
+            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+        val h2NotSelectedHolder =
+            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+        val h3SelectedHolder =
+            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+        val h3NotSelectedHolder =
+            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+
+        // Testing
+
+        adapter.onBindViewHolder(h1SelectedHolder, 0)
+        adapter.onBindViewHolder(h1NotSelectedHolder, 1)
+        adapter.onBindViewHolder(h2SelectedHolder, 2)
+        adapter.onBindViewHolder(h2NotSelectedHolder, 3)
+        adapter.onBindViewHolder(h3SelectedHolder, 4)
+        adapter.onBindViewHolder(h3NotSelectedHolder, 5)
+
+        check(h1SelectedHolder is BlockViewHolder.HeaderOne)
+        check(h1NotSelectedHolder is BlockViewHolder.HeaderOne)
+        check(h2SelectedHolder is BlockViewHolder.HeaderTwo)
+        check(h2NotSelectedHolder is BlockViewHolder.HeaderTwo)
+        check(h3SelectedHolder is BlockViewHolder.HeaderThree)
+        check(h3NotSelectedHolder is BlockViewHolder.HeaderThree)
+
+        assertTrue { h1SelectedHolder.content.isSelected }
+        assertFalse { h1NotSelectedHolder.content.isSelected }
+        assertTrue { h2SelectedHolder.content.isSelected }
+        assertFalse { h2NotSelectedHolder.content.isSelected }
+        assertTrue { h3SelectedHolder.content.isSelected }
+        assertFalse { h3NotSelectedHolder.content.isSelected }
+    }
+
+    @Test
+    fun `header holders should be in edit mode`() {
+
+        // Setup
+
+        val h1 = BlockView.HeaderOne(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = 0
+        )
+
+        val h2 = BlockView.HeaderTwo(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = 0
+        )
+
+        val h3 = BlockView.HeaderThree(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = 0
+        )
+
+        val views: List<BlockView> = listOf(h1, h2, h3)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val h1Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+        val h2Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+        val h3Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+
+        // Testing
+
+        adapter.onBindViewHolder(h1Holder, 0)
+        adapter.onBindViewHolder(h2Holder, 1)
+        adapter.onBindViewHolder(h3Holder, 2)
+
+        check(h1Holder is BlockViewHolder.HeaderOne)
+        check(h2Holder is BlockViewHolder.HeaderTwo)
+        check(h3Holder is BlockViewHolder.HeaderThree)
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = h1Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = h1Holder.content.isTextSelectable
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
+            actual = h2Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = h2Holder.content.isTextSelectable
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
+            actual = h3Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = h3Holder.content.isTextSelectable
+        )
+    }
+
+    @Test
+    fun `header holders should enter read mode after being in edit mode`() {
+
+        // Setup
+
+        val h1 = BlockView.HeaderOne(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = 0
+        )
+
+        val h2 = BlockView.HeaderTwo(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = 0
+        )
+
+        val h3 = BlockView.HeaderThree(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = 0
+        )
+
+        val h1Updated = h1.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val h2Updated = h2.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val h3Updated = h3.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val views: List<BlockView> = listOf(h1, h2, h3)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val h1Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+        val h2Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+        val h3Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+
+        adapter.onBindViewHolder(h1Holder, 0)
+        adapter.onBindViewHolder(h2Holder, 1)
+        adapter.onBindViewHolder(h3Holder, 2)
+
+        check(h1Holder is BlockViewHolder.HeaderOne)
+        check(h2Holder is BlockViewHolder.HeaderTwo)
+        check(h3Holder is BlockViewHolder.HeaderThree)
+
+        // Testing
+
+        // H1
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = h1Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = h1Holder.content.isTextSelectable
+        )
+
+        h1Holder.processChangePayload(
+            item = h1Updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(READ_WRITE_MODE_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = h1Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = h1Holder.content.isTextSelectable
+        )
+
+        // H2
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = h2Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = h2Holder.content.isTextSelectable
+        )
+
+        h2Holder.processChangePayload(
+            item = h2Updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(READ_WRITE_MODE_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = h2Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = h2Holder.content.isTextSelectable
+        )
+
+        // H3
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = h3Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = h3Holder.content.isTextSelectable
+        )
+
+        h3Holder.processChangePayload(
+            item = h3Updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(READ_WRITE_MODE_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = h3Holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = h3Holder.content.isTextSelectable
+        )
+    }
+
+    @Test
+    fun `hightlight holder should be in read mode`() {
+
+        // Setup
+
+        val highlight = BlockView.Highlight(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            indent = 0
+        )
+
+        val views = listOf(highlight)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Highlight)
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `highlight holder should be in edit mode`() {
+
+        // Setup
+
+        val highlight = BlockView.Highlight(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT
+        )
+
+        val views = listOf(highlight)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Highlight)
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+    }
+
+    @Test
+    fun `highlight holder should enter read mode after being in edit mode`() {
+
+        // Setup
+
+        val highlight = BlockView.Highlight(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT
+        )
+
+        val updated = highlight.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val views = listOf(highlight)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Highlight)
+
+        // Testing
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(READ_WRITE_MODE_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `bullet holder should be in read mode`() {
+
+        // Setup
+
+        val bullet = BlockView.Bulleted(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            indent = 0
+        )
+
+        val views = listOf(bullet)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BULLET)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Bulleted)
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `bullet holder should be in edit mode`() {
+
+        // Setup
+
+        val bullet = BlockView.Bulleted(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(bullet)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BULLET)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Bulleted)
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+    }
+
+    @Test
+    fun `bullet holder should enter read mode after being in edit mode`() {
+
+        // Setup
+
+        val bullet = BlockView.Bulleted(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = 0
+        )
+
+        val updated = bullet.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val views = listOf(bullet)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BULLET)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Bulleted)
+
+        // Testing
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(READ_WRITE_MODE_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `checkbox holder should be in read mode`() {
+
+        // Setup
+
+        val checkbox = BlockView.Checkbox(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            indent = 0
+        )
+
+        val views = listOf(checkbox)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Checkbox)
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `checkbox holder should be in edit mode`() {
+
+        // Setup
+
+        val checkbox = BlockView.Checkbox(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = 0
+        )
+
+        val views = listOf(checkbox)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Checkbox)
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+    }
+
+    @Test
+    fun `checkbox holder should enter read mode after being in edit mode`() {
+
+        // Setup
+
+        val checkbox = BlockView.Checkbox(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = 0
+        )
+
+        val updated = checkbox.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val views = listOf(checkbox)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Checkbox)
+
+        // Testing
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(READ_WRITE_MODE_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `numbered holder should be in read mode`() {
+
+        // Setup
+
+        val numbered = BlockView.Numbered(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            indent = 0,
+            number = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(numbered)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Numbered)
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `numbered holder should be in edit mode`() {
+
+        // Setup
+
+        val numbered = BlockView.Numbered(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = 0,
+            number = MockDataFactory.randomInt()
+        )
+
+        val views = listOf(numbered)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Numbered)
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+    }
+
+    @Test
+    fun `numbered holder should enter read mode after being in edit mode`() {
+
+        // Setup
+
+        val numbered = BlockView.Numbered(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = MockDataFactory.randomInt(),
+            number = MockDataFactory.randomInt()
+        )
+
+        val updated = numbered.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val views = listOf(numbered)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Numbered)
+
+        // Testing
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(READ_WRITE_MODE_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `toggle holder should be in read mode`() {
+
+        // Setup
+
+        val toggle = BlockView.Toggle(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.READ,
+            indent = 0,
+            focused = false,
+            marks = emptyList()
+        )
+
+        val views = listOf(toggle)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TOGGLE)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Toggle)
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `toggle holder should be in edit mode`() {
+
+        // Setup
+
+        val toggle = BlockView.Toggle(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = 0,
+            backgroundColor = null,
+            color = null,
+            focused = false,
+            marks = emptyList()
+        )
+
+        val views = listOf(toggle)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TOGGLE)
+
+        // Testing
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Toggle)
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+    }
+
+    @Test
+    fun `toggle holder should enter read mode after being in edit mode`() {
+
+        // Setup
+
+        val toggle = BlockView.Toggle(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            indent = MockDataFactory.randomInt(),
+            focused = false,
+            marks = emptyList()
+        )
+
+        val updated = toggle.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val views = listOf(toggle)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TOGGLE)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Toggle)
+
+        // Testing
+
+        assertEquals(
+            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = true,
+            actual = holder.content.isTextSelectable
+        )
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(READ_WRITE_MODE_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = InputType.TYPE_NULL,
+            actual = holder.content.inputType
+        )
+
+        assertEquals(
+            expected = false,
+            actual = holder.content.isTextSelectable
+        )
+
+        assertNull(holder.content.selectionDetector)
+    }
+
+    @Test
+    fun `should select file based on state`() {
+
+        // Setup
+
+        val views = listOf(
+            BlockView.File.View(
+                id = MockDataFactory.randomString(),
+                hash = MockDataFactory.randomString(),
+                indent = MockDataFactory.randomInt(),
+                mime = MockDataFactory.randomString(),
+                size = MockDataFactory.randomLong(),
+                name = MockDataFactory.randomString(),
+                url = MockDataFactory.randomString(),
+                isSelected = false
+            ),
+            BlockView.File.View(
+                id = MockDataFactory.randomString(),
+                hash = MockDataFactory.randomString(),
+                indent = MockDataFactory.randomInt(),
+                mime = MockDataFactory.randomString(),
+                size = MockDataFactory.randomLong(),
+                name = MockDataFactory.randomString(),
+                url = MockDataFactory.randomString(),
+                isSelected = true
+            )
+        )
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val firstHolder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE)
+        val secondHolder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE)
+        adapter.onBindViewHolder(firstHolder, 0)
+        adapter.onBindViewHolder(secondHolder, 1)
+
+        check(firstHolder is BlockViewHolder.File)
+        check(secondHolder is BlockViewHolder.File)
+
+        // Testing
+
+        assertTrue { !firstHolder.itemView.isSelected }
+        assertTrue { secondHolder.itemView.isSelected }
+    }
+
+    @Test
+    fun `should update selected state for file`() {
+
+        // Setup
+
+        val file = BlockView.File.View(
+            id = MockDataFactory.randomString(),
+            hash = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt(),
+            mime = MockDataFactory.randomString(),
+            size = MockDataFactory.randomLong(),
+            name = MockDataFactory.randomString(),
+            url = MockDataFactory.randomString(),
+            isSelected = false
+        )
+
+        val updated = file.copy(isSelected = true)
+
+        val views = listOf(file)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE)
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.File)
+
+        // Testing
+
+        assertTrue { !holder.itemView.isSelected }
+
+        holder.processChangePayload(
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(SELECTION_CHANGED)
+                )
+            ),
+            item = updated
+        )
+
+        assertTrue { holder.itemView.isSelected }
+    }
+
+    @Test
+    fun `should update selected state for page`() {
+
+        // Setup
+
+        val file = BlockView.Page(
+            id = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt(),
+            isSelected = false,
+            emoji = null
+        )
+
+        val updated = file.copy(isSelected = true)
+
+        val views = listOf(file)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+            this.adapter = adapter
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PAGE)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Page)
+
+        // Testing
+
+        assertTrue { !holder.itemView.isSelected }
+
+        adapter.updateWithDiffUtil(
+            items = listOf(updated)
+        )
+
+        val changes: MutableList<Any> = mutableListOf(
+            BlockViewDiffUtil.Payload(changes = listOf(SELECTION_CHANGED))
+        )
+
+        adapter.onBindViewHolder(holder, 0, changes)
+
+        assertTrue { holder.itemView.isSelected }
+    }
+
+    @Test
+    fun `should update selected state for bookmark`() {
+
+        // Setup
+
+        val bookmark = BlockView.Bookmark.View(
+            id = MockDataFactory.randomString(),
+            description = MockDataFactory.randomString(),
+            faviconUrl = MockDataFactory.randomString(),
+            imageUrl = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt(),
+            title = MockDataFactory.randomString(),
+            url = MockDataFactory.randomString(),
+            isSelected = false
+        )
+
+        val updated = bookmark.copy(isSelected = true)
+
+        val views = listOf(bookmark)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+            this.adapter = adapter
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BOOKMARK)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Bookmark)
+
+        // Testing
+
+        assertTrue { !holder.itemView.isSelected }
+
+        adapter.updateWithDiffUtil(
+            items = listOf(updated)
+        )
+
+        val changes: MutableList<Any> = mutableListOf(
+            BlockViewDiffUtil.Payload(changes = listOf(SELECTION_CHANGED))
+        )
+
+        adapter.onBindViewHolder(holder, 0, changes)
+
+        assertTrue { holder.itemView.isSelected }
+    }
+
     private fun buildAdapter(
         views: List<BlockView>,
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
@@ -1578,7 +3260,7 @@ class BlockAdapterTest {
             onFooterClicked = {},
             onPageClicked = {},
             onTextInputClicked = {},
-            onDownloadFileClicked = {},
+            onFileClicked = {},
             onPageIconClicked = {},
             onAddLocalFileClick = {},
             onAddLocalPictureClick = {},
@@ -1595,7 +3277,8 @@ class BlockAdapterTest {
             onMarkupActionClicked = {},
             onLongClickListener = {},
             onBookmarkClicked = {},
-            onFailedBookmarkClicked = {}
+            onFailedBookmarkClicked = {},
+            onTitleTextInputClicked = {}
         )
     }
 }

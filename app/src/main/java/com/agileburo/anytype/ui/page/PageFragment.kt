@@ -1,15 +1,19 @@
 package com.agileburo.anytype.ui.page
 
 import android.Manifest
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import androidx.core.animation.doOnEnd
 import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -114,7 +118,7 @@ open class PageFragment :
             onFooterClicked = vm::onOutsideClicked,
             onPageClicked = vm::onPageClicked,
             onTextInputClicked = vm::onTextInputClicked,
-            onDownloadFileClicked = vm::onDownloadFileClicked,
+            onFileClicked = vm::onFileClicked,
             onPageIconClicked = vm::onPageIconClicked,
             onAddUrlClick = vm::onAddVideoUrlClicked,
             onAddLocalVideoClick = vm::onAddLocalVideoClicked,
@@ -128,18 +132,19 @@ open class PageFragment :
             onBookmarkClicked = vm::onBookmarkClicked,
             onFailedBookmarkClicked = vm::onFailedBookmarkClicked,
             onMarkupActionClicked = vm::onMarkupActionClicked,
-            onLongClickListener = vm::onBlockLongPressedClicked
+            onLongClickListener = vm::onBlockLongPressedClicked,
+            onTitleTextInputClicked = vm::onTitleTextInputClicked
         )
     }
 
     private val titleVisibilityDetector by lazy {
         FirstItemInvisibilityDetector { isVisible ->
             if (isVisible) {
-                title.invisible()
-                emoji.invisible()
+                topToolbar.title.invisible()
+                topToolbar.icon.invisible()
             } else {
-                title.visible()
-                emoji.visible()
+                topToolbar.title.visible()
+                topToolbar.icon.visible()
             }
         }
     }
@@ -289,11 +294,31 @@ open class PageFragment :
             .onEach { vm.onAddBlockToolbarClicked() }
             .launchIn(lifecycleScope)
 
+        toolbar
+            .enterMultiSelectModeClicks()
+            .onEach { vm.onEnterMultiSelectModeClicked() }
+            .launchIn(lifecycleScope)
+
+        bottomMenu
+            .doneClicks()
+            .onEach { vm.onExitMultiSelectModeClicked() }
+            .launchIn(lifecycleScope)
+
+        bottomMenu
+            .deleteClicks()
+            .onEach { vm.onMultiSelectModeDeleteClicked() }
+            .launchIn(lifecycleScope)
+
+        select
+            .clicks()
+            .onEach { vm.onMultiSelectModeSelectAllClicked() }
+            .launchIn(lifecycleScope)
 
         fab.clicks().onEach { vm.onPlusButtonPressed() }.launchIn(lifecycleScope)
-        menu.clicks().onEach { showToolbarMenu() }.launchIn(lifecycleScope)
 
-        backButton.clicks().onEach {
+        topToolbar.menu.clicks().onEach { showToolbarMenu() }.launchIn(lifecycleScope)
+
+        topToolbar.back.clicks().onEach {
             hideSoftInput()
             vm.onBackButtonPressed()
         }.launchIn(lifecycleScope)
@@ -347,7 +372,7 @@ open class PageFragment :
     private fun showToolbarMenu() {
         DocumentPopUpMenu(
             requireContext(),
-            menu,
+            topToolbar.menu,
             vm::onArchiveThisPageClicked
         ).show()
     }
@@ -403,7 +428,20 @@ open class PageFragment :
         if (focus.isEmpty()) {
             placeholder.requestFocus()
             hideKeyboard()
-            fab.visible()
+            fab.apply {
+                scaleX = 0f
+                scaleY = 0f
+                visible()
+                animate()
+                    .scaleX(1.0f)
+                    .scaleY(1.0f)
+                    .apply {
+                        startDelay = FAB_SHOW_ANIMATION_START_DELAY
+                        duration = FAB_SHOW_ANIMATION_DURATION
+                        interpolator = AccelerateInterpolator()
+                    }
+                    .start()
+            }
         } else {
             fab.gone()
         }
@@ -486,8 +524,8 @@ open class PageFragment :
         state.blocks.firstOrNull { view ->
             view is BlockView.Title
         }?.let { view ->
-            title.text = (view as BlockView.Title).text
-            emoji.text = view.emoji
+            topToolbar.title.text = (view as BlockView.Title).text
+            topToolbar.icon.text = view.emoji
         }
     }
 
@@ -498,6 +536,22 @@ open class PageFragment :
             toolbar.visible()
         else
             toolbar.invisible()
+
+        state.multiSelect.apply {
+            if (isVisible) {
+                hideSoftInput()
+                Timber.d("Hiding top menu")
+                topToolbar.invisible()
+                lifecycleScope.launch {
+                    delay(300)
+                    bottomMenu.showWithAnimation()
+                    showSelectButton()
+                }
+            } else {
+                bottomMenu.hideWithAnimation()
+                hideSelectButton()
+            }
+        }
 
         state.stylingToolbar.apply {
             if (isVisible) {
@@ -513,6 +567,31 @@ open class PageFragment :
                 styleToolbar.hideWithAnimation()
                 recycler.updatePadding(bottom = dimen(R.dimen.default_toolbar_height))
             }
+        }
+    }
+
+    private fun hideSelectButton() {
+        ObjectAnimator.ofFloat(
+            select,
+            SELECT_BUTTON_ANIMATION_PROPERTY,
+            -requireContext().dimen(R.dimen.dp_48)
+        ).apply {
+            duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
+            interpolator = DecelerateInterpolator()
+            doOnEnd { topToolbar.visible() }
+            start()
+        }
+    }
+
+    private fun showSelectButton() {
+        ObjectAnimator.ofFloat(
+            select,
+            SELECT_BUTTON_ANIMATION_PROPERTY,
+            0f
+        ).apply {
+            duration = SELECT_BUTTON_SHOW_ANIMATION_DURATION
+            interpolator = DecelerateInterpolator()
+            start()
         }
     }
 
@@ -548,6 +627,13 @@ open class PageFragment :
         const val ID_KEY = "id"
         const val ID_EMPTY_VALUE = ""
         const val NOT_IMPLEMENTED_MESSAGE = "Not implemented."
+
+        const val FAB_SHOW_ANIMATION_START_DELAY = 250L
+        const val FAB_SHOW_ANIMATION_DURATION = 100L
+
+        const val SELECT_BUTTON_SHOW_ANIMATION_DURATION = 200L
+        const val SELECT_BUTTON_HIDE_ANIMATION_DURATION = 200L
+        const val SELECT_BUTTON_ANIMATION_PROPERTY = "translationY"
     }
 
     override fun onDismissBlockActionToolbar() {

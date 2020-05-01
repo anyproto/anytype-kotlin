@@ -53,6 +53,7 @@ class BlockAdapter(
     private val onParagraphTextChanged: (String, Editable) -> Unit,
     private val onTextChanged: (String, Editable) -> Unit,
     private val onTitleTextChanged: (Editable) -> Unit,
+    private val onTitleTextInputClicked: () -> Unit,
     private val onSelectionChanged: (String, IntRange) -> Unit,
     private val onCheckboxClicked: (String) -> Unit,
     private val onFocusChanged: (String, Boolean) -> Unit,
@@ -63,13 +64,13 @@ class BlockAdapter(
     private val onEndLineEnterTitleClicked: (Editable) -> Unit,
     private val onFooterClicked: () -> Unit,
     private val onPageClicked: (String) -> Unit,
-    private val onTextInputClicked: () -> Unit,
+    private val onTextInputClicked: (String) -> Unit,
     private val onAddUrlClick: (String, String) -> Unit,
     private val onAddLocalVideoClick: (String) -> Unit,
     private val onAddLocalPictureClick: (String) -> Unit,
     private val onAddLocalFileClick: (String) -> Unit,
     private val onPageIconClicked: () -> Unit,
-    private val onDownloadFileClicked: (String) -> Unit,
+    private val onFileClicked: (String) -> Unit,
     private val onBookmarkPlaceholderClicked: (String) -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
@@ -383,10 +384,9 @@ class BlockAdapter(
         position: Int,
         payloads: MutableList<Any>
     ) {
-        if (payloads.isEmpty())
-            onBindViewHolder(holder, position)
-        else
-            when (holder) {
+        when {
+            payloads.isEmpty() -> onBindViewHolder(holder, position)
+            else -> when (holder) {
                 is BlockViewHolder.Paragraph -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
@@ -441,8 +441,33 @@ class BlockAdapter(
                         item = blocks[position]
                     )
                 }
+                is BlockViewHolder.Highlight -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.File -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.Page -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.Bookmark -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
                 else -> throw IllegalStateException("Unexpected view holder: $holder")
             }
+        }
     }
 
     override fun onBindViewHolder(holder: BlockViewHolder, position: Int) {
@@ -545,7 +570,7 @@ class BlockAdapter(
             is BlockViewHolder.File -> {
                 holder.bind(
                     item = blocks[position] as BlockView.File.View,
-                    onDownloadFileClicked = onDownloadFileClicked,
+                    onFileClicked = onFileClicked,
                     menuClick = onMediaBlockMenuClick
                 )
             }
@@ -688,7 +713,10 @@ class BlockAdapter(
                 onNonEmptyBlockBackspaceClicked = { onNonEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id) }
             )
 
-            holder.setOnClickListener(onTextInputClicked)
+            if (holder is BlockViewHolder.Title)
+                holder.setOnClickListener { onTitleTextInputClicked() }
+            else
+                holder.setOnClickListener { onTextInputClicked(blocks[holder.adapterPosition].id) }
         }
     }
 

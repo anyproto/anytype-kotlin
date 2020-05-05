@@ -87,12 +87,12 @@ sealed class Command {
     /**
      * Command for updating style for one textual block.
      * @property context context id
-     * @property target id of the target block, whose style we need to update.
+     * @property targets id of the target blocks, whose style we need to update.
      * @property style new style for the target block.
      */
     data class UpdateStyle(
         val context: Id,
-        val target: Id,
+        val targets: List<Id>,
         val style: Block.Content.Text.Style
     )
 

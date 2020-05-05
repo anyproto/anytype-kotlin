@@ -58,6 +58,10 @@ enum class UiBlock {
 
     abstract fun category(): Category
 
+    fun isText(): Boolean = category().let { category ->
+        category == Category.TEXT || category == Category.LIST
+    }
+
     enum class Category {
         TEXT, LIST, PAGE, OBJECT, OTHER
     }

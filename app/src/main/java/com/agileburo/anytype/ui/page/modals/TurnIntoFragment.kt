@@ -26,12 +26,22 @@ class TurnIntoFragment : BaseBottomSheetFragment() {
             .getString(ARG_TARGET_KEY)
             ?: throw IllegalStateException(MISSING_TARGET_ERROR)
 
+    private val isMultiSelectMode: Boolean
+        get() = requireArguments()
+            .getBoolean(ARG_MULTI_SELECT_MODE_KEY, false)
+
     companion object {
-        fun newInstance(target: Id): TurnIntoFragment = TurnIntoFragment().apply {
+
+        fun single(target: Id): TurnIntoFragment = TurnIntoFragment().apply {
+            arguments = bundleOf(ARG_TARGET_KEY to target)
+        }
+
+        fun multiple(): TurnIntoFragment = TurnIntoFragment().apply {
             arguments = bundleOf(ARG_TARGET_KEY to target)
         }
 
         private const val ARG_TARGET_KEY = "arg.turn-into.target"
+        private const val ARG_MULTI_SELECT_MODE_KEY = "arg.turn-into.is-multi-select"
         private const val MISSING_TARGET_ERROR = "Target missing in args"
     }
 
@@ -75,10 +85,16 @@ class TurnIntoFragment : BaseBottomSheetFragment() {
     }
 
     private fun dispatchAndExit(block: UiBlock) {
-        (parentFragment as? TurnIntoActionReceiver)?.onTurnIntoBlockClicked(
-            block = block,
-            target = target
-        )
+        if (isMultiSelectMode) {
+            (parentFragment as? TurnIntoActionReceiver)?.onTurnIntoMultiSelectBlockClicked(
+                block = block
+            )
+        } else {
+            (parentFragment as? TurnIntoActionReceiver)?.onTurnIntoBlockClicked(
+                block = block,
+                target = target
+            )
+        }
         dismiss()
     }
 

@@ -2,6 +2,7 @@ package com.agileburo.anytype.presentation.mapper
 
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
 import com.agileburo.anytype.domain.emoji.Emojifier
@@ -154,4 +155,17 @@ suspend fun HomeDashboard.toView(
             else -> null
         }
     }
+}
+
+fun UiBlock.style(): Block.Content.Text.Style = when (this) {
+    UiBlock.TEXT -> Block.Content.Text.Style.P
+    UiBlock.HEADER_ONE -> Block.Content.Text.Style.H1
+    UiBlock.HEADER_TWO -> Block.Content.Text.Style.H2
+    UiBlock.HEADER_THREE -> Block.Content.Text.Style.H3
+    UiBlock.HIGHLIGHTED -> Block.Content.Text.Style.QUOTE
+    UiBlock.CHECKBOX -> Block.Content.Text.Style.CHECKBOX
+    UiBlock.BULLETED -> Block.Content.Text.Style.BULLET
+    UiBlock.NUMBERED -> Block.Content.Text.Style.NUMBERED
+    UiBlock.TOGGLE -> Block.Content.Text.Style.TOGGLE
+    else -> throw IllegalStateException("Could not extract style from block: $this")
 }

@@ -1894,7 +1894,7 @@ class PageViewModelTest {
             params = eq(
                 UpdateTextStyle.Params(
                     context = root,
-                    target = secondChild,
+                    targets = listOf(secondChild),
                     style = newStyle
                 )
             ),
@@ -2303,7 +2303,7 @@ class PageViewModelTest {
             scope = any(),
             params = eq(
                 UpdateTextStyle.Params(
-                    target = secondChild,
+                    targets = listOf(secondChild),
                     style = Block.Content.Text.Style.P,
                     context = root
                 )

@@ -3619,6 +3619,112 @@ class PageViewModelTest {
         )
     }
 
+    @Test
+    fun `should exit multi-select mode and unselect blocks`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+
+        val paragraphs = listOf(
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = paragraphs.map { it.id }
+            )
+        ) + paragraphs
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        val testObserver = vm.state.test()
+
+        val title = BlockView.Title(
+            id = root,
+            text = null,
+            focused = false
+        )
+
+        val initial = listOf(
+            paragraphs[0].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            }
+        )
+
+        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+
+        vm.onEnterMultiSelectModeClicked()
+
+        coroutineTestRule.advanceTime(150)
+
+        testObserver.assertValue(
+            ViewState.Success(
+                listOf(title.copy(mode = BlockView.Mode.READ)) + initial.map { view ->
+                    view.copy(mode = BlockView.Mode.READ)
+                }
+            )
+        )
+
+        vm.onTextInputClicked(target = paragraphs[0].id)
+
+        testObserver.assertValue(
+            ViewState.Success(
+                listOf(title.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
+                    if (i == 0)
+                        view.copy(mode = BlockView.Mode.READ, isSelected = true)
+                    else
+                        view.copy(mode = BlockView.Mode.READ)
+                }
+            )
+        )
+
+        vm.onExitMultiSelectModeClicked()
+
+        coroutineTestRule.advanceTime(300)
+
+        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+    }
+
     private fun simulateNormalPageOpeningFlow() {
 
         val root = MockDataFactory.randomUuid()

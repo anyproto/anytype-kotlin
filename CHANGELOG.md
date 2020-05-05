@@ -15,6 +15,8 @@
 
 ### Fixes & tech 🚒
 
+* Do not crash app wheh failing to parse bookmark uri (#414)
+* Migrate from Fabric to FirebaseCrashlytics (#414)
 * Read/edit mode switcher for editor (#404)
 * Refactored top navigation bar in document (switched to custom widget implementation) (#406)
 

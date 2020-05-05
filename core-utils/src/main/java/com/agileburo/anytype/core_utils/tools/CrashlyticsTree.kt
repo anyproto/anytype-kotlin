@@ -1,7 +1,7 @@
 package com.agileburo.anytype.core_utils.tools
 
 import android.util.Log
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import timber.log.Timber
 
 class CrashlyticsTree : Timber.Tree() {
@@ -12,14 +12,16 @@ class CrashlyticsTree : Timber.Tree() {
             return
         }
 
-        Crashlytics.setInt(CRASHLYTICS_KEY_PRIORITY, priority)
-        Crashlytics.setString(CRASHLYTICS_KEY_TAG, tag)
-        Crashlytics.setString(CRASHLYTICS_KEY_MESSAGE, message)
+        val crashlytics = FirebaseCrashlytics.getInstance()
+
+        crashlytics.setCustomKey(CRASHLYTICS_KEY_PRIORITY, priority)
+        crashlytics.setCustomKey(CRASHLYTICS_KEY_MESSAGE, message)
+        if (tag != null) crashlytics.setCustomKey(CRASHLYTICS_KEY_TAG, tag)
 
         if (t == null) {
-            Crashlytics.logException(Exception(message))
+            crashlytics.recordException(Exception(message))
         } else {
-            Crashlytics.logException(t)
+            crashlytics.recordException(t)
         }
     }
 

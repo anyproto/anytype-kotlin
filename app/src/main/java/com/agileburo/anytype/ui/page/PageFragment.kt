@@ -503,10 +503,14 @@ open class PageFragment :
                     hideSoftInput()
                 }
                 is PageViewModel.Command.Browse -> {
-                    Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(command.url)
-                    }.let {
-                        startActivity(it)
+                    try {
+                        Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(command.url)
+                        }.let {
+                            startActivity(it)
+                        }
+                    } catch (e: Throwable) {
+                        toast("Couldn't parse url: ${command.url}")
                     }
                 }
             }

@@ -24,7 +24,7 @@ class CommandEntity {
 
     data class UpdateStyle(
         val context: String,
-        val target: String,
+        val targets: List<String>,
         val style: BlockEntity.Content.Text.Style
     )
 

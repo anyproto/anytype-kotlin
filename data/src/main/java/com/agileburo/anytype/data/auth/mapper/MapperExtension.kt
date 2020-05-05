@@ -319,7 +319,7 @@ fun Command.UpdateText.toEntity(): CommandEntity.UpdateText {
 
 fun Command.UpdateStyle.toEntity(): CommandEntity.UpdateStyle = CommandEntity.UpdateStyle(
     context = context,
-    target = target,
+    targets = targets,
     style = BlockEntity.Content.Text.Style.valueOf(style.name)
 )
 

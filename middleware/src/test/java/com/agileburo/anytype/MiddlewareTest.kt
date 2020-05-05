@@ -1,7 +1,6 @@
 package com.agileburo.anytype
 
-import anytype.Commands.Rpc.Account
-import anytype.Commands.Rpc.Block
+import anytype.Commands.Rpc.*
 import anytype.model.Models
 import com.agileburo.anytype.common.MockDataFactory
 import com.agileburo.anytype.data.auth.model.BlockEntity
@@ -18,6 +17,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class MiddlewareTest {
 
@@ -200,5 +200,37 @@ class MiddlewareTest {
 
         verify(service, times(1)).blockSetDetails(request)
         verifyNoMoreInteractions(service)
+    }
+
+    @Test
+    fun `should update text style for several blocks`() {
+
+        // SETUP
+
+        val command = CommandEntity.UpdateStyle(
+            context = MockDataFactory.randomString(),
+            style = BlockEntity.Content.Text.Style.CHECKBOX,
+            targets = listOf(
+                MockDataFactory.randomString(),
+                MockDataFactory.randomString()
+            )
+        )
+
+        val request = BlockList.Set.Text.Style.Request
+            .newBuilder()
+            .setStyle(Models.Block.Content.Text.Style.Checkbox)
+            .addAllBlockIds(command.targets)
+            .setContextId(command.context)
+            .build()
+
+        // TESTING
+
+        assertTrue { request.blockIdsList.size == 2 }
+        assertTrue { request.blockIdsList[0] == command.targets[0] }
+        assertTrue { request.blockIdsList[1] == command.targets[1] }
+
+        middleware.updateTextStyle(command)
+
+        verify(service, times(1)).blockSetTextStyle(request)
     }
 }

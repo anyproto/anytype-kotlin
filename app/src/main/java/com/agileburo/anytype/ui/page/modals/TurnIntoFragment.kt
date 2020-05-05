@@ -37,7 +37,7 @@ class TurnIntoFragment : BaseBottomSheetFragment() {
         }
 
         fun multiple(): TurnIntoFragment = TurnIntoFragment().apply {
-            arguments = bundleOf(ARG_TARGET_KEY to target)
+            arguments = bundleOf(ARG_MULTI_SELECT_MODE_KEY to true)
         }
 
         private const val ARG_TARGET_KEY = "arg.turn-into.target"

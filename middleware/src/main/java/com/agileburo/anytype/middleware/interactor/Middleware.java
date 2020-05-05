@@ -251,6 +251,8 @@ public class Middleware {
                 .setContextId(command.getContext())
                 .build();
 
+        Timber.d("Updating text style with the following request:\n%s", request.toString());
+
         service.blockSetTextStyle(request);
     }
 

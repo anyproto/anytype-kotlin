@@ -312,6 +312,7 @@ open class PageFragment :
         bottomMenu
             .turnIntoClicks()
             .onEach { vm.onMultiSelectTurnIntoButtonClicked() }
+            .launchIn(lifecycleScope)
 
         select
             .clicks()

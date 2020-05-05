@@ -1260,9 +1260,11 @@ class PageViewModel(
 
     override fun onTurnIntoMultiSelectBlockClicked(block: UiBlock) {
         if (block.isText()) {
+            val targets = currentSelection().toList()
+            clearSelections()
             proceedWithUpdatingTextStyle(
                 style = block.style(),
-                targets = currentSelection().toList()
+                targets = targets
             )
         }
     }

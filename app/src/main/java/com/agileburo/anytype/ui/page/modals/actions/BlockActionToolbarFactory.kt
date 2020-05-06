@@ -19,25 +19,30 @@ object BlockActionToolbarFactory {
         is BlockView.Numbered -> newInstance(block)
         is BlockView.Toggle -> newInstance(block)
         is BlockView.Contact -> TODO()
-        is BlockView.File.View -> TODO()
-        is BlockView.File.Upload -> TODO()
-        is BlockView.File.Placeholder -> TODO()
-        is BlockView.File.Error -> TODO()
-        is BlockView.Video.View -> TODO()
-        is BlockView.Video.Upload -> TODO()
-        is BlockView.Video.Placeholder -> TODO()
-        is BlockView.Video.Error -> TODO()
-        is BlockView.Page -> TODO()
-        is BlockView.Divider -> TODO()
-        is BlockView.Bookmark.Placeholder -> TODO()
-        is BlockView.Bookmark.View -> TODO()
-        is BlockView.Bookmark.Error -> TODO()
-        is BlockView.Picture.View -> TODO()
-        is BlockView.Picture.Placeholder -> TODO()
-        is BlockView.Picture.Error -> TODO()
-        is BlockView.Picture.Upload -> TODO()
+        is BlockView.File.View -> newInstance(block)
+        is BlockView.File.Upload -> newInstance(block)
+        is BlockView.File.Placeholder -> newInstance(block)
+        is BlockView.File.Error -> newInstance(block)
+        is BlockView.Video.View -> newInstance(block)
+        is BlockView.Video.Upload -> newInstance(block)
+        is BlockView.Video.Placeholder -> newInstance(block)
+        is BlockView.Video.Error -> newInstance(block)
+        is BlockView.Page -> newInstance(block)
+        is BlockView.Divider -> newInstance(block)
+        is BlockView.Bookmark.Placeholder -> newInstance(block)
+        is BlockView.Bookmark.View -> newInstance(block)
+        is BlockView.Bookmark.Error -> newInstance(block)
+        is BlockView.Picture.View -> newInstance(block)
+        is BlockView.Picture.Placeholder -> newInstance(block)
+        is BlockView.Picture.Error -> newInstance(block)
+        is BlockView.Picture.Upload -> newInstance(block)
         BlockView.Footer -> TODO()
     }
+
+    fun newInstance(block: BlockView.Page): PageBlockActionToolbar =
+        PageBlockActionToolbar().apply {
+            arguments = bundleOf(BlockActionToolbar.ARG_BLOCK to block)
+        }
 
     fun newInstance(block: BlockView.Paragraph): ParagraphBlockActionToolbar =
         ParagraphBlockActionToolbar().apply {
@@ -91,6 +96,31 @@ object BlockActionToolbarFactory {
 
     fun newInstance(block: BlockView.Bulleted): BulletedBlockActionToolbar =
         BulletedBlockActionToolbar().apply {
+            arguments = bundleOf(BlockActionToolbar.ARG_BLOCK to block)
+        }
+
+    fun newInstance(block: BlockView.File): FileBlockActionToolbar =
+        FileBlockActionToolbar().apply {
+            arguments = bundleOf(BlockActionToolbar.ARG_BLOCK to block)
+        }
+
+    fun newInstance(block: BlockView.Picture): PictureBlockActionToolbar =
+        PictureBlockActionToolbar().apply {
+            arguments = bundleOf(BlockActionToolbar.ARG_BLOCK to block)
+        }
+
+    fun newInstance(block: BlockView.Video): VideoBlockActionToolbar =
+        VideoBlockActionToolbar().apply {
+            arguments = bundleOf(BlockActionToolbar.ARG_BLOCK to block)
+        }
+
+    fun newInstance(block : BlockView.Divider): DividerBlockActionToolbar =
+        DividerBlockActionToolbar().apply {
+            arguments = bundleOf(BlockActionToolbar.ARG_BLOCK to block)
+        }
+
+    fun newInstance(block: BlockView.Bookmark): BookmarkBlockActionToolbar =
+        BookmarkBlockActionToolbar().apply {
             arguments = bundleOf(BlockActionToolbar.ARG_BLOCK to block)
         }
 }

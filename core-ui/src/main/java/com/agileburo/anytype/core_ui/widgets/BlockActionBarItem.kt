@@ -63,7 +63,7 @@ class BlockActionBarItem @JvmOverloads constructor(
             )
             ActionItemType.Background -> updateContent(
                 R.string.action_bar_background,
-                R.drawable.ic_action_background
+                R.drawable.ic_ellipse
             )
             ActionItemType.Style -> updateContent(
                 R.string.action_bar_style,

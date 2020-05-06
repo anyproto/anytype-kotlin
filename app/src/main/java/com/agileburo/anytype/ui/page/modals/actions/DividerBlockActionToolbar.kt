@@ -6,19 +6,16 @@ import android.widget.ImageView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockView
 
-class CodeBlockActionToolbar : BlockActionToolbar() {
+class DividerBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.Code
+    lateinit var block: BlockView.Divider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         block = arguments?.getParcelable(ARG_BLOCK)!!
     }
 
-    override fun blockLayout() = R.layout.item_block_code_snippet
+    override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {}
     override fun getBlock(): BlockView = block
-
-    override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
-        TODO()
-    }
+    override fun blockLayout(): Int = R.layout.item_block_divider_preview
 }

@@ -571,13 +571,15 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.File.View,
                     onFileClicked = onFileClicked,
-                    menuClick = onMediaBlockMenuClick
+                    menuClick = onMediaBlockMenuClick,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.File.Error -> {
                 holder.bind(
                     item = blocks[position] as BlockView.File.Error,
-                    menuClick = onMediaBlockMenuClick
+                    menuClick = onMediaBlockMenuClick,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.File.Upload -> {
@@ -589,13 +591,15 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.File.Placeholder,
                     onAddLocalFileClick = onAddLocalFileClick,
-                    menuClick = onMediaBlockMenuClick
+                    menuClick = onMediaBlockMenuClick,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Video -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Video.View,
-                    menuClick = onMediaBlockMenuClick
+                    menuClick = onMediaBlockMenuClick,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Video.Upload -> {
@@ -607,58 +611,67 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Video.Placeholder,
                     onAddLocalVideoClick = onAddLocalVideoClick,
-                    menuClick = onMediaBlockMenuClick
+                    menuClick = onMediaBlockMenuClick,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Video.Error -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Video.Error,
-                    menuClick = onMediaBlockMenuClick
+                    menuClick = onMediaBlockMenuClick,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Page -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Page,
-                    onPageClicked = onPageClicked
+                    onPageClicked = onPageClicked,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Bookmark -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Bookmark.View,
                     onBookmarkMenuClicked = onBookmarkMenuClicked,
-                    onBookmarkClicked = onBookmarkClicked
+                    onBookmarkClicked = onBookmarkClicked,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Bookmark.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Bookmark.Placeholder,
-                    onBookmarkPlaceholderClicked = onBookmarkPlaceholderClicked
+                    onBookmarkPlaceholderClicked = onBookmarkPlaceholderClicked,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Bookmark.Error -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Bookmark.Error,
                     onErrorBookmarkMenuClicked = onBookmarkMenuClicked,
-                    onBookmarkClicked = onFailedBookmarkClicked
+                    onBookmarkClicked = onFailedBookmarkClicked,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Picture -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Picture.View,
-                    menuClick = onMediaBlockMenuClick
+                    menuClick = onMediaBlockMenuClick,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Picture.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Picture.Placeholder,
                     onAddLocalPictureClick = onAddLocalPictureClick,
-                    menuClick = onMediaBlockMenuClick
+                    menuClick = onMediaBlockMenuClick,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Picture.Error -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Picture.Error,
-                    menuClick = onMediaBlockMenuClick
+                    menuClick = onMediaBlockMenuClick,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Picture.Upload -> {
@@ -670,11 +683,18 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Highlight,
                     onTextChanged = onTextChanged,
-                    onFocusChanged = onFocusChanged
+                    onFocusChanged = onFocusChanged,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Footer -> {
                 holder.bind(onFooterClicked)
+            }
+            is BlockViewHolder.Divider -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Divider,
+                    onLongClickListener = onLongClickListener
+                )
             }
         }
 

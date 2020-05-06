@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/default_document_item_padding_start"
+    android:paddingEnd="@dimen/default_document_item_padding_end">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/fileGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="0dp" />
+
+    <ImageView
+        android:id="@+id/fileIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
+        android:contentDescription="@string/content_description_file_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/fileGuideline"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@drawable/ic_mime_image" />
+
+    <TextView
+        android:id="@+id/filename"
+        style="@style/BlockFileFilenameContentStyle"
+        android:layout_width="0dp"
+        android:layout_marginStart="7dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/fileSize"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/fileIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="W. J. T. Mitchell — There Are No Visual Media.pdf" />
+
+    <TextView
+        android:id="@+id/fileSize"
+        style="@style/BlockFileFileSizeContentStyle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnFileMenu"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="2.1 MB" />
+
+    <ImageView
+        android:id="@+id/btnFileMenu"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="3dp"
+        android:contentDescription="@string/content_description_more_button"
+        android:src="@drawable/ic_block_more"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

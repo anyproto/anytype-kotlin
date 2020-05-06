@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/videoBlockRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/default_document_item_padding_start"
+    android:layout_marginTop="6dp"
+    android:layout_marginEnd="@dimen/default_document_item_padding_end"
+    android:layout_marginBottom="6dp"
+    android:paddingBottom="1dp">
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:visibility="visible"
+        app:controller_layout_id="@layout/playback_off"/>
+
+</FrameLayout>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/default_document_item_padding_start"
+    android:paddingEnd="@dimen/default_document_item_padding_end">
+
+    <ImageView
+        android:id="@+id/toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/ic_block_toggle"
+        android:contentDescription="@string/content_description_toggle_icon"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:id="@+id/toggleContent"
+        style="@style/ToggleContentStyle"
+        android:layout_marginStart="4dp"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/toggle"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/default_text_placeholder" />
+
+    <TextView
+        android:id="@+id/togglePlaceholder"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:paddingBottom="3dp"
+        android:text="@string/empty_tap_to_create_new_block"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/toggleContent"
+        app:layout_constraintStart_toStartOf="@+id/toggleContent"
+        app:layout_constraintTop_toBottomOf="@+id/toggleContent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="0dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

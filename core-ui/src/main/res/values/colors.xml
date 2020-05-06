@@ -31,6 +31,7 @@
     <color name="black">#2C2B27</color>
     <color name="grey_50">#ACA996</color>
     <color name="emoji_color">#FFFFFF</color>
+    <color name="checkbox_state_checked">@color/grey_50</color>
 
     <color name="default_bottom_detail_toolbar_background_color">#F3F2EC</color>
     <color name="chapter_default">#FFFFFF</color>

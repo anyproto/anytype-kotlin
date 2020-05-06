@@ -1,13 +1,11 @@
 package com.agileburo.anytype.ui.page.modals.actions
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import com.agileburo.anytype.R
-import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.features.page.BlockView
-import com.agileburo.anytype.core_utils.ext.setReadOnly
 
 class HeaderThreeBlockActionToolbar : BlockActionToolbar() {
 
@@ -18,19 +16,22 @@ class HeaderThreeBlockActionToolbar : BlockActionToolbar() {
         block = arguments?.getParcelable(ARG_BLOCK)!!
     }
 
-    override fun blockLayout() = R.layout.item_block_header_three
+    override fun blockLayout() = R.layout.item_block_header_three_preview
     override fun getBlock(): BlockView = block
 
-    override fun initUi(view: View) {
-        view.findViewById<EditText>(R.id.headerThree).apply {
-            setReadOnly(true)
-            setText(block.text)
-            val textColor = block.color
-            if (textColor != null) {
-                setBlockTextColor(this, textColor)
-            } else {
-                setTextColor(context.color(R.color.black))
-            }
+    override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
+        view.findViewById<TextView>(R.id.headerThree).apply {
+            text = block.text
+            processTextColor(
+                textView = this,
+                colorImage = colorView,
+                color = block.color
+            )
         }
+        processBackgroundColor(
+            root = view.findViewById(R.id.root),
+            color = block.backgroundColor,
+            bgImage = backgroundView
+        )
     }
 }

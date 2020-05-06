@@ -1,7 +1,6 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.Editable
@@ -21,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.BuildConfig
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.common.isLinksPresent
 import com.agileburo.anytype.core_ui.common.toSpannable
 import com.agileburo.anytype.core_ui.extensions.color
@@ -636,7 +636,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private fun updateTextColor(context: Context, view: TextView, isSelected: Boolean) =
             view.setTextColor(
                 context.color(
-                    if (isSelected) R.color.grey_50 else R.color.black
+                    if (isSelected) R.color.checkbox_state_checked else R.color.black
                 )
             )
     }
@@ -740,7 +740,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         override fun setTextColor(color: String) {
             super.setTextColor(color)
-            bullet.tint(Color.parseColor(color))
+            bullet.setColorFilter(
+                ThemeColor.values().first { value ->
+                    value.title == color
+                }.text
+            )
         }
 
         override fun setTextColor(color: Int) {
@@ -1023,7 +1027,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
             item: BlockView.File.View,
             onFileClicked: (String) -> Unit,
-            menuClick: (String) -> Unit
+            menuClick: (String) -> Unit,
+            onLongClickListener: (String) -> Unit
         ) {
 
             indentize(item)
@@ -1049,6 +1054,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
             btnMenu.setOnClickListener { menuClick(item.id) }
             itemView.setOnClickListener { onFileClicked(item.id) }
+            itemView.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener)
+            )
         }
 
         override fun indentize(item: BlockView.Indentable) {
@@ -1074,8 +1084,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             fun bind(
                 item: BlockView.File.Placeholder,
                 onAddLocalFileClick: (String) -> Unit,
-                menuClick: (String) -> Unit
+                menuClick: (String) -> Unit,
+                onLongClickListener: (String) -> Unit
             ) {
+                root.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = onLongClickListener)
+                )
                 indentize(item)
                 btnMenu.setOnClickListener { menuClick(item.id) }
                 itemView.setOnClickListener { onAddLocalFileClick(item.id) }
@@ -1093,7 +1109,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             private val root = itemView.fileErrorPlaceholderRoot
             private val btnMenu = itemView.btnFileErrorMenu
 
-            fun bind(item: BlockView.File.Error, menuClick: (String) -> Unit) {
+            fun bind(item: BlockView.File.Error,
+                     menuClick: (String) -> Unit,
+                     onLongClickListener: (String) -> Unit) {
+                root.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = onLongClickListener)
+                )
                 btnMenu.setOnClickListener { menuClick(item.id) }
                 indentize(item)
             }
@@ -1126,8 +1149,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val player = itemView.playerView
         private val btnMenu = itemView.btnVideoMenu
 
-        fun bind(item: BlockView.Video.View, menuClick: (String) -> Unit) {
-            btnMenu.setOnClickListener { menuClick(item.id) }
+        fun bind(item: BlockView.Video.View,
+                 menuClick: (String) -> Unit,
+                 onLongClickListener: (String) -> Unit) {
+            btnMenu.setOnClickListener { onLongClickListener(item.id) }
             indentize(item)
             initPlayer(item.url)
         }
@@ -1161,8 +1186,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             fun bind(
                 item: BlockView.Video.Placeholder,
                 onAddLocalVideoClick: (String) -> Unit,
-                menuClick: (String) -> Unit
+                menuClick: (String) -> Unit,
+                onLongClickListener: (String) -> Unit
             ) {
+                root.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = onLongClickListener)
+                )
                 indentize(item)
                 btnMenu.setOnClickListener { menuClick(item.id) }
                 itemView.setOnClickListener { onAddLocalVideoClick(item.id) }
@@ -1180,7 +1211,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             private val root = itemView.videoErrorRoot
             private val btnMenu = itemView.btnVideoErrorMenu
 
-            fun bind(item: BlockView.Video.Error, menuClick: (String) -> Unit) {
+            fun bind(item: BlockView.Video.Error,
+                     menuClick: (String) -> Unit,
+                     onLongClickListener: (String) -> Unit) {
+                root.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = onLongClickListener)
+                )
                 btnMenu.setOnClickListener { menuClick(item.id) }
                 indentize(item)
             }
@@ -1218,7 +1256,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.Page,
-            onPageClicked: (String) -> Unit
+            onPageClicked: (String) -> Unit,
+            onLongClickListener: (String) -> Unit
         ) {
             indentize(item)
 
@@ -1233,6 +1272,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
 
             title.setOnClickListener { onPageClicked(item.id) }
+            title.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener)
+            )
         }
 
         override fun indentize(item: BlockView.Indentable) {
@@ -1289,7 +1333,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
             item: BlockView.Bookmark.View,
             onBookmarkMenuClicked: (String) -> Unit,
-            onBookmarkClicked: (BlockView.Bookmark.View) -> Unit
+            onBookmarkClicked: (BlockView.Bookmark.View) -> Unit,
+            onLongClickListener: (String) -> Unit
         ) {
 
             indentize(item)
@@ -1316,6 +1361,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             menu.setOnClickListener { onBookmarkMenuClicked(item.id) }
             card.setOnClickListener { onBookmarkClicked(item) }
+            card.setOnLongClickListener (
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener)
+            )
         }
 
         override fun indentize(item: BlockView.Indentable) {
@@ -1341,10 +1391,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             fun bind(
                 item: BlockView.Bookmark.Placeholder,
-                onBookmarkPlaceholderClicked: (String) -> Unit
+                onBookmarkPlaceholderClicked: (String) -> Unit,
+                onLongClickListener: (String) -> Unit
             ) {
                 indentize(item)
                 itemView.setOnClickListener { onBookmarkPlaceholderClicked(item.id) }
+                itemView.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = onLongClickListener)
+                )
             }
 
             override fun indentize(item: BlockView.Indentable) {
@@ -1363,12 +1419,18 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             fun bind(
                 item: BlockView.Bookmark.Error,
                 onErrorBookmarkMenuClicked: (String) -> Unit,
-                onBookmarkClicked: (BlockView.Bookmark.Error) -> Unit
+                onBookmarkClicked: (BlockView.Bookmark.Error) -> Unit,
+                onLongClickListener: (String) -> Unit
             ) {
                 indentize(item)
                 url.text = item.url
                 menu.setOnClickListener { onErrorBookmarkMenuClicked(item.id) }
                 root.setOnClickListener { onBookmarkClicked(item) }
+                itemView.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = onLongClickListener)
+                )
             }
 
             override fun indentize(item: BlockView.Indentable) {
@@ -1412,11 +1474,18 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        fun bind(item: BlockView.Picture.View, menuClick: (String) -> Unit) {
+        fun bind(item: BlockView.Picture.View,
+                 menuClick: (String) -> Unit,
+                 onLongClickListener: (String) -> Unit) {
             indentize(item)
             btnMenu.setOnClickListener {
                 menuClick(item.id)
             }
+            root.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener)
+            )
             Glide.with(image).load(item.url).listener(listener).into(image)
         }
 
@@ -1434,7 +1503,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             fun bind(
                 item: BlockView.Picture.Placeholder,
                 onAddLocalPictureClick: (String) -> Unit,
-                menuClick: (String) -> Unit
+                menuClick: (String) -> Unit,
+                onLongClickListener: (String) -> Unit
             ) {
                 indentize(item)
                 btnMore.setOnClickListener {
@@ -1443,6 +1513,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 itemView.setOnClickListener {
                     onAddLocalPictureClick(item.id)
                 }
+                root.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = onLongClickListener)
+                )
             }
 
             override fun indentize(item: BlockView.Indentable) {
@@ -1457,11 +1532,18 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             private val root = itemView.pictureErrorRoot
             private val btnMore = itemView.btnPicErrorMenu
 
-            fun bind(item: BlockView.Picture.Error, menuClick: (String) -> Unit) {
+            fun bind(item: BlockView.Picture.Error,
+                     menuClick: (String) -> Unit,
+                     onLongClickListener: (String) -> Unit) {
                 indentize(item)
                 btnMore.setOnClickListener {
                     menuClick(item.id)
                 }
+                root.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = onLongClickListener)
+                )
             }
 
             override fun indentize(item: BlockView.Indentable) {
@@ -1487,7 +1569,19 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Divider(view: View) : BlockViewHolder(view)
+    class Divider(view: View) : BlockViewHolder(view) {
+
+        fun bind(
+            item: BlockView.Divider,
+            onLongClickListener: (String) -> Unit
+        ) {
+            itemView.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = onLongClickListener)
+            )
+        }
+    }
 
     class Highlight(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
@@ -1503,7 +1597,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
             item: BlockView.Highlight,
             onTextChanged: (String, Editable) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit
+            onFocusChanged: (String, Boolean) -> Unit,
+            onLongClickListener: (String) -> Unit
         ) {
             //indentize(item)
 
@@ -1521,6 +1616,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     DefaultTextWatcher { text ->
                         onTextChanged(item.id, text)
                     }
+                )
+                content.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = onLongClickListener)
                 )
             }
         }

@@ -1,17 +1,14 @@
 package com.agileburo.anytype.ui.page.modals.actions
 
-import android.content.Context
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.View
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.toSpannable
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.features.page.BlockView
-import com.agileburo.anytype.core_utils.ext.setReadOnly
 
 class CheckBoxBlockActionToolbar : BlockActionToolbar() {
 
@@ -22,32 +19,30 @@ class CheckBoxBlockActionToolbar : BlockActionToolbar() {
         block = arguments?.getParcelable(ARG_BLOCK)!!
     }
 
-    override fun blockLayout() = R.layout.item_block_checkbox
+    override fun blockLayout() = R.layout.item_block_checkbox_preview
     override fun getBlock(): BlockView = block
 
-    override fun initUi(view: View) {
-        view.findViewById<EditText>(R.id.checkboxContent).apply {
-            setReadOnly(true)
+    override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
+        view.findViewById<TextView>(R.id.checkboxContent).apply {
             movementMethod = ScrollingMovementMethod()
-            updateTextColor(
-                context = requireContext(),
-                view = this,
-                isSelected = block.isChecked
-            )
-            if (block.marks.isNotEmpty())
-                setText(block.toSpannable(), TextView.BufferType.SPANNABLE)
-            else
-                setText(block.text)
+            text = block.toSpannable()
+            if (block.isChecked) {
+                setTextColor(requireContext().color(R.color.checkbox_state_checked))
+            } else {
+                processTextColor(
+                    textView = this,
+                    colorImage = colorView,
+                    color = block.color
+                )
+            }
         }
         view.findViewById<ImageView>(R.id.checkboxIcon).apply {
             isSelected = block.isChecked
         }
-    }
-
-    private fun updateTextColor(context: Context, view: TextView, isSelected: Boolean) =
-        view.setTextColor(
-            context.color(
-                if (isSelected) R.color.grey_50 else R.color.black
-            )
+        processBackgroundColor(
+            root = view.findViewById(R.id.root),
+            color = block.backgroundColor,
+            bgImage = backgroundView
         )
+    }
 }

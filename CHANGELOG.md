@@ -1,11 +1,12 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.30 (WIP)
+## Version 0.0.30
 
 ### New features 🚀
 
 * Multi-select mode: user can enter/exit this mode, select and delete blocks (#404).
 * Multi-select mode: turn-into (not stable) (#375)
+* Enable action toolbar for media blocks (#405)
 
 ### Design & UX 🔳
 
@@ -16,6 +17,9 @@
 
 ### Fixes & tech 🚒
 
+* Should render multi-line text in action toolbar block preview (#405)
+* Action toolbar supports text color and background color (#405)
+* Action toolbar has its own layouts (for a better separation of concerns) (#405)
 * Do not crash app wheh failing to parse bookmark uri (#414)
 * Migrate from Fabric to FirebaseCrashlytics (#414)
 * Read/edit mode switcher for editor (#404)

@@ -8,4 +8,9 @@ interface TurnIntoActionReceiver {
      * @param block new block's type
      */
     fun onTurnIntoBlockClicked(target: String, block: UiBlock)
+
+    /**
+     * @param block new block's type
+     */
+    fun onTurnIntoMultiSelectBlockClicked(block: UiBlock)
 }

@@ -19,7 +19,7 @@ open class UpdateTextStyle(
             command = Command.UpdateStyle(
                 style = params.style,
                 context = params.context,
-                target = params.target
+                targets = params.targets
             )
         ).let {
             Either.Right(it)
@@ -30,12 +30,12 @@ open class UpdateTextStyle(
 
     /**
      * @property context context id
-     * @property target id of the target block, whose style we need to update.
+     * @property targets id of the target blocks, whose style we need to update.
      * @property style new style for the target block.
      */
     data class Params(
         val context: Id,
-        val target: Id,
+        val targets: List<Id>,
         val style: Text.Style
     )
 }

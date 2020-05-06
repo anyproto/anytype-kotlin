@@ -37,6 +37,7 @@ class MultiSelectBottomToolbarWidget : ConstraintLayout {
 
     fun doneClicks() = done.clicks()
     fun deleteClicks() = delete.clicks()
+    fun turnIntoClicks() = convert.clicks()
 
     fun showWithAnimation() {
         ObjectAnimator.ofFloat(this, ANIMATED_PROPERTY, 0f).apply {

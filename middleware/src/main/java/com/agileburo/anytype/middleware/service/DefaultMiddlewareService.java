@@ -153,10 +153,10 @@ public class DefaultMiddlewareService implements MiddlewareService {
     }
 
     @Override
-    public Block.Set.Text.Style.Response blockSetTextStyle(Block.Set.Text.Style.Request request) throws Exception {
+    public BlockList.Set.Text.Style.Response blockSetTextStyle(BlockList.Set.Text.Style.Request request) throws Exception {
         byte[] encoded = Lib.blockSetTextStyle(request.toByteArray());
-        Block.Set.Text.Style.Response response = Block.Set.Text.Style.Response.parseFrom(encoded);
-        if (response.getError() != null && response.getError().getCode() != Block.Set.Text.Style.Response.Error.Code.NULL) {
+        BlockList.Set.Text.Style.Response response = BlockList.Set.Text.Style.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != BlockList.Set.Text.Style.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return response;

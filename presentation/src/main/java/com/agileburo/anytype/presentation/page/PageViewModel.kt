@@ -33,6 +33,7 @@ import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.common.SupportCommand
+import com.agileburo.anytype.presentation.mapper.style
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
 import com.agileburo.anytype.presentation.page.ControlPanelMachine.Interactor
@@ -725,7 +726,7 @@ class PageViewModel(
         } else {
             proceedWithUpdatingTextStyle(
                 style = Content.Text.Style.P,
-                target = id
+                targets = listOf(id)
             )
         }
     }
@@ -1243,51 +1244,33 @@ class PageViewModel(
         }
     }
 
+    fun onMultiSelectTurnIntoButtonClicked() {
+        dispatch(Command.OpenMultiSelectTurnIntoPanel)
+    }
+
     override fun onTurnIntoBlockClicked(target: String, block: UiBlock) {
-        when (block) {
-            UiBlock.TEXT -> proceedWithUpdatingTextStyle(
-                style = Content.Text.Style.P,
-                target = target
+        if (block.isText()) {
+            proceedWithUpdatingTextStyle(
+                style = block.style(),
+                targets = listOf(target)
             )
-            UiBlock.HEADER_ONE -> proceedWithUpdatingTextStyle(
-                style = Content.Text.Style.H1,
-                target = target
-            )
-            UiBlock.HEADER_TWO -> proceedWithUpdatingTextStyle(
-                style = Content.Text.Style.H2,
-                target = target
-            )
-            UiBlock.HEADER_THREE -> proceedWithUpdatingTextStyle(
-                style = Content.Text.Style.H3,
-                target = target
-            )
-            UiBlock.HIGHLIGHTED -> proceedWithUpdatingTextStyle(
-                style = Content.Text.Style.QUOTE,
-                target = target
-            )
-            UiBlock.CHECKBOX -> proceedWithUpdatingTextStyle(
-                style = Content.Text.Style.CHECKBOX,
-                target = target
-            )
-            UiBlock.BULLETED -> proceedWithUpdatingTextStyle(
-                style = Content.Text.Style.BULLET,
-                target = target
-            )
-            UiBlock.NUMBERED -> proceedWithUpdatingTextStyle(
-                style = Content.Text.Style.NUMBERED,
-                target = target
-            )
-            UiBlock.TOGGLE -> proceedWithUpdatingTextStyle(
-                style = Content.Text.Style.TOGGLE,
-                target = target
-            )
-            else -> Timber.d("Ignoring turn-into request")
         }
         dispatch(Command.PopBackStack)
     }
 
+    override fun onTurnIntoMultiSelectBlockClicked(block: UiBlock) {
+        if (block.isText()) {
+            val targets = currentSelection().toList()
+            clearSelections()
+            proceedWithUpdatingTextStyle(
+                style = block.style(),
+                targets = targets
+            )
+        }
+    }
+
     fun onTurnIntoStyleClicked(style: Content.Text.Style) {
-        proceedWithUpdatingTextStyle(style, focusChannel.value)
+        proceedWithUpdatingTextStyle(style, listOf(focusChannel.value))
     }
 
     fun onAddDividerBlockClicked() {
@@ -1297,13 +1280,13 @@ class PageViewModel(
 
     private fun proceedWithUpdatingTextStyle(
         style: Content.Text.Style,
-        target: String
+        targets: List<String>
     ) {
         updateTextStyle.invoke(
             scope = viewModelScope,
             params = UpdateTextStyle.Params(
                 context = context,
-                target = target,
+                targets = targets,
                 style = style
             )
         ) { result ->
@@ -1658,6 +1641,8 @@ class PageViewModel(
         data class OpenTurnIntoPanel(
             val target: Id
         ) : Command()
+
+        object OpenMultiSelectTurnIntoPanel : Command()
 
         data class RequestDownloadPermission(
             val id: String

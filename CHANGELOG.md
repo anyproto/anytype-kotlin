@@ -5,6 +5,7 @@
 ### New features 🚀
 
 * Multi-select mode: user can enter/exit this mode, select and delete blocks (#404).
+* Multi-select mode: turn-into (not stable) (#375)
 
 ### Design & UX 🔳
 

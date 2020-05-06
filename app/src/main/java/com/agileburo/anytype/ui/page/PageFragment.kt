@@ -309,6 +309,11 @@ open class PageFragment :
             .onEach { vm.onMultiSelectModeDeleteClicked() }
             .launchIn(lifecycleScope)
 
+        bottomMenu
+            .turnIntoClicks()
+            .onEach { vm.onMultiSelectTurnIntoButtonClicked() }
+            .launchIn(lifecycleScope)
+
         select
             .clicks()
             .onEach { vm.onMultiSelectModeSelectAllClicked() }
@@ -402,6 +407,10 @@ open class PageFragment :
         vm.onTurnIntoBlockClicked(target, block)
     }
 
+    override fun onTurnIntoMultiSelectBlockClicked(block: UiBlock) {
+        vm.onTurnIntoMultiSelectBlockClicked(block)
+    }
+
     override fun onAddMarkupLinkClicked(blockId: String, link: String, range: IntRange) {
         vm.onAddLinkPressed(blockId, link, range)
     }
@@ -460,9 +469,12 @@ open class PageFragment :
                     AddBlockFragment.newInstance().show(childFragmentManager, null)
                 }
                 is PageViewModel.Command.OpenTurnIntoPanel -> {
-                    TurnIntoFragment.newInstance(
+                    TurnIntoFragment.single(
                         target = command.target
                     ).show(childFragmentManager, null)
+                }
+                is PageViewModel.Command.OpenMultiSelectTurnIntoPanel -> {
+                    TurnIntoFragment.multiple().show(childFragmentManager, null)
                 }
                 is PageViewModel.Command.OpenBookmarkSetter -> {
                     CreateBookmarkFragment.newInstance(

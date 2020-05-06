@@ -244,12 +244,14 @@ public class Middleware {
 
         Models.Block.Content.Text.Style style = mapper.toMiddleware(command.getStyle());
 
-        Block.Set.Text.Style.Request request = Block.Set.Text.Style.Request
+        BlockList.Set.Text.Style.Request request = BlockList.Set.Text.Style.Request
                 .newBuilder()
                 .setStyle(style)
-                .setBlockId(command.getTarget())
+                .addAllBlockIds(command.getTargets())
                 .setContextId(command.getContext())
                 .build();
+
+        Timber.d("Updating text style with the following request:\n%s", request.toString());
 
         service.blockSetTextStyle(request);
     }

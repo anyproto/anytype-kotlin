@@ -8,10 +8,7 @@ import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.EditorMode
-import com.agileburo.anytype.presentation.mapper.marks
-import com.agileburo.anytype.presentation.mapper.toFileView
-import com.agileburo.anytype.presentation.mapper.toPictureView
-import com.agileburo.anytype.presentation.mapper.toVideoView
+import com.agileburo.anytype.presentation.mapper.*
 import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
 
 class DefaultBlockViewRenderer(
@@ -188,7 +185,8 @@ class DefaultBlockViewRenderer(
         focused = block.id == focus,
         color = content.color,
         backgroundColor = content.backgroundColor,
-        indent = indent
+        indent = indent,
+        alignment = content.align?.toView()
     )
 
     private fun headerThree(
@@ -202,7 +200,8 @@ class DefaultBlockViewRenderer(
         text = content.text,
         color = content.color,
         backgroundColor = content.backgroundColor,
-        indent = indent
+        indent = indent,
+        alignment = content.align?.toView()
     )
 
     private fun headerTwo(
@@ -216,7 +215,8 @@ class DefaultBlockViewRenderer(
         text = content.text,
         color = content.color,
         backgroundColor = content.backgroundColor,
-        indent = indent
+        indent = indent,
+        alignment = content.align?.toView()
     )
 
     private fun headerOne(
@@ -230,7 +230,8 @@ class DefaultBlockViewRenderer(
         text = content.text,
         color = content.color,
         backgroundColor = content.backgroundColor,
-        indent = indent
+        indent = indent,
+        alignment = content.align?.toView()
     )
 
     private fun checkbox(

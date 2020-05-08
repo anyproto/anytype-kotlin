@@ -74,6 +74,18 @@ sealed class Command {
     )
 
     /**
+     * Command for updating alignment for the block.
+     * @property context context id
+     * @property targets id of the target blocks, whose alignments we need to update.
+     * @property alignment new alignment
+     */
+    data class UpdateAlignment(
+        val context: Id,
+        val targets: List<Id>,
+        val alignment: Block.Align
+    )
+
+    /**
      * @property context context id
      * @property target id of the target checkbox block
      * @property isChecked new checked/unchecked state for this checkbox block

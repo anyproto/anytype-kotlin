@@ -363,6 +363,21 @@ open class PageFragment :
                             action = Markup.Type.KEYBOARD
                         )
                     }
+                    is StylingEvent.Alignment.Left -> {
+                        vm.onBlockAlignmentActionClicked(
+                            alignment = BlockView.Alignment.START
+                        )
+                    }
+                    is StylingEvent.Alignment.Center -> {
+                        vm.onBlockAlignmentActionClicked(
+                            alignment = BlockView.Alignment.CENTER
+                        )
+                    }
+                    is StylingEvent.Alignment.Right -> {
+                        vm.onBlockAlignmentActionClicked(
+                            alignment = BlockView.Alignment.END
+                        )
+                    }
                 }
             }
         }

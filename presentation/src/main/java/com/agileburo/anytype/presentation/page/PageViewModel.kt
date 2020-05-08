@@ -81,7 +81,8 @@ class PageViewModel(
     private val renderer: DefaultBlockViewRenderer,
     private val counter: Counter,
     private val patternMatcher: Matcher<Pattern>,
-    private val selectionStateHolder: SelectionStateHolder
+    private val selectionStateHolder: SelectionStateHolder,
+    private val updateAlignment: UpdateBlockAlignment
 ) : ViewStateViewModel<PageViewModel.ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<PageViewModel.Command>,
@@ -865,6 +866,46 @@ class PageViewModel(
                         )
                     },
                     fnR = { Timber.d("Background color ($color) has been successfully updated for the block: $focus") }
+                )
+            }
+        )
+    }
+
+    fun onBlockAlignmentActionClicked(alignment: BlockView.Alignment) {
+        val state = stateData.value
+        if (state is ViewState.Success) {
+            val blockView = state.blocks.first { it.id == focus.value }
+            if (blockView is BlockView.Alignable) {
+                updateBlockAlignment(target = blockView.id, alignment = alignment)
+            } else {
+                Timber.e("Block $blockView is not alignable type")
+            }
+        } else {
+            Timber.e("Error on block align update, ViewState:$state is not ViewState.Success")
+        }
+    }
+
+    private fun updateBlockAlignment(target: Id, alignment: BlockView.Alignment) {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockAlignmentSelected)
+        updateAlignment(
+            scope = viewModelScope,
+            params = UpdateBlockAlignment.Params(
+                context = context,
+                alignment = when (alignment) {
+                    BlockView.Alignment.START -> Block.Align.AlignLeft
+                    BlockView.Alignment.CENTER -> Block.Align.AlignCenter
+                    BlockView.Alignment.END -> Block.Align.AlignRight
+                },
+                targets = listOf(target)
+            ),
+            onResult = { result ->
+                result.either(
+                    fnL = {
+                        Timber.e(it, "Error while updating alignment for the block: ${focus.value}")
+                    },
+                    fnR = {
+                        Timber.d("Alignment ($alignment) has been successfully updated for the block: ${focus.value}")
+                    }
                 )
             }
         )

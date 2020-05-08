@@ -77,7 +77,8 @@ class DefaultBlockViewRendererTest {
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
                 style = Block.Content.Text.Style.P,
-                marks = emptyList()
+                marks = emptyList(),
+                align = Block.Align.AlignLeft
             ),
             fields = Block.Fields.empty()
         )
@@ -148,7 +149,8 @@ class DefaultBlockViewRendererTest {
                 marks = emptyList(),
                 backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                 color = paragraph.content<Block.Content.Text>().color,
-                text = paragraph.content<Block.Content.Text>().text
+                text = paragraph.content<Block.Content.Text>().text,
+                alignment = BlockView.Alignment.START
             ),
             BlockView.Toggle(
                 isEmpty = false,
@@ -175,7 +177,8 @@ class DefaultBlockViewRendererTest {
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
                 style = Block.Content.Text.Style.P,
-                marks = emptyList()
+                marks = emptyList(),
+                align = Block.Align.AlignRight
             ),
             fields = Block.Fields.empty()
         )
@@ -246,7 +249,8 @@ class DefaultBlockViewRendererTest {
                 marks = emptyList(),
                 backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                 color = paragraph.content<Block.Content.Text>().color,
-                text = paragraph.content<Block.Content.Text>().text
+                text = paragraph.content<Block.Content.Text>().text,
+                alignment = BlockView.Alignment.END
             ),
             BlockView.Toggle(
                 isEmpty = false,
@@ -267,6 +271,130 @@ class DefaultBlockViewRendererTest {
                 color = checkbox.content<Block.Content.Text>().color,
                 text = checkbox.content<Block.Content.Text>().text,
                 indent = 1
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should return paragraph with null alignment`() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.P,
+                marks = emptyList(),
+                align = null
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(paragraph.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            )
+        )
+
+        val blocks = listOf(page, paragraph)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = paragraph.id,
+                indent = 0
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title(
+                id = page.id,
+                focused = false,
+                text = null,
+                emoji = null
+            ),
+            BlockView.Paragraph(
+                focused = true,
+                id = paragraph.id,
+                marks = emptyList(),
+                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                color = paragraph.content<Block.Content.Text>().color,
+                text = paragraph.content<Block.Content.Text>().text,
+                alignment = null
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should return paragraph with proper alignment`() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.P,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(paragraph.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Page(
+                style = Block.Content.Page.Style.SET
+            )
+        )
+
+        val blocks = listOf(page, paragraph)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = paragraph.id,
+                indent = 0
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title(
+                id = page.id,
+                focused = false,
+                text = null,
+                emoji = null
+            ),
+            BlockView.Paragraph(
+                focused = true,
+                id = paragraph.id,
+                marks = emptyList(),
+                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                color = paragraph.content<Block.Content.Text>().color,
+                text = paragraph.content<Block.Content.Text>().text,
+                alignment = BlockView.Alignment.CENTER
             )
         )
 

@@ -20,7 +20,8 @@ data class BlockEntity(
             val marks: List<Mark>,
             val isChecked: Boolean? = null,
             val color: String? = null,
-            val backgroundColor: String? = null
+            val backgroundColor: String? = null,
+            val align: Align? = null
         ) : Content() {
 
             data class Mark(
@@ -112,5 +113,11 @@ data class BlockEntity(
 
         object Divider : Prototype()
         object Bookmark : Prototype()
+    }
+
+    sealed class Align {
+        object AlignLeft : Align()
+        object AlignCenter : Align()
+        object AlignRight : Align()
     }
 }

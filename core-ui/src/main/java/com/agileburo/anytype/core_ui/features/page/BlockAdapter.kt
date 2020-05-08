@@ -708,6 +708,12 @@ class BlockAdapter(
                 )
             }
 
+            if (block is BlockView.Alignable) {
+                block.alignment?.let {
+                    holder.setAlignment(alignment = it)
+                }
+            }
+
             if (holder is BlockViewHolder.Title) {
                 holder.enableEnterKeyDetector(
                     onEndLineEnterClicked = { editable ->

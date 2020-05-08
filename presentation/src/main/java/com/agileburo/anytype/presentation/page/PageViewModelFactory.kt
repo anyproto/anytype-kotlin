@@ -46,7 +46,8 @@ open class PageViewModelFactory(
     private val counter: Counter,
     private val patternMatcher: Matcher<Pattern>,
     private val updateTitle: UpdateTitle,
-    private val selectionStateHolder: SelectionStateHolder
+    private val selectionStateHolder: SelectionStateHolder,
+    private val updateAlignment: UpdateBlockAlignment
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -81,7 +82,8 @@ open class PageViewModelFactory(
             replaceBlock = replaceBlock,
             patternMatcher = patternMatcher,
             updateTitle = updateTitle,
-            selectionStateHolder = selectionStateHolder
+            selectionStateHolder = selectionStateHolder,
+            updateAlignment = updateAlignment
         ) as T
     }
 }

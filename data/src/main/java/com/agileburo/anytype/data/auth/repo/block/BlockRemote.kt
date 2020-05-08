@@ -12,6 +12,7 @@ interface BlockRemote {
     suspend fun updateTextStyle(command: CommandEntity.UpdateStyle)
     suspend fun updateTextColor(command: CommandEntity.UpdateTextColor)
     suspend fun updateBackgroundColor(command: CommandEntity.UpdateBackgroundColor)
+    suspend fun updateAlignment(command: CommandEntity.UpdateAlignment)
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun dnd(command: CommandEntity.Dnd)
     suspend fun merge(command: CommandEntity.Merge)

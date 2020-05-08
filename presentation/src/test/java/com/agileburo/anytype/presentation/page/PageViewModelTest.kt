@@ -101,6 +101,9 @@ class PageViewModelTest {
     lateinit var downloadFile: DownloadFile
 
     @Mock
+    lateinit var updateBlockAlignment: UpdateBlockAlignment
+
+    @Mock
     lateinit var uploadUrl: UploadUrl
 
     @Mock
@@ -232,7 +235,8 @@ class PageViewModelTest {
                 BlockView.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content<Block.Content.Text>().text,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                    alignment = null
                 )
             )
         )
@@ -442,12 +446,14 @@ class PageViewModelTest {
                     BlockView.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content.asText().text,
-                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                        alignment = null
                     ),
                     BlockView.Paragraph(
                         id = added.id,
                         text = added.content.asText().text,
-                        backgroundColor = added.content<Block.Content.Text>().backgroundColor
+                        backgroundColor = added.content<Block.Content.Text>().backgroundColor,
+                        alignment = null
                     )
                 )
             )
@@ -542,7 +548,8 @@ class PageViewModelTest {
                 BlockView.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                    alignment = null
                 )
             )
         )
@@ -669,7 +676,8 @@ class PageViewModelTest {
                             from = firstTimeRange.first(),
                             to = firstTimeRange.last()
                         )
-                    )
+                    ),
+                    alignment = null
                 )
             )
         )
@@ -714,7 +722,8 @@ class PageViewModelTest {
                             from = secondTimeRange.first(),
                             to = secondTimeRange.last()
                         )
-                    )
+                    ),
+                    alignment = null
                 )
             )
         )
@@ -818,7 +827,8 @@ class PageViewModelTest {
                             from = firstTimeRange.first(),
                             to = firstTimeRange.last()
                         )
-                    )
+                    ),
+                    alignment = null
                 )
             )
         )
@@ -867,7 +877,8 @@ class PageViewModelTest {
                             from = secondTimeRange.first(),
                             to = secondTimeRange.last()
                         )
-                    )
+                    ),
+                    alignment = null
                 )
             )
         )
@@ -1035,7 +1046,8 @@ class PageViewModelTest {
                 BlockView.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                    alignment = null
                 )
             )
         )
@@ -1390,7 +1402,8 @@ class PageViewModelTest {
                     BlockView.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
-                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                        alignment = null
                     )
                 )
             )
@@ -1409,7 +1422,8 @@ class PageViewModelTest {
                     BlockView.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
-                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                        alignment = null
                     ),
                     BlockView.HeaderOne(
                         id = new.id,
@@ -1622,12 +1636,14 @@ class PageViewModelTest {
                     BlockView.Paragraph(
                         id = page[1].id,
                         text = page[1].content<Block.Content.Text>().text,
-                        backgroundColor = page[1].content<Block.Content.Text>().backgroundColor
+                        backgroundColor = page[1].content<Block.Content.Text>().backgroundColor,
+                        alignment = null
                     ),
                     BlockView.Paragraph(
                         id = page.last().id,
                         text = page.last().content<Block.Content.Text>().text,
-                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor
+                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor,
+                        alignment = null
                     )
                 )
             )
@@ -1653,7 +1669,8 @@ class PageViewModelTest {
                     BlockView.Paragraph(
                         id = page.last().id,
                         text = page.last().content<Block.Content.Text>().text,
-                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor
+                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor,
+                        alignment = null
                     )
                 )
             )
@@ -3510,21 +3527,24 @@ class PageViewModelTest {
                 BlockView.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    alignment = null
                 )
             },
             paragraphs[1].let { p ->
                 BlockView.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    alignment = null
                 )
             },
             paragraphs[2].let { p ->
                 BlockView.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    alignment = null
                 )
             }
         )
@@ -3686,7 +3706,8 @@ class PageViewModelTest {
                 BlockView.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    alignment = null
                 )
             }
         )
@@ -3817,7 +3838,8 @@ class PageViewModelTest {
             replaceBlock = replaceBlock,
             patternMatcher = DefaultPatternMatcher(),
             updateTitle = updateTitle,
-            selectionStateHolder = SelectionStateHolder.Default()
+            selectionStateHolder = SelectionStateHolder.Default(),
+            updateAlignment = updateBlockAlignment
         )
     }
 }

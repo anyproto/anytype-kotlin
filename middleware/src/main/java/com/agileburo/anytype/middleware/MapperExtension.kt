@@ -139,7 +139,8 @@ fun Block.text(): BlockEntity.Content.Text = BlockEntity.Content.Text(
     style = text.style.entity(),
     isChecked = text.checked,
     color = if (text.color.isNotEmpty()) text.color else null,
-    backgroundColor = if (backgroundColor.isNotEmpty()) backgroundColor else null
+    backgroundColor = if (backgroundColor.isNotEmpty()) backgroundColor else null,
+    align = if (align != null) align.entity() else null
 )
 
 fun List<Block.Content.Text.Mark>.marks(): List<BlockEntity.Content.Text.Mark> = map { mark ->
@@ -231,6 +232,13 @@ fun Block.file(): BlockEntity.Content.File = BlockEntity.Content.File(
     type = file.type.entity(),
     state = file.state.entity()
 )
+
+fun Block.Align.entity(): BlockEntity.Align = when (this) {
+    Block.Align.AlignLeft -> BlockEntity.Align.AlignLeft
+    Block.Align.AlignCenter -> BlockEntity.Align.AlignCenter
+    Block.Align.AlignRight -> BlockEntity.Align.AlignRight
+    else -> throw IllegalStateException("Unexpected align type: $this")
+}
 
 fun Block.Content.File.Type.entity(): BlockEntity.Content.File.Type = when (this) {
     Block.Content.File.Type.File -> BlockEntity.Content.File.Type.FILE
@@ -385,4 +393,10 @@ fun PositionEntity.toMiddleware(): Block.Position = when (this) {
     PositionEntity.TOP -> Block.Position.Top
     PositionEntity.BOTTOM -> Block.Position.Bottom
     PositionEntity.INNER -> Block.Position.Inner
+}
+
+fun BlockEntity.Align.toMiddleware(): Block.Align = when (this) {
+    BlockEntity.Align.AlignLeft -> Block.Align.AlignLeft
+    BlockEntity.Align.AlignCenter -> Block.Align.AlignCenter
+    BlockEntity.Align.AlignRight -> Block.Align.AlignRight
 }

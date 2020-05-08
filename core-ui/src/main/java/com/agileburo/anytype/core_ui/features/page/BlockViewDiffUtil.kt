@@ -83,6 +83,11 @@ class BlockViewDiffUtil(
                 changes.add(READ_WRITE_MODE_CHANGED)
         }
 
+        if (newBlock is BlockView.Alignable && oldBlock is BlockView.Alignable) {
+            if (newBlock.alignment != oldBlock.alignment)
+                changes.add(ALIGNMENT_CHANGED)
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -102,6 +107,7 @@ class BlockViewDiffUtil(
         fun backgroundColorChanged() = changes.contains(BACKGROUND_COLOR_CHANGED)
         fun readWriteModeChanged() = changes.contains(READ_WRITE_MODE_CHANGED)
         fun selectionChanged() = changes.contains(SELECTION_CHANGED)
+        fun alignmentChanged() = changes.contains(ALIGNMENT_CHANGED)
     }
 
     companion object {
@@ -115,5 +121,6 @@ class BlockViewDiffUtil(
         const val TOGGLE_EMPTY_STATE_CHANGED = 8
         const val READ_WRITE_MODE_CHANGED = 9
         const val SELECTION_CHANGED = 10
+        const val ALIGNMENT_CHANGED = 11
     }
 }

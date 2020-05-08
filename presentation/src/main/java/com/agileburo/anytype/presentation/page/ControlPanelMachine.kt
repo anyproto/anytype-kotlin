@@ -83,6 +83,11 @@ sealed class ControlPanelMachine {
         object OnBlockBackgroundColorSelected : Event()
 
         /**
+         * Represents an event when user selected alignment on [Toolbar.Styling] toolbar.
+         */
+        object OnBlockAlignmentSelected : Event()
+
+        /**
          * Represents an event when user cleares the current focus by closing keyboard.
          */
         object OnClearFocusClicked : Event()
@@ -144,6 +149,7 @@ sealed class ControlPanelMachine {
             )
             is Event.OnBlockTextColorSelected -> state.copy()
             is Event.OnBlockBackgroundColorSelected -> state.copy()
+            is Event.OnBlockAlignmentSelected -> state.copy()
             is Event.OnAddBlockToolbarOptionSelected -> state.copy()
             is Event.OnMarkupBackgroundColorSelected -> state.copy(
                 stylingToolbar = state.stylingToolbar.copy(

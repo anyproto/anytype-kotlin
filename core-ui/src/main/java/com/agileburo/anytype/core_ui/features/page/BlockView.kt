@@ -88,6 +88,13 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     /**
+     * Views implementing this interface support alignment.
+     */
+    interface Alignable {
+        val alignment: Alignment?
+    }
+
+    /**
      * Views implementing this interface support read/write mode switch.
      */
     interface Permission {
@@ -112,8 +119,9 @@ sealed class BlockView : ViewType, Parcelable {
         override val backgroundColor: String? = null,
         override val indent: Int = 0,
         override val mode: Mode = Mode.EDIT,
-        override val isSelected: Boolean = false
-    ) : BlockView(), Markup, Focusable, Text, Indentable, Permission, Selectable {
+        override val isSelected: Boolean = false,
+        override val alignment: Alignment? = null
+    ) : BlockView(), Markup, Focusable, Text, Indentable, Permission, Selectable, Alignable {
         override fun getViewType() = HOLDER_PARAGRAPH
         override val body: String = text
     }
@@ -149,8 +157,9 @@ sealed class BlockView : ViewType, Parcelable {
         override val backgroundColor: String? = null,
         override val indent: Int = 0,
         override val mode: Mode = Mode.EDIT,
-        override val isSelected: Boolean = false
-    ) : BlockView(), Text, Indentable, Permission, Selectable {
+        override val isSelected: Boolean = false,
+        override val alignment: Alignment? = null
+    ) : BlockView(), Text, Indentable, Permission, Selectable, Alignable {
         override fun getViewType() = HOLDER_HEADER_ONE
     }
 
@@ -168,8 +177,9 @@ sealed class BlockView : ViewType, Parcelable {
         override val backgroundColor: String? = null,
         override val indent: Int,
         override val mode: Mode = Mode.EDIT,
-        override val isSelected: Boolean = false
-    ) : BlockView(), Text, Indentable, Permission, Selectable {
+        override val isSelected: Boolean = false,
+        override val alignment: Alignment? = null
+    ) : BlockView(), Text, Indentable, Permission, Selectable, Alignable {
         override fun getViewType() = HOLDER_HEADER_TWO
     }
 
@@ -187,8 +197,9 @@ sealed class BlockView : ViewType, Parcelable {
         override val backgroundColor: String? = null,
         override val indent: Int,
         override val mode: Mode = Mode.EDIT,
-        override val isSelected: Boolean = false
-    ) : BlockView(), Text, Indentable, Permission, Selectable {
+        override val isSelected: Boolean = false,
+        override val alignment: Alignment? = null
+    ) : BlockView(), Text, Indentable, Permission, Selectable, Alignable {
         override fun getViewType() = HOLDER_HEADER_THREE
     }
 
@@ -627,6 +638,7 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     enum class Mode { READ, EDIT }
+    enum class Alignment { START, CENTER, END }
 
     companion object {
         const val FOOTER_ID = "FOOTER"

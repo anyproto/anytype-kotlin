@@ -34,6 +34,12 @@ class CommandEntity {
         val color: String
     )
 
+    data class UpdateAlignment(
+        val context: String,
+        val targets: List<String>,
+        val alignment: BlockEntity.Align
+    )
+
     data class UpdateBackgroundColor(
         val context: String,
         val targets: List<String>,

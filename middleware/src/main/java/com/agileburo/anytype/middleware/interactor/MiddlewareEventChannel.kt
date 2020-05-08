@@ -28,7 +28,8 @@ class MiddlewareEventChannel(
         Events.Event.Message.ValueCase.BLOCKSETLINK,
         Events.Event.Message.ValueCase.BLOCKSETFILE,
         Events.Event.Message.ValueCase.BLOCKSETFIELDS,
-        Events.Event.Message.ValueCase.BLOCKSETBOOKMARK
+        Events.Event.Message.ValueCase.BLOCKSETBOOKMARK,
+        Events.Event.Message.ValueCase.BLOCKSETALIGN
     )
 
     override fun observeEvents(
@@ -91,6 +92,13 @@ class MiddlewareEventChannel(
                         context = context,
                         id = event.blockSetBackgroundColor.id,
                         backgroundColor = event.blockSetBackgroundColor.backgroundColor
+                    )
+                }
+                Events.Event.Message.ValueCase.BLOCKSETALIGN -> {
+                    EventEntity.Command.GranularChange(
+                        context = context,
+                        id = event.blockSetAlign.id,
+                        alignment = event.blockSetAlign.align.entity()
                     )
                 }
                 Events.Event.Message.ValueCase.BLOCKDELETE -> {

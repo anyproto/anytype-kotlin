@@ -2,6 +2,7 @@ package com.agileburo.anytype.core_ui.features.page
 
 import android.text.Editable
 import android.text.InputType.*
+import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
 import android.widget.TextView
@@ -127,6 +128,14 @@ interface TextHolder {
             content.clearFocus()
     }
 
+    fun setAlignment(alignment: BlockView.Alignment) {
+        content.gravity = when (alignment) {
+            BlockView.Alignment.START -> Gravity.START
+            BlockView.Alignment.CENTER -> Gravity.CENTER
+            BlockView.Alignment.END -> Gravity.END
+        }
+    }
+
     fun setMarkup(markup: Markup) {
         content.text?.setMarkup(markup)
     }
@@ -185,6 +194,12 @@ interface TextHolder {
 
             if (payload.backgroundColorChanged()) {
                 setBackgroundColor(item.backgroundColor)
+            }
+
+            if (payload.alignmentChanged()) {
+                if (item is BlockView.Alignable) {
+                    item.alignment?.let { setAlignment(it) }
+                }
             }
         }
 

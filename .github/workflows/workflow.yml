@@ -1,6 +1,6 @@
 on:
   push:
-    branches: develop
+    branches: feature/411_alignment
 name: CI
 jobs:
   setup-android:

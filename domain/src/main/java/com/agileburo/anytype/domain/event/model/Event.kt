@@ -55,7 +55,8 @@ sealed class Event {
             val style: Text.Style? = null,
             val color: String? = null,
             val backgroundColor: String? = null,
-            val marks: List<Text.Mark>? = null
+            val marks: List<Text.Mark>? = null,
+            val alignment: Block.Align? = null
         ) : Command()
 
         /**

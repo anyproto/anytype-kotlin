@@ -69,6 +69,12 @@ fun Block.Content.File.toFileView(
     else -> throw IllegalStateException("Unexpected state: $state")
 }
 
+fun Block.Align.toView(): BlockView.Alignment = when (this) {
+    Block.Align.AlignLeft -> BlockView.Alignment.START
+    Block.Align.AlignCenter -> BlockView.Alignment.CENTER
+    Block.Align.AlignRight -> BlockView.Alignment.END
+}
+
 fun Block.Content.Text.marks(): List<Markup.Mark> = marks.mapNotNull { mark ->
     when (mark.type) {
         Block.Content.Text.Mark.Type.ITALIC -> {

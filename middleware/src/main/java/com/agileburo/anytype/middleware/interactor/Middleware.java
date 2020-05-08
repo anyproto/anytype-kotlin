@@ -282,6 +282,22 @@ public class Middleware {
         service.blockSetTextBackgroundColor(request);
     }
 
+    public void updateAlignment(CommandEntity.UpdateAlignment command) throws Exception {
+
+        Models.Block.Align align = mapper.toMiddleware(command.getAlignment());
+
+        BlockList.Set.Align.Request request = BlockList.Set.Align.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .addAllBlockIds(command.getTargets())
+                .setAlignValue(align.getNumber())
+                .build();
+
+        Timber.d("Updating alignment with the following request:\n%s", request.toString());
+
+        service.blockSetAlignment(request);
+    }
+
     public void uploadMediaBlockContent(CommandEntity.UploadBlock command) throws Exception {
         Block.Upload.Request request = Block.Upload.Request
                 .newBuilder()

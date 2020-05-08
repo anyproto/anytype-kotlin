@@ -31,7 +31,8 @@ sealed class EventEntity {
             val style: BlockEntity.Content.Text.Style? = null,
             val color: String? = null,
             val backgroundColor: String? = null,
-            val marks: List<BlockEntity.Content.Text.Mark>? = null
+            val marks: List<BlockEntity.Content.Text.Mark>? = null,
+            val alignment: BlockEntity.Align? = null
         ) : Command()
 
         data class LinkGranularChange(

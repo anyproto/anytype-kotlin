@@ -20,6 +20,10 @@ class BlockDataRepository(
         factory.remote.closeDashboard(id)
     }
 
+    override suspend fun updateAlignment(command: Command.UpdateAlignment) {
+        factory.remote.updateAlignment(command.toEntity())
+    }
+
     override suspend fun createPage(parentId: String) = factory.remote.createPage(parentId)
 
     override suspend fun openPage(id: String) {

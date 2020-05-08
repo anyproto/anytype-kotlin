@@ -12,6 +12,7 @@ interface BlockDataStore {
     suspend fun updateTextStyle(command: CommandEntity.UpdateStyle)
     suspend fun updateTextColor(command: CommandEntity.UpdateTextColor)
     suspend fun updateBackroundColor(command: CommandEntity.UpdateBackgroundColor)
+    suspend fun updateAlignment(command: CommandEntity.UpdateAlignment)
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun uploadUrl(command: CommandEntity.UploadBlock)
     suspend fun dnd(command: CommandEntity.Dnd)

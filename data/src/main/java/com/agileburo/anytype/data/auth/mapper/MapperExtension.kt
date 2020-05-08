@@ -140,7 +140,8 @@ fun BlockEntity.Content.Text.toDomain(): Block.Content.Text {
         style = Block.Content.Text.Style.valueOf(style.name),
         isChecked = isChecked,
         color = color,
-        backgroundColor = backgroundColor
+        backgroundColor = backgroundColor,
+        align = align?.toDomain()
     )
 }
 
@@ -433,6 +434,12 @@ fun Command.UpdateTitle.toEntity() = CommandEntity.UpdateTitle(
     title = title
 )
 
+fun Command.UpdateAlignment.toEntity(): CommandEntity.UpdateAlignment = CommandEntity.UpdateAlignment(
+    context = context,
+    targets = targets,
+    alignment = alignment.toEntity()
+)
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }
@@ -484,7 +491,8 @@ fun EventEntity.toDomain(): Event {
                     null,
                 color = color,
                 backgroundColor = backgroundColor,
-                marks = marks?.map { it.toDomain() }
+                marks = marks?.map { it.toDomain() },
+                alignment = alignment?.toDomain()
             )
         }
         is EventEntity.Command.LinkGranularChange -> {
@@ -559,3 +567,15 @@ fun Block.Prototype.toEntity(): BlockEntity.Prototype = when (this) {
 fun Block.Prototype.Page.toEntity() = BlockEntity.Prototype.Page(
     style = BlockEntity.Content.Page.Style.valueOf(style.name)
 )
+
+fun Block.Align.toEntity(): BlockEntity.Align = when (this) {
+    Block.Align.AlignLeft -> BlockEntity.Align.AlignLeft
+    Block.Align.AlignCenter -> BlockEntity.Align.AlignCenter
+    Block.Align.AlignRight -> BlockEntity.Align.AlignRight
+}
+
+fun BlockEntity.Align.toDomain(): Block.Align = when (this) {
+    BlockEntity.Align.AlignLeft -> Block.Align.AlignLeft
+    BlockEntity.Align.AlignCenter -> Block.Align.AlignCenter
+    BlockEntity.Align.AlignRight -> Block.Align.AlignRight
+}

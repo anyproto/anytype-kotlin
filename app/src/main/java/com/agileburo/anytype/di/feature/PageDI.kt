@@ -71,7 +71,8 @@ class PageModule {
         replaceBlock: ReplaceBlock,
         patternMatcher: DefaultPatternMatcher,
         updateTitle: UpdateTitle,
-        selectionStateHolder: SelectionStateHolder
+        selectionStateHolder: SelectionStateHolder,
+        updateAlignment: UpdateBlockAlignment
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -102,7 +103,8 @@ class PageModule {
         replaceBlock = replaceBlock,
         patternMatcher = patternMatcher,
         updateTitle = updateTitle,
-        selectionStateHolder = selectionStateHolder
+        selectionStateHolder = selectionStateHolder,
+        updateAlignment = updateAlignment
     )
 
     @Provides
@@ -215,6 +217,14 @@ class PageModule {
     fun provideUpdateTextColorUseCase(
         repo: BlockRepository
     ): UpdateTextColor = UpdateTextColor(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideUpdateAlignmentUseCase(
+        repo: BlockRepository
+    ): UpdateBlockAlignment = UpdateBlockAlignment(
         repo = repo
     )
 

@@ -14,4 +14,8 @@ class MiddlewareMapper {
     fun toMiddleware(position: PositionEntity): Block.Position {
         return position.toMiddleware()
     }
+
+    fun toMiddleware(alignment: BlockEntity.Align): Block.Align {
+        return alignment.toMiddleware()
+    }
 }

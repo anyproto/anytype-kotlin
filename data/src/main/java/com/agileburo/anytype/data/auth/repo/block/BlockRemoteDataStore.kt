@@ -48,6 +48,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         remote.updateCheckbox(command)
     }
 
+    override suspend fun updateAlignment(command: CommandEntity.UpdateAlignment) {
+        remote.updateAlignment(command)
+    }
+
     override suspend fun uploadUrl(command: CommandEntity.UploadBlock) {
         remote.uploadUrl(command)
     }

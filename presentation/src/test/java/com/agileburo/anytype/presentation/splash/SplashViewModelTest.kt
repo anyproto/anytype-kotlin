@@ -1,12 +1,15 @@
 package com.agileburo.anytype.presentation.splash
 
+import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.agileburo.anytype.domain.auth.interactor.LaunchAccount
 import com.agileburo.anytype.domain.auth.interactor.LaunchWallet
 import com.agileburo.anytype.domain.auth.model.AuthStatus
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.presentation.navigation.AppNavigation
+import com.agileburo.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
@@ -20,6 +23,9 @@ class SplashViewModelTest {
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
+
+    @get:Rule
+    val coroutineTestRule = CoroutinesTestRule()
 
     @Mock
     lateinit var checkAuthorizationStatus: CheckAuthorizationStatus
@@ -44,15 +50,37 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun `should not execute use case when view model is created`() = runBlocking {
-        verify(checkAuthorizationStatus, times(0)).invoke(any(), any(), any())
-        verifyNoMoreInteractions(checkAuthorizationStatus)
+    fun `should not execute use case when view model is created`() {
+
+        val status = AuthStatus.AUTHORIZED
+        val response = Either.Right(status)
+
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
+
+        runBlocking {
+            verify(checkAuthorizationStatus, times(0)).invoke(any(), any(), any())
+            verify(checkAuthorizationStatus, times(0)).invoke(any())
+            verifyNoMoreInteractions(checkAuthorizationStatus)
+        }
     }
 
     @Test
-    fun `should start executing use case when view is created`() = runBlocking {
+    fun `should start executing use case when view is created`() {
+
+        val status = AuthStatus.AUTHORIZED
+        val response = Either.Right(status)
+
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
+
         vm.onViewCreated()
-        verify(checkAuthorizationStatus, times(1)).invoke(any(), any(), any())
+
+        runBlocking {
+            verify(checkAuthorizationStatus, times(1)).invoke(any())
+        }
     }
 
     @Test
@@ -62,15 +90,15 @@ class SplashViewModelTest {
 
         val response = Either.Right(status)
 
-        checkAuthorizationStatus.stub {
-            on { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, AuthStatus>) -> Unit>(2)(response)
-            }
-        }
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
 
         vm.onViewCreated()
 
-        verify(launchWallet, times(1)).invoke(any(), any(), any())
+        runBlocking {
+            verify(launchWallet, times(1)).invoke(any())
+        }
     }
 
     @Test
@@ -80,22 +108,16 @@ class SplashViewModelTest {
 
         val response = Either.Right(status)
 
-        checkAuthorizationStatus.stub {
-            on { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, AuthStatus>) -> Unit>(2)(response)
-            }
-        }
-
-        launchWallet.stub {
-            on { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
 
         vm.onViewCreated()
 
-        verify(launchWallet, times(1)).invoke(any(), any(), any())
-        verify(launchAccount, times(1)).invoke(any(), any(), any())
+        runBlocking {
+            verify(launchWallet, times(1)).invoke(any())
+            verify(launchAccount, times(1)).invoke(any())
+        }
     }
 
     @Test
@@ -105,23 +127,9 @@ class SplashViewModelTest {
 
         val response = Either.Right(status)
 
-        checkAuthorizationStatus.stub {
-            on { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, AuthStatus>) -> Unit>(2)(response)
-            }
-        }
-
-        launchAccount.stub {
-            on { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
-
-        launchWallet.stub {
-            on { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
+        stubCheckAuthStatus(response)
+        stubLaunchAccount()
+        stubLaunchWallet()
 
         vm.onViewCreated()
 
@@ -137,16 +145,62 @@ class SplashViewModelTest {
 
         val response = Either.Right(status)
 
-        checkAuthorizationStatus.stub {
-            on { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, AuthStatus>) -> Unit>(2)(response)
-            }
-        }
+        stubCheckAuthStatus(response)
 
         vm.onViewCreated()
 
         vm.navigation.test().assertValue { value ->
             value.peekContent() == AppNavigation.Command.OpenStartLoginScreen
+        }
+    }
+
+    @Test
+    fun `should retry launching wallet after failed launch and emit error`() {
+
+        // SETUP
+
+        val status = AuthStatus.AUTHORIZED
+
+        val response = Either.Right(status)
+
+        val exception = Exception(MockDataFactory.randomString())
+
+        stubCheckAuthStatus(response)
+
+        stubLaunchWallet(response = Either.Left(exception))
+
+        // TESTING
+
+        val state = vm.state.test()
+
+        state.assertNoValue()
+
+        vm.onViewCreated()
+
+        state.assertValue { value -> value is ViewState.Error }
+
+        runBlocking {
+            verify(launchWallet, times(2)).invoke(any())
+        }
+    }
+
+    private fun stubCheckAuthStatus(response: Either.Right<AuthStatus>) {
+        checkAuthorizationStatus.stub {
+            onBlocking { invoke(eq(Unit)) } doReturn response
+        }
+    }
+
+    private fun stubLaunchWallet(
+        response: Either<Throwable, Unit> = Either.Right(Unit)
+    ) {
+        launchWallet.stub {
+            onBlocking { invoke(any()) } doReturn response
+        }
+    }
+
+    private fun stubLaunchAccount() {
+        launchAccount.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
         }
     }
 }

@@ -1,14 +1,14 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white">
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:src="@drawable/ic_logo" />
 
     <TextView
@@ -20,5 +20,19 @@
         android:fontFamily="monospace"
         android:textSize="12sp"
         tools:text="0.0.10" />
+
+    <TextView
+        android:id="@+id/error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="100dp"
+        android:fontFamily="monospace"
+        android:text="@string/failed_to_launch_wallet"
+        android:textColor="#FF5722"
+        android:textSize="10sp"
+        android:visibility="invisible"
+        tools:ignore="SmallSp"
+        tools:visibility="visible" />
 
 </FrameLayout>

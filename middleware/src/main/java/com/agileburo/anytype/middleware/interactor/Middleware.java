@@ -90,6 +90,8 @@ public class Middleware {
                 .setRootPath(path)
                 .build();
 
+        Timber.d("Recovering wallet...");
+
         service.walletRecover(request);
     }
 

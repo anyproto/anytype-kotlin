@@ -2,9 +2,13 @@ package com.agileburo.anytype.ui.splash
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.extensions.visible
+import com.agileburo.anytype.core_utils.ext.toast
+import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.splash.SplashViewModel
 import com.agileburo.anytype.presentation.splash.SplashViewModelFactory
@@ -17,7 +21,7 @@ import javax.inject.Inject
  * email :  ki@agileburo.com
  * on 2019-10-21.
  */
-class SplashFragment : NavigationFragment(R.layout.fragment_splash) {
+class SplashFragment : NavigationFragment(R.layout.fragment_splash), Observer<ViewState<Nothing>> {
 
     @Inject
     lateinit var factory: SplashViewModelFactory
@@ -30,13 +34,21 @@ class SplashFragment : NavigationFragment(R.layout.fragment_splash) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.navigation.observe(this, navObserver)
+        vm.navigation.observe(viewLifecycleOwner, navObserver)
+        vm.state.observe(viewLifecycleOwner, this)
         vm.onViewCreated()
         showVersion()
     }
 
     private fun showVersion() {
         version.text = BuildConfig.VERSION_NAME
+    }
+
+    override fun onChanged(state: ViewState<Nothing>) {
+        if (state is ViewState.Error) {
+            toast(state.error)
+            error.visible()
+        }
     }
 
     override fun injectDependencies() {

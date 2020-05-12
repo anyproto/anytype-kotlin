@@ -1278,6 +1278,9 @@ class PageViewModel(
                     is BlockView.Toggle -> block.copy(isSelected = true).also {
                         select(block.id)
                     }
+                    is BlockView.Code -> block.copy(isSelected = true).also {
+                        select(block.id)
+                    }
                     else -> block
                 }
             }
@@ -1519,6 +1522,7 @@ class PageViewModel(
                             is BlockView.Bulleted -> block.copy(isSelected = isSelected(target))
                             is BlockView.Numbered -> block.copy(isSelected = isSelected(target))
                             is BlockView.Toggle -> block.copy(isSelected = isSelected(target))
+                            is BlockView.Code -> block.copy(isSelected = isSelected(target))
                             else -> block
                         }
                     else

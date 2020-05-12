@@ -193,5 +193,6 @@
     <string name="more">More</string>
     <string name="done">Done</string>
     <string name="select_or_drag_and_drop_blocks">Select or drag and drop blocks</string>
+    <string name="block_code_menu_title">Language</string>
 
 </resources>

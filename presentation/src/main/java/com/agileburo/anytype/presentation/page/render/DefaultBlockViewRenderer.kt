@@ -111,7 +111,7 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.CODE_SNIPPET -> {
                             counter.reset()
-                            result.add(code(block, content))
+                            result.add(code(mode, block, content, focus))
                         }
                         Content.Text.Style.BULLET -> {
                             counter.reset()
@@ -270,11 +270,15 @@ class DefaultBlockViewRenderer(
     )
 
     private fun code(
+        mode: EditorMode,
         block: Block,
-        content: Content.Text
+        content: Content.Text,
+        focus: Id
     ): BlockView.Code = BlockView.Code(
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
-        snippet = content.text
+        text = content.text,
+        focused = block.id == focus
     )
 
     private fun highlight(

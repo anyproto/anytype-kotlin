@@ -355,6 +355,7 @@ fun Block.Content.Text.Style.entity(): BlockEntity.Content.Text.Style = when (th
     Block.Content.Text.Style.Numbered -> BlockEntity.Content.Text.Style.NUMBERED
     Block.Content.Text.Style.Toggle -> BlockEntity.Content.Text.Style.TOGGLE
     Block.Content.Text.Style.Checkbox -> BlockEntity.Content.Text.Style.CHECKBOX
+    Block.Content.Text.Style.Code -> BlockEntity.Content.Text.Style.CODE_SNIPPET
     else -> throw IllegalStateException("Unexpected text style: $this")
 }
 
@@ -369,6 +370,7 @@ fun BlockEntity.Content.Text.Style.toMiddleware(): Block.Content.Text.Style = wh
     BlockEntity.Content.Text.Style.NUMBERED -> Block.Content.Text.Style.Numbered
     BlockEntity.Content.Text.Style.TOGGLE -> Block.Content.Text.Style.Toggle
     BlockEntity.Content.Text.Style.CHECKBOX -> Block.Content.Text.Style.Checkbox
+    BlockEntity.Content.Text.Style.CODE_SNIPPET -> Block.Content.Text.Style.Code
     else -> throw IllegalStateException("Unexpected text style: $this")
 }
 

@@ -2,9 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/item_block_code_multi_select_mode_selector"
-    android:layout_marginTop="1dp"
-    android:layout_marginBottom="1dp"
+    android:background="#F3F2EC"
     android:paddingStart="20dp"
     android:orientation="vertical"
     android:layout_height="wrap_content">
@@ -17,14 +15,13 @@
         style="@style/BlockCodeLanguageMenuStyle"
         android:text="@string/block_code_menu_title"/>
 
-    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+    <TextView
         android:id="@+id/snippet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/BlockCodeContentStyle"
         android:paddingTop="23dp"
         android:paddingBottom="30dp"
-        style="@style/BlockCodeContentStyle"
-        android:text="No content yet"
         android:fontFamily="monospace"
         tools:text="@string/default_text_placeholder" />
 

@@ -227,8 +227,11 @@ sealed class BlockView : ViewType, Parcelable {
     @Parcelize
     data class Code(
         override val id: String,
-        val snippet: String
-    ) : BlockView() {
+        val text: String,
+        override val mode: Mode = Mode.EDIT,
+        override var focused: Boolean = false,
+        override val isSelected: Boolean = false
+    ) : BlockView(), Permission, Selectable, Focusable {
         override fun getViewType() = HOLDER_CODE_SNIPPET
     }
 

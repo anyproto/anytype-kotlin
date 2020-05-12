@@ -465,6 +465,12 @@ class BlockAdapter(
                         item = blocks[position]
                     )
                 }
+                is BlockViewHolder.Code -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
                 else -> throw IllegalStateException("Unexpected view holder: $holder")
             }
         }
@@ -515,7 +521,11 @@ class BlockAdapter(
             }
             is BlockViewHolder.Code -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Code
+                    item = blocks[position] as BlockView.Code,
+                    onTextChanged = onTextChanged,
+                    onSelectionChanged = onSelectionChanged,
+                    onFocusChanged = onFocusChanged,
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Checkbox -> {

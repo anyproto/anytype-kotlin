@@ -1,4 +1,4 @@
-package com.agileburo.anytype.feature_desktop.utils
+package com.agileburo.anytype.ui.desktop
 
 import androidx.recyclerview.widget.DiffUtil
 import com.agileburo.anytype.presentation.desktop.DashboardView

@@ -408,6 +408,7 @@ open class PageFragment :
             UiBlock.BULLETED -> vm.onAddTextBlockClicked(Text.Style.BULLET)
             UiBlock.NUMBERED -> vm.onAddTextBlockClicked(Text.Style.NUMBERED)
             UiBlock.TOGGLE -> vm.onAddTextBlockClicked(Text.Style.TOGGLE)
+            UiBlock.CODE -> vm.onAddTextBlockClicked(Text.Style.CODE_SNIPPET)
             UiBlock.PAGE -> vm.onAddNewPageClicked()
             UiBlock.FILE -> vm.onAddFileBlockClicked()
             UiBlock.IMAGE -> vm.onAddImageBlockClicked()

@@ -506,12 +506,51 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Code(view: View) : BlockViewHolder(view) {
+    class Code(view: View) : BlockViewHolder(view), TextHolder {
 
-        private val code = itemView.snippet
+        override val root: View
+            get() = itemView
+        override val content: TextInputWidget
+            get() = itemView.snippet
 
-        fun bind(item: BlockView.Code) {
-            code.text = item.snippet
+        fun bind(item: BlockView.Code,
+                 onTextChanged: (String, Editable) -> Unit,
+                 onSelectionChanged: (String, IntRange) -> Unit,
+                 onFocusChanged: (String, Boolean) -> Unit,
+                 onLongClickListener: (String) -> Unit) {
+            if (item.mode == BlockView.Mode.READ) {
+                content.setText(item.text)
+                enableReadOnlyMode()
+                select(item)
+            } else {
+                enableEditMode()
+
+                select(item)
+
+                content.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = onLongClickListener
+                    )
+                )
+
+                content.clearTextWatchers()
+
+                content.setText(item.text)
+                setFocus(item)
+
+                setupTextWatcher(onTextChanged, item)
+
+                content.setOnFocusChangeListener { _, focused ->
+                    item.focused = focused
+                    onFocusChanged(item.id, focused)
+                }
+                content.selectionDetector = { onSelectionChanged(item.id, it) }
+            }
+        }
+
+        override fun select(item: BlockView.Selectable) {
+            root.isSelected = item.isSelected
         }
     }
 

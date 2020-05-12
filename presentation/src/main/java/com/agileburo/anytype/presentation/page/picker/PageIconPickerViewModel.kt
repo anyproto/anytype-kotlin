@@ -149,10 +149,25 @@ class PageIconPickerViewModel(
         emojis.map { emoji ->
             PageIconPickerView.Emoji(
                 alias = emoji.aliases.first(),
-                unicode = emoji.unicode
+                /**
+                 * Fix pirate flag emoji render, after fixing
+                 * in table https://github.com/vdurmont/emoji-java/blob/master/EMOJIS.md
+                 * can be removed
+                 */
+                unicode = emoji.unicode.filterTextByChar(
+                    value = '☠',
+                    filterBy = '♾'
+                )
             )
         }
     }
+
+    private fun String.filterTextByChar(value: Char, filterBy: Char): String =
+        if (contains(value)) {
+            filterNot { it == filterBy }
+        } else {
+            this
+        }
 
     fun onEvent(event: Event) {
         channel.offer(event)

@@ -10,7 +10,15 @@ class DefaultEmojifier : Emojifier {
         check(alias.isNotEmpty()) { "Alias cannot be empty" }
         return EmojiManager.getForAlias(alias).let { result ->
             Emoji(
-                unicode = result.unicode,
+                /**
+                 * Fix pirate flag emoji render, after fixing
+                 * in table https://github.com/vdurmont/emoji-java/blob/master/EMOJIS.md
+                 * can be removed
+                 */
+                unicode = result.unicode.filterTextByChar(
+                    value = '☠',
+                    filterBy = '♾'
+                ),
                 alias = result.aliases.first()
             )
         }
@@ -22,3 +30,10 @@ class DefaultEmojifier : Emojifier {
         return fromAlias(alias)
     }
 }
+
+fun String.filterTextByChar(value: Char, filterBy: Char): String =
+    if (contains(value)) {
+        filterNot { it == filterBy }
+    } else {
+        this
+    }

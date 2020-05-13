@@ -12,6 +12,7 @@
 * Consuming event payload from middleware callaback responses (#408)
 * Hard-coded alpha invite code for internal use (#408)
 * `PageViewModel` refactoring (#408)
+* Better logging for middleware requests and responses (#421)
 
 ### Middleware ⚙️
 

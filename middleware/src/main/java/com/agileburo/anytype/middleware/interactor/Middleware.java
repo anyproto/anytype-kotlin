@@ -45,8 +45,17 @@ public class Middleware {
 
     public ConfigEntity getConfig() throws Exception {
         Config.Get.Request request = Config.Get.Request.newBuilder().build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
         Config.Get.Response response = service.configGet(request);
-        Timber.d("Got config:\n%s", response.toString());
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
         return new ConfigEntity(response.getHomeBlockId(), response.getGatewayUrl());
     }
 
@@ -56,7 +65,15 @@ public class Middleware {
                 .setRootPath(path)
                 .build();
 
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
         Wallet.Create.Response response = service.walletCreate(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return new CreateWalletResponse(response.getMnemonic());
     }
@@ -83,7 +100,15 @@ public class Middleware {
                     .build();
         }
 
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
         Account.Create.Response response = service.accountCreate(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return new CreateAccountResponse(
                 response.getAccount().getId(),
@@ -99,9 +124,15 @@ public class Middleware {
                 .setRootPath(path)
                 .build();
 
-        Timber.d("Recovering wallet...");
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
-        service.walletRecover(request);
+        Wallet.Recover.Response response = service.walletRecover(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public void logout() throws Exception {
@@ -109,7 +140,15 @@ public class Middleware {
                 .newBuilder()
                 .build();
 
-        service.accountStop(request);
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Account.Stop.Response response = service.accountStop(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public void recoverAccount() throws Exception {
@@ -124,7 +163,15 @@ public class Middleware {
                 .setRootPath(path)
                 .build();
 
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
         Account.Select.Response response = service.accountSelect(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return new SelectAccountResponse(
                 response.getAccount().getId(),
@@ -140,9 +187,15 @@ public class Middleware {
                 .setBlockId(id)
                 .build();
 
-        Timber.d("Opening home dashboard with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         Block.Open.Response response = service.blockOpen(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return mapper.toPayload(response.getEvent());
     }
@@ -153,9 +206,15 @@ public class Middleware {
                 .setBlockId(id)
                 .build();
 
-        Timber.d("Opening page with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         Block.Open.Response response = service.blockOpen(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return mapper.toPayload(response.getEvent());
     }
@@ -167,9 +226,16 @@ public class Middleware {
                 .setPosition(Models.Block.Position.Inner)
                 .build();
 
-        Timber.d("Creating page with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         Block.CreatePage.Response response = service.blockCreatePage(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
         return response.getTargetId();
     }
 
@@ -179,7 +245,15 @@ public class Middleware {
                 .setBlockId(id)
                 .build();
 
-        service.blockClose(request);
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Block.Close.Response response = service.blockClose(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public void closeDashboard(String id) throws Exception {
@@ -188,9 +262,15 @@ public class Middleware {
                 .setBlockId(id)
                 .build();
 
-        Timber.d("Closing dashboard with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
-        service.blockClose(request);
+        Block.Close.Response response = service.blockClose(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public void updateDocumentTitle(CommandEntity.UpdateTitle command) throws Exception {
@@ -209,9 +289,15 @@ public class Middleware {
                 .addDetails(details)
                 .build();
 
-        Timber.d("Updating doc. title with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
-        service.blockSetDetails(request);
+        Block.Set.Details.Response response = service.blockSetDetails(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public void updateText(
@@ -220,7 +306,6 @@ public class Middleware {
             String text,
             List<Models.Block.Content.Text.Mark> marks
     ) throws Exception {
-        Timber.d("Updating block with the follwing text:\n%s", text);
 
         Models.Block.Content.Text.Marks markup = Models.Block.Content.Text.Marks
                 .newBuilder()
@@ -235,9 +320,15 @@ public class Middleware {
                 .setText(text)
                 .build();
 
-        Timber.d("Updating block with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
-        service.blockSetTextText(request);
+        Block.Set.Text.TText.Response response = service.blockSetTextText(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public void updateCheckbox(
@@ -252,7 +343,15 @@ public class Middleware {
                 .setChecked(isChecked)
                 .build();
 
-        service.blockSetTextChecked(request);
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Block.Set.Text.Checked.Response response = service.blockSetTextChecked(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public void updateTextStyle(CommandEntity.UpdateStyle command) throws Exception {
@@ -266,9 +365,15 @@ public class Middleware {
                 .setContextId(command.getContext())
                 .build();
 
-        Timber.d("Updating text style with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
-        service.blockSetTextStyle(request);
+        BlockList.Set.Text.Style.Response response = service.blockSetTextStyle(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public PayloadEntity updateTextColor(CommandEntity.UpdateTextColor command) throws Exception {
@@ -279,9 +384,15 @@ public class Middleware {
                 .setColor(command.getColor())
                 .build();
 
-        Timber.d("Updating text color with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         Block.Set.Text.Color.Response response = service.blockSetTextColor(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return mapper.toPayload(response.getEvent());
     }
@@ -294,9 +405,15 @@ public class Middleware {
                 .setColor(command.getColor())
                 .build();
 
-        Timber.d("Updating background color with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         BlockList.Set.BackgroundColor.Response response = service.blockSetTextBackgroundColor(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return mapper.toPayload(response.getEvent());
     }
@@ -312,9 +429,15 @@ public class Middleware {
                 .setAlignValue(align.getNumber())
                 .build();
 
-        Timber.d("Updating alignment with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         BlockList.Set.Align.Response response = service.blockSetAlignment(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return mapper.toPayload(response.getEvent());
     }
@@ -328,9 +451,15 @@ public class Middleware {
                 .setBlockId(command.getBlockId())
                 .build();
 
-        Timber.d("Upload video block url with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
-        service.blockUpload(request);
+        Block.Upload.Response response = service.blockUpload(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public Pair<String, PayloadEntity> createBlock(
@@ -376,9 +505,15 @@ public class Middleware {
                 .setBlock(model)
                 .build();
 
-        Timber.i("Replacing block with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         Block.Create.Response response = service.blockCreate(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return new Pair<>(response.getBlockId(), mapper.toPayload(response.getEvent()));
     }
@@ -394,9 +529,15 @@ public class Middleware {
                 .setPosition(position)
                 .build();
 
-        Timber.d("Creating new document with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         Block.CreatePage.Response response = service.blockCreatePage(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return new Pair<>(response.getBlockId(), response.getTargetId());
     }
@@ -412,7 +553,15 @@ public class Middleware {
                 .setDropTargetId(command.getDropTargetId())
                 .build();
 
-        service.blockListMove(request);
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        BlockList.Move.Response response = service.blockListMove(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public Pair<String, PayloadEntity> duplicate(CommandEntity.Duplicate command) throws Exception {
@@ -424,9 +573,15 @@ public class Middleware {
                 .setPosition(Models.Block.Position.Bottom)
                 .build();
 
-        Timber.d("Duplicating blocks with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         BlockList.Duplicate.Response response = service.blockListDuplicate(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return new Pair<>(response.getBlockIds(0), mapper.toPayload(response.getEvent()));
     }
@@ -438,9 +593,15 @@ public class Middleware {
                 .addAllBlockIds(command.getTargets())
                 .build();
 
-        Timber.d("Unlinking blocks with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         Block.Unlink.Response response = service.blockUnlink(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return mapper.toPayload(response.getEvent());
     }
@@ -453,9 +614,15 @@ public class Middleware {
                 .setSecondBlockId(command.getPair().getSecond())
                 .build();
 
-        Timber.d("Merging blocks with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         Block.Merge.Response response = service.blockMerge(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return mapper.toPayload(response.getEvent());
     }
@@ -475,9 +642,15 @@ public class Middleware {
                 .setRange(range)
                 .build();
 
-        Timber.d("Splitting the target block with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         Block.Split.Response response = service.blockSplit(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
 
         return new Pair<>(response.getBlockId(), mapper.toPayload(response.getEvent()));
     }
@@ -498,9 +671,15 @@ public class Middleware {
                 .addDetails(details)
                 .build();
 
-        Timber.d("Setting icon details with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
-        service.blockSetDetails(request);
+        Block.Set.Details.Response response = service.blockSetDetails(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public void setupBookmark(CommandEntity.SetupBookmark command) throws Exception {
@@ -511,9 +690,15 @@ public class Middleware {
                 .setUrl(command.getUrl())
                 .build();
 
-        Timber.d("Fetching bookmark with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
-        service.blockBookmarkFetch(request);
+        Block.Bookmark.Fetch.Response response = service.blockBookmarkFetch(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public void undo(CommandEntity.Undo command) throws Exception {
@@ -522,9 +707,15 @@ public class Middleware {
                 .setContextId(command.getContext())
                 .build();
 
-        Timber.d("Undoing changes with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
-        service.blockUndo(request);
+        Block.Undo.Response response = service.blockUndo(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public void redo(CommandEntity.Redo command) throws Exception {
@@ -533,9 +724,15 @@ public class Middleware {
                 .setContextId(command.getContext())
                 .build();
 
-        Timber.d("Redoing changes with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
-        service.blockRedo(request);
+        Block.Redo.Response response = service.blockRedo(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 
     public void archiveDocument(CommandEntity.ArchiveDocument command) throws Exception {
@@ -546,8 +743,14 @@ public class Middleware {
                 .setIsArchived(true)
                 .build();
 
-        Timber.d("Archiving document with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
-        service.blockSetPageIsArchived(request);
+        Block.Set.Page.IsArchived.Response response = service.blockSetPageIsArchived(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
     }
 }

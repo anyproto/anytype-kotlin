@@ -16,6 +16,7 @@ message Event {
     message Message {
         oneof value {
             Account.Show accountShow = 1;
+            Account.Details accountDetails = 201;
 
             Block.Add blockAdd = 2;
             Block.Delete blockDelete = 3;
@@ -33,6 +34,7 @@ message Event {
             Block.Set.Bookmark blockSetBookmark = 14;
             Block.Set.Align blockSetAlign = 15;
             Block.Set.Details blockSetDetails = 16;
+            Block.Set.Div blockSetDiv = 17;
 
             Block.Show blockShow = 20;
             User.Block.Join userBlockJoin = 21;
@@ -56,6 +58,11 @@ message Event {
             int32 index = 1; // Number of an account in an all found accounts list
             anytype.model.Account account = 2; // An Account, that has been found for the mnemonic
         }
+
+        message Details {
+            string profileId = 1;
+            google.protobuf.Struct details = 2;
+        }
     }
     message Block {
         /*
@@ -75,13 +82,14 @@ message Event {
         }
 
         /*
-         * Works with a smart blocks: Page, Dashboard
-         * Dashboard opened, click on a page, Rpc.Block.open, Block.ShowFullscreen(PageBlock)
+          * Works with a smart blocks: Page, Dashboard
+          * Dashboard opened, click on a page, Rpc.Block.open, Block.ShowFullscreen(PageBlock)
         */
         message Show {
             string rootId = 1; // Root block id
             repeated anytype.model.Block blocks = 2; // dependent blocks (descendants)
             repeated Block.Set.Details details = 3; // details for current and dependent smart blocks
+            SmartBlockType type = 4;
         }
 
         /**
@@ -168,6 +176,16 @@ message Event {
                 }
 
             }
+
+            message Div {
+                string id = 1;
+                Style style = 2;
+
+                message Style {
+                    anytype.model.Block.Content.Div.Style value = 1;
+                }
+            }
+
 
             message File {
                 string id = 1;
@@ -329,6 +347,19 @@ message Event {
         }
     }
 
+}
+
+enum SmartBlockType {
+    Page = 0;
+    Home = 1;
+    ProfilePage = 2;
+    Archive = 3;
+    Breadcrumbs = 4;
+}
+
+message ResponseEvent {
+    repeated Event.Message messages = 1;
+    string contextId = 2;
 }
 
 message Model {

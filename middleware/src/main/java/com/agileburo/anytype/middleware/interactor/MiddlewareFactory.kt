@@ -34,12 +34,7 @@ class MiddlewareFactory {
                 }
                 builder.setFile(file).build()
             }
-            is BlockEntity.Prototype.Page -> {
-                val page = Block.Content.Page.newBuilder().apply {
-                    style = Block.Content.Page.Style.Empty
-                }
-                builder.setPage(page).build()
-            }
+            else -> throw IllegalStateException("Unexpected prototype: $prototype")
         }
     }
 }

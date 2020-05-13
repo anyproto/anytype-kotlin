@@ -8,6 +8,7 @@ import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.event.model.Payload
 
 /**
  * Use-case for creating a block.
@@ -15,7 +16,7 @@ import com.agileburo.anytype.domain.common.Id
  */
 open class CreateBlock(
     private val repo: BlockRepository
-) : BaseUseCase<Id, Params>() {
+) : BaseUseCase<Pair<Id, Payload>, Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.create(

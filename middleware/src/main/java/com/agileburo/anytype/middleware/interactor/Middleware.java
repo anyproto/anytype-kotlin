@@ -3,7 +3,9 @@ package com.agileburo.anytype.middleware.interactor;
 import com.agileburo.anytype.data.auth.model.BlockEntity;
 import com.agileburo.anytype.data.auth.model.CommandEntity;
 import com.agileburo.anytype.data.auth.model.ConfigEntity;
+import com.agileburo.anytype.data.auth.model.PayloadEntity;
 import com.agileburo.anytype.data.auth.model.PositionEntity;
+import com.agileburo.anytype.middleware.BuildConfig;
 import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
 import com.agileburo.anytype.middleware.model.SelectAccountResponse;
@@ -18,6 +20,7 @@ import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
 import anytype.Commands.Rpc.Wallet;
 import anytype.model.Models;
+import anytype.model.Models.Range;
 import kotlin.Pair;
 import timber.log.Timber;
 
@@ -59,18 +62,24 @@ public class Middleware {
     }
 
     public CreateAccountResponse createAccount(String name, String path) throws Exception {
+
         Account.Create.Request request;
+
+        // TODO remove hard-coded alpha invite code when no longer needed
+        String code = "elbrus";
 
         if (path != null) {
             request = Account.Create.Request
                     .newBuilder()
                     .setName(name)
                     .setAvatarLocalPath(path)
+                    .setAlphaInviteCode(code)
                     .build();
         } else {
             request = Account.Create.Request
                     .newBuilder()
                     .setName(name)
+                    .setAlphaInviteCode(code)
                     .build();
         }
 
@@ -124,7 +133,7 @@ public class Middleware {
         );
     }
 
-    public void openDashboard(String contextId, String id) throws Exception {
+    public PayloadEntity openDashboard(String contextId, String id) throws Exception {
         Block.Open.Request request = Block.Open.Request
                 .newBuilder()
                 .setContextId(contextId)
@@ -133,10 +142,12 @@ public class Middleware {
 
         Timber.d("Opening home dashboard with the following request:\n%s", request.toString());
 
-        service.blockOpen(request);
+        Block.Open.Response response = service.blockOpen(request);
+
+        return mapper.toPayload(response.getEvent());
     }
 
-    public void openBlock(String id) throws Exception {
+    public PayloadEntity openBlock(String id) throws Exception {
         Block.Open.Request request = Block.Open.Request
                 .newBuilder()
                 .setBlockId(id)
@@ -144,7 +155,9 @@ public class Middleware {
 
         Timber.d("Opening page with the following request:\n%s", request.toString());
 
-        service.blockOpen(request);
+        Block.Open.Response response = service.blockOpen(request);
+
+        return mapper.toPayload(response.getEvent());
     }
 
     public String createPage(String parentId) throws Exception {
@@ -258,7 +271,7 @@ public class Middleware {
         service.blockSetTextStyle(request);
     }
 
-    public void updateTextColor(CommandEntity.UpdateTextColor command) throws Exception {
+    public PayloadEntity updateTextColor(CommandEntity.UpdateTextColor command) throws Exception {
         Block.Set.Text.Color.Request request = Block.Set.Text.Color.Request
                 .newBuilder()
                 .setContextId(command.getContext())
@@ -268,10 +281,12 @@ public class Middleware {
 
         Timber.d("Updating text color with the following request:\n%s", request.toString());
 
-        service.blockSetTextColor(request);
+        Block.Set.Text.Color.Response response = service.blockSetTextColor(request);
+
+        return mapper.toPayload(response.getEvent());
     }
 
-    public void updateBackgroundColor(CommandEntity.UpdateBackgroundColor command) throws Exception {
+    public PayloadEntity updateBackgroundColor(CommandEntity.UpdateBackgroundColor command) throws Exception {
         BlockList.Set.BackgroundColor.Request request = BlockList.Set.BackgroundColor.Request
                 .newBuilder()
                 .setContextId(command.getContext())
@@ -281,10 +296,12 @@ public class Middleware {
 
         Timber.d("Updating background color with the following request:\n%s", request.toString());
 
-        service.blockSetTextBackgroundColor(request);
+        BlockList.Set.BackgroundColor.Response response = service.blockSetTextBackgroundColor(request);
+
+        return mapper.toPayload(response.getEvent());
     }
 
-    public void updateAlignment(CommandEntity.UpdateAlignment command) throws Exception {
+    public PayloadEntity updateAlignment(CommandEntity.UpdateAlignment command) throws Exception {
 
         Models.Block.Align align = mapper.toMiddleware(command.getAlignment());
 
@@ -297,7 +314,9 @@ public class Middleware {
 
         Timber.d("Updating alignment with the following request:\n%s", request.toString());
 
-        service.blockSetAlignment(request);
+        BlockList.Set.Align.Response response = service.blockSetAlignment(request);
+
+        return mapper.toPayload(response.getEvent());
     }
 
     public void uploadMediaBlockContent(CommandEntity.UploadBlock command) throws Exception {
@@ -314,7 +333,7 @@ public class Middleware {
         service.blockUpload(request);
     }
 
-    public String createBlock(
+    public Pair<String, PayloadEntity> createBlock(
             String contextId,
             String targetId,
             PositionEntity position,
@@ -333,14 +352,20 @@ public class Middleware {
                 .setBlock(model)
                 .build();
 
-        Timber.d("Creating block with the following request:\n%s", request.toString());
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
 
         Block.Create.Response response = service.blockCreate(request);
 
-        return response.getBlockId();
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return new Pair<>(response.getBlockId(), mapper.toPayload(response.getEvent()));
     }
 
-    public String replace(CommandEntity.Replace command) throws Exception {
+    public Pair<String, PayloadEntity> replace(CommandEntity.Replace command) throws Exception {
         Models.Block model = factory.create(command.getPrototype());
 
         Block.Create.Request request = Block.Create.Request
@@ -351,11 +376,11 @@ public class Middleware {
                 .setBlock(model)
                 .build();
 
-        Timber.d("Replacing block with the following request:\n%s", request.toString());
+        Timber.i("Replacing block with the following request:\n%s", request.toString());
 
         Block.Create.Response response = service.blockCreate(request);
 
-        return response.getBlockId();
+        return new Pair<>(response.getBlockId(), mapper.toPayload(response.getEvent()));
     }
 
     public Pair<String, String> createDocument(CommandEntity.CreateDocument command) throws Exception {
@@ -390,7 +415,7 @@ public class Middleware {
         service.blockListMove(request);
     }
 
-    public String duplicate(CommandEntity.Duplicate command) throws Exception {
+    public Pair<String, PayloadEntity> duplicate(CommandEntity.Duplicate command) throws Exception {
         BlockList.Duplicate.Request request = BlockList.Duplicate.Request
                 .newBuilder()
                 .setContextId(command.getContext())
@@ -403,10 +428,10 @@ public class Middleware {
 
         BlockList.Duplicate.Response response = service.blockListDuplicate(request);
 
-        return response.getBlockIds(0);
+        return new Pair<>(response.getBlockIds(0), mapper.toPayload(response.getEvent()));
     }
 
-    public void unlink(CommandEntity.Unlink command) throws Exception {
+    public PayloadEntity unlink(CommandEntity.Unlink command) throws Exception {
         Block.Unlink.Request request = Block.Unlink.Request
                 .newBuilder()
                 .setContextId(command.getContext())
@@ -415,10 +440,12 @@ public class Middleware {
 
         Timber.d("Unlinking blocks with the following request:\n%s", request.toString());
 
-        service.blockUnlink(request);
+        Block.Unlink.Response response = service.blockUnlink(request);
+
+        return mapper.toPayload(response.getEvent());
     }
 
-    public void merge(CommandEntity.Merge command) throws Exception {
+    public PayloadEntity merge(CommandEntity.Merge command) throws Exception {
         Block.Merge.Request request = Block.Merge.Request
                 .newBuilder()
                 .setContextId(command.getContext())
@@ -428,22 +455,31 @@ public class Middleware {
 
         Timber.d("Merging blocks with the following request:\n%s", request.toString());
 
-        service.blockMerge(request);
+        Block.Merge.Response response = service.blockMerge(request);
+
+        return mapper.toPayload(response.getEvent());
     }
 
-    public String split(CommandEntity.Split command) throws Exception {
+    public Pair<String, PayloadEntity> split(CommandEntity.Split command) throws Exception {
+
+        Range range = Range
+                .newBuilder()
+                .setFrom(command.getIndex())
+                .setTo(command.getIndex())
+                .build();
+
         Block.Split.Request request = Block.Split.Request
                 .newBuilder()
                 .setBlockId(command.getTarget())
                 .setContextId(command.getContext())
-                .setCursorPosition(command.getIndex())
+                .setRange(range)
                 .build();
 
         Timber.d("Splitting the target block with the following request:\n%s", request.toString());
 
         Block.Split.Response response = service.blockSplit(request);
 
-        return response.getBlockId();
+        return new Pair<>(response.getBlockId(), mapper.toPayload(response.getEvent()));
     }
 
     public void setIconName(CommandEntity.SetIconName command) throws Exception {

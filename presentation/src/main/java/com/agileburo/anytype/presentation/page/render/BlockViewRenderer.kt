@@ -1,7 +1,6 @@
 package com.agileburo.anytype.presentation.page.render
 
 import com.agileburo.anytype.core_ui.features.page.BlockView
-import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.page.EditorMode
@@ -24,7 +23,6 @@ interface BlockViewRenderer {
         focus: Id,
         anchor: Id,
         indent: Int,
-        counter: Counter,
         details: Block.Details = Block.Details(emptyMap())
     ): List<BlockView>
 }

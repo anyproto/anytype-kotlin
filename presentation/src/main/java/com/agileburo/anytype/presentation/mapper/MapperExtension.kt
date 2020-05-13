@@ -5,7 +5,6 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
-import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.presentation.desktop.DashboardView
 
@@ -133,9 +132,7 @@ fun Block.Content.Text.marks(): List<Markup.Mark> = marks.mapNotNull { mark ->
     }
 }
 
-suspend fun HomeDashboard.toView(
-    emojifier: Emojifier
-): List<DashboardView.Document> = children.mapNotNull { id ->
+fun HomeDashboard.toView(): List<DashboardView.Document> = children.mapNotNull { id ->
     blocks.find { block -> block.id == id }?.let { model ->
         when (val content = model.content) {
             is Block.Content.Link -> {
@@ -146,7 +143,7 @@ suspend fun HomeDashboard.toView(
                             title = details.details[content.target]?.name,
                             emoji = details.details[content.target]?.icon?.let { name ->
                                 if (name.isNotEmpty())
-                                    emojifier.fromShortName(name).unicode
+                                    name
                                 else
                                     null
                             }

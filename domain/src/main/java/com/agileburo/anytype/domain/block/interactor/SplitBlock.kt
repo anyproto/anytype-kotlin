@@ -5,11 +5,14 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.event.model.Payload
 
 /**
  * Use-case for splitting the target block into two blocks based on cursor position.
  */
-class SplitBlock(private val repo: BlockRepository) : BaseUseCase<Id, SplitBlock.Params>() {
+class SplitBlock(
+    private val repo: BlockRepository
+) : BaseUseCase<Pair<Id, Payload>, SplitBlock.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.split(

@@ -1,5 +1,4 @@
-include ':app', ':library-emojifier',
-        ':sample',
+include ':app',
         ':core-utils',
         ':middleware',
         ':protobuf',
@@ -8,6 +7,9 @@ include ':app', ':library-emojifier',
         ':data',
         ':device',
         ':presentation',
+        ':presentation-editor',
         ':core-ui',
         ':library-kanban-widget',
-        ':library-page-icon-picker-widget'
+        ':library-page-icon-picker-widget',
+        ':library-emojifier',
+        ':sample'

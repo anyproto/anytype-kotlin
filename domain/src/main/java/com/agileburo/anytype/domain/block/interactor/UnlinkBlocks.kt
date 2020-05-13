@@ -5,13 +5,14 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.event.model.Payload
 
 /**
  * Use-case for unlinking blocks from its context.
  * Unlinking is a remplacement for delete operations.
  */
 open class UnlinkBlocks(private val repo: BlockRepository) :
-    BaseUseCase<Unit, UnlinkBlocks.Params>() {
+    BaseUseCase<Payload, UnlinkBlocks.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.unlink(

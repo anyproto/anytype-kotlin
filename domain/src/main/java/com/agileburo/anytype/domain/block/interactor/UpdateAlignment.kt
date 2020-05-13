@@ -6,12 +6,13 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.event.model.Payload
 
-open class UpdateBlockAlignment(
+open class UpdateAlignment(
     private val repo: BlockRepository
-) : BaseUseCase<Unit, UpdateBlockAlignment.Params>() {
+) : BaseUseCase<Payload, UpdateAlignment.Params>() {
 
-    override suspend fun run(params: Params): Either<Throwable, Unit> = try {
+    override suspend fun run(params: Params) = try {
         repo.updateAlignment(
             command = Command.UpdateAlignment(
                 context = params.context,

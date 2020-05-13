@@ -13,6 +13,7 @@ import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.image.ImageLoader
 import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.domain.page.CreatePage
+import com.agileburo.anytype.presentation.desktop.HomeDashboardEventConverter
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModelFactory
 import com.agileburo.anytype.ui.desktop.HomeDashboardFragment
 import dagger.Module
@@ -49,7 +50,8 @@ class HomeDashboardModule {
         closeDashboard: CloseDashboard,
         getConfig: GetConfig,
         dnd: DragAndDrop,
-        interceptEvents: InterceptEvents
+        interceptEvents: InterceptEvents,
+        eventConverter: HomeDashboardEventConverter
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getCurrentAccount = getCurrentAccount,
         loadImage = loadImage,
@@ -58,7 +60,8 @@ class HomeDashboardModule {
         closeDashboard = closeDashboard,
         getConfig = getConfig,
         dnd = dnd,
-        interceptEvents = interceptEvents
+        interceptEvents = interceptEvents,
+        eventConverter = eventConverter
     )
 
     @Provides
@@ -126,4 +129,10 @@ class HomeDashboardModule {
         context = Dispatchers.IO,
         channel = channel
     )
+
+    @Provides
+    @PerScreen
+    fun provideEventConverter(): HomeDashboardEventConverter {
+        return HomeDashboardEventConverter.DefaultConverter()
+    }
 }

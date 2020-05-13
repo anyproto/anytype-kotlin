@@ -46,13 +46,11 @@ class HomeDashboardViewMapperTest {
             blocks = listOf(child),
             children = listOf(child.id),
             fields = Block.Fields.empty(),
-            type = Block.Content.Dashboard.Type.MAIN_SCREEN
+            type = Block.Content.Smart.Type.HOME
         )
 
         val view = runBlocking {
-            dashboard.toView(
-                emojifier = emojifier
-            )
+            dashboard.toView()
         }
 
         assertEquals(
@@ -85,14 +83,14 @@ class HomeDashboardViewMapperTest {
             blocks = listOf(child),
             children = listOf(child.id),
             fields = Block.Fields.empty(),
-            type = Block.Content.Dashboard.Type.MAIN_SCREEN
+            type = Block.Content.Smart.Type.HOME
         )
 
         emojifier.stub {
             onBlocking { fromShortName(any()) } doReturn emoji
         }
 
-        val view: List<DashboardView> = runBlocking { dashboard.toView(emojifier = emojifier) }
+        val view: List<DashboardView> = runBlocking { dashboard.toView() }
 
         assertEquals(
             expected = listOf(

@@ -21,8 +21,4 @@ abstract class BaseFragment(
         super.onDestroy()
         if (fragmentScope) releaseDependencies()
     }
-
-    companion object {
-        const val CORE_COMPONENT_PROVIDER_ERROR = "Activity should implement core component provider"
-    }
 }

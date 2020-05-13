@@ -7,13 +7,15 @@ import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.download.Downloader
-import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.EventChannel
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
+import com.agileburo.anytype.presentation.page.Editor
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
+import com.agileburo.anytype.presentation.page.editor.Interactor
+import com.agileburo.anytype.presentation.page.editor.Orchestrator
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.agileburo.anytype.presentation.page.selection.SelectionStateHolder
 import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
@@ -44,67 +46,31 @@ class PageModule {
     fun providePageViewModelFactory(
         openPage: OpenPage,
         closePage: ClosePage,
-        undo: Undo,
-        redo: Redo,
-        updateText: UpdateText,
-        createBlock: CreateBlock,
         interceptEvents: InterceptEvents,
-        updateCheckbox: UpdateCheckbox,
-        unlinkBlocks: UnlinkBlocks,
         updateLinkMarks: UpdateLinkMarks,
         removeLinkMark: RemoveLinkMark,
-        duplicateBlock: DuplicateBlock,
-        updateTextStyle: UpdateTextStyle,
-        updateTextColor: UpdateTextColor,
-        updateBackgroundColor: UpdateBackgroundColor,
-        mergeBlocks: MergeBlocks,
-        splitBlock: SplitBlock,
         createPage: CreatePage,
         createDocument: CreateDocument,
         uploadUrl: UploadUrl,
         documentExternalEventReducer: DocumentExternalEventReducer,
         urlBuilder: UrlBuilder,
-        downloadFile: DownloadFile,
         renderer: DefaultBlockViewRenderer,
-        counter: Counter,
         archiveDocument: ArchiveDocument,
-        replaceBlock: ReplaceBlock,
-        patternMatcher: DefaultPatternMatcher,
-        updateTitle: UpdateTitle,
-        selectionStateHolder: SelectionStateHolder,
-        updateAlignment: UpdateBlockAlignment
+        interactor: Orchestrator
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
         createPage = createPage,
         createDocument = createDocument,
-        updateText = updateText,
-        createBlock = createBlock,
         interceptEvents = interceptEvents,
-        updateCheckbox = updateCheckbox,
-        unlinkBlocks = unlinkBlocks,
-        duplicateBlock = duplicateBlock,
-        updateTextStyle = updateTextStyle,
-        updateTextColor = updateTextColor,
-        updateBackgroundColor = updateBackgroundColor,
         updateLinkMarks = updateLinkMarks,
         removeLinkMark = removeLinkMark,
-        mergeBlocks = mergeBlocks,
         uploadUrl = uploadUrl,
-        splitBlock = splitBlock,
         documentEventReducer = documentExternalEventReducer,
         urlBuilder = urlBuilder,
-        downloadFile = downloadFile,
         renderer = renderer,
-        counter = counter,
-        undo = undo,
-        redo = redo,
         archiveDocument = archiveDocument,
-        replaceBlock = replaceBlock,
-        patternMatcher = patternMatcher,
-        updateTitle = updateTitle,
-        selectionStateHolder = selectionStateHolder,
-        updateAlignment = updateAlignment
+        interactor = interactor
     )
 
     @Provides
@@ -222,14 +188,6 @@ class PageModule {
 
     @Provides
     @PerScreen
-    fun provideUpdateAlignmentUseCase(
-        repo: BlockRepository
-    ): UpdateBlockAlignment = UpdateBlockAlignment(
-        repo = repo
-    )
-
-    @Provides
-    @PerScreen
     fun provideUpdateBackgroundColorUseCase(
         repo: BlockRepository
     ): UpdateBackgroundColor = UpdateBackgroundColor(
@@ -256,13 +214,13 @@ class PageModule {
     @Provides
     @PerScreen
     fun provideDefaultBlockViewRenderer(
-        emojifier: Emojifier,
         urlBuilder: UrlBuilder,
-        toggleStateHolder: ToggleStateHolder
+        toggleStateHolder: ToggleStateHolder,
+        counter: Counter
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
-        emojifier = emojifier,
-        toggleStateHolder = toggleStateHolder
+        toggleStateHolder = toggleStateHolder,
+        counter = counter
     )
 
     @Provides
@@ -333,4 +291,86 @@ class PageModule {
     @Provides
     @PerScreen
     fun provideSelectionStateHolder(): SelectionStateHolder = SelectionStateHolder.Default()
+
+    @Provides
+    @PerScreen
+    fun provideMemory(
+        selectionStateHolder: SelectionStateHolder
+    ): Editor.Memory = Editor.Memory(
+        selections = selectionStateHolder
+    )
+
+    @Provides
+    @PerScreen
+    fun provideInteractor(
+        storage: Editor.Storage,
+        proxer: Editor.Proxer,
+        memory: Editor.Memory,
+        createBlock: CreateBlock,
+        replaceBlock: ReplaceBlock,
+        duplicateBlock: DuplicateBlock,
+        updateTextColor: UpdateTextColor,
+        updateBackgroundColor: UpdateBackgroundColor,
+        splitBlock: SplitBlock,
+        mergeBlocks: MergeBlocks,
+        unlinkBlocks: UnlinkBlocks,
+        updateTextStyle: UpdateTextStyle,
+        updateCheckbox: UpdateCheckbox,
+        downloadFile: DownloadFile,
+        updateTitle: UpdateTitle,
+        updateText: UpdateText,
+        updateAlignment: UpdateAlignment,
+        textInteractor: Interactor.TextInteractor,
+        undo: Undo,
+        redo: Redo
+    ): Orchestrator = Orchestrator(
+        stores = storage,
+        createBlock = createBlock,
+        replaceBlock = replaceBlock,
+        proxies = proxer,
+        duplicateBlock = duplicateBlock,
+        updateBackgroundColor = updateBackgroundColor,
+        updateTextColor = updateTextColor,
+        splitBlock = splitBlock,
+        mergeBlocks = mergeBlocks,
+        unlinkBlocks = unlinkBlocks,
+        undo = undo,
+        redo = redo,
+        updateTextStyle = updateTextStyle,
+        updateCheckbox = updateCheckbox,
+        memory = memory,
+        downloadFile = downloadFile,
+        updateTitle = updateTitle,
+        textInteractor = textInteractor,
+        updateText = updateText,
+        updateAlignment = updateAlignment
+    )
+
+    @Provides
+    @PerScreen
+    fun provideProxer(): Editor.Proxer = Editor.Proxer()
+
+    @Provides
+    @PerScreen
+    fun provideStorage(): Editor.Storage = Editor.Storage()
+
+    @Provides
+    @PerScreen
+    fun provideTextInteractor(
+        proxer: Editor.Proxer,
+        storage: Editor.Storage,
+        matcher: DefaultPatternMatcher
+    ): Interactor.TextInteractor = Interactor.TextInteractor(
+        proxies = proxer,
+        stores = storage,
+        matcher = matcher
+    )
+
+    @Provides
+    @PerScreen
+    fun provideUpdateAlignmentUseCase(
+        repo: BlockRepository
+    ): UpdateAlignment = UpdateAlignment(
+        repo = repo
+    )
 }

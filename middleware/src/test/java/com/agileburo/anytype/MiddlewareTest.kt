@@ -131,7 +131,7 @@ class MiddlewareTest {
 
         assertEquals(
             expected = response.blockId,
-            actual = result
+            actual = result.first
         )
     }
 

@@ -12,8 +12,8 @@ import com.agileburo.anytype.presentation.mapper.*
 import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
 
 class DefaultBlockViewRenderer(
+    private val counter: Counter,
     private val urlBuilder: UrlBuilder,
-    private val emojifier: Emojifier,
     private val toggleStateHolder: ToggleStateHolder
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
@@ -23,7 +23,6 @@ class DefaultBlockViewRenderer(
         focus: Id,
         anchor: Id,
         indent: Int,
-        counter: Counter,
         details: Block.Details
     ): List<BlockView> {
 
@@ -87,7 +86,6 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        counter = counter,
                                         details = details
                                     )
                                 )
@@ -139,13 +137,26 @@ class DefaultBlockViewRenderer(
                     counter.reset()
                     result.add(file(content, block, indent))
                 }
+                is Content.Layout -> {
+                    counter.reset()
+                    result.addAll(
+                        render(
+                            mode = mode,
+                            focus = focus,
+                            indent = indent,
+                            anchor = block.id,
+                            root = root,
+                            details = details
+                        )
+                    )
+                }
             }
         }
 
         return result
     }
 
-    private suspend fun buildTitle(
+    private fun buildTitle(
         mode: EditorMode,
         anchor: Id,
         root: Block,
@@ -162,7 +173,7 @@ class DefaultBlockViewRenderer(
                     text = details.details[root.id]?.name,
                     emoji = details.details[root.id]?.icon?.let { name ->
                         if (name.isNotEmpty())
-                            emojifier.fromShortName(name).unicode
+                            name
                         else
                             null
                     }
@@ -384,7 +395,7 @@ class DefaultBlockViewRenderer(
         else -> throw IllegalStateException("Unexpected file type: ${content.type}")
     }
 
-    private suspend fun title(
+    private fun title(
         mode: EditorMode,
         block: Block,
         content: Content.Text,
@@ -396,14 +407,14 @@ class DefaultBlockViewRenderer(
         text = content.text,
         emoji = root.fields.icon?.let { name ->
             if (name.isNotEmpty())
-                emojifier.fromShortName(name).unicode
+                name
             else
                 null
         },
         focused = block.id == focus
     )
 
-    private suspend fun page(
+    private fun page(
         block: Block,
         content: Content.Link,
         indent: Int,
@@ -413,7 +424,7 @@ class DefaultBlockViewRenderer(
         isEmpty = true,
         emoji = details.details[content.target]?.icon?.let { name ->
             if (name.isNotEmpty())
-                emojifier.fromShortName(name).unicode
+                name
             else
                 null
         },

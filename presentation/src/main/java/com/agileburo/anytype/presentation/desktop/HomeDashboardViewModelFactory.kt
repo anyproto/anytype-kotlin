@@ -19,7 +19,8 @@ class HomeDashboardViewModelFactory(
     private val createPage: CreatePage,
     private val getConfig: GetConfig,
     private val dnd: DragAndDrop,
-    private val interceptEvents: InterceptEvents
+    private val interceptEvents: InterceptEvents,
+    private val eventConverter: HomeDashboardEventConverter
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -32,7 +33,8 @@ class HomeDashboardViewModelFactory(
             createPage = createPage,
             getConfig = getConfig,
             dragAndDrop = dnd,
-            interceptEvents = interceptEvents
+            interceptEvents = interceptEvents,
+            eventConverter = eventConverter
         ) as T
     }
 }

@@ -1,0 +1,53 @@
+syntax = "proto3";
+package anytype.model;
+option go_package = "github.com/anytypeio/go-anytype-library/pb/model";
+
+import "google/protobuf/struct.proto";
+
+message State {
+    map<string, uint64> state = 1;
+}
+
+message PageInfo {
+    string id = 1;
+    google.protobuf.Struct details = 2;
+    string snippet = 3;
+    State state = 4;
+    int64 lastOpened = 5;
+    uint32 inboundLinksCount = 6;
+}
+
+message PageDetails {
+    google.protobuf.Struct details = 1;
+}
+
+message PageLinks {
+    repeated string inboundIDs = 1;
+    repeated string outboundIDs = 2;
+}
+
+message PageLinksInfo {
+    repeated PageInfo inbound = 1;
+    repeated PageInfo outbound = 2;
+}
+
+message PageInfoWithLinks {
+    string id = 1;
+    PageInfo info = 2;
+    PageLinksInfo links = 3;
+    State state = 4;
+}
+
+message PageInfoWithOutboundLinks {
+    string id = 1;
+    PageInfo info = 2;
+    repeated PageInfo outboundLinks = 3;
+    State state = 4;
+}
+
+message PageInfoWithOutboundLinksIDs {
+    string id = 1;
+    PageInfo info = 2;
+    repeated string outboundLinks = 3;
+    State state = 4;
+}

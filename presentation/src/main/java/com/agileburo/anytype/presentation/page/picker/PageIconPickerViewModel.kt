@@ -111,7 +111,7 @@ class PageIconPickerViewModel(
         setIconName.run(
             params = SetIconName.Params(
                 target = action.target,
-                name = ":${action.alias}:",
+                name = action.unicode,
                 context = action.context
             )
         )

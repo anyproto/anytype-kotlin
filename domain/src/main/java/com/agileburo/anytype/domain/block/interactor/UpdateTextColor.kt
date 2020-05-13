@@ -5,13 +5,14 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.event.model.Payload
 
 /**
  * Use-case for updating the whole block's text color.
  */
 open class UpdateTextColor(
     private val repo: BlockRepository
-) : BaseUseCase<Unit, UpdateTextColor.Params>() {
+) : BaseUseCase<Payload, UpdateTextColor.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.updateTextColor(

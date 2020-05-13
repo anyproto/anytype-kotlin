@@ -45,6 +45,8 @@ import com.agileburo.anytype.domain.ext.getSubstring
 import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
+import com.agileburo.anytype.presentation.page.editor.Command
+import com.agileburo.anytype.presentation.page.editor.ViewState
 import com.agileburo.anytype.ui.base.NavigationFragment
 import com.agileburo.anytype.ui.page.modals.*
 import com.agileburo.anytype.ui.page.modals.actions.BlockActionToolbarFactory
@@ -472,42 +474,42 @@ open class PageFragment :
         }
     }
 
-    private fun execute(event: EventWrapper<PageViewModel.Command>) {
+    private fun execute(event: EventWrapper<Command>) {
         event.getContentIfNotHandled()?.let { command ->
             when (command) {
-                is PageViewModel.Command.OpenPagePicker -> {
+                is Command.OpenPagePicker -> {
                     PageIconPickerFragment.newInstance(
                         context = requireArguments().getString(ID_KEY, ID_EMPTY_VALUE),
                         target = command.target
                     ).show(childFragmentManager, null)
                 }
-                is PageViewModel.Command.OpenAddBlockPanel -> {
+                is Command.OpenAddBlockPanel -> {
                     AddBlockFragment.newInstance().show(childFragmentManager, null)
                 }
-                is PageViewModel.Command.OpenTurnIntoPanel -> {
+                is Command.OpenTurnIntoPanel -> {
                     TurnIntoFragment.single(
                         target = command.target
                     ).show(childFragmentManager, null)
                 }
-                is PageViewModel.Command.OpenMultiSelectTurnIntoPanel -> {
+                is Command.OpenMultiSelectTurnIntoPanel -> {
                     TurnIntoFragment.multiple().show(childFragmentManager, null)
                 }
-                is PageViewModel.Command.OpenBookmarkSetter -> {
+                is Command.OpenBookmarkSetter -> {
                     CreateBookmarkFragment.newInstance(
                         context = command.context,
                         target = command.target
                     ).show(childFragmentManager, null)
                 }
-                is PageViewModel.Command.OpenGallery -> {
+                is Command.OpenGallery -> {
                     openGalleryWithPermissionCheck(command.mediaType)
                 }
-                is PageViewModel.Command.RequestDownloadPermission -> {
+                is Command.RequestDownloadPermission -> {
                     startDownloadWithPermissionCheck(command.id)
                 }
-                is PageViewModel.Command.PopBackStack -> {
+                is Command.PopBackStack -> {
                     childFragmentManager.popBackStack()
                 }
-                is PageViewModel.Command.OpenActionBar -> {
+                is Command.OpenActionBar -> {
                     hideKeyboard()
                     childFragmentManager.beginTransaction()
                         .setCustomAnimations(R.anim.action_bar_enter, R.anim.action_bar_exit)
@@ -515,10 +517,10 @@ open class PageFragment :
                         .addToBackStack(null)
                         .commit()
                 }
-                is PageViewModel.Command.CloseKeyboard -> {
+                is Command.CloseKeyboard -> {
                     hideSoftInput()
                 }
-                is PageViewModel.Command.Browse -> {
+                is Command.Browse -> {
                     try {
                         Intent(Intent.ACTION_VIEW).apply {
                             data = Uri.parse(command.url)
@@ -533,13 +535,13 @@ open class PageFragment :
         }
     }
 
-    private fun render(state: PageViewModel.ViewState) {
+    private fun render(state: ViewState) {
         when (state) {
-            is PageViewModel.ViewState.Success -> {
+            is ViewState.Success -> {
                 pageAdapter.updateWithDiffUtil(state.blocks)
                 resetDocumentTitle(state)
             }
-            is PageViewModel.ViewState.OpenLinkScreen -> {
+            is ViewState.OpenLinkScreen -> {
                 SetLinkFragment.newInstance(
                     blockId = state.block.id,
                     initUrl = state.block.getFirstLinkMarkupParam(state.range),
@@ -548,11 +550,11 @@ open class PageFragment :
                     rangeStart = state.range.first
                 ).show(childFragmentManager, null)
             }
-            is PageViewModel.ViewState.Error -> toast(state.message)
+            is ViewState.Error -> toast(state.message)
         }
     }
 
-    private fun resetDocumentTitle(state: PageViewModel.ViewState.Success) {
+    private fun resetDocumentTitle(state: ViewState.Success) {
         state.blocks.firstOrNull { view ->
             view is BlockView.Title
         }?.let { view ->
@@ -648,11 +650,11 @@ open class PageFragment :
     }
 
     override fun injectDependencies() {
-        componentManager().pageComponent.get().inject(this)
+        componentManager().pageComponent.get(extractDocumentId()).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().pageComponent.release()
+        componentManager().pageComponent.release(extractDocumentId())
     }
 
     companion object {

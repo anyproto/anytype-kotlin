@@ -5,6 +5,7 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.common.Id
 
 open class UpdateText(
     private val repo: BlockRepository
@@ -13,8 +14,8 @@ open class UpdateText(
     override suspend fun run(params: Params) = try {
         repo.updateText(
             command = Command.UpdateText(
-                contextId = params.contextId,
-                blockId = params.blockId,
+                contextId = params.context,
+                blockId = params.target,
                 text = params.text,
                 marks = params.marks
             )
@@ -26,10 +27,9 @@ open class UpdateText(
     }
 
     data class Params(
-        val contextId: String,
-        val blockId: String,
+        val context: Id,
+        val target: Id,
         val text: String,
         val marks: List<Block.Content.Text.Mark>
     )
-
 }

@@ -5,12 +5,13 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.event.model.Payload
 
 /**
  * Use-case for merging a pair of blocks.
  */
 open class MergeBlocks(private val repo: BlockRepository) :
-    BaseUseCase<Unit, MergeBlocks.Params>() {
+    BaseUseCase<Payload, MergeBlocks.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.merge(

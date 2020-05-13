@@ -2,6 +2,7 @@ package com.agileburo.anytype.domain.dashboard.interactor
 
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
+import com.agileburo.anytype.domain.ext.content
 
 fun List<Block>.toHomeDashboard(
     id: String,
@@ -15,7 +16,7 @@ fun List<Block>.toHomeDashboard(
         },
         children = root.children,
         fields = root.fields,
-        type = root.content.asDashboard().type,
+        type = root.content<Block.Content.Smart>().type,
         details = details
     )
 }

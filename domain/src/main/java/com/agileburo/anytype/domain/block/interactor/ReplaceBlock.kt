@@ -6,13 +6,14 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.event.model.Payload
 
 /**
  * Use-case for replacing target block by a new block (created from prototype)
  */
 class ReplaceBlock(
     private val repo: BlockRepository
-) : BaseUseCase<Id, ReplaceBlock.Params>() {
+) : BaseUseCase<Pair<Id, Payload>, ReplaceBlock.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.replace(

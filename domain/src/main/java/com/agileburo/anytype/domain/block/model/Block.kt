@@ -32,8 +32,6 @@ data class Block(
         val icon: String? by default
         val isArchived: Boolean? by default
 
-        fun hasName() = map.containsKey(NAME_KEY)
-
         companion object {
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"
@@ -45,7 +43,7 @@ data class Block(
      * Document metadata
      * @property details maps id of the block to its details (contained as fields)
      */
-    data class Details(val details: Map<Id, Fields>)
+    data class Details(val details: Map<Id, Fields> = emptyMap())
 
     /**
      * Block's content.
@@ -57,6 +55,15 @@ data class Block(
         fun asDashboard() = this as Dashboard
         fun asDivider() = this as Divider
         fun asFile() = this as File
+
+        /**
+         * Smart block.
+         */
+        data class Smart(
+            val type: Type
+        ) : Content() {
+            enum class Type { HOME, PAGE, ARCHIVE, BREADCRUMBS, PROFILE }
+        }
 
         /**
          * Textual block.
@@ -124,7 +131,7 @@ data class Block(
         }
 
         data class Layout(val type: Type) : Content() {
-            enum class Type { ROW, COLUMN }
+            enum class Type { ROW, COLUMN, DIV }
         }
 
         data class Image(

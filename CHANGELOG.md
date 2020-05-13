@@ -1,5 +1,22 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.31
+
+### New features 🚀
+
+
+
+### Fixes & tech 🚒
+
+* Migrate from short name emojis to unicode when parsing document icons (#408)
+* Consuming event payload from middleware callaback responses (#408)
+* Hard-coded alpha invite code for internal use (#408)
+* `PageViewModel` refactoring (#408)
+
+### Middleware ⚙️
+
+* Updated middleware to `0.9.0` (#339)
+
 ## Version 0.0.30
 
 ### New features 🚀

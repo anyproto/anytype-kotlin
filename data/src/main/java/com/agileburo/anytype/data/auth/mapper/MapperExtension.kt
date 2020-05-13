@@ -9,6 +9,7 @@ import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.event.model.Event
+import com.agileburo.anytype.domain.event.model.Payload
 
 fun AccountEntity.toDomain(): Account {
     return Account(
@@ -88,6 +89,7 @@ fun BlockEntity.Content.toDomain(): Block.Content = when (this) {
     is BlockEntity.Content.File -> toDomain()
     is BlockEntity.Content.Icon -> toDomain()
     is BlockEntity.Content.Bookmark -> toDomain()
+    is BlockEntity.Content.Smart -> toDomain()
 }
 
 fun BlockEntity.Content.File.toDomain(): Block.Content.File {
@@ -185,6 +187,11 @@ fun BlockEntity.Content.Image.toDomain(): Block.Content.Image {
 
 fun BlockEntity.Content.Divider.toDomain() = Block.Content.Divider
 
+
+fun BlockEntity.Content.Smart.toDomain() = Block.Content.Smart(
+    type = Block.Content.Smart.Type.valueOf(type.name)
+)
+
 fun Block.Content.Image.toEntity(): BlockEntity.Content.Image {
     return BlockEntity.Content.Image(
         path = path
@@ -219,6 +226,7 @@ fun Block.Content.toEntity(): BlockEntity.Content = when (this) {
     is Block.Content.File -> toEntity()
     is Block.Content.Icon -> toEntity()
     is Block.Content.Bookmark -> toEntity()
+    is Block.Content.Smart -> toEntity()
 }
 
 fun Block.Content.File.toEntity(): BlockEntity.Content.File {
@@ -443,6 +451,11 @@ fun Command.UpdateAlignment.toEntity(): CommandEntity.UpdateAlignment = CommandE
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }
+
+fun PayloadEntity.toDomain(): Payload = Payload(
+    context = context,
+    events = events.map { it.toDomain() }
+)
 
 fun EventEntity.toDomain(): Event {
     return when (this) {

@@ -94,7 +94,7 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val pageComponent = Component {
+    val pageComponent = ComponentMap {
         main
             .pageComponentBuilder()
             .pageModule(PageModule())
@@ -139,6 +139,19 @@ class ComponentManager(private val main: MainComponent) {
 
         fun release() {
             instance = null
+        }
+    }
+
+    class ComponentMap<T>(private val builder: () -> T) {
+
+        private val map = mutableMapOf<String, T>()
+
+        fun get(id: String) = map[id] ?: builder().also { map[id] = it }
+
+        fun new(id: String) = builder().also { map[id] = it }
+
+        fun release(id: String) {
+            map.remove(id)
         }
     }
 }

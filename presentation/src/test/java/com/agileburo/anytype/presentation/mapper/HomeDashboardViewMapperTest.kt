@@ -14,9 +14,6 @@ import kotlin.test.assertTrue
 
 class HomeDashboardViewMapperTest {
 
-    @Mock
-    lateinit var emojifier: Emojifier
-
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
@@ -54,7 +51,7 @@ class HomeDashboardViewMapperTest {
             blocks = listOf(archived, active),
             children = listOf(archived.id, active.id),
             fields = Block.Fields.empty(),
-            type = Block.Content.Dashboard.Type.MAIN_SCREEN,
+            type = Block.Content.Smart.Type.HOME,
             details = Block.Details(
                 details = mapOf(
                     target to Block.Fields(
@@ -67,9 +64,7 @@ class HomeDashboardViewMapperTest {
         )
 
         val result = runBlocking {
-            dashboard.toView(
-                emojifier = emojifier
-            )
+            dashboard.toView()
         }
 
         assertTrue {

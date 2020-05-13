@@ -31,13 +31,11 @@ class DefaultBlockViewRendererTest {
         suspend fun render(
             root: Block,
             anchor: Id,
-            counter: Counter = Counter.Default(),
             focus: Id,
             indent: Int
         ): List<BlockView> = blocks.render(
             root = root,
             anchor = anchor,
-            counter = counter,
             focus = focus,
             indent = indent
         )
@@ -63,8 +61,8 @@ class DefaultBlockViewRendererTest {
         MockitoAnnotations.initMocks(this)
         renderer = DefaultBlockViewRenderer(
             urlBuilder = UrlBuilder(config),
-            emojifier = emojifier,
-            toggleStateHolder = toggleStateHolder
+            toggleStateHolder = toggleStateHolder,
+            counter = Counter.Default()
         )
     }
 

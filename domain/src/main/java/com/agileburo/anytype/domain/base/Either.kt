@@ -18,4 +18,12 @@ sealed class Either<out L, out R> {
             is Left -> fnL(a)
             is Right -> fnR(b)
         }
+
+    suspend fun proceed(
+        failure: suspend (L) -> Any,
+        success: suspend (R) -> Any
+    ): Any = when (this) {
+        is Left -> failure(a)
+        is Right -> success(b)
+    }
 }

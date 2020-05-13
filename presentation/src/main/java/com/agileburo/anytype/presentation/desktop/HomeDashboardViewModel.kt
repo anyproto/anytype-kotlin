@@ -14,7 +14,6 @@ import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
-import com.agileburo.anytype.domain.dashboard.interactor.toHomeDashboard
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.image.LoadImage
@@ -38,8 +37,10 @@ class HomeDashboardViewModel(
     private val createPage: CreatePage,
     private val getConfig: GetConfig,
     private val dragAndDrop: DragAndDrop,
-    private val interceptEvents: InterceptEvents
+    private val interceptEvents: InterceptEvents,
+    private val eventConverter: HomeDashboardEventConverter
 ) : ViewStateViewModel<State>(),
+    HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     private val machine = Interactor(scope = viewModelScope)
@@ -67,55 +68,19 @@ class HomeDashboardViewModel(
     }
 
     private fun startInterceptingEvents(context: String) {
-        // TODO use context when middleware is ready
         interceptEvents
-            .build(InterceptEvents.Params(context = null))
+            .build(InterceptEvents.Params(context = context))
             .onEach { Timber.d("New events: $it") }
-            .onEach { events ->
-                events.forEach { event ->
-                    when (event) {
-                        is Event.Command.UpdateStructure -> machine.onEvent(
-                            Machine.Event.OnStructureUpdated(
-                                event.children
-                            )
-                        )
-                        is Event.Command.AddBlock -> machine.onEvent(
-                            Machine.Event.OnBlocksAdded(
-                                event.blocks
-                            )
-                        )
-                        is Event.Command.ShowBlock -> {
-                            if (event.root == context) {
-                                machine.onEvent(
-                                    Machine.Event.OnDashboardLoaded(
-                                        dashboard = event.blocks.toHomeDashboard(
-                                            id = context,
-                                            details = event.details
-                                        )
-                                    )
-                                )
-                            } else {
-                                Timber.e("Receiving event from other context!")
-                            }
-                        }
-                        is Event.Command.LinkGranularChange -> {
-                            event.fields?.let { fields ->
-                                machine.onEvent(
-                                    Machine.Event.OnLinkFieldsChanged(
-                                        id = event.id,
-                                        fields = fields
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            .onEach { events -> processEvents(events) }
             .launchIn(viewModelScope)
     }
 
+    private fun processEvents(events: List<Event>) = events.forEach {
+        convert(it)?.let { result -> machine.onEvent(result) }
+    }
+
     private fun proceedWithGettingConfig() {
-        getConfig.invoke(viewModelScope, Unit) { result ->
+        getConfig(viewModelScope, Unit) { result ->
             result.either(
                 fnR = { config ->
                     startInterceptingEvents(context = config.home)
@@ -127,7 +92,7 @@ class HomeDashboardViewModel(
     }
 
     private fun proceedWithGettingAccount() {
-        getCurrentAccount.invoke(viewModelScope, BaseUseCase.None) { result ->
+        getCurrentAccount(viewModelScope, BaseUseCase.None) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while getting account") },
                 fnR = { account ->
@@ -153,7 +118,7 @@ class HomeDashboardViewModel(
                     )
                 }
                 .collect { param ->
-                    dragAndDrop.invoke(this, param) { result ->
+                    dragAndDrop(viewModelScope, param) { result ->
                         result.either(
                             fnL = { Timber.e(it, "Error while DND for: $param") },
                             fnR = { Timber.d("Successfull DND for: $param") }
@@ -164,16 +129,15 @@ class HomeDashboardViewModel(
     }
 
     private fun proceedWithOpeningHomeDashboard() {
+
         machine.onEvent(Machine.Event.OnDashboardLoadingStarted)
+
         Timber.d("Opening home dashboard")
-        // TODO replace params = null by more explicit code
-        openDashboard.invoke(
-            scope = viewModelScope,
-            params = null
-        ) { result ->
-            result.either(
-                fnL = { Timber.e(it, "Error while opening home dashboard") },
-                fnR = { Timber.d("Home dashboard opened") }
+
+        viewModelScope.launch {
+            openDashboard(params = null).either(
+                fnR = { payload -> processEvents(payload.events) },
+                fnL = { Timber.e(it, "Error while opening home dashboard") }
             )
         }
     }
@@ -241,7 +205,7 @@ class HomeDashboardViewModel(
     }
 
     private fun navigateToPage(id: String) {
-        closeDashboard.invoke(viewModelScope, CloseDashboard.Param.home()) { result ->
+        closeDashboard(viewModelScope, CloseDashboard.Param.home()) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while closing a dashobard") },
                 fnR = { navigation.postValue(EventWrapper(AppNavigation.Command.OpenPage(id))) }

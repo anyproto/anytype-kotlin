@@ -9,6 +9,7 @@ import com.agileburo.anytype.data.auth.model.BlockEntity
 import com.agileburo.anytype.data.auth.model.PositionEntity
 import com.google.protobuf.Struct
 import com.google.protobuf.Value
+import timber.log.Timber
 
 
 fun Events.Event.Account.Show.toAccountEntity(): AccountEntity {
@@ -95,6 +96,15 @@ fun Block.fields(): BlockEntity.Fields = BlockEntity.Fields().also { result ->
     }
 }
 
+fun Events.SmartBlockType.entity(): BlockEntity.Content.Smart.Type = when (this) {
+    Events.SmartBlockType.Archive -> BlockEntity.Content.Smart.Type.ARCHIVE
+    Events.SmartBlockType.Page -> BlockEntity.Content.Smart.Type.PAGE
+    Events.SmartBlockType.Breadcrumbs -> BlockEntity.Content.Smart.Type.BREADCRUMBS
+    Events.SmartBlockType.Home -> BlockEntity.Content.Smart.Type.HOME
+    Events.SmartBlockType.ProfilePage -> BlockEntity.Content.Smart.Type.PROFILE
+    else -> throw IllegalStateException("Unexpected smart block type: $this")
+}
+
 fun Struct.fields(): BlockEntity.Fields = BlockEntity.Fields().also { result ->
     fieldsMap.forEach { (key, value) ->
         result.map[key] = when (val case = value.kindCase) {
@@ -105,33 +115,6 @@ fun Struct.fields(): BlockEntity.Fields = BlockEntity.Fields().also { result ->
         }
     }
 }
-
-fun Block.dashboard(): BlockEntity.Content.Dashboard = BlockEntity.Content.Dashboard(
-    type = when {
-        dashboard.style == Block.Content.Dashboard.Style.Archive -> {
-            BlockEntity.Content.Dashboard.Type.ARCHIVE
-        }
-        dashboard.style == Block.Content.Dashboard.Style.MainScreen -> {
-            BlockEntity.Content.Dashboard.Type.MAIN_SCREEN
-        }
-        else -> throw IllegalStateException("Unexpected dashboard style: ${dashboard.style}")
-    }
-)
-
-fun Block.page(): BlockEntity.Content.Page = BlockEntity.Content.Page(
-    style = when {
-        page.style == Block.Content.Page.Style.Empty -> {
-            BlockEntity.Content.Page.Style.EMPTY
-        }
-        page.style == Block.Content.Page.Style.Task -> {
-            BlockEntity.Content.Page.Style.TASK
-        }
-        page.style == Block.Content.Page.Style.Set -> {
-            BlockEntity.Content.Page.Style.SET
-        }
-        else -> throw IllegalStateException("Unexpected page style: ${page.style}")
-    }
-)
 
 fun Block.text(): BlockEntity.Content.Text = BlockEntity.Content.Text(
     text = text.text,
@@ -178,31 +161,20 @@ fun List<Block.Content.Text.Mark>.marks(): List<BlockEntity.Content.Text.Mark> =
 }
 
 fun Block.layout(): BlockEntity.Content.Layout = BlockEntity.Content.Layout(
-    type = when {
-        layout.style == Block.Content.Layout.Style.Column -> {
-            BlockEntity.Content.Layout.Type.COLUMN
-        }
-        layout.style == Block.Content.Layout.Style.Row -> {
-            BlockEntity.Content.Layout.Type.ROW
-        }
+    type = when (layout.style) {
+        Block.Content.Layout.Style.Column -> BlockEntity.Content.Layout.Type.COLUMN
+        Block.Content.Layout.Style.Row -> BlockEntity.Content.Layout.Type.ROW
+        Block.Content.Layout.Style.Div -> BlockEntity.Content.Layout.Type.DIV
         else -> throw IllegalStateException("Unexpected layout style: ${layout.style}")
     }
 )
 
 fun Block.link(): BlockEntity.Content.Link = BlockEntity.Content.Link(
-    type = when {
-        link.style == Block.Content.Link.Style.Page -> {
-            BlockEntity.Content.Link.Type.PAGE
-        }
-        link.style == Block.Content.Link.Style.Dataview -> {
-            BlockEntity.Content.Link.Type.DATA_VIEW
-        }
-        link.style == Block.Content.Link.Style.Archive -> {
-            BlockEntity.Content.Link.Type.ARCHIVE
-        }
-        link.style == Block.Content.Link.Style.Dashboard -> {
-            BlockEntity.Content.Link.Type.DASHBOARD
-        }
+    type = when (link.style) {
+        Block.Content.Link.Style.Page -> BlockEntity.Content.Link.Type.PAGE
+        Block.Content.Link.Style.Dataview -> BlockEntity.Content.Link.Type.DATA_VIEW
+        Block.Content.Link.Style.Archive -> BlockEntity.Content.Link.Type.ARCHIVE
+        Block.Content.Link.Style.Dashboard -> BlockEntity.Content.Link.Type.DASHBOARD
         else -> throw IllegalStateException("Unexpected link style: ${link.style}")
     },
     target = link.targetBlockId,
@@ -264,24 +236,10 @@ fun Block.bookmark(): BlockEntity.Content.Bookmark = BlockEntity.Content.Bookmar
     favicon = bookmark.faviconHash.ifEmpty { null }
 )
 
-fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
+fun List<Block>.blocks(
+    types: Map<String, Events.SmartBlockType> = emptyMap()
+): List<BlockEntity> = mapNotNull { block ->
     when (block.contentCase) {
-        Block.ContentCase.DASHBOARD -> {
-            BlockEntity(
-                id = block.id,
-                children = block.childrenIdsList.toList(),
-                fields = block.fields(),
-                content = block.dashboard()
-            )
-        }
-        Block.ContentCase.PAGE -> {
-            BlockEntity(
-                id = block.id,
-                children = block.childrenIdsList.toList(),
-                fields = block.fields(),
-                content = block.page()
-            )
-        }
         Block.ContentCase.TEXT -> {
             BlockEntity(
                 id = block.id,
@@ -338,7 +296,18 @@ fun List<Block>.blocks(): List<BlockEntity> = mapNotNull { block ->
                 content = block.bookmark()
             )
         }
+        Block.ContentCase.SMARTBLOCK -> {
+            BlockEntity(
+                id = block.id,
+                children = block.childrenIdsList,
+                content = BlockEntity.Content.Smart(
+                    type = types[block.id]?.entity() ?: throw IllegalStateException("Type missing")
+                ),
+                fields = block.fields()
+            )
+        }
         else -> {
+            Timber.d("Ignoring content type: ${block.contentCase}")
             null
         }
     }

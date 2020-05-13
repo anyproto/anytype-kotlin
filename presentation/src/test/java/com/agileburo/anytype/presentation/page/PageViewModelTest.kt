@@ -11,17 +11,22 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
+import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
+import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.presentation.MockBlockFactory
 import com.agileburo.anytype.presentation.navigation.AppNavigation
-import com.agileburo.anytype.presentation.page.PageViewModel.ViewState
+import com.agileburo.anytype.presentation.page.editor.Command
+import com.agileburo.anytype.presentation.page.editor.Interactor
+import com.agileburo.anytype.presentation.page.editor.Orchestrator
+import com.agileburo.anytype.presentation.page.editor.ViewState
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.agileburo.anytype.presentation.page.selection.SelectionStateHolder
 import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
@@ -33,6 +38,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -95,13 +101,13 @@ class PageViewModelTest {
     lateinit var createPage: CreatePage
 
     @Mock
+    lateinit var updateAlignment: UpdateAlignment
+
+    @Mock
     lateinit var updateBackgroundColor: UpdateBackgroundColor
 
     @Mock
     lateinit var downloadFile: DownloadFile
-
-    @Mock
-    lateinit var updateBlockAlignment: UpdateBlockAlignment
 
     @Mock
     lateinit var uploadUrl: UploadUrl
@@ -150,10 +156,11 @@ class PageViewModelTest {
 
         stubObserveEvents()
         buildViewModel()
+        stubOpenPage(context = id)
 
         vm.open(id)
 
-        verify(openPage, times(1)).invoke(any(), argThat { this.id == param.id }, any())
+        runBlockingTest { verify(openPage, times(1)).invoke(param) }
     }
 
     @Test
@@ -192,11 +199,7 @@ class PageViewModelTest {
             paragraph
         )
 
-        openPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
+        stubOpenPage(context = root)
 
         val flow: Flow<List<Event>> = flow {
             delay(1000)
@@ -212,12 +215,6 @@ class PageViewModelTest {
         }
 
         stubObserveEvents(flow)
-
-        openPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
 
         buildViewModel(builder)
 
@@ -235,8 +232,7 @@ class PageViewModelTest {
                 BlockView.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content<Block.Content.Text>().text,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
-                    alignment = null
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
                 )
             )
         )
@@ -255,7 +251,9 @@ class PageViewModelTest {
 
         vm.onSystemBackPressed(editorHasChildrenScreens = false)
 
-        verify(closePage, times(1)).invoke(any(), any(), any())
+        runBlockingTest {
+            verify(closePage, times(1)).invoke(any())
+        }
     }
 
     @Test
@@ -307,17 +305,19 @@ class PageViewModelTest {
 
         stubObserveEvents()
         buildViewModel()
+        stubOpenPage(context = pageId)
+        stubUpdateText()
 
         vm.open(pageId)
         vm.onTextChanged(id = blockId, text = text, marks = emptyList())
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verify(updateText, times(1)).invoke(
-            any(),
-            argThat { this.contextId == pageId && this.blockId == blockId && this.text == text },
-            any()
-        )
+        runBlockingTest {
+            verify(updateText, times(1)).invoke(
+                argThat { this.context == pageId && this.target == blockId && this.text == text }
+            )
+        }
     }
 
     @Test
@@ -328,6 +328,8 @@ class PageViewModelTest {
         val text = MockDataFactory.randomString()
 
         stubObserveEvents()
+        stubUpdateText()
+        stubOpenPage(context = pageId)
         buildViewModel()
 
         vm.open(pageId)
@@ -342,11 +344,11 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verify(updateText, times(2)).invoke(
-            any(),
-            argThat { this.contextId == pageId && this.blockId == blockId && this.text == text },
-            any()
-        )
+        runBlockingTest {
+            verify(updateText, times(2)).invoke(
+                argThat { this.context == pageId && this.target == blockId && this.text == text }
+            )
+        }
     }
 
     @Test
@@ -446,14 +448,12 @@ class PageViewModelTest {
                     BlockView.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content.asText().text,
-                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
-                        alignment = null
+                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
                     ),
                     BlockView.Paragraph(
                         id = added.id,
                         text = added.content.asText().text,
-                        backgroundColor = added.content<Block.Content.Text>().backgroundColor,
-                        alignment = null
+                        backgroundColor = added.content<Block.Content.Text>().backgroundColor
                     )
                 )
             )
@@ -463,9 +463,54 @@ class PageViewModelTest {
 
     @Test
     fun `should start creating a new block if user clicked create-text-block-button`() {
-        simulateNormalPageOpeningFlow()
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomString()
+
+        val smart = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(child)
+        )
+
+        val paragraph = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        stubOpenPage(
+            context = root,
+            events = listOf(
+                Event.Command.ShowBlock(
+                    context = root,
+                    blocks = listOf(smart, paragraph),
+                    root = root
+                )
+            )
+        )
+
+        stubCreateBlock(root)
+
+        buildViewModel()
+
+        vm.open(root)
+
+        vm.onBlockFocusChanged(id = paragraph.id, hasFocus = true)
+
         vm.onAddTextBlockClicked(style = Block.Content.Text.Style.P)
-        verify(createBlock, times(1)).invoke(any(), any(), any())
+
+        runBlockingTest {
+            verify(createBlock, times(1)).invoke(any())
+        }
     }
 
     @Test
@@ -548,8 +593,7 @@ class PageViewModelTest {
                 BlockView.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
-                    alignment = null
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
                 )
             )
         )
@@ -676,8 +720,7 @@ class PageViewModelTest {
                             from = firstTimeRange.first(),
                             to = firstTimeRange.last()
                         )
-                    ),
-                    alignment = null
+                    )
                 )
             )
         )
@@ -722,8 +765,7 @@ class PageViewModelTest {
                             from = secondTimeRange.first(),
                             to = secondTimeRange.last()
                         )
-                    ),
-                    alignment = null
+                    )
                 )
             )
         )
@@ -827,8 +869,7 @@ class PageViewModelTest {
                             from = firstTimeRange.first(),
                             to = firstTimeRange.last()
                         )
-                    ),
-                    alignment = null
+                    )
                 )
             )
         )
@@ -877,8 +918,7 @@ class PageViewModelTest {
                             from = secondTimeRange.first(),
                             to = secondTimeRange.last()
                         )
-                    ),
-                    alignment = null
+                    )
                 )
             )
         )
@@ -934,6 +974,7 @@ class PageViewModelTest {
         }
 
         stubObserveEvents(events)
+        stubUpdateText()
         stubOpenPage()
         buildViewModel()
 
@@ -959,18 +1000,18 @@ class PageViewModelTest {
             )
         )
 
-        verify(updateText, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                UpdateText.Params(
-                    blockId = paragraph.id,
-                    marks = marks,
-                    contextId = page.id,
-                    text = paragraph.content.asText().text
+        runBlockingTest {
+            verify(updateText, times(1)).invoke(
+                params = eq(
+                    UpdateText.Params(
+                        target = paragraph.id,
+                        marks = marks,
+                        context = page.id,
+                        text = paragraph.content.asText().text
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -1046,8 +1087,7 @@ class PageViewModelTest {
                 BlockView.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
-                    alignment = null
+                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
                 )
             )
         )
@@ -1215,6 +1255,8 @@ class PageViewModelTest {
 
         stubOpenPage()
 
+        stubUpdateText()
+
         buildViewModel()
 
         vm.open(root)
@@ -1233,24 +1275,50 @@ class PageViewModelTest {
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verify(updateText, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                UpdateText.Params(
-                    blockId = paragraph.id,
-                    text = userInput,
-                    marks = marks,
-                    contextId = page.id
+        runBlockingTest {
+            verify(updateText, times(1)).invoke(
+                params = eq(
+                    UpdateText.Params(
+                        target = paragraph.id,
+                        text = userInput,
+                        marks = marks,
+                        context = page.id
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
     fun `should receive initial control panel state when view model is initialized`() {
-        simulateNormalPageOpeningFlow()
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(1000)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(1001)
+
         val expected = ControlPanelState.init()
+
         vm.controlPanelViewState.test().assertValue(expected)
     }
 
@@ -1298,7 +1366,7 @@ class PageViewModelTest {
         val result = commands.value()
 
         assertEquals(
-            expected = PageViewModel.Command.OpenAddBlockPanel,
+            expected = Command.OpenAddBlockPanel,
             actual = result.peekContent()
         )
     }
@@ -1402,8 +1470,7 @@ class PageViewModelTest {
                     BlockView.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
-                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
-                        alignment = null
+                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
                     )
                 )
             )
@@ -1422,8 +1489,7 @@ class PageViewModelTest {
                     BlockView.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
-                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
-                        alignment = null
+                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
                     ),
                     BlockView.HeaderOne(
                         id = new.id,
@@ -1463,6 +1529,8 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubUpdateCheckbox()
+
         buildViewModel()
 
         vm.open(root)
@@ -1471,17 +1539,17 @@ class PageViewModelTest {
 
         vm.onCheckboxClicked(page.last().id)
 
-        verify(updateCheckbox, times(1)).invoke(
-            any(),
-            eq(
-                UpdateCheckbox.Params(
-                    context = root,
-                    target = child,
-                    isChecked = true
+        runBlockingTest {
+            verify(updateCheckbox, times(1)).invoke(
+                eq(
+                    UpdateCheckbox.Params(
+                        context = root,
+                        target = child,
+                        isChecked = true
+                    )
                 )
-            ),
-            any()
-        )
+            )
+        }
     }
 
     @Test
@@ -1507,6 +1575,11 @@ class PageViewModelTest {
         stubOpenPage()
         stubObserveEvents(events)
         buildViewModel()
+        stubDuplicateBlock(
+            newBlockId = MockDataFactory.randomString(),
+            root = root
+        )
+
 
         vm.open(root)
 
@@ -1515,20 +1588,22 @@ class PageViewModelTest {
         vm.onBlockFocusChanged(id = child, hasFocus = true)
         vm.onActionDuplicateClicked()
 
-        verify(duplicateBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                DuplicateBlock.Params(
-                    original = child,
-                    context = root
+        runBlockingTest {
+            verify(duplicateBlock, times(1)).invoke(
+                params = eq(
+                    DuplicateBlock.Params(
+                        original = child,
+                        context = root
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
     fun `should start deleting focused block when requested`() {
+
+        // SETUP
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
@@ -1548,8 +1623,11 @@ class PageViewModelTest {
         }
 
         stubOpenPage()
+        stubUnlinkBlocks(root = root)
         stubObserveEvents(events)
         buildViewModel()
+
+        // TESTING
 
         vm.open(root)
 
@@ -1558,16 +1636,16 @@ class PageViewModelTest {
         vm.onBlockFocusChanged(id = child, hasFocus = true)
         vm.onActionDeleteClicked()
 
-        verify(unlinkBlocks, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                UnlinkBlocks.Params(
-                    context = root,
-                    targets = listOf(child)
+        runBlockingTest {
+            verify(unlinkBlocks, times(1)).invoke(
+                params = eq(
+                    UnlinkBlocks.Params(
+                        context = root,
+                        targets = listOf(child)
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -1636,14 +1714,12 @@ class PageViewModelTest {
                     BlockView.Paragraph(
                         id = page[1].id,
                         text = page[1].content<Block.Content.Text>().text,
-                        backgroundColor = page[1].content<Block.Content.Text>().backgroundColor,
-                        alignment = null
+                        backgroundColor = page[1].content<Block.Content.Text>().backgroundColor
                     ),
                     BlockView.Paragraph(
                         id = page.last().id,
                         text = page.last().content<Block.Content.Text>().text,
-                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor,
-                        alignment = null
+                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor
                     )
                 )
             )
@@ -1669,8 +1745,7 @@ class PageViewModelTest {
                     BlockView.Paragraph(
                         id = page.last().id,
                         text = page.last().content<Block.Content.Text>().text,
-                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor,
-                        alignment = null
+                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor
                     )
                 )
             )
@@ -1700,6 +1775,7 @@ class PageViewModelTest {
         stubOpenPage()
         stubObserveEvents(events)
         buildViewModel()
+        stubUnlinkBlocks(root)
 
         vm.open(root)
 
@@ -1707,16 +1783,27 @@ class PageViewModelTest {
 
         vm.onEmptyBlockBackspaceClicked(child)
 
-        verify(unlinkBlocks, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                UnlinkBlocks.Params(
-                    context = root,
-                    targets = listOf(child)
+        runBlockingTest {
+            verify(unlinkBlocks, times(1)).invoke(
+                params = eq(
+                    UnlinkBlocks.Params(
+                        context = root,
+                        targets = listOf(child)
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
+    }
+
+    private fun stubUnlinkBlocks(root: String) {
+        unlinkBlocks.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = emptyList()
+                )
+            )
+        }
     }
 
     @Test
@@ -1786,6 +1873,7 @@ class PageViewModelTest {
 
         stubOpenPage()
         stubObserveEvents(events)
+        stubCreateBlock(root)
         buildViewModel()
 
         vm.open(root)
@@ -1798,18 +1886,18 @@ class PageViewModelTest {
             text = page.last().content<Block.Content.Text>().text
         )
 
-        verify(createBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                CreateBlock.Params(
-                    context = root,
-                    target = child,
-                    position = Position.BOTTOM,
-                    prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
+        runBlockingTest {
+            verify(createBlock, times(1)).invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        context = root,
+                        target = child,
+                        position = Position.BOTTOM,
+                        prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -1838,6 +1926,7 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubCreateBlock(root)
         buildViewModel()
 
         vm.open(root)
@@ -1846,20 +1935,20 @@ class PageViewModelTest {
 
         vm.onOutsideClicked()
 
-        verify(createBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                CreateBlock.Params(
-                    context = root,
-                    target = "",
-                    position = Position.INNER,
-                    prototype = Block.Prototype.Text(
-                        style = Block.Content.Text.Style.P
+        runBlockingTest {
+            verify(createBlock, times(1)).invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        context = root,
+                        target = "",
+                        position = Position.INNER,
+                        prototype = Block.Prototype.Text(
+                            style = Block.Content.Text.Style.P
+                        )
                     )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -1891,6 +1980,8 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubUpdateTextStyle()
+
         buildViewModel()
 
         vm.open(root)
@@ -1906,17 +1997,17 @@ class PageViewModelTest {
 
         vm.onTurnIntoStyleClicked(style = newStyle)
 
-        verify(updateTextStyle, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                UpdateTextStyle.Params(
-                    context = root,
-                    targets = listOf(secondChild),
-                    style = newStyle
+        runBlockingTest {
+            verify(updateTextStyle, times(1)).invoke(
+                params = eq(
+                    UpdateTextStyle.Params(
+                        context = root,
+                        targets = listOf(secondChild),
+                        style = newStyle
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -1994,6 +2085,8 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
+        stubUpdateTextColor(root)
+
         vm.open(root)
 
         coroutineTestRule.advanceTime(100)
@@ -2007,17 +2100,17 @@ class PageViewModelTest {
 
         vm.onToolbarTextColorAction(color = color)
 
-        verify(updateTextColor, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                UpdateTextColor.Params(
-                    context = root,
-                    target = child,
-                    color = color
+        runBlockingTest {
+            verify(updateTextColor, times(1)).invoke(
+                params = eq(
+                    UpdateTextColor.Params(
+                        context = root,
+                        target = child,
+                        color = color
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2048,6 +2141,7 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubCreateBlock(root)
         buildViewModel()
 
         vm.open(root)
@@ -2065,20 +2159,20 @@ class PageViewModelTest {
             marks = emptyList()
         )
 
-        verify(createBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                CreateBlock.Params(
-                    context = root,
-                    target = child,
-                    prototype = Block.Prototype.Text(
-                        style = style
-                    ),
-                    position = Position.BOTTOM
+        runBlockingTest {
+            verify(createBlock, times(1)).invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        context = root,
+                        target = child,
+                        prototype = Block.Prototype.Text(
+                            style = style
+                        ),
+                        position = Position.BOTTOM
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2109,6 +2203,7 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubCreateBlock(root)
         buildViewModel()
 
         vm.open(root)
@@ -2126,20 +2221,20 @@ class PageViewModelTest {
             text = page.last().content<Block.Content.Text>().text
         )
 
-        verify(createBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                CreateBlock.Params(
-                    context = root,
-                    target = child,
-                    prototype = Block.Prototype.Text(
-                        style = style
-                    ),
-                    position = Position.BOTTOM
+        runBlockingTest {
+            verify(createBlock, times(1)).invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        context = root,
+                        target = child,
+                        prototype = Block.Prototype.Text(
+                            style = style
+                        ),
+                        position = Position.BOTTOM
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2170,6 +2265,7 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubCreateBlock(root)
         buildViewModel()
 
         vm.open(root)
@@ -2187,20 +2283,20 @@ class PageViewModelTest {
             marks = emptyList()
         )
 
-        verify(createBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                CreateBlock.Params(
-                    context = root,
-                    target = child,
-                    prototype = Block.Prototype.Text(
-                        style = Block.Content.Text.Style.P
-                    ),
-                    position = Position.BOTTOM
+        runBlockingTest {
+            verify(createBlock, times(1)).invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        context = root,
+                        target = child,
+                        prototype = Block.Prototype.Text(
+                            style = Block.Content.Text.Style.P
+                        ),
+                        position = Position.BOTTOM
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2236,6 +2332,7 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubMergeBlocks(root)
         buildViewModel()
 
         vm.open(root)
@@ -2251,16 +2348,16 @@ class PageViewModelTest {
             id = thirdChild
         )
 
-        verify(mergeBlocks, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                MergeBlocks.Params(
-                    context = root,
-                    pair = Pair(secondChild, thirdChild)
+        runBlockingTest {
+            verify(mergeBlocks, times(1)).invoke(
+                params = eq(
+                    MergeBlocks.Params(
+                        context = root,
+                        pair = Pair(secondChild, thirdChild)
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2294,6 +2391,7 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubUpdateTextStyle()
         buildViewModel()
 
         vm.open(root)
@@ -2311,22 +2409,24 @@ class PageViewModelTest {
             marks = emptyList()
         )
 
-        verify(createBlock, never()).invoke(
-            scope = any(),
-            params = any(),
-            onResult = any()
-        )
-        verify(updateTextStyle, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                UpdateTextStyle.Params(
-                    targets = listOf(secondChild),
-                    style = Block.Content.Text.Style.P,
-                    context = root
+        runBlockingTest {
+
+            verify(createBlock, never()).invoke(
+                scope = any(),
+                params = any(),
+                onResult = any()
+            )
+
+            verify(updateTextStyle, times(1)).invoke(
+                params = eq(
+                    UpdateTextStyle.Params(
+                        targets = listOf(secondChild),
+                        style = Block.Content.Text.Style.P,
+                        context = root
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2359,6 +2459,7 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubCreateBlock(root)
         buildViewModel()
 
         vm.open(root)
@@ -2367,20 +2468,20 @@ class PageViewModelTest {
 
         vm.onOutsideClicked()
 
-        verify(createBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                CreateBlock.Params(
-                    target = "",
-                    context = root,
-                    position = Position.INNER,
-                    prototype = Block.Prototype.Text(
-                        style = Block.Content.Text.Style.P
+        runBlockingTest {
+            verify(createBlock, times(1)).invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        target = "",
+                        context = root,
+                        position = Position.INNER,
+                        prototype = Block.Prototype.Text(
+                            style = Block.Content.Text.Style.P
+                        )
                     )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2413,6 +2514,8 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
+        stubSplitBlocks(root)
+
         vm.open(root)
 
         coroutineTestRule.advanceTime(100)
@@ -2431,17 +2534,17 @@ class PageViewModelTest {
             index = index
         )
 
-        verify(splitBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                SplitBlock.Params(
-                    context = root,
-                    target = child,
-                    index = index
+        runBlockingTest {
+            verify(splitBlock, times(1)).invoke(
+                params = eq(
+                    SplitBlock.Params(
+                        context = root,
+                        target = child,
+                        index = index
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2531,6 +2634,8 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel(builder)
 
+        stubDownloadFile()
+
         vm.open(root)
 
         coroutineTestRule.advanceTime(100)
@@ -2539,18 +2644,18 @@ class PageViewModelTest {
 
         vm.startDownloadingFile(id = file.id)
 
-        verify(downloadFile, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                DownloadFile.Params(
-                    name = file.content<Block.Content.File>().name.orEmpty(),
-                    url = builder.file(
-                        hash = file.content<Block.Content.File>().hash
+        runBlockingTest {
+            verify(downloadFile, times(1)).invoke(
+                params = eq(
+                    DownloadFile.Params(
+                        name = file.content<Block.Content.File>().name.orEmpty(),
+                        url = builder.file(
+                            hash = file.content<Block.Content.File>().hash
+                        )
                     )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2590,6 +2695,7 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubCreateBlock(root)
         buildViewModel()
 
         vm.open(root)
@@ -2609,18 +2715,18 @@ class PageViewModelTest {
             style = Block.Content.Text.Style.P
         )
 
-        verify(createBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                CreateBlock.Params(
-                    context = root,
-                    target = title.id,
-                    position = Position.BOTTOM,
-                    prototype = Block.Prototype.Text(Block.Content.Text.Style.P)
+        runBlockingTest {
+            verify(createBlock, times(1)).invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        context = root,
+                        target = title.id,
+                        position = Position.BOTTOM,
+                        prototype = Block.Prototype.Text(Block.Content.Text.Style.P)
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2731,6 +2837,7 @@ class PageViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage()
         buildViewModel()
+        stubCreateBlock(root)
 
         vm.open(root)
 
@@ -2747,18 +2854,18 @@ class PageViewModelTest {
 
         vm.onAddBookmarkClicked()
 
-        verify(createBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                CreateBlock.Params(
-                    context = root,
-                    target = title.id,
-                    position = Position.BOTTOM,
-                    prototype = Block.Prototype.Bookmark
+        runBlockingTest {
+            verify(createBlock, times(1)).invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        context = root,
+                        target = title.id,
+                        position = Position.BOTTOM,
+                        prototype = Block.Prototype.Bookmark
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2798,6 +2905,7 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubCreateBlock(root = root)
         buildViewModel()
 
         vm.open(root)
@@ -2815,18 +2923,18 @@ class PageViewModelTest {
 
         vm.onAddDividerBlockClicked()
 
-        verify(createBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                CreateBlock.Params(
-                    context = root,
-                    target = title.id,
-                    position = Position.BOTTOM,
-                    prototype = Block.Prototype.Divider
+        runBlockingTest {
+            verify(createBlock, times(1)).invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        context = root,
+                        target = title.id,
+                        position = Position.BOTTOM,
+                        prototype = Block.Prototype.Divider
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -2865,8 +2973,12 @@ class PageViewModelTest {
         }
 
         stubObserveEvents(flow)
-        stubOpenPage()
+        stubOpenPage(context = root)
         buildViewModel()
+
+        undo.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
 
         vm.open(root)
 
@@ -2876,13 +2988,13 @@ class PageViewModelTest {
 
         vm.onActionUndoClicked()
 
-        verify(undo, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                Undo.Params(context = root)
-            ),
-            onResult = any()
-        )
+        runBlockingTest {
+            verify(undo, times(1)).invoke(
+                params = eq(
+                    Undo.Params(context = root)
+                )
+            )
+        }
     }
 
     @Test
@@ -2924,6 +3036,10 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
+        redo.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+
         vm.open(root)
 
         coroutineTestRule.advanceTime(100)
@@ -2932,13 +3048,13 @@ class PageViewModelTest {
 
         vm.onActionRedoClicked()
 
-        verify(redo, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                Redo.Params(context = root)
-            ),
-            onResult = any()
-        )
+        runBlockingTest {
+            verify(redo, times(1)).invoke(
+                params = eq(
+                    Redo.Params(context = root)
+                )
+            )
+        }
     }
 
     @Test
@@ -2988,16 +3104,20 @@ class PageViewModelTest {
 
         vm.onArchiveThisPageClicked()
 
-        verify(archiveDocument, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                ArchiveDocument.Params(
-                    context = root,
-                    target = root
+        archiveDocument.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+
+        runBlockingTest {
+            verify(archiveDocument, times(1)).invoke(
+                params = eq(
+                    ArchiveDocument.Params(
+                        context = root,
+                        target = root
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -3037,42 +3157,44 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubClosePage()
         buildViewModel()
 
         vm.open(root)
 
         coroutineTestRule.advanceTime(100)
 
-        archiveDocument.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
-        }
+        stubArchiveDocument()
+        stubClosePage()
 
         // TESTING
 
         vm.onArchiveThisPageClicked()
 
-        verify(archiveDocument, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                ArchiveDocument.Params(
-                    context = root,
-                    target = root
+        runBlockingTest {
+            verify(archiveDocument, times(1)).invoke(
+                params = eq(
+                    ArchiveDocument.Params(
+                        context = root,
+                        target = root
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
 
-        verify(closePage, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                ClosePage.Params(
-                    id = root
+            verify(closePage, times(1)).invoke(
+                params = eq(
+                    ClosePage.Params(
+                        id = root
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
+    }
+
+    private fun stubArchiveDocument() {
+        archiveDocument.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
     }
 
     @Test
@@ -3112,7 +3234,10 @@ class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubReplaceBlock(root = root)
         buildViewModel()
+
+        stubReplaceBlock(root)
 
         vm.open(root)
 
@@ -3128,19 +3253,19 @@ class PageViewModelTest {
             text = update
         )
 
-        verify(replaceBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                ReplaceBlock.Params(
-                    context = root,
-                    target = paragraph.id,
-                    prototype = Block.Prototype.Text(
-                        style = Block.Content.Text.Style.NUMBERED
+        runBlockingTest {
+            verify(replaceBlock, times(1)).invoke(
+                params = eq(
+                    ReplaceBlock.Params(
+                        context = root,
+                        target = paragraph.id,
+                        prototype = Block.Prototype.Text(
+                            style = Block.Content.Text.Style.NUMBERED
+                        )
                     )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -3205,38 +3330,34 @@ class PageViewModelTest {
             text = update
         )
 
-        verify(updateText, never()).invoke(
-            scope = any(),
-            params = any(),
-            onResult = any()
-        )
+        runBlockingTest {
+            verify(updateText, never()).invoke(
+                params = any()
+            )
 
-        verify(replaceBlock, never()).invoke(
-            scope = any(),
-            params = any(),
-            onResult = any()
-        )
+            verify(replaceBlock, never()).invoke(
+                params = any()
+            )
+        }
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verify(replaceBlock, never()).invoke(
-            scope = any(),
-            params = any(),
-            onResult = any()
-        )
+        runBlockingTest {
+            verify(replaceBlock, never()).invoke(
+                params = any()
+            )
 
-        verify(updateText, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                UpdateText.Params(
-                    contextId = root,
-                    blockId = numbered.id,
-                    marks = numbered.content<Block.Content.Text>().marks,
-                    text = update
+            verify(updateText, times(1)).invoke(
+                params = eq(
+                    UpdateText.Params(
+                        context = root,
+                        target = numbered.id,
+                        marks = numbered.content<Block.Content.Text>().marks,
+                        text = update
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test
@@ -3344,11 +3465,7 @@ class PageViewModelTest {
 
         val newBlockId = MockDataFactory.randomUuid()
 
-        duplicateBlock.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, String>) -> Unit>(2)(Either.Right(newBlockId))
-            }
-        }
+        stubDuplicateBlock(newBlockId, root)
 
         val focus = vm.focus.test()
 
@@ -3363,19 +3480,34 @@ class PageViewModelTest {
 
         vm.onActionDuplicateClicked()
 
-        verify(duplicateBlock, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                DuplicateBlock.Params(
-                    context = root,
-                    original = paragraph.id
+        runBlockingTest {
+            verify(duplicateBlock, times(1)).invoke(
+                params = eq(
+                    DuplicateBlock.Params(
+                        context = root,
+                        original = paragraph.id
+                    )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
+
         verifyNoMoreInteractions(duplicateBlock)
 
         focus.assertValue { id -> id == newBlockId }
+    }
+
+    private fun stubDuplicateBlock(newBlockId: String, root: String) {
+        duplicateBlock.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Pair(
+                    newBlockId,
+                    Payload(
+                        context = root,
+                        events = emptyList()
+                    )
+                )
+            )
+        }
     }
 
     @Test
@@ -3415,6 +3547,8 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
+        stubUpdateTitle()
+
         vm.open(root)
 
         coroutineTestRule.advanceTime(100)
@@ -3425,19 +3559,19 @@ class PageViewModelTest {
 
         vm.onTitleTextChanged(update)
 
-        verify(updateTitle, never()).invoke(
-            scope = any(),
-            params = any(),
-            onResult = any()
-        )
+        runBlockingTest {
+            verify(updateTitle, never()).invoke(
+                params = any()
+            )
+        }
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verify(updateTitle, times(1)).invoke(
-            any(),
-            any(),
-            any()
-        )
+        runBlockingTest {
+            verify(updateTitle, times(1)).invoke(
+                params = any()
+            )
+        }
     }
 
     @Test
@@ -3527,24 +3661,21 @@ class PageViewModelTest {
                 BlockView.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text,
-                    alignment = null
+                    text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[1].let { p ->
                 BlockView.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text,
-                    alignment = null
+                    text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[2].let { p ->
                 BlockView.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text,
-                    alignment = null
+                    text = p.content<Block.Content.Text>().text
                 )
             }
         )
@@ -3706,8 +3837,7 @@ class PageViewModelTest {
                 BlockView.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text,
-                    alignment = null
+                    text = p.content<Block.Content.Text>().text
                 )
             }
         )
@@ -3746,53 +3876,124 @@ class PageViewModelTest {
         testObserver.assertValue(ViewState.Success(listOf(title) + initial))
     }
 
-    private fun simulateNormalPageOpeningFlow() {
+    private fun stubClosePage(
+        response: Either<Throwable, Unit> = Either.Right(Unit)
+    ) {
+        closePage.stub {
+            onBlocking { invoke(any()) } doReturn response
+        }
+    }
 
-        val root = MockDataFactory.randomUuid()
-        val child = MockDataFactory.randomUuid()
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(1000)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
+    private fun stubSplitBlocks(root: String) {
+        splitBlock.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Pair(
+                    MockDataFactory.randomString(),
+                    Payload(
+                        context = root,
+                        events = emptyList()
                     )
                 )
             )
         }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.open(root)
-
-        coroutineTestRule.advanceTime(1001)
     }
 
-    private fun stubClosePage(response: Either<Throwable, Unit>) {
-        closePage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(response)
-            }
-        }
-    }
-
-    private fun stubOpenPage() {
+    private fun stubOpenPage(
+        context: Id = MockDataFactory.randomString(),
+        events: List<Event> = emptyList()
+    ) {
         openPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
-            }
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = context,
+                    events = events
+                )
+            )
         }
     }
 
     private fun stubObserveEvents(flow: Flow<List<Event>> = flowOf()) {
         interceptEvents.stub {
             onBlocking { build() } doReturn flow
+        }
+    }
+
+    private fun stubUpdateText() {
+        updateText.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+    }
+
+    private fun stubReplaceBlock(root: String) {
+        replaceBlock.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Pair(
+                    MockDataFactory.randomString(),
+                    Payload(
+                        context = root,
+                        events = emptyList()
+                    )
+                )
+            )
+        }
+    }
+
+    private fun stubCreateBlock(root: String) {
+        createBlock.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Pair(
+                    MockDataFactory.randomString(), Payload(
+                        context = root,
+                        events = listOf()
+                    )
+                )
+            )
+        }
+    }
+
+    private fun stubUpdateTitle() {
+        updateTitle.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+    }
+
+    private fun stubDownloadFile() {
+        downloadFile.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+    }
+
+    private fun stubUpdateTextColor(root: String) {
+        updateTextColor.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = emptyList()
+                )
+            )
+        }
+    }
+
+    private fun stubUpdateTextStyle() {
+        updateTextStyle.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+    }
+
+    private fun stubUpdateCheckbox() {
+        updateCheckbox.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+    }
+
+    private fun stubMergeBlocks(root: String) {
+        mergeBlocks.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = emptyList()
+                )
+            )
         }
     }
 
@@ -3804,42 +4005,56 @@ class PageViewModelTest {
             )
         )
     ) {
+
+        val storage = Editor.Storage()
+        val proxies = Editor.Proxer()
+        val memory = Editor.Memory(
+            selections = SelectionStateHolder.Default()
+        )
+
         vm = PageViewModel(
             openPage = openPage,
             closePage = closePage,
             createPage = createPage,
-            updateText = updateText,
-            undo = undo,
-            redo = redo,
             interceptEvents = interceptEvents,
-            createBlock = createBlock,
-            updateCheckbox = updateCheckbox,
-            unlinkBlocks = unlinkBlocks,
-            duplicateBlock = duplicateBlock,
-            updateTextStyle = updateTextStyle,
-            updateTextColor = updateTextColor,
-            updateBackgroundColor = updateBackgroundColor,
             updateLinkMarks = updateLinkMark,
             removeLinkMark = removeLinkMark,
-            mergeBlocks = mergeBlocks,
-            splitBlock = splitBlock,
-            documentExternalEventReducer = DocumentExternalEventReducer(),
+            reducer = DocumentExternalEventReducer(),
             urlBuilder = urlBuilder,
-            downloadFile = downloadFile,
             uploadUrl = uploadUrl,
-            counter = Counter.Default(),
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,
-                emojifier = emojifier,
-                toggleStateHolder = ToggleStateHolder.Default()
+                toggleStateHolder = ToggleStateHolder.Default(),
+                counter = Counter.Default()
             ),
             archiveDocument = archiveDocument,
             createDocument = createDocument,
-            replaceBlock = replaceBlock,
-            patternMatcher = DefaultPatternMatcher(),
-            updateTitle = updateTitle,
-            selectionStateHolder = SelectionStateHolder.Default(),
-            updateAlignment = updateBlockAlignment
+            orchestrator = Orchestrator(
+                createBlock = createBlock,
+                replaceBlock = replaceBlock,
+                updateTextColor = updateTextColor,
+                duplicateBlock = duplicateBlock,
+                downloadFile = downloadFile,
+                undo = undo,
+                redo = redo,
+                updateTitle = updateTitle,
+                updateText = updateText,
+                updateCheckbox = updateCheckbox,
+                updateTextStyle = updateTextStyle,
+                updateBackgroundColor = updateBackgroundColor,
+                mergeBlocks = mergeBlocks,
+                splitBlock = splitBlock,
+                unlinkBlocks = unlinkBlocks,
+                memory = memory,
+                stores = storage,
+                proxies = proxies,
+                textInteractor = Interactor.TextInteractor(
+                    proxies = proxies,
+                    stores = storage,
+                    matcher = DefaultPatternMatcher()
+                ),
+                updateAlignment = updateAlignment
+            )
         )
     }
 }

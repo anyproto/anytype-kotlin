@@ -4,16 +4,10 @@ option go_package = "github.com/anytypeio/go-anytype-library/pb/model";
 
 import "google/protobuf/struct.proto";
 
-message SmartBlock {
-    string id = 1;
-    Type type = 2;
-    enum Type {
-        Dashboard = 0;
-        Page = 1;
-        Archive = 2;
-        Breadcrumbs = 3;
-        Dataview = 4;
-    }
+message SmartBlockSnapshotBase {
+    repeated Block blocks = 1;
+    google.protobuf.Struct details = 2;
+    google.protobuf.Struct fileKeys = 3;
 }
 
 message Block {
@@ -25,9 +19,7 @@ message Block {
     Align align = 6;
 
     oneof content {
-        Content.Dashboard dashboard = 11;
-        Content.Page page = 12;
-        Content.Dataview dataview = 13;
+        Content.Smartblock smartblock = 11;
 
         Content.Text text = 14;
         Content.File file = 15;
@@ -36,6 +28,7 @@ message Block {
         Content.Bookmark bookmark = 18;
         Content.Icon icon = 19;
         Content.Link link = 20;
+        Content.Dataview dataview = 21;
     }
 
 
@@ -74,6 +67,7 @@ message Block {
             enum Style {
                 Row = 0;
                 Column = 1;
+                Div = 2;
             }
         }
 
@@ -120,22 +114,6 @@ message Block {
 
         message Icon {
             string name = 1;
-        }
-
-        /*
-        * Block type to organize pages on the main screen (main purpose)
-        * It also can be mounted on a page.
-        */
-        message Dashboard {
-            enum Style {
-                MainScreen = 0;
-                Archive = 1;
-            }
-
-            Style style = 1;
-        }
-
-        message Dataview {
         }
 
         message Text {
@@ -207,19 +185,11 @@ message Block {
             }
         }
 
-        message Page {
-            enum Style {
-                Empty = 0; // Ordinary page, without additional fields
-                Task = 1; // Page with a task fields
-                Set = 2; // Page, that organize a set of blocks by a specific criterio
-                Profile = 3;
+        message Smartblock {
+        }
 
-                Breadcrumbs = 101;
-
-                // ...
-            }
-
-            Style style = 1;
+        message Dataview {
+            string databaseId = 1;
         }
     }
 }

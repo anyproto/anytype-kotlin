@@ -3,6 +3,8 @@ package anytype;
 option go_package = "pb";
 
 import "models.proto";
+import "localstore.proto";
+import "events.proto";
 import "google/protobuf/struct.proto";
 
 /*
@@ -24,7 +26,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-
+                ResponseEvent event = 2;
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -66,6 +68,30 @@ message Rpc {
 
     message BlockList {
 
+        message ConvertChildrenToPages {
+            message Request {
+                string contextId = 1;
+                repeated string blockIds = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated string linkIds = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
         message Move {
             message Request {
                 string contextId = 1;
@@ -77,6 +103,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                ResponseEvent event = 2;
 
                 message Error {
                     Code code = 1;
@@ -96,14 +123,15 @@ message Rpc {
             message Request {
                 string contextId = 1;
                 repeated string blockIds = 2;
-                anytype.model.Block block = 3;
-                string dropTargetId = 4; // id of the block in Page(contextId) to create a link near that block
+                google.protobuf.Struct details = 3; // page details
+                string dropTargetId = 4;
                 anytype.model.Block.Position position = 5;
             }
 
             message Response {
                 Error error = 1;
                 string linkId = 2;
+                ResponseEvent event = 3;
 
                 message Error {
                     Code code = 1;
@@ -133,6 +161,7 @@ message Rpc {
             message Response {
                 Error error = 1;
                 repeated string blockIds = 2;
+                ResponseEvent event = 3;
 
                 message Error {
                     Code code = 1;
@@ -149,6 +178,32 @@ message Rpc {
         }
 
         message Set {
+            message Page {
+                message IsArchived {
+                    message Request {
+                        string contextId = 1;
+                        repeated string blockIds = 2;
+                        bool isArchived = 3;
+                    }
+
+                    message Response {
+                        Error error = 1;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+            }
+
             message Text {
                 message Style {
                     message Request {
@@ -159,6 +214,7 @@ message Rpc {
 
                     message Response {
                         Error error = 1;
+                        ResponseEvent event = 2;
 
                         message Error {
                             Code code = 1;
@@ -182,6 +238,7 @@ message Rpc {
 
                     message Response {
                         Error error = 1;
+                        ResponseEvent event = 2;
 
                         message Error {
                             Code code = 1;
@@ -207,6 +264,7 @@ message Rpc {
 
                 message Response {
                     Error error = 1;
+                    ResponseEvent event = 2;
 
                     message Error {
                         Code code = 1;
@@ -230,6 +288,7 @@ message Rpc {
 
                 message Response {
                     Error error = 1;
+                    ResponseEvent event = 2;
 
                     message Error {
                         Code code = 1;
@@ -256,6 +315,60 @@ message Rpc {
                 }
                 message Response {
                     Error error = 1;
+                    ResponseEvent event = 2;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                            // ...
+                        }
+                    }
+                }
+            }
+            message Div {
+                message Style {
+                    message Request {
+                        string contextId = 1;
+                        repeated string blockIds = 2;
+                        anytype.model.Block.Content.Div.Style style = 3;
+                    }
+
+                    message Response {
+                        Error error = 1;
+                        ResponseEvent event = 2;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        message Delete {
+            // Deletes the page, keys and all records from the local store and unsubscribe from remote changes
+            message Page {
+                message Request {
+                    repeated string blockIds = 1; // pages to remove
+                }
+
+                message Response {
+                    Error error = 1;
+                    ResponseEvent event = 2;
 
                     message Error {
                         Code code = 1;
@@ -287,6 +400,7 @@ message Rpc {
             message Response {
                 Error error = 1;
                 string blockId = 2;
+                ResponseEvent event = 3;
 
                 message Error {
                     Code code = 1;
@@ -302,18 +416,18 @@ message Rpc {
             }
         }
 
-
         message Split {
             message Request {
                 string contextId = 1;
                 string blockId = 2;
-                int32 cursorPosition = 3;
+                anytype.model.Range range = 3;
                 anytype.model.Block.Content.Text.Style style = 4;
             }
 
             message Response {
                 Error error = 1;
                 string blockId = 2;
+                ResponseEvent event = 3;
 
                 message Error {
                     Code code = 1;
@@ -338,6 +452,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                ResponseEvent event = 2;
 
                 message Error {
                     Code code = 1;
@@ -358,6 +473,7 @@ message Rpc {
             message Request {
                 string contextId = 1;
                 repeated anytype.model.Block blocks = 2;
+                anytype.model.Range selectedTextRange = 3;
             }
 
             message Response {
@@ -384,15 +500,18 @@ message Rpc {
                 string focusedBlockId = 2;
                 anytype.model.Range selectedTextRange = 3;
                 repeated string selectedBlockIds = 4;
+                anytype.model.Range copyTextRange = 5;
 
-                string textSlot = 5;
-                string htmlSlot = 6;
-                repeated anytype.model.Block anySlot = 7;
+                string textSlot = 6;
+                string htmlSlot = 7;
+                repeated anytype.model.Block anySlot = 8;
             }
 
             message Response {
                 Error error = 1;
                 repeated string blockIds = 2;
+                int32 caretPosition = 3;
+                ResponseEvent event = 4;
 
                 message Error {
                     Code code = 1;
@@ -412,6 +531,7 @@ message Rpc {
             message Request {
                 string contextId = 1;
                 repeated anytype.model.Block blocks = 2;
+                anytype.model.Range selectedTextRange = 3;
             }
 
             message Response {
@@ -419,6 +539,7 @@ message Rpc {
                 string textSlot = 2;
                 string htmlSlot = 3;
                 repeated anytype.model.Block anySlot = 4;
+                ResponseEvent event = 5;
 
                 message Error {
                     Code code = 1;
@@ -443,6 +564,7 @@ message Rpc {
             message Response {
                 Error error = 1;
                 string path = 2;
+                ResponseEvent event = 3;
 
                 message Error {
                     Code code = 1;
@@ -468,6 +590,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                ResponseEvent event = 2;
 
                 message Error {
                     Code code = 1;
@@ -491,6 +614,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                ResponseEvent event = 2;
 
                 message Error {
                     Code code = 1;
@@ -516,6 +640,7 @@ message Rpc {
 
                 message Response {
                     Error error = 1;
+                    ResponseEvent event = 2;
 
                     message Error {
                         Code code = 1;
@@ -564,6 +689,7 @@ message Rpc {
 
                 message Response {
                     Error error = 1;
+                    ResponseEvent event = 2;
 
                     message Error {
                         Code code = 1;
@@ -640,6 +766,7 @@ message Rpc {
 
                     message Response {
                         Error error = 1;
+                        ResponseEvent event = 2;
 
                         message Error {
                             Code code = 1;
@@ -665,6 +792,7 @@ message Rpc {
 
                     message Response {
                         Error error = 1;
+                        ResponseEvent event = 2;
 
                         message Error {
                             Code code = 1;
@@ -689,6 +817,7 @@ message Rpc {
 
                     message Response {
                         Error error = 1;
+                        ResponseEvent event = 2;
 
                         message Error {
                             Code code = 1;
@@ -715,6 +844,7 @@ message Rpc {
 
                     message Response {
                         Error error = 1;
+                        ResponseEvent event = 2;
 
                         message Error {
                             Code code = 1;
@@ -841,6 +971,7 @@ message Rpc {
 
                     message Response {
                         Error error = 1;
+                        ResponseEvent event = 2;
 
                         message Error {
                             Code code = 1;
@@ -858,6 +989,7 @@ message Rpc {
             }
         }
 
+
         message Bookmark {
             message Fetch {
                 message Request {
@@ -868,6 +1000,63 @@ message Rpc {
 
                 message Response {
                     Error error = 1;
+                    ResponseEvent event = 2;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                        }
+                    }
+                }
+            }
+
+            message CreateAndFetch {
+                message Request {
+                    string contextId = 1;
+                    string targetId = 2;
+                    anytype.model.Block.Position position = 3;
+                    string url = 4;
+                }
+
+                message Response {
+                    Error error = 1;
+                    string blockId = 2;
+                    ResponseEvent event = 3;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                        }
+                    }
+                }
+            }
+        }
+
+        message File {
+            message CreateAndUpload {
+                message Request {
+                    string contextId = 1;
+                    string targetId = 2;
+                    anytype.model.Block.Position position = 3;
+                    string url = 4;
+                    string localPath = 5;
+                    anytype.model.Block.Content.File.Type fileType = 6;
+                }
+
+                message Response {
+                    Error error = 1;
+                    string blockId = 2;
+                    ResponseEvent event = 3;
 
                     message Error {
                         Code code = 1;
@@ -896,6 +1085,7 @@ message Rpc {
 
                 message Response {
                     Error error = 1;
+                    ResponseEvent event = 2;
 
                     message Error {
                         Code code = 1;
@@ -919,6 +1109,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                ResponseEvent event = 2;
 
                 message Error {
                     Code code = 1;
@@ -942,6 +1133,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                ResponseEvent event = 2;
 
                 message Error {
                     Code code = 1;
@@ -979,12 +1171,35 @@ message Rpc {
             message Request {
                 string contextId = 1; // id of the context blo1k
                 string blockId = 2;
-                repeated string breadcrumbsIds = 3; // optional ids of breadcrubms blocks
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message GetPublicWebURL {
+            message Request {
+                string blockId = 1;
             }
 
             message Response {
                 Error error = 1;
 
+                string url = 2;
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -1007,6 +1222,7 @@ message Rpc {
             message Response {
                 Error error = 1;
                 string blockId = 2;
+                ResponseEvent event = 3;
 
                 message Error {
                     Code code = 1;
@@ -1022,14 +1238,15 @@ message Rpc {
             }
         }
 
-        message CutBreadcrumbs {
+        message SetBreadcrumbs {
             message Request {
                 string breadcrumbsId = 1;
-                int32 index = 2; // 0 - for full reset
+                repeated string ids = 2; // page ids
             }
 
             message Response {
                 Error error = 1;
+                ResponseEvent event = 2;
 
                 message Error {
                     Code code = 1;
@@ -1071,6 +1288,7 @@ message Rpc {
             message Response {
                 Error error = 1;
                 string blockId = 2;
+                ResponseEvent event = 3;
 
                 message Error {
                     Code code = 1;
@@ -1098,6 +1316,7 @@ message Rpc {
                 Error error = 1;
                 string blockId = 2;
                 string targetId = 3;
+                ResponseEvent event = 4;
 
                 message Error {
                     Code code = 1;
@@ -1112,6 +1331,7 @@ message Rpc {
                 }
             }
         }
+
         /*
          * Remove blocks from the childrenIds of its parents
         */
@@ -1124,6 +1344,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                ResponseEvent event = 2;
 
                 message Error {
                     Code code = 1;
@@ -1246,6 +1467,9 @@ message Rpc {
                     string avatarLocalPath = 2; // Path to an image, that will be used as an avatar of this account
                     string avatarColor = 3; // Avatar color as an alternative for avatar image
                 }
+
+
+                string alphaInviteCode = 20;
             }
 
             /**
@@ -1269,6 +1493,7 @@ message Rpc {
                         ACCOUNT_CREATED_BUT_FAILED_TO_SET_AVATAR = 103;
                         FAILED_TO_STOP_RUNNING_NODE = 104;
 
+                        BAD_INVITE_CODE = 900;
                     }
                 }
             }
@@ -1544,6 +1769,27 @@ message Rpc {
         }
     }
 
+    message Shutdown {
+        message Request {
+        }
+        message Response {
+            Error error = 1;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+
+                    NODE_NOT_STARTED = 101;
+                }
+            }
+
+        }
+    }
+
     message Config {
         message Get {
             message Request {
@@ -1551,7 +1797,8 @@ message Rpc {
             message Response {
                 Error error = 1;
                 string homeBlockId = 2; // home dashboard block id
-                string archiveBlockId = 3; // home dashboard block id
+                string archiveBlockId = 3; // archive block id
+                string profileBlockId = 4; // profile block id
                 string gatewayUrl = 101; // gateway url for fetching static files
                 message Error {
                     Code code = 1;
@@ -1564,7 +1811,6 @@ message Rpc {
                         NODE_NOT_STARTED = 101;
                     }
                 }
-
             }
         }
     }
@@ -1643,6 +1889,7 @@ message Rpc {
             string url = 1;
             string localPath = 2;
             anytype.model.Block.Content.File.Type type = 3;
+            bool disableEncryption = 4;
         }
 
         message Response {
@@ -1662,6 +1909,55 @@ message Rpc {
         }
     }
 
+    message Navigation {
+        message ListPages {
+            message Request {
+            }
+
+            message Response {
+                Error error = 1;
+                repeated anytype.model.PageInfo pages = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        /*
+          * Get the info for page alongside with info for all inbound and outbound links from/to this page
+        */
+        message GetPageInfoWithLinks {
+            message Request {
+                string pageId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                anytype.model.PageInfoWithLinks page = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+    }
 }
 
 message Empty {

@@ -3,6 +3,7 @@ package com.agileburo.anytype.domain.dashboard.interactor
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.event.model.Payload
 
 /**
  * Use-case for opening a dashboard by sending a special request.
@@ -11,7 +12,7 @@ import com.agileburo.anytype.domain.block.repo.BlockRepository
  */
 class OpenDashboard(
     private val repo: BlockRepository
-) : BaseUseCase<Unit, OpenDashboard.Param?>() {
+) : BaseUseCase<Payload, OpenDashboard.Param?>() {
 
     override suspend fun run(params: Param?) = try {
         if (params != null)

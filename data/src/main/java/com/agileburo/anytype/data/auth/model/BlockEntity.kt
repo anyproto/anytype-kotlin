@@ -14,6 +14,12 @@ data class BlockEntity(
 
     sealed class Content {
 
+        data class Smart(
+            val type: Type
+        ) : Content() {
+            enum class Type { HOME, PAGE, ARCHIVE, BREADCRUMBS, PROFILE }
+        }
+
         data class Text(
             val text: String,
             val style: Style,
@@ -47,7 +53,7 @@ data class BlockEntity(
         }
 
         data class Layout(val type: Type) : Content() {
-            enum class Type { ROW, COLUMN }
+            enum class Type { ROW, COLUMN, DIV }
         }
 
         data class Image(

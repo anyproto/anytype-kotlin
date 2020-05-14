@@ -11,6 +11,7 @@ import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.block.interactor.DragAndDrop
 import com.agileburo.anytype.domain.block.model.Position
+import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
@@ -107,7 +108,6 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             dropChanges
                 .withLatestFrom(movementChanges) { a, b -> Pair(a, b) }
-                .onEach { Timber.d("Dnd request: $it") }
                 .mapLatest { (subject, movement) ->
                     DragAndDrop.Params(
                         context = context,
@@ -213,8 +213,8 @@ class HomeDashboardViewModel(
         }
     }
 
-    fun onDocumentClicked(id: String) {
-        navigateToPage(id)
+    fun onDocumentClicked(target: Id) {
+        navigateToPage(target)
     }
 
     fun onProfileClicked() {

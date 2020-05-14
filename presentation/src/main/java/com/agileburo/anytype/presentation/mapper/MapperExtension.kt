@@ -139,7 +139,8 @@ fun HomeDashboard.toView(): List<DashboardView.Document> = children.mapNotNull {
                 if (content.type == Block.Content.Link.Type.PAGE) {
                     if (details.details[content.target]?.isArchived != true) {
                         DashboardView.Document(
-                            id = content.target,
+                            id = model.id,
+                            target = content.target,
                             title = details.details[content.target]?.name,
                             emoji = details.details[content.target]?.icon?.let { name ->
                                 if (name.isNotEmpty())

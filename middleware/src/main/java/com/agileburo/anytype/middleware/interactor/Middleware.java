@@ -543,12 +543,13 @@ public class Middleware {
     }
 
     public void dnd(CommandEntity.Dnd command) throws Exception {
-        Models.Block.Position positionModel = mapper.toMiddleware(command.getPosition());
+        Models.Block.Position position = mapper.toMiddleware(command.getPosition());
 
         BlockList.Move.Request request = BlockList.Move.Request
                 .newBuilder()
                 .setContextId(command.getContextId())
-                .setPosition(positionModel)
+                .setTargetContextId(command.getDropTargetContextId())
+                .setPosition(position)
                 .addAllBlockIds(command.getBlockIds())
                 .setDropTargetId(command.getDropTargetId())
                 .build();

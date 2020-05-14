@@ -37,9 +37,18 @@ class MiddlewareTest {
 
     @Test
     fun `should call account-stop method when logging out`() {
-        middleware.logout()
+
+        // SETUP
 
         val request = Account.Stop.Request.newBuilder().build()
+
+        service.stub {
+            on { accountStop(request) } doReturn Account.Stop.Response.getDefaultInstance()
+        }
+
+        // TESTING
+
+        middleware.logout()
 
         verify(service, times(1)).accountStop(request)
         verifyNoMoreInteractions(service)
@@ -47,6 +56,8 @@ class MiddlewareTest {
 
     @Test
     fun `should create request to create new document and return pair of ids`() {
+
+        // SETUP
 
         val command = CommandEntity.CreateDocument(
             context = MockDataFactory.randomUuid(),
@@ -74,6 +85,8 @@ class MiddlewareTest {
             on { blockCreatePage(any()) } doReturn response
         }
 
+        // TESTING
+
         val (block, target) = middleware.createDocument(command)
 
         verify(service, times(1)).blockCreatePage(request)
@@ -91,6 +104,8 @@ class MiddlewareTest {
 
     @Test
     fun `should create a request for replacing target block and return id of the new block`() {
+
+        // SETUP
 
         val command = CommandEntity.Replace(
             context = MockDataFactory.randomUuid(),
@@ -125,6 +140,8 @@ class MiddlewareTest {
             on { blockCreate(any()) } doReturn response
         }
 
+        // TESTING
+
         val result = middleware.replace(command)
 
         verify(service, times(1)).blockCreate(request)
@@ -133,10 +150,14 @@ class MiddlewareTest {
             expected = response.blockId,
             actual = result.first
         )
+
+        verifyNoMoreInteractions(service)
     }
 
     @Test
     fun `should set emoji icon by updating document details`() {
+
+        // SETUP
 
         val command = CommandEntity.SetIconName(
             context = MockDataFactory.randomUuid(),
@@ -163,6 +184,8 @@ class MiddlewareTest {
             on { blockSetDetails(any()) } doReturn response
         }
 
+        // TESTING
+
         middleware.setIconName(command)
 
         verify(service, times(1)).blockSetDetails(request)
@@ -171,6 +194,8 @@ class MiddlewareTest {
 
     @Test
     fun `should set document title by updating document details`() {
+
+        // SETUP
 
         val command = CommandEntity.UpdateTitle(
             context = MockDataFactory.randomUuid(),
@@ -195,6 +220,8 @@ class MiddlewareTest {
         service.stub {
             on { blockSetDetails(any()) } doReturn response
         }
+
+        // TESTING
 
         middleware.updateDocumentTitle(command)
 
@@ -223,6 +250,10 @@ class MiddlewareTest {
             .setContextId(command.context)
             .build()
 
+        service.stub {
+            on { blockSetTextStyle(request) } doReturn BlockList.Set.Text.Style.Response.getDefaultInstance()
+        }
+
         // TESTING
 
         assertTrue { request.blockIdsList.size == 2 }
@@ -232,5 +263,44 @@ class MiddlewareTest {
         middleware.updateTextStyle(command)
 
         verify(service, times(1)).blockSetTextStyle(request)
+        verifyNoMoreInteractions(service)
+    }
+
+    @Test
+    fun `should create request for dnd inside home dashboard`() {
+
+        // SETUP
+
+        val context = MockDataFactory.randomUuid()
+
+        val command = CommandEntity.Dnd(
+            contextId = context,
+            dropTargetContextId = context,
+            blockIds = listOf(MockDataFactory.randomUuid()),
+            dropTargetId = MockDataFactory.randomUuid(),
+            position = PositionEntity.TOP
+        )
+
+        val position = Models.Block.Position.Top
+
+        val request = BlockList.Move.Request
+            .newBuilder()
+            .setContextId(command.contextId)
+            .setTargetContextId(command.contextId)
+            .setPosition(position)
+            .addAllBlockIds(command.blockIds)
+            .setDropTargetId(command.dropTargetId)
+            .build()
+
+        service.stub {
+            on { blockListMove(request) } doReturn BlockList.Move.Response.getDefaultInstance()
+        }
+
+        // TESTING
+
+        middleware.dnd(command)
+
+        verify(service, times(1)).blockListMove(request)
+        verifyNoMoreInteractions(service)
     }
 }

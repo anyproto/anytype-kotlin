@@ -481,8 +481,8 @@ class HomeDashboardViewModelTest {
                 DragAndDrop.Params(
                     context = config.home,
                     targetContext = config.home,
-                    targetId = pages.last().content.asLink().target,
-                    blockIds = listOf(pages.first().content.asLink().target),
+                    targetId = pages.last().id,
+                    blockIds = listOf(pages.first().id),
                     position = Position.BOTTOM
                 )
             ),

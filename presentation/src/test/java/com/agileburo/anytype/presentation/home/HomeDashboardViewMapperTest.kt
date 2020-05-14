@@ -95,7 +95,8 @@ class HomeDashboardViewMapperTest {
         assertEquals(
             expected = listOf(
                 DashboardView.Document(
-                    id = child.content.asLink().target,
+                    id = child.id,
+                    target = child.content.asLink().target,
                     title = null,
                     emoji = null
                 )

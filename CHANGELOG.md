@@ -16,6 +16,7 @@
 * Hard-coded alpha invite code for internal use (#408)
 * `PageViewModel` refactoring (#408)
 * Better logging for middleware requests and responses (#421)
+* Should persist home dashboard document order (#425)
 
 ### Middleware ⚙️
 

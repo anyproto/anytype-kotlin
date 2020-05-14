@@ -68,7 +68,7 @@ class HomeDashboardViewMapperTest {
         }
 
         assertTrue {
-            result.size == 1 && result.first().id == active.content<Block.Content.Link>().target
+            result.size == 1 && result.first().id == active.id
         }
     }
 }

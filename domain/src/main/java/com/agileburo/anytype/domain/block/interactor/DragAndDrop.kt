@@ -13,7 +13,7 @@ import com.agileburo.anytype.domain.block.repo.BlockRepository
  */
 class DragAndDrop(
     private val repo: BlockRepository
-) : BaseUseCase<Unit, DragAndDrop.Params>() {
+) : BaseUseCase<Unit, Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.dnd(

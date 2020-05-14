@@ -54,24 +54,25 @@
     <string name="option_other_divider">Divider</string>
     <string name="option_other_dots">Dots</string>
 
-    <string name="add_block_or_turn_into_subtitle_text">Just start writing with a plain text</string>
-    <string name="add_block_or_turn_into_subtitle_header_one">Big section heading</string>
-    <string name="add_block_or_turn_into_subtitle_header_two">Medium section heading</string>
-    <string name="add_block_or_turn_into_subtitle_header_three">Small section heading</string>
-    <string name="add_block_or_turn_into_subtitle_highlighted">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_checkbox">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_bulleted">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_numbered">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_toggle">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_page">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_existing_page">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_file">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_image">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_video">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_bookmark">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_code">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_line_divider">Lorem ipsum dolor sit amet, consectetur</string>
-    <string name="add_block_or_turn_into_subtitle_dots">Lorem ipsum dolor sit amet, consectetur</string>
+
+    <string name="add_block_or_turn_into_subtitle_text">Write a plain text</string>
+    <string name="add_block_or_turn_into_subtitle_header_one">Big headline of a chapter, paragraph or section</string>
+    <string name="add_block_or_turn_into_subtitle_header_two">Medium headline</string>
+    <string name="add_block_or_turn_into_subtitle_header_three">Small headline</string>
+    <string name="add_block_or_turn_into_subtitle_highlighted">Spotlight what needs special attention</string>
+    <string name="add_block_or_turn_into_subtitle_checkbox">Create and track task with to-do list</string>
+    <string name="add_block_or_turn_into_subtitle_bulleted">Simple list</string>
+    <string name="add_block_or_turn_into_subtitle_numbered">Numbered list</string>
+    <string name="add_block_or_turn_into_subtitle_toggle">Hide and show content inside</string>
+    <string name="add_block_or_turn_into_subtitle_page">Create new page inside this one</string>
+    <string name="add_block_or_turn_into_subtitle_existing_page">Link existing page with this one</string>
+    <string name="add_block_or_turn_into_subtitle_file">Store file in original state</string>
+    <string name="add_block_or_turn_into_subtitle_image">Upload and enrich the page with image</string>
+    <string name="add_block_or_turn_into_subtitle_video">Upload playable video</string>
+    <string name="add_block_or_turn_into_subtitle_bookmark">Save your favorite link with summary</string>
+    <string name="add_block_or_turn_into_subtitle_code">Capture code snippet</string>
+    <string name="add_block_or_turn_into_subtitle_line_divider">Separate information with line</string>
+    <string name="add_block_or_turn_into_subtitle_dots">Separate information with three dots</string>
 
     <string name="toolbar_section_text">Text</string>
     <string name="toolbar_section_list">List</string>

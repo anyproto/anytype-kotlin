@@ -5,6 +5,9 @@
 ### New features 🚀
 
 
+### Design & UX 🔳
+
+* Updated subtitles for add-block or turn-into bottom sheet items (#429)
 
 ### Fixes & tech 🚒
 

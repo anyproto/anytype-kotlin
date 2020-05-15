@@ -1,11 +1,9 @@
 package com.agileburo.anytype.core_ui.common
 
-import android.graphics.Typeface
 import android.os.Parcelable
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.text.style.*
 import com.agileburo.anytype.core_utils.ext.VALUE_ROUNDED
 import com.agileburo.anytype.core_utils.ext.removeSpans
 import kotlinx.android.parcel.Parcelize
@@ -90,7 +88,7 @@ fun Markup.toSpannable() = SpannableStringBuilder(body).apply {
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.BACKGROUND_COLOR -> setSpan(
-                Span.Highlight(mark.background()),
+                Span.Highlight(mark.background().toString()),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
@@ -148,7 +146,7 @@ fun Editable.setMarkup(markup: Markup) {
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.BACKGROUND_COLOR -> setSpan(
-                Span.Highlight(mark.background()),
+                Span.Highlight(mark.background().toString()),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG

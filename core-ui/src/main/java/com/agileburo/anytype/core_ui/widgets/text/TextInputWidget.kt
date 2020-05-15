@@ -10,42 +10,42 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
 import com.agileburo.anytype.core_ui.extensions.toast
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
+import com.agileburo.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
+import com.agileburo.anytype.core_ui.widgets.text.highlight.HighlightDrawer
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
 
 class TextInputWidget : AppCompatEditText {
 
     private val watchers: MutableList<TextWatcher> = mutableListOf()
-    private var textRoundedBgHelper: TextRoundedBgHelper? = null
+    private var highlightDrawer: HighlightDrawer? = null
 
     var selectionDetector: ((IntRange) -> Unit)? = null
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        setupKeyboardMarkupHelpers(context, attrs)
+        setupHighlightHelpers(context, attrs)
     }
 
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
-        context,
-        attrs,
-        defStyle
-    ) {
-        setupKeyboardMarkupHelpers(context, attrs)
-    }
-
-    private fun setupKeyboardMarkupHelpers(
+    constructor(
         context: Context,
-        attrs: AttributeSet
-    ) {
-        val attributeReader = TextRoundedBgAttributeReader(context, attrs)
-        textRoundedBgHelper = TextRoundedBgHelper(
-            horizontalPadding = attributeReader.horizontalPadding,
-            verticalPadding = attributeReader.verticalPadding,
-            drawable = attributeReader.drawable,
-            drawableLeft = attributeReader.drawableLeft,
-            drawableMid = attributeReader.drawableMid,
-            drawableRight = attributeReader.drawableRight
-        )
+        attrs: AttributeSet,
+        defStyle: Int
+    ) : super(context, attrs, defStyle) {
+        setupHighlightHelpers(context, attrs)
+    }
+
+    private fun setupHighlightHelpers(context: Context, attrs: AttributeSet) {
+        HighlightAttributeReader(context, attrs).let { reader ->
+            highlightDrawer = HighlightDrawer(
+                horizontalPadding = reader.horizontalPadding,
+                verticalPadding = reader.verticalPadding,
+                drawable = reader.drawable,
+                drawableLeft = reader.drawableLeft,
+                drawableMid = reader.drawableMid,
+                drawableRight = reader.drawableRight
+            )
+        }
     }
 
     override fun addTextChangedListener(watcher: TextWatcher) {
@@ -91,7 +91,7 @@ class TextInputWidget : AppCompatEditText {
         // need to draw bg first so that text can be on top during super.onDraw()
         if (text is Spanned && layout != null) {
             canvas?.withTranslation(totalPaddingLeft.toFloat(), totalPaddingTop.toFloat()) {
-                textRoundedBgHelper?.draw(canvas, text as Spanned, layout)
+                highlightDrawer?.draw(canvas, text as Spanned, layout)
             }
         }
         super.onDraw(canvas)

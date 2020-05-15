@@ -23,8 +23,8 @@ fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).
         is Span.Highlight -> Mark(
             range = getSpanStart(span)..getSpanEnd(span),
             type = Mark.Type.BACKGROUND_COLOR,
-            param = span.backgroundColor.let { background ->
-                ThemeColor.background[background]
+            param = span.value.let { background ->
+                ThemeColor.background[background.toInt()]
             }
         )
         is Span.Italic -> Mark(

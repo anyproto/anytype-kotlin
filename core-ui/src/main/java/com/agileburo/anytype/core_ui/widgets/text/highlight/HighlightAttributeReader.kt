@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-package com.agileburo.anytype.core_ui.widgets.text
+package com.agileburo.anytype.core_ui.widgets.text.highlight
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -22,17 +22,15 @@ import androidx.core.content.res.getDrawableOrThrow
 import com.agileburo.anytype.core_ui.R
 
 /**
- * Reads default attributes that [TextRoundedBgHelper] needs from resources. The attributes read
- * are:
- *
- * - chHorizontalPadding: the padding to be applied to left & right of the background
- * - chVerticalPadding: the padding to be applied to top & bottom of the background
- * - chDrawable: the drawable used to draw the background
- * - chDrawableLeft: the drawable used to draw left edge of the background
- * - chDrawableMid: the drawable used to draw for whole line
- * - chDrawableRight: the drawable used to draw right edge of the background
+ * Reads default attributes that [HighlightAttributeReader] needs from resources.
+ * @property horizontalPadding: the padding to be applied to left & right of the background
+ * @property verticalPadding: the padding to be applied to top & bottom of the background
+ * @property drawable: the drawable used to draw the background
+ * @property drawableLeft: the drawable used to draw left edge of the background
+ * @property drawableMid: the drawable used to draw for whole line
+ * @property drawableRight: the drawable used to draw right edge of the background
  */
-class TextRoundedBgAttributeReader(context: Context, attrs: AttributeSet?) {
+class HighlightAttributeReader(context: Context, attrs: AttributeSet?) {
 
     val horizontalPadding: Int
     val verticalPadding: Int
@@ -44,29 +42,29 @@ class TextRoundedBgAttributeReader(context: Context, attrs: AttributeSet?) {
     init {
         val typedArray = context.obtainStyledAttributes(
             attrs,
-            R.styleable.TextRoundedBgHelper,
+            R.styleable.HighlightDrawer,
             0,
             R.style.RoundedBgTextView
         )
         horizontalPadding = typedArray.getDimensionPixelSize(
-            R.styleable.TextRoundedBgHelper_roundedTextHorizontalPadding,
+            R.styleable.HighlightDrawer_roundedTextHorizontalPadding,
             0
         )
         verticalPadding = typedArray.getDimensionPixelSize(
-            R.styleable.TextRoundedBgHelper_roundedTextVerticalPadding,
+            R.styleable.HighlightDrawer_roundedTextVerticalPadding,
             0
         )
         drawable = typedArray.getDrawableOrThrow(
-            R.styleable.TextRoundedBgHelper_roundedTextDrawable
+            R.styleable.HighlightDrawer_roundedTextDrawable
         )
         drawableLeft = typedArray.getDrawableOrThrow(
-            R.styleable.TextRoundedBgHelper_roundedTextDrawableLeft
+            R.styleable.HighlightDrawer_roundedTextDrawableLeft
         )
         drawableMid = typedArray.getDrawableOrThrow(
-            R.styleable.TextRoundedBgHelper_roundedTextDrawableMid
+            R.styleable.HighlightDrawer_roundedTextDrawableMid
         )
         drawableRight = typedArray.getDrawableOrThrow(
-            R.styleable.TextRoundedBgHelper_roundedTextDrawableRight
+            R.styleable.HighlightDrawer_roundedTextDrawableRight
         )
         typedArray.recycle()
     }

@@ -7,7 +7,7 @@
         <attr name="active_background_color" format="color" />
     </declare-styleable>
 
-    <declare-styleable name="TextRoundedBgHelper">
+    <declare-styleable name="HighlightDrawer">
         <attr name="roundedTextHorizontalPadding" format="dimension" />
         <attr name="roundedTextVerticalPadding" format="dimension" />
         <attr name="roundedTextDrawable" format="reference" />

@@ -8,6 +8,8 @@
 ### Design & UX 🔳
 
 * Updated subtitles for add-block or turn-into bottom sheet items (#429)
+* Text background should have the same height as the OS text-selection highlight (#392)
+* Text background should have z-axis priority lower as the one of the OS text-selection highlight (#426)
 
 ### Fixes & tech 🚒
 
@@ -17,6 +19,7 @@
 * `PageViewModel` refactoring (#408)
 * Better logging for middleware requests and responses (#421)
 * Should persist home dashboard document order (#425)
+* New way to render background mark: using `Annotation` span instead of `BackgroundColorSpan` (#436)
 
 ### Middleware ⚙️
 

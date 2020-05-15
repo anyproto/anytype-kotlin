@@ -14,11 +14,13 @@
  * limitations under the License.
 */
 
-package com.agileburo.anytype.core_ui.widgets.text
+package com.agileburo.anytype.core_ui.widgets.text.highlight
 
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.text.Layout
+import com.agileburo.anytype.core_ui.widgets.text.getLineBottomWithoutPadding
+import com.agileburo.anytype.core_ui.widgets.text.getLineTopWithoutPadding
 import kotlin.math.max
 import kotlin.math.min
 

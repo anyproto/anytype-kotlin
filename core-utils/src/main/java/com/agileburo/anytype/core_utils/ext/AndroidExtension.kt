@@ -126,17 +126,7 @@ fun <T> hasSpan(spanned: Spanned, clazz: Class<T>): Boolean {
 }
 
 inline fun <reified T> Editable.removeSpans() {
-    val allSpans = getSpans(0, length, T::class.java)
-    for (span in allSpans) {
-        removeSpan(span)
-    }
-}
-
-fun Editable.removeRoundedSpans(): Editable {
-    this.getSpans(0, length, Annotation::class.java).forEach { span ->
-        if (span.key == KEY_ROUNDED && span.value == VALUE_ROUNDED) removeSpan(span)
-    }
-    return this
+    getSpans(0, length, T::class.java).forEach { removeSpan(it) }
 }
 
 fun getVideoFileIntent(mediaType: String): Intent {

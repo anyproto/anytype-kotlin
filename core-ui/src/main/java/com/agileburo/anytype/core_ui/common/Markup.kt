@@ -2,14 +2,11 @@ package com.agileburo.anytype.core_ui.common
 
 import android.graphics.Typeface
 import android.os.Parcelable
-import android.text.Annotation
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.*
-import com.agileburo.anytype.core_utils.ext.KEY_ROUNDED
 import com.agileburo.anytype.core_utils.ext.VALUE_ROUNDED
-import com.agileburo.anytype.core_utils.ext.removeRoundedSpans
 import com.agileburo.anytype.core_utils.ext.removeSpans
 import kotlinx.android.parcel.Parcelize
 
@@ -69,49 +66,50 @@ fun Markup.toSpannable() = SpannableStringBuilder(body).apply {
     marks.forEach { mark ->
         when (mark.type) {
             Markup.Type.ITALIC -> setSpan(
-                StyleSpan(Typeface.ITALIC),
+                Span.Italic(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.BOLD -> setSpan(
-                StyleSpan(Typeface.BOLD),
+                Span.Bold(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.STRIKETHROUGH -> setSpan(
-                StrikethroughSpan(),
+                Span.Strikethrough(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.TEXT_COLOR -> setSpan(
-                ForegroundColorSpan(mark.color()),
+                Span.TextColor(mark.color()),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.BACKGROUND_COLOR -> setSpan(
-                BackgroundColorSpan(mark.background()),
+                Span.Highlight(mark.background()),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             Markup.Type.LINK -> setSpan(
-                URLSpan(mark.param),
+                Span.Url(mark.param as String),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.KEYBOARD -> setSpan(
-                TypefaceSpan(Markup.SPAN_MONOSPACE),
-                mark.from,
-                mark.to,
-                Markup.DEFAULT_SPANNABLE_FLAG
-            ).also {
+            Markup.Type.KEYBOARD -> {
                 setSpan(
-                    Annotation(KEY_ROUNDED, VALUE_ROUNDED),
+                    Span.Font(Markup.SPAN_MONOSPACE),
+                    mark.from,
+                    mark.to,
+                    Markup.DEFAULT_SPANNABLE_FLAG
+                )
+                setSpan(
+                    Span.Keyboard(VALUE_ROUNDED),
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG
@@ -123,7 +121,6 @@ fun Markup.toSpannable() = SpannableStringBuilder(body).apply {
 
 fun Editable.setMarkup(markup: Markup) {
     removeSpans<Span>()
-    removeRoundedSpans()
     markup.marks.forEach { mark ->
         when (mark.type) {
             Markup.Type.ITALIC -> setSpan(
@@ -170,7 +167,7 @@ fun Editable.setMarkup(markup: Markup) {
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
                 setSpan(
-                    Span.Annotate(KEY_ROUNDED, VALUE_ROUNDED),
+                    Span.Keyboard(VALUE_ROUNDED),
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG

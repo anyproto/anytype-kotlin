@@ -133,6 +133,8 @@ dependencies {
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.robolectric
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.mockitoKotlin
 
     //Acceptance tests dependencies
     androidTestImplementation acceptanceTesting.mockitoAndroid

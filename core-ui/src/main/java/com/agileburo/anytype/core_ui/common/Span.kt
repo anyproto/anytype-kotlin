@@ -12,5 +12,10 @@ interface Span {
     class Highlight(color: Int) : BackgroundColorSpan(color), Span
     class Url(url: String) : URLSpan(url), Span
     class Font(family: String) : TypefaceSpan(family), Span
-    class Annotate(key: String, value: String) : Annotation(key, value)
+
+    class Keyboard(value: String) : Annotation(KEYBOARD_KEY, value), Span {
+        companion object {
+            const val KEYBOARD_KEY = "keyboard"
+        }
+    }
 }

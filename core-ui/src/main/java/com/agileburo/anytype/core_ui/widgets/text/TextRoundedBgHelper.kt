@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.text.Annotation
 import android.text.Layout
 import android.text.Spanned
+import com.agileburo.anytype.core_ui.common.Span
 import com.agileburo.anytype.core_utils.ext.VALUE_ROUNDED
 
 /**
@@ -68,7 +69,7 @@ class TextRoundedBgHelper(
         // invalidation of the cache is required whenever anything related to text has changed.
         val spans = text.getSpans(0, text.length, Annotation::class.java)
         spans.forEach { span ->
-            if (span.value == VALUE_ROUNDED) {
+            if (span.key == Span.Keyboard.KEYBOARD_KEY) {
                 val spanStart = text.getSpanStart(span)
                 val spanEnd = text.getSpanEnd(span)
                 val startLine = layout.getLineForOffset(spanStart)

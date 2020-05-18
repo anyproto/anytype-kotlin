@@ -443,6 +443,7 @@ open class PageFragment :
         vm.controlPanelViewState.observe(viewLifecycleOwner, Observer { render(it) })
         vm.focus.observe(viewLifecycleOwner, Observer { handleFocus(it) })
         vm.commands.observe(viewLifecycleOwner, Observer { execute(it) })
+        vm.error.observe(viewLifecycleOwner, Observer { renderError(it) })
     }
 
     override fun onBlockActionClicked(id: String, action: ActionItemType) {
@@ -548,7 +549,6 @@ open class PageFragment :
                     rangeStart = state.range.first
                 ).show(childFragmentManager, null)
             }
-            is ViewState.Error -> toast(state.message)
         }
     }
 
@@ -645,6 +645,10 @@ open class PageFragment :
         return requireArguments()
             .getString(ID_KEY)
             ?: throw IllegalStateException("Document id missing")
+    }
+
+    private fun renderError(message: String) {
+        toast(message)
     }
 
     override fun injectDependencies() {

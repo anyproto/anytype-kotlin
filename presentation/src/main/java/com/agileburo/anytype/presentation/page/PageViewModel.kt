@@ -97,6 +97,9 @@ class PageViewModel(
     private val _focus: MutableLiveData<Id> = MutableLiveData()
     val focus: LiveData<Id> = _focus
 
+    private val _error: MutableLiveData<String> = MutableLiveData()
+    val error: LiveData<String> = _error
+
     /**
      * Open gallery and search media files for block with that id
      */
@@ -168,7 +171,7 @@ class PageViewModel(
             orchestrator.proxies.errors
                 .stream()
                 .collect {
-                    stateData.value = ViewState.Error(it.message ?: "Unknown error")
+                    _error.value = it.message ?: "Unknown error"
                 }
         }
     }
@@ -650,6 +653,8 @@ class PageViewModel(
         val state = stateData.value
         if (state is ViewState.Success) {
             dispatch(Command.OpenActionBar(block = state.blocks.first { it.id == target }))
+        } else {
+            Timber.e("onBlockLongPressedClicked, state:$state should be ViewState.Success, to get proper BlockView")
         }
     }
 
@@ -810,10 +815,10 @@ class PageViewModel(
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Rename -> {
-                stateData.value = ViewState.Error("Rename not implemented")
+                _error.value = "Rename not implemented"
             }
             ActionItemType.MoveTo -> {
-                stateData.value = ViewState.Error("Move To not implemented")
+                _error.value = "Move To not implemented"
             }
             ActionItemType.Color -> {
                 controlPanelInteractor.onEvent(
@@ -834,16 +839,16 @@ class PageViewModel(
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Download -> {
-                stateData.value = ViewState.Error("Download not implemented")
+                _error.value = "Download not implemented"
             }
             ActionItemType.Replace -> {
-                stateData.value = ViewState.Error("Replace not implemented")
+                _error.value = "Replace not implemented"
             }
             ActionItemType.AddCaption -> {
-                stateData.value = ViewState.Error("Add caption not implemented")
+                _error.value = "Add caption not implemented"
             }
             ActionItemType.Divider -> {
-                stateData.value = ViewState.Error("not implemented")
+                _error.value = "not implemented"
             }
         }
     }
@@ -1411,7 +1416,7 @@ class PageViewModel(
             rerenderingBlocks(newBlock)
         } catch (e: Exception) {
             Timber.e(e, "Error while update block:$mediaBlockId state to Uploading")
-            stateData.value = ViewState.Error("Can't load video for this block")
+            _error.value = "Can't load video for this block"
         }
     }
 

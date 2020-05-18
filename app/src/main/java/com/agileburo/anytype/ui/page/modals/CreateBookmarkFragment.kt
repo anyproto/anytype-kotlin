@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.reactive.clicks
+import com.agileburo.anytype.core_utils.ext.hideKeyboard
 import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.agileburo.anytype.di.common.componentManager
@@ -86,6 +87,7 @@ class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
                     target = target,
                     url = state.url
                 )
+                view?.rootView?.hideKeyboard()
                 dismiss()
             }
             is ViewState.Error -> toast(state.message)

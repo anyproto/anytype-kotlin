@@ -1370,6 +1370,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             clicked: (ListenerType) -> Unit
         ) {
             indentize(item)
+            select(item.isSelected)
             title.text = item.title
             description.text = item.description
             url.text = item.url
@@ -1423,9 +1424,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     )
                 }
                 if (payload.selectionChanged()) {
-                    itemView.isSelected = item.isSelected
+                    select(item.isSelected)
                 }
             }
+        }
+
+        private fun select(isSelected: Boolean) {
+            itemView.isSelected = isSelected
         }
 
         private fun enableReadOrWriteMode(
@@ -1462,6 +1467,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 clicked: (ListenerType) -> Unit
             ) {
                 indentize(item)
+                select(item.isSelected)
                 root.setOnClickListener {
                     clicked(ListenerType.Bookmark.Placeholder(item.id))
                 }
@@ -1499,9 +1505,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                         )
                     }
                     if (payload.selectionChanged()) {
-                        root.isSelected = item.isSelected
+                        select(item.isSelected)
                     }
                 }
+            }
+
+            private fun select(isSelected: Boolean) {
+                root.isSelected = isSelected
             }
 
             private fun enableReadOrWriteMode(
@@ -1540,6 +1550,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 clicked: (ListenerType) -> Unit
             ) {
                 indentize(item)
+                select(item.isSelected)
                 url.text = item.url
                 root.setOnClickListener {
                     clicked(ListenerType.Bookmark.Error(item))
@@ -1576,9 +1587,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                         )
                     }
                     if (payload.selectionChanged()) {
-                        root.isSelected = item.isSelected
+                        select(item.isSelected)
                     }
                 }
+            }
+
+            private fun select(isSelected: Boolean) {
+                root.isSelected = isSelected
             }
 
             private fun enableReadOrWriteMode(

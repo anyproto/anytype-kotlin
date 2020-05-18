@@ -3,6 +3,7 @@ package com.agileburo.anytype.data.auth.repo.block
 import com.agileburo.anytype.data.auth.model.CommandEntity
 import com.agileburo.anytype.data.auth.model.PayloadEntity
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.event.model.Payload
 
 class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
@@ -90,7 +91,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun setupBookmark(
         command: CommandEntity.SetupBookmark
-    ) = remote.setupBookmark(command)
+    ): PayloadEntity = remote.setupBookmark(command)
 
     override suspend fun undo(command: CommandEntity.Undo) = remote.undo(command)
 

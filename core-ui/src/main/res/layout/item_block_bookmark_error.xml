@@ -1,41 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bookmarkErrorRoot"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="6dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginBottom="6dp"
-    android:background="@drawable/bg_bookmark_error_background">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="1dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="1dp"
+    android:background="@drawable/item_block_multi_select_mode_selector"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
 
-    <TextView
-        android:id="@+id/errorBookmarkUrl"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textColor="@color/black"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/errorBookmarkMenu"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="medium.com/s/story/The Akari" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_48"
+        android:background="@drawable/rectangle_bookmark_placeholder">
 
-    <ImageView
-        android:id="@+id/errorBookmarkMenu"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="12dp"
-        android:contentDescription="@string/bookmark_error_menu_button"
-        android:src="@drawable/ic_more"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/errorBookmarkUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/graphik_regular"
+            android:maxLines="1"
+            android:layout_gravity="center_vertical"
+            android:text="@string/bookmark_error"
+            android:textColor="#2C2B27"
+            android:textSize="15sp"
+            tools:text="error url medium.com/s/story/The Akari pull request as ready for review" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+
+</FrameLayout>

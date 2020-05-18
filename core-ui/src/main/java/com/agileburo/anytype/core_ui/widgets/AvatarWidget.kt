@@ -9,8 +9,8 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.extensions.invisible
-import com.agileburo.anytype.core_ui.extensions.visible
+import com.agileburo.anytype.core_utils.ext.invisible
+import com.agileburo.anytype.core_utils.ext.visible
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.widget_avatar.view.*
 import java.io.ByteArrayInputStream

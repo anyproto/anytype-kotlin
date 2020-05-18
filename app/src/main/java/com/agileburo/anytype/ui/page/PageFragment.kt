@@ -21,8 +21,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.extensions.invisible
-import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
@@ -124,18 +122,15 @@ open class PageFragment :
             onPageIconClicked = vm::onPageIconClicked,
             onAddUrlClick = vm::onAddVideoUrlClicked,
             onAddLocalVideoClick = vm::onAddLocalVideoClicked,
-            onBookmarkPlaceholderClicked = vm::onBookmarkPlaceholderClicked,
             onAddLocalPictureClick = vm::onAddLocalPictureClicked,
             onAddLocalFileClick = vm::onAddLocalFileClicked,
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
             onMediaBlockMenuClick = vm::onMediaBlockMenuClicked,
-            onBookmarkMenuClicked = vm::onBookmarkMenuClicked,
-            onBookmarkClicked = vm::onBookmarkClicked,
-            onFailedBookmarkClicked = vm::onFailedBookmarkClicked,
             onMarkupActionClicked = vm::onMarkupActionClicked,
             onLongClickListener = vm::onBlockLongPressedClicked,
-            onTitleTextInputClicked = vm::onTitleTextInputClicked
+            onTitleTextInputClicked = vm::onTitleTextInputClicked,
+            onClickListener = vm::onClickListener
         )
     }
 
@@ -399,6 +394,10 @@ open class PageFragment :
         ).show()
     }
 
+    override fun onAddBookmarkUrlClicked(target: String, url: String) {
+        vm.onAddBookmarkUrl(target = target, url = url)
+    }
+
     override fun onAddBlockClicked(block: UiBlock) {
         when (block) {
             UiBlock.TEXT -> vm.onAddTextBlockClicked(Text.Style.P)
@@ -415,7 +414,7 @@ open class PageFragment :
             UiBlock.FILE -> vm.onAddFileBlockClicked()
             UiBlock.IMAGE -> vm.onAddImageBlockClicked()
             UiBlock.VIDEO -> vm.onAddVideoBlockClicked()
-            UiBlock.BOOKMARK -> vm.onAddBookmarkClicked()
+            UiBlock.BOOKMARK -> vm.onAddBookmarkBlockClicked()
             UiBlock.LINE_DIVIDER -> vm.onAddDividerBlockClicked()
             else -> toast(NOT_IMPLEMENTED_MESSAGE)
         }
@@ -496,7 +495,6 @@ open class PageFragment :
                 }
                 is Command.OpenBookmarkSetter -> {
                     CreateBookmarkFragment.newInstance(
-                        context = command.context,
                         target = command.target
                     ).show(childFragmentManager, null)
                 }
@@ -680,4 +678,5 @@ interface OnFragmentInteractionListener {
     fun onRemoveMarkupLinkClicked(blockId: String, range: IntRange)
     fun onBlockActionClicked(id: String, action: ActionItemType)
     fun onDismissBlockActionToolbar()
+    fun onAddBookmarkUrlClicked(target: String, url: String)
 }

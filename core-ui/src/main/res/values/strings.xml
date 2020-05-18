@@ -156,13 +156,14 @@
 
     <string name="untitled">Untitled</string>
     <string name="error_while_loading">Error while loading</string>
-    <string name="error_while_loading_picture">Error while loading picture</string>
+    <string name="error_while_loading_picture">Error while \nloading picture</string>
     <string name="block_with_a_picture">Block with a picture</string>
     <string name="tap_here_to_insert_a_bookmark_url">Tap here to insert a bookmark url</string>
     <string name="add_a_web_bookmark">Add a web bookmark</string>
     <string name="archive">Archive</string>
     <string name="add_block_option_icon">Add block option icon</string>
     <string name="bookmark_error_menu_button">Bookmark error menu button</string>
+    <string name="bookmark_error">Error! Bookmark not defined</string>
 
     <string name="menu_item_bold">Bold</string>
     <string name="menu_item_italic">Italic</string>

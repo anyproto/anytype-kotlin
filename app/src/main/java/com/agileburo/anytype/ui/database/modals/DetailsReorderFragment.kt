@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.agileburo.anytype.R
-import com.agileburo.anytype.core_ui.extensions.invisible
-import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.layout.ListDividerItemDecoration
+import com.agileburo.anytype.core_utils.ext.invisible
+import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.di.feature.DetailsReorderModule

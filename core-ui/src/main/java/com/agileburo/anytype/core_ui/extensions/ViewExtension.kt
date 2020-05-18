@@ -6,19 +6,6 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_utils.ext.px
-
-fun View.invisible() {
-    this.visibility = View.INVISIBLE
-}
-
-fun View.visible() {
-    this.visibility = View.VISIBLE
-}
-
-fun View.gone() {
-    this.visibility = View.GONE
-}
 
 fun Context.toast(
     msg: CharSequence,

@@ -24,9 +24,7 @@ import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.common.isLinksPresent
 import com.agileburo.anytype.core_ui.common.toSpannable
 import com.agileburo.anytype.core_ui.extensions.color
-import com.agileburo.anytype.core_ui.extensions.invisible
 import com.agileburo.anytype.core_ui.extensions.tint
-import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.NUMBER_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.SELECTION_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
@@ -37,9 +35,7 @@ import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
-import com.agileburo.anytype.core_utils.ext.addDot
-import com.agileburo.anytype.core_utils.ext.dimen
-import com.agileburo.anytype.core_utils.ext.imm
+import com.agileburo.anytype.core_utils.ext.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -1343,7 +1339,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val logo = itemView.bookmarkLogo
         private val error = itemView.loadBookmarkPictureError
         private val card = itemView.bookmarkRoot
-        private val menu = itemView.bookmarkMenu
+        private val root = itemView
 
         private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
 
@@ -1371,57 +1367,90 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.Bookmark.View,
-            onBookmarkMenuClicked: (String) -> Unit,
-            onBookmarkClicked: (BlockView.Bookmark.View) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
-
             indentize(item)
-
-            itemView.isSelected = item.isSelected
-
             title.text = item.title
             description.text = item.description
             url.text = item.url
-
-            item.imageUrl?.let { url ->
+            if (item.imageUrl != null) {
+                image.visible()
                 Glide.with(image)
-                    .load(url)
+                    .load(item.imageUrl)
                     .centerCrop()
                     .listener(listener)
                     .into(image)
+            } else {
+                image.gone()
             }
-            item.faviconUrl?.let { url ->
+            if (item.faviconUrl != null) {
+                logo.visible()
                 Glide.with(logo)
-                    .load(url)
+                    .load(item.faviconUrl)
                     .listener(listener)
                     .into(logo)
+            } else {
+                logo.gone()
             }
-
-            menu.setOnClickListener { onBookmarkMenuClicked(item.id) }
-            card.setOnClickListener { onBookmarkClicked(item) }
-            card.setOnLongClickListener (
-                EditorLongClickListener(
-                    t = item.id,
-                    click = onLongClickListener)
+            card.setOnClickListener { clicked(ListenerType.Bookmark.View(item)) }
+            enableReadOrWriteMode(
+                mode = item.mode,
+                target = item.id,
+                clicked = clicked
             )
         }
 
         override fun indentize(item: BlockView.Indentable) {
-            (card.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                val default = dimen(R.dimen.dp_12)
+            (root.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                val default = dimen(R.dimen.bookmark_default_margin_start)
                 val extra = item.indent * dimen(R.dimen.indent)
                 leftMargin = default + extra
             }
         }
 
-        fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+        fun processChangePayload(
+            payloads: List<Payload>,
+            item: BlockView,
+            clicked: (ListenerType) -> Unit
+        ) {
             check(item is BlockView.Bookmark.View) { "Expected a bookmark block, but was: $item" }
             payloads.forEach { payload ->
-                if (payload.changes.contains(SELECTION_CHANGED)) {
+                if (payload.readWriteModeChanged()) {
+                    enableReadOrWriteMode(
+                        mode = item.mode,
+                        clicked = clicked,
+                        target = item.id
+                    )
+                }
+                if (payload.selectionChanged()) {
                     itemView.isSelected = item.isSelected
                 }
             }
+        }
+
+        private fun enableReadOrWriteMode(
+            mode: BlockView.Mode,
+            target: String,
+            clicked: (ListenerType) -> Unit
+        ) = when (mode) {
+            BlockView.Mode.READ -> enableReadOnlyMode()
+            BlockView.Mode.EDIT -> enableEditMode(target, clicked)
+        }
+
+        private fun enableReadOnlyMode() {
+            card.setOnLongClickListener(null)
+        }
+
+        private fun enableEditMode(
+            target: String,
+            clicked: (ListenerType) -> Unit
+        ) {
+            card.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = target,
+                    click = { clicked(ListenerType.Bookmark.ViewLong(it)) }
+                )
+            )
         }
 
         class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
@@ -1430,54 +1459,151 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             fun bind(
                 item: BlockView.Bookmark.Placeholder,
-                onBookmarkPlaceholderClicked: (String) -> Unit,
-                onLongClickListener: (String) -> Unit
+                clicked: (ListenerType) -> Unit
             ) {
                 indentize(item)
-                itemView.setOnClickListener { onBookmarkPlaceholderClicked(item.id) }
-                itemView.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener)
-                )
-            }
-
-            override fun indentize(item: BlockView.Indentable) {
-                root.updatePadding(
-                    left = item.indent * dimen(R.dimen.indent)
-                )
-            }
-        }
-
-        class Error(view: View) : BlockViewHolder(view), IndentableHolder {
-
-            private val menu = itemView.errorBookmarkMenu
-            private val root = itemView.bookmarkErrorRoot
-            private val url = itemView.errorBookmarkUrl
-
-            fun bind(
-                item: BlockView.Bookmark.Error,
-                onErrorBookmarkMenuClicked: (String) -> Unit,
-                onBookmarkClicked: (BlockView.Bookmark.Error) -> Unit,
-                onLongClickListener: (String) -> Unit
-            ) {
-                indentize(item)
-                url.text = item.url
-                menu.setOnClickListener { onErrorBookmarkMenuClicked(item.id) }
-                root.setOnClickListener { onBookmarkClicked(item) }
-                itemView.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener)
+                root.setOnClickListener {
+                    clicked(ListenerType.Bookmark.Placeholder(item.id))
+                }
+                enableReadOrWriteMode(
+                    mode = item.mode,
+                    target = item.id,
+                    clicked = clicked
                 )
             }
 
             override fun indentize(item: BlockView.Indentable) {
                 root.updateLayoutParams {
                     (this as RecyclerView.LayoutParams).apply {
-                        leftMargin = dimen(R.dimen.dp_16) + item.indent * dimen(R.dimen.indent)
+                        val default = dimen(R.dimen.bookmark_default_margin_start)
+                        val extra = item.indent * dimen(R.dimen.indent)
+                        leftMargin = default + extra
                     }
                 }
+            }
+
+            fun processChangePayload(
+                payloads: List<Payload>,
+                item: BlockView,
+                clicked: (ListenerType) -> Unit
+            ) {
+                check(item is BlockView.Bookmark.Placeholder) {
+                    "Expected a bookmark placeholder block, but was: $item"
+                }
+                payloads.forEach { payload ->
+                    if (payload.readWriteModeChanged()) {
+                        enableReadOrWriteMode(
+                            mode = item.mode,
+                            target = item.id,
+                            clicked = clicked
+                        )
+                    }
+                    if (payload.selectionChanged()) {
+                        root.isSelected = item.isSelected
+                    }
+                }
+            }
+
+            private fun enableReadOrWriteMode(
+                mode: BlockView.Mode,
+                target: String,
+                clicked: (ListenerType) -> Unit
+            ) = when (mode) {
+                BlockView.Mode.READ -> enableReadOnlyMode()
+                BlockView.Mode.EDIT -> enableEditMode(target, clicked)
+            }
+
+            private fun enableReadOnlyMode() {
+                root.setOnLongClickListener(null)
+            }
+
+            private fun enableEditMode(
+                target: String,
+                clicked: (ListenerType) -> Unit
+            ) {
+                root.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = target,
+                        click = { clicked(ListenerType.Bookmark.PlaceholderLong(it)) }
+                    )
+                )
+            }
+        }
+
+        class Error(view: View) : BlockViewHolder(view), IndentableHolder {
+
+            private val root = itemView.bookmarkErrorRoot
+            private val url = itemView.errorBookmarkUrl
+
+            fun bind(
+                item: BlockView.Bookmark.Error,
+                clicked: (ListenerType) -> Unit
+            ) {
+                indentize(item)
+                url.text = item.url
+                root.setOnClickListener {
+                    clicked(ListenerType.Bookmark.Error(item))
+                }
+                enableReadOrWriteMode(
+                    mode = item.mode,
+                    target = item.id,
+                    clicked = clicked
+                )
+            }
+
+            override fun indentize(item: BlockView.Indentable) {
+                root.updateLayoutParams {
+                    (this as RecyclerView.LayoutParams).apply {
+                        val default = dimen(R.dimen.bookmark_default_margin_start)
+                        val extra = item.indent * dimen(R.dimen.indent)
+                        leftMargin = default + extra
+                    }
+                }
+            }
+
+            fun processChangePayload(
+                payloads: List<Payload>,
+                item: BlockView,
+                clicked: (ListenerType) -> Unit
+            ) {
+                check(item is BlockView.Bookmark.Error) { "Expected a bookmark error block, but was: $item" }
+                payloads.forEach { payload ->
+                    if (payload.readWriteModeChanged()) {
+                        enableReadOrWriteMode(
+                            mode = item.mode,
+                            target = item.id,
+                            clicked = clicked
+                        )
+                    }
+                    if (payload.selectionChanged()) {
+                        root.isSelected = item.isSelected
+                    }
+                }
+            }
+
+            private fun enableReadOrWriteMode(
+                mode: BlockView.Mode,
+                target: String,
+                clicked: (ListenerType) -> Unit
+            ) = when (mode) {
+                BlockView.Mode.READ -> enableReadOnlyMode()
+                BlockView.Mode.EDIT -> enableEditMode(target, clicked)
+            }
+
+            private fun enableReadOnlyMode() {
+                root.setOnLongClickListener(null)
+            }
+
+            private fun enableEditMode(
+                target: String,
+                clicked: (ListenerType) -> Unit
+            ) {
+                root.setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = target,
+                        click = { clicked(ListenerType.Bookmark.ErrorLong(it)) }
+                    )
+                )
             }
         }
     }
@@ -1725,5 +1851,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         const val FOCUS_TIMEOUT_MILLIS = 16L
         const val KEYBOARD_SHOW_DELAY = 16L
+    }
+}
+
+sealed class ListenerType {
+    sealed class Bookmark : ListenerType() {
+        data class View(val item: BlockView.Bookmark.View) : Bookmark()
+        data class ViewLong(val target: String) : Bookmark()
+        data class Placeholder(val target: String) : Bookmark()
+        data class PlaceholderLong(val target: String) : Bookmark()
+        data class Error(val item: BlockView.Bookmark.Error) : Bookmark()
+        data class ErrorLong(val target: String) : Bookmark()
     }
 }

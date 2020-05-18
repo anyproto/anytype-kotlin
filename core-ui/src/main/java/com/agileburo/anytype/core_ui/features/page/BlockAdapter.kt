@@ -65,19 +65,16 @@ class BlockAdapter(
     private val onFooterClicked: () -> Unit,
     private val onPageClicked: (String) -> Unit,
     private val onTextInputClicked: (String) -> Unit,
+    private val onClickListener: (ListenerType) -> Unit,
     private val onAddUrlClick: (String, String) -> Unit,
     private val onAddLocalVideoClick: (String) -> Unit,
     private val onAddLocalPictureClick: (String) -> Unit,
     private val onAddLocalFileClick: (String) -> Unit,
     private val onPageIconClicked: () -> Unit,
     private val onFileClicked: (String) -> Unit,
-    private val onBookmarkPlaceholderClicked: (String) -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
     private val onMediaBlockMenuClick: (String) -> Unit,
-    private val onBookmarkMenuClicked: (String) -> Unit,
-    private val onBookmarkClicked: (BlockView.Bookmark.View) -> Unit,
-    private val onFailedBookmarkClicked: (BlockView.Bookmark.Error) -> Unit,
     private val onMarkupActionClicked: (Markup.Type) -> Unit,
     private val onLongClickListener: (String) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
@@ -462,7 +459,22 @@ class BlockAdapter(
                 is BlockViewHolder.Bookmark -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position]
+                        item = blocks[position],
+                        clicked = onClickListener
+                    )
+                }
+                is BlockViewHolder.Bookmark.Placeholder -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position],
+                        clicked = onClickListener
+                    )
+                }
+                is BlockViewHolder.Bookmark.Error -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position],
+                        clicked = onClickListener
                     )
                 }
                 is BlockViewHolder.Code -> {
@@ -642,24 +654,19 @@ class BlockAdapter(
             is BlockViewHolder.Bookmark -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Bookmark.View,
-                    onBookmarkMenuClicked = onBookmarkMenuClicked,
-                    onBookmarkClicked = onBookmarkClicked,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Bookmark.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Bookmark.Placeholder,
-                    onBookmarkPlaceholderClicked = onBookmarkPlaceholderClicked,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Bookmark.Error -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Bookmark.Error,
-                    onErrorBookmarkMenuClicked = onBookmarkMenuClicked,
-                    onBookmarkClicked = onFailedBookmarkClicked,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Picture -> {

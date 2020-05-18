@@ -7,6 +7,7 @@ import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.domain.page.Redo
 import com.agileburo.anytype.domain.page.Undo
 import com.agileburo.anytype.domain.page.UpdateTitle
+import com.agileburo.anytype.domain.page.bookmark.SetupBookmark
 import com.agileburo.anytype.presentation.page.Editor
 import kotlinx.coroutines.flow.collect
 import timber.log.Timber
@@ -26,6 +27,7 @@ class Orchestrator(
     private val downloadFile: DownloadFile,
     private val updateText: UpdateText,
     private val updateAlignment: UpdateAlignment,
+    private val setupBookmark: SetupBookmark,
     private val undo: Undo,
     private val redo: Redo,
     val memory: Editor.Memory,
@@ -240,6 +242,22 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = {}
+                    )
+                }
+                is Intent.Bookmark.SetupBookmark -> {
+                    setupBookmark(
+                        params = SetupBookmark.Params(
+                            context = intent.context,
+                            target = intent.target,
+                            url = intent.url
+                        )
+                    ).proceed(
+                        failure = { throwable ->
+                            proxies.errors.send(throwable)
+                        },
+                        success = { payload ->
+                            proxies.payloads.send(payload)
+                        }
                     )
                 }
             }

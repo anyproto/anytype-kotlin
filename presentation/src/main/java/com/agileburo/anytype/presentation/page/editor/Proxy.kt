@@ -38,4 +38,6 @@ interface Proxy<T> {
     class Intents : Subject<Intent>()
 
     class Payloads : Subject<Payload>()
+
+    class Error : Subject<Throwable>()
 }

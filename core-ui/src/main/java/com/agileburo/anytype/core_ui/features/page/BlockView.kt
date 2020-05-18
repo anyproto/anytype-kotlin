@@ -522,7 +522,7 @@ sealed class BlockView : ViewType, Parcelable {
      */
     sealed class Bookmark(
         override val id: String
-    ) : BlockView(), Indentable, Parcelable {
+    ) : BlockView(), Indentable, Parcelable, Selectable, Permission {
 
         /**
          * UI-model for a bookmark placeholder (used when bookmark url is not set)
@@ -530,7 +530,9 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Placeholder(
             override val id: String,
-            override val indent: Int
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
         ) : Bookmark(id = id) {
             override fun getViewType() = HOLDER_BOOKMARK_PLACEHOLDER
         }
@@ -547,13 +549,14 @@ sealed class BlockView : ViewType, Parcelable {
         data class View(
             override val id: String,
             override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             val url: String,
             val title: String?,
             val description: String?,
             val faviconUrl: String?,
             val imageUrl: String?
-        ) : Bookmark(id = id), Selectable {
+        ) : Bookmark(id = id) {
             override fun getViewType() = HOLDER_BOOKMARK
         }
 
@@ -565,6 +568,8 @@ sealed class BlockView : ViewType, Parcelable {
         data class Error(
             override val id: String,
             override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
             val url: String
         ) : Bookmark(id = id) {
             override fun getViewType(): Int = HOLDER_BOOKMARK_ERROR

@@ -110,7 +110,7 @@ class BlockMiddleware(
 
     override suspend fun setupBookmark(
         command: CommandEntity.SetupBookmark
-    ) = middleware.setupBookmark(command)
+    ): PayloadEntity = middleware.setupBookmark(command)
 
     override suspend fun undo(command: CommandEntity.Undo) = middleware.undo(command)
 

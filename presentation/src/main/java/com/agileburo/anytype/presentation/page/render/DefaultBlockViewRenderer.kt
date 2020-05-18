@@ -123,7 +123,7 @@ class DefaultBlockViewRenderer(
                 }
                 is Content.Bookmark -> {
                     counter.reset()
-                    result.add(bookmark(content, block, indent))
+                    result.add(bookmark(mode, content, block, indent))
                 }
                 is Content.Divider -> {
                     counter.reset()
@@ -344,6 +344,7 @@ class DefaultBlockViewRenderer(
     )
 
     private fun bookmark(
+        mode: EditorMode,
         content: Content.Bookmark,
         block: Block,
         indent: Int
@@ -356,18 +357,21 @@ class DefaultBlockViewRenderer(
                 description = content.description,
                 imageUrl = content.image?.let { urlBuilder.image(it) },
                 faviconUrl = content.favicon?.let { urlBuilder.image(it) },
-                indent = indent
+                indent = indent,
+                mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
             )
         } else {
             BlockView.Bookmark.Error(
                 id = block.id,
                 url = url,
-                indent = indent
+                indent = indent,
+                mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
             )
         }
     } ?: BlockView.Bookmark.Placeholder(
         id = block.id,
-        indent = indent
+        indent = indent,
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
     )
 
     private fun divider(block: Block) = BlockView.Divider(id = block.id)

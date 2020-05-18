@@ -33,7 +33,7 @@ interface BlockDataStore {
     suspend fun closePage(id: String)
     suspend fun closeDashboard(id: String)
     suspend fun setIconName(command: CommandEntity.SetIconName)
-    suspend fun setupBookmark(command: CommandEntity.SetupBookmark)
+    suspend fun setupBookmark(command: CommandEntity.SetupBookmark) : PayloadEntity
     suspend fun undo(command: CommandEntity.Undo)
     suspend fun redo(command: CommandEntity.Redo)
     suspend fun archiveDocument(command: CommandEntity.ArchiveDocument)

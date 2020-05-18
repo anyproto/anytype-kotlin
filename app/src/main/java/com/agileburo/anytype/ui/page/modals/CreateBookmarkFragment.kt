@@ -16,6 +16,7 @@ import com.agileburo.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.page.bookmark.CreateBookmarkViewModel
 import com.agileburo.anytype.presentation.page.bookmark.CreateBookmarkViewModel.ViewState
+import com.agileburo.anytype.ui.page.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.dialog_create_bookmark.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -28,11 +29,6 @@ class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
             .getString(ARG_TARGET)
             ?: throw IllegalStateException(MISSING_TARGET_ERROR)
 
-    private val context: String
-        get() = requireArguments()
-            .getString(ARG_CONTEXT)
-            ?: throw IllegalStateException(MISSING_CONTEXT_ERROR)
-
     @Inject
     lateinit var factory: CreateBookmarkViewModel.Factory
 
@@ -44,20 +40,14 @@ class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
 
     companion object {
 
-        private const val ARG_CONTEXT = "arg.create.bookmark.context"
         private const val ARG_TARGET = "arg.create.bookmark.target"
 
         private const val MISSING_TARGET_ERROR = "Target missing in args"
-        private const val MISSING_CONTEXT_ERROR = "Context missing in args"
 
         fun newInstance(
-            context: String,
             target: String
         ): CreateBookmarkFragment = CreateBookmarkFragment().apply {
-            arguments = bundleOf(
-                ARG_CONTEXT to context,
-                ARG_TARGET to target
-            )
+            arguments = bundleOf(ARG_TARGET to target)
         }
     }
 
@@ -78,8 +68,6 @@ class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
             .clicks()
             .onEach {
                 vm.onCreateBookmarkClicked(
-                    context = context,
-                    target = target,
                     url = urlInput.text.toString()
                 )
             }
@@ -92,10 +80,17 @@ class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
     }
 
     override fun onChanged(state: ViewState) {
-        if (state is ViewState.Exit)
-            dismiss()
-        else if (state is ViewState.Error)
-            toast(state.message)
+        when (state) {
+            is ViewState.Success -> {
+                (parentFragment as OnFragmentInteractionListener).onAddBookmarkUrlClicked(
+                    target = target,
+                    url = state.url
+                )
+                dismiss()
+            }
+            is ViewState.Error -> toast(state.message)
+            is ViewState.Exit -> dismiss()
+        }
     }
 
     override fun injectDependencies() {

@@ -21,6 +21,7 @@ import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
+import com.agileburo.anytype.domain.page.bookmark.SetupBookmark
 import com.agileburo.anytype.presentation.MockBlockFactory
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.page.editor.Command
@@ -120,6 +121,9 @@ class PageViewModelTest {
 
     @Mock
     lateinit var redo: Redo
+
+    @Mock
+    lateinit var setupBookmark: SetupBookmark
 
     @Mock
     lateinit var createDocument: CreateDocument
@@ -2852,7 +2856,7 @@ class PageViewModelTest {
 
         vm.onAddBlockToolbarClicked()
 
-        vm.onAddBookmarkClicked()
+        vm.onAddBookmarkBlockClicked()
 
         runBlockingTest {
             verify(createBlock, times(1)).invoke(
@@ -4053,7 +4057,8 @@ class PageViewModelTest {
                     stores = storage,
                     matcher = DefaultPatternMatcher()
                 ),
-                updateAlignment = updateAlignment
+                updateAlignment = updateAlignment,
+                setupBookmark = setupBookmark
             )
         )
     }

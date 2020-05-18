@@ -683,7 +683,7 @@ public class Middleware {
         }
     }
 
-    public void setupBookmark(CommandEntity.SetupBookmark command) throws Exception {
+    public PayloadEntity setupBookmark(CommandEntity.SetupBookmark command) throws Exception {
         Block.Bookmark.Fetch.Request request = Block.Bookmark.Fetch.Request
                 .newBuilder()
                 .setBlockId(command.getTarget())
@@ -700,6 +700,8 @@ public class Middleware {
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
+
+        return mapper.toPayload(response.getEvent());
     }
 
     public void undo(CommandEntity.Undo command) throws Exception {

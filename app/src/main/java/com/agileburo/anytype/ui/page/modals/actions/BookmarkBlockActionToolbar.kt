@@ -2,8 +2,11 @@ package com.agileburo.anytype.ui.page.modals.actions
 
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
@@ -21,9 +24,9 @@ class BookmarkBlockActionToolbar : BlockActionToolbar() {
     }
 
     override fun blockLayout(): Int = when (block.getViewType()) {
-        HOLDER_BOOKMARK -> R.layout.item_block_bookmark_preview
-        HOLDER_BOOKMARK_ERROR -> R.layout.item_block_bookmark_error_preview
-        HOLDER_BOOKMARK_PLACEHOLDER -> R.layout.item_block_bookmark_placeholder_preview
+        HOLDER_BOOKMARK -> R.layout.item_block_bookmark
+        HOLDER_BOOKMARK_ERROR -> R.layout.item_block_bookmark_error
+        HOLDER_BOOKMARK_PLACEHOLDER -> R.layout.item_block_bookmark_placeholder
         else -> throw RuntimeException("No layout for bookmark block with type ${block.getViewType()}")
     }
 
@@ -33,9 +36,18 @@ class BookmarkBlockActionToolbar : BlockActionToolbar() {
         when (block.getViewType()) {
             HOLDER_BOOKMARK -> initBookmark(view)
             HOLDER_BOOKMARK_ERROR -> initError(view)
-            HOLDER_BOOKMARK_PLACEHOLDER -> Unit
+            HOLDER_BOOKMARK_PLACEHOLDER -> initPlaceholder(view)
             else -> throw RuntimeException("No layout for bookmark block with type ${block.getViewType()}")
         }
+
+    private fun initPlaceholder(view: View) {
+        view.findViewById<ConstraintLayout>(R.id.bookmarkPlaceholderRoot)
+            .updateLayoutParams<FrameLayout.LayoutParams> {
+                this.apply {
+                    rightMargin = 0
+                }
+            }
+    }
 
     private fun initBookmark(view: View) {
         val item = block as BlockView.Bookmark.View
@@ -62,6 +74,21 @@ class BookmarkBlockActionToolbar : BlockActionToolbar() {
                     .into(this)
             }
         }
+
+        view.findViewById<FrameLayout>(R.id.root).apply {
+            updateLayoutParams<FrameLayout.LayoutParams> {
+                this.apply {
+                    rightMargin = 0
+                    topMargin = 0
+                    bottomMargin = 0
+                    topMargin = 0
+                }
+            }
+            setPadding(0, 0, 0, 0)
+        }
+
+        view.findViewById<FrameLayout>(R.id.block_container)
+            .setPadding(0, 0, 0, 0)
     }
 
     private fun initError(view: View) {
@@ -69,5 +96,11 @@ class BookmarkBlockActionToolbar : BlockActionToolbar() {
         view.findViewById<TextView>(R.id.errorBookmarkUrl).apply {
             text = item.url
         }
+        view.findViewById<FrameLayout>(R.id.bookmarkErrorRoot)
+            .updateLayoutParams<FrameLayout.LayoutParams> {
+                this.apply {
+                    rightMargin = 0
+                }
+            }
     }
 }

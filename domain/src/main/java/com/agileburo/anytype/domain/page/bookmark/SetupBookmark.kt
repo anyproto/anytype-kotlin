@@ -5,13 +5,14 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.event.model.Payload
 
 /**
  * Use-case for setting up (i.e. fetching) a bookmark from url.
  */
 class SetupBookmark(
     private val repo: BlockRepository
-) : BaseUseCase<Unit, SetupBookmark.Params>() {
+) : BaseUseCase<Payload, SetupBookmark.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.setupBookmark(

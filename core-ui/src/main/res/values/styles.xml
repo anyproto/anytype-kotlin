@@ -168,30 +168,24 @@
     </style>
 
     <style name="BlockBookmarkTitleStyle">
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginTop">12dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="fontFamily">@font/graphik_regular</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">#2C2B27</item>
     </style>
 
     <style name="BlockBookmarkDescriptionStyle">
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginTop">6dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:textSize">13sp</item>
+        <item name="fontFamily">@font/graphik_regular</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
         <item name="android:textColor">#6C6A5F</item>
     </style>
 
     <style name="BlockBookmarkUrlStyle">
         <item name="android:ellipsize">end</item>
         <item name="android:singleLine">true</item>
-        <item name="android:layout_marginStart">6dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:layout_marginBottom">16dp</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">#2C2B27</item>
+        <item name="android:textSize">11sp</item>
     </style>
 
     <style name="BlockFileFilenameContentStyle">

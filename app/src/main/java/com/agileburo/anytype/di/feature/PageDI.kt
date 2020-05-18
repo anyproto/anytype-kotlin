@@ -11,6 +11,7 @@ import com.agileburo.anytype.domain.event.interactor.EventChannel
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
+import com.agileburo.anytype.domain.page.bookmark.SetupBookmark
 import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
 import com.agileburo.anytype.presentation.page.Editor
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
@@ -321,6 +322,7 @@ class PageModule {
         updateText: UpdateText,
         updateAlignment: UpdateAlignment,
         textInteractor: Interactor.TextInteractor,
+        setupBookmark: SetupBookmark,
         undo: Undo,
         redo: Redo
     ): Orchestrator = Orchestrator(
@@ -343,7 +345,8 @@ class PageModule {
         updateTitle = updateTitle,
         textInteractor = textInteractor,
         updateText = updateText,
-        updateAlignment = updateAlignment
+        updateAlignment = updateAlignment,
+        setupBookmark = setupBookmark
     )
 
     @Provides
@@ -371,6 +374,14 @@ class PageModule {
     fun provideUpdateAlignmentUseCase(
         repo: BlockRepository
     ): UpdateAlignment = UpdateAlignment(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideSetupBookmarkUseCase(
+        repo: BlockRepository
+    ): SetupBookmark = SetupBookmark(
         repo = repo
     )
 }

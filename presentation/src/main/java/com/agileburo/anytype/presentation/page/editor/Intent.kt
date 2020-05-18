@@ -111,4 +111,13 @@ sealed class Intent {
         ) : Media()
 
     }
+
+    sealed class Bookmark : Intent() {
+
+        class SetupBookmark(
+            val context: Id,
+            val target: Id,
+            val url: String
+        ) : Bookmark()
+    }
 }

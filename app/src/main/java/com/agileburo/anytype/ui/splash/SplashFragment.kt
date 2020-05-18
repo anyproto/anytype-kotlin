@@ -6,8 +6,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
-import com.agileburo.anytype.core_ui.extensions.visible
 import com.agileburo.anytype.core_utils.ext.toast
+import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.splash.SplashViewModel

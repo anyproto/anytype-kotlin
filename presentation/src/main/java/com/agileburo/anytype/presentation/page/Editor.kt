@@ -15,7 +15,8 @@ interface Editor {
         val intents: Proxy.Intents = Proxy.Intents(),
         val changes: Proxy.Text.Changes = Proxy.Text.Changes(),
         val saves: Proxy.Text.Saves = Proxy.Text.Saves(),
-        val payloads: Proxy.Payloads = Proxy.Payloads()
+        val payloads: Proxy.Payloads = Proxy.Payloads(),
+        val errors: Proxy.Error = Proxy.Error()
     )
 
     class Memory(

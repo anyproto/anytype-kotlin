@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.state.ControlPanelState
@@ -111,6 +112,7 @@ class PageViewModel(
         startProcessingControlPanelViewState()
         startObservingEvents()
         startObservingPayload()
+        startObservingErrors()
         processRendering()
         processMarkupChanges()
         viewModelScope.launch { orchestrator.start() }
@@ -158,6 +160,16 @@ class PageViewModel(
                 .filter { events -> events.any { it.context == context } }
                 .map { events -> processEvents(events) }
                 .collect { viewModelScope.launch { refresh() } }
+        }
+    }
+
+    private fun startObservingErrors() {
+        viewModelScope.launch {
+            orchestrator.proxies.errors
+                .stream()
+                .collect {
+                    stateData.value = ViewState.Error(it.message ?: "Unknown error")
+                }
         }
     }
 
@@ -1046,6 +1058,9 @@ class PageViewModel(
                     is BlockView.Bulleted -> block.copy(isSelected = true)
                     is BlockView.Numbered -> block.copy(isSelected = true)
                     is BlockView.Toggle -> block.copy(isSelected = true)
+                    is BlockView.Bookmark.View -> block.copy(isSelected = true)
+                    is BlockView.Bookmark.Placeholder -> block.copy(isSelected = true)
+                    is BlockView.Bookmark.Error -> block.copy(isSelected = true)
                     else -> block
                 }
             }
@@ -1208,7 +1223,7 @@ class PageViewModel(
         }
     }
 
-    fun onAddBookmarkClicked() {
+    fun onAddBookmarkBlockClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
@@ -1217,6 +1232,18 @@ class PageViewModel(
                     position = Position.BOTTOM,
                     target = orchestrator.stores.focus.current(),
                     prototype = Prototype.Bookmark
+                )
+            )
+        }
+    }
+
+    fun onAddBookmarkUrl(target: String, url: String) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Bookmark.SetupBookmark(
+                    context = context,
+                    target = target,
+                    url = url
                 )
             )
         }
@@ -1260,10 +1287,6 @@ class PageViewModel(
         )
     }
 
-    fun onBookmarkMenuClicked(target: Id) {
-        updateFocus(target)
-    }
-
     fun onTitleTextInputClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
     }
@@ -1284,6 +1307,9 @@ class PageViewModel(
                             is BlockView.Bulleted -> block.copy(isSelected = isSelected(target))
                             is BlockView.Numbered -> block.copy(isSelected = isSelected(target))
                             is BlockView.Toggle -> block.copy(isSelected = isSelected(target))
+                            is BlockView.Bookmark.View -> block.copy(isSelected = isSelected(target))
+                            is BlockView.Bookmark.Placeholder -> block.copy(isSelected = isSelected(target))
+                            is BlockView.Bookmark.Error -> block.copy(isSelected = isSelected(target))
                             else -> block
                         }
                     else
@@ -1295,6 +1321,37 @@ class PageViewModel(
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
         }
     }
+
+    fun onClickListener(clicked: ListenerType) =
+        when (clicked) {
+            is ListenerType.Bookmark.View -> {
+                when (mode) {
+                    EditorMode.EDITING -> onBookmarkClicked(clicked.item)
+                    EditorMode.MULTI_SELECT -> onTextInputClicked(clicked.item.id)
+                }
+            }
+            is ListenerType.Bookmark.ViewLong -> {
+                onBlockLongPressedClicked(clicked.target)
+            }
+            is ListenerType.Bookmark.Placeholder -> {
+                when (mode) {
+                    EditorMode.EDITING -> onBookmarkPlaceholderClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onTextInputClicked(clicked.target)
+                }
+            }
+            is ListenerType.Bookmark.PlaceholderLong -> {
+                onBlockLongPressedClicked(clicked.target)
+            }
+            is ListenerType.Bookmark.Error -> {
+                when (mode) {
+                    EditorMode.EDITING -> onFailedBookmarkClicked(clicked.item)
+                    EditorMode.MULTI_SELECT -> onTextInputClicked(clicked.item.id)
+                }
+            }
+            is ListenerType.Bookmark.ErrorLong -> {
+                onBlockLongPressedClicked(clicked.target)
+            }
+        }
 
     fun onPlusButtonPressed() {
         createPage(

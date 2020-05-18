@@ -9,9 +9,9 @@ import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.extensions.drawable
-import com.agileburo.anytype.core_ui.extensions.invisible
-import com.agileburo.anytype.core_ui.extensions.visible
+import com.agileburo.anytype.core_utils.ext.invisible
 import com.agileburo.anytype.core_utils.ext.toast
+import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.di.feature.DetailEditModule

@@ -18,7 +18,7 @@
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.DefaultTextWidget
         android:layout_width="0dp"
         android:id="@+id/toggleContent"
         style="@style/ToggleContentStyle"

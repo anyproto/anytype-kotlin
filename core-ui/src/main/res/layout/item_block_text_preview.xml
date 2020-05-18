@@ -7,7 +7,7 @@
     android:paddingStart="@dimen/default_document_item_padding_start"
     android:paddingEnd="@dimen/default_document_item_padding_end">
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.DefaultTextWidget
         android:id="@+id/textContent"
         style="@style/BlockTextContentStyle"
         android:layout_width="match_parent"

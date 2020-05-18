@@ -10,7 +10,7 @@
     android:paddingEnd="@dimen/default_document_item_padding_end"
     android:paddingBottom="6dp">
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.DefaultTextWidget
         android:id="@+id/highlightContent"
         style="@style/BlockHighlightContentStyle"
         android:layout_width="match_parent"
@@ -19,6 +19,7 @@
         android:layout_marginEnd="12dp"
         android:background="@drawable/vertical_line"
         android:paddingStart="@dimen/dp_16"
+        android:paddingEnd="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/default_text_placeholder" />

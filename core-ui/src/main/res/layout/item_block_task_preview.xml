@@ -16,7 +16,7 @@
         android:contentDescription="@string/content_description_task_pic"
         android:src="@drawable/selector_block_task" />
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.DefaultTextWidget
         android:id="@+id/taskContent"
         style="@style/BlockCheckboxContentStyle"
         android:layout_marginStart="28dp"

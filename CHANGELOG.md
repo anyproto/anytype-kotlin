@@ -9,6 +9,7 @@
 ### Design & UX 🔳
 
 * New bookmark block design (#422)
+* Render bookmark in multi-select mode (#422)
 * Updated subtitles for add-block or turn-into bottom sheet items (#429)
 * Text background should have the same height as the OS text-selection highlight (#392)
 * Text background should have z-axis priority lower as the one of the OS text-selection highlight (#426)

@@ -1047,7 +1047,7 @@ class PageViewModel(
     fun onMultiSelectModeSelectAllClicked() {
         (stateData.value as ViewState.Success).let { state ->
             val update = state.blocks.map { block ->
-                select(block.id)
+                if (block.id != context) select(block.id)
                 when (block) {
                     is BlockView.Paragraph -> block.copy(isSelected = true)
                     is BlockView.HeaderOne -> block.copy(isSelected = true)

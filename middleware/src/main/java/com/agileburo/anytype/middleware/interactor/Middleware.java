@@ -56,7 +56,11 @@ public class Middleware {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
 
-        return new ConfigEntity(response.getHomeBlockId(), response.getGatewayUrl());
+        return new ConfigEntity(
+                response.getHomeBlockId(),
+                response.getProfileBlockId(),
+                response.getGatewayUrl()
+        );
     }
 
     public CreateWalletResponse createWallet(String path) throws Exception {

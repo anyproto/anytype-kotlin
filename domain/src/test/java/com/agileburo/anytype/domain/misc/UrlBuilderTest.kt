@@ -12,7 +12,11 @@ class UrlBuilderTest {
 
     @Before
     fun setup() {
-        config = Config(home = "67889", gateway = "https://anytype.io")
+        config = Config(
+            home = "67889",
+            gateway = "https://anytype.io",
+            profile = "profile"
+        )
         urlBuilder = UrlBuilder(config)
     }
 

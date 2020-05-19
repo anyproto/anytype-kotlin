@@ -68,37 +68,12 @@ class AccountDaoTest {
     }
 
     @Test
-    fun `should save account with its avatar`() = runBlocking {
-
-        val account = AccountTable(
-            id = MockDataFactory.randomString(),
-            name = MockDataFactory.randomString(),
-            timestamp = System.currentTimeMillis(),
-            avatar = AccountTable.Avatar(
-                avatarId = MockDataFactory.randomString(),
-                sizes = listOf(AccountTable.Size.LARGE, AccountTable.Size.SMALL)
-            )
-        )
-
-        database.accountDao().insert(account)
-
-        val result = database.accountDao().lastAccount()
-
-        assertTrue { result.size == 1 }
-        assertTrue { result.first() == account }
-    }
-
-    @Test
     fun `should return expected account when queried using account id`() = runBlocking {
 
         val account = AccountTable(
             id = MockDataFactory.randomString(),
             name = MockDataFactory.randomString(),
-            timestamp = System.currentTimeMillis(),
-            avatar = AccountTable.Avatar(
-                avatarId = MockDataFactory.randomString(),
-                sizes = listOf(AccountTable.Size.LARGE, AccountTable.Size.SMALL)
-            )
+            timestamp = System.currentTimeMillis()
         )
 
         database.accountDao().insert(account)

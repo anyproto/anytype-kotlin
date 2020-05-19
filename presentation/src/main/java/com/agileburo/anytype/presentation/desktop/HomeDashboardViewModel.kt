@@ -17,7 +17,6 @@ import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
-import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.Interactor
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.State
@@ -31,7 +30,6 @@ import timber.log.Timber
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine as Machine
 
 class HomeDashboardViewModel(
-    private val loadImage: LoadImage,
     private val getCurrentAccount: GetCurrentAccount,
     private val openDashboard: OpenDashboard,
     private val closeDashboard: CloseDashboard,
@@ -53,8 +51,6 @@ class HomeDashboardViewModel(
 
     private val _profile = MutableLiveData<ProfileView>()
     val profile: LiveData<ProfileView> = _profile
-    private val _image = MutableLiveData<ByteArray>()
-    val image: LiveData<ByteArray> = _image
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
@@ -97,8 +93,13 @@ class HomeDashboardViewModel(
             result.either(
                 fnL = { Timber.e(it, "Error while getting account") },
                 fnR = { account ->
-                    _profile.postValue(ProfileView(name = account.name))
-                    loadAvatarImage(account)
+                    Timber.d("account: $account")
+                    _profile.postValue(
+                        ProfileView(
+                            name = account.name,
+                            avatar = account.avatar
+                        )
+                    )
                 }
             )
         }
@@ -140,22 +141,6 @@ class HomeDashboardViewModel(
                 fnL = { Timber.e(it, "Error while opening home dashboard") }
             )
         }
-    }
-
-    private fun loadAvatarImage(account: Account) {
-        account.avatar?.let { image ->
-            loadImage.invoke(
-                scope = viewModelScope,
-                params = LoadImage.Param(
-                    id = image.id
-                )
-            ) { result ->
-                result.either(
-                    fnL = { Timber.e(it, "Error while loading image") },
-                    fnR = { blob -> _image.postValue(blob) }
-                )
-            }
-        } ?: Timber.d("User does not have any avatar")
     }
 
     fun onViewCreated() {

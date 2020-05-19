@@ -35,9 +35,8 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     private val profileObserver = Observer<ProfileView> { profile ->
         greeting.text = getString(R.string.greet, profile.name)
         avatar.bind(name = profile.name)
+        profile.avatar?.let { avatar.icon(it) }
     }
-
-    private val imageObserver = Observer<ByteArray> { blob -> avatar.bind(blob) }
 
     private val vm by lazy {
         ViewModelProviders
@@ -67,9 +66,6 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     @Inject
     lateinit var factory: HomeDashboardViewModelFactory
 
-    @Inject
-    lateinit var emojifier: Emojifier
-
     private val dashboardAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
@@ -85,7 +81,6 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             state.observe(viewLifecycleOwner, this@HomeDashboardFragment)
             navigation.observe(viewLifecycleOwner, navObserver)
             profile.observe(viewLifecycleOwner, profileObserver)
-            image.observe(viewLifecycleOwner, imageObserver)
         }
 
         vm.onViewCreated()

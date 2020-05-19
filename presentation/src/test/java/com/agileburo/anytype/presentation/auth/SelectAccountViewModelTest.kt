@@ -6,9 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.domain.auth.interactor.ObserveAccounts
 import com.agileburo.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.agileburo.anytype.domain.auth.model.Account
-import com.agileburo.anytype.domain.auth.model.Image
 import com.agileburo.anytype.domain.base.Either
-import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.presentation.auth.account.SelectAccountViewModel
 import com.agileburo.anytype.presentation.auth.model.SelectAccountView
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
@@ -27,6 +25,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.MockitoDebugger
 
 class SelectAccountViewModelTest {
 
@@ -42,52 +41,35 @@ class SelectAccountViewModelTest {
     @Mock
     lateinit var observeAccounts: ObserveAccounts
 
-    @Mock
-    lateinit var loadImage: LoadImage
-
     lateinit var vm: SelectAccountViewModel
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-
     }
 
     private fun buildViewModel(): SelectAccountViewModel {
         return SelectAccountViewModel(
             startLoadingAccounts = startLoadingAccounts,
-            loadImage = loadImage,
             observeAccounts = observeAccounts
         )
     }
 
     @Test
-    fun `should emit one account with image`() = runBlockingTest {
+    fun `should emit one account without image`() = runBlockingTest {
 
         val account = Account(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
-            avatar = Image(
-                id = MockDataFactory.randomUuid(),
-                sizes = listOf(Image.Size.SMALL)
-            ),
+            avatar = MockDataFactory.randomString(),
             color = null
         )
 
         val accounts = listOf(account).asFlow()
 
-        val blob = ByteArray(0)
-
-        val response = Either.Right(blob)
 
         observeAccounts.stub {
             onBlocking { build() } doReturn accounts
-        }
-
-        loadImage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, ByteArray>) -> Unit>(2)(response)
-            }
         }
 
         vm = buildViewModel()
@@ -98,7 +80,7 @@ class SelectAccountViewModelTest {
                     SelectAccountView.AccountView(
                         id = account.id,
                         name = account.name,
-                        image = blob
+                        image = account.avatar
                     )
                 )
             )
@@ -111,20 +93,14 @@ class SelectAccountViewModelTest {
         val firstAccount = Account(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
-            avatar = Image(
-                id = MockDataFactory.randomUuid(),
-                sizes = listOf(Image.Size.SMALL)
-            ),
+            avatar = null,
             color = null
         )
 
         val secondAccount = Account(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
-            avatar = Image(
-                id = MockDataFactory.randomUuid(),
-                sizes = listOf(Image.Size.SMALL)
-            ),
+            avatar = null,
             color = null
         )
 
@@ -141,12 +117,6 @@ class SelectAccountViewModelTest {
             onBlocking { build() } doReturn accounts
         }
 
-        loadImage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, ByteArray>) -> Unit>(2)(response)
-            }
-        }
-
         vm = buildViewModel()
 
         vm.state.test()
@@ -154,77 +124,15 @@ class SelectAccountViewModelTest {
                 listOf(
                     SelectAccountView.AccountView(
                         id = firstAccount.id,
-                        name = firstAccount.name,
-                        image = blob
+                        name = firstAccount.name
                     ),
                     SelectAccountView.AccountView(
                         id = secondAccount.id,
-                        name = secondAccount.name,
-                        image = blob
+                        name = secondAccount.name
                     )
                 )
             )
             .assertHistorySize(1)
 
-    }
-
-    @Test
-    fun `should emit first account while the second one is still loading`() = runBlockingTest {
-
-        val firstAccount = Account(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            avatar = Image(
-                id = MockDataFactory.randomUuid(),
-                sizes = listOf(Image.Size.SMALL)
-            ),
-            color = null
-        )
-
-        val secondAccount = Account(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            avatar = Image(
-                id = MockDataFactory.randomUuid(),
-                sizes = listOf(Image.Size.SMALL)
-            ),
-            color = null
-        )
-
-        val accounts = flow {
-            emit(firstAccount)
-            delay(300)
-            emit(secondAccount)
-        }
-
-        val blob = ByteArray(0)
-
-        val response = Either.Right(blob)
-
-        observeAccounts.stub {
-            onBlocking { build() } doReturn accounts
-        }
-
-        loadImage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, ByteArray>) -> Unit>(2)(response)
-            }
-        }
-
-        vm = buildViewModel()
-
-        vm.state.test()
-            .assertValue(
-                listOf(
-                    SelectAccountView.AccountView(
-                        id = firstAccount.id,
-                        name = firstAccount.name,
-                        image = blob
-                    )
-                )
-            )
-            .assertHistorySize(1)
-
-        vm.viewModelScope.cancel()
     }
 }

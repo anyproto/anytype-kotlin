@@ -52,7 +52,8 @@ class OpenDashboardTest {
 
         val config = Config(
             home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomString()
+            gateway = MockDataFactory.randomString(),
+            profile = MockDataFactory.randomUuid()
         )
 
         repo.stub {

@@ -10,8 +10,7 @@ import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.event.interactor.EventChannel
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
-import com.agileburo.anytype.domain.image.ImageLoader
-import com.agileburo.anytype.domain.image.LoadImage
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.presentation.desktop.HomeDashboardEventConverter
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModelFactory
@@ -44,7 +43,6 @@ class HomeDashboardModule {
     @PerScreen
     fun provideDesktopViewModelFactory(
         getCurrentAccount: GetCurrentAccount,
-        loadImage: LoadImage,
         openDashboard: OpenDashboard,
         createPage: CreatePage,
         closeDashboard: CloseDashboard,
@@ -54,7 +52,6 @@ class HomeDashboardModule {
         eventConverter: HomeDashboardEventConverter
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getCurrentAccount = getCurrentAccount,
-        loadImage = loadImage,
         openDashboard = openDashboard,
         createPage = createPage,
         closeDashboard = closeDashboard,
@@ -67,18 +64,11 @@ class HomeDashboardModule {
     @Provides
     @PerScreen
     fun provideGetAccountUseCase(
-        repository: AuthRepository
-    ): GetCurrentAccount =
-        GetCurrentAccount(
-            repository = repository
-        )
-
-    @Provides
-    @PerScreen
-    fun provideLoadImageUseCase(
-        loader: ImageLoader
-    ): LoadImage = LoadImage(
-        loader = loader
+        repository: BlockRepository,
+        builder: UrlBuilder
+    ): GetCurrentAccount = GetCurrentAccount(
+            repo = repository,
+            builder = builder
     )
 
     @Provides

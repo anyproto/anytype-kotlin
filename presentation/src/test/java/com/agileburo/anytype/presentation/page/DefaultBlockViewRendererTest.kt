@@ -51,7 +51,8 @@ class DefaultBlockViewRendererTest {
 
     private val config = Config(
         home = MockDataFactory.randomUuid(),
-        gateway = MockDataFactory.randomString()
+        gateway = MockDataFactory.randomString(),
+        profile = MockDataFactory.randomUuid()
     )
 
     private lateinit var wrapper: BlockViewRenderWrapper

@@ -20,6 +20,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun createPage(parentId: String): String = remote.createPage(parentId)
     override suspend fun openPage(id: String): PayloadEntity = remote.openPage(id)
+    override suspend fun openProfile(id: String): PayloadEntity = remote.openProfile(id)
 
     override suspend fun closePage(id: String) {
         remote.closePage(id)

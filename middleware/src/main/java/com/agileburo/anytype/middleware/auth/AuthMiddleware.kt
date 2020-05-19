@@ -26,7 +26,6 @@ class AuthMiddleware(
         AccountEntity(
             id = response.id,
             name = response.name,
-            avatar = null,
             color = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.COLOR)
                 response.avatar.color else null
         )
@@ -40,7 +39,6 @@ class AuthMiddleware(
             AccountEntity(
                 id = response.id,
                 name = response.name,
-                avatar = null,
                 color = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.COLOR)
                     response.avatar.color else null
             )

@@ -2,7 +2,6 @@ package com.agileburo.anytype.data.auth.mapper
 
 import com.agileburo.anytype.data.auth.model.*
 import com.agileburo.anytype.domain.auth.model.Account
-import com.agileburo.anytype.domain.auth.model.Image
 import com.agileburo.anytype.domain.auth.model.Wallet
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
@@ -15,8 +14,8 @@ fun AccountEntity.toDomain(): Account {
     return Account(
         id = id,
         name = name,
-        avatar = avatar?.toDomain(),
-        color = color
+        color = color,
+        avatar = null
     )
 }
 
@@ -24,7 +23,6 @@ fun Account.toEntity(): AccountEntity {
     return AccountEntity(
         id = id,
         name = name,
-        avatar = avatar?.toEntity(),
         color = color
     )
 }
@@ -33,36 +31,6 @@ fun WalletEntity.toDomain(): Wallet {
     return Wallet(
         mnemonic = mnemonic
     )
-}
-
-fun ImageEntity.toDomain(): Image {
-    return Image(
-        id = id,
-        sizes = sizes.map { it.toDomain() }
-    )
-}
-
-fun Image.toEntity(): ImageEntity {
-    return ImageEntity(
-        id = id,
-        sizes = sizes.map { it.toEntity() }
-    )
-}
-
-fun ImageEntity.Size.toDomain(): Image.Size {
-    return when (this) {
-        ImageEntity.Size.THUMB -> Image.Size.THUMB
-        ImageEntity.Size.LARGE -> Image.Size.LARGE
-        ImageEntity.Size.SMALL -> Image.Size.SMALL
-    }
-}
-
-fun Image.Size.toEntity(): ImageEntity.Size {
-    return when (this) {
-        Image.Size.THUMB -> ImageEntity.Size.THUMB
-        Image.Size.SMALL -> ImageEntity.Size.SMALL
-        Image.Size.LARGE -> ImageEntity.Size.LARGE
-    }
 }
 
 fun BlockEntity.toDomain(): Block {
@@ -313,6 +281,7 @@ fun Block.Content.Text.Mark.toEntity(): BlockEntity.Content.Text.Mark {
 fun ConfigEntity.toDomain(): Config {
     return Config(
         home = home,
+        profile = profile,
         gateway = gateway
     )
 }

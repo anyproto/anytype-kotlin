@@ -19,6 +19,7 @@ class BlockDataRepository(
     ) = factory.remote.openDashboard(id = id, contextId = contextId).toDomain()
 
     override suspend fun openPage(id: String): Payload = factory.remote.openPage(id).toDomain()
+    override suspend fun openProfile(id: String): Payload = factory.remote.openProfile(id).toDomain()
 
     override suspend fun closeDashboard(id: String) {
         factory.remote.closeDashboard(id)

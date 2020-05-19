@@ -60,6 +60,8 @@ interface BlockRepository {
     suspend fun createPage(parentId: String): Id
 
     suspend fun openPage(id: String): Payload
+    suspend fun openProfile(id: String) : Payload
+
     suspend fun closePage(id: String)
     suspend fun openDashboard(contextId: String, id: String): Payload
     suspend fun closeDashboard(id: String)

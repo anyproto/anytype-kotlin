@@ -77,10 +77,8 @@ class SelectAccountAdapter(
                 name.text = model.name
                 itemView.setOnClickListener { onProfileClicked(model) }
 
-                model.image?.let { blob ->
-                    avatar.bind(
-                        blob = blob
-                    )
+                model.image?.let { url ->
+                    avatar.icon(url)
                 } ?: avatar.bind(
                     name = model.name
                 )

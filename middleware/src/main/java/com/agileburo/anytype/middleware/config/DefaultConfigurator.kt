@@ -16,7 +16,8 @@ class DefaultConfigurator : Configurator {
         fetchConfig().let { response ->
             ConfigEntity(
                 home = response.homeBlockId,
-                gateway = response.gatewayUrl
+                gateway = response.gatewayUrl,
+                profile = response.profileBlockId
             )
         }
     }

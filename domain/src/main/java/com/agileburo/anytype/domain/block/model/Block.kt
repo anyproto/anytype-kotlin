@@ -30,6 +30,7 @@ data class Block(
 
         val name: String? by default
         val icon: String? by default
+        val iconImage: String? by default
         val isArchived: Boolean? by default
 
         companion object {

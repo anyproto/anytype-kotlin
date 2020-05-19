@@ -10,7 +10,6 @@ import javax.inject.Singleton
         ContextModule::class,
         DataModule::class,
         EventModule::class,
-        ImageModule::class,
         ConfigModule::class,
         DeviceModule::class,
         UtilModule::class,

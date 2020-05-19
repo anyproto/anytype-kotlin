@@ -16,7 +16,6 @@ fun Events.Event.Account.Show.toAccountEntity(): AccountEntity {
     return AccountEntity(
         id = account.id,
         name = account.name,
-        avatar = null,
         color = if (account.avatar.avatarCase == Account.Avatar.AvatarCase.COLOR)
             account.avatar.color
         else null

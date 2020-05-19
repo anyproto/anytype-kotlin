@@ -46,7 +46,6 @@ class AuthDataRepositoryTest {
         val account = AccountEntity(
             id = id,
             name = MockDataFactory.randomString(),
-            avatar = null,
             color = null
         )
 
@@ -79,7 +78,6 @@ class AuthDataRepositoryTest {
         val account = AccountEntity(
             id = name,
             name = MockDataFactory.randomString(),
-            avatar = null,
             color = null
         )
 
@@ -163,7 +161,6 @@ class AuthDataRepositoryTest {
         val account = AccountEntity(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
-            avatar = null,
             color = null
         )
 
@@ -248,7 +245,6 @@ class AuthDataRepositoryTest {
         val account = AccountEntity(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
-            avatar = null,
             color = null
         )
 

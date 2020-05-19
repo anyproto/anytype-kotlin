@@ -27,13 +27,9 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.state.observe(this, this)
-        vm.navigation.observe(this, navObserver)
+        vm.state.observe(viewLifecycleOwner, this)
+        vm.navigation.observe(viewLifecycleOwner, navObserver)
         vm.onViewCreated()
-
-        vm.image.observe(this, Observer { blob ->
-            avatar.bind(blob = blob)
-        })
 
         backButtonContainer.setOnClickListener { vm.onBackButtonClicked() }
     }
@@ -56,6 +52,7 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
             is ViewState.Success -> {
                 name.text = state.data.name
                 avatar.bind(state.data.name)
+                state.data.avatar?.let { avatar.icon(it) }
             }
         }
     }

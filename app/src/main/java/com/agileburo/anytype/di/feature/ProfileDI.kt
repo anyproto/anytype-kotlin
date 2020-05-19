@@ -4,8 +4,8 @@ import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.interactor.Logout
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
-import com.agileburo.anytype.domain.image.ImageLoader
-import com.agileburo.anytype.domain.image.LoadImage
+import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.presentation.profile.ProfileViewModelFactory
 import com.agileburo.anytype.ui.profile.ProfileFragment
 import dagger.Module
@@ -35,11 +35,9 @@ class ProfileModule {
     @PerScreen
     fun provideProfileViewModelFactory(
         logout: Logout,
-        loadImage: LoadImage,
         getCurrentAccount: GetCurrentAccount
     ): ProfileViewModelFactory = ProfileViewModelFactory(
         logout = logout,
-        loadImage = loadImage,
         getCurrentAccount = getCurrentAccount
     )
 
@@ -51,18 +49,8 @@ class ProfileModule {
 
     @Provides
     @PerScreen
-    fun provideLoadImageUseCase(
-        loader: ImageLoader
-    ): LoadImage = LoadImage(
-        loader = loader
-    )
-
-    @Provides
-    @PerScreen
     fun provideGetAccountUseCase(
-        authRepository: AuthRepository
-    ): GetCurrentAccount =
-        GetCurrentAccount(
-            repository = authRepository
-        )
+        repo: BlockRepository,
+        builder: UrlBuilder
+    ): GetCurrentAccount = GetCurrentAccount(repo = repo, builder = builder)
 }

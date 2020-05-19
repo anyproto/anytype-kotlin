@@ -56,7 +56,6 @@ class AvatarWidget : FrameLayout {
 
     fun bind(name: String) {
         initials.visible()
-        //todo Потенциальный краш если Char sequence is empty.
         initials.text = if (name.isNotEmpty()) name.first().toUpperCase().toString() else ""
         icon.invisible()
         backgroundTintList = ColorStateList.valueOf(randomColor(name))
@@ -74,18 +73,13 @@ class AvatarWidget : FrameLayout {
         return Color.HSVToColor(floatArrayOf(h, 0.3f, 0.8f))
     }
 
-    fun bind(blob: ByteArray) {
-        val stream = ByteArrayInputStream(blob)
-        val bitmap = BitmapFactory.decodeStream(stream)
-
+    fun icon(url: String) {
         Glide
             .with(icon)
-            .load(bitmap)
+            .load(url)
             .centerInside()
             .circleCrop()
             .into(icon)
-
-        stream.close()
 
         icon.visible()
         initials.invisible()

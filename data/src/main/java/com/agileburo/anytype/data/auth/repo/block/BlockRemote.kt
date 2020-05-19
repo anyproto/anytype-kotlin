@@ -28,6 +28,7 @@ interface BlockRemote {
     suspend fun getConfig(): ConfigEntity
     suspend fun createPage(parentId: String): String
     suspend fun openPage(id: String): PayloadEntity
+    suspend fun openProfile(id: String): PayloadEntity
     suspend fun closePage(id: String)
     suspend fun openDashboard(contextId: String, id: String): PayloadEntity
     suspend fun closeDashboard(id: String)

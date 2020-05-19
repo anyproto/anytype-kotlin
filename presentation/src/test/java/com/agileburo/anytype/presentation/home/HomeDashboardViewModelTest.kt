@@ -5,7 +5,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.core_utils.ext.shift
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.model.Account
-import com.agileburo.anytype.domain.auth.model.Image
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.DragAndDrop
 import com.agileburo.anytype.domain.block.model.Block
@@ -17,11 +16,9 @@ import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.toHomeDashboard
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
 import com.agileburo.anytype.domain.emoji.Emoji
-import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
-import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.presentation.desktop.HomeDashboardEventConverter
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine
@@ -54,9 +51,6 @@ class HomeDashboardViewModelTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     @Mock
-    lateinit var loadImage: LoadImage
-
-    @Mock
     lateinit var getCurrentAccount: GetCurrentAccount
 
     @Mock
@@ -86,7 +80,6 @@ class HomeDashboardViewModelTest {
 
     private fun buildViewModel(): HomeDashboardViewModel {
         return HomeDashboardViewModel(
-            loadImage = loadImage,
             getCurrentAccount = getCurrentAccount,
             openDashboard = openDashboard,
             closeDashboard = closeDashboard,
@@ -105,7 +98,8 @@ class HomeDashboardViewModelTest {
 
         val config = Config(
             home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid()
+            gateway = MockDataFactory.randomUuid(),
+            profile = MockDataFactory.randomUuid()
         )
 
         val response = Either.Right(config)
@@ -119,7 +113,6 @@ class HomeDashboardViewModelTest {
 
         verify(getConfig, times(1)).invoke(any(), any(), any())
         verifyZeroInteractions(openDashboard)
-        verifyZeroInteractions(loadImage)
         verifyZeroInteractions(getCurrentAccount)
     }
 
@@ -130,7 +123,8 @@ class HomeDashboardViewModelTest {
 
         val config = Config(
             home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid()
+            gateway = MockDataFactory.randomUuid(),
+            profile = MockDataFactory.randomUuid()
         )
 
         val response = Either.Right(config)
@@ -155,7 +149,8 @@ class HomeDashboardViewModelTest {
 
         val config = Config(
             home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid()
+            gateway = MockDataFactory.randomUuid(),
+            profile = MockDataFactory.randomUuid()
         )
 
         val response = Either.Right(config)
@@ -169,7 +164,6 @@ class HomeDashboardViewModelTest {
 
         verify(getConfig, times(1)).invoke(any(), any(), any())
         verifyZeroInteractions(openDashboard)
-        verifyZeroInteractions(loadImage)
         verifyZeroInteractions(getCurrentAccount)
     }
 
@@ -180,7 +174,8 @@ class HomeDashboardViewModelTest {
 
         val config = Config(
             home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid()
+            gateway = MockDataFactory.randomUuid(),
+            profile = MockDataFactory.randomUuid()
         )
 
         stubGetConfig(Either.Right(config))
@@ -210,7 +205,8 @@ class HomeDashboardViewModelTest {
 
         val config = Config(
             home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid()
+            gateway = MockDataFactory.randomUuid(),
+            profile = MockDataFactory.randomUuid()
         )
 
         val page = Block(
@@ -271,7 +267,8 @@ class HomeDashboardViewModelTest {
 
         val config = Config(
             home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid()
+            gateway = MockDataFactory.randomUuid(),
+            profile = MockDataFactory.randomUuid()
         )
 
         val emoji = Emoji(
@@ -399,7 +396,8 @@ class HomeDashboardViewModelTest {
 
         val config = Config(
             home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid()
+            gateway = MockDataFactory.randomUuid(),
+            profile = MockDataFactory.randomUuid()
         )
 
         val emoji = Emoji(
@@ -497,7 +495,8 @@ class HomeDashboardViewModelTest {
 
         val config = Config(
             home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid()
+            gateway = MockDataFactory.randomUuid(),
+            profile = MockDataFactory.randomUuid()
         )
 
         stubGetConfig(Either.Right(config))
@@ -542,70 +541,6 @@ class HomeDashboardViewModelTest {
     }
 
     @Test
-    fun `should fetch avatar image and update view state when account is ready`() {
-
-        val account = Account(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            avatar = Image(
-                id = MockDataFactory.randomString(),
-                sizes = listOf(Image.Size.SMALL)
-            ),
-            color = null
-        )
-
-        val blob = ByteArray(0)
-
-        val accountResponse = Either.Right(account)
-        val imageResponse = Either.Right(blob)
-
-        stubObserveEvents()
-        stubGetCurrentAccount(accountResponse)
-        stubOpenDashboard()
-
-        loadImage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, ByteArray>) -> Unit>(2)(imageResponse)
-            }
-        }
-
-        vm = buildViewModel()
-
-        vm.onViewCreated()
-
-        verify(getCurrentAccount, times(1)).invoke(any(), any(), any())
-        verify(loadImage, times(1)).invoke(any(), any(), any())
-
-        vm.image.test()
-            .assertHasValue()
-            .assertValue(blob)
-    }
-
-    @Test
-    fun `should not fetch the avatar image if given account does not have it`() {
-
-        val account = Account(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            avatar = null,
-            color = null
-        )
-
-        val accountResponse = Either.Right(account)
-
-        stubObserveEvents()
-        stubGetCurrentAccount(accountResponse)
-        stubOpenDashboard()
-
-        vm = buildViewModel()
-
-        vm.onViewCreated()
-
-        verify(getCurrentAccount, times(1)).invoke(any(), any(), any())
-        verify(loadImage, never()).invoke(any(), any(), any())
-    }
-
-    @Test
     fun `should start creating page when requested from UI`() {
 
         stubObserveEvents()
@@ -641,7 +576,11 @@ class HomeDashboardViewModelTest {
     @Test
     fun `should update state when a new block is added without updating dashboard children structure`() {
 
-        val config = Config(home = "HOME_ID", gateway = MockDataFactory.randomUuid())
+        val config = Config(
+            home = "HOME_ID",
+            gateway = MockDataFactory.randomString(),
+            profile = MockDataFactory.randomUuid()
+        )
 
         val page = Block(
             id = "FIRST_PAGE_ID",

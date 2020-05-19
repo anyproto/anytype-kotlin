@@ -30,6 +30,7 @@ interface BlockDataStore {
     suspend fun getConfig(): ConfigEntity
     suspend fun createPage(parentId: String): String
     suspend fun openPage(id: String): PayloadEntity
+    suspend fun openProfile(id: String): PayloadEntity
     suspend fun closePage(id: String)
     suspend fun closeDashboard(id: String)
     suspend fun setIconName(command: CommandEntity.SetIconName)

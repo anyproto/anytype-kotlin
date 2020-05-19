@@ -1,5 +1,19 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.32 (WIP)
+
+### New features 🚀
+
+
+### Design & UX 🔳
+
+
+### Fixes & tech 🚒
+
+* Load profile picture from local http-server instead of loading image blob (#431)
+
+### Middleware ⚙️
+
 ## Version 0.0.31
 
 ### New features 🚀

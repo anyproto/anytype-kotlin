@@ -176,7 +176,8 @@ class PageViewModelTest {
         val builder = UrlBuilder(
             config = Config(
                 home = root,
-                gateway = MockDataFactory.randomUuid()
+                gateway = MockDataFactory.randomUuid(),
+                profile = MockDataFactory.randomUuid()
             )
         )
 
@@ -364,7 +365,8 @@ class PageViewModelTest {
         val builder = UrlBuilder(
             config = Config(
                 home = root,
-                gateway = MockDataFactory.randomUuid()
+                gateway = MockDataFactory.randomUuid(),
+                profile = MockDataFactory.randomUuid()
             )
         )
 
@@ -526,7 +528,8 @@ class PageViewModelTest {
         val builder = UrlBuilder(
             config = Config(
                 home = root,
-                gateway = MockDataFactory.randomUuid()
+                gateway = MockDataFactory.randomUuid(),
+                profile = MockDataFactory.randomUuid()
             )
         )
 
@@ -638,7 +641,8 @@ class PageViewModelTest {
         val builder = UrlBuilder(
             config = Config(
                 home = root,
-                gateway = MockDataFactory.randomUuid()
+                gateway = MockDataFactory.randomUuid(),
+                profile = MockDataFactory.randomUuid()
             )
         )
 
@@ -789,7 +793,8 @@ class PageViewModelTest {
         val builder = UrlBuilder(
             config = Config(
                 home = root,
-                gateway = MockDataFactory.randomUuid()
+                gateway = MockDataFactory.randomUuid(),
+                profile = MockDataFactory.randomUuid()
             )
         )
 
@@ -1027,7 +1032,8 @@ class PageViewModelTest {
         val builder = UrlBuilder(
             config = Config(
                 home = root,
-                gateway = MockDataFactory.randomUuid()
+                gateway = MockDataFactory.randomUuid(),
+                profile = MockDataFactory.randomUuid()
             )
         )
 
@@ -1404,7 +1410,8 @@ class PageViewModelTest {
         val builder = UrlBuilder(
             config = Config(
                 home = root,
-                gateway = MockDataFactory.randomUuid()
+                gateway = MockDataFactory.randomUuid(),
+                profile = MockDataFactory.randomUuid()
             )
         )
 
@@ -1671,7 +1678,8 @@ class PageViewModelTest {
         val builder = UrlBuilder(
             config = Config(
                 home = root,
-                gateway = MockDataFactory.randomUuid()
+                gateway = MockDataFactory.randomUuid(),
+                profile = MockDataFactory.randomUuid()
             )
         )
 
@@ -2630,7 +2638,8 @@ class PageViewModelTest {
         val builder = UrlBuilder(
             config = Config(
                 home = MockDataFactory.randomUuid(),
-                gateway = MockDataFactory.randomString()
+                gateway = MockDataFactory.randomString(),
+                profile = MockDataFactory.randomUuid()
             )
         )
 
@@ -4005,7 +4014,8 @@ class PageViewModelTest {
         urlBuilder: UrlBuilder = UrlBuilder(
             config = Config(
                 home = MockDataFactory.randomUuid(),
-                gateway = MockDataFactory.randomUuid()
+                gateway = MockDataFactory.randomUuid(),
+                profile = MockDataFactory.randomUuid()
             )
         )
     ) {

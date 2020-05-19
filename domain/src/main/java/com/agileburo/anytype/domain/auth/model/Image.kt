@@ -3,6 +3,7 @@ package com.agileburo.anytype.domain.auth.model
 /**
  * @property id id of the image
  */
+@Deprecated("Legacy")
 data class Image(
     val id: String,
     val sizes: List<Size>

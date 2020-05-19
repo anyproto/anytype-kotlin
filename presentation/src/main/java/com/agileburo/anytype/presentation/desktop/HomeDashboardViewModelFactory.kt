@@ -8,12 +8,10 @@ import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
-import com.agileburo.anytype.domain.image.LoadImage
 import com.agileburo.anytype.domain.page.CreatePage
 
 class HomeDashboardViewModelFactory(
     private val getCurrentAccount: GetCurrentAccount,
-    private val loadImage: LoadImage,
     private val openDashboard: OpenDashboard,
     private val closeDashboard: CloseDashboard,
     private val createPage: CreatePage,
@@ -27,7 +25,6 @@ class HomeDashboardViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return HomeDashboardViewModel(
             getCurrentAccount = getCurrentAccount,
-            loadImage = loadImage,
             openDashboard = openDashboard,
             closeDashboard = closeDashboard,
             createPage = createPage,

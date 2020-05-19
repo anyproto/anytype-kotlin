@@ -14,7 +14,14 @@ class MapperExtensionKtTest {
     fun `should return file block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
         val indent = MockDataFactory.randomInt()
 
         val name = "name"
@@ -52,7 +59,14 @@ class MapperExtensionKtTest {
     fun `should return placeholder file block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
         val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.EMPTY
@@ -74,7 +88,15 @@ class MapperExtensionKtTest {
     fun `should return error file block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
+
         val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.ERROR
@@ -96,7 +118,15 @@ class MapperExtensionKtTest {
     fun `should return upload file block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
+
         val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.UPLOADING
@@ -117,7 +147,15 @@ class MapperExtensionKtTest {
     fun `should return picture block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
+
         val indent = MockDataFactory.randomInt()
 
         val name = "name"
@@ -156,7 +194,14 @@ class MapperExtensionKtTest {
     fun `should return placeholder picture block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
         val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.EMPTY
@@ -178,7 +223,15 @@ class MapperExtensionKtTest {
     fun `should return error picture block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
+
         val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.ERROR
@@ -204,7 +257,15 @@ class MapperExtensionKtTest {
     fun `should return upload picture block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
+
         val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.UPLOADING
@@ -225,7 +286,14 @@ class MapperExtensionKtTest {
     fun `should return video block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
         val indent = MockDataFactory.randomInt()
 
         val name = "name"
@@ -263,7 +331,15 @@ class MapperExtensionKtTest {
     fun `should return video block view empty params`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
+
         val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.DONE
@@ -298,7 +374,15 @@ class MapperExtensionKtTest {
     fun `should return placeholder video block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
+
         val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.EMPTY
@@ -327,7 +411,15 @@ class MapperExtensionKtTest {
     fun `should return upload video block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
+
         val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.UPLOADING
@@ -356,7 +448,15 @@ class MapperExtensionKtTest {
     fun `should return error video block view`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
+
         val indent = MockDataFactory.randomInt()
 
         val state = Block.Content.File.State.ERROR
@@ -385,7 +485,15 @@ class MapperExtensionKtTest {
     fun `should throw exceptions when state not set`() {
 
         val id = MockDataFactory.randomUuid()
-        val urlBuilder = UrlBuilder(config = Config(home = "home", gateway = "gateway"))
+
+        val config = Config(
+            home = "home",
+            gateway = "gateway",
+            profile = "profile"
+        )
+
+        val urlBuilder = UrlBuilder(config = config)
+
         val indent = MockDataFactory.randomInt()
 
         val type = Block.Content.File.Type.VIDEO
@@ -398,7 +506,6 @@ class MapperExtensionKtTest {
             state = null,
             type = type
         )
-
 
         block.toVideoView(id, urlBuilder, indent)
     }

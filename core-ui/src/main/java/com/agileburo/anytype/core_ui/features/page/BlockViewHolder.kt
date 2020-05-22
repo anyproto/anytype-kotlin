@@ -223,11 +223,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                         }
                     }
                 }
+                if (payload.focusChanged()) {
+                    focus(item.focused)
+                }
                 if (payload.readWriteModeChanged()) {
                     if (item.mode == BlockView.Mode.EDIT)
                         enableEditMode()
                     else
-                        enableReadOnlyMode()
+                        enableTitleReadOnlyMode()
                 }
             }
         }
@@ -238,22 +241,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 showKeyboard()
             } else
                 content.clearFocus()
-        }
-
-        override fun processChangePayload(
-            payloads: List<Payload>, item: BlockView
-        ) {
-            check(item is BlockView.Title)
-            payloads.forEach { payload ->
-                if (payload.focusChanged())
-                    focus(item.focused)
-                if (payload.readWriteModeChanged()) {
-                    if (item.mode == BlockView.Mode.EDIT)
-                        enableEditMode()
-                    else
-                        enableReadOnlyMode()
-                }
-            }
         }
 
         override fun enableBackspaceDetector(
@@ -881,8 +868,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        override fun processChangePayload(payloads: List<Payload>, item: BlockView) {
-            super.processChangePayload(payloads, item)
+        override fun processChangePayload(payloads: List<Payload>,
+                                          item: BlockView,
+                                          onTextChanged: (String, Editable) -> Unit,
+                                          onSelectionChanged: (String, IntRange) -> Unit
+        ) {
+            super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged)
             payloads.forEach { payload ->
                 if (payload.changes.contains(NUMBER_CHANGED))
                     number.text = "${(item as BlockView.Numbered).number}"
@@ -1018,9 +1009,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             mode = BlockView.Mode.EDIT
         }
 
-        override fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+        override fun processChangePayload(payloads: List<Payload>,
+                                          item: BlockView,
+                                          onTextChanged: (String, Editable) -> Unit,
+                                          onSelectionChanged: (String, IntRange) -> Unit) {
             check(item is BlockView.Toggle) { "Expected a toggle block, but was: $item" }
-            super.processChangePayload(payloads, item)
+            super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged)
             payloads.forEach { payload ->
                 if (payload.changes.contains(TOGGLE_EMPTY_STATE_CHANGED))
                     placeholder.isVisible = item.isEmpty

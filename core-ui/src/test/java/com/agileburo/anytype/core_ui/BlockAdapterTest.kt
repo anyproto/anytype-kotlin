@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.text.Editable
 import android.text.InputType
+import android.view.inputmethod.EditorInfo
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.marginLeft
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +23,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.T
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.FOCUS_TIMEOUT_MILLIS
+import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget.Companion.TEXT_INPUT_WIDGET_INPUT_TYPE
 import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ext.hexColorCode
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
@@ -201,7 +203,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(TEXT_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -251,7 +255,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(BACKGROUND_COLOR_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -302,7 +308,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(TEXT_COLOR_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -404,7 +412,9 @@ class BlockAdapterTest {
                     changes = listOf(FOCUS_CHANGED)
                 )
             ),
-            item = focused
+            item = focused,
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -502,7 +512,9 @@ class BlockAdapterTest {
                     changes = listOf(TEXT_CHANGED)
                 )
             ),
-            item = updated
+            item = updated,
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -1383,7 +1395,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(FOCUS_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -1434,7 +1448,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(FOCUS_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -1519,7 +1535,7 @@ class BlockAdapterTest {
 
         assertTrue { !triggered }
 
-        holder.content.append("\n")
+        holder.content.onEditorAction(EditorInfo.IME_ACTION_GO)
 
         assertTrue { triggered }
     }
@@ -1634,7 +1650,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Paragraph)
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -1678,7 +1694,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -1695,7 +1711,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -1781,7 +1799,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Title)
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -1824,7 +1842,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -1839,7 +1857,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -2092,7 +2112,7 @@ class BlockAdapterTest {
         check(h3Holder is BlockViewHolder.HeaderThree)
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = h1Holder.content.inputType
         )
 
@@ -2102,7 +2122,7 @@ class BlockAdapterTest {
         )
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = h2Holder.content.inputType
         )
 
@@ -2112,7 +2132,7 @@ class BlockAdapterTest {
         )
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = h3Holder.content.inputType
         )
 
@@ -2185,7 +2205,7 @@ class BlockAdapterTest {
         // H1
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = h1Holder.content.inputType
         )
 
@@ -2200,7 +2220,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -2216,7 +2238,7 @@ class BlockAdapterTest {
         // H2
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = h2Holder.content.inputType
         )
 
@@ -2231,7 +2253,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -2247,7 +2271,7 @@ class BlockAdapterTest {
         // H3
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = h3Holder.content.inputType
         )
 
@@ -2262,7 +2286,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -2345,7 +2371,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Highlight)
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -2387,7 +2413,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -2402,7 +2428,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -2488,7 +2516,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Bulleted)
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -2531,7 +2559,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -2546,7 +2574,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -2632,7 +2662,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Checkbox)
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -2675,7 +2705,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -2690,7 +2720,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -2778,7 +2810,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Numbered)
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -2822,7 +2854,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -2837,7 +2869,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(
@@ -2929,7 +2963,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Toggle)
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -2974,7 +3008,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
             actual = holder.content.inputType
         )
 
@@ -2989,7 +3023,9 @@ class BlockAdapterTest {
                 BlockViewDiffUtil.Payload(
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
-            )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
         )
 
         assertEquals(

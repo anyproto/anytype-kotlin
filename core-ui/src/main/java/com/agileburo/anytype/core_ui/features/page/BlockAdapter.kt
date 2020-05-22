@@ -387,19 +387,25 @@ class BlockAdapter(
                 is BlockViewHolder.Paragraph -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position]
+                        item = blocks[position],
+                        onTextChanged = onParagraphTextChanged,
+                        onSelectionChanged = onSelectionChanged
                     )
                 }
                 is BlockViewHolder.Bulleted -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position]
+                        item = blocks[position],
+                        onTextChanged = onParagraphTextChanged,
+                        onSelectionChanged = onSelectionChanged
                     )
                 }
                 is BlockViewHolder.Checkbox -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position]
+                        item = blocks[position],
+                        onTextChanged = onParagraphTextChanged,
+                        onSelectionChanged = onSelectionChanged
                     )
                 }
                 is BlockViewHolder.Title -> {
@@ -411,37 +417,49 @@ class BlockAdapter(
                 is BlockViewHolder.Numbered -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position]
+                        item = blocks[position],
+                        onTextChanged = onParagraphTextChanged,
+                        onSelectionChanged = onSelectionChanged
                     )
                 }
                 is BlockViewHolder.HeaderOne -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position]
+                        item = blocks[position],
+                        onTextChanged = onParagraphTextChanged,
+                        onSelectionChanged = onSelectionChanged
                     )
                 }
                 is BlockViewHolder.HeaderTwo -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position]
+                        item = blocks[position],
+                        onTextChanged = onParagraphTextChanged,
+                        onSelectionChanged = onSelectionChanged
                     )
                 }
                 is BlockViewHolder.HeaderThree -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position]
+                        item = blocks[position],
+                        onTextChanged = onParagraphTextChanged,
+                        onSelectionChanged = onSelectionChanged
                     )
                 }
                 is BlockViewHolder.Toggle -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position]
+                        item = blocks[position],
+                        onTextChanged = onParagraphTextChanged,
+                        onSelectionChanged = onSelectionChanged
                     )
                 }
                 is BlockViewHolder.Highlight -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position]
+                        item = blocks[position],
+                        onTextChanged = onParagraphTextChanged,
+                        onSelectionChanged = onSelectionChanged
                     )
                 }
                 is BlockViewHolder.File -> {
@@ -480,7 +498,9 @@ class BlockAdapter(
                 is BlockViewHolder.Code -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position]
+                        item = blocks[position],
+                        onTextChanged = onParagraphTextChanged,
+                        onSelectionChanged = onSelectionChanged
                     )
                 }
                 else -> throw IllegalStateException("Unexpected view holder: $holder")

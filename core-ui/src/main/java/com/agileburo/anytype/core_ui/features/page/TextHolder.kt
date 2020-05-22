@@ -1,7 +1,6 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.text.Editable
-import android.text.InputType.*
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
@@ -12,10 +11,10 @@ import com.agileburo.anytype.core_ui.menu.TextBlockContextMenu
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget.Companion.TEXT_INPUT_WIDGET_ACTION_GO
 import com.agileburo.anytype.core_utils.ext.hideKeyboard
 import com.agileburo.anytype.core_utils.ext.imm
 import com.agileburo.anytype.core_utils.text.BackspaceKeyDetector
-import com.agileburo.anytype.core_utils.text.DefaultEnterKeyDetector
 import timber.log.Timber
 
 /**
@@ -63,12 +62,17 @@ interface TextHolder {
         onEndLineEnterClicked: (Editable) -> Unit,
         onSplitLineEnterClicked: (Int) -> Unit
     ) {
-        content.filters = arrayOf(
-            DefaultEnterKeyDetector(
-                onSplitLineEnterClicked = onSplitLineEnterClicked,
-                onEndLineEnterClicked = { onEndLineEnterClicked(content.editableText) }
-            )
-        )
+        content.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == TEXT_INPUT_WIDGET_ACTION_GO) {
+                if (v.selectionEnd < v.text.length) {
+                    onSplitLineEnterClicked(v.selectionEnd)
+                } else {
+                    onEndLineEnterClicked(content.editableText)
+                }
+                return@setOnEditorActionListener true
+            }
+            false
+        }
     }
 
     fun setOnClickListener(onTextInputClicked: () -> Unit) {
@@ -165,7 +169,9 @@ interface TextHolder {
 
     fun processChangePayload(
         payloads: List<BlockViewDiffUtil.Payload>,
-        item: BlockView
+        item: BlockView,
+        onTextChanged: (String, Editable) -> Unit,
+        onSelectionChanged: (String, IntRange) -> Unit
     ) = payloads.forEach { payload ->
 
         Timber.d("Processing $payload for new view:\n$item")
@@ -204,10 +210,14 @@ interface TextHolder {
         }
 
         if (item is BlockView.Permission && payload.readWriteModeChanged()) {
-            if (item.mode == BlockView.Mode.EDIT)
+            if (item.mode == BlockView.Mode.EDIT) {
+                content.clearTextWatchers()
+                setupTextWatcher(onTextChanged, item)
+                content.selectionDetector = { onSelectionChanged(item.id, it) }
                 enableEditMode()
-            else
+            } else {
                 enableReadOnlyMode()
+            }
         }
 
         if (item is BlockView.Selectable && payload.selectionChanged()) {
@@ -224,14 +234,16 @@ interface TextHolder {
     }
 
     fun enableReadOnlyMode() {
+        content.enableReadMode()
         content.selectionDetector = null
-        content.setTextIsSelectable(false)
         content.clearTextWatchers()
-        content.setRawInputType(TYPE_NULL)
     }
 
     fun enableEditMode() {
-        content.setRawInputType(TYPE_TEXT_FLAG_NO_SUGGESTIONS or TYPE_TEXT_FLAG_MULTI_LINE)
-        content.setTextIsSelectable(true)
+        content.enableEditMode()
+    }
+
+    fun enableTitleReadOnlyMode() {
+        content.enableReadMode()
     }
 }

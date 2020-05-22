@@ -15,6 +15,7 @@ import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.TouchDelegate
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.DimenRes
@@ -153,8 +154,9 @@ fun String.getFileName(mime: String?): String =
 
 fun Int.addDot(): String = "$this."
 
-fun EditText.setReadOnly(value: Boolean, inputType: Int = InputType.TYPE_NULL) {
-    isFocusable = !value
-    isFocusableInTouchMode = !value
+fun EditText.multilineIme(action: Int, inputType: Int) {
+    imeOptions = action
     this.inputType = inputType
+    setHorizontallyScrolling(false)
+    maxLines = Integer.MAX_VALUE
 }

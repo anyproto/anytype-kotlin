@@ -67,11 +67,7 @@ class BlockAdapter(
     private val onTextInputClicked: (String) -> Unit,
     private val onClickListener: (ListenerType) -> Unit,
     private val onAddUrlClick: (String, String) -> Unit,
-    private val onAddLocalVideoClick: (String) -> Unit,
-    private val onAddLocalPictureClick: (String) -> Unit,
-    private val onAddLocalFileClick: (String) -> Unit,
     private val onPageIconClicked: () -> Unit,
-    private val onFileClicked: (String) -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
     private val onMediaBlockMenuClick: (String) -> Unit,
@@ -245,7 +241,7 @@ class BlockAdapter(
             HOLDER_VIDEO_PLACEHOLDER -> {
                 BlockViewHolder.Video.Placeholder(
                     view = inflater.inflate(
-                        R.layout.item_block_video_empty,
+                        R.layout.item_block_video_placeholder,
                         parent,
                         false
                     )
@@ -468,6 +464,72 @@ class BlockAdapter(
                         item = blocks[position]
                     )
                 }
+                is BlockViewHolder.File.Placeholder -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.File.Error -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.File.Upload -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.Picture -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.Picture.Placeholder -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.Picture.Error -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.Picture.Upload -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.Video -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.Video.Placeholder -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.Video.Error -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
+                is BlockViewHolder.Video.Upload -> {
+                    holder.processChangePayload(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position]
+                    )
+                }
                 is BlockViewHolder.Page -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
@@ -477,22 +539,19 @@ class BlockAdapter(
                 is BlockViewHolder.Bookmark -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        clicked = onClickListener
+                        item = blocks[position]
                     )
                 }
                 is BlockViewHolder.Bookmark.Placeholder -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        clicked = onClickListener
+                        item = blocks[position]
                     )
                 }
                 is BlockViewHolder.Bookmark.Error -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        clicked = onClickListener
+                        item = blocks[position]
                     )
                 }
                 is BlockViewHolder.Code -> {
@@ -612,29 +671,25 @@ class BlockAdapter(
             is BlockViewHolder.File -> {
                 holder.bind(
                     item = blocks[position] as BlockView.File.View,
-                    onFileClicked = onFileClicked,
-                    menuClick = onMediaBlockMenuClick,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.File.Error -> {
                 holder.bind(
                     item = blocks[position] as BlockView.File.Error,
-                    menuClick = onMediaBlockMenuClick,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.File.Upload -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.File.Upload
+                    item = blocks[position] as BlockView.File.Upload,
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.File.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.File.Placeholder,
-                    onAddLocalFileClick = onAddLocalFileClick,
-                    menuClick = onMediaBlockMenuClick,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Video -> {
@@ -646,22 +701,20 @@ class BlockAdapter(
             }
             is BlockViewHolder.Video.Upload -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Video.Upload
+                    item = blocks[position] as BlockView.Video.Upload,
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Video.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Video.Placeholder,
-                    onAddLocalVideoClick = onAddLocalVideoClick,
-                    menuClick = onMediaBlockMenuClick,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Video.Error -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Video.Error,
-                    menuClick = onMediaBlockMenuClick,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Page -> {
@@ -692,28 +745,25 @@ class BlockAdapter(
             is BlockViewHolder.Picture -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Picture.View,
-                    menuClick = onMediaBlockMenuClick,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Picture.Placeholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Picture.Placeholder,
-                    onAddLocalPictureClick = onAddLocalPictureClick,
-                    menuClick = onMediaBlockMenuClick,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Picture.Error -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Picture.Error,
-                    menuClick = onMediaBlockMenuClick,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Picture.Upload -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Picture.Upload
+                    item = blocks[position] as BlockView.Picture.Upload,
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Highlight -> {

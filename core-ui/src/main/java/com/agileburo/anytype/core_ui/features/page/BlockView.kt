@@ -366,7 +366,7 @@ sealed class BlockView : ViewType, Parcelable {
      */
     sealed class File(
         override val id: String
-    ) : BlockView(), Indentable, Parcelable {
+    ) : BlockView(), Indentable, Parcelable, Selectable, Permission {
 
         /**
          * UI-model for block containing file, with state DONE.
@@ -376,13 +376,14 @@ sealed class BlockView : ViewType, Parcelable {
         data class View(
             override val id: String,
             override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             val size: Long?,
             val name: String?,
             val mime: String?,
             val hash: String?,
             val url: String
-        ) : BlockView.File(id), Selectable {
+        ) : BlockView.File(id) {
             override fun getViewType() = HOLDER_FILE
         }
 
@@ -393,7 +394,9 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Upload(
             override val id: String,
-            override val indent: Int
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
         ) : BlockView.File(id) {
             override fun getViewType() = HOLDER_FILE_UPLOAD
         }
@@ -405,7 +408,9 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Placeholder(
             override val id: String,
-            override val indent: Int
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
         ) : BlockView.File(id) {
             override fun getViewType() = HOLDER_FILE_PLACEHOLDER
         }
@@ -417,7 +422,9 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Error(
             override val id: String,
-            override val indent: Int
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
         ) : BlockView.File(id) {
             override fun getViewType() = HOLDER_FILE_ERROR
         }
@@ -429,7 +436,7 @@ sealed class BlockView : ViewType, Parcelable {
      */
     sealed class Video(
         override val id: String
-    ) : BlockView(), Indentable, Parcelable {
+    ) : BlockView(), Indentable, Parcelable, Selectable, Permission {
 
         /**
          * UI-model for block containing video, with state DONE.
@@ -438,6 +445,8 @@ sealed class BlockView : ViewType, Parcelable {
         data class View(
             override val id: String,
             override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
             val size: Long?,
             val name: String?,
             val mime: String?,
@@ -454,7 +463,9 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Upload(
             override val id: String,
-            override val indent: Int
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
         ) : BlockView.Video(id) {
             override fun getViewType() = HOLDER_VIDEO_UPLOAD
         }
@@ -466,7 +477,9 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Placeholder(
             override val id: String,
-            override val indent: Int
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
         ) : BlockView.Video(id) {
             override fun getViewType() = HOLDER_VIDEO_PLACEHOLDER
         }
@@ -478,7 +491,9 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Error(
             override val id: String,
-            override val indent: Int
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
         ) : BlockView.Video(id) {
             override fun getViewType() = HOLDER_VIDEO_ERROR
         }
@@ -582,7 +597,7 @@ sealed class BlockView : ViewType, Parcelable {
      */
     sealed class Picture(
         override val id: String
-    ) : BlockView(), Indentable, Parcelable {
+    ) : BlockView(), Indentable, Parcelable, Selectable, Permission {
 
         /**
          * UI-model for block containing image, with state DONE.
@@ -591,6 +606,8 @@ sealed class BlockView : ViewType, Parcelable {
         data class View(
             override val id: String,
             override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
             val size: Long?,
             val name: String?,
             val mime: String?,
@@ -606,7 +623,9 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Placeholder(
             override val id: String,
-            override val indent: Int
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
         ) : BlockView.Picture(id) {
             override fun getViewType() = HOLDER_PICTURE_PLACEHOLDER
         }
@@ -617,7 +636,9 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Error(
             override val id: String,
-            override val indent: Int
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
         ) : BlockView.Picture(id) {
             override fun getViewType() = HOLDER_PICTURE_ERROR
         }
@@ -628,7 +649,9 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Upload(
             override val id: String,
-            override val indent: Int
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
         ) : BlockView.Picture(id) {
             override fun getViewType() = HOLDER_PICTURE_UPLOAD
         }

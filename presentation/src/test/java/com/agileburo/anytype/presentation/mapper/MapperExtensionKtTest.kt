@@ -30,6 +30,7 @@ class MapperExtensionKtTest {
         val hash = "647tyhfgehf7ru"
         val state = Block.Content.File.State.DONE
         val type = Block.Content.File.Type.FILE
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             name = name,
@@ -47,10 +48,11 @@ class MapperExtensionKtTest {
             size = size,
             mime = mime,
             hash = hash,
+            mode = BlockView.Mode.EDIT,
             url = urlBuilder.video(hash),
             indent = indent
         )
-        val actual = block.toFileView(id, urlBuilder, indent)
+        val actual = block.toFileView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -71,6 +73,7 @@ class MapperExtensionKtTest {
 
         val state = Block.Content.File.State.EMPTY
         val type = Block.Content.File.Type.FILE
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             state = state,
@@ -79,7 +82,7 @@ class MapperExtensionKtTest {
         )
 
         val expected = BlockView.File.Placeholder(id = id, indent = indent)
-        val actual = block.toFileView(id, urlBuilder, indent)
+        val actual = block.toFileView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -101,6 +104,7 @@ class MapperExtensionKtTest {
 
         val state = Block.Content.File.State.ERROR
         val type = Block.Content.File.Type.FILE
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             state = state,
@@ -109,7 +113,7 @@ class MapperExtensionKtTest {
         )
 
         val expected = BlockView.File.Error(id = id, indent = indent)
-        val actual = block.toFileView(id, urlBuilder, indent)
+        val actual = block.toFileView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -131,6 +135,7 @@ class MapperExtensionKtTest {
 
         val state = Block.Content.File.State.UPLOADING
         val type = Block.Content.File.Type.FILE
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             state = state,
@@ -138,7 +143,7 @@ class MapperExtensionKtTest {
         )
 
         val expected = BlockView.File.Upload(id = id, indent = indent)
-        val actual = block.toFileView(id, urlBuilder, indent)
+        val actual = block.toFileView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -164,6 +169,7 @@ class MapperExtensionKtTest {
         val hash = "647tyhfgehf7ru"
         val state = Block.Content.File.State.DONE
         val type = Block.Content.File.Type.IMAGE
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             name = name,
@@ -185,7 +191,7 @@ class MapperExtensionKtTest {
             indent = indent
         )
 
-        val actual = block.toPictureView(id, urlBuilder, indent)
+        val actual = block.toPictureView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -206,6 +212,7 @@ class MapperExtensionKtTest {
 
         val state = Block.Content.File.State.EMPTY
         val type = Block.Content.File.Type.IMAGE
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             state = state,
@@ -214,7 +221,7 @@ class MapperExtensionKtTest {
         )
 
         val expected = BlockView.Picture.Placeholder(id = id, indent = indent)
-        val actual = block.toPictureView(id, urlBuilder, indent)
+        val actual = block.toPictureView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -236,6 +243,7 @@ class MapperExtensionKtTest {
 
         val state = Block.Content.File.State.ERROR
         val type = Block.Content.File.Type.IMAGE
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             state = state,
@@ -248,7 +256,7 @@ class MapperExtensionKtTest {
             indent = indent
         )
 
-        val actual = block.toPictureView(id, urlBuilder, indent)
+        val actual = block.toPictureView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -270,6 +278,7 @@ class MapperExtensionKtTest {
 
         val state = Block.Content.File.State.UPLOADING
         val type = Block.Content.File.Type.IMAGE
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             state = state,
@@ -277,7 +286,7 @@ class MapperExtensionKtTest {
         )
 
         val expected = BlockView.Picture.Upload(id = id, indent = indent)
-        val actual = block.toPictureView(id, urlBuilder, indent)
+        val actual = block.toPictureView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -302,6 +311,7 @@ class MapperExtensionKtTest {
         val hash = "647tyhfgehf7ru"
         val state = Block.Content.File.State.DONE
         val type = Block.Content.File.Type.VIDEO
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             name = name,
@@ -322,7 +332,7 @@ class MapperExtensionKtTest {
             indent = indent
         )
 
-        val actual = block.toVideoView(id, urlBuilder, indent)
+        val actual = block.toVideoView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -344,6 +354,7 @@ class MapperExtensionKtTest {
 
         val state = Block.Content.File.State.DONE
         val type = Block.Content.File.Type.VIDEO
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             name = null,
@@ -365,7 +376,7 @@ class MapperExtensionKtTest {
             indent = indent
         )
 
-        val actual = block.toVideoView(id, urlBuilder, indent)
+        val actual = block.toVideoView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -387,6 +398,7 @@ class MapperExtensionKtTest {
 
         val state = Block.Content.File.State.EMPTY
         val type = Block.Content.File.Type.VIDEO
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             name = null,
@@ -402,7 +414,7 @@ class MapperExtensionKtTest {
             indent = indent
         )
 
-        val actual = block.toVideoView(id, urlBuilder, indent)
+        val actual = block.toVideoView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -424,6 +436,7 @@ class MapperExtensionKtTest {
 
         val state = Block.Content.File.State.UPLOADING
         val type = Block.Content.File.Type.VIDEO
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             name = null,
@@ -439,7 +452,7 @@ class MapperExtensionKtTest {
             indent = indent
         )
 
-        val actual = block.toVideoView(id, urlBuilder, indent)
+        val actual = block.toVideoView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -461,6 +474,7 @@ class MapperExtensionKtTest {
 
         val state = Block.Content.File.State.ERROR
         val type = Block.Content.File.Type.VIDEO
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             name = null,
@@ -476,7 +490,7 @@ class MapperExtensionKtTest {
             indent = indent
         )
 
-        val actual = block.toVideoView(id, urlBuilder, indent)
+        val actual = block.toVideoView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
     }
@@ -497,6 +511,7 @@ class MapperExtensionKtTest {
         val indent = MockDataFactory.randomInt()
 
         val type = Block.Content.File.Type.VIDEO
+        val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
             name = null,
@@ -507,6 +522,6 @@ class MapperExtensionKtTest {
             type = type
         )
 
-        block.toVideoView(id, urlBuilder, indent)
+        block.toVideoView(id, urlBuilder, indent, mode)
     }
 }

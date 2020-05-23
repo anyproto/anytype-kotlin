@@ -26,22 +26,13 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.FOC
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget.Companion.TEXT_INPUT_WIDGET_INPUT_TYPE
 import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ext.hexColorCode
-import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
-import kotlinx.android.synthetic.main.item_block_file_error.view.*
 import kotlinx.android.synthetic.main.item_block_file_placeholder.view.*
 import kotlinx.android.synthetic.main.item_block_file_uploading.view.*
 import kotlinx.android.synthetic.main.item_block_page.view.*
-import kotlinx.android.synthetic.main.item_block_picture.view.*
-import kotlinx.android.synthetic.main.item_block_picture_error.view.*
-import kotlinx.android.synthetic.main.item_block_picture_placeholder.view.*
-import kotlinx.android.synthetic.main.item_block_picture_uploading.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import kotlinx.android.synthetic.main.item_block_video.view.*
-import kotlinx.android.synthetic.main.item_block_video_empty.view.*
-import kotlinx.android.synthetic.main.item_block_video_error.view.*
-import kotlinx.android.synthetic.main.item_block_video_uploading.view.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -947,9 +938,10 @@ class BlockAdapterTest {
 
         check(holder is BlockViewHolder.File.Placeholder)
 
-        val actual = holder.itemView.filePlaceholderRoot.paddingLeft
+        val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -976,9 +968,10 @@ class BlockAdapterTest {
 
         check(holder is BlockViewHolder.File.Error)
 
-        val actual = holder.itemView.fileErrorPlaceholderRoot.paddingLeft
+        val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1005,9 +998,10 @@ class BlockAdapterTest {
 
         check(holder is BlockViewHolder.File.Upload)
 
-        val actual = holder.itemView.fileUploadingPlaceholderRoot.paddingLeft
+        val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1068,9 +1062,10 @@ class BlockAdapterTest {
 
         check(holder is BlockViewHolder.Video.Placeholder)
 
-        val actual = holder.itemView.videoPlaceholderRoot.paddingLeft
+        val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1097,9 +1092,10 @@ class BlockAdapterTest {
 
         check(holder is BlockViewHolder.Video.Upload)
 
-        val actual = holder.itemView.videoUploadingPlaceholderRoot.paddingLeft
+        val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1126,9 +1122,10 @@ class BlockAdapterTest {
 
         check(holder is BlockViewHolder.Video.Error)
 
-        val actual = holder.itemView.videoErrorRoot.paddingLeft
+        val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1258,9 +1255,10 @@ class BlockAdapterTest {
 
         check(holder is BlockViewHolder.Picture)
 
-        val actual = holder.itemView.pictureRootLayout.paddingLeft
+        val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1288,9 +1286,10 @@ class BlockAdapterTest {
 
         check(holder is BlockViewHolder.Picture.Placeholder)
 
-        val actual = holder.itemView.picturePlaceholderRoot.paddingLeft
+        val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1317,9 +1316,10 @@ class BlockAdapterTest {
 
         check(holder is BlockViewHolder.Picture.Error)
 
-        val actual = holder.itemView.pictureErrorRoot.paddingLeft
+        val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1346,9 +1346,10 @@ class BlockAdapterTest {
 
         check(holder is BlockViewHolder.Picture.Upload)
 
-        val actual = holder.itemView.pictureUploadRoot.paddingLeft
+        val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -3238,8 +3239,7 @@ class BlockAdapterTest {
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
         onTitleTextChanged: (Editable) -> Unit = {},
         onEndLineEnterTitleClicked: (Editable) -> Unit = {},
-        onTextChanged: (String, Editable) -> Unit = { _, _ -> },
-        onBookmarkMenuClicked: (String) -> Unit = {}
+        onTextChanged: (String, Editable) -> Unit = { _, _ -> }
     ): BlockAdapter {
         return BlockAdapter(
             blocks = views,
@@ -3254,11 +3254,7 @@ class BlockAdapterTest {
             onFooterClicked = {},
             onPageClicked = {},
             onTextInputClicked = {},
-            onFileClicked = {},
             onPageIconClicked = {},
-            onAddLocalFileClick = {},
-            onAddLocalPictureClick = {},
-            onAddLocalVideoClick = {},
             onAddUrlClick = { _, _ -> },
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},

@@ -7,19 +7,17 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import android.text.Annotation
 import android.text.Editable
-import android.text.InputType
 import android.text.Spanned
 import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.TouchDelegate
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import timber.log.Timber
@@ -160,3 +158,11 @@ fun EditText.multilineIme(action: Int, inputType: Int) {
     setHorizontallyScrolling(false)
     maxLines = Integer.MAX_VALUE
 }
+
+fun View.indentize(indent: Int, defIndent: Int, margin: Int) =
+    updateLayoutParams<RecyclerView.LayoutParams> {
+        apply {
+            val extra = indent * defIndent
+            leftMargin = margin + extra
+        }
+    }

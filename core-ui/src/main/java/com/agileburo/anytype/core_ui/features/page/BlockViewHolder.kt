@@ -53,9 +53,6 @@ import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import kotlinx.android.synthetic.main.item_block_contact.view.*
 import kotlinx.android.synthetic.main.item_block_file.view.*
-import kotlinx.android.synthetic.main.item_block_file_error.view.*
-import kotlinx.android.synthetic.main.item_block_file_placeholder.view.*
-import kotlinx.android.synthetic.main.item_block_file_uploading.view.*
 import kotlinx.android.synthetic.main.item_block_header_one.view.*
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
 import kotlinx.android.synthetic.main.item_block_header_two.view.*
@@ -63,17 +60,11 @@ import kotlinx.android.synthetic.main.item_block_highlight.view.*
 import kotlinx.android.synthetic.main.item_block_numbered.view.*
 import kotlinx.android.synthetic.main.item_block_page.view.*
 import kotlinx.android.synthetic.main.item_block_picture.view.*
-import kotlinx.android.synthetic.main.item_block_picture_error.view.*
-import kotlinx.android.synthetic.main.item_block_picture_placeholder.view.*
-import kotlinx.android.synthetic.main.item_block_picture_uploading.view.*
 import kotlinx.android.synthetic.main.item_block_task.view.*
 import kotlinx.android.synthetic.main.item_block_text.view.*
 import kotlinx.android.synthetic.main.item_block_title.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import kotlinx.android.synthetic.main.item_block_video.view.*
-import kotlinx.android.synthetic.main.item_block_video_empty.view.*
-import kotlinx.android.synthetic.main.item_block_video_error.view.*
-import kotlinx.android.synthetic.main.item_block_video_uploading.view.*
 import android.text.format.Formatter as FileSizeFormatter
 
 /**
@@ -1050,26 +1041,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val icon = itemView.fileIcon
         private val size = itemView.fileSize
         private val name = itemView.filename
-        private val guideline = itemView.fileGuideline
-        private val btnMenu = itemView.btnFileMenu
 
         fun bind(
             item: BlockView.File.View,
-            onFileClicked: (String) -> Unit,
-            menuClick: (String) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
-
             indentize(item)
-
-            itemView.isSelected = item.isSelected
-
             name.text = item.name
-
             item.size?.let {
                 size.text = FileSizeFormatter.formatFileSize(itemView.context, it)
             }
-
             when (item.mime?.let { MimeTypes.category(it) }) {
                 MimeTypes.Category.PDF -> icon.setImageResource(R.drawable.ic_mime_pdf)
                 MimeTypes.Category.IMAGE -> icon.setImageResource(R.drawable.ic_mime_image)
@@ -1081,18 +1062,22 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 MimeTypes.Category.PRESENTATION -> icon.setImageResource(R.drawable.ic_mime_presentation)
                 MimeTypes.Category.OTHER -> icon.setImageResource(R.drawable.ic_mime_other)
             }
-            btnMenu.setOnClickListener { menuClick(item.id) }
-            itemView.setOnClickListener { onFileClicked(item.id) }
-            itemView.setOnLongClickListener(
-                EditorLongClickListener(
-                    t = item.id,
-                    click = onLongClickListener)
-            )
+            with(itemView) {
+                isSelected = item.isSelected
+                setOnClickListener { clicked(ListenerType.File.View(item.id)) }
+                setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = { clicked(ListenerType.LongClick(it)) })
+                )
+            }
         }
 
         override fun indentize(item: BlockView.Indentable) {
-            guideline.setGuidelineBegin(
-                item.indent * itemView.context.dimen(R.dimen.indent).toInt()
+            itemView.indentize(
+                indent = item.indent,
+                defIndent = dimen(R.dimen.indent),
+                margin = dimen(R.dimen.bookmark_default_margin_start)
             )
         }
 
@@ -1107,68 +1092,107 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            private val root = itemView.filePlaceholderRoot
-            private val btnMenu = itemView.btnFilePlaceholderMenu
-
             fun bind(
                 item: BlockView.File.Placeholder,
-                onAddLocalFileClick: (String) -> Unit,
-                menuClick: (String) -> Unit,
-                onLongClickListener: (String) -> Unit
+                clicked: (ListenerType) -> Unit
             ) {
-                root.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener)
-                )
                 indentize(item)
-                btnMenu.setOnClickListener { menuClick(item.id) }
-                itemView.setOnClickListener { onAddLocalFileClick(item.id) }
+                with(itemView) {
+                    isSelected = item.isSelected
+                    setOnClickListener { clicked(ListenerType.File.Placeholder(item.id)) }
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = { clicked(ListenerType.LongClick(it)) })
+                    )
+                }
             }
 
             override fun indentize(item: BlockView.Indentable) {
-                root.updatePadding(
-                    left = item.indent * dimen(R.dimen.indent)
+                itemView.indentize(
+                    indent = item.indent,
+                    defIndent = dimen(R.dimen.indent),
+                    margin = dimen(R.dimen.bookmark_default_margin_start)
                 )
+            }
+
+            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+                check(item is BlockView.File.Placeholder) { "Expected a file placeholder block, but was: $item" }
+                payloads.forEach { payload ->
+                    if (payload.changes.contains(SELECTION_CHANGED)) {
+                        itemView.isSelected = item.isSelected
+                    }
+                }
             }
         }
 
         class Error(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            private val root = itemView.fileErrorPlaceholderRoot
-            private val btnMenu = itemView.btnFileErrorMenu
-
             fun bind(item: BlockView.File.Error,
-                     menuClick: (String) -> Unit,
-                     onLongClickListener: (String) -> Unit) {
-                root.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener)
-                )
-                btnMenu.setOnClickListener { menuClick(item.id) }
+                     clicked: (ListenerType) -> Unit
+            ) {
                 indentize(item)
+                with(itemView) {
+                    isSelected = item.isSelected
+                    setOnClickListener { clicked(ListenerType.File.Error(item.id)) }
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = { clicked(ListenerType.LongClick(it)) })
+                    )
+                }
             }
 
             override fun indentize(item: BlockView.Indentable) {
-                root.updatePadding(
-                    left = item.indent * dimen(R.dimen.indent)
+                itemView.indentize(
+                    indent = item.indent,
+                    defIndent = dimen(R.dimen.indent),
+                    margin = dimen(R.dimen.bookmark_default_margin_start)
                 )
+            }
+
+            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+                check(item is BlockView.File.Error) { "Expected a file error block, but was: $item" }
+                payloads.forEach { payload ->
+                    if (payload.changes.contains(SELECTION_CHANGED)) {
+                        itemView.isSelected = item.isSelected
+                    }
+                }
             }
         }
 
         class Upload(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            private val root = itemView.fileUploadingPlaceholderRoot
-
-            fun bind(item: BlockView.File.Upload) {
+            fun bind(item: BlockView.File.Upload,
+                     clicked: (ListenerType) -> Unit
+            ) {
                 indentize(item)
+                with(itemView) {
+                    isSelected = item.isSelected
+                    setOnClickListener { clicked(ListenerType.File.Upload(item.id)) }
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = { clicked(ListenerType.LongClick(it)) })
+                    )
+                }
             }
 
             override fun indentize(item: BlockView.Indentable) {
-                root.updatePadding(
-                    left = item.indent * dimen(R.dimen.indent)
+                itemView.indentize(
+                    indent = item.indent,
+                    defIndent = dimen(R.dimen.indent),
+                    margin = dimen(R.dimen.bookmark_default_margin_start)
                 )
+            }
+
+            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+                check(item is BlockView.File.Upload) { "Expected a file upload block, but was: $item" }
+                payloads.forEach { payload ->
+                    if (payload.changes.contains(SELECTION_CHANGED)) {
+                        itemView.isSelected = item.isSelected
+                    }
+                }
             }
         }
     }
@@ -1207,70 +1231,123 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             )
         }
 
-        class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
+        fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+            check(item is BlockView.Video.View) { "Expected a video block, but was: $item" }
+            payloads.forEach { payload ->
+                if (payload.changes.contains(SELECTION_CHANGED)) {
+                    //todo will fix with https://github.com/anytypeio/android-anytype/issues/427
+                    //itemView.isSelected = item.isSelected
+                }
+            }
+        }
 
-            private val root = itemView.videoPlaceholderRoot
-            private val btnMenu = itemView.btnVideoPlaceholderMenu
+        class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
 
             fun bind(
                 item: BlockView.Video.Placeholder,
-                onAddLocalVideoClick: (String) -> Unit,
-                menuClick: (String) -> Unit,
-                onLongClickListener: (String) -> Unit
+                clicked: (ListenerType) -> Unit
             ) {
-                root.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener)
-                )
                 indentize(item)
-                btnMenu.setOnClickListener { menuClick(item.id) }
-                itemView.setOnClickListener { onAddLocalVideoClick(item.id) }
+                with(itemView) {
+                    isSelected = item.isSelected
+                    setOnClickListener { clicked(ListenerType.Video.Placeholder(item.id)) }
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = { clicked(ListenerType.LongClick(it)) }
+                        )
+                    )
+                }
             }
 
             override fun indentize(item: BlockView.Indentable) {
-                root.updatePadding(
-                    left = item.indent * dimen(R.dimen.indent)
+                itemView.indentize(
+                    indent = item.indent,
+                    defIndent = dimen(R.dimen.indent),
+                    margin = dimen(R.dimen.bookmark_default_margin_start)
                 )
+            }
+
+            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+                check(item is BlockView.Video.Placeholder) { "Expected a video placeholder block, but was: $item" }
+                payloads.forEach { payload ->
+                    if (payload.changes.contains(SELECTION_CHANGED)) {
+                        itemView.isSelected = item.isSelected
+                    }
+                }
             }
         }
 
         class Error(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            private val root = itemView.videoErrorRoot
-            private val btnMenu = itemView.btnVideoErrorMenu
-
             fun bind(item: BlockView.Video.Error,
-                     menuClick: (String) -> Unit,
-                     onLongClickListener: (String) -> Unit) {
-                root.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener)
-                )
-                btnMenu.setOnClickListener { menuClick(item.id) }
+                     clicked: (ListenerType) -> Unit
+            ) {
                 indentize(item)
+                with(itemView) {
+                    isSelected = item.isSelected
+                    setOnClickListener { clicked(ListenerType.Video.Error(item.id)) }
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = { clicked(ListenerType.LongClick(it)) }
+                        )
+                    )
+                }
             }
 
             override fun indentize(item: BlockView.Indentable) {
-                root.updatePadding(
-                    left = item.indent * dimen(R.dimen.indent)
+                itemView.indentize(
+                    indent = item.indent,
+                    defIndent = dimen(R.dimen.indent),
+                    margin = dimen(R.dimen.bookmark_default_margin_start)
                 )
+            }
+
+            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+                check(item is BlockView.Video.Error) { "Expected a video error block, but was: $item" }
+                payloads.forEach { payload ->
+                    if (payload.changes.contains(SELECTION_CHANGED)) {
+                        itemView.isSelected = item.isSelected
+                    }
+                }
             }
         }
 
         class Upload(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            private val root = itemView.videoUploadingPlaceholderRoot
-
-            fun bind(item: BlockView.Video.Upload) {
+            fun bind(
+                item: BlockView.Video.Upload,
+                clicked: (ListenerType) -> Unit
+            ) {
                 indentize(item)
+                with(itemView) {
+                    isSelected = item.isSelected
+                    setOnClickListener { clicked(ListenerType.Video.Upload(item.id)) }
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = { clicked(ListenerType.LongClick(it)) }
+                        )
+                    )
+                }
             }
 
             override fun indentize(item: BlockView.Indentable) {
-                root.updatePadding(
-                    left = item.indent * dimen(R.dimen.indent)
+                itemView.indentize(
+                    indent = item.indent,
+                    defIndent = dimen(R.dimen.indent),
+                    margin = dimen(R.dimen.bookmark_default_margin_start)
                 )
+            }
+
+            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+                check(item is BlockView.Video.Upload) { "Expected a video upload block, but was: $item" }
+                payloads.forEach { payload ->
+                    if (payload.changes.contains(SELECTION_CHANGED)) {
+                        itemView.isSelected = item.isSelected
+                    }
+                }
             }
         }
     }
@@ -1387,12 +1464,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             } else {
                 logo.gone()
             }
-            card.setOnClickListener { clicked(ListenerType.Bookmark.View(item)) }
-            enableReadOrWriteMode(
-                mode = item.mode,
-                target = item.id,
-                clicked = clicked
-            )
+            with(card) {
+                setOnClickListener { clicked(ListenerType.Bookmark.View(item)) }
+                setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = { clicked(ListenerType.LongClick(it)) }
+                    )
+                )
+            }
         }
 
         override fun indentize(item: BlockView.Indentable) {
@@ -1405,18 +1485,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun processChangePayload(
             payloads: List<Payload>,
-            item: BlockView,
-            clicked: (ListenerType) -> Unit
+            item: BlockView
         ) {
             check(item is BlockView.Bookmark.View) { "Expected a bookmark block, but was: $item" }
             payloads.forEach { payload ->
-                if (payload.readWriteModeChanged()) {
-                    enableReadOrWriteMode(
-                        mode = item.mode,
-                        clicked = clicked,
-                        target = item.id
-                    )
-                }
                 if (payload.selectionChanged()) {
                     select(item.isSelected)
                 }
@@ -1425,31 +1497,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private fun select(isSelected: Boolean) {
             itemView.isSelected = isSelected
-        }
-
-        private fun enableReadOrWriteMode(
-            mode: BlockView.Mode,
-            target: String,
-            clicked: (ListenerType) -> Unit
-        ) = when (mode) {
-            BlockView.Mode.READ -> enableReadOnlyMode()
-            BlockView.Mode.EDIT -> enableEditMode(target, clicked)
-        }
-
-        private fun enableReadOnlyMode() {
-            card.setOnLongClickListener(null)
-        }
-
-        private fun enableEditMode(
-            target: String,
-            clicked: (ListenerType) -> Unit
-        ) {
-            card.setOnLongClickListener(
-                EditorLongClickListener(
-                    t = target,
-                    click = { clicked(ListenerType.Bookmark.ViewLong(it)) }
-                )
-            )
         }
 
         class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
@@ -1462,42 +1509,33 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             ) {
                 indentize(item)
                 select(item.isSelected)
-                root.setOnClickListener {
-                    clicked(ListenerType.Bookmark.Placeholder(item.id))
+                with (root) {
+                    setOnClickListener {
+                        clicked(ListenerType.Bookmark.Placeholder(item.id))
+                    }
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = { clicked(ListenerType.LongClick(it)) }
+                        )
+                    )
                 }
-                enableReadOrWriteMode(
-                    mode = item.mode,
-                    target = item.id,
-                    clicked = clicked
-                )
             }
 
             override fun indentize(item: BlockView.Indentable) {
-                root.updateLayoutParams {
-                    (this as RecyclerView.LayoutParams).apply {
-                        val default = dimen(R.dimen.bookmark_default_margin_start)
-                        val extra = item.indent * dimen(R.dimen.indent)
-                        leftMargin = default + extra
-                    }
-                }
+                root.indentize(
+                    indent = item.indent,
+                    defIndent = dimen(R.dimen.indent),
+                    margin = dimen(R.dimen.bookmark_default_margin_start)
+                )
             }
 
             fun processChangePayload(
                 payloads: List<Payload>,
-                item: BlockView,
-                clicked: (ListenerType) -> Unit
+                item: BlockView
             ) {
-                check(item is BlockView.Bookmark.Placeholder) {
-                    "Expected a bookmark placeholder block, but was: $item"
-                }
+                check(item is BlockView.Bookmark.Placeholder) { "Expected a bookmark placeholder block, but was: $item" }
                 payloads.forEach { payload ->
-                    if (payload.readWriteModeChanged()) {
-                        enableReadOrWriteMode(
-                            mode = item.mode,
-                            target = item.id,
-                            clicked = clicked
-                        )
-                    }
                     if (payload.selectionChanged()) {
                         select(item.isSelected)
                     }
@@ -1506,31 +1544,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             private fun select(isSelected: Boolean) {
                 root.isSelected = isSelected
-            }
-
-            private fun enableReadOrWriteMode(
-                mode: BlockView.Mode,
-                target: String,
-                clicked: (ListenerType) -> Unit
-            ) = when (mode) {
-                BlockView.Mode.READ -> enableReadOnlyMode()
-                BlockView.Mode.EDIT -> enableEditMode(target, clicked)
-            }
-
-            private fun enableReadOnlyMode() {
-                root.setOnLongClickListener(null)
-            }
-
-            private fun enableEditMode(
-                target: String,
-                clicked: (ListenerType) -> Unit
-            ) {
-                root.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = target,
-                        click = { clicked(ListenerType.Bookmark.PlaceholderLong(it)) }
-                    )
-                )
             }
         }
 
@@ -1546,40 +1559,33 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 indentize(item)
                 select(item.isSelected)
                 url.text = item.url
-                root.setOnClickListener {
-                    clicked(ListenerType.Bookmark.Error(item))
+                with (root) {
+                    setOnClickListener {
+                        clicked(ListenerType.Bookmark.Error(item))
+                    }
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = { clicked(ListenerType.LongClick(it)) }
+                        )
+                    )
                 }
-                enableReadOrWriteMode(
-                    mode = item.mode,
-                    target = item.id,
-                    clicked = clicked
-                )
             }
 
             override fun indentize(item: BlockView.Indentable) {
-                root.updateLayoutParams {
-                    (this as RecyclerView.LayoutParams).apply {
-                        val default = dimen(R.dimen.bookmark_default_margin_start)
-                        val extra = item.indent * dimen(R.dimen.indent)
-                        leftMargin = default + extra
-                    }
-                }
+                root.indentize(
+                    indent = item.indent,
+                    defIndent = dimen(R.dimen.indent),
+                    margin = dimen(R.dimen.bookmark_default_margin_start)
+                )
             }
 
             fun processChangePayload(
                 payloads: List<Payload>,
-                item: BlockView,
-                clicked: (ListenerType) -> Unit
+                item: BlockView
             ) {
                 check(item is BlockView.Bookmark.Error) { "Expected a bookmark error block, but was: $item" }
                 payloads.forEach { payload ->
-                    if (payload.readWriteModeChanged()) {
-                        enableReadOrWriteMode(
-                            mode = item.mode,
-                            target = item.id,
-                            clicked = clicked
-                        )
-                    }
                     if (payload.selectionChanged()) {
                         select(item.isSelected)
                     }
@@ -1589,40 +1595,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             private fun select(isSelected: Boolean) {
                 root.isSelected = isSelected
             }
-
-            private fun enableReadOrWriteMode(
-                mode: BlockView.Mode,
-                target: String,
-                clicked: (ListenerType) -> Unit
-            ) = when (mode) {
-                BlockView.Mode.READ -> enableReadOnlyMode()
-                BlockView.Mode.EDIT -> enableEditMode(target, clicked)
-            }
-
-            private fun enableReadOnlyMode() {
-                root.setOnLongClickListener(null)
-            }
-
-            private fun enableEditMode(
-                target: String,
-                clicked: (ListenerType) -> Unit
-            ) {
-                root.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = target,
-                        click = { clicked(ListenerType.Bookmark.ErrorLong(it)) }
-                    )
-                )
-            }
         }
     }
 
     class Picture(view: View) : BlockViewHolder(view), IndentableHolder {
 
         private val image = itemView.image
-        private val root = itemView.pictureRootLayout
         private val error = itemView.error
-        private val btnMenu = itemView.btnPicMenu
 
         private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
 
@@ -1648,97 +1627,147 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        fun bind(item: BlockView.Picture.View,
-                 menuClick: (String) -> Unit,
-                 onLongClickListener: (String) -> Unit) {
+        fun bind(
+            item: BlockView.Picture.View,
+            clicked: (ListenerType) -> Unit
+        ) {
             indentize(item)
-            btnMenu.setOnClickListener {
-                menuClick(item.id)
+            with(itemView) {
+                isSelected = item.isSelected
+                setOnClickListener { clicked(ListenerType.Picture.View(item.id)) }
+                setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = { clicked(ListenerType.LongClick(it)) }
+                    )
+                )
             }
-            root.setOnLongClickListener(
-                EditorLongClickListener(
-                    t = item.id,
-                    click = onLongClickListener)
-            )
             Glide.with(image).load(item.url).listener(listener).into(image)
         }
 
         override fun indentize(item: BlockView.Indentable) {
-            root.updatePadding(
-                left = item.indent * dimen(R.dimen.indent)
+            itemView.indentize(
+                indent = item.indent,
+                defIndent = dimen(R.dimen.indent),
+                margin = dimen(R.dimen.bookmark_default_margin_start)
             )
+        }
+
+        fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+            check(item is BlockView.Picture.View) { "Expected a picture block, but was: $item" }
+            payloads.forEach { payload ->
+                if (payload.changes.contains(SELECTION_CHANGED)) {
+                    itemView.isSelected = item.isSelected
+                }
+            }
         }
 
         class Placeholder(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            private val root = itemView.picturePlaceholderRoot
-            private val btnMore = itemView.btnPicPlaceholderMenu
-
             fun bind(
                 item: BlockView.Picture.Placeholder,
-                onAddLocalPictureClick: (String) -> Unit,
-                menuClick: (String) -> Unit,
-                onLongClickListener: (String) -> Unit
+                clicked: (ListenerType) -> Unit
             ) {
                 indentize(item)
-                btnMore.setOnClickListener {
-                    menuClick(item.id)
+                with(itemView) {
+                    isSelected = item.isSelected
+                    setOnClickListener { clicked(ListenerType.Picture.Placeholder(item.id)) }
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = { clicked(ListenerType.LongClick(it)) }
+                        )
+                    )
                 }
-                itemView.setOnClickListener {
-                    onAddLocalPictureClick(item.id)
-                }
-                root.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener)
-                )
             }
 
             override fun indentize(item: BlockView.Indentable) {
-                root.updatePadding(
-                    left = item.indent * dimen(R.dimen.indent)
+                itemView.indentize(
+                    indent = item.indent,
+                    defIndent = dimen(R.dimen.indent),
+                    margin = dimen(R.dimen.bookmark_default_margin_start)
                 )
+            }
+
+            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+                check(item is BlockView.Picture.Placeholder) { "Expected a picture placeholder block, but was: $item" }
+                payloads.forEach { payload ->
+                    if (payload.changes.contains(SELECTION_CHANGED)) {
+                        itemView.isSelected = item.isSelected
+                    }
+                }
             }
         }
 
         class Error(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            private val root = itemView.pictureErrorRoot
-            private val btnMore = itemView.btnPicErrorMenu
-
             fun bind(item: BlockView.Picture.Error,
-                     menuClick: (String) -> Unit,
-                     onLongClickListener: (String) -> Unit) {
+                     clicked: (ListenerType) -> Unit
+            ) {
                 indentize(item)
-                btnMore.setOnClickListener {
-                    menuClick(item.id)
+                with(itemView) {
+                    isSelected = item.isSelected
+                    setOnClickListener { clicked(ListenerType.Picture.Error(item.id)) }
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = { clicked(ListenerType.LongClick(it)) }
+                        )
+                    )
                 }
-                root.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener)
-                )
             }
 
             override fun indentize(item: BlockView.Indentable) {
-                root.updatePadding(
-                    left = item.indent * dimen(R.dimen.indent)
+                itemView.indentize(
+                    indent = item.indent,
+                    defIndent = dimen(R.dimen.indent),
+                    margin = dimen(R.dimen.bookmark_default_margin_start)
                 )
+            }
+
+            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+                check(item is BlockView.Picture.Error) { "Expected a picture error block, but was: $item" }
+                payloads.forEach { payload ->
+                    if (payload.changes.contains(SELECTION_CHANGED)) {
+                        itemView.isSelected = item.isSelected
+                    }
+                }
             }
         }
 
         class Upload(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            private val root = itemView.pictureUploadRoot
-
-            fun bind(item: BlockView.Picture.Upload) {
+            fun bind(item: BlockView.Picture.Upload,
+                     clicked: (ListenerType) -> Unit
+            ) {
                 indentize(item)
+                with(itemView) {
+                    isSelected = item.isSelected
+                    setOnClickListener { clicked(ListenerType.Picture.Upload(item.id)) }
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = { clicked(ListenerType.LongClick(it)) }
+                        )
+                    )
+                }
             }
 
             override fun indentize(item: BlockView.Indentable) {
-                root.updatePadding(
-                    left = item.indent * dimen(R.dimen.indent)
+                itemView.indentize(
+                    indent = item.indent,
+                    defIndent = dimen(R.dimen.indent),
+                    margin = dimen(R.dimen.bookmark_default_margin_start)
                 )
+            }
+
+            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
+                check(item is BlockView.Picture.Upload) { "Expected a picture upload block, but was: $item" }
+                payloads.forEach { payload ->
+                    if (payload.changes.contains(SELECTION_CHANGED)) {
+                        itemView.isSelected = item.isSelected
+                    }
+                }
             }
         }
     }
@@ -1860,16 +1889,5 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         const val FOCUS_TIMEOUT_MILLIS = 16L
         const val KEYBOARD_SHOW_DELAY = 16L
-    }
-}
-
-sealed class ListenerType {
-    sealed class Bookmark : ListenerType() {
-        data class View(val item: BlockView.Bookmark.View) : Bookmark()
-        data class ViewLong(val target: String) : Bookmark()
-        data class Placeholder(val target: String) : Bookmark()
-        data class PlaceholderLong(val target: String) : Bookmark()
-        data class Error(val item: BlockView.Bookmark.Error) : Bookmark()
-        data class ErrorLong(val target: String) : Bookmark()
     }
 }

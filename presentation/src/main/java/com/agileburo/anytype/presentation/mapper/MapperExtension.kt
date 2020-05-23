@@ -11,10 +11,19 @@ import com.agileburo.anytype.presentation.desktop.DashboardView
 fun Block.Content.File.toPictureView(
     id: String,
     urlBuilder: UrlBuilder,
-    indent: Int
+    indent: Int,
+    mode: BlockView.Mode
 ): BlockView = when (state) {
-    Block.Content.File.State.EMPTY -> BlockView.Picture.Placeholder(id = id, indent = indent)
-    Block.Content.File.State.UPLOADING -> BlockView.Picture.Upload(id = id, indent = indent)
+    Block.Content.File.State.EMPTY -> BlockView.Picture.Placeholder(
+        id = id,
+        indent = indent,
+        mode = mode
+    )
+    Block.Content.File.State.UPLOADING -> BlockView.Picture.Upload(
+        id = id,
+        indent = indent,
+        mode = mode
+    )
     Block.Content.File.State.DONE -> BlockView.Picture.View(
         id = id,
         size = size,
@@ -22,19 +31,33 @@ fun Block.Content.File.toPictureView(
         mime = mime,
         hash = hash,
         url = urlBuilder.video(hash),
-        indent = indent
+        indent = indent,
+        mode = mode
     )
-    Block.Content.File.State.ERROR -> BlockView.Picture.Error(id = id, indent = indent)
+    Block.Content.File.State.ERROR -> BlockView.Picture.Error(
+        id = id,
+        indent = indent,
+        mode = mode
+    )
     else -> throw IllegalStateException("Unexpected state: $state")
 }
 
 fun Block.Content.File.toVideoView(
     id: String,
     urlBuilder: UrlBuilder,
-    indent: Int
+    indent: Int,
+    mode: BlockView.Mode
 ): BlockView = when (state) {
-    Block.Content.File.State.EMPTY -> BlockView.Video.Placeholder(id = id, indent = indent)
-    Block.Content.File.State.UPLOADING -> BlockView.Video.Upload(id = id, indent = indent)
+    Block.Content.File.State.EMPTY -> BlockView.Video.Placeholder(
+        id = id,
+        indent = indent,
+        mode = mode
+    )
+    Block.Content.File.State.UPLOADING -> BlockView.Video.Upload(
+        id = id,
+        indent = indent,
+        mode = mode
+    )
     Block.Content.File.State.DONE -> BlockView.Video.View(
         id = id,
         size = size,
@@ -42,19 +65,33 @@ fun Block.Content.File.toVideoView(
         mime = mime,
         hash = hash,
         url = urlBuilder.video(hash),
-        indent = indent
+        indent = indent,
+        mode = mode
     )
-    Block.Content.File.State.ERROR -> BlockView.Video.Error(id = id, indent = indent)
+    Block.Content.File.State.ERROR -> BlockView.Video.Error(
+        id = id,
+        indent = indent,
+        mode = mode
+    )
     else -> throw IllegalStateException("Unexpected state: $state")
 }
 
 fun Block.Content.File.toFileView(
     id: String,
     urlBuilder: UrlBuilder,
-    indent: Int
+    indent: Int,
+    mode: BlockView.Mode
 ): BlockView = when (state) {
-    Block.Content.File.State.EMPTY -> BlockView.File.Placeholder(id = id, indent = indent)
-    Block.Content.File.State.UPLOADING -> BlockView.File.Upload(id = id, indent = indent)
+    Block.Content.File.State.EMPTY -> BlockView.File.Placeholder(
+        id = id,
+        indent = indent,
+        mode = mode
+    )
+    Block.Content.File.State.UPLOADING -> BlockView.File.Upload(
+        id = id,
+        indent = indent,
+        mode = mode
+    )
     Block.Content.File.State.DONE -> BlockView.File.View(
         id = id,
         size = size,
@@ -62,9 +99,14 @@ fun Block.Content.File.toFileView(
         mime = mime,
         hash = hash,
         url = urlBuilder.video(hash),
-        indent = indent
+        indent = indent,
+        mode = mode
     )
-    Block.Content.File.State.ERROR -> BlockView.File.Error(id = id, indent = indent)
+    Block.Content.File.State.ERROR -> BlockView.File.Error(
+        id = id,
+        indent = indent,
+        mode = mode
+    )
     else -> throw IllegalStateException("Unexpected state: $state")
 }
 

@@ -3,56 +3,40 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/filePlaceholderRoot"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    style="@style/BlockMediaRootLayoutStyle"
+    android:background="@drawable/item_block_multi_select_mode_selector">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_document_item_padding_start"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="@dimen/default_document_item_padding_end"
-        android:layout_marginBottom="6dp"
-        android:background="@drawable/rectangle_block_media_background"
-        android:paddingTop="1dp"
-        android:paddingBottom="1dp">
+        android:layout_height="@dimen/dp_48"
+        android:background="@drawable/rectangle_bookmark_placeholder">
 
         <ImageView
             android:id="@+id/icFile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
             android:contentDescription="@string/content_description_file_icon"
+            android:src="@drawable/ic_file_light"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_file_light" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/editUrl"
-            style="@style/BlockVideoStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="24dp"
-            android:inputType="none"
-            android:text="@string/hint_upload_file"
-            android:textColor="#ACA996"
-            app:layout_constraintBottom_toBottomOf="@+id/icFile"
-            app:layout_constraintEnd_toStartOf="@+id/btnFilePlaceholderMenu"
-            app:layout_constraintStart_toEndOf="@+id/icFile"
-            app:layout_constraintTop_toTopOf="@+id/icFile" />
-
-        <ImageView
-            android:id="@+id/btnFilePlaceholderMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_block_more" />
-
+            android:layout_marginStart="5dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/graphik_regular"
+            android:maxLines="1"
+            android:text="@string/hint_upload_file"
+            android:textColor="#ACA996"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@+id/icFile"
+            app:layout_constraintStart_toEndOf="@+id/icFile"
+            app:layout_constraintTop_toTopOf="@+id/icFile" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </FrameLayout>

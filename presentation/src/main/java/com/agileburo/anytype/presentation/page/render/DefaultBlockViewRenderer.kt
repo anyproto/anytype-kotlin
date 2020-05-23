@@ -5,7 +5,6 @@ import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content
 import com.agileburo.anytype.domain.common.Id
-import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.EditorMode
 import com.agileburo.anytype.presentation.mapper.*
@@ -135,7 +134,7 @@ class DefaultBlockViewRenderer(
                 }
                 is Content.File -> {
                     counter.reset()
-                    result.add(file(content, block, indent))
+                    result.add(file(mode, content, block, indent))
                 }
                 is Content.Layout -> {
                     counter.reset()
@@ -377,6 +376,7 @@ class DefaultBlockViewRenderer(
     private fun divider(block: Block) = BlockView.Divider(id = block.id)
 
     private fun file(
+        mode: EditorMode,
         content: Content.File,
         block: Block,
         indent: Int
@@ -384,17 +384,20 @@ class DefaultBlockViewRenderer(
         Content.File.Type.IMAGE -> content.toPictureView(
             id = block.id,
             urlBuilder = urlBuilder,
-            indent = indent
+            indent = indent,
+            mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
         )
         Content.File.Type.FILE -> content.toFileView(
             id = block.id,
             urlBuilder = urlBuilder,
-            indent = indent
+            indent = indent,
+            mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
         )
         Content.File.Type.VIDEO -> content.toVideoView(
             id = block.id,
             urlBuilder = urlBuilder,
-            indent = indent
+            indent = indent,
+            mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
         )
         else -> throw IllegalStateException("Unexpected file type: ${content.type}")
     }

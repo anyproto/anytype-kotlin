@@ -14,6 +14,8 @@
 
 ### Middleware ⚙️
 
+* Updated middleware to `0.11.0` (#454)
+
 ## Version 0.0.31
 
 ### New features 🚀

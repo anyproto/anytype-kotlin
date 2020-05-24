@@ -141,6 +141,7 @@ message Block {
                     Link = 5;
                     TextColor = 6;
                     BackgroundColor = 7;
+                    Mention = 8;
                 }
             }
 

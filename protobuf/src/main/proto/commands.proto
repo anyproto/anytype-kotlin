@@ -4,6 +4,7 @@ option go_package = "pb";
 
 import "models.proto";
 import "localstore.proto";
+
 import "events.proto";
 import "google/protobuf/struct.proto";
 
@@ -478,7 +479,9 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-                string html = 2;
+                string textSlot = 2;
+                string htmlSlot = 3;
+                repeated anytype.model.Block anySlot = 4;
 
                 message Error {
                     Code code = 1;
@@ -500,7 +503,7 @@ message Rpc {
                 string focusedBlockId = 2;
                 anytype.model.Range selectedTextRange = 3;
                 repeated string selectedBlockIds = 4;
-                anytype.model.Range copyTextRange = 5;
+                bool isPartOfBlock = 5;
 
                 string textSlot = 6;
                 string htmlSlot = 7;
@@ -511,7 +514,8 @@ message Rpc {
                 Error error = 1;
                 repeated string blockIds = 2;
                 int32 caretPosition = 3;
-                ResponseEvent event = 4;
+                bool isSameBlockCaret = 4;
+                ResponseEvent event = 5;
 
                 message Error {
                     Code code = 1;
@@ -540,6 +544,31 @@ message Rpc {
                 string htmlSlot = 3;
                 repeated anytype.model.Block anySlot = 4;
                 ResponseEvent event = 5;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message ImportMarkdown {
+            message Request {
+                string contextId = 1;
+                string importPath = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated string rootLinkIds = 2;
+                ResponseEvent event = 3;
 
                 message Error {
                     Code code = 1;
@@ -1332,9 +1361,9 @@ message Rpc {
             }
         }
 
-        /*
-         * Remove blocks from the childrenIds of its parents
-        */
+    /*
+     * Remove blocks from the childrenIds of its parents
+    */
         message Unlink {
             message Request {
                 string contextId = 1; // id of the context block

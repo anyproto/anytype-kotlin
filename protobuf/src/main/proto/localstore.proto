@@ -14,7 +14,7 @@ message PageInfo {
     string snippet = 3;
     State state = 4;
     int64 lastOpened = 5;
-    uint32 inboundLinksCount = 6;
+    bool hasInboundLinks = 6;
 }
 
 message PageDetails {

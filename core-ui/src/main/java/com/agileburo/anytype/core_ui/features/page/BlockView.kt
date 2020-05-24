@@ -102,6 +102,14 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     /**
+     * Views implementing this interface can scroll by Y coordinate on screen.
+     */
+    interface Scrollable {
+        val target: String?
+        val scrollTo: Int?
+    }
+
+    /**
      * UI-model for a basic paragraph block.
      * @property id block's id
      * @property text block's content text

@@ -13,8 +13,10 @@ import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.TouchDelegate
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.TextView
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.core.view.updateLayoutParams
@@ -158,6 +160,18 @@ fun EditText.multilineIme(action: Int, inputType: Int) {
     setHorizontallyScrolling(false)
     maxLines = Integer.MAX_VALUE
 }
+
+fun TextView.getCursorOffsetY(): Int? =
+    (parent as? ViewGroup)?.let { parentView ->
+        val start = selectionStart
+        with(layout) {
+            val line = getLineForOffset(start)
+            val baseLine = getLineBaseline(line)
+            val ascent = getLineAscent(line)
+            val y = baseLine + ascent
+            return y + parentView.top
+        }
+    }
 
 fun View.indentize(indent: Int, defIndent: Int, margin: Int) =
     updateLayoutParams<RecyclerView.LayoutParams> {

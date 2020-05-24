@@ -822,8 +822,22 @@ class BlockAdapter(
             }
 
             holder.enableBackspaceDetector(
-                onEmptyBlockBackspaceClicked = { onEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id) },
-                onNonEmptyBlockBackspaceClicked = { onNonEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id) }
+                onEmptyBlockBackspaceClicked = {
+                    if (holder.adapterPosition != RecyclerView.NO_POSITION) {
+                        onEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id)
+                        Timber.d("Proceed onEmptyBlockBackspaceClicked for adapter position:${holder.adapterPosition}")
+                    } else {
+                        Timber.e("Can't proceed with onEmptyBlockBackspaceClicked, because holder.adapter position is NO_POSITION")
+                    }
+                },
+                onNonEmptyBlockBackspaceClicked = {
+                    if (holder.adapterPosition != RecyclerView.NO_POSITION) {
+                        onNonEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id)
+                        Timber.d("Proceed onNonEmptyBlockBackspaceClicked for adapter position:${holder.adapterPosition}")
+                    } else {
+                        Timber.e("Can't proceed with onNonEmptyBlockBackspaceClicked, because holder.adapter position is NO_POSITION")
+                    }
+                }
             )
 
             if (holder is BlockViewHolder.Title)

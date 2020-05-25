@@ -22,7 +22,7 @@ interface BlockRemote {
     suspend fun createDocument(command: CommandEntity.CreateDocument): Pair<String, String>
     suspend fun updateDocumentTitle(command: CommandEntity.UpdateTitle)
     suspend fun updateText(command: CommandEntity.UpdateText)
-    suspend fun updateTextStyle(command: CommandEntity.UpdateStyle)
+    suspend fun updateTextStyle(command: CommandEntity.UpdateStyle) : PayloadEntity
 
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun dnd(command: CommandEntity.Dnd)

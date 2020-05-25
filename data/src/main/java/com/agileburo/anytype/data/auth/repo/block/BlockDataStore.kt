@@ -22,7 +22,7 @@ interface BlockDataStore {
     suspend fun createDocument(command: CommandEntity.CreateDocument): Pair<Id, Id>
     suspend fun updateDocumentTitle(command: CommandEntity.UpdateTitle)
     suspend fun updateText(command: CommandEntity.UpdateText)
-    suspend fun updateTextStyle(command: CommandEntity.UpdateStyle)
+    suspend fun updateTextStyle(command: CommandEntity.UpdateStyle) : PayloadEntity
 
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun uploadUrl(command: CommandEntity.UploadBlock)

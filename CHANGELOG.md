@@ -13,6 +13,7 @@
 
 * Load profile picture from local http-server instead of loading image blob (#431)
 * Should persist link markup while editing text (#455)
+* Regression | Should convert an empty list block to a paragraph on enter-pressed event (#457)
 
 ### Middleware ⚙️
 

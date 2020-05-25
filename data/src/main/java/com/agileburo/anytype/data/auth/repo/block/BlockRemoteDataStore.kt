@@ -34,9 +34,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         remote.updateText(command)
     }
 
-    override suspend fun updateTextStyle(command: CommandEntity.UpdateStyle) {
-        remote.updateTextStyle(command)
-    }
+    override suspend fun updateTextStyle(
+        command: CommandEntity.UpdateStyle
+    ) : PayloadEntity = remote.updateTextStyle(command)
 
     override suspend fun updateTextColor(
         command: CommandEntity.UpdateTextColor

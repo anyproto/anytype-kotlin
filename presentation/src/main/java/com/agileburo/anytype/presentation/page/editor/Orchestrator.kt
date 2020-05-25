@@ -42,6 +42,10 @@ class Orchestrator(
         proxies.payloads.send(payload)
     }
 
+    private val defaultPayload: suspend (Payload) -> Unit = {
+        proxies.payloads.send(it)
+    }
+
     private val defaultOnError: suspend (Throwable) -> Unit = { Timber.e(it) }
 
     suspend fun start() {
@@ -137,7 +141,7 @@ class Orchestrator(
                         )
                     ).proceed(
                         failure = defaultOnError,
-                        success = { payload -> proxies.payloads.send(payload) }
+                        success = defaultPayload
                     )
                 }
                 is Intent.Text.UpdateBackgroundColor -> {
@@ -149,7 +153,7 @@ class Orchestrator(
                         )
                     ).proceed(
                         failure = defaultOnError,
-                        success = { payload -> proxies.payloads.send(payload) }
+                        success = defaultPayload
                     )
                 }
                 is Intent.Text.UpdateStyle -> {
@@ -161,7 +165,7 @@ class Orchestrator(
                         )
                     ).proceed(
                         failure = defaultOnError,
-                        success = {}
+                        success = defaultPayload
                     )
                 }
                 is Intent.Text.UpdateCheckbox -> {
@@ -198,9 +202,7 @@ class Orchestrator(
                         )
                     ).proceed(
                         failure = defaultOnError,
-                        success = { payload ->
-                            proxies.payloads.send(payload)
-                        }
+                        success = defaultPayload
                     )
                 }
                 is Intent.Document.Redo -> {
@@ -210,7 +212,7 @@ class Orchestrator(
                         )
                     ).proceed(
                         failure = defaultOnError,
-                        success = {  }
+                        success = {}
                     )
                 }
                 is Intent.Document.Undo -> {
@@ -256,9 +258,7 @@ class Orchestrator(
                         failure = { throwable ->
                             proxies.errors.send(throwable)
                         },
-                        success = { payload ->
-                            proxies.payloads.send(payload)
-                        }
+                        success = defaultPayload
                     )
                 }
                 is Intent.Clipboard.Paste -> {

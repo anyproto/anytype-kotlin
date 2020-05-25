@@ -49,9 +49,9 @@ class BlockMiddleware(
         middleware.uploadMediaBlockContent(command)
     }
 
-    override suspend fun updateTextStyle(command: CommandEntity.UpdateStyle) {
-        middleware.updateTextStyle(command)
-    }
+    override suspend fun updateTextStyle(
+        command: CommandEntity.UpdateStyle
+    ) : PayloadEntity = middleware.updateTextStyle(command)
 
     override suspend fun updateTextColor(
         command: CommandEntity.UpdateTextColor

@@ -44,9 +44,9 @@ class BlockDataRepository(
         factory.remote.updateText(command.toEntity())
     }
 
-    override suspend fun updateTextStyle(command: Command.UpdateStyle) {
-        factory.remote.updateTextStyle(command.toEntity())
-    }
+    override suspend fun updateTextStyle(
+        command: Command.UpdateStyle
+    ) : Payload = factory.remote.updateTextStyle(command.toEntity()).toDomain()
 
     override suspend fun updateTextColor(
         command: Command.UpdateTextColor

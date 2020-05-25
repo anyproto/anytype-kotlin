@@ -359,7 +359,7 @@ public class Middleware {
         }
     }
 
-    public void updateTextStyle(CommandEntity.UpdateStyle command) throws Exception {
+    public PayloadEntity updateTextStyle(CommandEntity.UpdateStyle command) throws Exception {
 
         Models.Block.Content.Text.Style style = mapper.toMiddleware(command.getStyle());
 
@@ -379,6 +379,8 @@ public class Middleware {
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
+
+        return mapper.toPayload(response.getEvent());
     }
 
     public PayloadEntity updateTextColor(CommandEntity.UpdateTextColor command) throws Exception {

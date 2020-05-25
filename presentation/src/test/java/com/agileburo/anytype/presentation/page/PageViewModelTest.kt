@@ -2249,6 +2249,138 @@ class PageViewModelTest {
     }
 
     @Test
+    fun `should convert list block with empty text to paragraph on enter-pressed event`() {
+
+        // SETUP
+
+        val style = Block.Content.Text.Style.CHECKBOX
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val checkbox = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = "",
+                marks = emptyList(),
+                style = style
+            ),
+            children = emptyList()
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = listOf(child)
+            ),
+            checkbox
+        )
+
+        stubObserveEvents()
+
+        stubOpenPage(
+            context = root,
+            events = listOf(
+                Event.Command.ShowBlock(
+                    root = root,
+                    blocks = page,
+                    context = root
+                )
+            )
+        )
+
+        stubCreateBlock(root)
+
+        stubUpdateTextStyle(
+            payload = Payload(
+                context = root,
+                events = listOf(
+                    Event.Command.GranularChange(
+                        context = root,
+                        id = child,
+                        style = Block.Content.Text.Style.P
+                    )
+                )
+            )
+        )
+
+        buildViewModel()
+
+        // TESTING
+
+        vm.open(root)
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
+
+        // expected state before on-enter-pressed event
+
+        val before = ViewState.Success(
+            blocks = listOf(
+                BlockView.Title(
+                    id = root,
+                    text = null,
+                    focused = false
+                ),
+                BlockView.Checkbox(
+                    id = child,
+                    text = "",
+                    focused = false,
+                    isChecked = false,
+                    indent = 0
+                )
+            )
+        )
+
+        vm.state.test().assertValue(before)
+
+        vm.onEndLineEnterClicked(
+            id = child,
+            marks = emptyList(),
+            text = page.last().content<Block.Content.Text>().text
+        )
+
+        runBlockingTest {
+            verify(updateTextStyle, times(1)).invoke(
+                params = eq(
+                    UpdateTextStyle.Params(
+                        context = root,
+                        targets = listOf(child),
+                        style = Block.Content.Text.Style.P
+                    )
+                )
+            )
+        }
+
+        verifyZeroInteractions(createBlock)
+
+        // expected state after on-enter-pressed event
+
+        val after = ViewState.Success(
+            blocks = listOf(
+                BlockView.Title(
+                    id = root,
+                    text = null,
+                    focused = false
+                ),
+                BlockView.Paragraph(
+                    id = child,
+                    text = "",
+                    focused = true
+                )
+            )
+        )
+
+        vm.state.test().assertValue(after)
+    }
+
+    @Test
     fun `should start creating a new paragraph on endline-enter-pressed event inside a quote block`() {
 
         val style = Block.Content.Text.Style.QUOTE
@@ -3986,9 +4118,14 @@ class PageViewModelTest {
         }
     }
 
-    private fun stubUpdateTextStyle() {
+    private fun stubUpdateTextStyle(
+        payload: Payload = Payload(
+            context = MockDataFactory.randomUuid(),
+            events = emptyList()
+        )
+    ) {
         updateTextStyle.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+            onBlocking { invoke(any()) } doReturn Either.Right(payload)
         }
     }
 

@@ -47,7 +47,7 @@ interface BlockRepository {
 
     suspend fun updateDocumentTitle(command: Command.UpdateTitle)
     suspend fun updateText(command: Command.UpdateText)
-    suspend fun updateTextStyle(command: Command.UpdateStyle)
+    suspend fun updateTextStyle(command: Command.UpdateStyle) : Payload
 
     suspend fun updateTextColor(command: Command.UpdateTextColor): Payload
     suspend fun updateBackgroundColor(command: Command.UpdateBackgroundColor): Payload

@@ -5,6 +5,7 @@
 ### New features 🚀
 
 * User can paste from web to Anytype. First iteration (#447)
+* Turn-into in multi-select mode for text blocks (#458)
 
 ### Design & UX 🔳
 

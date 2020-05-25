@@ -1,5 +1,6 @@
 package com.agileburo.anytype.domain.block.repo
 
+import com.agileburo.anytype.domain.block.interactor.Clipboard
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.Config
@@ -77,4 +78,6 @@ interface BlockRepository {
 
     suspend fun undo(command: Command.Undo)
     suspend fun redo(command: Command.Redo)
+
+    suspend fun paste(command: Command.Paste) : Clipboard.Paste.Response
 }

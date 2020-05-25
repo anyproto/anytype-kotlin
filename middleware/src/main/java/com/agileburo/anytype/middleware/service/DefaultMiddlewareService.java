@@ -316,4 +316,15 @@ public class DefaultMiddlewareService implements MiddlewareService {
             return response;
         }
     }
+
+    @Override
+    public Block.Paste.Response blockPaste(Block.Paste.Request request) throws Exception {
+        byte[] encoded = Lib.blockPaste(request.toByteArray());
+        Block.Paste.Response response = Block.Paste.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Block.Paste.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
 }

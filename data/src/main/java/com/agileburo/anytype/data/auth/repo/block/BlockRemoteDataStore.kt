@@ -2,8 +2,8 @@ package com.agileburo.anytype.data.auth.repo.block
 
 import com.agileburo.anytype.data.auth.model.CommandEntity
 import com.agileburo.anytype.data.auth.model.PayloadEntity
+import com.agileburo.anytype.data.auth.model.Response
 import com.agileburo.anytype.domain.common.Id
-import com.agileburo.anytype.domain.event.model.Payload
 
 class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
@@ -102,6 +102,11 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: CommandEntity.ArchiveDocument
     ) = remote.archiveDocument(command)
 
-    override suspend fun replace(command: CommandEntity.Replace): Pair<Id, PayloadEntity> =
-        remote.replace(command)
+    override suspend fun replace(
+        command: CommandEntity.Replace
+    ): Pair<Id, PayloadEntity> = remote.replace(command)
+
+    override suspend fun paste(
+        command: CommandEntity.Paste
+    ): Response.Clipboard.Paste = remote.paste(command)
 }

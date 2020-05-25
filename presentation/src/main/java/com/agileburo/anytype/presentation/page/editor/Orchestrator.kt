@@ -28,6 +28,7 @@ class Orchestrator(
     private val updateText: UpdateText,
     private val updateAlignment: UpdateAlignment,
     private val setupBookmark: SetupBookmark,
+    private val paste: Clipboard.Paste,
     private val undo: Undo,
     private val redo: Redo,
     val memory: Editor.Memory,
@@ -257,6 +258,25 @@ class Orchestrator(
                         },
                         success = { payload ->
                             proxies.payloads.send(payload)
+                        }
+                    )
+                }
+                is Intent.Clipboard.Paste -> {
+                    paste(
+                        params = Clipboard.Paste.Params(
+                            context = intent.context,
+                            focus = intent.focus,
+                            range = intent.range,
+                            blocks = emptyList(),
+                            html = intent.html,
+                            text = intent.text,
+                            selected = intent.selected
+                        )
+                    ).proceed(
+                        failure = defaultOnError,
+                        success = { response ->
+                            Timber.d("response: $response")
+                            proxies.payloads.send(response.payload)
                         }
                     )
                 }

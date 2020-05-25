@@ -1,5 +1,6 @@
 package com.agileburo.anytype.core_ui.widgets.text
 
+import android.R
 import android.content.Context
 import android.graphics.Canvas
 import android.text.InputType
@@ -9,8 +10,6 @@ import android.text.TextWatcher
 import android.text.util.Linkify
 import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.EditorInfo.IME_ACTION_NONE
-import android.view.inputmethod.EditorInfo.TYPE_NULL
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
 import com.agileburo.anytype.core_ui.extensions.toast
@@ -32,6 +31,7 @@ class TextInputWidget : AppCompatEditText {
     private var highlightDrawer: HighlightDrawer? = null
 
     var selectionDetector: ((IntRange) -> Unit)? = null
+    var clipboardDetector: (() -> Unit)?  = null
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
@@ -118,6 +118,22 @@ class TextInputWidget : AppCompatEditText {
         Timber.d("New selection: $selStart - $selEnd")
         selectionDetector?.invoke(selStart..selEnd)
         super.onSelectionChanged(selStart, selEnd)
+    }
+
+    override fun onTextContextMenuItem(id: Int): Boolean {
+        var consumed = true
+        when(id) {
+            R.id.paste -> {
+                clipboardDetector?.invoke()
+            }
+            R.id.cut -> {
+                consumed = super.onTextContextMenuItem(id)
+            }
+            R.id.copy -> {
+                consumed = super.onTextContextMenuItem(id)
+            }
+        }
+        return consumed
     }
 
     override fun onDraw(canvas: Canvas?) {

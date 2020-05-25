@@ -3,6 +3,7 @@ package com.agileburo.anytype.middleware.block
 import com.agileburo.anytype.data.auth.model.CommandEntity
 import com.agileburo.anytype.data.auth.model.ConfigEntity
 import com.agileburo.anytype.data.auth.model.PayloadEntity
+import com.agileburo.anytype.data.auth.model.Response
 import com.agileburo.anytype.data.auth.repo.block.BlockRemote
 import com.agileburo.anytype.middleware.interactor.Middleware
 import com.agileburo.anytype.middleware.toMiddleware
@@ -124,4 +125,8 @@ class BlockMiddleware(
     override suspend fun replace(
         command: CommandEntity.Replace
     ): Pair<String, PayloadEntity> = middleware.replace(command)
+
+    override suspend fun paste(
+        command: CommandEntity.Paste
+    ): Response.Clipboard.Paste = middleware.paste(command)
 }

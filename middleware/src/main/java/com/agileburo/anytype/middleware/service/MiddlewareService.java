@@ -65,4 +65,6 @@ public interface MiddlewareService {
     Block.Set.Page.IsArchived.Response blockSetPageIsArchived(Block.Set.Page.IsArchived.Request request) throws Exception;
 
     Block.Set.Details.Response blockSetDetails(Block.Set.Details.Request request) throws Exception;
+
+    Block.Paste.Response blockPaste(Block.Paste.Request request) throws Exception;
 }

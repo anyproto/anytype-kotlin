@@ -21,7 +21,6 @@ import kotlin.test.assertEquals
 @RunWith(RobolectricTestRunner::class)
 class MarkupExtractTest {
 
-
     @Mock
     lateinit var markup : Markup
 
@@ -228,6 +227,39 @@ class MarkupExtractTest {
         )
     }
 
+    @Test
+    fun `should extract url span`() {
+
+        // SETUP
+
+        val source = "Everything was in confusion in the Oblonskys’ house"
+
+        val mark = Markup.Mark(
+            from = 0,
+            to = 5,
+            param = DataFactory.randomString(),
+            type = Markup.Type.LINK
+        )
+
+        stubMarkup(source, mark)
+
+        val editable = markup.toSpannable()
+
+        // TESTING
+
+        val marks = editable.extractMarks()
+
+        assertEquals(expected = 1, actual = marks.size)
+        assertEquals(
+            expected = Mark(
+                range = mark.from..mark.to,
+                param = mark.param,
+                type = Mark.Type.LINK
+            ),
+            actual = marks.first()
+        )
+    }
+
     private fun stubMarkup(
         source: String,
         mark: Markup.Mark
@@ -237,5 +269,4 @@ class MarkupExtractTest {
             on { marks } doReturn listOf(mark)
         }
     }
-
 }

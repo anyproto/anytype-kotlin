@@ -3,6 +3,7 @@ package com.agileburo.anytype.data.auth.repo.block
 import com.agileburo.anytype.data.auth.model.CommandEntity
 import com.agileburo.anytype.data.auth.model.ConfigEntity
 import com.agileburo.anytype.data.auth.model.PayloadEntity
+import com.agileburo.anytype.data.auth.model.Response
 import com.agileburo.anytype.domain.common.Id
 
 interface BlockRemote {
@@ -38,4 +39,5 @@ interface BlockRemote {
     suspend fun undo(command: CommandEntity.Undo)
     suspend fun redo(command: CommandEntity.Redo)
     suspend fun archiveDocument(command: CommandEntity.ArchiveDocument)
+    suspend fun paste(command: CommandEntity.Paste) : Response.Clipboard.Paste
 }

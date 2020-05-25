@@ -28,8 +28,6 @@ import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ext.hexColorCode
 import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
-import kotlinx.android.synthetic.main.item_block_file_placeholder.view.*
-import kotlinx.android.synthetic.main.item_block_file_uploading.view.*
 import kotlinx.android.synthetic.main.item_block_page.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import kotlinx.android.synthetic.main.item_block_video.view.*
@@ -3265,7 +3263,8 @@ class BlockAdapterTest {
             onMarkupActionClicked = {},
             onLongClickListener = {},
             onTitleTextInputClicked = {},
-            onClickListener = {}
+            onClickListener = {},
+            clipboardDetector = {}
         )
     }
 }

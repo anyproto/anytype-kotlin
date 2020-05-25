@@ -39,6 +39,11 @@ fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).
             range = getSpanStart(span)..getSpanEnd(span),
             type = Mark.Type.KEYBOARD
         )
+        is Span.Url -> Mark(
+            range = getSpanStart(span)..getSpanEnd(span),
+            type = Mark.Type.LINK,
+            param = span.url
+        )
         else -> null
     }
 }

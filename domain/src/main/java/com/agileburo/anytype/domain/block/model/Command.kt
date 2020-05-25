@@ -229,4 +229,24 @@ sealed class Command {
      * @property context id of the context
      */
     data class Redo(val context: Id)
+
+    /**
+     * Params for clipboard pasting operation
+     * @property context id of the context
+     * @property focus id of the focused/target block
+     * @property selected id of currently selected blocks
+     * @property range selected text range
+     * @property text plain text to paste
+     * @property html optional html to paste
+     * @property blocks blocks currently contained in clipboard
+     */
+    data class Paste(
+        val context: Id,
+        val focus: Id,
+        val selected: List<Id>,
+        val range: IntRange,
+        val text: String,
+        val html: String?,
+        val blocks: List<Block>
+    )
 }

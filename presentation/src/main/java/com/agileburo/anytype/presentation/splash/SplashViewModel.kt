@@ -29,7 +29,7 @@ class SplashViewModel(
 
     val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> = MutableLiveData()
 
-    fun onViewCreated() {
+    fun onResume() {
         viewModelScope.launch {
             checkAuthorizationStatus(Unit).either(
                 fnL = { e -> Timber.e(e, "Error while checking auth status") },

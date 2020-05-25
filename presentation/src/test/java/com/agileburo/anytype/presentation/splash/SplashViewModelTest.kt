@@ -76,7 +76,7 @@ class SplashViewModelTest {
         stubLaunchWallet()
         stubLaunchAccount()
 
-        vm.onViewCreated()
+        vm.onResume()
 
         runBlocking {
             verify(checkAuthorizationStatus, times(1)).invoke(any())
@@ -94,7 +94,7 @@ class SplashViewModelTest {
         stubLaunchWallet()
         stubLaunchAccount()
 
-        vm.onViewCreated()
+        vm.onResume()
 
         runBlocking {
             verify(launchWallet, times(1)).invoke(any())
@@ -112,7 +112,7 @@ class SplashViewModelTest {
         stubLaunchWallet()
         stubLaunchAccount()
 
-        vm.onViewCreated()
+        vm.onResume()
 
         runBlocking {
             verify(launchWallet, times(1)).invoke(any())
@@ -131,7 +131,7 @@ class SplashViewModelTest {
         stubLaunchAccount()
         stubLaunchWallet()
 
-        vm.onViewCreated()
+        vm.onResume()
 
         vm.navigation.test().assertValue { value ->
             value.peekContent() == AppNavigation.Command.StartDesktopFromSplash
@@ -147,7 +147,7 @@ class SplashViewModelTest {
 
         stubCheckAuthStatus(response)
 
-        vm.onViewCreated()
+        vm.onResume()
 
         vm.navigation.test().assertValue { value ->
             value.peekContent() == AppNavigation.Command.OpenStartLoginScreen
@@ -175,7 +175,7 @@ class SplashViewModelTest {
 
         state.assertNoValue()
 
-        vm.onViewCreated()
+        vm.onResume()
 
         state.assertValue { value -> value is ViewState.Error }
 

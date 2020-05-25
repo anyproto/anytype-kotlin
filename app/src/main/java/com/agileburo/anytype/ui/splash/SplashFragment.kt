@@ -36,8 +36,12 @@ class SplashFragment : NavigationFragment(R.layout.fragment_splash), Observer<Vi
         super.onViewCreated(view, savedInstanceState)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         vm.state.observe(viewLifecycleOwner, this)
-        vm.onViewCreated()
         showVersion()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
     }
 
     private fun showVersion() {

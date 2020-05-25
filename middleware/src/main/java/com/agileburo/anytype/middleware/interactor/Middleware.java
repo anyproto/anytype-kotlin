@@ -5,6 +5,7 @@ import com.agileburo.anytype.data.auth.model.CommandEntity;
 import com.agileburo.anytype.data.auth.model.ConfigEntity;
 import com.agileburo.anytype.data.auth.model.PayloadEntity;
 import com.agileburo.anytype.data.auth.model.PositionEntity;
+import com.agileburo.anytype.data.auth.model.Response;
 import com.agileburo.anytype.middleware.BuildConfig;
 import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
@@ -759,5 +760,46 @@ public class Middleware {
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
+    }
+
+    public Response.Clipboard.Paste paste(CommandEntity.Paste command) throws Exception {
+
+        Range range = Range
+                .newBuilder()
+                .setFrom(command.getRange().getFirst())
+                .setTo(command.getRange().getLast())
+                .build();
+
+        String html = "";
+
+        if (command.getHtml() != null) {
+            html = command.getHtml();
+        }
+
+        Block.Paste.Request request = Block.Paste.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .setFocusedBlockId(command.getFocus())
+                .setTextSlot(command.getText())
+                .setHtmlSlot(html)
+                .setSelectedTextRange(range)
+                .addAllSelectedBlockIds(command.getSelected())
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Block.Paste.Response response = service.blockPaste(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return new Response.Clipboard.Paste(
+                response.getCaretPosition(),
+                response.getBlockIdsList(),
+                mapper.toPayload(response.getEvent())
+        );
     }
 }

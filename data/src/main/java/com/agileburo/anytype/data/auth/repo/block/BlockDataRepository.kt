@@ -2,6 +2,7 @@ package com.agileburo.anytype.data.auth.repo.block
 
 import com.agileburo.anytype.data.auth.mapper.toDomain
 import com.agileburo.anytype.data.auth.mapper.toEntity
+import com.agileburo.anytype.domain.block.interactor.Clipboard
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
@@ -118,4 +119,8 @@ class BlockDataRepository(
     override suspend fun archiveDocument(
         command: Command.ArchiveDocument
     ) = factory.remote.archiveDocument(command.toEntity())
+
+    override suspend fun paste(
+        command: Command.Paste
+    ): Clipboard.Paste.Response = factory.remote.paste(command.toEntity()).toDomain()
 }

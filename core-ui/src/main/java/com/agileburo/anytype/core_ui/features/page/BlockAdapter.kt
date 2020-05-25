@@ -72,7 +72,8 @@ class BlockAdapter(
     private val onToggleClicked: (String) -> Unit,
     private val onMediaBlockMenuClick: (String) -> Unit,
     private val onMarkupActionClicked: (Markup.Type) -> Unit,
-    private val onLongClickListener: (String) -> Unit
+    private val onLongClickListener: (String) -> Unit,
+    private val clipboardDetector: (IntRange) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -844,6 +845,10 @@ class BlockAdapter(
                 holder.setOnClickListener { onTitleTextInputClicked() }
             else
                 holder.setOnClickListener { onTextInputClicked(blocks[holder.adapterPosition].id) }
+
+            holder.content.clipboardDetector = {
+                clipboardDetector(holder.content.selectionStart..holder.content.selectionEnd)
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.agileburo.anytype.core_utils.ext
 
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
@@ -180,3 +181,7 @@ fun View.indentize(indent: Int, defIndent: Int, margin: Int) =
             leftMargin = margin + extra
         }
     }
+
+fun Fragment.clipboard() : ClipboardManager {
+    return requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+}

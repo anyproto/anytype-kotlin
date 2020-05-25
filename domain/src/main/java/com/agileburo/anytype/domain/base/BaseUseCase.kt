@@ -22,5 +22,17 @@ abstract class BaseUseCase<out Type, in Params>(
         return withContext(context) { run(params) }
     }
 
+    /**
+     * Wraps use-case code to [Either]
+     * @param block code block to execute
+     */
+    inline fun <Type> safe(
+        block: () -> Type
+    ) : Either<Throwable, Type> = try {
+        Either.Right(block())
+    } catch (t: Throwable) {
+        Either.Left(t)
+    }
+
     object None
 }

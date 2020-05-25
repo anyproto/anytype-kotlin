@@ -3,6 +3,7 @@ package com.agileburo.anytype.data.auth.mapper
 import com.agileburo.anytype.data.auth.model.*
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.model.Wallet
+import com.agileburo.anytype.domain.block.interactor.Clipboard
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.model.Position
@@ -393,6 +394,16 @@ fun Command.ArchiveDocument.toEntity() = CommandEntity.ArchiveDocument(
     target = target
 )
 
+fun Command.Paste.toEntity() = CommandEntity.Paste(
+    context = context,
+    focus = focus,
+    text = text,
+    html = html,
+    selected = selected,
+    blocks = blocks.map { it.toEntity() },
+    range = range
+)
+
 fun Command.CreateDocument.toEntity() = CommandEntity.CreateDocument(
     context = context,
     target = target,
@@ -561,3 +572,9 @@ fun BlockEntity.Align.toDomain(): Block.Align = when (this) {
     BlockEntity.Align.AlignCenter -> Block.Align.AlignCenter
     BlockEntity.Align.AlignRight -> Block.Align.AlignRight
 }
+
+fun Response.Clipboard.Paste.toDomain() = Clipboard.Paste.Response(
+    blocks = blocks,
+    cursor = cursor,
+    payload = payload.toDomain()
+)

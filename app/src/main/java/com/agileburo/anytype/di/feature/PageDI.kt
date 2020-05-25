@@ -323,6 +323,7 @@ class PageModule {
         updateAlignment: UpdateAlignment,
         textInteractor: Interactor.TextInteractor,
         setupBookmark: SetupBookmark,
+        paste: Clipboard.Paste,
         undo: Undo,
         redo: Redo
     ): Orchestrator = Orchestrator(
@@ -346,7 +347,8 @@ class PageModule {
         textInteractor = textInteractor,
         updateText = updateText,
         updateAlignment = updateAlignment,
-        setupBookmark = setupBookmark
+        setupBookmark = setupBookmark,
+        paste = paste
     )
 
     @Provides
@@ -382,6 +384,14 @@ class PageModule {
     fun provideSetupBookmarkUseCase(
         repo: BlockRepository
     ): SetupBookmark = SetupBookmark(
+        repo = repo
+    )
+
+    @Provides
+    @PerScreen
+    fun provideClipboardPasteUseCase(
+        repo: BlockRepository
+    ) : Clipboard.Paste = Clipboard.Paste(
         repo = repo
     )
 }

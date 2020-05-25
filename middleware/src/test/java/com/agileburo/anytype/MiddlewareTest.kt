@@ -2,6 +2,7 @@ package com.agileburo.anytype
 
 import anytype.Commands.Rpc.*
 import anytype.model.Models
+import anytype.model.Models.Range
 import com.agileburo.anytype.common.MockDataFactory
 import com.agileburo.anytype.data.auth.model.BlockEntity
 import com.agileburo.anytype.data.auth.model.CommandEntity
@@ -301,6 +302,47 @@ class MiddlewareTest {
         middleware.dnd(command)
 
         verify(service, times(1)).blockListMove(request)
+        verifyNoMoreInteractions(service)
+    }
+
+    @Test
+    fun `should create request for clipboard pasting`() {
+
+        // SETUP
+
+        val context = MockDataFactory.randomUuid()
+
+        val command = CommandEntity.Paste(
+            context = context,
+            focus = MockDataFactory.randomUuid(),
+            selected = listOf(MockDataFactory.randomUuid(), MockDataFactory.randomUuid()),
+            range = 0..5,
+            text = MockDataFactory.randomString(),
+            html = MockDataFactory.randomString(),
+            blocks = emptyList()
+        )
+
+        val range = Range.newBuilder().setFrom(0).setTo(5).build()
+
+        val request = Block.Paste.Request
+            .newBuilder()
+            .setContextId(command.context)
+            .setFocusedBlockId(command.focus)
+            .setTextSlot(command.text)
+            .setHtmlSlot(command.html)
+            .setSelectedTextRange(range)
+            .addAllSelectedBlockIds(command.selected)
+            .build()
+
+        service.stub {
+            on { blockPaste(request) } doReturn Block.Paste.Response.getDefaultInstance()
+        }
+
+        // TESTING
+
+        middleware.paste(command)
+
+        verify(service, times(1)).blockPaste(request)
         verifyNoMoreInteractions(service)
     }
 }

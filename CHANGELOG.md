@@ -4,6 +4,7 @@
 
 ### New features 🚀
 
+* User can paste from web to Anytype. First iteration (#447)
 
 ### Design & UX 🔳
 
@@ -11,6 +12,7 @@
 ### Fixes & tech 🚒
 
 * Load profile picture from local http-server instead of loading image blob (#431)
+* Should persist link markup while editing text (#455)
 
 ### Middleware ⚙️
 

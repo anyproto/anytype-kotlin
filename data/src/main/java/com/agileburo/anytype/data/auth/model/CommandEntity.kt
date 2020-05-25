@@ -123,4 +123,14 @@ class CommandEntity {
         val target: String,
         val prototype: BlockEntity.Prototype
     )
+
+    data class Paste(
+        val context: String,
+        val focus: String,
+        val selected: List<String>,
+        val range: IntRange,
+        val text: String,
+        val html: String?,
+        val blocks: List<BlockEntity>
+    )
 }

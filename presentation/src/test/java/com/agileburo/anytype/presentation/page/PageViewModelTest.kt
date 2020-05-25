@@ -14,7 +14,6 @@ import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.download.DownloadFile
-import com.agileburo.anytype.domain.emoji.Emojifier
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
@@ -114,7 +113,7 @@ class PageViewModelTest {
     lateinit var uploadUrl: UploadUrl
 
     @Mock
-    lateinit var emojifier: Emojifier
+    lateinit var paste: Clipboard.Paste
 
     @Mock
     lateinit var undo: Undo
@@ -4068,7 +4067,8 @@ class PageViewModelTest {
                     matcher = DefaultPatternMatcher()
                 ),
                 updateAlignment = updateAlignment,
-                setupBookmark = setupBookmark
+                setupBookmark = setupBookmark,
+                paste = paste
             )
         )
     }

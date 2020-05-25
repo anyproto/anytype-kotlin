@@ -51,6 +51,18 @@ sealed class Intent {
         ) : CRUD()
     }
 
+    sealed class Clipboard : Intent() {
+        class Paste(
+            val context: Id,
+            val focus: Id,
+            val selected: List<Id>,
+            val range: IntRange,
+            val text: String,
+            val html: String?,
+            val blocks: List<Block>
+        ) : Clipboard()
+    }
+
     sealed class Text : Intent() {
 
         class UpdateColor(

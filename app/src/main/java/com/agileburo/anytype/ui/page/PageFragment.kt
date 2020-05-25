@@ -126,7 +126,23 @@ open class PageFragment :
             onMarkupActionClicked = vm::onMarkupActionClicked,
             onLongClickListener = vm::onBlockLongPressedClicked,
             onTitleTextInputClicked = vm::onTitleTextInputClicked,
-            onClickListener = vm::onClickListener
+            onClickListener = vm::onClickListener,
+            clipboardDetector = { range ->
+                // TODO this logic should be moved to device module
+                clipboard().primaryClip?.let { clip ->
+                    if (clip.itemCount > 0) {
+                        val item = clip.getItemAt(0)
+                        vm.onPaste(
+                            plain = item.text.toString(),
+                            html = if (item.htmlText != null)
+                                item.htmlText
+                            else
+                                null,
+                            range = range
+                        )
+                    }
+                }
+            }
         )
     }
 

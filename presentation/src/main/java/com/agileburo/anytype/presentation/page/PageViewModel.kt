@@ -1367,6 +1367,26 @@ class PageViewModel(
         }
     }
 
+    fun onPaste(
+        plain: String,
+        html: String?,
+        range: IntRange
+    ) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Clipboard.Paste(
+                    context = context,
+                    focus = orchestrator.stores.focus.current(),
+                    range = range,
+                    blocks = emptyList(),
+                    selected = emptyList(),
+                    html = html,
+                    text = plain
+                )
+            )
+        }
+    }
+
     fun onClickListener(clicked: ListenerType) =
         when (clicked) {
             is ListenerType.Bookmark.View -> {

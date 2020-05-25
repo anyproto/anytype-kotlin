@@ -1455,7 +1455,12 @@ class PageViewModel(
                     EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
                 }
             }
-            is ListenerType.Video.View -> {}
+            is ListenerType.Video.View -> {
+                when (mode) {
+                    EditorMode.EDITING -> Unit
+                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                }
+            }
             is ListenerType.Video.Placeholder -> {
                 when (mode) {
                     EditorMode.EDITING -> onAddLocalVideoClicked(clicked.target)

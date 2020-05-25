@@ -122,7 +122,6 @@ open class PageFragment :
             onAddUrlClick = vm::onAddVideoUrlClicked,
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
-            onMediaBlockMenuClick = vm::onMediaBlockMenuClicked,
             onMarkupActionClicked = vm::onMarkupActionClicked,
             onLongClickListener = vm::onBlockLongPressedClicked,
             onTitleTextInputClicked = vm::onTitleTextInputClicked,

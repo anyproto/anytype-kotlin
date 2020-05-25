@@ -70,7 +70,6 @@ class BlockAdapter(
     private val onPageIconClicked: () -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
-    private val onMediaBlockMenuClick: (String) -> Unit,
     private val onMarkupActionClicked: (Markup.Type) -> Unit,
     private val onLongClickListener: (String) -> Unit,
     private val clipboardDetector: (IntRange) -> Unit
@@ -696,8 +695,7 @@ class BlockAdapter(
             is BlockViewHolder.Video -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Video.View,
-                    menuClick = onMediaBlockMenuClick,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Video.Upload -> {

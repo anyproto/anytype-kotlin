@@ -6,15 +6,16 @@
 
 * User can paste from web to Anytype. First iteration (#447)
 * Turn-into in multi-select mode for text blocks (#458)
-
-### Design & UX 🔳
-
+* All media blocks can be selected in multi-select mode (#427, #428)
 
 ### Fixes & tech 🚒
 
+* New and more stable enter-press detection (#449)
+* Refactored media block click handling (#427, #428)
 * Load profile picture from local http-server instead of loading image blob (#431)
 * Should persist link markup while editing text (#455)
 * Regression | Should convert an empty list block to a paragraph on enter-pressed event (#457)
+* Inconsistent backspace detection when user presses backspace on non-empty text where selection > 0 (#450)
 
 ### Middleware ⚙️
 

@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -1199,13 +1200,21 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Video(view: View) : BlockViewHolder(view), IndentableHolder {
 
-        private val player = itemView.playerView
-        private val btnMenu = itemView.btnVideoMenu
-
         fun bind(item: BlockView.Video.View,
-                 menuClick: (String) -> Unit,
-                 onLongClickListener: (String) -> Unit) {
-            btnMenu.setOnClickListener { onLongClickListener(item.id) }
+                 clicked: (ListenerType) -> Unit
+        ) {
+            itemView.isSelected = item.isSelected
+            itemView.playerView.findViewById<FrameLayout>(R.id.exo_controller).apply {
+                setOnClickListener {
+                    clicked(ListenerType.Video.View(item.id))
+                }
+                setOnLongClickListener(
+                    EditorLongClickListener(
+                        t = item.id,
+                        click = { clicked(ListenerType.LongClick(it)) }
+                    )
+                )
+            }
             indentize(item)
             initPlayer(item.url)
         }
@@ -1226,8 +1235,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         override fun indentize(item: BlockView.Indentable) {
-            player.updatePadding(
-                left = item.indent * dimen(R.dimen.indent)
+            itemView.indentize(
+                indent = item.indent,
+                defIndent = dimen(R.dimen.indent),
+                margin = dimen(R.dimen.bookmark_default_margin_start)
             )
         }
 
@@ -1235,8 +1246,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             check(item is BlockView.Video.View) { "Expected a video block, but was: $item" }
             payloads.forEach { payload ->
                 if (payload.changes.contains(SELECTION_CHANGED)) {
-                    //todo will fix with https://github.com/anytypeio/android-anytype/issues/427
-                    //itemView.isSelected = item.isSelected
+                    itemView.isSelected = item.isSelected
                 }
             }
         }

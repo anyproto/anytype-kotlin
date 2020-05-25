@@ -1031,9 +1031,10 @@ class BlockAdapterTest {
 
         check(holder is BlockViewHolder.Video)
 
-        val actual = holder.itemView.playerView.paddingLeft
+        val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+        val expected =
+            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -3256,7 +3257,6 @@ class BlockAdapterTest {
             onAddUrlClick = { _, _ -> },
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
-            onMediaBlockMenuClick = {},
             onParagraphTextChanged = { _, _ -> },
             onTitleTextChanged = onTitleTextChanged,
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,

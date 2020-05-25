@@ -212,7 +212,7 @@ class Orchestrator(
                         )
                     ).proceed(
                         failure = defaultOnError,
-                        success = {}
+                        success = defaultPayload
                     )
                 }
                 is Intent.Document.Undo -> {
@@ -222,7 +222,7 @@ class Orchestrator(
                         )
                     ).proceed(
                         failure = defaultOnError,
-                        success = {}
+                        success = defaultPayload
                     )
                 }
                 is Intent.Document.UpdateTitle -> {

@@ -86,8 +86,6 @@
     <string name="toolbar_action_duplicate">Duplicate</string>
     <string name="toolbar_action_mention">Mention</string>
     <string name="toolbar_action_share">Share</string>
-    <string name="toolbar_action_undo">Undo</string>
-    <string name="toolbar_action_redo">Redo</string>
 
     <string name="actions">Actions</string>
     <string name="toolbar_text_color_placeholder">Aa</string>
@@ -196,5 +194,8 @@
     <string name="done">Done</string>
     <string name="select_or_drag_and_drop_blocks">Select or drag and drop blocks</string>
     <string name="block_code_menu_title">Language</string>
+
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
 
 </resources>

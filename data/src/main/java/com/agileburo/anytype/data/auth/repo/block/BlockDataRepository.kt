@@ -112,9 +112,13 @@ class BlockDataRepository(
         factory.remote.uploadUrl(command.toEntity())
     }
 
-    override suspend fun undo(command: Command.Undo) = factory.remote.undo(command.toEntity())
+    override suspend fun undo(
+        command: Command.Undo
+    ) : Payload = factory.remote.undo(command.toEntity()).toDomain()
 
-    override suspend fun redo(command: Command.Redo) = factory.remote.redo(command.toEntity())
+    override suspend fun redo(
+        command: Command.Redo
+    ) : Payload = factory.remote.redo(command.toEntity()).toDomain()
 
     override suspend fun archiveDocument(
         command: Command.ArchiveDocument

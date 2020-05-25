@@ -3121,7 +3121,12 @@ class PageViewModelTest {
         buildViewModel()
 
         undo.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = emptyList()
+                )
+            )
         }
 
         vm.open(root)
@@ -3181,7 +3186,12 @@ class PageViewModelTest {
         buildViewModel()
 
         redo.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = emptyList()
+                )
+            )
         }
 
         vm.open(root)

@@ -711,7 +711,7 @@ public class Middleware {
         return mapper.toPayload(response.getEvent());
     }
 
-    public void undo(CommandEntity.Undo command) throws Exception {
+    public PayloadEntity undo(CommandEntity.Undo command) throws Exception {
         Block.Undo.Request request = Block.Undo.Request
                 .newBuilder()
                 .setContextId(command.getContext())
@@ -726,9 +726,11 @@ public class Middleware {
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
+
+        return mapper.toPayload(response.getEvent());
     }
 
-    public void redo(CommandEntity.Redo command) throws Exception {
+    public PayloadEntity redo(CommandEntity.Redo command) throws Exception {
         Block.Redo.Request request = Block.Redo.Request
                 .newBuilder()
                 .setContextId(command.getContext())
@@ -743,6 +745,8 @@ public class Middleware {
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
+
+        return mapper.toPayload(response.getEvent());
     }
 
     public void archiveDocument(CommandEntity.ArchiveDocument command) throws Exception {

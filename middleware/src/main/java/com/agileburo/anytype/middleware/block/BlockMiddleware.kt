@@ -114,9 +114,13 @@ class BlockMiddleware(
         command: CommandEntity.SetupBookmark
     ): PayloadEntity = middleware.setupBookmark(command)
 
-    override suspend fun undo(command: CommandEntity.Undo) = middleware.undo(command)
+    override suspend fun undo(
+        command: CommandEntity.Undo
+    ) : PayloadEntity = middleware.undo(command)
 
-    override suspend fun redo(command: CommandEntity.Redo) = middleware.redo(command)
+    override suspend fun redo(
+        command: CommandEntity.Redo
+    ) : PayloadEntity = middleware.redo(command)
 
     override suspend fun archiveDocument(
         command: CommandEntity.ArchiveDocument

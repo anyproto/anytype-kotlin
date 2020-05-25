@@ -76,8 +76,8 @@ interface BlockRepository {
 
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
 
-    suspend fun undo(command: Command.Undo)
-    suspend fun redo(command: Command.Redo)
+    suspend fun undo(command: Command.Undo) : Payload
+    suspend fun redo(command: Command.Redo) : Payload
 
     suspend fun paste(command: Command.Paste) : Clipboard.Paste.Response
 }

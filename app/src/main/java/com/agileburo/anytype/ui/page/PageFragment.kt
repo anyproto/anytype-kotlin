@@ -399,9 +399,11 @@ open class PageFragment :
 
     private fun showToolbarMenu() {
         DocumentPopUpMenu(
-            requireContext(),
-            topToolbar.menu,
-            vm::onArchiveThisPageClicked
+            context = requireContext(),
+            view = topToolbar.menu,
+            onArchiveClicked = vm::onArchiveThisPageClicked,
+            onRedoClicked = vm::onActionRedoClicked,
+            onUndoClicked = vm::onActionUndoClicked
         ).show()
     }
 

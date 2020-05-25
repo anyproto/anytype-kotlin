@@ -1,6 +1,24 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.32 (WIP)
+## Version 0.0.33 (WIP)
+
+### New features 🚀
+
+*
+
+### Design & UX 🔳
+
+* Undo/redo migrated to document's context menu (#461)
+
+### Fixes & tech 🚒
+
+*
+
+### Middleware ⚙️
+
+*
+
+## Version 0.0.32
 
 ### New features 🚀
 
@@ -25,7 +43,7 @@
 
 ### New features 🚀
 
-* User can add code block (№409)
+* User can add code block (#409)
 
 ### Design & UX 🔳
 

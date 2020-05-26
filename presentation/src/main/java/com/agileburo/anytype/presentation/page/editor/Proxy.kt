@@ -30,7 +30,7 @@ interface Proxy<T> {
         override fun cancel() = channel.cancel()
     }
 
-    sealed class Text : Subject<TextUpdate>() {
+    sealed class Text : Subject<TextUpdate?>() {
         class Changes : Text()
         class Saves : Text()
     }

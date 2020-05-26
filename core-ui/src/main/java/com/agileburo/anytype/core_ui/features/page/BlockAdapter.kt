@@ -58,8 +58,8 @@ class BlockAdapter(
     private val onCheckboxClicked: (String) -> Unit,
     private val onFocusChanged: (String, Boolean) -> Unit,
     private val onEmptyBlockBackspaceClicked: (String) -> Unit,
-    private val onNonEmptyBlockBackspaceClicked: (String) -> Unit,
-    private val onSplitLineEnterClicked: (String, Int) -> Unit,
+    private val onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
+    private val onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
     private val onEndLineEnterClicked: (String, Editable) -> Unit,
     private val onEndLineEnterTitleClicked: (Editable) -> Unit,
     private val onFooterClicked: () -> Unit,
@@ -806,7 +806,7 @@ class BlockAdapter(
                         onEndLineEnterTitleClicked(editable)
                     },
                     onSplitLineEnterClicked = { index ->
-                        onSplitLineEnterClicked(blocks[holder.adapterPosition].id, index)
+                        onSplitLineEnterClicked(blocks[holder.adapterPosition].id, index, holder.content.text!!)
                     }
                 )
             } else {
@@ -815,7 +815,7 @@ class BlockAdapter(
                         onEndLineEnterClicked(blocks[holder.adapterPosition].id, editable)
                     },
                     onSplitLineEnterClicked = { index ->
-                        onSplitLineEnterClicked(blocks[holder.adapterPosition].id, index)
+                        onSplitLineEnterClicked(blocks[holder.adapterPosition].id, index, holder.content.text!!)
                     }
                 )
             }
@@ -831,7 +831,7 @@ class BlockAdapter(
                 },
                 onNonEmptyBlockBackspaceClicked = {
                     if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                        onNonEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id)
+                        onNonEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id, holder.content.text!!)
                         Timber.d("Proceed onNonEmptyBlockBackspaceClicked for adapter position:${holder.adapterPosition}")
                     } else {
                         Timber.e("Can't proceed with onNonEmptyBlockBackspaceClicked, because holder.adapter position is NO_POSITION")

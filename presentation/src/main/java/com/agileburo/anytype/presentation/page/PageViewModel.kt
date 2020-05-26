@@ -341,7 +341,10 @@ class PageViewModel(
             .proxies
             .changes
             .stream()
-            .onEach { update -> orchestrator.textInteractor.consume(update, context) }
+            .filterNotNull()
+            .onEach { update ->
+                orchestrator.textInteractor.consume(update, context)
+            }
             .launchIn(viewModelScope)
 
         orchestrator
@@ -349,6 +352,7 @@ class PageViewModel(
             .saves
             .stream()
             .debounce(TEXT_CHANGES_DEBOUNCE_DURATION)
+            .filterNotNull()
             .onEach { update ->
                 blocks = blocks.map { block ->
                     if (block.id == update.target) {
@@ -529,25 +533,6 @@ class PageViewModel(
         }
     }
 
-    fun onEmptyBlockBackspaceClicked(id: String) {
-        Timber.d("onEmptyBlockBackspaceClicked: $id")
-        proceedWithUnlinking(target = id)
-    }
-
-    fun onNonEmptyBlockBackspaceClicked(id: String) {
-        val page = blocks.first { it.id == context }
-        val index = page.children.indexOf(id)
-        if (index > 0) {
-            val previous = page.children[index.dec()]
-            proceedWithMergingBlocks(
-                previous = previous,
-                id = id
-            )
-        } else {
-            Timber.d("Skipping merge on non-empty-block-backspace-pressed event")
-        }
-    }
-
     private fun proceedWithMergingBlocks(id: String, previous: String) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
@@ -562,8 +547,39 @@ class PageViewModel(
 
     fun onSplitLineEnterClicked(
         target: String,
-        index: Int
+        index: Int,
+        text: String,
+        marks: List<Content.Text.Mark>
     ) {
+        blocks = blocks.map { block ->
+            if (block.id == target) {
+                block.copy(
+                    content = block.content<Content.Text>().copy(
+                        text = text,
+                        marks = marks
+                    )
+                )
+            } else {
+                block
+            }
+        }
+
+        viewModelScope.launch {
+            orchestrator.proxies.saves.send(null)
+            orchestrator.proxies.changes.send(null)
+        }
+
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Text.UpdateText(
+                    context = context,
+                    target = target,
+                    marks = marks,
+                    text = text
+                )
+            )
+        }
+
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.Split(
@@ -610,6 +626,58 @@ class PageViewModel(
                 id = id,
                 style = Content.Text.Style.P
             )
+        }
+    }
+
+    fun onEmptyBlockBackspaceClicked(id: String) {
+        Timber.d("onEmptyBlockBackspaceClicked: $id")
+        proceedWithUnlinking(target = id)
+    }
+
+    fun onNonEmptyBlockBackspaceClicked(
+        id: String,
+        text: String,
+        marks: List<Content.Text.Mark>
+    ) {
+        blocks = blocks.map { block ->
+            if (block.id == id) {
+                block.copy(
+                    content = block.content<Content.Text>().copy(
+                        text = text,
+                        marks = marks
+                    )
+                )
+            } else {
+                block
+            }
+        }
+
+        viewModelScope.launch {
+            orchestrator.proxies.saves.send(null)
+            orchestrator.proxies.changes.send(null)
+        }
+
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Text.UpdateText(
+                    context = context,
+                    target = id,
+                    marks = marks,
+                    text = text
+                )
+            )
+        }
+
+        val page = blocks.first { it.id == context }
+        val index = page.children.indexOf(id)
+        if (index > 0) {
+            val previous = page.children[index.dec()]
+            proceedWithMergingBlocks(
+                previous = previous,
+                id = id
+            )
+        } else {
+            Timber.d("Skipping merge on non-empty-block-backspace-pressed event")
         }
     }
 

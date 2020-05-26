@@ -30,7 +30,6 @@ import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_page.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
-import kotlinx.android.synthetic.main.item_block_video.view.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -3242,9 +3241,9 @@ class BlockAdapterTest {
     ): BlockAdapter {
         return BlockAdapter(
             blocks = views,
-            onNonEmptyBlockBackspaceClicked = {},
+            onNonEmptyBlockBackspaceClicked = { _, _ -> },
             onEmptyBlockBackspaceClicked = {},
-            onSplitLineEnterClicked = { _, _ -> },
+            onSplitLineEnterClicked = { _, _, _ -> },
             onEndLineEnterClicked = { _, _ -> },
             onTextChanged = onTextChanged,
             onCheckboxClicked = {},

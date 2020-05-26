@@ -2443,7 +2443,7 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should proceed with merging the first paragraph with the second on non-empty-block-backspace-pressed event`() {
+    fun `should update text and proceed with merging the first paragraph with the second on non-empty-block-backspace-pressed event`() {
 
         val root = MockDataFactory.randomUuid()
         val firstChild = MockDataFactory.randomUuid()
@@ -2476,6 +2476,7 @@ class PageViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage()
         stubMergeBlocks(root)
+        stubUpdateText()
         buildViewModel()
 
         vm.open(root)
@@ -2487,9 +2488,34 @@ class PageViewModelTest {
             hasFocus = true
         )
 
-        vm.onNonEmptyBlockBackspaceClicked(
-            id = thirdChild
+        val text = MockDataFactory.randomString()
+
+        vm.onTextChanged(
+            id = thirdChild,
+            marks = emptyList(),
+            text = text
         )
+
+        vm.onNonEmptyBlockBackspaceClicked(
+            id = thirdChild,
+            marks = emptyList(),
+            text = text
+        )
+
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        runBlockingTest {
+            verify(updateText, times(1)).invoke(
+                params = eq(
+                    UpdateText.Params(
+                        context = root,
+                        text = text,
+                        marks = emptyList(),
+                        target = thirdChild
+                    )
+                )
+            )
+        }
 
         runBlockingTest {
             verify(mergeBlocks, times(1)).invoke(
@@ -2628,7 +2654,7 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should proceed with splittig block on split-enter-key event`() {
+    fun `should update text and proceed with splittig block on split-enter-key event`() {
 
         // SETUP
 
@@ -2656,7 +2682,7 @@ class PageViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage()
         buildViewModel()
-
+        stubUpdateText()
         stubSplitBlocks(root)
 
         vm.open(root)
@@ -2672,10 +2698,35 @@ class PageViewModelTest {
 
         val index = MockDataFactory.randomInt()
 
+        val text = MockDataFactory.randomString()
+
+        vm.onTextChanged(
+            id = child,
+            text = text,
+            marks = emptyList()
+        )
+
         vm.onSplitLineEnterClicked(
             target = child,
-            index = index
+            index = index,
+            marks = emptyList(),
+            text = text
         )
+
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        runBlockingTest {
+            verify(updateText, times(1)).invoke(
+                params = eq(
+                    UpdateText.Params(
+                        context = root,
+                        text = text,
+                        target = child,
+                        marks = emptyList()
+                    )
+                )
+            )
+        }
 
         runBlockingTest {
             verify(splitBlock, times(1)).invoke(

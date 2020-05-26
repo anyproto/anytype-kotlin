@@ -62,6 +62,8 @@ enum class UiBlock {
         category == Category.TEXT || category == Category.LIST
     }
 
+    fun isCode() : Boolean = this == CODE
+
     enum class Category {
         TEXT, LIST, PAGE, OBJECT, OTHER
     }

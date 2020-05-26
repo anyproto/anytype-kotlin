@@ -213,5 +213,6 @@ fun UiBlock.style(): Block.Content.Text.Style = when (this) {
     UiBlock.BULLETED -> Block.Content.Text.Style.BULLET
     UiBlock.NUMBERED -> Block.Content.Text.Style.NUMBERED
     UiBlock.TOGGLE -> Block.Content.Text.Style.TOGGLE
+    UiBlock.CODE -> Block.Content.Text.Style.CODE_SNIPPET
     else -> throw IllegalStateException("Could not extract style from block: $this")
 }

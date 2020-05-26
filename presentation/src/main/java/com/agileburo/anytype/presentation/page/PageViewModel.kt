@@ -1158,7 +1158,7 @@ class PageViewModel(
     }
 
     override fun onTurnIntoBlockClicked(target: String, block: UiBlock) {
-        if (block.isText()) {
+        if (block.isText() || block.isCode()) {
             proceedWithUpdatingTextStyle(
                 style = block.style(),
                 targets = listOf(target)
@@ -1168,7 +1168,7 @@ class PageViewModel(
     }
 
     override fun onTurnIntoMultiSelectBlockClicked(block: UiBlock) {
-        if (block.isText()) {
+        if (block.isText() || block.isCode()) {
             val targets = currentSelection().toList()
             clearSelections()
             proceedWithUpdatingTextStyle(

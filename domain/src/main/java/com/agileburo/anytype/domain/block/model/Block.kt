@@ -53,9 +53,6 @@ data class Block(
 
         fun asText() = this as Text
         fun asLink() = this as Link
-        fun asDashboard() = this as Dashboard
-        fun asDivider() = this as Divider
-        fun asFile() = this as File
 
         /**
          * Smart block.
@@ -133,14 +130,6 @@ data class Block(
 
         data class Layout(val type: Type) : Content() {
             enum class Type { ROW, COLUMN, DIV }
-        }
-
-        data class Image(
-            val path: String
-        ) : Content()
-
-        data class Dashboard(val type: Type) : Content() {
-            enum class Type { MAIN_SCREEN, ARCHIVE }
         }
 
         data class Page(val style: Style) : Content() {

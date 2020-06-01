@@ -13,7 +13,8 @@ import javax.inject.Singleton
         ConfigModule::class,
         DeviceModule::class,
         UtilModule::class,
-        EmojiModule::class
+        EmojiModule::class,
+        ClipboardModule::class
     ]
 )
 interface MainComponent {

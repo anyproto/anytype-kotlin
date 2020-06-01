@@ -1,12 +1,14 @@
 package com.agileburo.anytype.domain.block.repo
 
-import com.agileburo.anytype.domain.block.interactor.Clipboard
 import com.agileburo.anytype.domain.block.model.Command
+import com.agileburo.anytype.domain.clipboard.Copy
+import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.event.model.Payload
 
 interface BlockRepository {
+
     suspend fun dnd(command: Command.Dnd)
     suspend fun unlink(command: Command.Unlink): Payload
 
@@ -79,5 +81,6 @@ interface BlockRepository {
     suspend fun undo(command: Command.Undo) : Payload
     suspend fun redo(command: Command.Redo) : Payload
 
-    suspend fun paste(command: Command.Paste) : Clipboard.Paste.Response
+    suspend fun copy(command: Command.Copy) : Copy.Response
+    suspend fun paste(command: Command.Paste) : Paste.Response
 }

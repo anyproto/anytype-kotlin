@@ -683,12 +683,11 @@ class BlockExtensionTest {
 
     @Test(expected = ClassCastException::class)
     fun `should throw exception when block is not text`() {
+
         val block = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
-            content = Block.Content.Dashboard(
-                type = Block.Content.Dashboard.Type.MAIN_SCREEN
-            ),
+            content = Block.Content.Divider,
             children = emptyList()
         )
         val range = IntRange(10, 13)

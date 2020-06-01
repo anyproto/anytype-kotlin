@@ -40,4 +40,5 @@ interface BlockRemote {
     suspend fun redo(command: CommandEntity.Redo) : PayloadEntity
     suspend fun archiveDocument(command: CommandEntity.ArchiveDocument)
     suspend fun paste(command: CommandEntity.Paste) : Response.Clipboard.Paste
+    suspend fun copy(command: CommandEntity.Copy) : Response.Clipboard.Copy
 }

@@ -5,9 +5,15 @@ import anytype.model.Models.Block
 import com.agileburo.anytype.data.auth.model.BlockEntity
 import com.agileburo.anytype.data.auth.model.PayloadEntity
 import com.agileburo.anytype.data.auth.model.PositionEntity
-import com.agileburo.anytype.middleware.toMiddleware
+import com.agileburo.anytype.middleware.converters.block
+import com.agileburo.anytype.middleware.converters.blocks
+import com.agileburo.anytype.middleware.converters.toMiddleware
 
 class MiddlewareMapper {
+
+    fun toMiddleware(blocks: List<BlockEntity>) : List<Block> {
+        return blocks.map { it.block() }
+    }
 
     fun toMiddleware(style: BlockEntity.Content.Text.Style): Block.Content.Text.Style {
         return style.toMiddleware()
@@ -29,5 +35,9 @@ class MiddlewareMapper {
 
     fun toMiddleware(alignment: BlockEntity.Align): Block.Align {
         return alignment.toMiddleware()
+    }
+
+    fun toEntity(blocks: List<Block>) : List<BlockEntity> {
+        return blocks.blocks()
     }
 }

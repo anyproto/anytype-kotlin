@@ -67,4 +67,6 @@ public interface MiddlewareService {
     Block.Set.Details.Response blockSetDetails(Block.Set.Details.Request request) throws Exception;
 
     Block.Paste.Response blockPaste(Block.Paste.Request request) throws Exception;
+
+    Block.Copy.Response blockCopy(Block.Copy.Request request) throws Exception;
 }

@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:id="@+id/delete"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:paddingStart="20dp"
         android:paddingEnd="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -30,6 +30,7 @@
         android:id="@+id/convert"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -52,6 +53,7 @@
         style="@style/BottomMultiSelectToolbarOptionStyle"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -63,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/more" />
+            android:text="@string/copy" />
 
     </FrameLayout>
 
@@ -88,12 +90,12 @@
     </FrameLayout>
 
     <FrameLayout
-        android:visibility="invisible"
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

@@ -2,7 +2,9 @@ package com.agileburo.anytype.middleware.interactor
 
 import anytype.model.Models.Block
 import com.agileburo.anytype.data.auth.model.BlockEntity
-import com.agileburo.anytype.middleware.toMiddleware
+import com.agileburo.anytype.middleware.converters.state
+import com.agileburo.anytype.middleware.converters.toMiddleware
+import com.agileburo.anytype.middleware.converters.type
 
 class MiddlewareFactory {
 
@@ -29,8 +31,8 @@ class MiddlewareFactory {
             }
             is BlockEntity.Prototype.File -> {
                 val file = Block.Content.File.newBuilder().apply {
-                    state = prototype.state.toMiddleware()
-                    type = prototype.type.toMiddleware()
+                    state = prototype.state.state()
+                    type = prototype.type.type()
                 }
                 builder.setFile(file).build()
             }

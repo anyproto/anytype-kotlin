@@ -4,7 +4,8 @@
 
 ### New features 🚀
 
-*
+* Select text and copy-paste inside Anytype. First iteration (#467)
+* Copy and paste multiple blocks in multi-select mode. First iteration (#467)
 
 ### Design & UX 🔳
 
@@ -12,7 +13,8 @@
 
 ### Fixes & tech 🚒
 
-*
+* Resolve race conditions on split and merge (#463, #448)
+* Turn-into code block in edit-mode and multi-select mode does not work (#468)
 
 ### Middleware ⚙️
 

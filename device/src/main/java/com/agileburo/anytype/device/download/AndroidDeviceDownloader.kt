@@ -8,7 +8,7 @@ import android.net.Uri
 import android.os.Environment.DIRECTORY_DOWNLOADS
 import timber.log.Timber
 
-class DeviceDownloader(private val context: Context) {
+class AndroidDeviceDownloader(private val context: Context) {
 
     private val manager by lazy {
         context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager

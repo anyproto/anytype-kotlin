@@ -109,4 +109,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun paste(
         command: CommandEntity.Paste
     ): Response.Clipboard.Paste = remote.paste(command)
+
+    override suspend fun copy(
+        command: CommandEntity.Copy
+    ): Response.Clipboard.Copy = remote.copy(command)
 }

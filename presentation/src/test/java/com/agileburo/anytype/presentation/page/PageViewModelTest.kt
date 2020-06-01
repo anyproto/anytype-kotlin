@@ -11,6 +11,8 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
+import com.agileburo.anytype.domain.clipboard.Copy
+import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.download.DownloadFile
@@ -113,7 +115,10 @@ class PageViewModelTest {
     lateinit var uploadUrl: UploadUrl
 
     @Mock
-    lateinit var paste: Clipboard.Paste
+    lateinit var paste: Paste
+
+    @Mock
+    lateinit var copy: Copy
 
     @Mock
     lateinit var undo: Undo
@@ -4266,7 +4271,8 @@ class PageViewModelTest {
                 ),
                 updateAlignment = updateAlignment,
                 setupBookmark = setupBookmark,
-                paste = paste
+                paste = paste,
+                copy = copy
             )
         )
     }

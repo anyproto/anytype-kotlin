@@ -56,17 +56,9 @@ data class BlockEntity(
             enum class Type { ROW, COLUMN, DIV }
         }
 
-        data class Image(
-            val path: String
-        ) : Content()
-
         data class Icon(
             val name: String
         ) : Content()
-
-        data class Dashboard(val type: Type) : Content() {
-            enum class Type { MAIN_SCREEN, ARCHIVE }
-        }
 
         data class Page(val style: Style) : Content() {
             enum class Style { EMPTY, TASK, SET }

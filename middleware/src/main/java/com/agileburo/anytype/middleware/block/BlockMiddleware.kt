@@ -5,8 +5,8 @@ import com.agileburo.anytype.data.auth.model.ConfigEntity
 import com.agileburo.anytype.data.auth.model.PayloadEntity
 import com.agileburo.anytype.data.auth.model.Response
 import com.agileburo.anytype.data.auth.repo.block.BlockRemote
+import com.agileburo.anytype.middleware.converters.mark
 import com.agileburo.anytype.middleware.interactor.Middleware
-import com.agileburo.anytype.middleware.toMiddleware
 
 class BlockMiddleware(
     private val middleware: Middleware
@@ -41,7 +41,7 @@ class BlockMiddleware(
             command.contextId,
             command.blockId,
             command.text,
-            command.marks.map { it.toMiddleware() }
+            command.marks.map { it.mark() }
         )
     }
 
@@ -133,4 +133,8 @@ class BlockMiddleware(
     override suspend fun paste(
         command: CommandEntity.Paste
     ): Response.Clipboard.Paste = middleware.paste(command)
+
+    override suspend fun copy(
+        command: CommandEntity.Copy
+    ): Response.Clipboard.Copy = middleware.copy(command)
 }

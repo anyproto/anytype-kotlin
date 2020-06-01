@@ -6,8 +6,8 @@ import com.agileburo.anytype.data.auth.model.AccountEntity
 import com.agileburo.anytype.data.auth.model.WalletEntity
 import com.agileburo.anytype.data.auth.repo.AuthRemote
 import com.agileburo.anytype.middleware.EventProxy
+import com.agileburo.anytype.middleware.converters.toAccountEntity
 import com.agileburo.anytype.middleware.interactor.Middleware
-import com.agileburo.anytype.middleware.toAccountEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.filter

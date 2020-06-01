@@ -1,7 +1,6 @@
-package com.agileburo.anytype.middleware
+package com.agileburo.anytype.middleware.converters
 
 import anytype.Events
-import anytype.model.Models
 import anytype.model.Models.Account
 import anytype.model.Models.Block
 import com.agileburo.anytype.data.auth.model.AccountEntity
@@ -11,7 +10,6 @@ import com.google.protobuf.Struct
 import com.google.protobuf.Value
 import timber.log.Timber
 
-
 fun Events.Event.Account.Show.toAccountEntity(): AccountEntity {
     return AccountEntity(
         id = account.id,
@@ -20,69 +18,6 @@ fun Events.Event.Account.Show.toAccountEntity(): AccountEntity {
             account.avatar.color
         else null
     )
-}
-
-fun BlockEntity.Content.Text.Mark.toMiddleware(): Block.Content.Text.Mark {
-    val rangeModel = Models.Range.newBuilder()
-        .setFrom(range.first)
-        .setTo(range.last)
-        .build()
-
-    return when (type) {
-        BlockEntity.Content.Text.Mark.Type.BOLD -> {
-            Block.Content.Text.Mark
-                .newBuilder()
-                .setType(Block.Content.Text.Mark.Type.Bold)
-                .setRange(rangeModel)
-                .build()
-        }
-        BlockEntity.Content.Text.Mark.Type.ITALIC -> {
-            Block.Content.Text.Mark
-                .newBuilder()
-                .setType(Block.Content.Text.Mark.Type.Italic)
-                .setRange(rangeModel)
-                .build()
-        }
-        BlockEntity.Content.Text.Mark.Type.STRIKETHROUGH -> {
-            Block.Content.Text.Mark
-                .newBuilder()
-                .setType(Block.Content.Text.Mark.Type.Strikethrough)
-                .setRange(rangeModel)
-                .build()
-        }
-        BlockEntity.Content.Text.Mark.Type.TEXT_COLOR -> {
-            Block.Content.Text.Mark
-                .newBuilder()
-                .setType(Block.Content.Text.Mark.Type.TextColor)
-                .setRange(rangeModel)
-                .setParam(param)
-                .build()
-        }
-        BlockEntity.Content.Text.Mark.Type.LINK -> {
-            Block.Content.Text.Mark
-                .newBuilder()
-                .setType(Block.Content.Text.Mark.Type.Link)
-                .setRange(rangeModel)
-                .setParam(param)
-                .build()
-        }
-        BlockEntity.Content.Text.Mark.Type.BACKGROUND_COLOR -> {
-            Block.Content.Text.Mark
-                .newBuilder()
-                .setType(Block.Content.Text.Mark.Type.BackgroundColor)
-                .setRange(rangeModel)
-                .setParam(param)
-                .build()
-        }
-        BlockEntity.Content.Text.Mark.Type.KEYBOARD -> {
-            Block.Content.Text.Mark
-                .newBuilder()
-                .setType(Block.Content.Text.Mark.Type.Keyboard)
-                .setRange(rangeModel)
-                .build()
-        }
-        else -> throw IllegalStateException("Unsupported mark type: ${type.name}")
-    }
 }
 
 fun Block.fields(): BlockEntity.Fields = BlockEntity.Fields().also { result ->

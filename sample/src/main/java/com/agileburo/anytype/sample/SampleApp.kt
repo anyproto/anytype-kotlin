@@ -18,4 +18,8 @@ class SampleApp : Application() {
         else
             Timber.plant(CrashlyticsTree())
     }
+
+    companion object {
+        const val BASE_URI = "content://com.agileburo.anytype"
+    }
 }

@@ -5,6 +5,9 @@ import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.clipboard.Clipboard
+import com.agileburo.anytype.domain.clipboard.Copy
+import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.download.Downloader
 import com.agileburo.anytype.domain.event.interactor.EventChannel
@@ -323,7 +326,8 @@ class PageModule {
         updateAlignment: UpdateAlignment,
         textInteractor: Interactor.TextInteractor,
         setupBookmark: SetupBookmark,
-        paste: Clipboard.Paste,
+        copy: Copy,
+        paste: Paste,
         undo: Undo,
         redo: Redo
     ): Orchestrator = Orchestrator(
@@ -348,7 +352,8 @@ class PageModule {
         updateText = updateText,
         updateAlignment = updateAlignment,
         setupBookmark = setupBookmark,
-        paste = paste
+        paste = paste,
+        copy = copy
     )
 
     @Provides
@@ -390,8 +395,22 @@ class PageModule {
     @Provides
     @PerScreen
     fun provideClipboardPasteUseCase(
-        repo: BlockRepository
-    ) : Clipboard.Paste = Clipboard.Paste(
-        repo = repo
+        repo: BlockRepository,
+        clipboard: Clipboard,
+        matcher: Clipboard.UriMatcher
+    ) : Paste = Paste(
+        repo = repo,
+        clipboard = clipboard,
+        matcher = matcher
+    )
+
+    @Provides
+    @PerScreen
+    fun provideCopyUseCase(
+        repo: BlockRepository,
+        clipboard: Clipboard
+    ) : Copy = Copy(
+        repo = repo,
+        clipboard = clipboard
     )
 }

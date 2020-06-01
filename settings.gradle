@@ -13,3 +13,4 @@ include ':app',
         ':library-page-icon-picker-widget',
         ':library-emojifier',
         ':sample'
+include ':clipboard'

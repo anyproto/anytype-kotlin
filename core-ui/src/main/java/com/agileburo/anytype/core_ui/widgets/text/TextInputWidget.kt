@@ -13,6 +13,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
 import com.agileburo.anytype.core_ui.extensions.toast
+import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.agileburo.anytype.core_ui.widgets.text.highlight.HighlightDrawer
@@ -28,10 +29,12 @@ class TextInputWidget : AppCompatEditText {
     }
 
     private val watchers: MutableList<TextWatcher> = mutableListOf()
+
     private var highlightDrawer: HighlightDrawer? = null
 
     var selectionDetector: ((IntRange) -> Unit)? = null
-    var clipboardDetector: (() -> Unit)?  = null
+
+    var clipboardInterceptor: ClipboardInterceptor? = null
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
@@ -121,19 +124,40 @@ class TextInputWidget : AppCompatEditText {
     }
 
     override fun onTextContextMenuItem(id: Int): Boolean {
-        var consumed = true
+        if (clipboardInterceptor == null) {
+            return super.onTextContextMenuItem(id)
+        }
+
+        var consumed = false
+
         when(id) {
             R.id.paste -> {
-                clipboardDetector?.invoke()
-            }
-            R.id.cut -> {
-                consumed = super.onTextContextMenuItem(id)
+                if (clipboardInterceptor != null) {
+                    clipboardInterceptor?.onClipboardAction(
+                        ClipboardInterceptor.Action.Paste(
+                            selection = selectionStart..selectionEnd
+                        )
+                    )
+                    consumed = true
+                }
             }
             R.id.copy -> {
-                consumed = super.onTextContextMenuItem(id)
+                if (clipboardInterceptor != null) {
+                    clipboardInterceptor?.onClipboardAction(
+                        ClipboardInterceptor.Action.Copy(
+                            selection = selectionStart..selectionEnd
+                        )
+                    )
+                    consumed = true
+                }
             }
         }
-        return consumed
+
+        return if (!consumed) {
+            super.onTextContextMenuItem(id)
+        } else {
+            consumed
+        }
     }
 
     override fun onDraw(canvas: Canvas?) {

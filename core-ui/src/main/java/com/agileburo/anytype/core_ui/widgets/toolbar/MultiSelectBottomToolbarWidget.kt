@@ -39,6 +39,9 @@ class MultiSelectBottomToolbarWidget : ConstraintLayout {
     fun deleteClicks() = delete.clicks()
     fun turnIntoClicks() = convert.clicks()
 
+    // Temporary button usage for copying.
+    fun copyClicks() = more.clicks()
+
     fun showWithAnimation() {
         ObjectAnimator.ofFloat(this, ANIMATED_PROPERTY, 0f).apply {
             duration = ANIMATION_DURATION

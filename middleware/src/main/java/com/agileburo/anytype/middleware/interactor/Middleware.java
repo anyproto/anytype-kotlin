@@ -782,6 +782,8 @@ public class Middleware {
             html = command.getHtml();
         }
 
+        List<Models.Block> blocks = mapper.toMiddleware(command.getBlocks());
+
         Block.Paste.Request request = Block.Paste.Request
                 .newBuilder()
                 .setContextId(command.getContext())
@@ -789,6 +791,7 @@ public class Middleware {
                 .setTextSlot(command.getText())
                 .setHtmlSlot(html)
                 .setSelectedTextRange(range)
+                .addAllAnySlot(blocks)
                 .addAllSelectedBlockIds(command.getSelected())
                 .build();
 
@@ -806,6 +809,49 @@ public class Middleware {
                 response.getCaretPosition(),
                 response.getBlockIdsList(),
                 mapper.toPayload(response.getEvent())
+        );
+    }
+
+    public Response.Clipboard.Copy copy(CommandEntity.Copy command) throws Exception {
+
+        Range range;
+
+        if (command.getRange() != null) {
+            range = Range.newBuilder()
+                    .setFrom(command.getRange().getFirst())
+                    .setTo(command.getRange().getLast())
+                    .build();
+        } else {
+            range = Range.getDefaultInstance();
+        }
+
+        List<Models.Block> blocks = mapper.toMiddleware(command.getBlocks());
+
+        Block.Copy.Request.Builder builder = Block.Copy.Request.newBuilder();
+
+        if (range != null) {
+            builder.setSelectedTextRange(range);
+        }
+
+        Block.Copy.Request request = builder
+                .setContextId(command.getContext())
+                .addAllBlocks(blocks)
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Block.Copy.Response response = service.blockCopy(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return new Response.Clipboard.Copy(
+                response.getTextSlot(),
+                response.getHtmlSlot(),
+                mapper.toEntity(response.getAnySlotList())
         );
     }
 }

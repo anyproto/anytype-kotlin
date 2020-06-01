@@ -3,10 +3,11 @@ package com.agileburo.anytype.data.auth.mapper
 import com.agileburo.anytype.data.auth.model.*
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.model.Wallet
-import com.agileburo.anytype.domain.block.interactor.Clipboard
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.model.Position
+import com.agileburo.anytype.domain.clipboard.Copy
+import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
@@ -49,10 +50,8 @@ fun BlockEntity.Details.toDomain(): Block.Details = Block.Details(
 
 fun BlockEntity.Content.toDomain(): Block.Content = when (this) {
     is BlockEntity.Content.Text -> toDomain()
-    is BlockEntity.Content.Dashboard -> toDomain()
     is BlockEntity.Content.Page -> toDomain()
     is BlockEntity.Content.Layout -> toDomain()
-    is BlockEntity.Content.Image -> toDomain()
     is BlockEntity.Content.Link -> toDomain()
     is BlockEntity.Content.Divider -> toDomain()
     is BlockEntity.Content.File -> toDomain()
@@ -116,12 +115,6 @@ fun BlockEntity.Content.Text.toDomain(): Block.Content.Text {
     )
 }
 
-fun BlockEntity.Content.Dashboard.toDomain(): Block.Content.Dashboard {
-    return Block.Content.Dashboard(
-        type = Block.Content.Dashboard.Type.valueOf(type.name)
-    )
-}
-
 fun BlockEntity.Content.Page.toDomain(): Block.Content.Page {
     return Block.Content.Page(
         style = Block.Content.Page.Style.valueOf(style.name)
@@ -148,24 +141,12 @@ fun Block.Content.Layout.toEntity(): BlockEntity.Content.Layout {
     )
 }
 
-fun BlockEntity.Content.Image.toDomain(): Block.Content.Image {
-    return Block.Content.Image(
-        path = path
-    )
-}
-
 fun BlockEntity.Content.Divider.toDomain() = Block.Content.Divider
 
 
 fun BlockEntity.Content.Smart.toDomain() = Block.Content.Smart(
     type = Block.Content.Smart.Type.valueOf(type.name)
 )
-
-fun Block.Content.Image.toEntity(): BlockEntity.Content.Image {
-    return BlockEntity.Content.Image(
-        path = path
-    )
-}
 
 fun BlockEntity.Content.Text.Mark.toDomain(): Block.Content.Text.Mark {
     return Block.Content.Text.Mark(
@@ -186,10 +167,8 @@ fun Block.toEntity(): BlockEntity {
 
 fun Block.Content.toEntity(): BlockEntity.Content = when (this) {
     is Block.Content.Text -> toEntity()
-    is Block.Content.Dashboard -> toEntity()
     is Block.Content.Page -> toEntity()
     is Block.Content.Layout -> toEntity()
-    is Block.Content.Image -> toEntity()
     is Block.Content.Link -> toEntity()
     is Block.Content.Divider -> toEntity()
     is Block.Content.File -> toEntity()
@@ -246,12 +225,6 @@ fun Block.Content.Text.toEntity(): BlockEntity.Content.Text {
         text = text,
         marks = marks.map { it.toEntity() },
         style = BlockEntity.Content.Text.Style.valueOf(style.name)
-    )
-}
-
-fun Block.Content.Dashboard.toEntity(): BlockEntity.Content.Dashboard {
-    return BlockEntity.Content.Dashboard(
-        type = BlockEntity.Content.Dashboard.Type.valueOf(type.name)
     )
 }
 
@@ -400,6 +373,12 @@ fun Command.Paste.toEntity() = CommandEntity.Paste(
     text = text,
     html = html,
     selected = selected,
+    blocks = blocks.map { it.toEntity() },
+    range = range
+)
+
+fun Command.Copy.toEntity() = CommandEntity.Copy(
+    context = context,
     blocks = blocks.map { it.toEntity() },
     range = range
 )
@@ -573,8 +552,14 @@ fun BlockEntity.Align.toDomain(): Block.Align = when (this) {
     BlockEntity.Align.AlignRight -> Block.Align.AlignRight
 }
 
-fun Response.Clipboard.Paste.toDomain() = Clipboard.Paste.Response(
+fun Response.Clipboard.Paste.toDomain() = Paste.Response(
     blocks = blocks,
     cursor = cursor,
     payload = payload.toDomain()
+)
+
+fun Response.Clipboard.Copy.toDomain() = Copy.Response(
+    text = plain,
+    html = html,
+    blocks = blocks.map { it.toDomain() }
 )

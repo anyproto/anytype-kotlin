@@ -38,6 +38,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
+import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_utils.ext.typeOf
 import timber.log.Timber
 
@@ -72,7 +73,7 @@ class BlockAdapter(
     private val onToggleClicked: (String) -> Unit,
     private val onMarkupActionClicked: (Markup.Type) -> Unit,
     private val onLongClickListener: (String) -> Unit,
-    private val clipboardDetector: (IntRange) -> Unit
+    private val clipboardInterceptor: ClipboardInterceptor
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -844,9 +845,7 @@ class BlockAdapter(
             else
                 holder.setOnClickListener { onTextInputClicked(blocks[holder.adapterPosition].id) }
 
-            holder.content.clipboardDetector = {
-                clipboardDetector(holder.content.selectionStart..holder.content.selectionEnd)
-            }
+            holder.content.clipboardInterceptor = clipboardInterceptor
         }
     }
 

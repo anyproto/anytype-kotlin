@@ -25,7 +25,6 @@ fun Map<String, List<Block>>.asRender(anchor: String): List<Block> {
     children.forEach { child ->
         when (child.content) {
             is Content.Text,
-            is Content.Image,
             is Content.Link,
             is Content.Divider,
             is Content.Bookmark,

@@ -1,6 +1,8 @@
 package com.agileburo.anytype.presentation.page.editor
 
 import com.agileburo.anytype.domain.block.interactor.*
+import com.agileburo.anytype.domain.clipboard.Copy
+import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.event.model.Payload
@@ -28,7 +30,8 @@ class Orchestrator(
     private val updateText: UpdateText,
     private val updateAlignment: UpdateAlignment,
     private val setupBookmark: SetupBookmark,
-    private val paste: Clipboard.Paste,
+    private val copy: Copy,
+    private val paste: Paste,
     private val undo: Undo,
     private val redo: Redo,
     val memory: Editor.Memory,
@@ -263,14 +266,10 @@ class Orchestrator(
                 }
                 is Intent.Clipboard.Paste -> {
                     paste(
-                        params = Clipboard.Paste.Params(
+                        params = Paste.Params(
                             context = intent.context,
                             focus = intent.focus,
-                            range = intent.range,
-                            blocks = emptyList(),
-                            html = intent.html,
-                            text = intent.text,
-                            selected = intent.selected
+                            range = intent.range
                         )
                     ).proceed(
                         failure = defaultOnError,
@@ -278,6 +277,20 @@ class Orchestrator(
                             Timber.d("response: $response")
                             proxies.payloads.send(response.payload)
                         }
+                    )
+                }
+                is Intent.Clipboard.Copy -> {
+                    copy(
+                        params = Copy.Params(
+                            context = intent.context,
+                            blocks = intent.blocks,
+                            range = intent.range
+                        )
+                    ).proceed(
+                        success = {
+                            Timber.d("Copy sucessful")
+                        },
+                        failure = defaultOnError
                     )
                 }
             }

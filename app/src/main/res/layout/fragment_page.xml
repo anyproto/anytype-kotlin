@@ -24,6 +24,7 @@
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <FrameLayout
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:id="@+id/select"
             android:layout_width="wrap_content"
             android:layout_height="48dp"

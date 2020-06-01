@@ -1117,6 +1117,20 @@ class PageViewModel(
         }
     }
 
+    fun onMultiSelectCopyClicked() {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Clipboard.Copy(
+                    context = context,
+                    blocks = blocks.filter { block ->
+                        currentSelection().contains(block.id)
+                    },
+                    range = null
+                )
+            )
+        }
+    }
+
     fun onMultiSelectModeSelectAllClicked() {
         (stateData.value as ViewState.Success).let { state ->
             val update = state.blocks.map { block ->
@@ -1436,8 +1450,6 @@ class PageViewModel(
     }
 
     fun onPaste(
-        plain: String,
-        html: String?,
         range: IntRange
     ) {
         viewModelScope.launch {
@@ -1446,10 +1458,21 @@ class PageViewModel(
                     context = context,
                     focus = orchestrator.stores.focus.current(),
                     range = range,
-                    blocks = emptyList(),
-                    selected = emptyList(),
-                    html = html,
-                    text = plain
+                    selected = emptyList()
+                )
+            )
+        }
+    }
+
+    fun onCopy(
+        range: IntRange
+    ) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Clipboard.Copy(
+                    context = context,
+                    range = range,
+                    blocks = listOf(blocks.first { it.id == focus.value })
                 )
             )
         }

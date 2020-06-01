@@ -2,9 +2,10 @@ package com.agileburo.anytype.data.auth.repo.block
 
 import com.agileburo.anytype.data.auth.mapper.toDomain
 import com.agileburo.anytype.data.auth.mapper.toEntity
-import com.agileburo.anytype.domain.block.interactor.Clipboard
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.clipboard.Copy
+import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.event.model.Payload
 
@@ -126,5 +127,9 @@ class BlockDataRepository(
 
     override suspend fun paste(
         command: Command.Paste
-    ): Clipboard.Paste.Response = factory.remote.paste(command.toEntity()).toDomain()
+    ): Paste.Response = factory.remote.paste(command.toEntity()).toDomain()
+
+    override suspend fun copy(
+        command: Command.Copy
+    ): Copy.Response = factory.remote.copy(command.toEntity()).toDomain()
 }

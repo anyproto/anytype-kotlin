@@ -30,6 +30,7 @@ import com.agileburo.anytype.core_ui.menu.DocumentPopUpMenu
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_ui.state.ControlPanelState
+import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_ui.tools.FirstItemInvisibilityDetector
 import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
@@ -70,6 +71,7 @@ open class PageFragment :
     OnFragmentInteractionListener,
     AddBlockFragment.AddBlockActionReceiver,
     TurnIntoActionReceiver,
+    ClipboardInterceptor,
     PickiTCallbacks {
 
     private val vm by lazy {
@@ -139,22 +141,7 @@ open class PageFragment :
             onLongClickListener = vm::onBlockLongPressedClicked,
             onTitleTextInputClicked = vm::onTitleTextInputClicked,
             onClickListener = vm::onClickListener,
-            clipboardDetector = { range ->
-                // TODO this logic should be moved to device module
-                clipboard().primaryClip?.let { clip ->
-                    if (clip.itemCount > 0) {
-                        val item = clip.getItemAt(0)
-                        vm.onPaste(
-                            plain = item.text.toString(),
-                            html = if (item.htmlText != null)
-                                item.htmlText
-                            else
-                                null,
-                            range = range
-                        )
-                    }
-                }
-            }
+            clipboardInterceptor = this
         )
     }
 
@@ -328,6 +315,11 @@ open class PageFragment :
         bottomMenu
             .deleteClicks()
             .onEach { vm.onMultiSelectModeDeleteClicked() }
+            .launchIn(lifecycleScope)
+
+        bottomMenu
+            .copyClicks()
+            .onEach { vm.onMultiSelectCopyClicked() }
             .launchIn(lifecycleScope)
 
         bottomMenu
@@ -638,6 +630,13 @@ open class PageFragment :
             interpolator = DecelerateInterpolator()
             doOnEnd { topToolbar.visible() }
             start()
+        }
+    }
+
+    override fun onClipboardAction(action: ClipboardInterceptor.Action) {
+        when(action) {
+            is ClipboardInterceptor.Action.Copy -> vm.onCopy(action.selection)
+            is ClipboardInterceptor.Action.Paste -> vm.onPaste(action.selection)
         }
     }
 

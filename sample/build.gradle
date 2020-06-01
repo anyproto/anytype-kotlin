@@ -42,6 +42,10 @@ dependencies {
 
     def applicationDependencies = rootProject.ext.mainApplication
 
+    def protobufDependencies = rootProject.ext.protobuf
+
+    implementation protobufDependencies.protobufJava
+
     implementation 'com.github.HBiSoft:PickiT:0.1.9'
 
     implementation 'com.vdurmont:emoji-java:5.1.1'
@@ -49,6 +53,8 @@ dependencies {
     implementation project(':core-utils')
     implementation project(':core-ui')
     implementation project(':library-page-icon-picker-widget')
+    implementation project(':middleware')
+    implementation project(':protobuf')
 
     implementation applicationDependencies.timber
 

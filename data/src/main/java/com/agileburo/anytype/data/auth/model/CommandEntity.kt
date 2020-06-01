@@ -133,4 +133,10 @@ class CommandEntity {
         val html: String?,
         val blocks: List<BlockEntity>
     )
+
+    data class Copy(
+        val context: String,
+        val range: IntRange?,
+        val blocks: List<BlockEntity>
+    )
 }

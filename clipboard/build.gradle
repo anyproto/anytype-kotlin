@@ -1,0 +1,62 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    def config = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion config["compile_sdk"]
+
+    defaultConfig {
+        minSdkVersion config["min_sdk"]
+        targetSdkVersion config["target_sdk"]
+        versionCode config["version_code"]
+        versionName config["version_name"]
+
+        testInstrumentationRunner config["test_runner"]
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField ANYTYPE_CLIPBOARD_URI_TYPE, ANYTYPE_CLIPBOARD_URI, ANYTYPE_CLIPBOARD_URI_VALUE
+            buildConfigField ANYTYPE_CLIPBOARD_LABEL_TYPE, ANYTYPE_CLIPBOARD_LABEL, ANYTYPE_CLIPBOARD_LABEL_VALUE
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField ANYTYPE_CLIPBOARD_URI_TYPE, ANYTYPE_CLIPBOARD_URI, ANYTYPE_CLIPBOARD_URI_VALUE
+            buildConfigField ANYTYPE_CLIPBOARD_LABEL_TYPE, ANYTYPE_CLIPBOARD_LABEL, ANYTYPE_CLIPBOARD_LABEL_VALUE
+        }
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
+
+    implementation project(':data')
+
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutines
+    implementation applicationDependencies.timber
+
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.androidXTestCore
+    testImplementation unitTestDependencies.robolectric
+}

@@ -3,10 +3,10 @@ package com.agileburo.anytype.middleware.interactor
 import anytype.Events.Event
 import com.agileburo.anytype.data.auth.model.BlockEntity
 import com.agileburo.anytype.data.auth.model.EventEntity
-import com.agileburo.anytype.middleware.blocks
-import com.agileburo.anytype.middleware.entity
-import com.agileburo.anytype.middleware.fields
-import com.agileburo.anytype.middleware.marks
+import com.agileburo.anytype.middleware.converters.blocks
+import com.agileburo.anytype.middleware.converters.entity
+import com.agileburo.anytype.middleware.converters.fields
+import com.agileburo.anytype.middleware.converters.marks
 
 fun Event.Message.toEntity(
     context: String

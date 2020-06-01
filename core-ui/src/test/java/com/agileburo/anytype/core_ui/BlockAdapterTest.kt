@@ -23,9 +23,11 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.T
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.FOCUS_TIMEOUT_MILLIS
+import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget.Companion.TEXT_INPUT_WIDGET_INPUT_TYPE
 import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ext.hexColorCode
+import com.nhaarman.mockitokotlin2.mock
 import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_page.view.*
@@ -43,6 +45,8 @@ import kotlin.test.*
 class BlockAdapterTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
+
+    private val clipboardInterceptor : ClipboardInterceptor = mock()
 
     @Test
     fun `should return transparent hex code when int color value is zero`() {
@@ -3263,7 +3267,7 @@ class BlockAdapterTest {
             onLongClickListener = {},
             onTitleTextInputClicked = {},
             onClickListener = {},
-            clipboardDetector = {}
+            clipboardInterceptor = clipboardInterceptor
         )
     }
 }

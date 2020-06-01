@@ -56,9 +56,11 @@ sealed class Intent {
             val context: Id,
             val focus: Id,
             val selected: List<Id>,
-            val range: IntRange,
-            val text: String,
-            val html: String?,
+            val range: IntRange
+        ) : Clipboard()
+        class Copy(
+            val context: Id,
+            val range: IntRange?,
             val blocks: List<Block>
         ) : Clipboard()
     }

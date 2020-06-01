@@ -62,4 +62,5 @@ dependencies {
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.robolectric
     testImplementation unitTestDependencies.androidXTestCore
+    testImplementation unitTestDependencies.mockitoKotlin
 }

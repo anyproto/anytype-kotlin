@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.33 (WIP)
+## Version 0.0.33
 
 ### New features 🚀
 
@@ -15,10 +15,6 @@
 
 * Resolve race conditions on split and merge (#463, #448)
 * Turn-into code block in edit-mode and multi-select mode does not work (#468)
-
-### Middleware ⚙️
-
-*
 
 ## Version 0.0.32
 

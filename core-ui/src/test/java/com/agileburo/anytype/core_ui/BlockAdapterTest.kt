@@ -3185,6 +3185,7 @@ class BlockAdapterTest {
         assertTrue { holder.itemView.isSelected }
     }
 
+
 //    Turned off the test, because Robolectric is not working with MateralCardView
 //    @Test
 //    fun `should update selected state for bookmark`() {

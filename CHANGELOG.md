@@ -1,5 +1,23 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.34 (WIP)
+
+### New features 🚀
+
+*
+
+### Design & UX 🔳
+
+*
+
+### Fixes & tech 🚒
+
+* Should focus and open keyboard when creating headers or highlight block (#485)
+
+### Middleware ⚙
+
+*
+
 ## Version 0.0.33
 
 ### New features 🚀
@@ -33,7 +51,7 @@
 * Regression | Should convert an empty list block to a paragraph on enter-pressed event (#457)
 * Inconsistent backspace detection when user presses backspace on non-empty text where selection > 0 (#450)
 
-### Middleware ⚙️
+### Middleware ⚙
 
 * Updated middleware to `0.11.0` (#454)
 
@@ -61,7 +79,7 @@
 * Should persist home dashboard document order (#425)
 * New way to render background mark: using `Annotation` span instead of `BackgroundColorSpan` (#436)
 
-### Middleware ⚙️
+### Middleware ⚙
 
 * Updated middleware to `0.9.0` (#339)
 
@@ -152,7 +170,7 @@
 * Duplicate action should transfer the carriage to a new block (#352)
 * Duplicated-platform-classes issue caused by `emoji-java` library breaks Github Actions CI (#357)
 
-### Middleware ⚙️
+### Middleware ⚙
 
 * Updated middleware to `0.5.0` (#339)
 * Added `blockSetDetails` command (#339)
@@ -193,7 +211,7 @@
 * Should update link block titles when corresponding page titles have been updated (#283)
 * Should set "Untitled" as link's title if it's not set or blank (#283)
 
-### Middleware ⚙️
+### Middleware ⚙
 
 * Added `blockUndo` command (#284)
 * Added `blockRedo` command (#284)
@@ -217,7 +235,7 @@
 * New mappers (from middleware layer entity to data layer entity) (#140)
 * Introduced new rendering converter (from business tree-like data structures to flattened view data structures) (#313)
 
-### Middleware ⚙️
+### Middleware ⚙
 
 * Added `blockBookmarkFetch` command (#140)
 * Added `blockUpload` command (#295)
@@ -251,7 +269,7 @@
 * Different icons for different mime types for file blocks (#288)
 * Page icon picker (#280)
 
-### Middleware ⚙️
+### Middleware ⚙
 
 * Added `blockSetIconName` command (#280)
 
@@ -297,7 +315,7 @@
 * Default text color and default background color from app ressources aren't converted correctly to hex color code (#204)
 * Added scenarios for UI-testing (#241)
 
-### Middleware ⚙️
+### Middleware ⚙
 
 * Added `blockSplit` command (#229)
 * Added `blockSetTextBackgroundColor` command (#244)
@@ -330,7 +348,7 @@
 * Inconsistent behaviour while editing page's title on page screen (#182)
 * Event channel refactoring (decreased code duplication) (#194)
 
-### Middleware ⚙️
+### Middleware ⚙
 
 * Added `blockMerge` command (#159)
 
@@ -357,7 +375,7 @@
 * Markup is broken when user splits the range (#122)
 * Page title changes are not saved after user pressed backspace on empty page title block (#185). 
 
-### Middleware ⚙️
+### Middleware ⚙
 
 * Updated middleware library and protocol to 0.2.4 (#173, #181)
 * Added `blockCreatePage` command (#173)

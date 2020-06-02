@@ -161,13 +161,14 @@ sealed class BlockView : ViewType, Parcelable {
     data class HeaderOne(
         override val id: String,
         override val text: String,
+        override val focused: Boolean = false,
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val indent: Int = 0,
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false,
         override val alignment: Alignment? = null
-    ) : BlockView(), Text, Indentable, Permission, Selectable, Alignable {
+    ) : BlockView(), Text, Focusable, Indentable, Permission, Selectable, Alignable {
         override fun getViewType() = HOLDER_HEADER_ONE
     }
 
@@ -182,12 +183,13 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String,
         override val color: String? = null,
         override val text: String,
+        override val focused: Boolean = false,
         override val backgroundColor: String? = null,
         override val indent: Int,
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false,
         override val alignment: Alignment? = null
-    ) : BlockView(), Text, Indentable, Permission, Selectable, Alignable {
+    ) : BlockView(), Text, Focusable, Indentable, Permission, Selectable, Alignable {
         override fun getViewType() = HOLDER_HEADER_TWO
     }
 
@@ -202,12 +204,13 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String,
         override val color: String? = null,
         override val text: String,
+        override val focused: Boolean = false,
         override val backgroundColor: String? = null,
         override val indent: Int,
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false,
         override val alignment: Alignment? = null
-    ) : BlockView(), Text, Indentable, Permission, Selectable, Alignable {
+    ) : BlockView(), Text, Focusable, Indentable, Permission, Selectable, Alignable {
         override fun getViewType() = HOLDER_HEADER_THREE
     }
 
@@ -219,11 +222,12 @@ sealed class BlockView : ViewType, Parcelable {
     @Parcelize
     data class Highlight(
         override val id: String,
+        override val focused: Boolean = false,
         val text: String,
         override val indent: Int = 0,
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false
-    ) : BlockView(), Indentable, Permission, Selectable {
+    ) : BlockView(), Focusable, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_HIGHLIGHT
     }
 

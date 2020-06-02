@@ -262,7 +262,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             indentize(item)
 
             if (item.mode == BlockView.Mode.READ) {
+
                 enableReadOnlyMode()
+
                 header.setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
@@ -284,6 +286,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 enableEditMode()
 
                 select(item)
+
+                setFocus(item)
 
                 with(header) {
 
@@ -367,6 +371,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
                 select(item)
 
+                setFocus(item)
+
                 header.setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
@@ -444,6 +450,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 enableEditMode()
 
                 select(item)
+
+                setFocus(item)
 
                 header.setOnLongClickListener(
                     EditorLongClickListener(
@@ -1819,22 +1827,28 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 enableReadOnlyMode()
                 content.setText(item.text)
             } else {
+
                 enableEditMode()
-                content.clearTextWatchers()
-                content.setOnFocusChangeListener { _, hasFocus ->
-                    onFocusChanged(item.id, hasFocus)
-                }
-                content.setText(item.text)
-                content.addTextChangedListener(
-                    DefaultTextWatcher { text ->
-                        onTextChanged(item.id, text)
+
+                setFocus(item)
+
+                with(content) {
+                    clearTextWatchers()
+                    setOnFocusChangeListener { _, hasFocus ->
+                        onFocusChanged(item.id, hasFocus)
                     }
-                )
-                content.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener)
-                )
+                    setText(item.text)
+                    addTextChangedListener(
+                        DefaultTextWatcher { text ->
+                            onTextChanged(item.id, text)
+                        }
+                    )
+                    setOnLongClickListener(
+                        EditorLongClickListener(
+                            t = item.id,
+                            click = onLongClickListener)
+                    )
+                }
             }
         }
 

@@ -92,23 +92,19 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.H1 -> {
                             counter.reset()
-                            result.add(headerOne(mode, block, content, indent))
+                            result.add(headerOne(mode, block, focus, content, indent))
                         }
                         Content.Text.Style.H2 -> {
                             counter.reset()
-                            result.add(headerTwo(mode, block, content, indent))
+                            result.add(headerTwo(mode, block, focus, content, indent))
                         }
                         Content.Text.Style.H3, Content.Text.Style.H4 -> {
                             counter.reset()
-                            result.add(headerThree(mode, block, content, indent))
+                            result.add(headerThree(mode, block, focus, content, indent))
                         }
                         Content.Text.Style.QUOTE -> {
                             counter.reset()
-                            result.add(highlight(mode, block, content, indent))
-                        }
-                        Content.Text.Style.CODE_SNIPPET -> {
-                            counter.reset()
-                            result.add(code(mode, block, content, focus))
+                            result.add(highlight(mode, block, focus, content, indent))
                         }
                         Content.Text.Style.BULLET -> {
                             counter.reset()
@@ -117,6 +113,10 @@ class DefaultBlockViewRenderer(
                         Content.Text.Style.CHECKBOX -> {
                             counter.reset()
                             result.add(checkbox(mode, block, content, focus, indent))
+                        }
+                        Content.Text.Style.CODE_SNIPPET -> {
+                            counter.reset()
+                            result.add(code(mode, block, content, focus))
                         }
                     }
                 }
@@ -202,6 +202,7 @@ class DefaultBlockViewRenderer(
     private fun headerThree(
         mode: EditorMode,
         block: Block,
+        focus: Id,
         content: Content.Text,
         indent: Int
     ): BlockView.HeaderThree = BlockView.HeaderThree(
@@ -209,6 +210,7 @@ class DefaultBlockViewRenderer(
         id = block.id,
         text = content.text,
         color = content.color,
+        focused = block.id == focus,
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView()
@@ -217,6 +219,7 @@ class DefaultBlockViewRenderer(
     private fun headerTwo(
         mode: EditorMode,
         block: Block,
+        focus: Id,
         content: Content.Text,
         indent: Int
     ): BlockView.HeaderTwo = BlockView.HeaderTwo(
@@ -224,6 +227,7 @@ class DefaultBlockViewRenderer(
         id = block.id,
         text = content.text,
         color = content.color,
+        focused = block.id == focus,
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView()
@@ -232,6 +236,7 @@ class DefaultBlockViewRenderer(
     private fun headerOne(
         mode: EditorMode,
         block: Block,
+        focus: Id,
         content: Content.Text,
         indent: Int
     ): BlockView.HeaderOne = BlockView.HeaderOne(
@@ -239,6 +244,7 @@ class DefaultBlockViewRenderer(
         id = block.id,
         text = content.text,
         color = content.color,
+        focused = block.id == focus,
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView()
@@ -294,11 +300,13 @@ class DefaultBlockViewRenderer(
     private fun highlight(
         mode: EditorMode,
         block: Block,
+        focus: Id,
         content: Content.Text,
         indent: Int
     ): BlockView.Highlight = BlockView.Highlight(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
+        focused = block.id == focus,
         text = content.text,
         indent = indent
     )

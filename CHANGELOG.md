@@ -13,6 +13,7 @@
 ### Fixes & tech 🚒
 
 * Should focus and open keyboard when creating headers or highlight block (#485)
+* Enabled markup links (#200)
 
 ### Middleware ⚙
 

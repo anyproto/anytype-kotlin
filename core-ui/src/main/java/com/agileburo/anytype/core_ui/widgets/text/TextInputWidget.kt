@@ -12,12 +12,12 @@ import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
-import com.agileburo.anytype.core_ui.extensions.toast
 import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.agileburo.anytype.core_ui.widgets.text.highlight.HighlightDrawer
 import com.agileburo.anytype.core_utils.ext.multilineIme
+import com.agileburo.anytype.core_utils.ext.toast
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
 
@@ -171,7 +171,7 @@ class TextInputWidget : AppCompatEditText {
     }
 
     fun setLinksClickable() {
-        //makeLinksActive()
+        makeLinksActive()
     }
 
     /**

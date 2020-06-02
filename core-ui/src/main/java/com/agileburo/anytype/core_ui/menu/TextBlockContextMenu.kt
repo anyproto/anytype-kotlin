@@ -43,6 +43,8 @@ class TextBlockContextMenu(
                 onTextColorClicked(mode)
             }
             R.id.itemLink -> {
+                onMenuItemClicked(Markup.Type.LINK)
+                mode.finish()
                 true
             }
             R.id.itemBackground -> {

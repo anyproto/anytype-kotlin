@@ -845,6 +845,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
                 number.text = item.number.addDot()
 
+                if (item.marks.isLinksPresent()) {
+                    content.setLinksClickable()
+                }
+
                 content.setText(item.toSpannable(), BufferType.SPANNABLE)
 
                 if (item.color != null)
@@ -956,6 +960,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                         click = onLongClickListener
                     )
                 )
+
+                if (item.marks.isLinksPresent()) {
+                    content.setLinksClickable()
+                }
 
                 content.clearTextWatchers()
                 content.setText(item.toSpannable(), BufferType.SPANNABLE)

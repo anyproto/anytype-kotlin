@@ -141,6 +141,9 @@ interface TextHolder {
     }
 
     fun setMarkup(markup: Markup) {
+        if (markup.marks.isLinksPresent()) {
+            content.setLinksClickable()
+        }
         content.text?.setMarkup(markup)
     }
 

@@ -12,6 +12,7 @@
 
 ### Fixes & tech 🚒
 
+* Inconsistent behavior when merging two highlight blocks (#478)
 * Should preserve text style while splitting (#479)
 * Should focus and open keyboard when creating headers or highlight block (#485)
 * Enabled markup links (#200)

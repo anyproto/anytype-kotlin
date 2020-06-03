@@ -308,7 +308,9 @@ class DefaultBlockViewRenderer(
         id = block.id,
         focused = block.id == focus,
         text = content.text,
-        indent = indent
+        indent = indent,
+        color = content.color,
+        backgroundColor = content.backgroundColor
     )
 
     private fun toggle(

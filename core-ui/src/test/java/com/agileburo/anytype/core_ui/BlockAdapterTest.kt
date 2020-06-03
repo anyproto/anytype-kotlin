@@ -2306,7 +2306,7 @@ class BlockAdapterTest {
     }
 
     @Test
-    fun `hightlight holder should be in read mode`() {
+    fun `highlight holder should be in read mode`() {
 
         // Setup
 
@@ -2314,7 +2314,9 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
-            indent = 0
+            indent = 0,
+            color = null,
+            backgroundColor = null
         )
 
         val views = listOf(highlight)
@@ -2347,6 +2349,61 @@ class BlockAdapterTest {
     }
 
     @Test
+    fun `should update highlight holder with new text`() {
+
+        // Setup
+
+        val highlight = BlockView.Highlight(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            mode = BlockView.Mode.EDIT,
+            color = null,
+            backgroundColor = null
+        )
+
+        val updated = highlight.copy(
+            text = MockDataFactory.randomString()
+        )
+
+        val views = listOf(highlight)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Highlight)
+
+        // Testing
+
+        assertEquals(
+            expected = highlight.text,
+            actual = holder.content.text.toString()
+        )
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(TEXT_CHANGED)
+                )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
+        )
+
+        assertEquals(
+            expected = updated.text,
+            actual = holder.content.text.toString()
+        )
+    }
+
+    @Test
     fun `highlight holder should be in edit mode`() {
 
         // Setup
@@ -2354,7 +2411,9 @@ class BlockAdapterTest {
         val highlight = BlockView.Highlight(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            mode = BlockView.Mode.EDIT
+            mode = BlockView.Mode.EDIT,
+            color = null,
+            backgroundColor = null
         )
 
         val views = listOf(highlight)
@@ -2392,7 +2451,9 @@ class BlockAdapterTest {
         val highlight = BlockView.Highlight(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            mode = BlockView.Mode.EDIT
+            mode = BlockView.Mode.EDIT,
+            color = null,
+            backgroundColor = null
         )
 
         val updated = highlight.copy(

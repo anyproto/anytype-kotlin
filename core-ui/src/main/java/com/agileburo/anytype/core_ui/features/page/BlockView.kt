@@ -223,11 +223,13 @@ sealed class BlockView : ViewType, Parcelable {
     data class Highlight(
         override val id: String,
         override val focused: Boolean = false,
-        val text: String,
+        override val text: String,
+        override val color: String?,
+        override val backgroundColor: String?,
         override val indent: Int = 0,
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false
-    ) : BlockView(), Focusable, Indentable, Permission, Selectable {
+    ) : BlockView(), Text, Focusable, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_HIGHLIGHT
     }
 

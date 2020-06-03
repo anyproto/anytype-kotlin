@@ -332,7 +332,8 @@ fun Command.Merge.toEntity(): CommandEntity.Merge = CommandEntity.Merge(
 fun Command.Split.toEntity(): CommandEntity.Split = CommandEntity.Split(
     context = context,
     target = target,
-    index = index
+    index = index,
+    style = BlockEntity.Content.Text.Style.valueOf(style.name)
 )
 
 fun Command.SetIconName.toEntity() = CommandEntity.SetIconName(

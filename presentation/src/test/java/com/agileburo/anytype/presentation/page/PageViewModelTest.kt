@@ -2659,7 +2659,7 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should update text and proceed with splittig block on split-enter-key event`() {
+    fun `should update text and proceed with splitting block on split-enter-key event`() {
 
         // SETUP
 
@@ -2739,11 +2739,106 @@ class PageViewModelTest {
                     SplitBlock.Params(
                         context = root,
                         target = child,
-                        index = index
+                        index = index,
+                        style = Block.Content.Text.Style.P
                     )
                 )
             )
         }
+    }
+
+    @Test
+    fun `should preserve text style while splitting`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val child = MockDataFactory.randomUuid()
+
+        val style = MockBlockFactory.randomStyle()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(
+                    type = Block.Content.Smart.Type.PAGE
+                ),
+                children = listOf(child)
+            ),
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = style
+                ),
+                children = emptyList()
+            )
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+        stubUpdateText()
+        stubSplitBlocks(root)
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.onBlockFocusChanged(
+            id = child,
+            hasFocus = true
+        )
+
+        val index = MockDataFactory.randomInt()
+
+        val text = MockDataFactory.randomString()
+
+        vm.onTextChanged(
+            id = child,
+            text = text,
+            marks = emptyList()
+        )
+
+        vm.onSplitLineEnterClicked(
+            target = child,
+            index = index,
+            marks = emptyList(),
+            text = text
+        )
+
+        runBlockingTest {
+            verify(splitBlock, times(1)).invoke(
+                params = eq(
+                    SplitBlock.Params(
+                        context = root,
+                        target = child,
+                        index = index,
+                        style = style
+                    )
+                )
+            )
+        }
+
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test

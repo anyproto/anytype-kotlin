@@ -551,10 +551,14 @@ class PageViewModel(
         text: String,
         marks: List<Content.Text.Mark>
     ) {
+        var style: Content.Text.Style = Content.Text.Style.P
+
         blocks = blocks.map { block ->
             if (block.id == target) {
+                val content = block.content<Content.Text>()
+                style = content.style
                 block.copy(
-                    content = block.content<Content.Text>().copy(
+                    content = content.copy(
                         text = text,
                         marks = marks
                     )
@@ -585,7 +589,8 @@ class PageViewModel(
                 Intent.Text.Split(
                     context = context,
                     target = target,
-                    index = index
+                    index = index,
+                    style = style
                 )
             )
         }

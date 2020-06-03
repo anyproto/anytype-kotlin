@@ -2,8 +2,15 @@ package com.agileburo.anytype.presentation
 
 import MockDataFactory
 import com.agileburo.anytype.domain.block.model.Block
+import java.util.concurrent.ThreadLocalRandom
 
 object MockBlockFactory {
+
+    fun randomStyle() : Block.Content.Text.Style {
+        val styles = Block.Content.Text.Style.values()
+        val random = ThreadLocalRandom.current().nextInt(styles.size)
+        return styles[random]
+    }
 
     fun makeOnePageWithOneTextBlock(
         root: String,

@@ -99,6 +99,7 @@ class CommandEntity {
     data class Split(
         val context: String,
         val target: String,
+        val style: BlockEntity.Content.Text.Style,
         val index: Int
     )
 

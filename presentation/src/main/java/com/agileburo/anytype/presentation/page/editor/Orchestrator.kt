@@ -111,7 +111,8 @@ class Orchestrator(
                         params = SplitBlock.Params(
                             context = intent.context,
                             target = intent.target,
-                            index = intent.index
+                            index = intent.index,
+                            style = intent.style
                         )
                     ).proceed(
                         failure = defaultOnError,

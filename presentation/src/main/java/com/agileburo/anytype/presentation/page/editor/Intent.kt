@@ -82,6 +82,7 @@ sealed class Intent {
         class Split(
             val context: Id,
             val target: Id,
+            val style: Block.Content.Text.Style,
             val index: Int
         ) : Text()
 

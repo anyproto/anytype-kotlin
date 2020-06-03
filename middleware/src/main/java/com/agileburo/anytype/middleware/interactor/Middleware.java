@@ -637,6 +637,8 @@ public class Middleware {
 
     public Pair<String, PayloadEntity> split(CommandEntity.Split command) throws Exception {
 
+        Models.Block.Content.Text.Style style = mapper.toMiddleware(command.getStyle());
+
         Range range = Range
                 .newBuilder()
                 .setFrom(command.getIndex())
@@ -647,6 +649,7 @@ public class Middleware {
                 .newBuilder()
                 .setBlockId(command.getTarget())
                 .setContextId(command.getContext())
+                .setStyle(style)
                 .setRange(range)
                 .build();
 

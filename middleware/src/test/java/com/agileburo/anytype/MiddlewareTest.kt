@@ -345,4 +345,44 @@ class MiddlewareTest {
         verify(service, times(1)).blockPaste(request)
         verifyNoMoreInteractions(service)
     }
+
+    @Test
+    fun `should create request for splitting`() {
+
+        // SETUP
+
+        val context = MockDataFactory.randomUuid()
+
+        val command = CommandEntity.Split(
+            context = context,
+            index = MockDataFactory.randomInt(),
+            style = BlockEntity.Content.Text.Style.CHECKBOX,
+            target = MockDataFactory.randomUuid()
+        )
+
+        val request = Block.Split.Request
+            .newBuilder()
+            .setRange(
+                Range
+                    .newBuilder()
+                    .setFrom(command.index)
+                    .setTo(command.index)
+                    .build()
+            )
+            .setStyle(Models.Block.Content.Text.Style.Checkbox)
+            .setContextId(context)
+            .setBlockId(command.target)
+            .build()
+
+        service.stub {
+            on { blockSplit(request) } doReturn Block.Split.Response.getDefaultInstance()
+        }
+
+        // TESTING
+
+        middleware.split(command)
+
+        verify(service, times(1)).blockSplit(request)
+        verifyNoMoreInteractions(service)
+    }
 }

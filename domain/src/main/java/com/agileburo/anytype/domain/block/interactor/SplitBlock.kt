@@ -2,6 +2,7 @@ package com.agileburo.anytype.domain.block.interactor
 
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
+import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
@@ -19,7 +20,8 @@ class SplitBlock(
             command = Command.Split(
                 context = params.context,
                 target = params.target,
-                index = params.index
+                index = params.index,
+                style = params.style
             )
         ).let {
             Either.Right(it)
@@ -32,11 +34,13 @@ class SplitBlock(
      * Params for splitting one block into two blocks
      * @property context context id
      * @property target id of the target block, which we need to split
+     * @property style target block text style
      * @property index index or cursor position
      */
     data class Params(
         val context: Id,
         val target: Id,
-        val index: Int
+        val index: Int,
+        val style: Block.Content.Text.Style
     )
 }

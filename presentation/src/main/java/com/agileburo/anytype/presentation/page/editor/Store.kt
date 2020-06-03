@@ -2,7 +2,7 @@ package com.agileburo.anytype.presentation.page.editor
 
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.common.Id
-import com.agileburo.anytype.presentation.page.PageViewModel
+import com.agileburo.anytype.domain.editor.Editor
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -41,7 +41,7 @@ interface Store<T> {
         override fun cancel() = channel.cancel()
     }
 
-    class Focus : Conflated<String>(PageViewModel.EMPTY_FOCUS_ID)
+    class Focus : Conflated<Editor.Focus>(Editor.Focus.empty())
     class Context : Conflated<String>("")
 
     class Details : Conflated<Block.Details>(Block.Details()) {

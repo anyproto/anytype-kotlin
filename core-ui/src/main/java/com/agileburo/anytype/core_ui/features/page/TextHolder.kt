@@ -181,20 +181,24 @@ interface TextHolder {
 
         if (item is BlockView.Text) {
             if (payload.textChanged()) {
-                val cursor = content.length()
                 content.pauseTextWatchers {
                     if (item is Markup)
                         content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
                     else
                         content.setText(item.text)
                 }
-                try {
-                    content.setSelection(cursor)
-                } catch (e: Throwable) {
-                    Timber.e(e, "Error while setting selection")
-                }
             } else if (payload.markupChanged()) {
                 if (item is Markup) setMarkup(item)
+            }
+
+            try {
+                if (item is BlockView.Cursor && payload.isCursorChanged) {
+                    item.cursor?.let {
+                        content.setSelection(it)
+                    }
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Error while setting selection")
             }
 
             if (payload.textColorChanged()) {

@@ -44,7 +44,6 @@ import kotlinx.android.parcel.Parcelize
  */
 sealed class BlockView : ViewType, Parcelable {
 
-
     /**
      * Each block view has a corresponding block id.
      */
@@ -101,6 +100,10 @@ sealed class BlockView : ViewType, Parcelable {
         val mode: Mode
     }
 
+    interface Cursor {
+        val cursor: Int?
+    }
+
     /**
      * Views implementing this interface can scroll by Y coordinate on screen.
      */
@@ -128,8 +131,9 @@ sealed class BlockView : ViewType, Parcelable {
         override val indent: Int = 0,
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false,
-        override val alignment: Alignment? = null
-    ) : BlockView(), Markup, Focusable, Text, Indentable, Permission, Selectable, Alignable {
+        override val alignment: Alignment? = null,
+        override val cursor: Int? = null
+    ) : BlockView(), Markup, Focusable, Text, Cursor, Indentable, Permission, Selectable, Alignable {
         override fun getViewType() = HOLDER_PARAGRAPH
         override val body: String = text
     }

@@ -3,6 +3,7 @@ package com.agileburo.anytype.presentation.page.render
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.editor.Editor
 import com.agileburo.anytype.domain.page.EditorMode
 
 /**
@@ -20,7 +21,7 @@ interface BlockViewRenderer {
     suspend fun Map<Id, List<Block>>.render(
         mode: EditorMode = EditorMode.EDITING,
         root: Block,
-        focus: Id,
+        focus: Editor.Focus,
         anchor: Id,
         indent: Int,
         details: Block.Details = Block.Details(emptyMap())

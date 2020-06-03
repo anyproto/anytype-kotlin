@@ -46,6 +46,7 @@ sealed class Intent {
             val context: Id,
             val targets: List<Id>,
             val previous: Id?,
+            val cursor: Int? = null,
             val next: Id?,
             val effects: List<SideEffect> = emptyList()
         ) : CRUD()

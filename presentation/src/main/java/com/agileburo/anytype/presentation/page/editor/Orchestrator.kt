@@ -5,6 +5,7 @@ import com.agileburo.anytype.domain.clipboard.Copy
 import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.download.DownloadFile
+import com.agileburo.anytype.domain.editor.Editor.Focus
 import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.domain.page.Redo
 import com.agileburo.anytype.domain.page.Undo
@@ -41,7 +42,7 @@ class Orchestrator(
 ) {
 
     private val defaultOnSuccess: suspend (Pair<Id, Payload>) -> Unit = { (id, payload) ->
-        stores.focus.update(id)
+        stores.focus.update(Focus.id(id))
         proxies.payloads.send(payload)
     }
 
@@ -100,7 +101,14 @@ class Orchestrator(
                         failure = defaultOnError,
                         success = { payload ->
                             val focus = intent.previous ?: intent.next
-                            if (focus != null) stores.focus.update(focus)
+                            if (focus != null) {
+                                stores.focus.update(
+                                    Focus(
+                                        id = focus,
+                                        range = intent.cursor?.let { it..it }
+                                    )
+                                )
+                            }
                             processSideEffects(intent.effects)
                             proxies.payloads.send(payload)
                         }
@@ -117,7 +125,7 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = { (id, payload) ->
-                            stores.focus.update(intent.target)
+                            stores.focus.update(Focus.id(intent.target))
                             proxies.payloads.send(payload)
                         }
                     )
@@ -131,7 +139,7 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = { payload ->
-                            stores.focus.update(intent.previous)
+                            stores.focus.update(Focus.id(intent.previous))
                             proxies.payloads.send(payload)
                         }
                     )

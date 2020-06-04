@@ -12,18 +12,26 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
+import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
+import com.agileburo.anytype.core_utils.tools.Counter
+import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.clipboard.Clipboard
+import com.agileburo.anytype.domain.clipboard.Copy
+import com.agileburo.anytype.domain.clipboard.Paste
+import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
-import com.agileburo.anytype.domain.page.ClosePage
-import com.agileburo.anytype.domain.page.CreatePage
-import com.agileburo.anytype.domain.page.OpenPage
+import com.agileburo.anytype.domain.event.model.Payload
+import com.agileburo.anytype.domain.misc.UrlBuilder
+import com.agileburo.anytype.domain.page.*
+import com.agileburo.anytype.domain.page.bookmark.SetupBookmark
 import com.agileburo.anytype.mocking.MockDataFactory
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_BULLET
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_CHECKBOX
-import com.agileburo.anytype.mocking.MockUiTests.BLOCK_CODE
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_H1
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_H2
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_H3
@@ -32,20 +40,29 @@ import com.agileburo.anytype.mocking.MockUiTests.BLOCK_NUMBERED_1
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_PARAGRAPH
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_PARAGRAPH_1
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_QUOTE
-import com.agileburo.anytype.mocking.MockUiTests.BLOCK_TITLE
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_TOGGLE
 import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
+import com.agileburo.anytype.presentation.page.Editor
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
+import com.agileburo.anytype.presentation.page.editor.Interactor
+import com.agileburo.anytype.presentation.page.editor.Orchestrator
+import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
+import com.agileburo.anytype.presentation.page.selection.SelectionStateHolder
+import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
 import com.agileburo.anytype.ui.page.PageFragment
 import com.agileburo.anytype.utils.CoroutinesTestRule
 import com.agileburo.anytype.utils.TestUtils.withRecyclerView
 import com.agileburo.anytype.utils.scrollTo
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.stub
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
@@ -69,6 +86,19 @@ class PageFragmentTest {
 
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
+
+    lateinit var archiveDocument: ArchiveDocument
+    lateinit var createDocument: CreateDocument
+    lateinit var downloadFile: DownloadFile
+    lateinit var undo: Undo
+    lateinit var redo: Redo
+    lateinit var copy: Copy
+    lateinit var paste: Paste
+    lateinit var updateTitle: UpdateTitle
+    lateinit var updateAlignment: UpdateAlignment
+    lateinit var replaceBlock: ReplaceBlock
+    lateinit var setupBookmark: SetupBookmark
+    lateinit var uploadUrl: UploadUrl
 
     @Mock
     lateinit var openPage: OpenPage
@@ -98,7 +128,12 @@ class PageFragmentTest {
     lateinit var mergeBlocks: MergeBlocks
 
     @Mock
+    lateinit var uriMatcher: Clipboard.UriMatcher
+
+    @Mock
     lateinit var repo: BlockRepository
+    @Mock
+    lateinit var clipboard: Clipboard
 
     private lateinit var splitBlock: SplitBlock
     private lateinit var createPage: CreatePage
@@ -109,93 +144,167 @@ class PageFragmentTest {
 
     private val root: String = "rootId123"
 
+    private val config = Config(
+        home = MockDataFactory.randomUuid(),
+        gateway = MockDataFactory.randomString(),
+        profile = MockDataFactory.randomUuid()
+    )
+
+    private val urlBuilder = UrlBuilder(
+        config = config
+    )
+
+    private val stores = Editor.Storage()
+
+    private val proxies = Editor.Proxer()
+
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
 
-        actionToolbar = onView(withId(R.id.actionToolbar))
-        optionToolbar = onView(withId(R.id.optionToolbar))
-
         splitBlock = SplitBlock(repo)
         createPage = CreatePage(repo)
+        archiveDocument = ArchiveDocument(repo)
+        createDocument = CreateDocument(repo)
+        undo = Undo(repo)
+        redo = Redo(repo)
+        replaceBlock = ReplaceBlock(repo)
+        setupBookmark = SetupBookmark(repo)
+        updateAlignment = UpdateAlignment(repo)
+        updateTitle = UpdateTitle(repo)
+        uploadUrl = UploadUrl(repo)
+        downloadFile = DownloadFile(
+            downloader = mock(),
+            context = Dispatchers.Main
+        )
+        copy = Copy(
+            repo = repo,
+            clipboard = clipboard
+        )
+
+        paste = Paste(
+            repo = repo,
+            clipboard = clipboard,
+            matcher = uriMatcher
+        )
+
         updateBackgroundColor = UpdateBackgroundColor(repo)
 
         TestPageFragment.testViewModelFactory = PageViewModelFactory(
             openPage = openPage,
             closePage = closePage,
-            updateText = updateText,
-            createBlock = createBlock,
             interceptEvents = interceptEvents,
-            updateCheckbox = updateCheckbox,
-            unlinkBlocks = unlinkBlocks,
-            duplicateBlock = duplicateBlock,
-            updateTextStyle = updateTextStyle,
-            updateTextColor = updateTextColor,
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
-            mergeBlocks = mergeBlocks,
-            splitBlock = splitBlock,
             createPage = createPage,
             documentEventReducer = DocumentExternalEventReducer(),
-            updateBackgroundColor = updateBackgroundColor
+            archiveDocument = archiveDocument,
+            createDocument = createDocument,
+            uploadUrl = uploadUrl,
+            urlBuilder = urlBuilder,
+            renderer = DefaultBlockViewRenderer(
+                urlBuilder = urlBuilder,
+                counter = Counter.Default(),
+                toggleStateHolder = ToggleStateHolder.Default()
+            ),
+            interactor = Orchestrator(
+                createBlock = createBlock,
+                splitBlock = splitBlock,
+                unlinkBlocks = unlinkBlocks,
+                updateCheckbox = updateCheckbox,
+                updateTextStyle = updateTextStyle,
+                updateText = updateText,
+                updateBackgroundColor = updateBackgroundColor,
+                undo = undo,
+                redo = redo,
+                copy = copy,
+                paste = paste,
+                duplicateBlock = duplicateBlock,
+                updateAlignment = updateAlignment,
+                downloadFile = downloadFile,
+                mergeBlocks = mergeBlocks,
+                updateTitle = updateTitle,
+                updateTextColor = updateTextColor,
+                replaceBlock = replaceBlock,
+                setupBookmark = setupBookmark,
+                memory = Editor.Memory(
+                    selections = SelectionStateHolder.Default()
+                ),
+                stores = stores,
+                proxies = proxies,
+                textInteractor = Interactor.TextInteractor(
+                    proxies = proxies,
+                    stores = stores,
+                    matcher = DefaultPatternMatcher()
+                )
+            )
         )
     }
 
-    @Test
+    @Test()
     fun shouldHaveTextSetForTextBlocks() {
 
         // SETUP
 
-        val delayBeforeGettingEvents = 100L
-
         val args = bundleOf(PageFragment.ID_KEY to root)
 
-        val page = listOf(
+        val blocks = listOf(
+            BLOCK_H1,
+            BLOCK_H2,
+            BLOCK_H3,
+            BLOCK_H4,
+            BLOCK_PARAGRAPH,
+            BLOCK_QUOTE,
+            BLOCK_BULLET,
+            BLOCK_NUMBERED_1,
+            BLOCK_TOGGLE,
+            BLOCK_CHECKBOX
+        )
+
+        val document = listOf(
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
                 content = Block.Content.Page(
                     style = Block.Content.Page.Style.SET
                 ),
-                children = listOf(
-                    BLOCK_H1.id, BLOCK_H2.id, BLOCK_H3.id,
-                    BLOCK_H4.id, BLOCK_TITLE.id, BLOCK_PARAGRAPH.id,
-                    BLOCK_QUOTE.id, BLOCK_CODE.id, BLOCK_BULLET.id,
-                    BLOCK_NUMBERED_1.id, BLOCK_TOGGLE.id, BLOCK_CHECKBOX.id
-                )
-            ),
-            BLOCK_H1, BLOCK_H2, BLOCK_H3, BLOCK_H4, BLOCK_TITLE,
-            BLOCK_PARAGRAPH, BLOCK_QUOTE, BLOCK_CODE, BLOCK_BULLET,
-            BLOCK_NUMBERED_1, BLOCK_TOGGLE, BLOCK_CHECKBOX
-        )
+                children = blocks.map { it.id }
+            )
+        ) + blocks
 
-        stubShowBlock(
-            initialDelay = delayBeforeGettingEvents,
-            blocks = page
-        )
+        stubInterceptEvents()
+
+        openPage.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Payload(
+                context = root,
+                events = listOf(
+                    Event.Command.ShowBlock(
+                        context = root,
+                        root = root,
+                        details = Block.Details(),
+                        blocks = document
+                    )
+                )
+            ))
+        }
 
         launchFragment(args)
-
-        advance(delayBeforeGettingEvents)
 
         // TESTING
 
         onView(withId(R.id.recycler)).check(matches(isDisplayed()))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.headerOne))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.headerOne))
             .check(matches(withText(BLOCK_H1.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.headerTwo))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, R.id.headerTwo))
             .check(matches(withText(BLOCK_H2.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, R.id.headerThree))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(3, R.id.headerThree))
             .check(matches(withText(BLOCK_H3.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(3, R.id.headerThree))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(4, R.id.headerThree))
             .check(matches(withText(BLOCK_H4.content.asText().text)))
-
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(4, R.id.title))
-            .check(matches(withText(BLOCK_TITLE.content.asText().text)))
 
         onView(withRecyclerView(R.id.recycler).atPositionOnView(5, R.id.textContent))
             .check(matches(withText(BLOCK_PARAGRAPH.content.asText().text)))
@@ -203,30 +312,32 @@ class PageFragmentTest {
         onView(withRecyclerView(R.id.recycler).atPositionOnView(6, R.id.highlightContent))
             .check(matches(withText(BLOCK_QUOTE.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(7, R.id.snippet))
-            .check(matches(withText(BLOCK_CODE.content.asText().text)))
-
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(8, R.id.bulletedListContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(7, R.id.bulletedListContent))
             .check(matches(withText(BLOCK_BULLET.content.asText().text)))
 
-        R.id.recycler.scrollTo<BlockViewHolder.Numbered>(9)
+        R.id.recycler.scrollTo<BlockViewHolder.Numbered>(8)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(9, R.id.numberedListContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(8, R.id.numberedListContent))
             .check(matches(withText(BLOCK_NUMBERED_1.content.asText().text)))
 
-        onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(9, R.id.number)
-        ).check(matches(withText("1")))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(8, R.id.number))
+            .check(matches(withText("1.")))
 
-        R.id.recycler.scrollTo<BlockViewHolder.Toggle>(10)
+        R.id.recycler.scrollTo<BlockViewHolder.Toggle>(9)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(10, R.id.toggleContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(9, R.id.toggleContent))
             .check(matches(withText(BLOCK_TOGGLE.content.asText().text)))
 
-        R.id.recycler.scrollTo<BlockViewHolder.Checkbox>(11)
+        R.id.recycler.scrollTo<BlockViewHolder.Checkbox>(10)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(11, R.id.checkboxContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(10, R.id.checkboxContent))
             .check(matches(withText(BLOCK_CHECKBOX.content.asText().text)))
+    }
+
+    private fun stubInterceptEvents() {
+        interceptEvents.stub {
+            onBlocking { build() } doReturn emptyFlow()
+        }
     }
 
     @Test
@@ -379,6 +490,8 @@ class PageFragmentTest {
         onView(withId(R.id.toolbar)).check(matches(not(isDisplayed())))
         target.check(matches(not(hasFocus())))
     }
+
+    /*
 
     @Test
     fun shouldSplitBlocks() {
@@ -775,6 +888,10 @@ class PageFragmentTest {
     }
      */
 
+
+
+     */
+
     private fun launchFragment(args: Bundle) {
         launchFragmentInContainer<TestPageFragment>(
             fragmentArgs = args,
@@ -793,7 +910,7 @@ class PageFragmentTest {
                 emit(
                     listOf(
                         Event.Command.ShowBlock(
-                            rootId = root,
+                            root = root,
                             blocks = blocks,
                             context = root
                         )

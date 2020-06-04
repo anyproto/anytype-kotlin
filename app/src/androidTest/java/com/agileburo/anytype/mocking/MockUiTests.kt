@@ -121,16 +121,6 @@ object MockUiTests {
                     type = Block.Content.Text.Mark.Type.LINK,
                     range = IntRange(80, 90),
                     param = "https://anytype.io"
-                ),
-                Block.Content.Text.Mark(
-                    type = Block.Content.Text.Mark.Type.BACKGROUND_COLOR,
-                    range = IntRange(92, 113),
-                    param = "#2AA7EE"
-                ),
-                Block.Content.Text.Mark(
-                    type = Block.Content.Text.Mark.Type.TEXT_COLOR,
-                    range = IntRange(115, 130),
-                    param = "#E51CA0"
                 )
             ),
             style = Block.Content.Text.Style.P

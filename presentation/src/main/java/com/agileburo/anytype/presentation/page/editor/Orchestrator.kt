@@ -5,8 +5,8 @@ import com.agileburo.anytype.domain.clipboard.Copy
 import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.download.DownloadFile
+import com.agileburo.anytype.domain.editor.Editor.Cursor
 import com.agileburo.anytype.domain.editor.Editor.Focus
-import com.agileburo.anytype.domain.editor.Editor.Focus.Cursor
 import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.domain.page.Redo
 import com.agileburo.anytype.domain.page.Undo

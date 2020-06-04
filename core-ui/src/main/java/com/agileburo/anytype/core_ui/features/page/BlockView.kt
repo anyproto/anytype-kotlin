@@ -101,7 +101,7 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     /**
-     * Views implementing this interface support cursor/caret positioning.
+     * Views implementing this interface support cursor/carriage positioning.
      * @property cursor cursor position
      */
     interface Cursor {

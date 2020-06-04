@@ -11,6 +11,7 @@ interface Editor {
         val id: String,
         val cursor: Cursor?
     ) : Editor {
+
         val isEmpty : Boolean
             get() = id == ""
 
@@ -18,11 +19,11 @@ interface Editor {
             fun empty() = Focus("", null)
             fun id(id: Id) = Focus(id, null)
         }
+    }
 
-        sealed class Cursor {
-            object Start : Cursor()
-            object End: Cursor()
-            data class Range(val range: IntRange) : Cursor()
-        }
+    sealed class Cursor {
+        object Start : Cursor()
+        object End: Cursor()
+        data class Range(val range: IntRange) : Cursor()
     }
 }

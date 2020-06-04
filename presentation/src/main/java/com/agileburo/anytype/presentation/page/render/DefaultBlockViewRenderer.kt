@@ -6,6 +6,8 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.editor.Editor
+import com.agileburo.anytype.domain.editor.Editor.Cursor
+import com.agileburo.anytype.domain.editor.Editor.Focus
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.EditorMode
 import com.agileburo.anytype.presentation.mapper.*
@@ -20,7 +22,7 @@ class DefaultBlockViewRenderer(
     override suspend fun Map<Id, List<Block>>.render(
         mode: EditorMode,
         root: Block,
-        focus: Editor.Focus,
+        focus: Focus,
         anchor: Id,
         indent: Int,
         details: Block.Details
@@ -162,7 +164,7 @@ class DefaultBlockViewRenderer(
         root: Block,
         result: MutableList<BlockView>,
         details: Block.Details,
-        focus: Editor.Focus
+        focus: Focus
     ) {
         if (anchor == root.id) {
             result.add(
@@ -186,7 +188,7 @@ class DefaultBlockViewRenderer(
         mode: EditorMode,
         block: Block,
         content: Content.Text,
-        focus: Editor.Focus,
+        focus: Focus,
         indent: Int
     ): BlockView.Paragraph = BlockView.Paragraph(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -200,9 +202,9 @@ class DefaultBlockViewRenderer(
         alignment = content.align?.toView(),
         cursor = focus.cursor?.let { cursor ->
             when(cursor) {
-                is Editor.Focus.Cursor.Start -> 0
-                is Editor.Focus.Cursor.End -> content.text.length
-                is Editor.Focus.Cursor.Range -> cursor.range.first
+                is Cursor.Start -> 0
+                is Cursor.End -> content.text.length
+                is Cursor.Range -> cursor.range.first
             }
         }
     )
@@ -210,7 +212,7 @@ class DefaultBlockViewRenderer(
     private fun headerThree(
         mode: EditorMode,
         block: Block,
-        focus: Editor.Focus,
+        focus: Focus,
         content: Content.Text,
         indent: Int
     ): BlockView.HeaderThree = BlockView.HeaderThree(
@@ -227,7 +229,7 @@ class DefaultBlockViewRenderer(
     private fun headerTwo(
         mode: EditorMode,
         block: Block,
-        focus: Editor.Focus,
+        focus: Focus,
         content: Content.Text,
         indent: Int
     ): BlockView.HeaderTwo = BlockView.HeaderTwo(
@@ -244,7 +246,7 @@ class DefaultBlockViewRenderer(
     private fun headerOne(
         mode: EditorMode,
         block: Block,
-        focus: Editor.Focus,
+        focus: Focus,
         content: Content.Text,
         indent: Int
     ): BlockView.HeaderOne = BlockView.HeaderOne(
@@ -262,7 +264,7 @@ class DefaultBlockViewRenderer(
         mode: EditorMode,
         block: Block,
         content: Content.Text,
-        focus: Editor.Focus,
+        focus: Focus,
         indent: Int
     ): BlockView.Checkbox = BlockView.Checkbox(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -280,7 +282,7 @@ class DefaultBlockViewRenderer(
         mode: EditorMode,
         block: Block,
         content: Content.Text,
-        focus: Editor.Focus,
+        focus: Focus,
         indent: Int
     ): BlockView.Bulleted = BlockView.Bulleted(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -297,7 +299,7 @@ class DefaultBlockViewRenderer(
         mode: EditorMode,
         block: Block,
         content: Content.Text,
-        focus: Editor.Focus
+        focus: Focus
     ): BlockView.Code = BlockView.Code(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -308,7 +310,7 @@ class DefaultBlockViewRenderer(
     private fun highlight(
         mode: EditorMode,
         block: Block,
-        focus: Editor.Focus,
+        focus: Focus,
         content: Content.Text,
         indent: Int
     ): BlockView.Highlight = BlockView.Highlight(
@@ -326,7 +328,7 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Text,
         indent: Int,
-        focus: Editor.Focus,
+        focus: Focus,
         isEmpty: Boolean
     ): BlockView.Toggle = BlockView.Toggle(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -346,7 +348,7 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Text,
         number: Int,
-        focus: Editor.Focus,
+        focus: Focus,
         indent: Int
     ): BlockView.Numbered = BlockView.Numbered(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,

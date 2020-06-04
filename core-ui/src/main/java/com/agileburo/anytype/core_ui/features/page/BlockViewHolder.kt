@@ -290,6 +290,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
                 select(item)
 
+                if (item.focused) setCursor(item)
+
                 setFocus(item)
 
                 with(header) {
@@ -374,6 +376,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
                 select(item)
 
+                if (item.focused) setCursor(item)
+
                 setFocus(item)
 
                 header.setOnLongClickListener(
@@ -454,6 +458,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
                 select(item)
 
+                if (item.focused) setCursor(item)
+
                 setFocus(item)
 
                 header.setOnLongClickListener(
@@ -499,11 +505,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val content: TextInputWidget
             get() = itemView.snippet
 
-        fun bind(item: BlockView.Code,
-                 onTextChanged: (String, Editable) -> Unit,
-                 onSelectionChanged: (String, IntRange) -> Unit,
-                 onFocusChanged: (String, Boolean) -> Unit,
-                 onLongClickListener: (String) -> Unit) {
+        fun bind(
+            item: BlockView.Code,
+            onTextChanged: (String, Editable) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit,
+            onLongClickListener: (String) -> Unit
+        ) {
             if (item.mode == BlockView.Mode.READ) {
                 content.setText(item.text)
                 enableReadOnlyMode()
@@ -611,6 +619,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     content.setText(item.toSpannable(), BufferType.SPANNABLE)
                 else
                     content.setText(item.text)
+
+                if (item.focused) setCursor(item)
 
                 setFocus(item)
 
@@ -747,6 +757,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setTextColor(content.context.color(R.color.black))
                 }
 
+                if (item.focused) setCursor(item)
+
                 setFocus(item)
 
                 content.addTextChangedListener(
@@ -859,6 +871,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 else
                     setTextColor(content.context.color(R.color.black))
 
+                if (item.focused) setCursor(item)
+
                 setFocus(item)
 
                 content.addTextChangedListener(
@@ -875,10 +889,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        override fun processChangePayload(payloads: List<Payload>,
-                                          item: BlockView,
-                                          onTextChanged: (String, Editable) -> Unit,
-                                          onSelectionChanged: (String, IntRange) -> Unit
+        override fun processChangePayload(
+            payloads: List<Payload>,
+            item: BlockView,
+            onTextChanged: (String, Editable) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit
         ) {
             super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged)
             payloads.forEach { payload ->
@@ -977,6 +992,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setTextColor(content.context.color(R.color.black))
                 }
 
+                if (item.focused) setCursor(item)
+
                 setFocus(item)
 
                 setupTextWatcher(onTextChanged, item)
@@ -1020,10 +1037,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             mode = BlockView.Mode.EDIT
         }
 
-        override fun processChangePayload(payloads: List<Payload>,
-                                          item: BlockView,
-                                          onTextChanged: (String, Editable) -> Unit,
-                                          onSelectionChanged: (String, IntRange) -> Unit) {
+        override fun processChangePayload(
+            payloads: List<Payload>,
+            item: BlockView,
+            onTextChanged: (String, Editable) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit
+        ) {
             check(item is BlockView.Toggle) { "Expected a toggle block, but was: $item" }
             super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged)
             payloads.forEach { payload ->
@@ -1148,8 +1167,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         class Error(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            fun bind(item: BlockView.File.Error,
-                     clicked: (ListenerType) -> Unit
+            fun bind(
+                item: BlockView.File.Error,
+                clicked: (ListenerType) -> Unit
             ) {
                 indentize(item)
                 with(itemView) {
@@ -1183,8 +1203,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         class Upload(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            fun bind(item: BlockView.File.Upload,
-                     clicked: (ListenerType) -> Unit
+            fun bind(
+                item: BlockView.File.Upload,
+                clicked: (ListenerType) -> Unit
             ) {
                 indentize(item)
                 with(itemView) {
@@ -1219,8 +1240,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Video(view: View) : BlockViewHolder(view), IndentableHolder {
 
-        fun bind(item: BlockView.Video.View,
-                 clicked: (ListenerType) -> Unit
+        fun bind(
+            item: BlockView.Video.View,
+            clicked: (ListenerType) -> Unit
         ) {
             itemView.isSelected = item.isSelected
             itemView.playerView.findViewById<FrameLayout>(R.id.exo_controller).apply {
@@ -1309,8 +1331,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         class Error(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            fun bind(item: BlockView.Video.Error,
-                     clicked: (ListenerType) -> Unit
+            fun bind(
+                item: BlockView.Video.Error,
+                clicked: (ListenerType) -> Unit
             ) {
                 indentize(item)
                 with(itemView) {
@@ -1410,7 +1433,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             title.setOnLongClickListener(
                 EditorLongClickListener(
                     t = item.id,
-                    click = onLongClickListener)
+                    click = onLongClickListener
+                )
             )
         }
 
@@ -1538,7 +1562,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             ) {
                 indentize(item)
                 select(item.isSelected)
-                with (root) {
+                with(root) {
                     setOnClickListener {
                         clicked(ListenerType.Bookmark.Placeholder(item.id))
                     }
@@ -1588,7 +1612,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 indentize(item)
                 select(item.isSelected)
                 url.text = item.url
-                with (root) {
+                with(root) {
                     setOnClickListener {
                         clicked(ListenerType.Bookmark.Error(item))
                     }
@@ -1730,8 +1754,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         class Error(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            fun bind(item: BlockView.Picture.Error,
-                     clicked: (ListenerType) -> Unit
+            fun bind(
+                item: BlockView.Picture.Error,
+                clicked: (ListenerType) -> Unit
             ) {
                 indentize(item)
                 with(itemView) {
@@ -1766,8 +1791,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         class Upload(view: View) : BlockViewHolder(view), IndentableHolder {
 
-            fun bind(item: BlockView.Picture.Upload,
-                     clicked: (ListenerType) -> Unit
+            fun bind(
+                item: BlockView.Picture.Upload,
+                clicked: (ListenerType) -> Unit
             ) {
                 indentize(item)
                 with(itemView) {
@@ -1810,7 +1836,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             itemView.setOnLongClickListener(
                 EditorLongClickListener(
                     t = item.id,
-                    click = onLongClickListener)
+                    click = onLongClickListener
+                )
             )
         }
     }
@@ -1857,7 +1884,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = onLongClickListener)
+                            click = onLongClickListener
+                        )
                     )
                 }
             }

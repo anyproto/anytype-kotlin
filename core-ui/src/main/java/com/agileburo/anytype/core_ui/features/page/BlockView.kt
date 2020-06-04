@@ -100,6 +100,10 @@ sealed class BlockView : ViewType, Parcelable {
         val mode: Mode
     }
 
+    /**
+     * Views implementing this interface support cursor/caret positioning.
+     * @property cursor cursor position
+     */
     interface Cursor {
         val cursor: Int?
     }

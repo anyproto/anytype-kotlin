@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.block.interactor.DragAndDrop
 import com.agileburo.anytype.domain.config.GetConfig
+import com.agileburo.anytype.domain.config.GetDebugSettings
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
@@ -18,7 +19,8 @@ class HomeDashboardViewModelFactory(
     private val getConfig: GetConfig,
     private val dnd: DragAndDrop,
     private val interceptEvents: InterceptEvents,
-    private val eventConverter: HomeDashboardEventConverter
+    private val eventConverter: HomeDashboardEventConverter,
+    private val getDebugSettings: GetDebugSettings
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -31,7 +33,8 @@ class HomeDashboardViewModelFactory(
             getConfig = getConfig,
             dragAndDrop = dnd,
             interceptEvents = interceptEvents,
-            eventConverter = eventConverter
+            eventConverter = eventConverter,
+            getDebugSettings = getDebugSettings
         ) as T
     }
 }

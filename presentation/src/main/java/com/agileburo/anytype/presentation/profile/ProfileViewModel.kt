@@ -34,6 +34,10 @@ class ProfileViewModel(
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenCreateAccount))
     }
 
+    fun onDebugSettingsClicked(){
+        navigation.postValue(EventWrapper(AppNavigation.Command.OpenDebugSettingsScreen))
+    }
+
     private fun proceedWithGettingAccount() {
         getCurrentAccount.invoke(viewModelScope, BaseUseCase.None) { result ->
             result.either(
@@ -79,5 +83,10 @@ class ProfileViewModel(
 
     fun onInviteToggled(value: Boolean) {
         // TODO update profile settings
+    }
+
+    companion object DEBUG_SETTINGS {
+
+        const val ANYTYPE_ACTION_MODE = "debug.settings.aam"
     }
 }

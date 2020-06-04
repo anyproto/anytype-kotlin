@@ -10,7 +10,9 @@ import com.agileburo.anytype.domain.block.interactor.DragAndDrop
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.config.DebugSettings
 import com.agileburo.anytype.domain.config.GetConfig
+import com.agileburo.anytype.domain.config.GetDebugSettings
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.toHomeDashboard
@@ -69,6 +71,9 @@ class HomeDashboardViewModelTest {
     lateinit var interceptEvents: InterceptEvents
 
     @Mock
+    lateinit var getDebugSettings: GetDebugSettings
+
+    @Mock
     lateinit var dnd: DragAndDrop
 
     private lateinit var vm: HomeDashboardViewModel
@@ -87,7 +92,8 @@ class HomeDashboardViewModelTest {
             getConfig = getConfig,
             dragAndDrop = dnd,
             interceptEvents = interceptEvents,
-            eventConverter = HomeDashboardEventConverter.DefaultConverter()
+            eventConverter = HomeDashboardEventConverter.DefaultConverter(),
+            getDebugSettings = getDebugSettings
         )
     }
 
@@ -558,6 +564,7 @@ class HomeDashboardViewModelTest {
         val id = MockDataFactory.randomUuid()
 
         stubObserveEvents()
+        stubGetEditorSettings()
         stubCloseDashboard()
         stubCreatePage(id)
 
@@ -725,6 +732,12 @@ class HomeDashboardViewModelTest {
             onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
                 answer.getArgument<(Either<Throwable, Unit>) -> Unit>(2)(Either.Right(Unit))
             }
+        }
+    }
+
+    private fun stubGetEditorSettings() {
+        getDebugSettings.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(DebugSettings(true))
         }
     }
 

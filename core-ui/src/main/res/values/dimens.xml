@@ -99,4 +99,6 @@
     <dimen name="default_document_title_margin_bottom">1dp</dimen>
     <dimen name="bookmark_default_margin_start">@dimen/dp_8</dimen>
 
+    <dimen name="popup_context_menu_height">44dp</dimen>
+
 </resources>

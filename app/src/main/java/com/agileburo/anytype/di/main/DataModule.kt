@@ -10,6 +10,7 @@ import com.agileburo.anytype.data.auth.repo.block.BlockRemoteDataStore
 import com.agileburo.anytype.device.DefaultPathProvider
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.config.InfrastructureRepository
 import com.agileburo.anytype.domain.database.repo.DatabaseRepository
 import com.agileburo.anytype.domain.device.PathProvider
 import com.agileburo.anytype.middleware.EventProxy
@@ -22,6 +23,7 @@ import com.agileburo.anytype.middleware.service.DefaultMiddlewareService
 import com.agileburo.anytype.middleware.service.MiddlewareService
 import com.agileburo.anytype.persistence.db.AnytypeDatabase
 import com.agileburo.anytype.persistence.repo.DefaultAuthCache
+import com.agileburo.anytype.persistence.repo.DefaultDebugSettingsCache
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -75,6 +77,26 @@ class DataModule {
         return DefaultAuthCache(
             db = db,
             prefs = prefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideDebugSettingsCache(
+        prefs: SharedPreferences
+    ): DebugSettingsCache {
+        return DefaultDebugSettingsCache(
+            prefs = prefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideInfrastructureRepository(
+        cache: DebugSettingsCache
+    ): InfrastructureRepository {
+        return InfrastructureDataRepository(
+            cache = cache
         )
     }
 

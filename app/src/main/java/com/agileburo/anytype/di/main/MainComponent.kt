@@ -35,4 +35,5 @@ interface MainComponent {
     fun linkAddComponentBuilder(): LinkSubComponent.Builder
     fun pageIconPickerBuilder(): PageIconPickerSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
+    fun debugSettingsBuilder() : DebugSettingsSubComponent.Builder
 }

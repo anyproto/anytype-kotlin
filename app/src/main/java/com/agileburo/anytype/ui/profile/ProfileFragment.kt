@@ -2,9 +2,10 @@ package com.agileburo.anytype.ui.profile
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.profile.ProfileView
@@ -48,6 +49,13 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
                 keychainPhrase.setOnClickListener { vm.onKeyChainPhraseClicked() }
                 backButton.setOnClickListener { vm.onBackButtonClicked() }
                 switchProfileButton.setOnClickListener { vm.onAddProfileClicked() }
+
+                if (BuildConfig.DEBUG) {
+                    with(debugSettingsButton) {
+                        visible()
+                        setOnClickListener { vm.onDebugSettingsClicked() }
+                    }
+                }
             }
             is ViewState.Success -> {
                 name.text = state.data.name

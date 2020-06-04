@@ -328,4 +328,12 @@
         <item name="android:paddingBottom">6dp</item>
     </style>
 
+    <style name="ActionModePopupButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/popup_context_menu_height</item>
+        <item name="android:paddingStart">@dimen/dp_16</item>
+        <item name="android:paddingEnd">@dimen/dp_16</item>
+        <item name="android:background">?selectableItemBackground</item>
+    </style>
+
 </resources>

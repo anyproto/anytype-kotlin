@@ -33,6 +33,8 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.T
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
+import com.agileburo.anytype.core_ui.widgets.actionmode.AnytypeContextMenuEvent
+import com.agileburo.anytype.core_ui.widgets.actionmode.EmptyActionMode
 import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
@@ -96,10 +98,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            onLongClickListener: (String) -> Unit
+            onLongClickListener: (String) -> Unit,
+            anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null
         ) {
 
             indentize(item)
+            anytypeContextMenuListener?.let { setAnytypeContextMenuListener(it) }
 
             if (item.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
@@ -134,8 +138,27 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     item.focused = focused
                     onFocusChanged(item.id, focused)
                 }
-                content.selectionDetector = { onSelectionChanged(item.id, it) }
+                content.selectionDetector = {
+                    onSelectionChanged(item.id, it)
+
+                    /**
+                     * [AnytypeContextMenu] logic
+                     */
+                    //Todo Remove before major release
+                    if (it.first != it.last) {
+                        anytypeContextMenuListener?.invoke(AnytypeContextMenuEvent.Selected(content))
+                    }
+                }
             }
+        }
+
+        /**
+         * [AnytypeContextMenu] logic
+         */
+        //Todo Remove before major release
+        private fun setAnytypeContextMenuListener(listener: (AnytypeContextMenuEvent) -> Unit) {
+            content.customSelectionActionModeCallback =
+                EmptyActionMode { listener.invoke(AnytypeContextMenuEvent.Detached) }
         }
 
         private fun setText(item: BlockView.Paragraph) {

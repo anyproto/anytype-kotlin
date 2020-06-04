@@ -4,9 +4,11 @@ import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.config.DebugSettings
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.presentation.desktop.DashboardView
+import com.agileburo.anytype.presentation.settings.EditorSettings
 
 fun Block.Content.File.toPictureView(
     id: String,
@@ -216,3 +218,6 @@ fun UiBlock.style(): Block.Content.Text.Style = when (this) {
     UiBlock.CODE -> Block.Content.Text.Style.CODE_SNIPPET
     else -> throw IllegalStateException("Could not extract style from block: $this")
 }
+
+fun DebugSettings.toView(): EditorSettings =
+    EditorSettings(customContextMenu = this.isAnytypeContextMenuEnabled)

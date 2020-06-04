@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -19,6 +20,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
@@ -34,6 +36,8 @@ import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_ui.tools.FirstItemInvisibilityDetector
 import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
+import com.agileburo.anytype.core_ui.widgets.actionmode.AnytypeContextMenu
+import com.agileburo.anytype.core_ui.widgets.actionmode.AnytypeContextMenuEvent
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.di.common.componentManager
@@ -46,6 +50,7 @@ import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.presentation.page.editor.Command
 import com.agileburo.anytype.presentation.page.editor.ViewState
+import com.agileburo.anytype.presentation.settings.EditorSettings
 import com.agileburo.anytype.ui.base.NavigationFragment
 import com.agileburo.anytype.ui.page.modals.*
 import com.agileburo.anytype.ui.page.modals.actions.BlockActionToolbarFactory
@@ -60,6 +65,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import permissions.dispatcher.*
 import timber.log.Timber
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 
@@ -80,6 +86,7 @@ open class PageFragment :
             .get(PageViewModel::class.java)
     }
     private lateinit var pickiT: PickiT
+    private var anytypeContextMenu: AnytypeContextMenu? = null
 
     private val pageAdapter by lazy {
         BlockAdapter(
@@ -141,7 +148,8 @@ open class PageFragment :
             onLongClickListener = vm::onBlockLongPressedClicked,
             onTitleTextInputClicked = vm::onTitleTextInputClicked,
             onClickListener = vm::onClickListener,
-            clipboardInterceptor = this
+            clipboardInterceptor = this,
+            anytypeContextMenuListener = anytypeContextMenuListener
         )
     }
 
@@ -253,6 +261,9 @@ open class PageFragment :
         vm.open(id = extractDocumentId())
         pickiT = PickiT(requireContext(), this)
         setupOnBackPressedDispatcher()
+        if (BuildConfig.DEBUG) {
+            getEditorSettings()
+        }
     }
 
     private fun setupOnBackPressedDispatcher() =
@@ -684,8 +695,53 @@ open class PageFragment :
         componentManager().pageComponent.release(extractDocumentId())
     }
 
+    private fun getEditorSettings() {
+        val editorSettings: EditorSettings? = arguments?.getParcelable(DEBUG_SETTINGS)
+        if (editorSettings?.customContextMenu == true) {
+            initContextMenuListener()
+        }
+    }
+
+    //------------ Anytype Custom Context Menu ------------
+
+    private var anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null
+
+    private fun initContextMenuListener() {
+        anytypeContextMenuListener = {
+            when (it) {
+                AnytypeContextMenuEvent.Detached -> removeContextMenu()
+                is AnytypeContextMenuEvent.Selected -> onAnytypeContextMenuEvent(it.view)
+            }
+        }
+    }
+
+    private fun onAnytypeContextMenuEvent(
+        originatingView: TextView
+    ) {
+        if (anytypeContextMenu == null) {
+            anytypeContextMenu =
+                AnytypeContextMenu(
+                    contextRef = WeakReference(requireContext()),
+                    anchorViewRef = WeakReference(originatingView),
+                    onMarkupActionClicked = {
+                        vm.onMarkupActionClicked(it)
+                        removeContextMenu()
+                    }
+                )
+        }
+        anytypeContextMenu?.showAtLocation()
+    }
+
+    private fun removeContextMenu() {
+        anytypeContextMenu?.finish()
+        anytypeContextMenu = null
+    }
+
+    //------------ End of Anytype Custom Context Menu ------------
+
     companion object {
         const val ID_KEY = "id"
+        const val DEBUG_SETTINGS = "debug_settings"
         const val ID_EMPTY_VALUE = ""
         const val NOT_IMPLEMENTED_MESSAGE = "Not implemented."
 

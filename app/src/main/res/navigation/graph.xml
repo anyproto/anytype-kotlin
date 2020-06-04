@@ -63,6 +63,9 @@
         <action
             android:id="@+id/action_open_keychain"
             app:destination="@id/keychainDialog" />
+        <action
+            android:id="@+id/action_profileScreen_to_debugSettingsFragment"
+            app:destination="@id/debugSettingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/createAccountScreen"
@@ -321,5 +324,10 @@
         android:id="@+id/goalsFragment"
         android:name="com.agileburo.anytype.ui.goals.GoalsFragment"
         android:label="GoalsFragment" />
+    <fragment
+        android:id="@+id/debugSettingsFragment"
+        android:name="com.agileburo.anytype.ui.settings.DebugSettingsFragment"
+        android:label="DebugSettingsFragment"
+        tools:layout="@layout/fragment_debug_settings"/>
 
 </navigation>

@@ -180,6 +180,7 @@ interface TextHolder {
         Timber.d("Processing $payload for new view:\n$item")
 
         if (item is BlockView.Text) {
+
             if (payload.textChanged()) {
                 content.pauseTextWatchers {
                     if (item is Markup)
@@ -198,7 +199,7 @@ interface TextHolder {
                     }
                 }
             } catch (e: Throwable) {
-                Timber.e(e, "Error while setting selection")
+                Timber.e(e, "Error while setting cursor from $item")
             }
 
             if (payload.textColorChanged()) {

@@ -58,10 +58,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flow
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before
@@ -310,12 +307,6 @@ class EditorIntegrationTesting {
             .check(matches(withText(BLOCK_CHECKBOX.content.asText().text)))
     }
 
-    private fun stubInterceptEvents() {
-        interceptEvents.stub {
-            onBlocking { build() } doReturn emptyFlow()
-        }
-    }
-
     @Test
     fun shouldAppendTextToTheEndAfterTyping() {
 
@@ -406,24 +397,6 @@ class EditorIntegrationTesting {
 
         onView(withId(R.id.toolbar)).check(matches(not(isDisplayed())))
         target.check(matches(not(hasFocus())))
-    }
-
-    private fun stubOpenDocument(document: List<Block>) {
-        openPage.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
-                Payload(
-                    context = root,
-                    events = listOf(
-                        Event.Command.ShowBlock(
-                            context = root,
-                            root = root,
-                            details = Block.Details(),
-                            blocks = document
-                        )
-                    )
-                )
-            )
-        }
     }
 
     /*
@@ -838,26 +811,27 @@ class EditorIntegrationTesting {
      * STUBBING
      */
 
-    private fun stubShowBlock(initialDelay: Long, blocks: List<Block>) {
+    private fun stubInterceptEvents() {
         interceptEvents.stub {
-            onBlocking { build() } doReturn flow {
-                delay(initialDelay)
-                emit(
-                    listOf(
-                        Event.Command.ShowBlock(
-                            root = root,
-                            blocks = blocks,
-                            context = root
-                        )
-                    )
-                )
-            }
+            onBlocking { build() } doReturn emptyFlow()
         }
     }
 
-    private fun stubEvents(events: Flow<List<Event>>) {
-        interceptEvents.stub {
-            onBlocking { build() } doReturn events
+    private fun stubOpenDocument(document: List<Block>) {
+        openPage.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = listOf(
+                        Event.Command.ShowBlock(
+                            context = root,
+                            root = root,
+                            details = Block.Details(),
+                            blocks = document
+                        )
+                    )
+                )
+            )
         }
     }
 

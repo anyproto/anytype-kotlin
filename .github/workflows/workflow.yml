@@ -1,6 +1,6 @@
 on:
   push:
-    branches: feature/430_AAM
+    branches: develop
 name: CI
 jobs:
   setup-android:

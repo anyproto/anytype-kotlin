@@ -6,6 +6,7 @@ import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.editor.Editor.Focus
+import com.agileburo.anytype.domain.editor.Editor.Focus.Cursor
 import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.domain.page.Redo
 import com.agileburo.anytype.domain.page.Undo
@@ -88,7 +89,10 @@ class Orchestrator(
                         )
                     ).proceed(
                         failure = defaultOnError,
-                        success = defaultOnSuccess
+                        success = { (id, payload) ->
+                            stores.focus.update(Focus(id = id, cursor = Cursor.End))
+                            proxies.payloads.send(payload)
+                        }
                     )
                 }
                 is Intent.CRUD.Unlink -> {
@@ -105,7 +109,7 @@ class Orchestrator(
                                 stores.focus.update(
                                     Focus(
                                         id = focus,
-                                        range = intent.cursor?.let { it..it }
+                                        cursor = Cursor.End
                                     )
                                 )
                             }
@@ -125,7 +129,12 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = { (id, payload) ->
-                            stores.focus.update(Focus.id(intent.target))
+                            stores.focus.update(
+                                Focus(
+                                    id = intent.target,
+                                    cursor = Cursor.Start
+                                )
+                            )
                             proxies.payloads.send(payload)
                         }
                     )
@@ -139,7 +148,18 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = { payload ->
-                            stores.focus.update(Focus.id(intent.previous))
+                            if (intent.previousLength != null) {
+                                stores.focus.update(
+                                    Focus(
+                                        id = intent.previous,
+                                        cursor = Cursor.Range(
+                                            intent.previousLength..intent.previousLength
+                                        )
+                                    )
+                                )
+                            } else {
+                                stores.focus.update(Focus.id(intent.previous))
+                            }
                             proxies.payloads.send(payload)
                         }
                     )

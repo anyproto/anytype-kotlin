@@ -90,6 +90,7 @@ sealed class Intent {
         class Merge(
             val context: Id,
             val previous: Id,
+            val previousLength: Int?,
             val pair: Pair<Id, Id>
         ) : Text()
 

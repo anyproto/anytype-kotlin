@@ -132,6 +132,10 @@ interface TextHolder {
             content.clearFocus()
     }
 
+    fun setCursor(item: BlockView.Cursor) {
+        item.cursor?.let { content.setSelection(it) }
+    }
+
     fun setAlignment(alignment: BlockView.Alignment) {
         content.gravity = when (alignment) {
             BlockView.Alignment.START -> Gravity.START

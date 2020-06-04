@@ -543,7 +543,14 @@ class PageViewModel(
                 Intent.Text.Merge(
                     context = context,
                     previous = previous,
-                    pair = Pair(previous, target)
+                    pair = Pair(previous, target),
+                    previousLength = blocks.find { it.id == previous }?.let {  block ->
+                        if (block.content is Content.Text) {
+                            block.content.asText().text.length
+                        } else {
+                            null
+                        }
+                    }
                 )
             )
         }
@@ -676,6 +683,8 @@ class PageViewModel(
                 )
             )
         }
+
+        // TODO should take into account that previous block could be a Block.Content.Layout!
 
         val page = blocks.first { it.id == context }
 

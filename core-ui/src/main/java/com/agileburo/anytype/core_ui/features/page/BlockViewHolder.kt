@@ -126,6 +126,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
                 setText(item)
                 setTextColor(item)
+
+                if (item.focused) setCursor(item)
+
                 setFocus(item)
 
                 setupTextWatcher(onTextChanged, item)

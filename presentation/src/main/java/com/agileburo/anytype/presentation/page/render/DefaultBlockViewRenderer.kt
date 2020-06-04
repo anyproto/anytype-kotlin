@@ -198,7 +198,13 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
-        cursor = focus.range?.first
+        cursor = focus.cursor?.let { cursor ->
+            when(cursor) {
+                is Editor.Focus.Cursor.Start -> 0
+                is Editor.Focus.Cursor.End -> content.text.length
+                is Editor.Focus.Cursor.Range -> cursor.range.first
+            }
+        }
     )
 
     private fun headerThree(

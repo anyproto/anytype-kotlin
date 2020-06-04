@@ -6,6 +6,7 @@ import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.agileburo.anytype.core_ui.state.ControlPanelState
+import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
@@ -330,7 +331,7 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should debonce values when dispatching text changes`() {
+    fun `should debounce values when dispatching text changes`() {
 
         val blockId = MockDataFactory.randomUuid()
         val pageId = MockDataFactory.randomUuid()
@@ -1649,7 +1650,7 @@ class PageViewModelTest {
         coroutineTestRule.advanceTime(1001)
 
         vm.onBlockFocusChanged(id = child, hasFocus = true)
-        vm.onActionDeleteClicked()
+        vm.onActionBarItemClicked(id = child, action = ActionItemType.Delete)
 
         runBlockingTest {
             verify(unlinkBlocks, times(1)).invoke(
@@ -1742,7 +1743,8 @@ class PageViewModelTest {
         )
 
         vm.onBlockFocusChanged(id = firstChild, hasFocus = true)
-        vm.onActionDeleteClicked()
+        //vm.onActionDeleteClicked()
+        vm.onActionBarItemClicked(id = firstChild, action = ActionItemType.Delete)
 
         assertEquals(expected = 3, actual = vm.blocks.size)
 

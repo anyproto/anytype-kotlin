@@ -6,7 +6,7 @@ import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.Config
-import com.agileburo.anytype.domain.emoji.Emojifier
+import com.agileburo.anytype.domain.editor.Editor
 import com.agileburo.anytype.domain.ext.asMap
 import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.domain.misc.UrlBuilder
@@ -31,7 +31,7 @@ class DefaultBlockViewRendererTest {
         suspend fun render(
             root: Block,
             anchor: Id,
-            focus: Id,
+            focus: Editor.Focus,
             indent: Int
         ): List<BlockView> = blocks.render(
             root = root,
@@ -40,9 +40,6 @@ class DefaultBlockViewRendererTest {
             indent = indent
         )
     }
-
-    @Mock
-    lateinit var emojifier: Emojifier
 
     @Mock
     lateinit var toggleStateHolder: ToggleStateHolder
@@ -130,7 +127,7 @@ class DefaultBlockViewRendererTest {
             wrapper.render(
                 root = page,
                 anchor = page.id,
-                focus = paragraph.id,
+                focus = Editor.Focus.id(paragraph.id),
                 indent = 0
             )
         }
@@ -230,7 +227,7 @@ class DefaultBlockViewRendererTest {
             wrapper.render(
                 root = page,
                 anchor = page.id,
-                focus = paragraph.id,
+                focus = Editor.Focus.id(paragraph.id),
                 indent = 0
             )
         }
@@ -312,7 +309,7 @@ class DefaultBlockViewRendererTest {
             wrapper.render(
                 root = page,
                 anchor = page.id,
-                focus = paragraph.id,
+                focus = Editor.Focus.id(paragraph.id),
                 indent = 0
             )
         }
@@ -374,7 +371,7 @@ class DefaultBlockViewRendererTest {
             wrapper.render(
                 root = page,
                 anchor = page.id,
-                focus = paragraph.id,
+                focus = Editor.Focus.id(paragraph.id),
                 indent = 0
             )
         }

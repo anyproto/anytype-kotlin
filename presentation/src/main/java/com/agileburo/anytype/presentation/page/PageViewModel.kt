@@ -885,10 +885,6 @@ class PageViewModel(
         }
     }
 
-    fun onActionDeleteClicked() {
-        proceedWithUnlinking(orchestrator.stores.focus.current().id)
-    }
-
     fun onActionBarItemClicked(id: String, action: ActionItemType) {
         when (action) {
             ActionItemType.TurnInto -> {

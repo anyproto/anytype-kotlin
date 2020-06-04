@@ -5,7 +5,6 @@ import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content
 import com.agileburo.anytype.domain.common.Id
-import com.agileburo.anytype.domain.editor.Editor
 import com.agileburo.anytype.domain.editor.Editor.Cursor
 import com.agileburo.anytype.domain.editor.Editor.Focus
 import com.agileburo.anytype.domain.misc.UrlBuilder
@@ -200,13 +199,7 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
-        cursor = focus.cursor?.let { cursor ->
-            when(cursor) {
-                is Cursor.Start -> 0
-                is Cursor.End -> content.text.length
-                is Cursor.Range -> cursor.range.first
-            }
-        }
+        cursor = setFocus(focus, content)
     )
 
     private fun headerThree(
@@ -223,7 +216,8 @@ class DefaultBlockViewRenderer(
         focused = block.id == focus.id,
         backgroundColor = content.backgroundColor,
         indent = indent,
-        alignment = content.align?.toView()
+        alignment = content.align?.toView(),
+        cursor = setFocus(focus, content)
     )
 
     private fun headerTwo(
@@ -240,7 +234,8 @@ class DefaultBlockViewRenderer(
         focused = block.id == focus.id,
         backgroundColor = content.backgroundColor,
         indent = indent,
-        alignment = content.align?.toView()
+        alignment = content.align?.toView(),
+        cursor = setFocus(focus, content)
     )
 
     private fun headerOne(
@@ -257,7 +252,8 @@ class DefaultBlockViewRenderer(
         focused = block.id == focus.id,
         backgroundColor = content.backgroundColor,
         indent = indent,
-        alignment = content.align?.toView()
+        alignment = content.align?.toView(),
+        cursor = setFocus(focus, content)
     )
 
     private fun checkbox(
@@ -275,7 +271,8 @@ class DefaultBlockViewRenderer(
         color = content.color,
         backgroundColor = content.backgroundColor,
         focused = block.id == focus.id,
-        indent = indent
+        indent = indent,
+        cursor = setFocus(focus, content)
     )
 
     private fun bulleted(
@@ -292,7 +289,8 @@ class DefaultBlockViewRenderer(
         marks = content.marks(),
         focused = block.id == focus.id,
         color = content.color,
-        backgroundColor = content.backgroundColor
+        backgroundColor = content.backgroundColor,
+        cursor = setFocus(focus, content)
     )
 
     private fun code(
@@ -320,7 +318,8 @@ class DefaultBlockViewRenderer(
         text = content.text,
         indent = indent,
         color = content.color,
-        backgroundColor = content.backgroundColor
+        backgroundColor = content.backgroundColor,
+        cursor = setFocus(focus, content)
     )
 
     private fun toggle(
@@ -340,7 +339,8 @@ class DefaultBlockViewRenderer(
         indent = indent,
         focused = block.id == focus.id,
         toggled = toggleStateHolder.isToggled(block.id),
-        isEmpty = isEmpty
+        isEmpty = isEmpty,
+        cursor = setFocus(focus, content)
     )
 
     private fun numbered(
@@ -359,7 +359,8 @@ class DefaultBlockViewRenderer(
         color = content.color,
         backgroundColor = content.backgroundColor,
         indent = indent,
-        marks = content.marks()
+        marks = content.marks(),
+        cursor = setFocus(focus, content)
     )
 
     private fun bookmark(
@@ -427,7 +428,7 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Text,
         root: Block,
-        focus: Editor.Focus
+        focus: Focus
     ): BlockView.Title = BlockView.Title(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -458,4 +459,15 @@ class DefaultBlockViewRenderer(
         text = details.details[content.target]?.name,
         indent = indent
     )
+
+    private fun setFocus(
+        focus: Focus,
+        content: Content.Text
+    ) : Int? = focus.cursor?.let { cursor ->
+        when (cursor) {
+            is Cursor.Start -> 0
+            is Cursor.End -> content.text.length
+            is Cursor.Range -> cursor.range.first
+        }
+    }
 }

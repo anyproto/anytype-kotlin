@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -35,11 +34,10 @@ import com.agileburo.anytype.mocking.MockUiTests.BLOCK_CHECKBOX
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_H1
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_H2
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_H3
-import com.agileburo.anytype.mocking.MockUiTests.BLOCK_H4
+import com.agileburo.anytype.mocking.MockUiTests.BLOCK_HIGHLIGHT
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_NUMBERED_1
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_PARAGRAPH
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_PARAGRAPH_1
-import com.agileburo.anytype.mocking.MockUiTests.BLOCK_QUOTE
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_TOGGLE
 import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
 import com.agileburo.anytype.presentation.page.Editor
@@ -79,7 +77,7 @@ https://github.com/android/testing-samples/blob/master/ui/espresso/RecyclerViewS
  */
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class PageFragmentTest {
+class EditorIntegrationTesting {
 
     @get:Rule
     val animationsRule = DisableAnimationsRule()
@@ -87,18 +85,21 @@ class PageFragmentTest {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    lateinit var archiveDocument: ArchiveDocument
-    lateinit var createDocument: CreateDocument
-    lateinit var downloadFile: DownloadFile
-    lateinit var undo: Undo
-    lateinit var redo: Redo
-    lateinit var copy: Copy
-    lateinit var paste: Paste
-    lateinit var updateTitle: UpdateTitle
-    lateinit var updateAlignment: UpdateAlignment
-    lateinit var replaceBlock: ReplaceBlock
-    lateinit var setupBookmark: SetupBookmark
-    lateinit var uploadUrl: UploadUrl
+    private lateinit var archiveDocument: ArchiveDocument
+    private lateinit var createDocument: CreateDocument
+    private lateinit var downloadFile: DownloadFile
+    private lateinit var undo: Undo
+    private lateinit var redo: Redo
+    private lateinit var copy: Copy
+    private lateinit var paste: Paste
+    private lateinit var updateTitle: UpdateTitle
+    private lateinit var updateAlignment: UpdateAlignment
+    private lateinit var replaceBlock: ReplaceBlock
+    private lateinit var setupBookmark: SetupBookmark
+    private lateinit var uploadUrl: UploadUrl
+    private lateinit var splitBlock: SplitBlock
+    private lateinit var createPage: CreatePage
+    private lateinit var updateBackgroundColor: UpdateBackgroundColor
 
     @Mock
     lateinit var openPage: OpenPage
@@ -129,18 +130,10 @@ class PageFragmentTest {
 
     @Mock
     lateinit var uriMatcher: Clipboard.UriMatcher
-
     @Mock
     lateinit var repo: BlockRepository
     @Mock
     lateinit var clipboard: Clipboard
-
-    private lateinit var splitBlock: SplitBlock
-    private lateinit var createPage: CreatePage
-    private lateinit var updateBackgroundColor: UpdateBackgroundColor
-
-    private lateinit var actionToolbar: ViewInteraction
-    private lateinit var optionToolbar: ViewInteraction
 
     private val root: String = "rootId123"
 
@@ -242,7 +235,7 @@ class PageFragmentTest {
     }
 
     @Test()
-    fun shouldHaveTextSetForTextBlocks() {
+    fun shouldSetTextForTextBlocks() {
 
         // SETUP
 
@@ -252,9 +245,8 @@ class PageFragmentTest {
             BLOCK_H1,
             BLOCK_H2,
             BLOCK_H3,
-            BLOCK_H4,
             BLOCK_PARAGRAPH,
-            BLOCK_QUOTE,
+            BLOCK_HIGHLIGHT,
             BLOCK_BULLET,
             BLOCK_NUMBERED_1,
             BLOCK_TOGGLE,
@@ -273,20 +265,7 @@ class PageFragmentTest {
         ) + blocks
 
         stubInterceptEvents()
-
-        openPage.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(Payload(
-                context = root,
-                events = listOf(
-                    Event.Command.ShowBlock(
-                        context = root,
-                        root = root,
-                        details = Block.Details(),
-                        blocks = document
-                    )
-                )
-            ))
-        }
+        stubOpenDocument(document)
 
         launchFragment(args)
 
@@ -303,34 +282,31 @@ class PageFragmentTest {
         onView(withRecyclerView(R.id.recycler).atPositionOnView(3, R.id.headerThree))
             .check(matches(withText(BLOCK_H3.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(4, R.id.headerThree))
-            .check(matches(withText(BLOCK_H4.content.asText().text)))
-
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(5, R.id.textContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(4, R.id.textContent))
             .check(matches(withText(BLOCK_PARAGRAPH.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(6, R.id.highlightContent))
-            .check(matches(withText(BLOCK_QUOTE.content.asText().text)))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(5, R.id.highlightContent))
+            .check(matches(withText(BLOCK_HIGHLIGHT.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(7, R.id.bulletedListContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(6, R.id.bulletedListContent))
             .check(matches(withText(BLOCK_BULLET.content.asText().text)))
 
-        R.id.recycler.scrollTo<BlockViewHolder.Numbered>(8)
+        R.id.recycler.scrollTo<BlockViewHolder.Numbered>(7)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(8, R.id.numberedListContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(7, R.id.numberedListContent))
             .check(matches(withText(BLOCK_NUMBERED_1.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(8, R.id.number))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(7, R.id.number))
             .check(matches(withText("1.")))
 
-        R.id.recycler.scrollTo<BlockViewHolder.Toggle>(9)
+        R.id.recycler.scrollTo<BlockViewHolder.Toggle>(8)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(9, R.id.toggleContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(8, R.id.toggleContent))
             .check(matches(withText(BLOCK_TOGGLE.content.asText().text)))
 
-        R.id.recycler.scrollTo<BlockViewHolder.Checkbox>(10)
+        R.id.recycler.scrollTo<BlockViewHolder.Checkbox>(9)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(10, R.id.checkboxContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(9, R.id.checkboxContent))
             .check(matches(withText(BLOCK_CHECKBOX.content.asText().text)))
     }
 
@@ -347,9 +323,7 @@ class PageFragmentTest {
 
         val args = bundleOf(PageFragment.ID_KEY to root)
 
-        val delayBeforeGettingEvents = 100L
-
-        val page = listOf(
+        val document = listOf(
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
@@ -363,20 +337,20 @@ class PageFragmentTest {
             BLOCK_PARAGRAPH_1
         )
 
-        stubShowBlock(
-            initialDelay = delayBeforeGettingEvents,
-            blocks = page
-        )
+        stubInterceptEvents()
+        stubOpenDocument(document)
+
+        updateText.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
 
         launchFragment(args)
-
-        advance(delayBeforeGettingEvents)
 
         // TESTING
 
         val text = " Add new text at the end"
 
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent))
+        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent))
 
         target.apply {
             perform(click())
@@ -392,103 +366,64 @@ class PageFragmentTest {
     }
 
     @Test
-    fun shouldShowBlockToolbarAsSoonAsTitleIsFocused() {
-
-        val args = bundleOf(PageFragment.ID_KEY to root)
-
-        val delayBeforeGettingEvents = 100L
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.TITLE
-            )
-        )
-
-        val page = listOf(
-            Block(
-                id = root,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
-                children = listOf(title.id)
-            ),
-            title
-        )
-
-        stubShowBlock(
-            initialDelay = delayBeforeGettingEvents,
-            blocks = page
-        )
-
-        launchFragment(args)
-
-        advance(delayBeforeGettingEvents)
-
-        // TESTING
-
-        onView(withId(R.id.toolbar)).check(matches(not(isDisplayed())))
-
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.title))
-
-        target.apply { perform(click()) }
-
-        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
-    }
-
-    @Test
     fun shouldClearFocusAfterClickedOnHideKeyboard() {
 
         val args = bundleOf(PageFragment.ID_KEY to root)
 
-        val delayBeforeGettingEvents = 100L
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.TITLE
-            )
-        )
-
-        val page = listOf(
+        val document = listOf(
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
                 content = Block.Content.Page(
                     style = Block.Content.Page.Style.SET
                 ),
-                children = listOf(title.id)
+                children = listOf(
+                    BLOCK_PARAGRAPH_1.id
+                )
             ),
-            title
+            BLOCK_PARAGRAPH_1
         )
 
-        stubShowBlock(
-            initialDelay = delayBeforeGettingEvents,
-            blocks = page
-        )
+        stubInterceptEvents()
+        stubOpenDocument(document)
 
         launchFragment(args)
 
-        advance(delayBeforeGettingEvents)
-
         // TESTING
 
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.title))
+        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent))
+
+        // Focusing
 
         target.perform(click())
 
-        onView(allOf(withId(R.id.keyboard), isDisplayed())).perform(click())
+        onView(withId(R.id.toolbar)).check(matches((isDisplayed())))
+        target.check(matches((hasFocus())))
+
+        // Unfocusing
+
+        onView(allOf(withId(R.id.unfocus), isDisplayed())).perform(click())
+
         onView(withId(R.id.toolbar)).check(matches(not(isDisplayed())))
         target.check(matches(not(hasFocus())))
+    }
+
+    private fun stubOpenDocument(document: List<Block>) {
+        openPage.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = listOf(
+                        Event.Command.ShowBlock(
+                            context = root,
+                            root = root,
+                            details = Block.Details(),
+                            blocks = document
+                        )
+                    )
+                )
+            )
+        }
     }
 
     /*

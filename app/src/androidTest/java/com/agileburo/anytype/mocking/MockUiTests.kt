@@ -143,7 +143,7 @@ object MockUiTests {
         )
     )
 
-    val BLOCK_QUOTE = Block(
+    val BLOCK_HIGHLIGHT = Block(
         id = "id_quote",
         children = emptyList(),
         content = Block.Content.Text(

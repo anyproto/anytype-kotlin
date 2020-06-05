@@ -56,6 +56,8 @@ class SplitAndMergeTest : EditorTestSetup() {
 
         val text = "FooBar"
 
+        val style = Block.Content.Text.Style.P
+
         val block = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
@@ -63,7 +65,7 @@ class SplitAndMergeTest : EditorTestSetup() {
             content = Block.Content.Text(
                 text = "",
                 marks = emptyList(),
-                style = Block.Content.Text.Style.P
+                style = style
             )
         )
 
@@ -85,7 +87,7 @@ class SplitAndMergeTest : EditorTestSetup() {
             content = Block.Content.Text(
                 text = "Foo",
                 marks = emptyList(),
-                style = Block.Content.Text.Style.P
+                style = style
             )
         )
 
@@ -114,7 +116,7 @@ class SplitAndMergeTest : EditorTestSetup() {
             context = root,
             target = block.id,
             index = 3,
-            style = Block.Content.Text.Style.P
+            style = style
         )
 
         stubSplitBlocks(
@@ -125,10 +127,12 @@ class SplitAndMergeTest : EditorTestSetup() {
 
         val scenario = launchFragment(args)
 
+        val targetViewId = R.id.textContent
+
         // TESTING
 
         val target = onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         )
 
         target.apply {
@@ -136,31 +140,36 @@ class SplitAndMergeTest : EditorTestSetup() {
             perform(ViewActions.typeText(text))
         }
 
-        Thread.sleep(500)
-
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
-
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
+
+        Thread.sleep(500)
 
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(R.id.textContent).setSelection(3)
+            fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
-        // Press ENTER
+        Thread.sleep(500)
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        // Press ENTER
 
         target.perform(ViewActions.pressImeActionButton())
 
         // Check results
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)).apply {
+        verifyBlocking(updateText, times(1)) { invoke(any()) }
+        verifyBlocking(repo, times(1)) { split(command) }
+
+        onView(
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+        ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, R.id.textContent)).apply {
+        onView(
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+        ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
         }
@@ -169,7 +178,7 @@ class SplitAndMergeTest : EditorTestSetup() {
 
         scenario.onFragment { fragment ->
             val item = fragment.recycler.getChildAt(2)
-            val view = item.findViewById<TextInputWidget>(R.id.textContent)
+            val view = item.findViewById<TextInputWidget>(targetViewId)
             assertEquals(
                 expected = 0,
                 actual = view.selectionStart
@@ -182,12 +191,7 @@ class SplitAndMergeTest : EditorTestSetup() {
 
         // Release pending coroutines
 
-        verifyBlocking(updateText, times(1)) { invoke(any()) }
-        verifyBlocking(repo, times(1)) { split(command) }
-
         advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
-
-        Thread.sleep(1000)
     }
 
     @Test
@@ -430,9 +434,9 @@ class SplitAndMergeTest : EditorTestSetup() {
             perform(ViewActions.typeText(text))
         }
 
-        Thread.sleep(500)
-
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
+
+        Thread.sleep(500)
 
         // Set cursor programmatically
 
@@ -440,27 +444,29 @@ class SplitAndMergeTest : EditorTestSetup() {
             fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
+        Thread.sleep(500)
+
         // Press ENTER
 
         target.perform(ViewActions.pressImeActionButton())
 
         // Check results
 
+        verifyBlocking(updateText, times(1)) { invoke(any()) }
+        verifyBlocking(repo, times(1)) { split(command) }
+
         onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
         onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
         }
-
-        verifyBlocking(updateText, times(1)) { invoke(any()) }
-        verifyBlocking(repo, times(1)) { split(command) }
 
         // Check cursor position
 

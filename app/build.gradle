@@ -143,6 +143,7 @@ dependencies {
     androidTestImplementation acceptanceTesting.espressoCore
     androidTestImplementation acceptanceTesting.espressoContrib
     androidTestImplementation acceptanceTesting.androidJUnit
+    androidTestImplementation unitTestDependencies.kotlinTest
     androidTestImplementation acceptanceTesting.testRules
     androidTestImplementation acceptanceTesting.disableAnimation
     androidTestImplementation unitTestDependencies.coroutineTesting

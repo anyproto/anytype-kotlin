@@ -70,6 +70,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import kotlin.test.assertEquals
 
 /**
 Helping link For Espresso RecyclerView actions:
@@ -491,11 +492,17 @@ class EditorIntegrationTesting {
 
         target.check(matches(withText(text)))
 
+        // Set cursor programmatically
+
         scenario.onFragment { fragment ->
            fragment.recycler.findViewById<TextInputWidget>(R.id.textContent).setSelection(3)
         }
 
+        // Press ENTER
+
         target.perform(pressImeActionButton())
+
+        // Check results
 
         verifyBlocking(updateText, times(1)) { invoke(any()) }
         verifyBlocking(repo, times(1)) { split(command) }
@@ -508,14 +515,24 @@ class EditorIntegrationTesting {
             check(matches(hasFocus()))
         }
 
-        // Release pending text update
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        // Check cursor position
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(R.id.textContent).apply {
-                print(text)
-            }
+            val item = fragment.recycler.getChildAt(2)
+            val view = item.findViewById<TextInputWidget>(R.id.textContent)
+            assertEquals(
+                expected = 0,
+                actual = view.selectionStart
+            )
+            assertEquals(
+                expected = 0,
+                actual = view.selectionEnd
+            )
         }
+
+        // Release pending coroutines
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     private fun stubUpdateText() {

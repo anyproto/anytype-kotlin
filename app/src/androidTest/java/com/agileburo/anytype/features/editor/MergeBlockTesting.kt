@@ -11,13 +11,15 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+import com.agileburo.anytype.domain.base.Either
+import com.agileburo.anytype.domain.block.interactor.MergeBlocks
 import com.agileburo.anytype.domain.block.model.Block
-import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.features.editor.base.EditorTestSetup
 import com.agileburo.anytype.features.editor.base.TestPageFragment
 import com.agileburo.anytype.mocking.MockDataFactory
+import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.ui.page.PageFragment
 import com.agileburo.anytype.utils.CoroutinesTestRule
 import com.agileburo.anytype.utils.TestUtils.withRecyclerView
@@ -54,6 +56,133 @@ class MergeBlockTesting : EditorTestSetup() {
 
         val style = Block.Content.Text.Style.P
 
+        val target = R.id.textContent
+
+        basicScenario(style, args, target)
+    }
+
+    @Test
+    fun shouldMergeTwoH1() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val style = Block.Content.Text.Style.H1
+
+        val target = R.id.headerOne
+
+        basicScenario(style, args, target)
+    }
+
+    @Test
+    fun shouldMergeTwoH2() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val style = Block.Content.Text.Style.H2
+
+        val target = R.id.headerTwo
+
+        basicScenario(style, args, target)
+    }
+
+    @Test
+    fun shouldMergeTwoH3() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val style = Block.Content.Text.Style.H3
+
+        val target = R.id.headerThree
+
+        basicScenario(style, args, target)
+    }
+
+    @Test
+    fun shouldMergeTwoHighlight() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val style = Block.Content.Text.Style.QUOTE
+
+        val target = R.id.highlightContent
+
+        basicScenario(style, args, target)
+    }
+
+    @Test
+    fun shouldMergeTwoCheckbox() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val style = Block.Content.Text.Style.CHECKBOX
+
+        val target = R.id.checkboxContent
+
+        basicScenario(style, args, target)
+    }
+
+    @Test
+    fun shouldMergeTwoBullet() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val style = Block.Content.Text.Style.BULLET
+
+        val target = R.id.bulletedListContent
+
+        basicScenario(style, args, target)
+    }
+
+    @Test
+    fun shouldMergeTwoNumbered() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val style = Block.Content.Text.Style.NUMBERED
+
+        val target = R.id.numberedListContent
+
+        basicScenario(style, args, target)
+    }
+
+    @Test
+    fun shouldMergeTwoToggle() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val style = Block.Content.Text.Style.TOGGLE
+
+        val target = R.id.toggleContent
+
+        basicScenario(style, args, target)
+    }
+
+    /**
+     * @param style style of two block to merge
+     * @param args args for fragment
+     * @param targetViewId id of the target view in recycler (which we need to merge)
+     */
+    private fun basicScenario(
+        style: Block.Content.Text.Style,
+        args: Bundle,
+        targetViewId: Int
+    ) {
         val a = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
@@ -104,7 +233,7 @@ class MergeBlockTesting : EditorTestSetup() {
             )
         )
 
-        val command = Command.Merge(
+        val params = MergeBlocks.Params(
             context = root,
             pair = Pair(a.id, b.id)
         )
@@ -113,13 +242,11 @@ class MergeBlockTesting : EditorTestSetup() {
         stubOpenDocument(document)
         stubUpdateText()
         stubMergelocks(
-            command = command,
+            params = params,
             events = events
         )
 
         val scenario = launchFragment(args)
-
-        val targetViewId = R.id.textContent
 
         // TESTING
 
@@ -141,19 +268,27 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // Press BACKSPACE
 
-        target.perform(ViewActions.pressKey(KeyEvent.KEYCODE_BACK))
+        target.perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
 
-        Thread.sleep(3000)
+        // Release pending coroutines
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
+    /**
+     * STUBBING AND SETTINGS
+     */
+
     private fun stubMergelocks(
-        command: Command.Merge,
+        params: MergeBlocks.Params,
         events: List<Event.Command>
     ) {
-        repo.stub {
+        mergeBlocks.stub {
             onBlocking {
-                merge(command = command)
-            } doReturn Payload(context = root, events = events)
+                invoke(params)
+            } doReturn Either.Right(
+                Payload(context = root, events = events)
+            )
         }
     }
 
@@ -164,4 +299,7 @@ class MergeBlockTesting : EditorTestSetup() {
         )
     }
 
+    private fun advance(millis: Long) {
+        coroutineTestRule.advanceTime(millis)
+    }
 }

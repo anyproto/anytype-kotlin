@@ -21,7 +21,6 @@ import com.agileburo.anytype.mocking.MockDataFactory
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.ui.page.PageFragment
 import com.agileburo.anytype.utils.CoroutinesTestRule
-import com.agileburo.anytype.utils.TestUtils
 import com.agileburo.anytype.utils.TestUtils.withRecyclerView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import com.nhaarman.mockitokotlin2.any
@@ -164,13 +163,13 @@ class SplitBlockTesting : EditorTestSetup() {
         verifyBlocking(repo, times(1)) { split(command) }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
@@ -311,13 +310,13 @@ class SplitBlockTesting : EditorTestSetup() {
         verifyBlocking(repo, times(1)) { split(command) }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
@@ -458,13 +457,13 @@ class SplitBlockTesting : EditorTestSetup() {
         verifyBlocking(repo, times(1)) { split(command) }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
@@ -575,7 +574,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // TESTING
 
         val target = onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         )
 
         target.apply {
@@ -603,13 +602,13 @@ class SplitBlockTesting : EditorTestSetup() {
         verifyBlocking(repo, times(1)) { split(command) }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
@@ -720,7 +719,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // TESTING
 
         val target = onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         )
 
         target.apply {
@@ -748,13 +747,13 @@ class SplitBlockTesting : EditorTestSetup() {
         verifyBlocking(repo, times(1)) { split(command) }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
@@ -865,7 +864,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // TESTING
 
         val target = onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         )
 
         target.apply {
@@ -893,13 +892,13 @@ class SplitBlockTesting : EditorTestSetup() {
         verifyBlocking(repo, times(1)) { split(command) }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
@@ -1010,7 +1009,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // TESTING
 
         val target = onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         )
 
         target.apply {
@@ -1036,13 +1035,13 @@ class SplitBlockTesting : EditorTestSetup() {
         verifyBlocking(repo, times(1)) { split(command) }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
@@ -1153,7 +1152,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // TESTING
 
         val target = onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         )
 
         target.apply {
@@ -1179,13 +1178,13 @@ class SplitBlockTesting : EditorTestSetup() {
         verifyBlocking(repo, times(1)) { split(command) }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))

@@ -2,6 +2,7 @@ package com.agileburo.anytype.features.page
 
 import android.os.Bundle
 import androidx.core.os.bundleOf
+import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -12,14 +13,17 @@ import androidx.test.filters.LargeTest
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
+import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.clipboard.Clipboard
 import com.agileburo.anytype.domain.clipboard.Copy
 import com.agileburo.anytype.domain.clipboard.Paste
+import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
@@ -45,6 +49,7 @@ import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.presentation.page.editor.Interactor
 import com.agileburo.anytype.presentation.page.editor.Orchestrator
+import com.agileburo.anytype.presentation.page.editor.Proxy
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.agileburo.anytype.presentation.page.selection.SelectionStateHolder
 import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
@@ -53,10 +58,8 @@ import com.agileburo.anytype.utils.CoroutinesTestRule
 import com.agileburo.anytype.utils.TestUtils.withRecyclerView
 import com.agileburo.anytype.utils.scrollTo
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.stub
+import com.nhaarman.mockitokotlin2.*
+import kotlinx.android.synthetic.main.fragment_page.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
 import org.hamcrest.CoreMatchers.allOf
@@ -144,9 +147,13 @@ class EditorIntegrationTesting {
         config = config
     )
 
+    private val intents = Proxy.Intents()
+
     private val stores = Editor.Storage()
 
-    private val proxies = Editor.Proxer()
+    private val proxies = Editor.Proxer(
+        intents = intents
+    )
 
     @Before
     fun setup() {
@@ -399,8 +406,6 @@ class EditorIntegrationTesting {
         target.check(matches(not(hasFocus())))
     }
 
-    /*
-
     @Test
     fun shouldSplitBlocks() {
 
@@ -408,21 +413,20 @@ class EditorIntegrationTesting {
 
         val args = bundleOf(PageFragment.ID_KEY to root)
 
-        val delayBeforeGettingEvents = 100L
-        val delayBeforeSplittingBlocks = 100L
+        val text = "FooBar"
 
         val paragraph = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "FooBar",
+                text = text,
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
             )
         )
 
-        val page = listOf(
+        val document = listOf(
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
@@ -439,66 +443,88 @@ class EditorIntegrationTesting {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Bar",
+                text = "Foo",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
             )
         )
 
-        stubEvents(
-            events = flow {
-                delay(delayBeforeGettingEvents)
-                emit(
-                    listOf(
-                        Event.Command.ShowBlock(
-                            rootId = root,
-                            blocks = page,
-                            context = root
-                        )
-                    )
-                )
-                delay(delayBeforeSplittingBlocks)
-                emit(
-                    listOf(
-                        Event.Command.GranularChange(
-                            context = root,
-                            id = paragraph.id,
-                            text = "Foo"
-                        ),
-                        Event.Command.UpdateStructure(
-                            context = root,
-                            id = page.first().id,
-                            children = listOf(paragraph.id, new.id)
-                        ),
-                        Event.Command.AddBlock(
-                            context = root,
-                            blocks = listOf(new)
-                        )
-                    )
-                )
-            }
+        val events = listOf(
+            Event.Command.GranularChange(
+                context = root,
+                id = paragraph.id,
+                text = "Bar"
+            ),
+            Event.Command.UpdateStructure(
+                context = root,
+                id = root,
+                children = listOf(new.id, paragraph.id)
+            ),
+            Event.Command.AddBlock(
+                context = root,
+                blocks = listOf(new)
+            )
         )
 
-        launchFragment(args)
+        stubInterceptEvents()
+        stubOpenDocument(document)
+        stubUpdateText()
+
+        val command = Command.Split(
+            context = root,
+            target = paragraph.id,
+            index = 3,
+            style = Block.Content.Text.Style.P
+        )
+
+        stubSplitBlocks(
+            new = new.id,
+            events = events,
+            command = command
+        )
+
+        val scenario = launchFragment(args)
 
         // TESTING
 
-        advance(delayBeforeGettingEvents)
+        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent))
 
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent))
+        target.check(matches(withText(text)))
 
-        target.check(matches(withText(paragraph.content.asText().text)))
+        scenario.onFragment { fragment ->
+           fragment.recycler.findViewById<TextInputWidget>(R.id.textContent).setSelection(3)
+        }
 
-        advance(delayBeforeSplittingBlocks)
+        target.perform(pressImeActionButton())
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent)).apply {
+        verifyBlocking(updateText, times(1)) { invoke(any()) }
+        verifyBlocking(repo, times(1)) { split(command) }
+
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)).apply {
             check(matches(withText("Foo")))
         }
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)).apply {
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, R.id.textContent)).apply {
             check(matches(withText("Bar")))
+            check(matches(hasFocus()))
+        }
+
+        // Release pending text update
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        scenario.onFragment { fragment ->
+            fragment.recycler.findViewById<TextInputWidget>(R.id.textContent).apply {
+                print(text)
+            }
         }
     }
 
+    private fun stubUpdateText() {
+        updateText.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+    }
+
+    /*
     @Test
     fun shouldCreateDividerBlockAfterFirstBlock() {
 
@@ -551,6 +577,7 @@ class EditorIntegrationTesting {
             content = Block.Content.Divider
         )
 
+        /*
         stubEvents(
             events = flow {
                 delay(delayBeforeGettingEvents)
@@ -584,6 +611,8 @@ class EditorIntegrationTesting {
                 )
             }
         )
+
+         */
 
         launchFragment(args)
 
@@ -664,6 +693,7 @@ class EditorIntegrationTesting {
             )
         )
 
+        /*
         stubEvents(
             events = flow {
                 delay(delayBeforeGettingEvents)
@@ -692,6 +722,8 @@ class EditorIntegrationTesting {
                 )
             }
         )
+
+         */
 
         launchFragment(args)
 
@@ -794,14 +826,12 @@ class EditorIntegrationTesting {
 
         actionToolbar.check(matches(not(isDisplayed())))
     }
-     */
-
-
 
      */
+     */
 
-    private fun launchFragment(args: Bundle) {
-        launchFragmentInContainer<TestPageFragment>(
+    private fun launchFragment(args: Bundle) : FragmentScenario<TestPageFragment> {
+        return launchFragmentInContainer<TestPageFragment>(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )
@@ -832,6 +862,18 @@ class EditorIntegrationTesting {
                     )
                 )
             )
+        }
+    }
+
+    private fun stubSplitBlocks(
+        command: Command.Split,
+        new: Id,
+        events: List<Event.Command>
+    ) {
+        repo.stub {
+            onBlocking {
+                split(command = command)
+            } doReturn Pair(new, Payload(context = root, events = events))
         }
     }
 

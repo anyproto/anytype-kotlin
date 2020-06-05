@@ -19,6 +19,7 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
@@ -299,6 +300,7 @@ open class PageFragment :
         recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
+            itemAnimator = null
             adapter = pageAdapter
             addOnScrollListener(titleVisibilityDetector)
         }
@@ -600,6 +602,9 @@ open class PageFragment :
 
         state.multiSelect.apply {
             if (isVisible) {
+                recycler.apply {
+                    itemAnimator = DefaultItemAnimator()
+                }
                 hideSoftInput()
                 Timber.d("Hiding top menu")
                 topToolbar.invisible()
@@ -609,6 +614,9 @@ open class PageFragment :
                     showSelectButton()
                 }
             } else {
+                recycler.apply {
+                    itemAnimator = null
+                }
                 bottomMenu.hideWithAnimation()
                 hideSelectButton()
             }

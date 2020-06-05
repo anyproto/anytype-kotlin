@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.navigation.NavController
 import com.agileburo.anytype.R
 import com.agileburo.anytype.presentation.navigation.AppNavigation
+import com.agileburo.anytype.presentation.settings.EditorSettings
 import com.agileburo.anytype.ui.auth.Keys
 import com.agileburo.anytype.ui.page.PageFragment
 
@@ -53,10 +54,15 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.action_open_profile)
     }
 
-    override fun openDocument(id: String) {
+    override fun openDocument(id: String, editorSettings: EditorSettings?) {
         navController?.navigate(
             R.id.pageScreen,
-            Bundle().apply { putString(PageFragment.ID_KEY, id) }
+            Bundle().apply {
+                putString(PageFragment.ID_KEY, id)
+                editorSettings?.let {
+                    putParcelable(PageFragment.DEBUG_SETTINGS, it)
+                }
+            }
         )
     }
 
@@ -118,6 +124,10 @@ class Navigator : AppNavigation {
 
     override fun exitToDesktop() {
         navController?.popBackStack(R.id.desktopScreen, false)
+    }
+
+    override fun openDebugSettings() {
+        navController?.navigate(R.id.action_profileScreen_to_debugSettingsFragment)
     }
 
     fun bind(navController: NavController) {

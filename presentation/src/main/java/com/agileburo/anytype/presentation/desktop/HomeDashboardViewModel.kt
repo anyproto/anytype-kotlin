@@ -7,22 +7,25 @@ import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.withLatestFrom
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
-import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.block.interactor.DragAndDrop
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.GetConfig
+import com.agileburo.anytype.domain.config.GetDebugSettings
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.page.CreatePage
+import com.agileburo.anytype.presentation.BuildConfig
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.Interactor
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.State
+import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
 import com.agileburo.anytype.presentation.profile.ProfileView
+import com.agileburo.anytype.presentation.settings.EditorSettings
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -37,7 +40,8 @@ class HomeDashboardViewModel(
     private val getConfig: GetConfig,
     private val dragAndDrop: DragAndDrop,
     private val interceptEvents: InterceptEvents,
-    private val eventConverter: HomeDashboardEventConverter
+    private val eventConverter: HomeDashboardEventConverter,
+    private val getDebugSettings: GetDebugSettings
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -154,7 +158,7 @@ class HomeDashboardViewModel(
                 fnL = { e -> Timber.e(e, "Error while creating a new page") },
                 fnR = { id ->
                     machine.onEvent(Machine.Event.OnFinishedCreatingPage)
-                    navigateToPage(id)
+                    proceedWithOpeningDocument(id)
                 }
             )
         }.also {
@@ -189,17 +193,43 @@ class HomeDashboardViewModel(
         }
     }
 
-    private fun navigateToPage(id: String) {
+    private fun proceedWithOpeningDocument(id: String) {
         closeDashboard(viewModelScope, CloseDashboard.Param.home()) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while closing a dashobard") },
-                fnR = { navigation.postValue(EventWrapper(AppNavigation.Command.OpenPage(id))) }
+                fnR = { proceedToPage(id) }
             )
         }
     }
 
+    private fun proceedToPage(id: String) {
+        if (BuildConfig.DEBUG) {
+            getEditorSettingsAndOpenPage(id)
+        } else {
+            navigateToPage(id)
+        }
+    }
+
+    private fun navigateToPage(id: String, editorSettings: EditorSettings? = null) =
+        navigation.postValue(
+            EventWrapper(
+                AppNavigation.Command.OpenPage(
+                    id = id,
+                    editorSettings = editorSettings
+                )
+            )
+        )
+
+    private fun getEditorSettingsAndOpenPage(id: String) =
+        viewModelScope.launch {
+            getDebugSettings(Unit).proceed(
+                failure = { Timber.e(it, "Error getting debug settings") },
+                success = { navigateToPage(id, it.toView()) }
+            )
+        }
+
     fun onDocumentClicked(target: Id) {
-        navigateToPage(target)
+        proceedWithOpeningDocument(target)
     }
 
     fun onProfileClicked() {

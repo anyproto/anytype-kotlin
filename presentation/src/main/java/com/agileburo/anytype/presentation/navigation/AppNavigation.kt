@@ -1,5 +1,7 @@
 package com.agileburo.anytype.presentation.navigation
 
+import com.agileburo.anytype.presentation.settings.EditorSettings
+
 interface AppNavigation {
 
     fun startLogin()
@@ -13,7 +15,7 @@ interface AppNavigation {
     fun chooseAccount()
     fun workspace()
     fun openProfile()
-    fun openDocument(id: String)
+    fun openDocument(id: String, editorSettings: EditorSettings?)
     fun startDesktopFromSplash()
     fun startDesktopFromLogin()
     fun startSplashFromDesktop()
@@ -27,6 +29,7 @@ interface AppNavigation {
     fun openGoals()
     fun exit()
     fun exitToDesktop()
+    fun openDebugSettings()
 
     sealed class Command {
 
@@ -43,7 +46,7 @@ interface AppNavigation {
         object SelectAccountScreen : Command()
         object EnterKeyChainScreen : Command()
         object WorkspaceScreen : Command()
-        data class OpenPage(val id: String) : Command()
+        data class OpenPage(val id: String, val editorSettings: EditorSettings?= null) : Command()
         object OpenProfile : Command()
         object OpenKeychainScreen : Command()
         object OpenPinCodeScreen : Command()
@@ -57,6 +60,7 @@ interface AppNavigation {
         object OpenCustomizeDisplayView : Command()
         object OpenKanbanScreen : Command()
         object OpenGoalsScreen : Command()
+        object OpenDebugSettingsScreen: Command()
     }
 
     interface Provider {

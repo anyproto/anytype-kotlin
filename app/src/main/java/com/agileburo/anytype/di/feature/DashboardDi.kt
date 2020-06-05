@@ -2,10 +2,11 @@ package com.agileburo.anytype.di.feature
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
-import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.block.interactor.DragAndDrop
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.config.GetConfig
+import com.agileburo.anytype.domain.config.GetDebugSettings
+import com.agileburo.anytype.domain.config.InfrastructureRepository
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.event.interactor.EventChannel
@@ -49,7 +50,8 @@ class HomeDashboardModule {
         getConfig: GetConfig,
         dnd: DragAndDrop,
         interceptEvents: InterceptEvents,
-        eventConverter: HomeDashboardEventConverter
+        eventConverter: HomeDashboardEventConverter,
+        getDebugSettings: GetDebugSettings
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getCurrentAccount = getCurrentAccount,
         openDashboard = openDashboard,
@@ -58,7 +60,8 @@ class HomeDashboardModule {
         getConfig = getConfig,
         dnd = dnd,
         interceptEvents = interceptEvents,
-        eventConverter = eventConverter
+        eventConverter = eventConverter,
+        getDebugSettings = getDebugSettings
     )
 
     @Provides
@@ -125,4 +128,12 @@ class HomeDashboardModule {
     fun provideEventConverter(): HomeDashboardEventConverter {
         return HomeDashboardEventConverter.DefaultConverter()
     }
+
+    @Provides
+    @PerScreen
+    fun provideGetDebugSettings(
+        repo: InfrastructureRepository
+    ) : GetDebugSettings = GetDebugSettings(
+        repo = repo
+    )
 }

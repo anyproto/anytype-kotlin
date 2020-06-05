@@ -7,13 +7,14 @@ import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
 
 class TextBlockContextMenu(
+    private val menuType: ContextMenuType,
     private val onTextColorClicked: (ActionMode) -> Boolean,
     private val onBackgroundColorClicked: (ActionMode) -> Boolean,
     private val onMenuItemClicked: (Markup.Type) -> Unit
 ) : ActionMode.Callback2() {
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-        mode.menuInflater.inflate(R.menu.menu_text_style, menu)
+        mode.menuInflater.inflate(getMenu(menuType), menu)
         return true
     }
 
@@ -58,5 +59,12 @@ class TextBlockContextMenu(
     }
 
     override fun onDestroyActionMode(mode: ActionMode?) {}
+
+    private fun getMenu(type: ContextMenuType) = when (type) {
+        ContextMenuType.TEXT -> R.menu.menu_text_style
+        ContextMenuType.HEADER -> R.menu.menu_header_style
+        ContextMenuType.HIGHLIGHT -> R.menu.menu_highlight_style
+    }
 }
 
+enum class ContextMenuType { TEXT, HEADER, HIGHLIGHT }

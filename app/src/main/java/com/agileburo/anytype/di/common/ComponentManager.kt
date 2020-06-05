@@ -66,6 +66,13 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val debugSettingsComponent = Component {
+        main
+            .debugSettingsBuilder()
+            .module(DebugSettingsModule())
+            .build()
+    }
+
     val splashLoginComponent = Component {
         main
             .splashComponentBuilder()

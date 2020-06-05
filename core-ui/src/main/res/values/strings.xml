@@ -170,6 +170,9 @@
     <string name="menu_item_link">Link</string>
     <string name="menu_item_color">Color</string>
     <string name="menu_item_background">Background</string>
+    <string name="menu_item_copy">Copy</string>
+    <string name="menu_item_cut">Cut</string>
+    <string name="menu_item_paste">Paste</string>
     <string name="style">Style</string>
     <string name="color">Color</string>
     <string name="background">Background</string>

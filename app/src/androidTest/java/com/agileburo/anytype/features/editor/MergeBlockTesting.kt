@@ -7,6 +7,8 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.agileburo.anytype.R
@@ -24,13 +26,13 @@ import com.agileburo.anytype.ui.page.PageFragment
 import com.agileburo.anytype.utils.CoroutinesTestRule
 import com.agileburo.anytype.utils.TestUtils.withRecyclerView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.stub
+import com.nhaarman.mockitokotlin2.*
 import kotlinx.android.synthetic.main.fragment_page.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -266,9 +268,40 @@ class MergeBlockTesting : EditorTestSetup() {
             view.setSelection(0)
         }
 
+        // Wait till cursor is ready
+
+        Thread.sleep(100)
+
         // Press BACKSPACE
 
         target.perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
+
+        // Check results
+
+        verifyBlocking(updateText, times(1)) { invoke(any()) }
+        verifyBlocking(mergeBlocks, times(1)) { invoke(params) }
+
+        Espresso.onView(
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+        ).apply {
+            check(ViewAssertions.matches(ViewMatchers.withText("FooBar")))
+            check(ViewAssertions.matches(ViewMatchers.hasFocus()))
+        }
+
+        // Check cursor position
+
+        scenario.onFragment { fragment ->
+            val item = fragment.recycler.getChildAt(1)
+            val view = item.findViewById<TextInputWidget>(targetViewId)
+            assertEquals(
+                expected = 3,
+                actual = view.selectionStart
+            )
+            assertEquals(
+                expected = 3,
+                actual = view.selectionEnd
+            )
+        }
 
         // Release pending coroutines
 

@@ -54,8 +54,13 @@ class BlockViewDiffUtil(
         }
 
         if (newBlock is Focusable && oldBlock is Focusable) {
-            if (newBlock.focused != oldBlock.focused)
+            if (newBlock.isFocused != oldBlock.isFocused)
                 changes.add(FOCUS_CHANGED)
+        }
+
+        if (newBlock is BlockView.Cursor && oldBlock is BlockView.Cursor) {
+            if (newBlock.cursor != oldBlock.cursor)
+                changes.add(CURSOR_CHANGED)
         }
 
         if (newBlock is Indentable && oldBlock is Indentable) {
@@ -100,6 +105,10 @@ class BlockViewDiffUtil(
     data class Payload(
         val changes: List<Int>
     ) {
+
+        val isCursorChanged : Boolean
+        get() = changes.contains(CURSOR_CHANGED)
+
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)
         fun textColorChanged() = changes.contains(TEXT_COLOR_CHANGED)
@@ -122,5 +131,6 @@ class BlockViewDiffUtil(
         const val READ_WRITE_MODE_CHANGED = 9
         const val SELECTION_CHANGED = 10
         const val ALIGNMENT_CHANGED = 11
+        const val CURSOR_CHANGED = 12
     }
 }

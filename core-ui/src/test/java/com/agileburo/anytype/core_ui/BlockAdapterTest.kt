@@ -16,6 +16,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.BACKGROUND_COLOR_CHANGED
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.CURSOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.READ_WRITE_MODE_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.SELECTION_CHANGED
@@ -312,6 +313,74 @@ class BlockAdapterTest {
     }
 
     @Test
+    fun `should update paragraph cursor`() {
+
+        // Setup
+
+        val paragraph = BlockView.Paragraph(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            cursor = null
+        )
+
+        val updated = paragraph.copy(
+            cursor = 2
+        )
+
+        val views = listOf(paragraph)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Paragraph)
+
+        // Testing
+
+        assertEquals(
+            expected = paragraph.text,
+            actual = holder.content.text.toString()
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = holder.content.selectionStart
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = holder.content.selectionEnd
+        )
+
+        holder.processChangePayload(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(CURSOR_CHANGED)
+                )
+            ),
+            onSelectionChanged = { _, _ ->  },
+            onTextChanged = { _, _ -> }
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = holder.content.selectionStart
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = holder.content.selectionEnd
+        )
+    }
+
+    @Test
     fun `should call back when paragraph view gets focused`() {
 
         // Setup
@@ -321,7 +390,7 @@ class BlockAdapterTest {
         val paragraph = BlockView.Paragraph(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = false
+            isFocused = false
         )
 
         val views = listOf(paragraph)
@@ -365,11 +434,11 @@ class BlockAdapterTest {
         val paragraph = BlockView.Paragraph(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = false
+            isFocused = false
         )
 
         val focused = paragraph.copy(
-            focused = true
+            isFocused = true
         )
 
         val views = listOf(paragraph)
@@ -521,7 +590,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = MockDataFactory.randomBoolean()
+            isFocused = MockDataFactory.randomBoolean()
         )
 
         val views = listOf(title)
@@ -548,7 +617,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = MockDataFactory.randomBoolean()
+            isFocused = MockDataFactory.randomBoolean()
         )
 
         val views = listOf(title)
@@ -583,7 +652,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = MockDataFactory.randomBoolean()
+            isFocused = MockDataFactory.randomBoolean()
         )
 
         val updated = title.copy(
@@ -636,7 +705,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = false
+            isFocused = false
         )
 
         val views = listOf(title)
@@ -685,7 +754,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = MockDataFactory.randomBoolean()
+            isFocused = MockDataFactory.randomBoolean()
         )
 
         val views = listOf(title)
@@ -891,7 +960,7 @@ class BlockAdapterTest {
             toggled = MockDataFactory.randomBoolean(),
             backgroundColor = null,
             color = null,
-            focused = false,
+            isFocused = false,
             marks = emptyList()
         )
 
@@ -1364,11 +1433,11 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = false
+            isFocused = false
         )
 
         val updated = title.copy(
-            focused = true
+            isFocused = true
         )
 
         val views = listOf(title)
@@ -1417,11 +1486,11 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = true
+            isFocused = true
         )
 
         val updated = title.copy(
-            focused = false
+            isFocused = false
         )
 
         val views = listOf(title)
@@ -1472,7 +1541,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = true
+            isFocused = true
         )
 
         val views = listOf(title)
@@ -1513,7 +1582,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = true
+            isFocused = true
         )
 
         val views = listOf(title)
@@ -1741,7 +1810,7 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
-            focused = false
+            isFocused = false
         )
 
         val views = listOf(title)
@@ -1782,7 +1851,7 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
-            focused = false
+            isFocused = false
         )
 
         val views = listOf(title)
@@ -1821,7 +1890,7 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
-            focused = false
+            isFocused = false
         )
 
         val updated = title.copy(
@@ -2961,7 +3030,7 @@ class BlockAdapterTest {
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
             indent = 0,
-            focused = false,
+            isFocused = false,
             marks = emptyList()
         )
 
@@ -3006,7 +3075,7 @@ class BlockAdapterTest {
             indent = 0,
             backgroundColor = null,
             color = null,
-            focused = false,
+            isFocused = false,
             marks = emptyList()
         )
 
@@ -3047,7 +3116,7 @@ class BlockAdapterTest {
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
             indent = MockDataFactory.randomInt(),
-            focused = false,
+            isFocused = false,
             marks = emptyList()
         )
 

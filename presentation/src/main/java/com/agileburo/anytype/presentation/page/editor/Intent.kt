@@ -46,6 +46,7 @@ sealed class Intent {
             val context: Id,
             val targets: List<Id>,
             val previous: Id?,
+            val cursor: Int? = null,
             val next: Id?,
             val effects: List<SideEffect> = emptyList()
         ) : CRUD()
@@ -89,6 +90,7 @@ sealed class Intent {
         class Merge(
             val context: Id,
             val previous: Id,
+            val previousLength: Int?,
             val pair: Pair<Id, Id>
         ) : Text()
 

@@ -21,6 +21,7 @@ import com.agileburo.anytype.domain.block.model.Block.Content
 import com.agileburo.anytype.domain.block.model.Block.Prototype
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.editor.Editor
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
@@ -123,7 +124,7 @@ class PageViewModel(
 
     private fun startProcessingFocusChanges() {
         viewModelScope.launch {
-            orchestrator.stores.focus.stream().collect { _focus.postValue(it) }
+            orchestrator.stores.focus.stream().collect { _focus.postValue(it.id) }
         }
     }
 
@@ -533,13 +534,23 @@ class PageViewModel(
         }
     }
 
-    private fun proceedWithMergingBlocks(id: String, previous: String) {
+    private fun proceedWithMergingBlocks(
+        target: String,
+        previous: String
+    ) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.Merge(
                     context = context,
                     previous = previous,
-                    pair = Pair(previous, id)
+                    pair = Pair(previous, target),
+                    previousLength = blocks.find { it.id == previous }?.let {  block ->
+                        if (block.content is Content.Text) {
+                            block.content.asText().text.length
+                        } else {
+                            null
+                        }
+                    }
                 )
             )
         }
@@ -673,13 +684,17 @@ class PageViewModel(
             )
         }
 
+        // TODO should take into account that previous block could be a Block.Content.Layout!
+
         val page = blocks.first { it.id == context }
+
         val index = page.children.indexOf(id)
+
         if (index > 0) {
             val previous = page.children[index.dec()]
             proceedWithMergingBlocks(
                 previous = previous,
-                id = id
+                target = id
             )
         } else {
             Timber.d("Skipping merge on non-empty-block-backspace-pressed event")
@@ -719,7 +734,7 @@ class PageViewModel(
 
     private fun updateFocus(id: Id) {
         Timber.d("Updating focus: $id")
-        viewModelScope.launch { orchestrator.stores.focus.update(id) }
+        viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.id(id)) }
     }
 
     fun onBlockLongPressedClicked(target: String) {
@@ -816,7 +831,7 @@ class PageViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Text.UpdateColor(
                     context = context,
-                    target = orchestrator.stores.focus.current(),
+                    target = orchestrator.stores.focus.current().id,
                     color = color
                 )
             )
@@ -829,7 +844,7 @@ class PageViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Text.UpdateBackgroundColor(
                     context = context,
-                    targets = listOf(orchestrator.stores.focus.current()),
+                    targets = listOf(orchestrator.stores.focus.current().id),
                     color = color
                 )
             )
@@ -868,10 +883,6 @@ class PageViewModel(
                 )
             }
         }
-    }
-
-    fun onActionDeleteClicked() {
-        proceedWithUnlinking(orchestrator.stores.focus.current())
     }
 
     fun onActionBarItemClicked(id: String, action: ActionItemType) {
@@ -938,6 +949,14 @@ class PageViewModel(
             if (prev != -1) parent.children[prev] else null
         }
 
+        val cursor = blocks.find { it.id == previous }?.let { block ->
+            if (block.content is Content.Text) {
+                block.content.asText().text.length
+            } else {
+                null
+            }
+        }
+
         val next = index.inc().let { nxt ->
             if (nxt <= parent.children.lastIndex) parent.children[nxt] else null
         }
@@ -948,14 +967,15 @@ class PageViewModel(
                     context = context,
                     targets = listOf(target),
                     previous = previous,
-                    next = next
+                    next = next,
+                    cursor = cursor
                 )
             )
         }
     }
 
     fun onActionDuplicateClicked() {
-        duplicateBlock(target = orchestrator.stores.focus.current())
+        duplicateBlock(target = orchestrator.stores.focus.current().id)
     }
 
     private fun duplicateBlock(target: String) {
@@ -992,14 +1012,14 @@ class PageViewModel(
     fun onAddTextBlockClicked(style: Content.Text.Style) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
         proceedWithCreatingNewTextBlock(
-            id = orchestrator.stores.focus.current(),
+            id = orchestrator.stores.focus.current().id,
             style = style
         )
     }
 
     fun onAddVideoBlockClicked() {
         proceedWithCreatingEmptyFileBlock(
-            id = orchestrator.stores.focus.current(),
+            id = orchestrator.stores.focus.current().id,
             type = Content.File.Type.VIDEO
         )
     }
@@ -1041,14 +1061,14 @@ class PageViewModel(
 
     fun onAddImageBlockClicked() {
         proceedWithCreatingEmptyFileBlock(
-            id = orchestrator.stores.focus.current(),
+            id = orchestrator.stores.focus.current().id,
             type = Content.File.Type.IMAGE
         )
     }
 
     fun onAddFileBlockClicked() {
         proceedWithCreatingEmptyFileBlock(
-            id = orchestrator.stores.focus.current(),
+            id = orchestrator.stores.focus.current().id,
             type = Content.File.Type.FILE
         )
     }
@@ -1103,7 +1123,7 @@ class PageViewModel(
         clearSelections()
         viewModelScope.launch {
             delay(300)
-            orchestrator.stores.focus.update(EMPTY_FOCUS_ID)
+            orchestrator.stores.focus.update(Editor.Focus.empty())
             refresh()
         }
     }
@@ -1198,7 +1218,7 @@ class PageViewModel(
     }
 
     fun onTurnIntoStyleClicked(style: Content.Text.Style) {
-        proceedWithUpdatingTextStyle(style, listOf(orchestrator.stores.focus.current()))
+        proceedWithUpdatingTextStyle(style, listOf(orchestrator.stores.focus.current().id))
     }
 
     fun onAddDividerBlockClicked() {
@@ -1207,7 +1227,7 @@ class PageViewModel(
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Create(
                     context = context,
-                    target = orchestrator.stores.focus.current(),
+                    target = orchestrator.stores.focus.current().id,
                     position = Position.BOTTOM,
                     prototype = Prototype.Divider
                 )
@@ -1264,7 +1284,7 @@ class PageViewModel(
 
     private fun proceedWithClearingFocus() {
         viewModelScope.launch {
-            orchestrator.stores.focus.update(EMPTY_FOCUS_ID)
+            orchestrator.stores.focus.update(Editor.Focus.empty())
             refresh()
         }
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
@@ -1300,7 +1320,7 @@ class PageViewModel(
         val params = CreateDocument.Params(
             context = context,
             position = Position.BOTTOM,
-            target = orchestrator.stores.focus.current(),
+            target = orchestrator.stores.focus.current().id,
             prototype = Prototype.Page(style = Content.Page.Style.EMPTY)
         )
 
@@ -1334,7 +1354,7 @@ class PageViewModel(
                 Intent.CRUD.Create(
                     context = context,
                     position = Position.BOTTOM,
-                    target = orchestrator.stores.focus.current(),
+                    target = orchestrator.stores.focus.current().id,
                     prototype = Prototype.Bookmark
                 )
             )
@@ -1461,7 +1481,7 @@ class PageViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Clipboard.Paste(
                     context = context,
-                    focus = orchestrator.stores.focus.current(),
+                    focus = orchestrator.stores.focus.current().id,
                     range = range,
                     selected = emptyList()
                 )

@@ -6,6 +6,7 @@ import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.agileburo.anytype.core_ui.state.ControlPanelState
+import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.*
@@ -234,7 +235,7 @@ class PageViewModelTest {
         val expected = ViewState.Success(
             blocks = listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = root,
                     text = null
                 ),
@@ -330,7 +331,7 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should debonce values when dispatching text changes`() {
+    fun `should debounce values when dispatching text changes`() {
 
         val blockId = MockDataFactory.randomUuid()
         val pageId = MockDataFactory.randomUuid()
@@ -451,7 +452,7 @@ class PageViewModelTest {
             ViewState.Success(
                 listOf(
                     BlockView.Title(
-                        focused = false,
+                        isFocused = false,
                         id = root,
                         text = null
                     ),
@@ -597,7 +598,7 @@ class PageViewModelTest {
         val beforeUpdate = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = root,
                     text = null
                 ),
@@ -716,12 +717,12 @@ class PageViewModelTest {
         val firstTimeExpected = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = root,
                     text = null
                 ),
                 BlockView.Paragraph(
-                    focused = true,
+                    isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
@@ -755,12 +756,12 @@ class PageViewModelTest {
         val secondTimeExpected = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = root,
                     text = null
                 ),
                 BlockView.Paragraph(
-                    focused = true,
+                    isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
@@ -866,12 +867,12 @@ class PageViewModelTest {
         val firstTimeExpected = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = page.id,
                     text = null
                 ),
                 BlockView.Paragraph(
-                    focused = true,
+                    isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
@@ -915,12 +916,12 @@ class PageViewModelTest {
         val secondTimeExpected = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = page.id,
                     text = null
                 ),
                 BlockView.Paragraph(
-                    focused = true,
+                    isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
@@ -1094,7 +1095,7 @@ class PageViewModelTest {
         val state = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = root,
                     text = null
                 ),
@@ -1478,7 +1479,7 @@ class PageViewModelTest {
             ViewState.Success(
                 blocks = listOf(
                     BlockView.Title(
-                        focused = false,
+                        isFocused = false,
                         id = root,
                         text = null
                     ),
@@ -1497,7 +1498,7 @@ class PageViewModelTest {
             ViewState.Success(
                 blocks = listOf(
                     BlockView.Title(
-                        focused = false,
+                        isFocused = false,
                         id = root,
                         text = null
                     ),
@@ -1649,7 +1650,7 @@ class PageViewModelTest {
         coroutineTestRule.advanceTime(1001)
 
         vm.onBlockFocusChanged(id = child, hasFocus = true)
-        vm.onActionDeleteClicked()
+        vm.onActionBarItemClicked(id = child, action = ActionItemType.Delete)
 
         runBlockingTest {
             verify(unlinkBlocks, times(1)).invoke(
@@ -1723,7 +1724,7 @@ class PageViewModelTest {
             ViewState.Success(
                 blocks = listOf(
                     BlockView.Title(
-                        focused = false,
+                        isFocused = false,
                         id = root,
                         text = null
                     ),
@@ -1742,7 +1743,8 @@ class PageViewModelTest {
         )
 
         vm.onBlockFocusChanged(id = firstChild, hasFocus = true)
-        vm.onActionDeleteClicked()
+        //vm.onActionDeleteClicked()
+        vm.onActionBarItemClicked(id = firstChild, action = ActionItemType.Delete)
 
         assertEquals(expected = 3, actual = vm.blocks.size)
 
@@ -1754,7 +1756,7 @@ class PageViewModelTest {
             ViewState.Success(
                 blocks = listOf(
                     BlockView.Title(
-                        focused = false,
+                        isFocused = false,
                         id = root,
                         text = null
                     ),
@@ -2331,12 +2333,12 @@ class PageViewModelTest {
                 BlockView.Title(
                     id = root,
                     text = null,
-                    focused = false
+                    isFocused = false
                 ),
                 BlockView.Checkbox(
                     id = child,
                     text = "",
-                    focused = false,
+                    isFocused = false,
                     isChecked = false,
                     indent = 0
                 )
@@ -2372,12 +2374,12 @@ class PageViewModelTest {
                 BlockView.Title(
                     id = root,
                     text = null,
-                    focused = false
+                    isFocused = false
                 ),
                 BlockView.Paragraph(
                     id = child,
                     text = "",
-                    focused = true
+                    isFocused = true
                 )
             )
         )
@@ -3958,7 +3960,7 @@ class PageViewModelTest {
         val title = BlockView.Title(
             id = root,
             text = null,
-            focused = false
+            isFocused = false
         )
 
         val initial = listOf(
@@ -4134,7 +4136,7 @@ class PageViewModelTest {
         val title = BlockView.Title(
             id = root,
             text = null,
-            focused = false
+            isFocused = false
         )
 
         val initial = listOf(

@@ -1,4 +1,4 @@
-package com.agileburo.anytype
+package com.agileburo.anytype.features.nav
 
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment

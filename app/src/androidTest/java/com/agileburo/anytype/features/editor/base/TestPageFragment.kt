@@ -1,4 +1,4 @@
-package com.agileburo.anytype.features.page
+package com.agileburo.anytype.features.editor.base
 
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.ui.page.PageFragment

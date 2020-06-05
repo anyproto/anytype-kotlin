@@ -128,10 +128,14 @@ interface TextHolder {
     }
 
     fun setFocus(item: Focusable) {
-        if (item.focused)
+        if (item.isFocused)
             focus()
         else
             content.clearFocus()
+    }
+
+    fun setCursor(item: BlockView.Cursor) {
+        item.cursor?.let { content.setSelection(it) }
     }
 
     fun setAlignment(alignment: BlockView.Alignment) {
@@ -164,10 +168,14 @@ interface TextHolder {
         Timber.d("Requesting focus")
         content.apply {
             post {
-                if (!hasFocus() && requestFocus())
-                    context.imm().showSoftInput(this, SHOW_IMPLICIT)
-                else
-                    Timber.d("Couldn't gain focus")
+                if (!hasFocus()) {
+                    if (requestFocus()) {
+                        context.imm().showSoftInput(this, SHOW_IMPLICIT)
+                    } else {
+                        Timber.d("Couldn't gain focus")
+                    }
+                } else
+                    Timber.d("Already had focus")
             }
         }
     }
@@ -182,21 +190,26 @@ interface TextHolder {
         Timber.d("Processing $payload for new view:\n$item")
 
         if (item is BlockView.Text) {
+
             if (payload.textChanged()) {
-                val cursor = content.length()
                 content.pauseTextWatchers {
                     if (item is Markup)
                         content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
                     else
                         content.setText(item.text)
                 }
-                try {
-                    content.setSelection(cursor)
-                } catch (e: Throwable) {
-                    Timber.e(e, "Error while setting selection")
-                }
             } else if (payload.markupChanged()) {
                 if (item is Markup) setMarkup(item)
+            }
+
+            try {
+                if (item is BlockView.Cursor && payload.isCursorChanged) {
+                    item.cursor?.let {
+                        content.setSelection(it)
+                    }
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Error while setting cursor from $item")
             }
 
             if (payload.textColorChanged()) {

@@ -260,7 +260,7 @@ class BlockViewDiffUtilTest {
             text = text,
             marks = emptyList(),
             number = 1,
-            focused = MockDataFactory.randomBoolean(),
+            isFocused = MockDataFactory.randomBoolean(),
             indent = MockDataFactory.randomInt()
         )
 
@@ -299,7 +299,7 @@ class BlockViewDiffUtilTest {
             id = id,
             text = text,
             marks = emptyList(),
-            focused = MockDataFactory.randomBoolean(),
+            isFocused = MockDataFactory.randomBoolean(),
             backgroundColor = null
         )
 
@@ -339,7 +339,7 @@ class BlockViewDiffUtilTest {
             text = text,
             marks = emptyList(),
             indent = 0,
-            focused = MockDataFactory.randomBoolean(),
+            isFocused = MockDataFactory.randomBoolean(),
             backgroundColor = null,
             color = null
         )
@@ -380,7 +380,7 @@ class BlockViewDiffUtilTest {
             text = text,
             marks = emptyList(),
             indent = 0,
-            focused = MockDataFactory.randomBoolean(),
+            isFocused = MockDataFactory.randomBoolean(),
             backgroundColor = null,
             color = null,
             isEmpty = true
@@ -420,11 +420,11 @@ class BlockViewDiffUtilTest {
         val oldBlock = BlockView.Title(
             id = id,
             text = text,
-            focused = false
+            isFocused = false
         )
 
         val newBlock: BlockView = oldBlock.copy(
-            focused = true
+            isFocused = true
         )
 
         val old = listOf(oldBlock)
@@ -495,7 +495,7 @@ class BlockViewDiffUtilTest {
             id = id,
             text = text,
             mode = BlockView.Mode.EDIT,
-            focused = false
+            isFocused = false
         )
 
         val newBlock: BlockView = oldBlock.copy(
@@ -665,6 +665,41 @@ class BlockViewDiffUtilTest {
 
         val expected = Payload(
             changes = listOf(BlockViewDiffUtil.SELECTION_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect cursor change in paragraph view`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Paragraph(
+            id = id,
+            text = MockDataFactory.randomString(),
+            cursor = null
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            cursor = 2
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.CURSOR_CHANGED)
         )
 
         assertEquals(

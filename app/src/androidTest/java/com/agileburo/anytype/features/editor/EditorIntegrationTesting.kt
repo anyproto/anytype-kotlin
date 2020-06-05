@@ -17,6 +17,8 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.event.model.Event
+import com.agileburo.anytype.features.editor.base.EditorTestSetup
+import com.agileburo.anytype.features.editor.base.TestPageFragment
 import com.agileburo.anytype.mocking.MockDataFactory
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_BULLET
 import com.agileburo.anytype.mocking.MockUiTests.BLOCK_CHECKBOX

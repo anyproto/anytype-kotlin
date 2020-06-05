@@ -15,6 +15,8 @@ import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.event.model.Event
+import com.agileburo.anytype.features.editor.base.EditorTestSetup
+import com.agileburo.anytype.features.editor.base.TestPageFragment
 import com.agileburo.anytype.mocking.MockDataFactory
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.ui.page.PageFragment
@@ -34,7 +36,7 @@ import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class SplitAndMergeTest : EditorTestSetup() {
+class SplitBlockTesting : EditorTestSetup() {
 
     @get:Rule
     val animationsRule = DisableAnimationsRule()
@@ -1294,7 +1296,7 @@ class SplitAndMergeTest : EditorTestSetup() {
         // TESTING
 
         val target = onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         )
 
         target.apply {
@@ -1320,13 +1322,13 @@ class SplitAndMergeTest : EditorTestSetup() {
         verifyBlocking(repo, times(1)) { split(command) }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))

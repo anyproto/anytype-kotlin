@@ -1,4 +1,4 @@
-package com.agileburo.anytype.features.editor
+package com.agileburo.anytype.features.editor.base
 
 import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.agileburo.anytype.core_utils.tools.Counter

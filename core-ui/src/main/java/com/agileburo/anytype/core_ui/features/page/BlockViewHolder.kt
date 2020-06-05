@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.Editable
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -301,7 +300,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 enableEditMode()
                 select(block)
                 setFocus(block)
-                if (item.focused) setCursor(item)
+                if (block.focused) setCursor(block)
                 setLinksClickable(block)
                 setBlockText(block)
                 setBlockTextColor(block.color)
@@ -386,7 +385,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             } else {
                 enableEditMode()
                 select(block)
-                if (item.focused) setCursor(item)
+                if (block.focused) setCursor(block)
                 setFocus(block)
                 setLinksClickable(block)
                 setBlockText(block)
@@ -472,7 +471,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             } else {
                 enableEditMode()
                 select(block)
-                if (item.focused) setCursor(item)
+                if (block.focused) setCursor(block)
                 setFocus(block)
                 setLinksClickable(block)
                 setBlockText(block)

@@ -136,6 +136,8 @@ class SplitAndMergeTest : EditorTestSetup() {
             perform(ViewActions.typeText(text))
         }
 
+        Thread.sleep(500)
+
         advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
@@ -420,13 +422,15 @@ class SplitAndMergeTest : EditorTestSetup() {
         // TESTING
 
         val target = onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         )
 
         target.apply {
             perform(ViewActions.click())
             perform(ViewActions.typeText(text))
         }
+
+        Thread.sleep(500)
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
@@ -442,21 +446,21 @@ class SplitAndMergeTest : EditorTestSetup() {
 
         // Check results
 
-        verifyBlocking(updateText, times(1)) { invoke(any()) }
-        verifyBlocking(repo, times(1)) { split(command) }
-
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
 
         onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
         }
+
+        verifyBlocking(updateText, times(1)) { invoke(any()) }
+        verifyBlocking(repo, times(1)) { split(command) }
 
         // Check cursor position
 
@@ -570,6 +574,8 @@ class SplitAndMergeTest : EditorTestSetup() {
             perform(ViewActions.click())
             perform(ViewActions.typeText(text))
         }
+
+        Thread.sleep(500)
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
@@ -714,6 +720,8 @@ class SplitAndMergeTest : EditorTestSetup() {
             perform(ViewActions.typeText(text))
         }
 
+        Thread.sleep(500)
+
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
         // Set cursor programmatically
@@ -856,6 +864,8 @@ class SplitAndMergeTest : EditorTestSetup() {
             perform(ViewActions.click())
             perform(ViewActions.typeText(text))
         }
+
+        Thread.sleep(500)
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 

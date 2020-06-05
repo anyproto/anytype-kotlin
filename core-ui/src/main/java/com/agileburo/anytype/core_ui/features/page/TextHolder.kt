@@ -166,10 +166,14 @@ interface TextHolder {
         Timber.d("Requesting focus")
         content.apply {
             post {
-                if (!hasFocus() && requestFocus())
-                    context.imm().showSoftInput(this, SHOW_IMPLICIT)
-                else
-                    Timber.d("Couldn't gain focus")
+                if (!hasFocus()) {
+                    if (requestFocus()) {
+                        context.imm().showSoftInput(this, SHOW_IMPLICIT)
+                    } else {
+                        Timber.d("Couldn't gain focus")
+                    }
+                } else
+                    Timber.d("Already had focus")
             }
         }
     }

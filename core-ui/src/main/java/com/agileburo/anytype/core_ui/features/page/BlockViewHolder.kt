@@ -132,14 +132,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 setText(item)
                 setTextColor(item)
 
-                if (item.focused) setCursor(item)
+                if (item.isFocused) setCursor(item)
 
                 setFocus(item)
 
                 setupTextWatcher(onTextChanged, item)
 
                 content.setOnFocusChangeListener { _, focused ->
-                    item.focused = focused
+                    item.isFocused = focused
                     onFocusChanged(item.id, focused)
                 }
                 content.selectionDetector = {
@@ -209,7 +209,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 icon.text = item.emoji ?: EMPTY_EMOJI
             } else {
                 enableEditMode()
-                focus(item.focused)
+                focus(item.isFocused)
                 content.setText(item.text, BufferType.EDITABLE)
                 if (!item.text.isNullOrEmpty()) content.setSelection(item.text.length)
                 setupTextWatcher({ _, editable -> onTitleTextChanged(editable) }, item)
@@ -243,7 +243,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     }
                 }
                 if (payload.focusChanged()) {
-                    focus(item.focused)
+                    focus(item.isFocused)
                 }
                 if (payload.readWriteModeChanged()) {
                     if (item.mode == BlockView.Mode.EDIT)
@@ -300,7 +300,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 enableEditMode()
                 select(block)
                 setFocus(block)
-                if (block.focused) setCursor(block)
+                if (block.isFocused) setCursor(block)
                 setLinksClickable(block)
                 setBlockText(block)
                 setBlockTextColor(block.color)
@@ -385,7 +385,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             } else {
                 enableEditMode()
                 select(block)
-                if (block.focused) setCursor(block)
+                if (block.isFocused) setCursor(block)
                 setFocus(block)
                 setLinksClickable(block)
                 setBlockText(block)
@@ -471,7 +471,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             } else {
                 enableEditMode()
                 select(block)
-                if (block.focused) setCursor(block)
+                if (block.isFocused) setCursor(block)
                 setFocus(block)
                 setLinksClickable(block)
                 setBlockText(block)
@@ -566,7 +566,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 setupTextWatcher(onTextChanged, item)
 
                 content.setOnFocusChangeListener { _, focused ->
-                    item.focused = focused
+                    item.isFocused = focused
                     onFocusChanged(item.id, focused)
                 }
                 content.selectionDetector = { onSelectionChanged(item.id, it) }
@@ -650,7 +650,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 else
                     content.setText(item.text)
 
-                if (item.focused) setCursor(item)
+                if (item.isFocused) setCursor(item)
 
                 setFocus(item)
 
@@ -787,7 +787,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setTextColor(content.context.color(R.color.black))
                 }
 
-                if (item.focused) setCursor(item)
+                if (item.isFocused) setCursor(item)
 
                 setFocus(item)
 
@@ -901,7 +901,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 else
                     setTextColor(content.context.color(R.color.black))
 
-                if (item.focused) setCursor(item)
+                if (item.isFocused) setCursor(item)
 
                 setFocus(item)
 
@@ -1022,14 +1022,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setTextColor(content.context.color(R.color.black))
                 }
 
-                if (item.focused) setCursor(item)
+                if (item.isFocused) setCursor(item)
 
                 setFocus(item)
 
                 setupTextWatcher(onTextChanged, item)
 
                 content.setOnFocusChangeListener { _, focused ->
-                    item.focused = focused
+                    item.isFocused = focused
                     onFocusChanged(item.id, focused)
                 }
                 content.selectionDetector = { onSelectionChanged(item.id, it) }
@@ -1901,7 +1901,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 enableEditMode()
                 setLinksClickable(item)
                 setText(item)
-                if (item.focused) setCursor(item)
+                if (item.isFocused) setCursor(item)
                 setFocus(item)
                 with(content) {
                     clearTextWatchers()

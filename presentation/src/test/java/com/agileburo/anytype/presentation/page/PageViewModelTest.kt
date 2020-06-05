@@ -235,7 +235,7 @@ class PageViewModelTest {
         val expected = ViewState.Success(
             blocks = listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = root,
                     text = null
                 ),
@@ -452,7 +452,7 @@ class PageViewModelTest {
             ViewState.Success(
                 listOf(
                     BlockView.Title(
-                        focused = false,
+                        isFocused = false,
                         id = root,
                         text = null
                     ),
@@ -598,7 +598,7 @@ class PageViewModelTest {
         val beforeUpdate = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = root,
                     text = null
                 ),
@@ -717,12 +717,12 @@ class PageViewModelTest {
         val firstTimeExpected = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = root,
                     text = null
                 ),
                 BlockView.Paragraph(
-                    focused = true,
+                    isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
@@ -756,12 +756,12 @@ class PageViewModelTest {
         val secondTimeExpected = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = root,
                     text = null
                 ),
                 BlockView.Paragraph(
-                    focused = true,
+                    isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
@@ -867,12 +867,12 @@ class PageViewModelTest {
         val firstTimeExpected = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = page.id,
                     text = null
                 ),
                 BlockView.Paragraph(
-                    focused = true,
+                    isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
@@ -916,12 +916,12 @@ class PageViewModelTest {
         val secondTimeExpected = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = page.id,
                     text = null
                 ),
                 BlockView.Paragraph(
-                    focused = true,
+                    isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
@@ -1095,7 +1095,7 @@ class PageViewModelTest {
         val state = ViewState.Success(
             listOf(
                 BlockView.Title(
-                    focused = false,
+                    isFocused = false,
                     id = root,
                     text = null
                 ),
@@ -1479,7 +1479,7 @@ class PageViewModelTest {
             ViewState.Success(
                 blocks = listOf(
                     BlockView.Title(
-                        focused = false,
+                        isFocused = false,
                         id = root,
                         text = null
                     ),
@@ -1498,7 +1498,7 @@ class PageViewModelTest {
             ViewState.Success(
                 blocks = listOf(
                     BlockView.Title(
-                        focused = false,
+                        isFocused = false,
                         id = root,
                         text = null
                     ),
@@ -1724,7 +1724,7 @@ class PageViewModelTest {
             ViewState.Success(
                 blocks = listOf(
                     BlockView.Title(
-                        focused = false,
+                        isFocused = false,
                         id = root,
                         text = null
                     ),
@@ -1756,7 +1756,7 @@ class PageViewModelTest {
             ViewState.Success(
                 blocks = listOf(
                     BlockView.Title(
-                        focused = false,
+                        isFocused = false,
                         id = root,
                         text = null
                     ),
@@ -2333,12 +2333,12 @@ class PageViewModelTest {
                 BlockView.Title(
                     id = root,
                     text = null,
-                    focused = false
+                    isFocused = false
                 ),
                 BlockView.Checkbox(
                     id = child,
                     text = "",
-                    focused = false,
+                    isFocused = false,
                     isChecked = false,
                     indent = 0
                 )
@@ -2374,12 +2374,12 @@ class PageViewModelTest {
                 BlockView.Title(
                     id = root,
                     text = null,
-                    focused = false
+                    isFocused = false
                 ),
                 BlockView.Paragraph(
                     id = child,
                     text = "",
-                    focused = true
+                    isFocused = true
                 )
             )
         )
@@ -3960,7 +3960,7 @@ class PageViewModelTest {
         val title = BlockView.Title(
             id = root,
             text = null,
-            focused = false
+            isFocused = false
         )
 
         val initial = listOf(
@@ -4136,7 +4136,7 @@ class PageViewModelTest {
         val title = BlockView.Title(
             id = root,
             text = null,
-            focused = false
+            isFocused = false
         )
 
         val initial = listOf(

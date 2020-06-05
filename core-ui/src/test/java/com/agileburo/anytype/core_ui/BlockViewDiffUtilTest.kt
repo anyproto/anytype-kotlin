@@ -260,7 +260,7 @@ class BlockViewDiffUtilTest {
             text = text,
             marks = emptyList(),
             number = 1,
-            focused = MockDataFactory.randomBoolean(),
+            isFocused = MockDataFactory.randomBoolean(),
             indent = MockDataFactory.randomInt()
         )
 
@@ -299,7 +299,7 @@ class BlockViewDiffUtilTest {
             id = id,
             text = text,
             marks = emptyList(),
-            focused = MockDataFactory.randomBoolean(),
+            isFocused = MockDataFactory.randomBoolean(),
             backgroundColor = null
         )
 
@@ -339,7 +339,7 @@ class BlockViewDiffUtilTest {
             text = text,
             marks = emptyList(),
             indent = 0,
-            focused = MockDataFactory.randomBoolean(),
+            isFocused = MockDataFactory.randomBoolean(),
             backgroundColor = null,
             color = null
         )
@@ -380,7 +380,7 @@ class BlockViewDiffUtilTest {
             text = text,
             marks = emptyList(),
             indent = 0,
-            focused = MockDataFactory.randomBoolean(),
+            isFocused = MockDataFactory.randomBoolean(),
             backgroundColor = null,
             color = null,
             isEmpty = true
@@ -420,11 +420,11 @@ class BlockViewDiffUtilTest {
         val oldBlock = BlockView.Title(
             id = id,
             text = text,
-            focused = false
+            isFocused = false
         )
 
         val newBlock: BlockView = oldBlock.copy(
-            focused = true
+            isFocused = true
         )
 
         val old = listOf(oldBlock)
@@ -495,7 +495,7 @@ class BlockViewDiffUtilTest {
             id = id,
             text = text,
             mode = BlockView.Mode.EDIT,
-            focused = false
+            isFocused = false
         )
 
         val newBlock: BlockView = oldBlock.copy(

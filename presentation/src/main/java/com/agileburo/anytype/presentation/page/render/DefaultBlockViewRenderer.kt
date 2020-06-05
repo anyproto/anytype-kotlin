@@ -170,7 +170,7 @@ class DefaultBlockViewRenderer(
                 BlockView.Title(
                     mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
                     id = anchor,
-                    focused = anchor == focus.id,
+                    isFocused = anchor == focus.id,
                     text = details.details[root.id]?.name,
                     emoji = details.details[root.id]?.icon?.let { name ->
                         if (name.isNotEmpty())
@@ -194,7 +194,7 @@ class DefaultBlockViewRenderer(
         id = block.id,
         text = content.text,
         marks = content.marks(),
-        focused = block.id == focus.id,
+        isFocused = block.id == focus.id,
         color = content.color,
         backgroundColor = content.backgroundColor,
         indent = indent,
@@ -213,7 +213,7 @@ class DefaultBlockViewRenderer(
         id = block.id,
         text = content.text,
         color = content.color,
-        focused = block.id == focus.id,
+        isFocused = block.id == focus.id,
         marks = content.marks(),
         backgroundColor = content.backgroundColor,
         indent = indent,
@@ -232,7 +232,7 @@ class DefaultBlockViewRenderer(
         id = block.id,
         text = content.text,
         color = content.color,
-        focused = block.id == focus.id,
+        isFocused = block.id == focus.id,
         marks = content.marks(),
         backgroundColor = content.backgroundColor,
         indent = indent,
@@ -251,7 +251,7 @@ class DefaultBlockViewRenderer(
         id = block.id,
         text = content.text,
         color = content.color,
-        focused = block.id == focus.id,
+        isFocused = block.id == focus.id,
         marks = content.marks(),
         backgroundColor = content.backgroundColor,
         indent = indent,
@@ -273,7 +273,7 @@ class DefaultBlockViewRenderer(
         isChecked = content.isChecked == true,
         color = content.color,
         backgroundColor = content.backgroundColor,
-        focused = block.id == focus.id,
+        isFocused = block.id == focus.id,
         indent = indent,
         cursor = setFocus(focus, content)
     )
@@ -290,7 +290,7 @@ class DefaultBlockViewRenderer(
         text = content.text,
         indent = indent,
         marks = content.marks(),
-        focused = block.id == focus.id,
+        isFocused = block.id == focus.id,
         color = content.color,
         backgroundColor = content.backgroundColor,
         cursor = setFocus(focus, content)
@@ -305,7 +305,7 @@ class DefaultBlockViewRenderer(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
-        focused = block.id == focus.id
+        isFocused = block.id == focus.id
     )
 
     private fun highlight(
@@ -317,7 +317,7 @@ class DefaultBlockViewRenderer(
     ): BlockView.Highlight = BlockView.Highlight(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
-        focused = block.id == focus.id,
+        isFocused = block.id == focus.id,
         text = content.text,
         marks = content.marks(),
         indent = indent,
@@ -341,7 +341,7 @@ class DefaultBlockViewRenderer(
         color = content.color,
         backgroundColor = content.backgroundColor,
         indent = indent,
-        focused = block.id == focus.id,
+        isFocused = block.id == focus.id,
         toggled = toggleStateHolder.isToggled(block.id),
         isEmpty = isEmpty,
         cursor = setFocus(focus, content)
@@ -359,7 +359,7 @@ class DefaultBlockViewRenderer(
         id = block.id,
         text = content.text,
         number = number,
-        focused = block.id == focus.id,
+        isFocused = block.id == focus.id,
         color = content.color,
         backgroundColor = content.backgroundColor,
         indent = indent,
@@ -443,7 +443,7 @@ class DefaultBlockViewRenderer(
             else
                 null
         },
-        focused = block.id == focus.id
+        isFocused = block.id == focus.id
     )
 
     private fun page(

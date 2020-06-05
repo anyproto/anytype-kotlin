@@ -54,7 +54,7 @@ class BlockViewDiffUtil(
         }
 
         if (newBlock is Focusable && oldBlock is Focusable) {
-            if (newBlock.focused != oldBlock.focused)
+            if (newBlock.isFocused != oldBlock.isFocused)
                 changes.add(FOCUS_CHANGED)
         }
 

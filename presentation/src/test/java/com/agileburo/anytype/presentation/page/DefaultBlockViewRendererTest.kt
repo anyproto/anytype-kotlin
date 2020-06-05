@@ -135,12 +135,12 @@ class DefaultBlockViewRendererTest {
         val expected = listOf(
             BlockView.Title(
                 id = page.id,
-                focused = false,
+                isFocused = false,
                 text = null,
                 emoji = null
             ),
             BlockView.Paragraph(
-                focused = true,
+                isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
                 backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
@@ -150,7 +150,7 @@ class DefaultBlockViewRendererTest {
             ),
             BlockView.Toggle(
                 isEmpty = false,
-                focused = false,
+                isFocused = false,
                 toggled = false,
                 id = toggle.id,
                 marks = emptyList(),
@@ -235,12 +235,12 @@ class DefaultBlockViewRendererTest {
         val expected = listOf(
             BlockView.Title(
                 id = page.id,
-                focused = false,
+                isFocused = false,
                 text = null,
                 emoji = null
             ),
             BlockView.Paragraph(
-                focused = true,
+                isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
                 backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
@@ -250,7 +250,7 @@ class DefaultBlockViewRendererTest {
             ),
             BlockView.Toggle(
                 isEmpty = false,
-                focused = false,
+                isFocused = false,
                 toggled = true,
                 id = toggle.id,
                 marks = emptyList(),
@@ -260,7 +260,7 @@ class DefaultBlockViewRendererTest {
                 indent = 0
             ),
             BlockView.Checkbox(
-                focused = false,
+                isFocused = false,
                 id = checkbox.id,
                 marks = emptyList(),
                 backgroundColor = checkbox.content<Block.Content.Text>().backgroundColor,
@@ -317,12 +317,12 @@ class DefaultBlockViewRendererTest {
         val expected = listOf(
             BlockView.Title(
                 id = page.id,
-                focused = false,
+                isFocused = false,
                 text = null,
                 emoji = null
             ),
             BlockView.Paragraph(
-                focused = true,
+                isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
                 backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
@@ -379,12 +379,12 @@ class DefaultBlockViewRendererTest {
         val expected = listOf(
             BlockView.Title(
                 id = page.id,
-                focused = false,
+                isFocused = false,
                 text = null,
                 emoji = null
             ),
             BlockView.Paragraph(
-                focused = true,
+                isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
                 backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,

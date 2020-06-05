@@ -390,7 +390,7 @@ class BlockAdapterTest {
         val paragraph = BlockView.Paragraph(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = false
+            isFocused = false
         )
 
         val views = listOf(paragraph)
@@ -434,11 +434,11 @@ class BlockAdapterTest {
         val paragraph = BlockView.Paragraph(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = false
+            isFocused = false
         )
 
         val focused = paragraph.copy(
-            focused = true
+            isFocused = true
         )
 
         val views = listOf(paragraph)
@@ -590,7 +590,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = MockDataFactory.randomBoolean()
+            isFocused = MockDataFactory.randomBoolean()
         )
 
         val views = listOf(title)
@@ -617,7 +617,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = MockDataFactory.randomBoolean()
+            isFocused = MockDataFactory.randomBoolean()
         )
 
         val views = listOf(title)
@@ -652,7 +652,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = MockDataFactory.randomBoolean()
+            isFocused = MockDataFactory.randomBoolean()
         )
 
         val updated = title.copy(
@@ -705,7 +705,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = false
+            isFocused = false
         )
 
         val views = listOf(title)
@@ -754,7 +754,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = MockDataFactory.randomBoolean()
+            isFocused = MockDataFactory.randomBoolean()
         )
 
         val views = listOf(title)
@@ -960,7 +960,7 @@ class BlockAdapterTest {
             toggled = MockDataFactory.randomBoolean(),
             backgroundColor = null,
             color = null,
-            focused = false,
+            isFocused = false,
             marks = emptyList()
         )
 
@@ -1433,11 +1433,11 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = false
+            isFocused = false
         )
 
         val updated = title.copy(
-            focused = true
+            isFocused = true
         )
 
         val views = listOf(title)
@@ -1486,11 +1486,11 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = true
+            isFocused = true
         )
 
         val updated = title.copy(
-            focused = false
+            isFocused = false
         )
 
         val views = listOf(title)
@@ -1541,7 +1541,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = true
+            isFocused = true
         )
 
         val views = listOf(title)
@@ -1582,7 +1582,7 @@ class BlockAdapterTest {
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            focused = true
+            isFocused = true
         )
 
         val views = listOf(title)
@@ -1810,7 +1810,7 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
-            focused = false
+            isFocused = false
         )
 
         val views = listOf(title)
@@ -1851,7 +1851,7 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
-            focused = false
+            isFocused = false
         )
 
         val views = listOf(title)
@@ -1890,7 +1890,7 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
-            focused = false
+            isFocused = false
         )
 
         val updated = title.copy(
@@ -3030,7 +3030,7 @@ class BlockAdapterTest {
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
             indent = 0,
-            focused = false,
+            isFocused = false,
             marks = emptyList()
         )
 
@@ -3075,7 +3075,7 @@ class BlockAdapterTest {
             indent = 0,
             backgroundColor = null,
             color = null,
-            focused = false,
+            isFocused = false,
             marks = emptyList()
         )
 
@@ -3116,7 +3116,7 @@ class BlockAdapterTest {
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
             indent = MockDataFactory.randomInt(),
-            focused = false,
+            isFocused = false,
             marks = emptyList()
         )
 

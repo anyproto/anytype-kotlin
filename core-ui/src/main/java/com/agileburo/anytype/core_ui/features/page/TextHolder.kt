@@ -128,7 +128,7 @@ interface TextHolder {
     }
 
     fun setFocus(item: Focusable) {
-        if (item.focused)
+        if (item.isFocused)
             focus()
         else
             content.clearFocus()

@@ -121,7 +121,7 @@ sealed class BlockView : ViewType, Parcelable {
      * @property id block's id
      * @property text block's content text
      * @property marks markup
-     * @property focused whether this block is currently focused or not
+     * @property isFocused whether this block is currently focused or not
      * @property color text color
      */
     @Parcelize
@@ -129,7 +129,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String,
         override val text: String,
         override val marks: List<Markup.Mark> = emptyList(),
-        override var focused: Boolean = false,
+        override var isFocused: Boolean = false,
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val indent: Int = 0,
@@ -151,7 +151,7 @@ sealed class BlockView : ViewType, Parcelable {
     @Parcelize
     data class Title(
         override val id: String,
-        override val focused: Boolean,
+        override val isFocused: Boolean,
         val text: String?,
         val emoji: String? = null,
         override val mode: Mode = Mode.EDIT
@@ -170,7 +170,7 @@ sealed class BlockView : ViewType, Parcelable {
     data class HeaderOne(
         override val id: String,
         override val text: String,
-        override val focused: Boolean = false,
+        override val isFocused: Boolean = false,
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val indent: Int = 0,
@@ -196,7 +196,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String,
         override val color: String? = null,
         override val text: String,
-        override val focused: Boolean = false,
+        override val isFocused: Boolean = false,
         override val backgroundColor: String? = null,
         override val indent: Int,
         override val marks: List<Markup.Mark> = emptyList(),
@@ -221,7 +221,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String,
         override val color: String? = null,
         override val text: String,
-        override val focused: Boolean = false,
+        override val isFocused: Boolean = false,
         override val backgroundColor: String? = null,
         override val indent: Int,
         override val marks: List<Markup.Mark> = emptyList(),
@@ -243,7 +243,7 @@ sealed class BlockView : ViewType, Parcelable {
     @Parcelize
     data class Highlight(
         override val id: String,
-        override val focused: Boolean = false,
+        override val isFocused: Boolean = false,
         override val text: String,
         override val color: String?,
         override val backgroundColor: String?,
@@ -267,7 +267,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String,
         val text: String,
         override val mode: Mode = Mode.EDIT,
-        override var focused: Boolean = false,
+        override var isFocused: Boolean = false,
         override val isSelected: Boolean = false
     ) : BlockView(), Permission, Selectable, Focusable {
         override fun getViewType() = HOLDER_CODE_SNIPPET
@@ -283,7 +283,7 @@ sealed class BlockView : ViewType, Parcelable {
     data class Checkbox(
         override val id: String,
         override val marks: List<Markup.Mark> = emptyList(),
-        override val focused: Boolean = false,
+        override val isFocused: Boolean = false,
         override val text: String,
         override val color: String? = null,
         override val backgroundColor: String? = null,
@@ -323,7 +323,7 @@ sealed class BlockView : ViewType, Parcelable {
     data class Bulleted(
         override val id: String,
         override val marks: List<Markup.Mark> = emptyList(),
-        override val focused: Boolean = false,
+        override val isFocused: Boolean = false,
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val text: String,
@@ -348,7 +348,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String,
         override val text: String,
         override val marks: List<Markup.Mark> = emptyList(),
-        override val focused: Boolean = false,
+        override val isFocused: Boolean = false,
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val indent: Int,
@@ -373,7 +373,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String,
         override val text: String,
         override val marks: List<Markup.Mark>,
-        override var focused: Boolean,
+        override var isFocused: Boolean,
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val indent: Int = 0,

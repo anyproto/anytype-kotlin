@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.Editable
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.S
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TOGGLE_EMPTY_STATE_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
+import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.actionmode.AnytypeContextMenuEvent
@@ -90,7 +92,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val content: TextInputWidget = itemView.textContent
 
         init {
-            setup(onMarkupActionClicked)
+            setup(onMarkupActionClicked, ContextMenuType.TEXT)
         }
 
         fun bind(
@@ -268,80 +270,57 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class HeaderOne(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class HeaderOne(view: View, onMarkupActionClicked: (Markup.Type) -> Unit) :
+        BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val header = itemView.headerOne
         override val root: View = itemView
         override val content: TextInputWidget
             get() = header
 
+        init {
+            setup(onMarkupActionClicked, ContextMenuType.HEADER)
+        }
+
         fun bind(
-            item: BlockView.HeaderOne,
+            block: BlockView.HeaderOne,
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit,
             onLongClickListener: (String) -> Unit
         ) {
-
-            indentize(item)
-
-            if (item.mode == BlockView.Mode.READ) {
-
+            if (block.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
-
-                header.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener
-                    )
-                )
-
-                header.setText(item.text)
-
-                if (item.color != null) {
-                    setTextColor(item.color)
-                } else {
-                    setTextColor(content.context.color(R.color.black))
-                }
-
-                select(item)
+                select(block)
+                setBlockText(block)
+                setBlockTextColor(block.color)
             } else {
-
                 enableEditMode()
-
-                select(item)
-
-                setFocus(item)
-
+                select(block)
+                setFocus(block)
+                setLinksClickable(block)
+                setBlockText(block)
+                setBlockTextColor(block.color)
                 with(header) {
-
-                    setOnLongClickListener(
-                        EditorLongClickListener(
-                            t = item.id,
-                            click = onLongClickListener
-                        )
-                    )
-
                     clearTextWatchers()
-
                     setOnFocusChangeListener { _, hasFocus ->
-                        onFocusChanged(item.id, hasFocus)
+                        onFocusChanged(block.id, hasFocus)
                     }
-
-                    setText(item.text)
-
                     addTextChangedListener(
                         DefaultTextWatcher { text ->
-                            onTextChanged(item.id, text)
+                            onTextChanged(block.id, text)
                         }
                     )
-                }
-
-                if (item.color != null) {
-                    setTextColor(item.color)
-                } else {
-                    setTextColor(content.context.color(R.color.black))
+                    selectionDetector = { onSelectionChanged(block.id, it) }
                 }
             }
+            header.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = block.id,
+                    click = onLongClickListener
+                )
+            )
+            indentize(block)
         }
 
         override fun indentize(item: BlockView.Indentable) {
@@ -349,80 +328,84 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 left = dimen(R.dimen.default_document_content_padding_start) + item.indent * dimen(R.dimen.indent)
             )
         }
+
+        private fun setBlockText(block: BlockView.HeaderOne) {
+            if (block.marks.isNotEmpty())
+                header.setText(block.toSpannable(), BufferType.SPANNABLE)
+            else
+                header.setText(block.text)
+        }
+
+        private fun setBlockTextColor(color: String?) {
+            if (color != null)
+                setTextColor(color)
+            else
+                setTextColor(content.context.color(R.color.black))
+        }
+
+        /**
+         *  Should be set before @[setBlockText]!
+         */
+        private fun setLinksClickable(block: BlockView.HeaderOne) {
+            if (block.marks.isLinksPresent()) {
+                content.setLinksClickable()
+            }
+        }
     }
 
-    class HeaderTwo(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class HeaderTwo(
+        view: View,
+        onMarkupActionClicked: (Markup.Type) -> Unit
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val header = itemView.headerTwo
         override val content: TextInputWidget
             get() = header
         override val root: View = itemView
 
+        init {
+            setup(onMarkupActionClicked, ContextMenuType.HEADER)
+        }
+
         fun bind(
-            item: BlockView.HeaderTwo,
+            block: BlockView.HeaderTwo,
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit,
             onLongClickListener: (String) -> Unit
         ) {
-
-            indentize(item)
-
-            if (item.mode == BlockView.Mode.READ) {
-
+            if (block.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
-
-                select(item)
-
-                header.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener
-                    )
-                )
-
-                header.setText(item.text)
-
-                if (item.color != null) {
-                    setTextColor(item.color)
-                } else {
-                    setTextColor(content.context.color(R.color.black))
-                }
-
+                select(block)
+                setBlockText(block)
+                setBlockTextColor(block.color)
             } else {
-
                 enableEditMode()
-
-                select(item)
-
-                setFocus(item)
-
-                header.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener
-                    )
-                )
-
-                header.clearTextWatchers()
-
-                header.setOnFocusChangeListener { _, hasFocus ->
-                    onFocusChanged(item.id, hasFocus)
-                }
-
-                header.setText(item.text)
-
-                if (item.color != null) {
-                    setTextColor(item.color)
-                } else {
-                    setTextColor(content.context.color(R.color.black))
-                }
-
-                header.addTextChangedListener(
-                    DefaultTextWatcher { text ->
-                        onTextChanged(item.id, text)
+                select(block)
+                setFocus(block)
+                setLinksClickable(block)
+                setBlockText(block)
+                setBlockTextColor(block.color)
+                with(header) {
+                    clearTextWatchers()
+                    setOnFocusChangeListener { _, hasFocus ->
+                        onFocusChanged(block.id, hasFocus)
                     }
-                )
+                    addTextChangedListener(
+                        DefaultTextWatcher { text ->
+                            onTextChanged(block.id, text)
+                        }
+                    )
+                    selectionDetector = { onSelectionChanged(block.id, it) }
+                }
             }
+            header.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = block.id,
+                    click = onLongClickListener
+                )
+            )
+            indentize(block)
         }
 
         override fun indentize(item: BlockView.Indentable) {
@@ -430,85 +413,113 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 left = dimen(R.dimen.default_document_content_padding_start) + item.indent * dimen(R.dimen.indent)
             )
         }
+
+        private fun setBlockText(block: BlockView.HeaderTwo) {
+            if (block.marks.isNotEmpty())
+                header.setText(block.toSpannable(), BufferType.SPANNABLE)
+            else
+                header.setText(block.text)
+        }
+
+        private fun setBlockTextColor(color: String?) {
+            if (color != null)
+                setTextColor(color)
+            else
+                setTextColor(content.context.color(R.color.black))
+        }
+
+        /**
+         *  Should be set before @[setBlockText]!
+         */
+        private fun setLinksClickable(block: BlockView.HeaderTwo) {
+            if (block.marks.isLinksPresent()) {
+                content.setLinksClickable()
+            }
+        }
     }
 
-    class HeaderThree(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class HeaderThree(
+        view: View,
+        onMarkupActionClicked: (Markup.Type) -> Unit
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val header = itemView.headerThree
         override val content: TextInputWidget
             get() = header
         override val root: View = itemView
 
+        init {
+            setup(onMarkupActionClicked, ContextMenuType.HEADER)
+        }
+
         fun bind(
-            item: BlockView.HeaderThree,
+            block: BlockView.HeaderThree,
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit,
             onLongClickListener: (String) -> Unit
         ) {
-
-            indentize(item)
-
-            if (item.mode == BlockView.Mode.READ) {
-
+            if (block.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
-
-                select(item)
-
-                header.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener
-                    )
-                )
-
-                header.setText(item.text)
-
-                if (item.color != null) {
-                    setTextColor(item.color)
-                } else {
-                    setTextColor(content.context.color(R.color.black))
-                }
+                select(block)
+                setBlockText(block)
+                setBlockTextColor(block.color)
             } else {
-
                 enableEditMode()
-
-                select(item)
-
-                setFocus(item)
-
-                header.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = onLongClickListener
-                    )
-                )
-
-                header.clearTextWatchers()
-
-                header.setOnFocusChangeListener { _, hasFocus ->
-                    onFocusChanged(item.id, hasFocus)
-                }
-
-                header.setText(item.text)
-
-                if (item.color != null) {
-                    setTextColor(item.color)
-                } else {
-                    setTextColor(content.context.color(R.color.black))
-                }
-
-                header.addTextChangedListener(
-                    DefaultTextWatcher { text ->
-                        onTextChanged(item.id, text)
+                select(block)
+                setFocus(block)
+                setLinksClickable(block)
+                setBlockText(block)
+                setBlockTextColor(block.color)
+                with(header) {
+                    clearTextWatchers()
+                    setOnFocusChangeListener { _, hasFocus ->
+                        onFocusChanged(block.id, hasFocus)
                     }
-                )
+                    addTextChangedListener(
+                        DefaultTextWatcher { text ->
+                            onTextChanged(block.id, text)
+                        }
+                    )
+                    selectionDetector = { onSelectionChanged(block.id, it) }
+                }
             }
+            header.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = block.id,
+                    click = onLongClickListener
+                )
+            )
+            indentize(block)
         }
 
         override fun indentize(item: BlockView.Indentable) {
             header.updatePadding(
                 left = dimen(R.dimen.default_document_content_padding_start) + item.indent * dimen(R.dimen.indent)
             )
+        }
+
+        private fun setBlockText(block: BlockView.HeaderThree) {
+            if (block.marks.isNotEmpty())
+                header.setText(block.toSpannable(), BufferType.SPANNABLE)
+            else
+                header.setText(block.text)
+        }
+
+        private fun setBlockTextColor(color: String?) {
+            if (color != null)
+                setTextColor(color)
+            else
+                setTextColor(content.context.color(R.color.black))
+        }
+
+        /**
+         *  Should be set before @[setBlockText]!
+         */
+        private fun setLinksClickable(block: BlockView.HeaderThree) {
+            if (block.marks.isLinksPresent()) {
+                content.setLinksClickable()
+            }
         }
     }
 
@@ -573,7 +584,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            setup(onMarkupActionClicked)
+            setup(onMarkupActionClicked, ContextMenuType.TEXT)
         }
 
         fun bind(
@@ -709,7 +720,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            setup(onMarkupActionClicked)
+            setup(onMarkupActionClicked, ContextMenuType.TEXT)
         }
 
         fun bind(
@@ -817,7 +828,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            setup(onMarkupActionClicked)
+            setup(onMarkupActionClicked, ContextMenuType.TEXT)
         }
 
         fun bind(
@@ -938,7 +949,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            setup(onMarkupActionClicked)
+            setup(onMarkupActionClicked, ContextMenuType.TEXT)
         }
 
         fun bind(
@@ -1830,12 +1841,14 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             itemView.setOnLongClickListener(
                 EditorLongClickListener(
                     t = item.id,
-                    click = onLongClickListener)
+                    click = onLongClickListener
+                )
             )
         }
     }
 
-    class Highlight(view: View) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    class Highlight(view: View, onMarkupActionClicked: (Markup.Type) -> Unit) :
+        BlockViewHolder(view), TextHolder, IndentableHolder {
 
         override val content: TextInputWidget = itemView.highlightContent
         override val root: View = itemView
@@ -1844,31 +1857,31 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
+            setup(onMarkupActionClicked, ContextMenuType.HIGHLIGHT)
         }
 
         fun bind(
             item: BlockView.Highlight,
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
+            onSelectionChanged: (String, IntRange) -> Unit,
             onLongClickListener: (String) -> Unit
         ) {
             //indentize(item)
 
             if (item.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
-                content.setText(item.text)
+                setText(item)
             } else {
-
                 enableEditMode()
-
+                setLinksClickable(item)
+                setText(item)
                 setFocus(item)
-
                 with(content) {
                     clearTextWatchers()
                     setOnFocusChangeListener { _, hasFocus ->
                         onFocusChanged(item.id, hasFocus)
                     }
-                    setText(item.text)
                     addTextChangedListener(
                         DefaultTextWatcher { text ->
                             onTextChanged(item.id, text)
@@ -1877,8 +1890,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = onLongClickListener)
+                            click = onLongClickListener
+                        )
                     )
+                    selectionDetector = { onSelectionChanged(item.id, it) }
                 }
             }
         }
@@ -1890,6 +1905,22 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override fun indentize(item: BlockView.Indentable) {
             indent.updateLayoutParams {
                 width = item.indent * dimen(R.dimen.indent)
+            }
+        }
+
+        private fun setText(item: BlockView.Highlight) {
+            if (item.marks.isNotEmpty())
+                content.setText(item.toSpannable(), BufferType.SPANNABLE)
+            else
+                content.setText(item.text)
+        }
+
+        /**
+         *  Should be set before @[setText]!
+         */
+        private fun setLinksClickable(block: BlockView.Highlight) {
+            if (block.marks.isLinksPresent()) {
+                content.setLinksClickable()
             }
         }
     }

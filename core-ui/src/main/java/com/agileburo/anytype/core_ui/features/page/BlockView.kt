@@ -156,6 +156,7 @@ sealed class BlockView : ViewType, Parcelable {
      * @property id block's id
      * @property text header's content (i.e. a header's text)
      * @property color text color
+     * @property marks markup
      */
     @Parcelize
     data class HeaderOne(
@@ -165,11 +166,13 @@ sealed class BlockView : ViewType, Parcelable {
         override val color: String? = null,
         override val backgroundColor: String? = null,
         override val indent: Int = 0,
+        override val marks: List<Markup.Mark> = emptyList(),
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false,
         override val alignment: Alignment? = null
-    ) : BlockView(), Text, Focusable, Indentable, Permission, Selectable, Alignable {
+    ) : BlockView(), Text, Markup, Focusable, Indentable, Permission, Selectable, Alignable {
         override fun getViewType() = HOLDER_HEADER_ONE
+        override val body: String = text
     }
 
     /**
@@ -177,6 +180,7 @@ sealed class BlockView : ViewType, Parcelable {
      * @property id block's id
      * @property text header's content (i.e. a header's text)
      * @property color text color
+     * @property marks markup
      */
     @Parcelize
     data class HeaderTwo(
@@ -186,11 +190,13 @@ sealed class BlockView : ViewType, Parcelable {
         override val focused: Boolean = false,
         override val backgroundColor: String? = null,
         override val indent: Int,
+        override val marks: List<Markup.Mark> = emptyList(),
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false,
         override val alignment: Alignment? = null
-    ) : BlockView(), Text, Focusable, Indentable, Permission, Selectable, Alignable {
+    ) : BlockView(), Text, Markup, Focusable, Indentable, Permission, Selectable, Alignable {
         override fun getViewType() = HOLDER_HEADER_TWO
+        override val body: String = text
     }
 
     /**
@@ -198,6 +204,7 @@ sealed class BlockView : ViewType, Parcelable {
      * @property id block's id
      * @property text header's content (i.e. a header's text)
      * @property color text color
+     * @property marks markup
      */
     @Parcelize
     data class HeaderThree(
@@ -207,17 +214,20 @@ sealed class BlockView : ViewType, Parcelable {
         override val focused: Boolean = false,
         override val backgroundColor: String? = null,
         override val indent: Int,
+        override val marks: List<Markup.Mark> = emptyList(),
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false,
         override val alignment: Alignment? = null
-    ) : BlockView(), Text, Focusable, Indentable, Permission, Selectable, Alignable {
+    ) : BlockView(), Text, Markup, Focusable, Indentable, Permission, Selectable, Alignable {
         override fun getViewType() = HOLDER_HEADER_THREE
+        override val body: String = text
     }
 
     /**
      * UI-model for a highlight block (analogue of quote block)
      * @property id block's id
      * @property text block's content
+     * @property marks markup
      */
     @Parcelize
     data class Highlight(
@@ -227,10 +237,12 @@ sealed class BlockView : ViewType, Parcelable {
         override val color: String?,
         override val backgroundColor: String?,
         override val indent: Int = 0,
+        override val marks: List<Markup.Mark> = emptyList(),
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false
-    ) : BlockView(), Text, Focusable, Indentable, Permission, Selectable {
+    ) : BlockView(), Text, Markup, Focusable, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_HIGHLIGHT
+        override val body: String = text
     }
 
     /**

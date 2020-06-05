@@ -108,7 +108,8 @@ class BlockAdapter(
                         R.layout.item_block_header_one,
                         parent,
                         false
-                    )
+                    ),
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_HEADER_TWO -> {
@@ -117,7 +118,8 @@ class BlockAdapter(
                         R.layout.item_block_header_two,
                         parent,
                         false
-                    )
+                    ),
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_HEADER_THREE -> {
@@ -126,7 +128,8 @@ class BlockAdapter(
                         R.layout.item_block_header_three,
                         parent,
                         false
-                    )
+                    ),
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_CODE_SNIPPET -> {
@@ -355,7 +358,8 @@ class BlockAdapter(
                         R.layout.item_block_highlight,
                         parent,
                         false
-                    )
+                    ),
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_FOOTER -> {
@@ -592,25 +596,28 @@ class BlockAdapter(
             }
             is BlockViewHolder.HeaderOne -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.HeaderOne,
+                    block = blocks[position] as BlockView.HeaderOne,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
+                    onSelectionChanged = onSelectionChanged,
                     onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.HeaderTwo -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.HeaderTwo,
+                    block = blocks[position] as BlockView.HeaderTwo,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
+                    onSelectionChanged = onSelectionChanged,
                     onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.HeaderThree -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.HeaderThree,
+                    block = blocks[position] as BlockView.HeaderThree,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
+                    onSelectionChanged = onSelectionChanged,
                     onLongClickListener = onLongClickListener
                 )
             }
@@ -774,7 +781,8 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Highlight,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
-                    onLongClickListener = onLongClickListener
+                    onLongClickListener = onLongClickListener,
+                    onSelectionChanged = onSelectionChanged
                 )
             }
             is BlockViewHolder.Footer -> {

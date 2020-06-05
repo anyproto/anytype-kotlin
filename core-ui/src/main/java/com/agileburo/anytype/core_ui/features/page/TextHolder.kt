@@ -7,6 +7,7 @@ import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
 import android.widget.TextView
 import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.extensions.preserveSelection
+import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.menu.TextBlockContextMenu
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
@@ -33,10 +34,11 @@ interface TextHolder {
      */
     val content: TextInputWidget
 
-    fun setup(onMarkupActionClicked: (Markup.Type) -> Unit) {
+    fun setup(onMarkupActionClicked: (Markup.Type) -> Unit, menuType: ContextMenuType) {
         with(content) {
             setSpannableFactory(DefaultSpannableFactory())
             customSelectionActionModeCallback = TextBlockContextMenu(
+                menuType = menuType,
                 onTextColorClicked = { mode ->
                     preserveSelection {
                         content.hideKeyboard()

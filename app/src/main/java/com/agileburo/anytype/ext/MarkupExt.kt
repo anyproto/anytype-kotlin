@@ -51,17 +51,10 @@ fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).
     }
 }
 
-fun <T> Spanned.extractSpans(range: IntRange, type: Class<T>): List<T> {
-    val spans = this.getSpans(range.first, range.last, type)
-    return spans.toList()
-}
-
 fun <T> isSpanInRange(textRange: IntRange, text: Spanned, type: Class<T>): Boolean {
-    val spans = text.extractSpans(textRange, type)
-
-    for (span in spans) {
-        val start = text.getSpanStart(span)
-        val end = text.getSpanEnd(span)
+    text.getSpans(textRange.first, textRange.last, type).forEach {
+        val start = text.getSpanStart(it)
+        val end = text.getSpanEnd(it)
         val spanRange = IntRange(start, end)
         val overlap = textRange.overlap(spanRange)
         if (overlap in listOf(

@@ -946,7 +946,7 @@ class PageViewModel(
         val index = parent.children.indexOf(target)
 
         val previous = index.dec().let { prev ->
-            if (prev != -1) parent.children[prev] else null
+            if (prev != -1) parent.children[prev] else context
         }
 
         val cursor = blocks.find { it.id == previous }?.let { block ->
@@ -957,17 +957,13 @@ class PageViewModel(
             }
         }
 
-        val next = index.inc().let { nxt ->
-            if (nxt <= parent.children.lastIndex) parent.children[nxt] else null
-        }
-
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Unlink(
                     context = context,
                     targets = listOf(target),
                     previous = previous,
-                    next = next,
+                    next = null,
                     cursor = cursor
                 )
             )

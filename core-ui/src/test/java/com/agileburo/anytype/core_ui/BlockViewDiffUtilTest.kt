@@ -707,4 +707,40 @@ class BlockViewDiffUtilTest {
             actual = payload
         )
     }
+
+    @Test
+    fun `should detect cursor change in title view`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Title(
+            id = id,
+            text = MockDataFactory.randomString(),
+            cursor = null,
+            isFocused = true
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            cursor = 2
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.CURSOR_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
 }

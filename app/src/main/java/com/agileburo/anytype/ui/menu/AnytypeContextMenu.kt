@@ -2,24 +2,27 @@ package com.agileburo.anytype.ui.menu
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PointF
 import android.graphics.drawable.ColorDrawable
+import android.text.Editable
 import android.view.*
-import android.widget.FrameLayout
-import android.widget.HorizontalScrollView
-import android.widget.PopupWindow
-import android.widget.TextView
+import android.widget.*
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.common.Span
+import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_utils.ext.PopupExtensions.calculateFloatToolbarPosition
 import com.agileburo.anytype.core_utils.ext.PopupExtensions.lerp
 import com.agileburo.anytype.core_utils.ext.invisible
 import com.agileburo.anytype.core_utils.ext.visible
+import com.agileburo.anytype.ext.isSpanInRange
 import java.lang.ref.WeakReference
 import kotlin.math.roundToInt
 
 class AnytypeContextMenu constructor(
+    private val type: AnytypeContextMenuType,
     private val contextRef: WeakReference<Context>,
     private val anchorViewRef: WeakReference<TextView>,
     private val onMarkupActionClicked: (Markup.Type) -> Unit,
@@ -93,7 +96,7 @@ class AnytypeContextMenu constructor(
             })
             isClippingEnabled = false
             isFocusable = false
-            addOnMenuItemClicks(contentView)
+            initMenuItems(contentView)
         }
 
     private fun updatePosition() {
@@ -115,7 +118,18 @@ class AnytypeContextMenu constructor(
         }
     }
 
-    private fun addOnMenuItemClicks(view: View) {
+    private fun initButtons(type: AnytypeContextMenuType) =
+        when (type) {
+            AnytypeContextMenuType.P -> {
+            }
+            AnytypeContextMenuType.HEADER -> {
+
+            }
+            AnytypeContextMenuType.HIGHTLIGHTED -> {
+            }
+        }
+
+    private fun initMenuItems(view: View) {
         view.findViewById<View>(R.id.menu_copy).setOnClickListener {
             anchorViewRef.get()?.onTextContextMenuItem(android.R.id.copy)
         }
@@ -125,8 +139,23 @@ class AnytypeContextMenu constructor(
         view.findViewById<View>(R.id.menu_paste).setOnClickListener {
             anchorViewRef.get()?.onTextContextMenuItem(android.R.id.paste)
         }
-        view.findViewById<View>(R.id.menu_bold).setOnClickListener {
-            onMarkupActionClicked.invoke(Markup.Type.BOLD)
+        view.findViewById<ImageView>(R.id.menu_bold).apply {
+
+            anchorViewRef.get()?.let {
+                if (isSpanInRange(
+                        textRange = IntRange(it.selectionStart, it.selectionEnd),
+                        text = it.text as Editable,
+                        type = Span.Bold::class.java
+                    )
+                ) {
+                    this.imageTintList =
+                        ColorStateList.valueOf(view.context.color(R.color.context_menu_selected_item))
+                }
+            }
+
+            setOnClickListener {
+                onMarkupActionClicked.invoke(Markup.Type.BOLD)
+            }
         }
         view.findViewById<View>(R.id.menu_italic).setOnClickListener {
             onMarkupActionClicked.invoke(Markup.Type.ITALIC)
@@ -153,12 +182,12 @@ class AnytypeContextMenu constructor(
             scrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
         }
         scrollView.setOnScrollChangeListener { _, scrollX, _, oldScrollX, _ ->
-                if (scrollX != oldScrollX) {
-                    arrowRight.invisible()
-                } else {
-                    arrowRight.visible()
-                }
+            if (scrollX != oldScrollX) {
+                arrowRight.invisible()
+            } else {
+                arrowRight.visible()
             }
+        }
     }
 
     override fun onDismiss() {
@@ -217,3 +246,5 @@ class AnytypeContextMenu constructor(
         cleanup()
     }
 }
+
+enum class AnytypeContextMenuType { P, HEADER, HIGHTLIGHTED }

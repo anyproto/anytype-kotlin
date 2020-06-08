@@ -52,6 +52,7 @@ import com.agileburo.anytype.presentation.page.editor.Command
 import com.agileburo.anytype.presentation.page.editor.ViewState
 import com.agileburo.anytype.presentation.settings.EditorSettings
 import com.agileburo.anytype.ui.base.NavigationFragment
+import com.agileburo.anytype.ui.menu.AnytypeContextMenuType
 import com.agileburo.anytype.ui.page.modals.*
 import com.agileburo.anytype.ui.page.modals.actions.BlockActionToolbarFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -724,6 +725,7 @@ open class PageFragment :
         if (anytypeContextMenu == null) {
             anytypeContextMenu =
                 AnytypeContextMenu(
+                    type = AnytypeContextMenuType.HEADER,
                     contextRef = WeakReference(requireContext()),
                     anchorViewRef = WeakReference(originatingView),
                     onMarkupActionClicked = {

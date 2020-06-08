@@ -46,9 +46,20 @@ class AnytypeContextMenu constructor(
     private val isShowable: Boolean
         get() = !isDismissed && contextRef.get() != null && popupWindowRef.get() != null && anchorViewRef.get() != null
     private var isDismissed: Boolean = false
-    private var popupWindowRef: WeakReference<PopupWindow>
+    private var popupWindowRef: WeakReference<ContextPopupWindow>
     private var currentLocation = PointF()
     private var popupHeight: Float = 0f
+
+    private var onTouchListener = View.OnTouchListener { v, event ->
+        if (!isShowable) return@OnTouchListener false
+        when {
+            (!dismissOnTouchOutside && event.action == MotionEvent.ACTION_OUTSIDE) -> {
+                v.performClick()
+                return@OnTouchListener true
+            }
+            else -> return@OnTouchListener false
+        }
+    }
 
     init {
 
@@ -59,9 +70,10 @@ class AnytypeContextMenu constructor(
             scrollListener
         )
 
-        val popupWindow = createPopupWindow(
-            contextRef.get()
-                ?: throw Throwable("null context")
+        val popupWindow = ContextPopupWindow(
+            context = contextRef.get() ?: throw Throwable("null context"),
+            onDismissListener = this,
+            onTouchInterceptor = onTouchListener
         )
 
         popupWindowRef = WeakReference(popupWindow)
@@ -77,31 +89,6 @@ class AnytypeContextMenu constructor(
         anchorViewRef.get()?.viewTreeObserver?.removeOnScrollChangedListener(scrollListener)
         scrollListener = null
     }
-
-    private fun createPopupWindow(context: Context): PopupWindow =
-        PopupWindow(context, null, android.R.attr.popupWindowStyle).apply {
-            val view = LayoutInflater.from(context).inflate(R.layout.popup_context_menu, null)
-            contentView = view
-            width = ViewGroup.LayoutParams.WRAP_CONTENT
-            height = ViewGroup.LayoutParams.WRAP_CONTENT
-            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            isOutsideTouchable = true
-            isTouchable = true
-            setOnDismissListener(this@AnytypeContextMenu)
-            setTouchInterceptor(View.OnTouchListener { v, event ->
-                if (!isShowable) return@OnTouchListener false
-                when {
-                    (!dismissOnTouchOutside && event.action == MotionEvent.ACTION_OUTSIDE) -> {
-                        v.performClick()
-                        return@OnTouchListener true
-                    }
-                    else -> return@OnTouchListener false
-                }
-            })
-            isClippingEnabled = false
-            isFocusable = false
-            initMenuItems(contentView)
-        }
 
     private fun updatePosition() {
         val anchorView = anchorViewRef.get()
@@ -251,9 +238,8 @@ class AnytypeContextMenu constructor(
                     popupWindowHeight = popupHeight,
                     tooltipOffsetY = POPUP_OFFSET
                 )
-                popupWindow?.showAtLocation(
+                popupWindow?.show(
                     anchorView,
-                    Gravity.NO_GRAVITY,
                     DEFAULT_X,
                     rect.y.toInt()
                 )

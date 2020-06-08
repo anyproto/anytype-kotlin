@@ -3,11 +3,11 @@ package com.agileburo.anytype.ui.menu
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.PointF
-import android.graphics.drawable.ColorDrawable
 import android.text.Editable
-import android.view.*
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.PopupWindow
@@ -72,8 +72,10 @@ class AnytypeContextMenu constructor(
 
         val popupWindow = ContextPopupWindow(
             context = contextRef.get() ?: throw Throwable("null context"),
+            onContextMenuButtonClicked = this::onContextMenuButtonClicked,
             onDismissListener = this,
-            onTouchInterceptor = onTouchListener
+            onTouchInterceptor = onTouchListener,
+            type = type
         )
 
         popupWindowRef = WeakReference(popupWindow)
@@ -109,33 +111,25 @@ class AnytypeContextMenu constructor(
         }
     }
 
-    private fun initButtons(type: AnytypeContextMenuType) =
-        when (type) {
-            AnytypeContextMenuType.P -> {
-            }
-            AnytypeContextMenuType.HEADER -> {
-
-            }
-            AnytypeContextMenuType.HIGHTLIGHTED -> {
-            }
+    private fun onContextMenuButtonClicked(click: ContextMenuButtonClick) {
+        when (click) {
+            ContextMenuButtonClick.Copy -> anchorViewRef.get()
+                ?.onTextContextMenuItem(android.R.id.copy)
+            ContextMenuButtonClick.Cut -> anchorViewRef.get()
+                ?.onTextContextMenuItem(android.R.id.cut)
+            ContextMenuButtonClick.Paste -> anchorViewRef.get()
+                ?.onTextContextMenuItem(android.R.id.paste)
+            ContextMenuButtonClick.Bold -> onMarkupActionClicked(Markup.Type.BOLD)
+            ContextMenuButtonClick.Italic -> onMarkupActionClicked(Markup.Type.ITALIC)
+            ContextMenuButtonClick.Stroke -> onMarkupActionClicked(Markup.Type.STRIKETHROUGH)
+            ContextMenuButtonClick.Code -> onMarkupActionClicked(Markup.Type.KEYBOARD)
+            ContextMenuButtonClick.TextColor -> onMarkupActionClicked(Markup.Type.TEXT_COLOR)
+            ContextMenuButtonClick.BackgroundColor -> onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR)
+            ContextMenuButtonClick.Link -> onMarkupActionClicked(Markup.Type.LINK)
         }
+    }
 
     private fun initMenuItems(view: View) {
-        view.btnCopy.apply {
-            setOnClickListener {
-                anchorViewRef.get()?.onTextContextMenuItem(android.R.id.copy)
-            }
-        }
-        view.btnCut.apply {
-            setOnClickListener {
-                anchorViewRef.get()?.onTextContextMenuItem(android.R.id.cut)
-            }
-        }
-        view.btnPaste.apply {
-            setOnClickListener {
-                anchorViewRef.get()?.onTextContextMenuItem(android.R.id.paste)
-            }
-        }
         view.btnBold.apply {
             anchorViewRef.get()?.let {
                 if (isSpanInRange(
@@ -147,40 +141,6 @@ class AnytypeContextMenu constructor(
                     this.imageTintList =
                         ColorStateList.valueOf(view.context.color(R.color.context_menu_selected_item))
                 }
-            }
-
-            setOnClickListener {
-                onMarkupActionClicked.invoke(Markup.Type.BOLD)
-            }
-        }
-        view.btnItalic.apply {
-            setOnClickListener {
-                onMarkupActionClicked.invoke(Markup.Type.ITALIC)
-            }
-        }
-        view.btnStroke.apply {
-            setOnClickListener {
-                onMarkupActionClicked.invoke(Markup.Type.STRIKETHROUGH)
-            }
-        }
-        view.btnCode.apply {
-            setOnClickListener {
-                onMarkupActionClicked.invoke(Markup.Type.KEYBOARD)
-            }
-        }
-        view.btnLink.apply {
-            setOnClickListener {
-                onMarkupActionClicked.invoke(Markup.Type.LINK)
-            }
-        }
-        view.btnColor.apply {
-            setOnClickListener {
-                onMarkupActionClicked.invoke(Markup.Type.TEXT_COLOR)
-            }
-        }
-        view.btnBackground.apply {
-            setOnClickListener {
-                onMarkupActionClicked.invoke(Markup.Type.BACKGROUND_COLOR)
             }
         }
 

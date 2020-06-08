@@ -1,25 +1,25 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.34 (WIP)
+## Version 0.0.34
 
 ### New features 🚀
 
-*
+* Enabled markup for headers and highlight blocks (#480)
 
 ### Design & UX 🔳
 
-*
+* New screen for debug settings (#492)
+* Custom context menu. First iteration available only in debug mode (#430)
 
 ### Fixes & tech 🚒
 
-* Inconsistent behavior when merging two highlight blocks (#478)
+* Enabled markup links (#200)
+* Added UI and integrations tests for basic CRUD, split and merge operations in editor (#497)
+* Better control over cursor position while CRUD, split and merge operations in editor (#491)
+* Fix incorrect cursor positioning while deleting an empty block (#493)
+* Fix Inconsistent behavior when merging two highlight blocks (#478)
 * Should preserve text style while splitting (#479)
 * Should focus and open keyboard when creating headers or highlight block (#485)
-* Enabled markup links (#200)
-
-### Middleware ⚙
-
-*
 
 ## Version 0.0.33
 

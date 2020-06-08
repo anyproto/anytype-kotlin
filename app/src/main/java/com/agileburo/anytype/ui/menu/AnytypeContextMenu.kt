@@ -8,8 +8,11 @@ import android.graphics.PointF
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
 import android.view.*
-import android.widget.*
-import com.agileburo.anytype.core_ui.R
+import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
+import android.widget.PopupWindow
+import android.widget.TextView
+import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.Span
 import com.agileburo.anytype.core_ui.extensions.color
@@ -18,6 +21,7 @@ import com.agileburo.anytype.core_utils.ext.PopupExtensions.lerp
 import com.agileburo.anytype.core_utils.ext.invisible
 import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.ext.isSpanInRange
+import kotlinx.android.synthetic.main.popup_context_menu.view.*
 import java.lang.ref.WeakReference
 import kotlin.math.roundToInt
 
@@ -130,17 +134,22 @@ class AnytypeContextMenu constructor(
         }
 
     private fun initMenuItems(view: View) {
-        view.findViewById<View>(R.id.menu_copy).setOnClickListener {
-            anchorViewRef.get()?.onTextContextMenuItem(android.R.id.copy)
+        view.btnCopy.apply {
+            setOnClickListener {
+                anchorViewRef.get()?.onTextContextMenuItem(android.R.id.copy)
+            }
         }
-        view.findViewById<View>(R.id.menu_cut).setOnClickListener {
-            anchorViewRef.get()?.onTextContextMenuItem(android.R.id.cut)
+        view.btnCut.apply {
+            setOnClickListener {
+                anchorViewRef.get()?.onTextContextMenuItem(android.R.id.cut)
+            }
         }
-        view.findViewById<View>(R.id.menu_paste).setOnClickListener {
-            anchorViewRef.get()?.onTextContextMenuItem(android.R.id.paste)
+        view.btnPaste.apply {
+            setOnClickListener {
+                anchorViewRef.get()?.onTextContextMenuItem(android.R.id.paste)
+            }
         }
-        view.findViewById<ImageView>(R.id.menu_bold).apply {
-
+        view.btnBold.apply {
             anchorViewRef.get()?.let {
                 if (isSpanInRange(
                         textRange = IntRange(it.selectionStart, it.selectionEnd),
@@ -157,23 +166,35 @@ class AnytypeContextMenu constructor(
                 onMarkupActionClicked.invoke(Markup.Type.BOLD)
             }
         }
-        view.findViewById<View>(R.id.menu_italic).setOnClickListener {
-            onMarkupActionClicked.invoke(Markup.Type.ITALIC)
+        view.btnItalic.apply {
+            setOnClickListener {
+                onMarkupActionClicked.invoke(Markup.Type.ITALIC)
+            }
         }
-        view.findViewById<View>(R.id.menu_stroke).setOnClickListener {
-            onMarkupActionClicked.invoke(Markup.Type.STRIKETHROUGH)
+        view.btnStroke.apply {
+            setOnClickListener {
+                onMarkupActionClicked.invoke(Markup.Type.STRIKETHROUGH)
+            }
         }
-        view.findViewById<View>(R.id.menu_code).setOnClickListener {
-
+        view.btnCode.apply {
+            setOnClickListener {
+                onMarkupActionClicked.invoke(Markup.Type.KEYBOARD)
+            }
         }
-        view.findViewById<View>(R.id.menu_link).setOnClickListener {
-            onMarkupActionClicked.invoke(Markup.Type.LINK)
+        view.btnLink.apply {
+            setOnClickListener {
+                onMarkupActionClicked.invoke(Markup.Type.LINK)
+            }
         }
-        view.findViewById<View>(R.id.menu_color).setOnClickListener {
-            onMarkupActionClicked.invoke(Markup.Type.TEXT_COLOR)
+        view.btnColor.apply {
+            setOnClickListener {
+                onMarkupActionClicked.invoke(Markup.Type.TEXT_COLOR)
+            }
         }
-        view.findViewById<View>(R.id.menu_background).setOnClickListener {
-            onMarkupActionClicked.invoke(Markup.Type.BACKGROUND_COLOR)
+        view.btnBackground.apply {
+            setOnClickListener {
+                onMarkupActionClicked.invoke(Markup.Type.BACKGROUND_COLOR)
+            }
         }
 
         val scrollView = view.findViewById<HorizontalScrollView>(R.id.scroll_view)

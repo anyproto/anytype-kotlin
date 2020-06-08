@@ -22,7 +22,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/menu_copy"
+                    android:id="@+id/btnCopy"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/graphik_font"
@@ -40,7 +40,7 @@
                     android:background="#6C6A5F" />
 
                 <TextView
-                    android:id="@+id/menu_cut"
+                    android:id="@+id/btnCut"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/graphik_font"
@@ -58,7 +58,7 @@
                     android:background="#6C6A5F" />
 
                 <TextView
-                    android:id="@+id/menu_paste"
+                    android:id="@+id/btnPaste"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/graphik_font"
@@ -76,7 +76,7 @@
                     android:background="#6C6A5F" />
 
                 <ImageView
-                    android:id="@+id/menu_bold"
+                    android:id="@+id/btnBold"
                     style="@style/ActionModePopupButton"
                     android:src="@drawable/ic_menu_bold" />
 
@@ -86,7 +86,7 @@
                     android:background="#6C6A5F" />
 
                 <ImageView
-                    android:id="@+id/menu_italic"
+                    android:id="@+id/btnItalic"
                     style="@style/ActionModePopupButton"
                     android:src="@drawable/ic_menu_italic" />
 
@@ -96,7 +96,7 @@
                     android:background="#6C6A5F" />
 
                 <ImageView
-                    android:id="@+id/menu_stroke"
+                    android:id="@+id/btnStroke"
                     style="@style/ActionModePopupButton"
                     android:src="@drawable/ic_menu_strike_through" />
 
@@ -106,7 +106,7 @@
                     android:background="#6C6A5F" />
 
                 <ImageView
-                    android:id="@+id/menu_code"
+                    android:id="@+id/btnCode"
                     style="@style/ActionModePopupButton"
                     android:src="@drawable/ic_menu_code" />
 
@@ -116,7 +116,7 @@
                     android:background="#6C6A5F" />
 
                 <ImageView
-                    android:id="@+id/menu_link"
+                    android:id="@+id/btnLink"
                     style="@style/ActionModePopupButton"
                     android:src="@drawable/ic_menu_link" />
 
@@ -126,7 +126,7 @@
                     android:background="#6C6A5F" />
 
                 <TextView
-                    android:id="@+id/menu_color"
+                    android:id="@+id/btnColor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/graphik_font"
@@ -144,7 +144,7 @@
                     android:background="#6C6A5F" />
 
                 <TextView
-                    android:id="@+id/menu_background"
+                    android:id="@+id/btnBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/graphik_font"

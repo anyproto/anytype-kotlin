@@ -154,8 +154,9 @@ sealed class BlockView : ViewType, Parcelable {
         override val isFocused: Boolean,
         val text: String?,
         val emoji: String? = null,
-        override val mode: Mode = Mode.EDIT
-    ) : BlockView(), Focusable, Permission {
+        override val mode: Mode = Mode.EDIT,
+        override val cursor: Int? = null
+    ) : BlockView(), Focusable, Cursor, Permission {
         override fun getViewType() = HOLDER_TITLE
     }
 

@@ -202,7 +202,10 @@ open class EditorTestSetup {
         }
     }
 
-    fun stubOpenDocument(document: List<Block>) {
+    fun stubOpenDocument(
+        document: List<Block>,
+        details: Block.Details = Block.Details()
+    ) {
         openPage.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
                 Payload(
@@ -211,7 +214,7 @@ open class EditorTestSetup {
                         Event.Command.ShowBlock(
                             context = root,
                             root = root,
-                            details = Block.Details(),
+                            details = details,
                             blocks = document
                         )
                     )

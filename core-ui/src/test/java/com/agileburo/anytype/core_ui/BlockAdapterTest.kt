@@ -381,6 +381,64 @@ class BlockAdapterTest {
     }
 
     @Test
+    fun `should update title cursor`() {
+
+        // Setup
+
+        val title = BlockView.Title(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            isFocused = false,
+            cursor = null
+        )
+
+        val updated = title.copy(
+            cursor = 2,
+            isFocused = true
+        )
+
+        val views = listOf(title)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Title)
+
+        // Testing
+
+        assertEquals(
+            expected = title.text,
+            actual = holder.content.text.toString()
+        )
+
+        holder.processPayloads(
+            item = updated,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(FOCUS_CHANGED, CURSOR_CHANGED)
+                )
+            )
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = holder.content.selectionStart
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = holder.content.selectionEnd
+        )
+    }
+
+    @Test
     fun `should call back when paragraph view gets focused`() {
 
         // Setup

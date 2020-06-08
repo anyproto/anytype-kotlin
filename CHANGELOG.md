@@ -1,5 +1,23 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.35 (WIP)
+
+### New features 🚀
+
+*
+
+### Design & UX 🔳
+
+*
+
+### Fixes & tech 🚒
+
+* Should focus document's title when first paragraph (as the first block in the document) is deleted (#498)
+
+### Middleware ⚙
+
+*
+
 ## Version 0.0.34
 
 ### New features 🚀

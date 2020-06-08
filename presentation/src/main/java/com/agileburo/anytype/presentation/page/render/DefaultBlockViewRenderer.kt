@@ -177,6 +177,13 @@ class DefaultBlockViewRenderer(
                             name
                         else
                             null
+                    },
+                    cursor = focus.cursor?.let { cursor ->
+                        when (cursor) {
+                            is Cursor.Start -> 0
+                            is Cursor.End -> details.details[root.id]?.name?.length ?: 0
+                            is Cursor.Range -> cursor.range.first
+                        }
                     }
                 )
             )

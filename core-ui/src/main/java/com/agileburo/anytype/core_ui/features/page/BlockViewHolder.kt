@@ -209,6 +209,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 icon.text = item.emoji ?: EMPTY_EMOJI
             } else {
                 enableEditMode()
+                if (item.isFocused) setCursor(item)
                 focus(item.isFocused)
                 content.setText(item.text, BufferType.EDITABLE)
                 if (!item.text.isNullOrEmpty()) content.setSelection(item.text.length)
@@ -241,6 +242,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                             content.setText(item.text, BufferType.EDITABLE)
                         }
                     }
+                }
+                if (payload.isCursorChanged) {
+                    if (item.isFocused) setCursor(item)
                 }
                 if (payload.focusChanged()) {
                     focus(item.isFocused)

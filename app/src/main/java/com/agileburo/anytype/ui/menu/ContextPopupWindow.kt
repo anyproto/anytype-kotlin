@@ -28,6 +28,12 @@ class ContextPopupWindow @JvmOverloads constructor(
     private val gravity: Int = Gravity.NO_GRAVITY
 ) : PopupWindow(context, attrs, defStyle, defStyleRes) {
 
+    companion object {
+        val HEADER = listOf(R.id.btnItalic, R.id.btnColor)
+        val HIGHTLIGHT = listOf(R.id.btnBold, R.id.btnColor)
+        val TEXT = listOf(R.id.btnBold, R.id.btnItalic, R.id.btnLink)
+    }
+
     init {
         contentView = LayoutInflater.from(context).inflate(R.layout.popup_context_menu, null)
         width = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -39,56 +45,90 @@ class ContextPopupWindow @JvmOverloads constructor(
         isFocusable = false
         setOnDismissListener(onDismissListener)
         setTouchInterceptor(onTouchInterceptor)
-        init(contentView)
+        when (type) {
+            AnytypeContextMenuType.P -> init(contentView, TEXT)
+            AnytypeContextMenuType.HEADER -> init(contentView, HEADER)
+            AnytypeContextMenuType.HIGHTLIGHTED -> init(contentView, HIGHTLIGHT)
+        }
     }
 
-    private fun init(view: View) {
+    private fun init(view: View, ids: List<Int>) {
         view.btnCopy.apply {
+            if (this.id in ids) {
+                visible()
+            }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Copy)
             }
         }
         view.btnCut.apply {
+            if (this.id in ids) {
+                visible()
+            }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Cut)
             }
         }
         view.btnPaste.apply {
+            if (this.id in ids) {
+                visible()
+            }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Paste)
             }
         }
         view.btnBold.apply {
+            if (this.id in ids) {
+                visible()
+            }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Bold)
             }
         }
         view.btnItalic.apply {
+            if (this.id in ids) {
+                visible()
+            }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Italic)
             }
         }
         view.btnStroke.apply {
+            if (this.id in ids) {
+                visible()
+            }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Stroke)
             }
         }
         view.btnCode.apply {
+            if (this.id in ids) {
+                visible()
+            }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Code)
             }
         }
         view.btnLink.apply {
+            if (this.id in ids) {
+                visible()
+            }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Link)
             }
         }
         view.btnColor.apply {
+            if (this.id in ids) {
+                visible()
+            }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.TextColor)
             }
         }
         view.btnBackground.apply {
+            if (this.id in ids) {
+                visible()
+            }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.BackgroundColor)
             }

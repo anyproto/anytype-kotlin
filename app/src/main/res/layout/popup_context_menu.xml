@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="44dp">
+    android:layout_height="44dp"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
@@ -78,6 +79,8 @@
                 <ImageView
                     android:id="@+id/btnBold"
                     style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:src="@drawable/ic_menu_bold" />
 
                 <View
@@ -88,6 +91,8 @@
                 <ImageView
                     android:id="@+id/btnItalic"
                     style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:src="@drawable/ic_menu_italic" />
 
                 <View
@@ -98,6 +103,8 @@
                 <ImageView
                     android:id="@+id/btnStroke"
                     style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:src="@drawable/ic_menu_strike_through" />
 
                 <View
@@ -108,6 +115,8 @@
                 <ImageView
                     android:id="@+id/btnCode"
                     style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:src="@drawable/ic_menu_code" />
 
                 <View
@@ -118,6 +127,8 @@
                 <ImageView
                     android:id="@+id/btnLink"
                     style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:src="@drawable/ic_menu_link" />
 
                 <View
@@ -134,6 +145,8 @@
                     android:paddingTop="@dimen/dp_12"
                     android:paddingEnd="@dimen/dp_16"
                     android:paddingBottom="@dimen/dp_12"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:text="@string/menu_item_color"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
@@ -153,6 +166,8 @@
                     android:paddingEnd="@dimen/dp_16"
                     android:paddingBottom="@dimen/dp_12"
                     android:text="@string/menu_item_background"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 

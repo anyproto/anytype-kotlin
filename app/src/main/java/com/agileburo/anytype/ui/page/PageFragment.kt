@@ -29,6 +29,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
+import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuEvent
 import com.agileburo.anytype.core_ui.menu.DocumentPopUpMenu
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.reactive.clicks
@@ -37,8 +38,7 @@ import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_ui.tools.FirstItemInvisibilityDetector
 import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
-import com.agileburo.anytype.core_ui.widgets.actionmode.AnytypeContextMenu
-import com.agileburo.anytype.core_ui.widgets.actionmode.AnytypeContextMenuEvent
+import com.agileburo.anytype.ui.menu.AnytypeContextMenu
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.di.common.componentManager

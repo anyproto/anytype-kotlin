@@ -1,4 +1,4 @@
-package com.agileburo.anytype.core_ui.widgets.actionmode
+package com.agileburo.anytype.ui.menu
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -106,7 +106,11 @@ class AnytypeContextMenu constructor(
                     popupWindowHeight = popupHeight,
                     tooltipOffsetY = POPUP_OFFSET
                 )
-                popupWindow.update(DEFAULT_X, rect.y.toInt(), WIDTH_IGNORE, HEIGHT_IGNORE)
+                popupWindow.update(
+                    DEFAULT_X, rect.y.toInt(),
+                    WIDTH_IGNORE,
+                    HEIGHT_IGNORE
+                )
             }
         }
     }
@@ -181,9 +185,14 @@ class AnytypeContextMenu constructor(
                     anim.addUpdateListener { animation ->
                         val v = animation.animatedValue as Float
                         val y = lerp(currY, rect.y, v).roundToInt()
-                        popupWindow.update(DEFAULT_X, y, WIDTH_IGNORE, HEIGHT_IGNORE)
+                        popupWindow.update(
+                            DEFAULT_X, y,
+                            WIDTH_IGNORE,
+                            HEIGHT_IGNORE
+                        )
                     }
-                    anim.duration = ANIM_DURATION
+                    anim.duration =
+                        ANIM_DURATION
                     anim.start()
                 }
             } else {
@@ -207,9 +216,4 @@ class AnytypeContextMenu constructor(
         popupWindowRef.get()?.dismiss()
         cleanup()
     }
-}
-
-sealed class AnytypeContextMenuEvent {
-    object Detached : AnytypeContextMenuEvent()
-    data class Selected(val view: TextView) : AnytypeContextMenuEvent()
 }

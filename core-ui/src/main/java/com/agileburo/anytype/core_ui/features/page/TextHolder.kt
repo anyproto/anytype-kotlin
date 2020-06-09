@@ -151,6 +151,8 @@ interface TextHolder {
             content.setLinksClickable()
         }
         content.text?.setMarkup(markup)
+        // Call selection detector, because we need to update state of anytype context menu, if exist
+        content.selectionDetector?.invoke(IntRange(content.selectionStart, content.selectionEnd))
     }
 
     fun setupTextWatcher(

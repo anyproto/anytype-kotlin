@@ -730,7 +730,6 @@ open class PageFragment :
                     anchorView = originatingView,
                     onMarkupActionClicked = {
                         vm.onMarkupActionClicked(it)
-                        removeContextMenu()
                     }
                 )
         }

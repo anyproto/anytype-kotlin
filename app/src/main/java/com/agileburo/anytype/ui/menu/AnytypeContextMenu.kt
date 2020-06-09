@@ -135,8 +135,7 @@ class AnytypeContextMenu constructor(
     fun showAtLocation() {
         val anchorView = anchorViewRef.get()
         val popupWindow = popupWindowRef.get()
-
-        if (anchorView != null && anchorView.isShown) {
+        if (anchorView != null) {
             if (popupWindow?.isShowing == true) {
                 val contentView = popupWindow.contentView
                 contentView?.handler?.removeCallbacksAndMessages(null)

@@ -32,7 +32,8 @@ class ContextPopupWindow @JvmOverloads constructor(
     private val gravity: Int = Gravity.NO_GRAVITY,
     editable: Editable,
     textRange: IntRange,
-    private val tintColor: ColorStateList
+    private val tintColor: ColorStateList,
+    private val textDefaultColor: Int
 ) : PopupWindow(context, attrs, defStyle, defStyleRes) {
 
     companion object {
@@ -211,6 +212,14 @@ class ContextPopupWindow @JvmOverloads constructor(
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Color)
             }
+            if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.TextColor::class.java
+                )
+            ) {
+                setTextColor(tintColor)
+            }
         }
         view.btnBackground.apply {
             if (this.id in ids) {
@@ -218,6 +227,14 @@ class ContextPopupWindow @JvmOverloads constructor(
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Background)
+            }
+            if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Highlight::class.java
+                )
+            ) {
+                setTextColor(tintColor)
             }
         }
 
@@ -274,6 +291,22 @@ class ContextPopupWindow @JvmOverloads constructor(
                     type = Span.Url::class.java
                 )
             ) tintColor else null
+        }
+        contentView.btnColor.apply {
+            if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.TextColor::class.java
+                )
+            ) setTextColor(tintColor) else setTextColor(textDefaultColor)
+        }
+        contentView.btnBackground.apply {
+            if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Highlight::class.java
+                )
+            ) setTextColor(tintColor) else setTextColor(textDefaultColor)
         }
     }
 

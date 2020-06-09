@@ -74,7 +74,8 @@ class AnytypeContextMenu constructor(
             type = type,
             editable = anchorView.text as Editable,
             textRange = IntRange(anchorView.selectionStart, anchorView.selectionEnd),
-            tintColor = ColorStateList.valueOf(context.color(R.color.context_menu_selected_item))
+            tintColor = ColorStateList.valueOf(context.color(R.color.context_menu_selected_item)),
+            textDefaultColor = context.color(R.color.white)
         )
         contextRef = WeakReference(context)
         anchorViewRef = WeakReference(anchorView)

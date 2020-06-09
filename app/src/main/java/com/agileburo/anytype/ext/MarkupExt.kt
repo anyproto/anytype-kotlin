@@ -51,21 +51,21 @@ fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).
     }
 }
 
-fun <T> isSpanInRange(textRange: IntRange, text: Spanned, type: Class<T>): Boolean {
-    text.getSpans(textRange.first, textRange.last, type).forEach {
+fun <T> Spanned.isSpanInRange(textRange: IntRange, type: Class<T>): Boolean {
+    val list = listOf(
+        Overlap.INNER,
+        Overlap.INNER_LEFT,
+        Overlap.INNER_RIGHT,
+        Overlap.EQUAL
+    )
+    getSpans(textRange.first, textRange.last, type).forEach {
         val overlap = textRange.overlap(
             IntRange(
-                start = text.getSpanStart(it),
-                endInclusive = text.getSpanEnd(it)
+                start = getSpanStart(it),
+                endInclusive = getSpanEnd(it)
             )
         )
-        if (overlap in listOf(
-                Overlap.INNER,
-                Overlap.INNER_LEFT,
-                Overlap.INNER_RIGHT,
-                Overlap.EQUAL
-            )
-        ) {
+        if (overlap in list) {
             return true
         }
     }

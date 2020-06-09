@@ -128,9 +128,8 @@ class ContextPopupWindow @JvmOverloads constructor(
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Bold)
             }
-            if (isSpanInRange(
+            if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Bold::class.java
                 )
             ) {
@@ -145,9 +144,8 @@ class ContextPopupWindow @JvmOverloads constructor(
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Italic)
             }
-            if (isSpanInRange(
+            if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Italic::class.java
                 )
             ) {
@@ -162,9 +160,8 @@ class ContextPopupWindow @JvmOverloads constructor(
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Stroke)
             }
-            if (isSpanInRange(
+            if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Strikethrough::class.java
                 )
             ) {
@@ -179,9 +176,8 @@ class ContextPopupWindow @JvmOverloads constructor(
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Code)
             }
-            if (isSpanInRange(
+            if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Keyboard::class.java
                 )
             ) {
@@ -196,9 +192,8 @@ class ContextPopupWindow @JvmOverloads constructor(
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Link)
             }
-            if (isSpanInRange(
+            if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Url::class.java
                 )
             ) {
@@ -213,9 +208,8 @@ class ContextPopupWindow @JvmOverloads constructor(
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Color)
             }
-            if (isSpanInRange(
+            if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.TextColor::class.java
                 )
             ) {
@@ -229,9 +223,8 @@ class ContextPopupWindow @JvmOverloads constructor(
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Background)
             }
-            if (isSpanInRange(
+            if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Highlight::class.java
                 )
             ) {
@@ -254,57 +247,50 @@ class ContextPopupWindow @JvmOverloads constructor(
 
     fun updateMarkupButtons(textRange: IntRange, editable: Editable) {
         contentView.btnBold.apply {
-            imageTintList = if (isSpanInRange(
+            imageTintList = if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Bold::class.java
                 )
             ) tintColor else null
         }
         contentView.btnItalic.apply {
-            imageTintList = if (isSpanInRange(
+            imageTintList = if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Italic::class.java
                 )
             ) tintColor else null
         }
         contentView.btnStroke.apply {
-            imageTintList = if (isSpanInRange(
+            imageTintList = if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Strikethrough::class.java
                 )
             ) tintColor else null
         }
         contentView.btnCode.apply {
-            imageTintList = if (isSpanInRange(
+            imageTintList = if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Keyboard::class.java
                 )
             ) tintColor else null
         }
         contentView.btnLink.apply {
-            imageTintList = if (isSpanInRange(
+            imageTintList = if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Url::class.java
                 )
             ) tintColor else null
         }
         contentView.btnColor.apply {
-            if (isSpanInRange(
+            if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.TextColor::class.java
                 )
             ) setTextColor(tintColor) else setTextColor(textDefaultColor)
         }
         contentView.btnBackground.apply {
-            if (isSpanInRange(
+            if (editable.isSpanInRange(
                     textRange = textRange,
-                    text = editable,
                     type = Span.Highlight::class.java
                 )
             ) setTextColor(tintColor) else setTextColor(textDefaultColor)

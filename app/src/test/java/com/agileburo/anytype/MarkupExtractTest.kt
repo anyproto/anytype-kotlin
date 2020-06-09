@@ -297,10 +297,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(11, 19)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Bold::class.java,
-            text = source
+            type = Span.Bold::class.java
         )
 
         assertTrue(result)
@@ -317,10 +316,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(10, 15)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Bold::class.java,
-            text = source
+            type = Span.Bold::class.java
         )
 
         assertTrue(result)
@@ -337,10 +335,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(15, 20)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Bold::class.java,
-            text = source
+            type = Span.Bold::class.java
         )
 
         assertTrue(result)
@@ -357,10 +354,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(10, 20)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Bold::class.java,
-            text = source
+            type = Span.Bold::class.java
         )
 
         assertTrue(result)
@@ -377,10 +373,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(10, 21)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Bold::class.java,
-            text = source
+            type = Span.Bold::class.java
         )
 
         assertFalse(result)
@@ -397,10 +392,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(9, 13)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Bold::class.java,
-            text = source
+            type = Span.Bold::class.java
         )
 
         assertFalse(result)
@@ -417,10 +411,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(14, 21)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Bold::class.java,
-            text = source
+            type = Span.Bold::class.java
         )
 
         assertFalse(result)
@@ -437,10 +430,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(1, 9)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Bold::class.java,
-            text = source
+            type = Span.Bold::class.java
         )
 
         assertFalse(result)
@@ -457,10 +449,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(21, 30)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Bold::class.java,
-            text = source
+            type = Span.Bold::class.java
         )
 
         assertFalse(result)
@@ -476,10 +467,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(0, 0)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Bold::class.java,
-            text = source
+            type = Span.Bold::class.java
         )
 
         assertFalse(result)
@@ -496,10 +486,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(12, 18)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Italic::class.java,
-            text = source
+            type = Span.Italic::class.java
         )
 
         assertFalse(result)
@@ -516,10 +505,9 @@ class MarkupExtractTest {
         // TESTING
 
         val textRange = IntRange(12, 180)
-        val result = isSpanInRange(
+        val result = source.isSpanInRange(
             textRange = textRange,
-            type = Span.Italic::class.java,
-            text = source
+            type = Span.Italic::class.java
         )
 
         assertFalse(result)

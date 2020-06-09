@@ -1,6 +1,6 @@
 on:
   push:
-    branches: develop
+    branches: feature/483_Custom_menu_scroll
 name: CI
 jobs:
   setup-android:

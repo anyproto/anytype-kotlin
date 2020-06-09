@@ -1,19 +1,22 @@
 package com.agileburo.anytype.ui.menu
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.text.Editable
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.PopupWindow
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.common.Span
 import com.agileburo.anytype.core_utils.ext.invisible
 import com.agileburo.anytype.core_utils.ext.visible
+import com.agileburo.anytype.ext.isSpanInRange
 import kotlinx.android.synthetic.main.popup_context_menu.view.*
 
 class ContextPopupWindow @JvmOverloads constructor(
@@ -25,7 +28,10 @@ class ContextPopupWindow @JvmOverloads constructor(
     onDismissListener: OnDismissListener,
     onTouchInterceptor: View.OnTouchListener,
     private val onContextMenuButtonClicked: (ContextMenuButtonClick) -> Unit,
-    private val gravity: Int = Gravity.NO_GRAVITY
+    private val gravity: Int = Gravity.NO_GRAVITY,
+    editable: Editable,
+    textRange: IntRange,
+    private val tintColor: ColorStateList
 ) : PopupWindow(context, attrs, defStyle, defStyleRes) {
 
     companion object {
@@ -40,7 +46,7 @@ class ContextPopupWindow @JvmOverloads constructor(
             R.id.btnStroke,
             R.id.btnBackground
         )
-        val HIGHTLIGHT = listOf(
+        val HIGHLIGHT = listOf(
             R.id.btnCopy,
             R.id.btnCut,
             R.id.btnPaste,
@@ -51,7 +57,7 @@ class ContextPopupWindow @JvmOverloads constructor(
             R.id.btnStroke,
             R.id.btnBackground
         )
-        val TEXT = listOf(
+        val DEFAULT = listOf(
             R.id.btnCopy,
             R.id.btnCut,
             R.id.btnPaste,
@@ -77,13 +83,13 @@ class ContextPopupWindow @JvmOverloads constructor(
         setOnDismissListener(onDismissListener)
         setTouchInterceptor(onTouchInterceptor)
         when (type) {
-            AnytypeContextMenuType.P -> init(contentView, TEXT)
-            AnytypeContextMenuType.HEADER -> init(contentView, HEADER)
-            AnytypeContextMenuType.HIGHTLIGHTED -> init(contentView, HIGHTLIGHT)
+            AnytypeContextMenuType.DEFAULT -> init(contentView, DEFAULT, editable, textRange)
+            AnytypeContextMenuType.HEADER -> init(contentView, HEADER, editable, textRange)
+            AnytypeContextMenuType.HIGHLIGHT -> init(contentView, HIGHLIGHT, editable, textRange)
         }
     }
 
-    private fun init(view: View, ids: List<Int>) {
+    private fun init(view: View, ids: List<Int>, editable: Editable, textRange: IntRange) {
         view.btnCopy.apply {
             if (this.id in ids) {
                 visible()
@@ -119,6 +125,14 @@ class ContextPopupWindow @JvmOverloads constructor(
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Bold)
             }
+            if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Bold::class.java
+                )
+            ) {
+                imageTintList = tintColor
+            }
         }
         view.btnItalic.apply {
             if (this.id in ids) {
@@ -127,6 +141,14 @@ class ContextPopupWindow @JvmOverloads constructor(
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Italic)
+            }
+            if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Italic::class.java
+                )
+            ) {
+                imageTintList = tintColor
             }
         }
         view.btnStroke.apply {
@@ -137,6 +159,14 @@ class ContextPopupWindow @JvmOverloads constructor(
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Stroke)
             }
+            if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Strikethrough::class.java
+                )
+            ) {
+                imageTintList = tintColor
+            }
         }
         view.btnCode.apply {
             if (this.id in ids) {
@@ -146,6 +176,14 @@ class ContextPopupWindow @JvmOverloads constructor(
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Code)
             }
+            if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Keyboard::class.java
+                )
+            ) {
+                imageTintList = tintColor
+            }
         }
         view.btnLink.apply {
             if (this.id in ids) {
@@ -154,6 +192,14 @@ class ContextPopupWindow @JvmOverloads constructor(
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Link)
+            }
+            if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Url::class.java
+                )
+            ) {
+                imageTintList = tintColor
             }
         }
         view.btnColor.apply {
@@ -174,12 +220,11 @@ class ContextPopupWindow @JvmOverloads constructor(
             }
         }
 
-        val scrollView = view.findViewById<HorizontalScrollView>(R.id.scroll_view)
-        val arrowRight = view.findViewById<FrameLayout>(R.id.container_arrow_right)
+        val arrowRight = view.arrowRightContainer
         arrowRight.setOnClickListener {
-            scrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
+            view.scrollContainer.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
         }
-        scrollView.setOnScrollChangeListener { _, scrollX, _, oldScrollX, _ ->
+        view.scrollContainer.setOnScrollChangeListener { _, scrollX, _, oldScrollX, _ ->
             if (scrollX != oldScrollX) {
                 arrowRight.invisible()
             } else {

@@ -725,9 +725,9 @@ open class PageFragment :
         if (anytypeContextMenu == null) {
             anytypeContextMenu =
                 AnytypeContextMenu(
-                    type = AnytypeContextMenuType.HEADER,
-                    contextRef = WeakReference(requireContext()),
-                    anchorViewRef = WeakReference(originatingView),
+                    type = AnytypeContextMenuType.DEFAULT,
+                    context = requireContext(),
+                    anchorView = originatingView,
                     onMarkupActionClicked = {
                         vm.onMarkupActionClicked(it)
                         removeContextMenu()

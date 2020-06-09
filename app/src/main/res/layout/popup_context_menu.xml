@@ -13,7 +13,7 @@
         app:cardCornerRadius="10dp">
 
         <HorizontalScrollView
-            android:id="@+id/scroll_view"
+            android:id="@+id/scrollContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -209,7 +209,7 @@
         </HorizontalScrollView>
 
         <FrameLayout
-            android:id="@+id/container_arrow_right"
+            android:id="@+id/arrowRightContainer"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end">

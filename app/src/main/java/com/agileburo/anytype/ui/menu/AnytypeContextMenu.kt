@@ -8,8 +8,6 @@ import android.text.Editable
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver
-import android.widget.FrameLayout
-import android.widget.HorizontalScrollView
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.agileburo.anytype.R
@@ -18,17 +16,15 @@ import com.agileburo.anytype.core_ui.common.Span
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_utils.ext.PopupExtensions.calculateFloatToolbarPosition
 import com.agileburo.anytype.core_utils.ext.PopupExtensions.lerp
-import com.agileburo.anytype.core_utils.ext.invisible
-import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.ext.isSpanInRange
 import kotlinx.android.synthetic.main.popup_context_menu.view.*
 import java.lang.ref.WeakReference
 import kotlin.math.roundToInt
 
 class AnytypeContextMenu constructor(
+    context: Context,
+    anchorView: TextView,
     private val type: AnytypeContextMenuType,
-    private val contextRef: WeakReference<Context>,
-    private val anchorViewRef: WeakReference<TextView>,
     private val onMarkupActionClicked: (Markup.Type) -> Unit,
     private val dismissOnTouchOutside: Boolean = false
 ) : PopupWindow.OnDismissListener {
@@ -40,6 +36,9 @@ class AnytypeContextMenu constructor(
         const val HEIGHT_IGNORE = -1
         const val ANIM_DURATION = 150L
     }
+
+    private val contextRef: WeakReference<Context>
+    private val anchorViewRef: WeakReference<TextView>
 
     private var scrollListener: ViewTreeObserver.OnScrollChangedListener? = null
 
@@ -66,25 +65,26 @@ class AnytypeContextMenu constructor(
         scrollListener = ViewTreeObserver.OnScrollChangedListener {
             updatePosition()
         }
-        anchorViewRef.get()?.viewTreeObserver?.addOnScrollChangedListener(
+        anchorView.viewTreeObserver?.addOnScrollChangedListener(
             scrollListener
         )
 
         val popupWindow = ContextPopupWindow(
-            context = contextRef.get() ?: throw Throwable("null context"),
+            context = context,
             onContextMenuButtonClicked = this::onContextMenuButtonClicked,
             onDismissListener = this,
             onTouchInterceptor = onTouchListener,
-            type = type
+            type = type,
+            editable = anchorView.text as Editable,
+            textRange = IntRange(anchorView.selectionStart, anchorView.selectionEnd),
+            tintColor = ColorStateList.valueOf(context.color(R.color.context_menu_selected_item))
         )
-
+        contextRef = WeakReference(context)
+        anchorViewRef = WeakReference(anchorView)
         popupWindowRef = WeakReference(popupWindow)
-        popupHeight =
-            contextRef.get()
-                ?.resources
-                ?.getDimensionPixelSize(R.dimen.popup_context_menu_height)
-                ?.toFloat()
-                ?: throw Throwable("null context")
+        popupHeight = context.resources
+            .getDimensionPixelSize(R.dimen.popup_context_menu_height)
+            .toFloat()
     }
 
     private fun cleanup() {
@@ -141,19 +141,6 @@ class AnytypeContextMenu constructor(
                     this.imageTintList =
                         ColorStateList.valueOf(view.context.color(R.color.context_menu_selected_item))
                 }
-            }
-        }
-
-        val scrollView = view.findViewById<HorizontalScrollView>(R.id.scroll_view)
-        val arrowRight = view.findViewById<FrameLayout>(R.id.container_arrow_right)
-        arrowRight.setOnClickListener {
-            scrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
-        }
-        scrollView.setOnScrollChangeListener { _, scrollX, _, oldScrollX, _ ->
-            if (scrollX != oldScrollX) {
-                arrowRight.invisible()
-            } else {
-                arrowRight.visible()
             }
         }
     }
@@ -214,4 +201,4 @@ class AnytypeContextMenu constructor(
     }
 }
 
-enum class AnytypeContextMenuType { P, HEADER, HIGHTLIGHTED }
+enum class AnytypeContextMenuType { DEFAULT, HEADER, HIGHLIGHT }

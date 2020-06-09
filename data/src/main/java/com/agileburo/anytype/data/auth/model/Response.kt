@@ -4,6 +4,7 @@ sealed class Response {
     sealed class Clipboard : Response() {
         class Paste(
             val cursor: Int,
+            val isSameBlockCursor: Boolean,
             val blocks: List<String>,
             val payload: PayloadEntity
         ) : Clipboard()

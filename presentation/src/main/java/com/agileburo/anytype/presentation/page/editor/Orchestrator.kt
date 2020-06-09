@@ -303,7 +303,20 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = { response ->
-                            Timber.d("response: $response")
+                            if (response.cursor >= 0)
+                                stores.focus.update(
+                                    stores.focus.current().copy(
+                                        cursor = Cursor.Range(response.cursor..response.cursor)
+                                    )
+                                )
+                            else if (response.blocks.isNotEmpty()) {
+                                stores.focus.update(
+                                    Focus(
+                                        id = response.blocks.last(),
+                                        cursor = Cursor.End
+                                    )
+                                )
+                            }
                             proxies.payloads.send(response.payload)
                         }
                     )

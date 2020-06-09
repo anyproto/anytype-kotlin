@@ -59,10 +59,12 @@ class Paste(
      * Response for the use-case.
      * @param cursor caret position
      * @param blocks ids of the new blocks
+     * @param isSameBlockCursor whether cursor stays at the same block.
      * @param payload response payload
      */
     data class Response(
         val cursor: Int,
+        val isSameBlockCursor: Boolean,
         val blocks: List<Id>,
         val payload: Payload
     )

@@ -556,6 +556,7 @@ fun BlockEntity.Align.toDomain(): Block.Align = when (this) {
 fun Response.Clipboard.Paste.toDomain() = Paste.Response(
     blocks = blocks,
     cursor = cursor,
+    isSameBlockCursor = isSameBlockCursor,
     payload = payload.toDomain()
 )
 

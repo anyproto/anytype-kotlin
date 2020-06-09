@@ -12,6 +12,7 @@
 
 ### Fixes & tech 🚒
 
+* Setting cursor when pasting from anytype clipboard (#484)
 * Should focus document's title when first paragraph (as the first block in the document) is deleted (#498)
 
 ### Middleware ⚙

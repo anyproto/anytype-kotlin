@@ -313,6 +313,329 @@ class BlockAdapterTest {
     }
 
     @Test
+    fun `should set paragraph cursor on first binding`() {
+
+        // Setup
+
+        val text = MockDataFactory.randomString()
+
+        val block = BlockView.Paragraph(
+            text = text,
+            id = MockDataFactory.randomUuid(),
+            isFocused = true,
+            cursor = MockDataFactory.randomInt(text.length.dec())
+        )
+
+        val views = listOf(block)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Paragraph)
+
+        // Testing
+
+        assertEquals(expected = block.text, actual = holder.content.text.toString())
+        assertEquals(expected = block.cursor, actual = holder.content.selectionStart)
+        assertEquals(expected = block.cursor, actual = holder.content.selectionEnd)
+    }
+
+    @Test
+    fun `should set header-one cursor on first binding`() {
+
+        // Setup
+
+        val text = MockDataFactory.randomString()
+
+        val block = BlockView.HeaderOne(
+            text = text,
+            id = MockDataFactory.randomUuid(),
+            isFocused = true,
+            cursor = MockDataFactory.randomInt(text.length.dec())
+        )
+
+        val views = listOf(block)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.HeaderOne)
+
+        // Testing
+
+        assertEquals(expected = block.text, actual = holder.content.text.toString())
+        assertEquals(expected = block.cursor, actual = holder.content.selectionStart)
+        assertEquals(expected = block.cursor, actual = holder.content.selectionEnd)
+    }
+
+    @Test
+    fun `should set header-two cursor on first binding`() {
+
+        // Setup
+
+        val text = MockDataFactory.randomString()
+
+        val block = BlockView.HeaderTwo(
+            text = text,
+            id = MockDataFactory.randomUuid(),
+            isFocused = true,
+            cursor = MockDataFactory.randomInt(text.length.dec())
+        )
+
+        val views = listOf(block)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.HeaderTwo)
+
+        // Testing
+
+        assertEquals(expected = block.text, actual = holder.content.text.toString())
+        assertEquals(expected = block.cursor, actual = holder.content.selectionStart)
+        assertEquals(expected = block.cursor, actual = holder.content.selectionEnd)
+    }
+
+    @Test
+    fun `should set header-three cursor on first binding`() {
+
+        // Setup
+
+        val text = MockDataFactory.randomString()
+
+        val block = BlockView.HeaderThree(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            isFocused = true,
+            cursor = MockDataFactory.randomInt(text.length.dec())
+        )
+
+        val views = listOf(block)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.HeaderThree)
+
+        // Testing
+
+        assertEquals(expected = block.text, actual = holder.content.text.toString())
+        assertEquals(expected = block.cursor, actual = holder.content.selectionStart)
+        assertEquals(expected = block.cursor, actual = holder.content.selectionEnd)
+    }
+
+    @Test
+    fun `should set highlight cursor on first binding`() {
+
+        // Setup
+
+        val text = MockDataFactory.randomString()
+
+        val block = BlockView.Highlight(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            isFocused = true,
+            indent = 0,
+            cursor = MockDataFactory.randomInt(text.length.dec()),
+            color = null,
+            backgroundColor = null
+        )
+
+        val views = listOf(block)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Highlight)
+
+        // Testing
+
+        assertEquals(expected = block.text, actual = holder.content.text.toString())
+        assertEquals(expected = block.cursor, actual = holder.content.selectionStart)
+        assertEquals(expected = block.cursor, actual = holder.content.selectionEnd)
+    }
+
+    @Test
+    fun `should set checkbox cursor on first binding`() {
+
+        // Setup
+
+        val text = MockDataFactory.randomString()
+
+        val block = BlockView.Checkbox(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            isFocused = true,
+            indent = 0,
+            cursor = MockDataFactory.randomInt(text.length.dec())
+        )
+
+        val views = listOf(block)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Checkbox)
+
+        // Testing
+
+        assertEquals(expected = block.text, actual = holder.content.text.toString())
+        assertEquals(expected = block.cursor, actual = holder.content.selectionStart)
+        assertEquals(expected = block.cursor, actual = holder.content.selectionEnd)
+    }
+
+    @Test
+    fun `should set bulleted-item block cursor on first binding`() {
+
+        // Setup
+
+        val text = MockDataFactory.randomString()
+
+        val block = BlockView.Bulleted(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            isFocused = true,
+            indent = 0,
+            cursor = MockDataFactory.randomInt(text.length.dec())
+        )
+
+        val views = listOf(block)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BULLET)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Bulleted)
+
+        // Testing
+
+        assertEquals(expected = block.text, actual = holder.content.text.toString())
+        assertEquals(expected = block.cursor, actual = holder.content.selectionStart)
+        assertEquals(expected = block.cursor, actual = holder.content.selectionEnd)
+    }
+
+    @Test
+    fun `should set numbered block cursor on first binding`() {
+
+        // Setup
+
+        val text = MockDataFactory.randomString()
+
+        val block = BlockView.Numbered(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            isFocused = true,
+            indent = 0,
+            cursor = MockDataFactory.randomInt(text.length.dec()),
+            number = 1
+        )
+
+        val views = listOf(block)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Numbered)
+
+        // Testing
+
+        assertEquals(expected = block.text, actual = holder.content.text.toString())
+        assertEquals(expected = block.cursor, actual = holder.content.selectionStart)
+        assertEquals(expected = block.cursor, actual = holder.content.selectionEnd)
+    }
+
+    @Test
+    fun `should set toggle block cursor on first binding`() {
+
+        // Setup
+
+        val text = MockDataFactory.randomString()
+
+        val block = BlockView.Toggle(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid(),
+            isFocused = true,
+            indent = 0,
+            cursor = MockDataFactory.randomInt(text.length.dec())
+        )
+
+        val views = listOf(block)
+
+        val adapter = buildAdapter(views)
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TOGGLE)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is BlockViewHolder.Toggle)
+
+        // Testing
+
+        assertEquals(expected = block.text, actual = holder.content.text.toString())
+        assertEquals(expected = block.cursor, actual = holder.content.selectionStart)
+        assertEquals(expected = block.cursor, actual = holder.content.selectionEnd)
+    }
+
+    @Test
     fun `should update paragraph cursor`() {
 
         // Setup

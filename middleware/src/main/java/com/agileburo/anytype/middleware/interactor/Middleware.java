@@ -810,6 +810,7 @@ public class Middleware {
 
         return new Response.Clipboard.Paste(
                 response.getCaretPosition(),
+                response.getIsSameBlockCaret(),
                 response.getBlockIdsList(),
                 mapper.toPayload(response.getEvent())
         );

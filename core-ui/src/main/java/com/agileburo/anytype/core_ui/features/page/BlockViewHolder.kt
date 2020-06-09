@@ -133,9 +133,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 setText(item)
                 setTextColor(item)
 
-                if (item.isFocused) setCursor(item)
-
                 setFocus(item)
+                if (item.isFocused) setCursor(item)
 
                 setupTextWatcher(onTextChanged, item)
 
@@ -309,11 +308,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             } else {
                 enableEditMode()
                 select(block)
-                setFocus(block)
-                if (block.isFocused) setCursor(block)
                 setLinksClickable(block)
                 setBlockText(block)
                 setBlockTextColor(block.color)
+                setFocus(block)
+                if (block.isFocused) setCursor(block)
                 with(header) {
                     clearTextWatchers()
                     setOnFocusChangeListener { _, hasFocus ->
@@ -395,11 +394,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             } else {
                 enableEditMode()
                 select(block)
-                if (block.isFocused) setCursor(block)
-                setFocus(block)
                 setLinksClickable(block)
                 setBlockText(block)
                 setBlockTextColor(block.color)
+                setFocus(block)
+                if (block.isFocused) setCursor(block)
                 with(header) {
                     clearTextWatchers()
                     setOnFocusChangeListener { _, hasFocus ->
@@ -481,11 +480,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             } else {
                 enableEditMode()
                 select(block)
-                if (block.isFocused) setCursor(block)
-                setFocus(block)
                 setLinksClickable(block)
                 setBlockText(block)
                 setBlockTextColor(block.color)
+                setFocus(block)
+                if (block.isFocused) setCursor(block)
                 with(header) {
                     clearTextWatchers()
                     setOnFocusChangeListener { _, hasFocus ->

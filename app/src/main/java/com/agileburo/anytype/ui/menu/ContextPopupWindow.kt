@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.HorizontalScrollView
 import android.widget.PopupWindow
+import android.widget.TextView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Span
 import com.agileburo.anytype.core_utils.ext.invisible
@@ -233,8 +234,51 @@ class ContextPopupWindow @JvmOverloads constructor(
         }
     }
 
-    fun show(anchor: View, x: Int, y: Int) {
-        showAtLocation(anchor, gravity, x, y)
+    fun updateMarkupButtons(textRange: IntRange, editable: Editable) {
+        contentView.btnBold.apply {
+            imageTintList = if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Bold::class.java
+                )
+            ) tintColor else null
+        }
+        contentView.btnItalic.apply {
+            imageTintList = if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Italic::class.java
+                )
+            ) tintColor else null
+        }
+        contentView.btnStroke.apply {
+            imageTintList = if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Strikethrough::class.java
+                )
+            ) tintColor else null
+        }
+        contentView.btnCode.apply {
+            imageTintList = if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Keyboard::class.java
+                )
+            ) tintColor else null
+        }
+        contentView.btnLink.apply {
+            imageTintList = if (isSpanInRange(
+                    textRange = textRange,
+                    text = editable,
+                    type = Span.Url::class.java
+                )
+            ) tintColor else null
+        }
+    }
+
+    fun show(anchorView: TextView, x: Int, y: Int) {
+        showAtLocation(anchorView, gravity, x, y)
     }
 }
 

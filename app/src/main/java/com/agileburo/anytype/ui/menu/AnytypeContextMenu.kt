@@ -12,19 +12,16 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.common.Span
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_utils.ext.PopupExtensions.calculateFloatToolbarPosition
 import com.agileburo.anytype.core_utils.ext.PopupExtensions.lerp
-import com.agileburo.anytype.ext.isSpanInRange
-import kotlinx.android.synthetic.main.popup_context_menu.view.*
 import java.lang.ref.WeakReference
 import kotlin.math.roundToInt
 
 class AnytypeContextMenu constructor(
     context: Context,
     anchorView: TextView,
-    private val type: AnytypeContextMenuType,
+    type: AnytypeContextMenuType,
     private val onMarkupActionClicked: (Markup.Type) -> Unit,
     private val dismissOnTouchOutside: Boolean = false
 ) : PopupWindow.OnDismissListener {
@@ -129,22 +126,6 @@ class AnytypeContextMenu constructor(
         }
     }
 
-    private fun initMenuItems(view: View) {
-        view.btnBold.apply {
-            anchorViewRef.get()?.let {
-                if (isSpanInRange(
-                        textRange = IntRange(it.selectionStart, it.selectionEnd),
-                        text = it.text as Editable,
-                        type = Span.Bold::class.java
-                    )
-                ) {
-                    this.imageTintList =
-                        ColorStateList.valueOf(view.context.color(R.color.context_menu_selected_item))
-                }
-            }
-        }
-    }
-
     override fun onDismiss() {
         isDismissed = true
     }
@@ -169,6 +150,13 @@ class AnytypeContextMenu constructor(
                     anim.addUpdateListener { animation ->
                         val v = animation.animatedValue as Float
                         val y = lerp(currY, rect.y, v).roundToInt()
+                        popupWindow.updateMarkupButtons(
+                            textRange = IntRange(
+                                anchorView.selectionStart,
+                                anchorView.selectionEnd
+                            ),
+                            editable = anchorView.text as Editable
+                        )
                         popupWindow.update(
                             DEFAULT_X, y,
                             WIDTH_IGNORE,
@@ -184,6 +172,13 @@ class AnytypeContextMenu constructor(
                     anchorView = anchorView,
                     popupWindowHeight = popupHeight,
                     tooltipOffsetY = POPUP_OFFSET
+                )
+                popupWindow?.updateMarkupButtons(
+                    textRange = IntRange(
+                        anchorView.selectionStart,
+                        anchorView.selectionEnd
+                    ),
+                    editable = anchorView.text as Editable
                 )
                 popupWindow?.show(
                     anchorView,

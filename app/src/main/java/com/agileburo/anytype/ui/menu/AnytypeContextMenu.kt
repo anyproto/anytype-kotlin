@@ -13,6 +13,7 @@ import android.widget.TextView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.extensions.color
+import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuType
 import com.agileburo.anytype.core_utils.ext.PopupExtensions.calculateFloatToolbarPosition
 import com.agileburo.anytype.core_utils.ext.PopupExtensions.lerp
 import java.lang.ref.WeakReference
@@ -29,8 +30,8 @@ class AnytypeContextMenu constructor(
     companion object {
         const val DEFAULT_X = 20
         const val POPUP_OFFSET = 20
-        const val WIDTH_IGNORE = -1
-        const val HEIGHT_IGNORE = -1
+        const val WIDTH_CHANGE_IGNORE = -1
+        const val HEIGHT_CHANGE_IGNORE = -1
         const val ANIM_DURATION = 150L
     }
 
@@ -102,8 +103,8 @@ class AnytypeContextMenu constructor(
                 )
                 popupWindow.update(
                     DEFAULT_X, rect.y.toInt(),
-                    WIDTH_IGNORE,
-                    HEIGHT_IGNORE
+                    WIDTH_CHANGE_IGNORE,
+                    HEIGHT_CHANGE_IGNORE
                 )
             }
         }
@@ -160,8 +161,8 @@ class AnytypeContextMenu constructor(
                         )
                         popupWindow.update(
                             DEFAULT_X, y,
-                            WIDTH_IGNORE,
-                            HEIGHT_IGNORE
+                            WIDTH_CHANGE_IGNORE,
+                            HEIGHT_CHANGE_IGNORE
                         )
                     }
                     anim.duration =
@@ -196,5 +197,3 @@ class AnytypeContextMenu constructor(
         cleanup()
     }
 }
-
-enum class AnytypeContextMenuType { DEFAULT, HEADER, HIGHLIGHT }

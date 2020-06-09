@@ -15,6 +15,7 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Span
+import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuType
 import com.agileburo.anytype.core_utils.ext.invisible
 import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.ext.isSpanInRange
@@ -28,10 +29,10 @@ class ContextPopupWindow @JvmOverloads constructor(
     defStyleRes: Int = 0,
     onDismissListener: OnDismissListener,
     onTouchInterceptor: View.OnTouchListener,
-    private val onContextMenuButtonClicked: (ContextMenuButtonClick) -> Unit,
-    private val gravity: Int = Gravity.NO_GRAVITY,
     editable: Editable,
     textRange: IntRange,
+    private val onContextMenuButtonClicked: (ContextMenuButtonClick) -> Unit,
+    private val gravity: Int = Gravity.NO_GRAVITY,
     private val tintColor: ColorStateList,
     private val textDefaultColor: Int
 ) : PopupWindow(context, attrs, defStyle, defStyleRes) {

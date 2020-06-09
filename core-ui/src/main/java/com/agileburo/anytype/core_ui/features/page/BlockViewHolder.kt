@@ -32,6 +32,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.T
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TOGGLE_EMPTY_STATE_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
 import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuEvent
+import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuType
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
@@ -150,7 +151,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                      */
                     //Todo Remove before major release
                     if (it.first != it.last) {
-                        anytypeContextMenuListener?.invoke(AnytypeContextMenuEvent.Selected(content))
+                        anytypeContextMenuListener?.invoke(
+                            AnytypeContextMenuEvent.Selected(
+                                view = content,
+                                type = AnytypeContextMenuType.DEFAULT
+                            )
+                        )
                     }
                 }
             }

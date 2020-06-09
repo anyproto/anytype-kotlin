@@ -84,4 +84,6 @@
         <item>#E3F7D0</item>
     </array>
 
+    <color name="context_menu_selected_item">#ACA996</color>
+
 </resources>

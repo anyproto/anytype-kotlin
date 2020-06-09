@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="44dp">
+    android:layout_height="44dp"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
@@ -12,7 +13,7 @@
         app:cardCornerRadius="10dp">
 
         <HorizontalScrollView
-            android:id="@+id/scroll_view"
+            android:id="@+id/scrollContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -22,7 +23,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/menu_copy"
+                    android:id="@+id/btnCopy"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/graphik_font"
@@ -31,16 +32,21 @@
                     android:paddingEnd="@dimen/dp_16"
                     android:paddingBottom="@dimen/dp_12"
                     android:text="@string/menu_item_copy"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
                 <View
+                    android:id="@+id/divCopy"
                     android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_height="match_parent"
                     android:background="#6C6A5F" />
 
                 <TextView
-                    android:id="@+id/menu_cut"
+                    android:id="@+id/btnCut"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/graphik_font"
@@ -49,16 +55,21 @@
                     android:paddingEnd="@dimen/dp_16"
                     android:paddingBottom="@dimen/dp_12"
                     android:text="@string/menu_item_cut"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
                 <View
+                    android:id="@+id/divCut"
                     android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_height="match_parent"
                     android:background="#6C6A5F" />
 
                 <TextView
-                    android:id="@+id/menu_paste"
+                    android:id="@+id/btnPaste"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/graphik_font"
@@ -67,66 +78,96 @@
                     android:paddingEnd="@dimen/dp_16"
                     android:paddingBottom="@dimen/dp_12"
                     android:text="@string/menu_item_paste"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
                 <View
+                    android:id="@+id/divPaste"
                     android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_height="match_parent"
                     android:background="#6C6A5F" />
 
                 <ImageView
-                    android:id="@+id/menu_bold"
+                    android:id="@+id/btnBold"
                     style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:src="@drawable/ic_menu_bold" />
 
                 <View
+                    android:id="@+id/divBold"
                     android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_height="match_parent"
                     android:background="#6C6A5F" />
 
                 <ImageView
-                    android:id="@+id/menu_italic"
+                    android:id="@+id/btnItalic"
                     style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:src="@drawable/ic_menu_italic" />
 
                 <View
+                    android:id="@+id/divItalic"
                     android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_height="match_parent"
                     android:background="#6C6A5F" />
 
                 <ImageView
-                    android:id="@+id/menu_stroke"
+                    android:id="@+id/btnStroke"
                     style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:src="@drawable/ic_menu_strike_through" />
 
                 <View
+                    android:id="@+id/divStroke"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:background="#6C6A5F" />
 
                 <ImageView
-                    android:id="@+id/menu_code"
+                    android:id="@+id/btnCode"
                     style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:src="@drawable/ic_menu_code" />
 
                 <View
+                    android:id="@+id/divCode"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:background="#6C6A5F" />
 
                 <ImageView
-                    android:id="@+id/menu_link"
+                    android:id="@+id/btnLink"
                     style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:src="@drawable/ic_menu_link" />
 
                 <View
+                    android:id="@+id/divLink"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:background="#6C6A5F" />
 
                 <TextView
-                    android:id="@+id/menu_color"
+                    android:id="@+id/btnColor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/graphik_font"
@@ -134,17 +175,22 @@
                     android:paddingTop="@dimen/dp_12"
                     android:paddingEnd="@dimen/dp_16"
                     android:paddingBottom="@dimen/dp_12"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:text="@string/menu_item_color"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
                 <View
+                    android:id="@+id/divColor"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:background="#6C6A5F" />
 
                 <TextView
-                    android:id="@+id/menu_background"
+                    android:id="@+id/btnBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/graphik_font"
@@ -153,6 +199,8 @@
                     android:paddingEnd="@dimen/dp_16"
                     android:paddingBottom="@dimen/dp_12"
                     android:text="@string/menu_item_background"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
@@ -161,7 +209,7 @@
         </HorizontalScrollView>
 
         <FrameLayout
-            android:id="@+id/container_arrow_right"
+            android:id="@+id/arrowRightContainer"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end">

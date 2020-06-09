@@ -28,6 +28,8 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
+import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuEvent
+import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuType
 import com.agileburo.anytype.core_ui.menu.DocumentPopUpMenu
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.reactive.clicks
@@ -36,8 +38,6 @@ import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_ui.tools.FirstItemInvisibilityDetector
 import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
-import com.agileburo.anytype.core_ui.widgets.actionmode.AnytypeContextMenu
-import com.agileburo.anytype.core_ui.widgets.actionmode.AnytypeContextMenuEvent
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.di.common.componentManager
@@ -52,6 +52,7 @@ import com.agileburo.anytype.presentation.page.editor.Command
 import com.agileburo.anytype.presentation.page.editor.ViewState
 import com.agileburo.anytype.presentation.settings.EditorSettings
 import com.agileburo.anytype.ui.base.NavigationFragment
+import com.agileburo.anytype.ui.menu.AnytypeContextMenu
 import com.agileburo.anytype.ui.page.modals.*
 import com.agileburo.anytype.ui.page.modals.actions.BlockActionToolbarFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -65,7 +66,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import permissions.dispatcher.*
 import timber.log.Timber
-import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 
@@ -713,22 +713,23 @@ open class PageFragment :
         anytypeContextMenuListener = {
             when (it) {
                 AnytypeContextMenuEvent.Detached -> removeContextMenu()
-                is AnytypeContextMenuEvent.Selected -> onAnytypeContextMenuEvent(it.view)
+                is AnytypeContextMenuEvent.Selected -> onAnytypeContextMenuEvent(it.view, it.type)
             }
         }
     }
 
     private fun onAnytypeContextMenuEvent(
-        originatingView: TextView
+        originatingView: TextView,
+        type: AnytypeContextMenuType
     ) {
         if (anytypeContextMenu == null) {
             anytypeContextMenu =
                 AnytypeContextMenu(
-                    contextRef = WeakReference(requireContext()),
-                    anchorViewRef = WeakReference(originatingView),
+                    type = type,
+                    context = requireContext(),
+                    anchorView = originatingView,
                     onMarkupActionClicked = {
                         vm.onMarkupActionClicked(it)
-                        removeContextMenu()
                     }
                 )
         }

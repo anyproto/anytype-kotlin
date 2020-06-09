@@ -32,11 +32,16 @@
                     android:paddingEnd="@dimen/dp_16"
                     android:paddingBottom="@dimen/dp_12"
                     android:text="@string/menu_item_copy"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
                 <View
+                    android:id="@+id/divCopy"
                     android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_height="match_parent"
                     android:background="#6C6A5F" />
 
@@ -50,11 +55,16 @@
                     android:paddingEnd="@dimen/dp_16"
                     android:paddingBottom="@dimen/dp_12"
                     android:text="@string/menu_item_cut"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
                 <View
+                    android:id="@+id/divCut"
                     android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_height="match_parent"
                     android:background="#6C6A5F" />
 
@@ -68,11 +78,16 @@
                     android:paddingEnd="@dimen/dp_16"
                     android:paddingBottom="@dimen/dp_12"
                     android:text="@string/menu_item_paste"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
                 <View
+                    android:id="@+id/divPaste"
                     android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_height="match_parent"
                     android:background="#6C6A5F" />
 
@@ -84,7 +99,10 @@
                     android:src="@drawable/ic_menu_bold" />
 
                 <View
+                    android:id="@+id/divBold"
                     android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_height="match_parent"
                     android:background="#6C6A5F" />
 
@@ -96,7 +114,10 @@
                     android:src="@drawable/ic_menu_italic" />
 
                 <View
+                    android:id="@+id/divItalic"
                     android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_height="match_parent"
                     android:background="#6C6A5F" />
 
@@ -108,8 +129,11 @@
                     android:src="@drawable/ic_menu_strike_through" />
 
                 <View
+                    android:id="@+id/divStroke"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:background="#6C6A5F" />
 
                 <ImageView
@@ -120,8 +144,11 @@
                     android:src="@drawable/ic_menu_code" />
 
                 <View
+                    android:id="@+id/divCode"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:background="#6C6A5F" />
 
                 <ImageView
@@ -132,8 +159,11 @@
                     android:src="@drawable/ic_menu_link" />
 
                 <View
+                    android:id="@+id/divLink"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:background="#6C6A5F" />
 
                 <TextView
@@ -152,8 +182,11 @@
                     android:textSize="15sp" />
 
                 <View
+                    android:id="@+id/divColor"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:background="#6C6A5F" />
 
                 <TextView

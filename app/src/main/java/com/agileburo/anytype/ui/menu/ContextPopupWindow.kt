@@ -29,9 +29,40 @@ class ContextPopupWindow @JvmOverloads constructor(
 ) : PopupWindow(context, attrs, defStyle, defStyleRes) {
 
     companion object {
-        val HEADER = listOf(R.id.btnItalic, R.id.btnColor)
-        val HIGHTLIGHT = listOf(R.id.btnBold, R.id.btnColor)
-        val TEXT = listOf(R.id.btnBold, R.id.btnItalic, R.id.btnLink)
+        val HEADER = listOf(
+            R.id.btnCopy,
+            R.id.btnCut,
+            R.id.btnPaste,
+            R.id.btnItalic,
+            R.id.btnLink,
+            R.id.btnCode,
+            R.id.btnColor,
+            R.id.btnStroke,
+            R.id.btnBackground
+        )
+        val HIGHTLIGHT = listOf(
+            R.id.btnCopy,
+            R.id.btnCut,
+            R.id.btnPaste,
+            R.id.btnBold,
+            R.id.btnLink,
+            R.id.btnCode,
+            R.id.btnColor,
+            R.id.btnStroke,
+            R.id.btnBackground
+        )
+        val TEXT = listOf(
+            R.id.btnCopy,
+            R.id.btnCut,
+            R.id.btnPaste,
+            R.id.btnBold,
+            R.id.btnItalic,
+            R.id.btnLink,
+            R.id.btnCode,
+            R.id.btnColor,
+            R.id.btnStroke,
+            R.id.btnBackground
+        )
     }
 
     init {
@@ -56,6 +87,7 @@ class ContextPopupWindow @JvmOverloads constructor(
         view.btnCopy.apply {
             if (this.id in ids) {
                 visible()
+                view.divCopy.visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Copy)
@@ -64,6 +96,7 @@ class ContextPopupWindow @JvmOverloads constructor(
         view.btnCut.apply {
             if (this.id in ids) {
                 visible()
+                view.divCut.visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Cut)
@@ -72,6 +105,7 @@ class ContextPopupWindow @JvmOverloads constructor(
         view.btnPaste.apply {
             if (this.id in ids) {
                 visible()
+                view.divPaste.visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Paste)
@@ -80,6 +114,7 @@ class ContextPopupWindow @JvmOverloads constructor(
         view.btnBold.apply {
             if (this.id in ids) {
                 visible()
+                view.divBold.visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Bold)
@@ -88,6 +123,7 @@ class ContextPopupWindow @JvmOverloads constructor(
         view.btnItalic.apply {
             if (this.id in ids) {
                 visible()
+                view.divItalic.visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Italic)
@@ -96,6 +132,7 @@ class ContextPopupWindow @JvmOverloads constructor(
         view.btnStroke.apply {
             if (this.id in ids) {
                 visible()
+                view.divStroke.visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Stroke)
@@ -104,6 +141,7 @@ class ContextPopupWindow @JvmOverloads constructor(
         view.btnCode.apply {
             if (this.id in ids) {
                 visible()
+                view.divCode.visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Code)
@@ -112,6 +150,7 @@ class ContextPopupWindow @JvmOverloads constructor(
         view.btnLink.apply {
             if (this.id in ids) {
                 visible()
+                view.divLink.visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Link)
@@ -120,9 +159,10 @@ class ContextPopupWindow @JvmOverloads constructor(
         view.btnColor.apply {
             if (this.id in ids) {
                 visible()
+                view.divColor.visible()
             }
             setOnClickListener {
-                onContextMenuButtonClicked(ContextMenuButtonClick.TextColor)
+                onContextMenuButtonClicked(ContextMenuButtonClick.Color)
             }
         }
         view.btnBackground.apply {
@@ -130,7 +170,7 @@ class ContextPopupWindow @JvmOverloads constructor(
                 visible()
             }
             setOnClickListener {
-                onContextMenuButtonClicked(ContextMenuButtonClick.BackgroundColor)
+                onContextMenuButtonClicked(ContextMenuButtonClick.Background)
             }
         }
 
@@ -161,7 +201,7 @@ sealed class ContextMenuButtonClick {
     object Italic : ContextMenuButtonClick()
     object Stroke : ContextMenuButtonClick()
     object Code : ContextMenuButtonClick()
-    object TextColor : ContextMenuButtonClick()
-    object BackgroundColor : ContextMenuButtonClick()
+    object Color : ContextMenuButtonClick()
+    object Background : ContextMenuButtonClick()
     object Link : ContextMenuButtonClick()
 }

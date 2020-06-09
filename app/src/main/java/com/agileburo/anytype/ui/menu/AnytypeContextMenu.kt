@@ -123,8 +123,8 @@ class AnytypeContextMenu constructor(
             ContextMenuButtonClick.Italic -> onMarkupActionClicked(Markup.Type.ITALIC)
             ContextMenuButtonClick.Stroke -> onMarkupActionClicked(Markup.Type.STRIKETHROUGH)
             ContextMenuButtonClick.Code -> onMarkupActionClicked(Markup.Type.KEYBOARD)
-            ContextMenuButtonClick.TextColor -> onMarkupActionClicked(Markup.Type.TEXT_COLOR)
-            ContextMenuButtonClick.BackgroundColor -> onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR)
+            ContextMenuButtonClick.Color -> onMarkupActionClicked(Markup.Type.TEXT_COLOR)
+            ContextMenuButtonClick.Background -> onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR)
             ContextMenuButtonClick.Link -> onMarkupActionClicked(Markup.Type.LINK)
         }
     }

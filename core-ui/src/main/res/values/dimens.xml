@@ -92,7 +92,7 @@
     <dimen name="indent">28dp</dimen>
 
     <dimen name="default_block_type_width">24dp</dimen>
-    <dimen name="block_style_toolbar_circle_size">48dp</dimen>
+    <dimen name="block_style_toolbar_circle_size">56dp</dimen>
     <dimen name="default_document_content_padding_start">12dp</dimen>
     <dimen name="default_document_content_padding_end">12dp</dimen>
     <dimen name="default_document_item_margin_top">1dp</dimen>
@@ -100,5 +100,7 @@
     <dimen name="bookmark_default_margin_start">@dimen/dp_8</dimen>
 
     <dimen name="popup_context_menu_height">44dp</dimen>
+    <dimen name="default_style_color_circle_inner_radius">24dp</dimen>
+    <dimen name="default_style_color_outer_stroke_width">2dp</dimen>
 
 </resources>

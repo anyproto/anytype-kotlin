@@ -5,91 +5,70 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <View
+    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorDefault"
-        android:layout_width="@dimen/block_style_toolbar_circle_size"
-        android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_style_white_background_color"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/white"
         tools:ignore="MissingConstraints" />
 
-    <View
+    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorGrey"
-        android:layout_width="@dimen/block_style_toolbar_circle_size"
-        android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_solid_default"
-        android:backgroundTint="#F3F2EC"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="#F3F2EC"
         tools:ignore="MissingConstraints" />
 
-    <View
+    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorYellow"
-        android:layout_width="@dimen/block_style_toolbar_circle_size"
-        android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_solid_default"
-        android:backgroundTint="#FEF9CC"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="#FEF9CC"
         tools:ignore="MissingConstraints" />
 
-    <View
+    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorOrange"
-        android:layout_width="@dimen/block_style_toolbar_circle_size"
-        android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_solid_default"
-        android:backgroundTint="#FEF3C5"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="#FEF3C5"
         tools:ignore="MissingConstraints" />
 
-    <View
+    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorRed"
-        android:layout_width="@dimen/block_style_toolbar_circle_size"
-        android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_solid_default"
-        android:backgroundTint="#FFEBE5"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="#FFEBE5"
         tools:ignore="MissingConstraints" />
 
-    <View
+    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorPink"
-        android:layout_width="@dimen/block_style_toolbar_circle_size"
-        android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_solid_default"
-        android:backgroundTint="#FEE3F5"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="#FEE3F5"
         tools:ignore="MissingConstraints" />
 
-    <View
+    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorPurple"
-        android:layout_width="@dimen/block_style_toolbar_circle_size"
-        android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_solid_default"
-        android:backgroundTint="#F4E3FA"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="#F4E3FA"
         tools:ignore="MissingConstraints" />
 
-    <View
+    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorBlue"
-        android:layout_width="@dimen/block_style_toolbar_circle_size"
-        android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_solid_default"
-        android:backgroundTint="#E4E7FC"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="#E4E7FC"
         tools:ignore="MissingConstraints" />
 
-    <View
+    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorIce"
-        android:layout_width="@dimen/block_style_toolbar_circle_size"
-        android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_solid_default"
-        android:backgroundTint="#D6EFFD"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="#D6EFFD"
         tools:ignore="MissingConstraints" />
 
-    <View
+    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorTeal"
-        android:layout_width="@dimen/block_style_toolbar_circle_size"
-        android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_solid_default"
-        android:backgroundTint="#D6F5F3"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="#D6F5F3"
         tools:ignore="MissingConstraints" />
 
-    <View
+    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorGreen"
-        android:layout_width="@dimen/block_style_toolbar_circle_size"
-        android:layout_height="@dimen/block_style_toolbar_circle_size"
-        android:background="@drawable/circle_solid_default"
-        android:backgroundTint="#E3F7D0"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="#E3F7D0"
         tools:ignore="MissingConstraints" />
 
     <androidx.constraintlayout.helper.widget.Flow
@@ -99,11 +78,11 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="8dp"
         app:constraint_referenced_ids="backgroundColorDefault,backgroundColorGrey,backgroundColorYellow,backgroundColorOrange,backgroundColorRed,backgroundColorPink,backgroundColorPurple,backgroundColorBlue,backgroundColorIce,backgroundColorTeal,backgroundColorGreen"
-        app:flow_horizontalGap="4dp"
+        app:flow_horizontalGap="0dp"
         app:flow_horizontalSeparator="10dp"
         app:flow_horizontalStyle="packed"
         app:flow_maxElementsWrap="6"
-        app:flow_verticalGap="4dp"
+        app:flow_verticalGap="0dp"
         app:flow_wrapMode="chain"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -6,7 +6,13 @@
     <declare-styleable name="ToolbarSectionWidget">
         <attr name="active_background_color" format="color" />
     </declare-styleable>
-
+    <declare-styleable name="ColorCircleWidget">
+        <attr name="innerColor" format="color"/>
+        <attr name="innerStrokeColor" format="color"/>
+        <attr name="innerRadius" format="dimension" />
+        <attr name="outerStrokeWidth" format="dimension" />
+        <attr name="outerStrokeColor" format="color"/>
+    </declare-styleable>
     <declare-styleable name="HighlightDrawer">
         <attr name="roundedTextHorizontalPadding" format="dimension" />
         <attr name="roundedTextVerticalPadding" format="dimension" />

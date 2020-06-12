@@ -13,7 +13,7 @@ class DefaultDebugSettingsCache(private val prefs: SharedPreferences) : DebugSet
         prefs.edit().putBoolean(ACTION_MODE, false).apply()
     }
 
-    override suspend fun getAnytypeContextMenu(): Boolean = prefs.getBoolean(ACTION_MODE, false)
+    override suspend fun getAnytypeContextMenu(): Boolean = prefs.getBoolean(ACTION_MODE, true)
 
     companion object {
         val ACTION_MODE = "prefs.action_mode"

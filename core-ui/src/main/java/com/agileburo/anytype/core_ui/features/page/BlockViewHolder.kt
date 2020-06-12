@@ -273,7 +273,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             get() = header
 
         init {
-            setup(onMarkupActionClicked, ContextMenuType.HEADER)
+            setup(onMarkupActionClicked, ContextMenuType.HEADER, actionModeListener)
         }
 
         fun bind(
@@ -306,7 +306,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                             onTextChanged(block.id, text)
                         }
                     )
-                    selectionDetector = { onSelectionChanged(block.id, it) }
+                    selectionDetector = {
+                        onSelectionChanged(block.id, it)
+                        onSelectionChangedEvent(it, ContextMenuType.HEADER)
+                    }
                 }
             }
             header.setOnLongClickListener(
@@ -360,7 +363,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            setup(onMarkupActionClicked, ContextMenuType.HEADER)
+            setup(onMarkupActionClicked, ContextMenuType.HEADER, actionModeListener)
         }
 
         fun bind(
@@ -393,7 +396,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                             onTextChanged(block.id, text)
                         }
                     )
-                    selectionDetector = { onSelectionChanged(block.id, it) }
+                    selectionDetector = {
+                        onSelectionChanged(block.id, it)
+                        onSelectionChangedEvent(it, ContextMenuType.HEADER)
+                    }
                 }
             }
             header.setOnLongClickListener(
@@ -447,7 +453,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            setup(onMarkupActionClicked, ContextMenuType.HEADER)
+            setup(onMarkupActionClicked, ContextMenuType.HEADER, actionModeListener)
         }
 
         fun bind(
@@ -480,7 +486,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                             onTextChanged(block.id, text)
                         }
                     )
-                    selectionDetector = { onSelectionChanged(block.id, it) }
+                    selectionDetector = {
+                        onSelectionChanged(block.id, it)
+                        onSelectionChangedEvent(it, ContextMenuType.HEADER)
+                    }
                 }
             }
             header.setOnLongClickListener(
@@ -522,7 +531,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Code(view: View, override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?) :
+    class Code(
+        view: View,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
+    ) :
         BlockViewHolder(view), TextHolder {
 
         override val root: View
@@ -587,7 +599,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            setup(onMarkupActionClicked, ContextMenuType.TEXT)
+            setup(onMarkupActionClicked, ContextMenuType.TEXT, actionModeListener)
         }
 
         fun bind(
@@ -672,7 +684,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     }
                 )
 
-                content.selectionDetector = { onSelectionChanged(item.id, it) }
+                content.selectionDetector = {
+                    onSelectionChanged(item.id, it)
+                    onSelectionChangedEvent(it, ContextMenuType.TEXT)
+                }
             }
         }
 
@@ -726,7 +741,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            setup(onMarkupActionClicked, ContextMenuType.TEXT)
+            setup(onMarkupActionClicked, ContextMenuType.TEXT, actionModeListener)
         }
 
         fun bind(
@@ -798,7 +813,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onFocusChanged(item.id, hasFocus)
                 }
 
-                content.selectionDetector = { onSelectionChanged(item.id, it) }
+                content.selectionDetector = {
+                    onSelectionChanged(item.id, it)
+                    onSelectionChangedEvent(it, ContextMenuType.TEXT)
+                }
             }
         }
 
@@ -837,7 +855,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            setup(onMarkupActionClicked, ContextMenuType.TEXT)
+            setup(onMarkupActionClicked, ContextMenuType.TEXT, actionModeListener)
         }
 
         fun bind(
@@ -913,7 +931,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onFocusChanged(item.id, hasFocus)
                 }
 
-                content.selectionDetector = { onSelectionChanged(item.id, it) }
+                content.selectionDetector = {
+                    onSelectionChanged(item.id, it)
+                    onSelectionChangedEvent(it, ContextMenuType.TEXT)
+                }
             }
         }
 
@@ -962,7 +983,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override val root: View = itemView
 
         init {
-            setup(onMarkupActionClicked, ContextMenuType.TEXT)
+            setup(onMarkupActionClicked, ContextMenuType.TEXT, actionModeListener)
         }
 
         fun bind(
@@ -1031,7 +1052,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     item.isFocused = focused
                     onFocusChanged(item.id, focused)
                 }
-                content.selectionDetector = { onSelectionChanged(item.id, it) }
+                content.selectionDetector = {
+                    onSelectionChanged(item.id, it)
+                    onSelectionChangedEvent(it, ContextMenuType.TEXT)
+                }
 
                 toggle.apply {
                     rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
@@ -1884,7 +1908,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
-            setup(onMarkupActionClicked, ContextMenuType.HIGHLIGHT)
+            setup(onMarkupActionClicked, ContextMenuType.HIGHLIGHT, actionModeListener)
         }
 
         fun bind(
@@ -1921,7 +1945,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                             click = onLongClickListener
                         )
                     )
-                    selectionDetector = { onSelectionChanged(item.id, it) }
+                    selectionDetector = {
+                        onSelectionChanged(item.id, it)
+                        onSelectionChangedEvent(it, ContextMenuType.HIGHLIGHT)
+                    }
                 }
             }
         }

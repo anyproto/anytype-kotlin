@@ -562,6 +562,8 @@ class PageViewModel(
         text: String,
         marks: List<Content.Text.Mark>
     ) {
+        if (target == context) return
+
         var style: Content.Text.Style = Content.Text.Style.P
 
         blocks = blocks.map { block ->

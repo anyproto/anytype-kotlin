@@ -26,6 +26,7 @@ import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verifyBlocking
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import kotlinx.android.synthetic.main.fragment_page.*
 import org.junit.Before
 import org.junit.Rule
@@ -46,6 +47,86 @@ class SplitBlockTesting : EditorTestSetup() {
     @Before
     override fun setup() {
         super.setup()
+    }
+
+    @Test
+    fun shouldNotSplitTitle() {
+
+        // SETUP
+
+        val args = bundleOf(PageFragment.ID_KEY to root)
+
+        val title = "Indivisible title"
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = emptyList()
+        )
+
+        val document = listOf(page)
+
+        stubInterceptEvents()
+        stubOpenDocument(
+            document = document,
+            details = Block.Details(
+                mapOf(
+                    root to Block.Fields(
+                        mapOf("name" to title)
+                    )
+                )
+            )
+        )
+
+        val scenario = launchFragment(args)
+
+        // TESTING
+
+        val target = onView(
+            withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.title)
+        )
+
+        // Set cursor programmatically
+
+        scenario.onFragment { fragment ->
+            fragment.recycler.findViewById<TextInputWidget>(R.id.title).setSelection(3)
+        }
+
+        // Press ENTER
+
+        target.perform(ViewActions.pressImeActionButton())
+
+        // Check results
+
+        verifyZeroInteractions(updateText)
+        verifyZeroInteractions(repo)
+
+        target.apply {
+            check(ViewAssertions.matches(ViewMatchers.withText(title)))
+            check(ViewAssertions.matches(ViewMatchers.hasFocus()))
+        }
+
+        // Check cursor position
+
+        scenario.onFragment { fragment ->
+            val item = fragment.recycler.getChildAt(0)
+            val view = item.findViewById<TextInputWidget>(R.id.title)
+            assertEquals(
+                expected = 3,
+                actual = view.selectionStart
+            )
+            assertEquals(
+                expected = 3,
+                actual = view.selectionEnd
+            )
+        }
+
+        // Release pending coroutines
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test

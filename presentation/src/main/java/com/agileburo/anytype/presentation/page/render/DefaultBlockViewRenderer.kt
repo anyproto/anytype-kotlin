@@ -178,12 +178,16 @@ class DefaultBlockViewRenderer(
                         else
                             null
                     },
-                    cursor = focus.cursor?.let { cursor ->
-                        when (cursor) {
-                            is Cursor.Start -> 0
-                            is Cursor.End -> details.details[root.id]?.name?.length ?: 0
-                            is Cursor.Range -> cursor.range.first
+                    cursor = if (anchor == focus.id) {
+                        focus.cursor?.let { cursor ->
+                            when (cursor) {
+                                is Cursor.Start -> 0
+                                is Cursor.End -> details.details[root.id]?.name?.length ?: 0
+                                is Cursor.Range -> cursor.range.first
+                            }
                         }
+                    } else {
+                        null
                     }
                 )
             )
@@ -206,7 +210,7 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
-        cursor = setFocus(focus, content)
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null
     )
 
     private fun headerThree(
@@ -225,7 +229,7 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
-        cursor = setFocus(focus, content)
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null
     )
 
     private fun headerTwo(
@@ -244,7 +248,7 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
-        cursor = setFocus(focus, content)
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null
     )
 
     private fun headerOne(
@@ -263,7 +267,7 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
-        cursor = setFocus(focus, content)
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null
     )
 
     private fun checkbox(
@@ -282,7 +286,7 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         isFocused = block.id == focus.id,
         indent = indent,
-        cursor = setFocus(focus, content)
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null
     )
 
     private fun bulleted(
@@ -300,7 +304,7 @@ class DefaultBlockViewRenderer(
         isFocused = block.id == focus.id,
         color = content.color,
         backgroundColor = content.backgroundColor,
-        cursor = setFocus(focus, content)
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null
     )
 
     private fun code(
@@ -330,7 +334,7 @@ class DefaultBlockViewRenderer(
         indent = indent,
         color = content.color,
         backgroundColor = content.backgroundColor,
-        cursor = setFocus(focus, content)
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null
     )
 
     private fun toggle(
@@ -351,7 +355,7 @@ class DefaultBlockViewRenderer(
         isFocused = block.id == focus.id,
         toggled = toggleStateHolder.isToggled(block.id),
         isEmpty = isEmpty,
-        cursor = setFocus(focus, content)
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null
     )
 
     private fun numbered(
@@ -371,7 +375,7 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         marks = content.marks(),
-        cursor = setFocus(focus, content)
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null
     )
 
     private fun bookmark(
@@ -471,7 +475,7 @@ class DefaultBlockViewRenderer(
         indent = indent
     )
 
-    private fun setFocus(
+    private fun setCursor(
         focus: Focus,
         content: Content.Text
     ) : Int? = focus.cursor?.let { cursor ->

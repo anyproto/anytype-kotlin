@@ -6,6 +6,7 @@ import com.agileburo.anytype.domain.editor.Editor
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import timber.log.Timber
 
 /**
  * Reactive store
@@ -41,7 +42,12 @@ interface Store<T> {
         override fun cancel() = channel.cancel()
     }
 
-    class Focus : Conflated<Editor.Focus>(Editor.Focus.empty())
+    class Focus : Conflated<Editor.Focus>(Editor.Focus.empty()) {
+        override suspend fun update(t: Editor.Focus) {
+            Timber.d("Update focus in store: $t")
+            super.update(t)
+        }
+    }
     class Context : Conflated<String>("")
 
     class Details : Conflated<Block.Details>(Block.Details()) {

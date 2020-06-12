@@ -100,6 +100,8 @@
     <dimen name="bookmark_default_margin_start">@dimen/dp_8</dimen>
 
     <dimen name="popup_context_menu_height">44dp</dimen>
+    <dimen name="popup_context_menu_margin">8dp</dimen>
+    <dimen name="popup_context_menu_bottom_allowance">40dp</dimen>
     <dimen name="default_style_color_circle_inner_radius">24dp</dimen>
     <dimen name="default_style_color_outer_stroke_width">2dp</dimen>
 

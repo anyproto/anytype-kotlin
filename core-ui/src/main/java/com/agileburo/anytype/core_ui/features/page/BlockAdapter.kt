@@ -90,7 +90,8 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onMarkupActionClicked = onMarkupActionClicked,
+                    actionModeListener = anytypeContextMenuListener
                 )
             }
             HOLDER_TITLE -> {
@@ -99,7 +100,8 @@ class BlockAdapter(
                         R.layout.item_block_title,
                         parent,
                         false
-                    )
+                    ),
+                    actionModeListener = anytypeContextMenuListener
                 )
             }
             HOLDER_HEADER_ONE -> {
@@ -109,7 +111,8 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onMarkupActionClicked = onMarkupActionClicked,
+                    actionModeListener = anytypeContextMenuListener
                 )
             }
             HOLDER_HEADER_TWO -> {
@@ -119,7 +122,8 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onMarkupActionClicked = onMarkupActionClicked,
+                    actionModeListener = anytypeContextMenuListener
                 )
             }
             HOLDER_HEADER_THREE -> {
@@ -129,7 +133,8 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onMarkupActionClicked = onMarkupActionClicked,
+                    actionModeListener = anytypeContextMenuListener
                 )
             }
             HOLDER_CODE_SNIPPET -> {
@@ -138,7 +143,8 @@ class BlockAdapter(
                         R.layout.item_block_code_snippet,
                         parent,
                         false
-                    )
+                    ),
+                    actionModeListener = anytypeContextMenuListener
                 )
             }
             HOLDER_CHECKBOX -> {
@@ -148,7 +154,8 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onMarkupActionClicked = onMarkupActionClicked,
+                    actionModeListener = anytypeContextMenuListener
                 )
             }
             HOLDER_TASK -> {
@@ -167,7 +174,8 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onMarkupActionClicked = onMarkupActionClicked,
+                    actionModeListener = anytypeContextMenuListener
                 )
             }
             HOLDER_NUMBERED -> {
@@ -177,7 +185,8 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onMarkupActionClicked = onMarkupActionClicked,
+                    actionModeListener = anytypeContextMenuListener
                 )
             }
             HOLDER_TOGGLE -> {
@@ -187,7 +196,8 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onMarkupActionClicked = onMarkupActionClicked,
+                    actionModeListener = anytypeContextMenuListener
                 )
             }
             HOLDER_CONTACT -> {
@@ -359,7 +369,8 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onMarkupActionClicked = onMarkupActionClicked,
+                    actionModeListener = anytypeContextMenuListener
                 )
             }
             HOLDER_FOOTER -> {
@@ -582,8 +593,7 @@ class BlockAdapter(
                     onTextChanged = onParagraphTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
-                    onLongClickListener = onLongClickListener,
-                    anytypeContextMenuListener = anytypeContextMenuListener
+                    onLongClickListener = onLongClickListener
                 )
             }
             is BlockViewHolder.Title -> {

@@ -4,8 +4,10 @@ import android.widget.TextView
 
 sealed class AnytypeContextMenuEvent {
     object Detached : AnytypeContextMenuEvent()
-    data class Selected(val view: TextView, val type: AnytypeContextMenuType) :
+    object MarkupChanged: AnytypeContextMenuEvent()
+    data class Create(val view: TextView, val type: ContextMenuType) :
+        AnytypeContextMenuEvent()
+
+    data class Selected(val view: TextView, val type: ContextMenuType) :
         AnytypeContextMenuEvent()
 }
-
-enum class AnytypeContextMenuType { DEFAULT, HEADER, HIGHLIGHT }

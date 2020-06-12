@@ -32,11 +32,9 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.T
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TOGGLE_EMPTY_STATE_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
 import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuEvent
-import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuType
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
-import com.agileburo.anytype.core_ui.widgets.actionmode.EmptyActionMode
 import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
@@ -85,14 +83,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Paragraph(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit
+        onMarkupActionClicked: (Markup.Type) -> Unit,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         override val root: View = itemView
         override val content: TextInputWidget = itemView.textContent
 
         init {
-            setup(onMarkupActionClicked, ContextMenuType.TEXT)
+            setup(onMarkupActionClicked, ContextMenuType.TEXT, actionModeListener)
         }
 
         fun bind(
@@ -100,12 +99,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            onLongClickListener: (String) -> Unit,
-            anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null
+            onLongClickListener: (String) -> Unit
         ) {
 
             indentize(item)
-            anytypeContextMenuListener?.let { setAnytypeContextMenuListener(it) }
 
             if (item.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
@@ -144,30 +141,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
                 content.selectionDetector = {
                     onSelectionChanged(item.id, it)
-
-                    /**
-                     * [AnytypeContextMenu] logic
-                     */
-                    //Todo Remove before major release
-                    if (it.first != it.last) {
-                        anytypeContextMenuListener?.invoke(
-                            AnytypeContextMenuEvent.Selected(
-                                view = content,
-                                type = AnytypeContextMenuType.DEFAULT
-                            )
-                        )
-                    }
+                    onSelectionChangedEvent(it, ContextMenuType.TEXT)
                 }
             }
-        }
-
-        /**
-         * [AnytypeContextMenu] logic
-         */
-        //Todo Remove before major release
-        private fun setAnytypeContextMenuListener(listener: (AnytypeContextMenuEvent) -> Unit) {
-            content.customSelectionActionModeCallback =
-                EmptyActionMode { listener.invoke(AnytypeContextMenuEvent.Detached) }
         }
 
         private fun setText(item: BlockView.Paragraph) {
@@ -191,7 +167,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Title(view: View) : BlockViewHolder(view), TextHolder {
+    class Title(
+        view: View,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
+    ) : BlockViewHolder(view), TextHolder {
 
         private val icon = itemView.logo
 
@@ -281,7 +260,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class HeaderOne(view: View, onMarkupActionClicked: (Markup.Type) -> Unit) :
+    class HeaderOne(
+        view: View,
+        onMarkupActionClicked: (Markup.Type) -> Unit,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
+    ) :
         BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val header = itemView.headerOne
@@ -367,7 +350,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class HeaderTwo(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit
+        onMarkupActionClicked: (Markup.Type) -> Unit,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val header = itemView.headerTwo
@@ -453,7 +437,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class HeaderThree(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit
+        onMarkupActionClicked: (Markup.Type) -> Unit,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val header = itemView.headerThree
@@ -537,7 +522,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Code(view: View) : BlockViewHolder(view), TextHolder {
+    class Code(view: View, override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?) :
+        BlockViewHolder(view), TextHolder {
 
         override val root: View
             get() = itemView
@@ -589,7 +575,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Checkbox(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit
+        onMarkupActionClicked: (Markup.Type) -> Unit,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         var mode = BlockView.Mode.EDIT
@@ -728,7 +715,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Bulleted(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit
+        onMarkupActionClicked: (Markup.Type) -> Unit,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val indent = itemView.bulletIndent
@@ -839,7 +827,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Numbered(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit
+        onMarkupActionClicked: (Markup.Type) -> Unit,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val container = itemView.numberedBlockContentContainer
@@ -959,7 +948,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Toggle(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit
+        onMarkupActionClicked: (Markup.Type) -> Unit,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private var mode = BlockView.Mode.EDIT
@@ -1881,7 +1871,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Highlight(view: View, onMarkupActionClicked: (Markup.Type) -> Unit) :
+    class Highlight(
+        view: View, onMarkupActionClicked: (Markup.Type) -> Unit,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
+    ) :
         BlockViewHolder(view), TextHolder, IndentableHolder {
 
         override val content: TextInputWidget = itemView.highlightContent

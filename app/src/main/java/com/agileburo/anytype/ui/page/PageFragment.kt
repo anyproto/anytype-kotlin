@@ -29,7 +29,7 @@ import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuEvent
-import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuType
+import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.menu.DocumentPopUpMenu
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.reactive.clicks
@@ -476,6 +476,11 @@ open class PageFragment :
         vm.error.observe(viewLifecycleOwner, Observer { renderError(it) })
     }
 
+    override fun onDestroyView() {
+        removeContextMenu()
+        super.onDestroyView()
+    }
+
     override fun onBlockActionClicked(id: String, action: ActionItemType) {
         vm.onActionBarItemClicked(id, action)
     }
@@ -714,13 +719,15 @@ open class PageFragment :
             when (it) {
                 AnytypeContextMenuEvent.Detached -> removeContextMenu()
                 is AnytypeContextMenuEvent.Selected -> onAnytypeContextMenuEvent(it.view, it.type)
+                is AnytypeContextMenuEvent.Create -> onAnytypeContextMenuEvent(it.view, it.type)
+                AnytypeContextMenuEvent.MarkupChanged -> anytypeContextMenu?.showAtLocation()
             }
         }
     }
 
     private fun onAnytypeContextMenuEvent(
         originatingView: TextView,
-        type: AnytypeContextMenuType
+        type: ContextMenuType
     ) {
         if (anytypeContextMenu == null) {
             anytypeContextMenu =
@@ -728,6 +735,7 @@ open class PageFragment :
                     type = type,
                     context = requireContext(),
                     anchorView = originatingView,
+                    parent = recycler,
                     onMarkupActionClicked = {
                         vm.onMarkupActionClicked(it)
                     }

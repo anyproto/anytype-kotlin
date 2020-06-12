@@ -1,13 +1,13 @@
 package com.agileburo.anytype.core_utils.ext
 
 import android.graphics.Path
-import android.graphics.PointF
 import android.graphics.Rect
 import android.graphics.RectF
 import android.view.View
 import android.widget.TextView
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 object PopupExtensions {
 
@@ -27,38 +27,38 @@ object PopupExtensions {
         return result
     }
 
-    fun calculateFloatToolbarPosition(
+    fun calculateContentBounds(
         anchorView: TextView,
-        popupWindowHeight: Float,
-        tooltipOffsetY: Int = 0
-    ): PointF {
-
-        val location = PointF()
+        bottomAllowance: Int
+    ): Rect {
+        val contentRect = Rect()
         val selRect = calculateSelectedTextBounds(anchorView)
         val anchorRect = calculateRectInWindow(anchorView)
 
-        location.x = 0f
-        location.y = anchorRect.top + selRect.top - popupWindowHeight - tooltipOffsetY
-        return location
+        contentRect.top = anchorRect.top + selRect.top + anchorView.paddingTop
+        contentRect.bottom =
+            anchorRect.top + selRect.bottom + anchorView.paddingTop + bottomAllowance
+
+        return contentRect
     }
 
     /**
      * Calculate the location of the view in the window, or null if not in window.
      */
-    private fun calculateRectInWindow(view: View?): RectF {
-        view?.apply {
+    fun calculateRectInWindow(view: View?): Rect {
+        view?.let {
             val location = IntArray(2)
-            view.getLocationInWindow(location)
-            return RectF(
-                location[0].toFloat(),
-                location[1].toFloat(),
-                (location[0] + view.measuredWidth).toFloat(),
-                (location[1] + view.measuredHeight).toFloat()
+            it.getLocationInWindow(location)
+            return Rect(
+                location[0],
+                location[1],
+                location[0] + it.measuredWidth,
+                location[1] + it.measuredHeight
             )
         }
-        return RectF()
+        return Rect()
     }
 
-    fun lerp(a: Float, b: Float, v: Float): Float = a + (b - a) * v
+    fun lerp(a: Int, b: Int, v: Float): Int = (a + (b - a) * v).roundToInt()
 
 }

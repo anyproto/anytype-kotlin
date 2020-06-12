@@ -1,10 +1,15 @@
 package com.agileburo.anytype.ui.menu
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Point
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
+import android.text.Spanned
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -12,17 +17,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.HorizontalScrollView
 import android.widget.PopupWindow
-import android.widget.TextView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Span
-import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuType
+import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_utils.ext.invisible
 import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.ext.isSpanInRange
 import kotlinx.android.synthetic.main.popup_context_menu.view.*
 
 class ContextPopupWindow @JvmOverloads constructor(
-    type: AnytypeContextMenuType,
+    type: ContextMenuType,
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0,
@@ -74,6 +78,10 @@ class ContextPopupWindow @JvmOverloads constructor(
         )
     }
 
+    private var popupHeight: Int
+    private var popupMargin: Int
+    private var mShowAnimation: AnimatorSet?
+
     init {
         contentView = LayoutInflater.from(context).inflate(R.layout.popup_context_menu, null)
         width = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -85,10 +93,15 @@ class ContextPopupWindow @JvmOverloads constructor(
         isFocusable = false
         setOnDismissListener(onDismissListener)
         setTouchInterceptor(onTouchInterceptor)
+        popupHeight = context.resources
+            .getDimensionPixelSize(R.dimen.popup_context_menu_height)
+        popupMargin = context.resources
+            .getDimensionPixelSize(R.dimen.popup_context_menu_margin)
+        mShowAnimation = createEnterAnimation(contentView)
         when (type) {
-            AnytypeContextMenuType.DEFAULT -> init(contentView, DEFAULT, editable, textRange)
-            AnytypeContextMenuType.HEADER -> init(contentView, HEADER, editable, textRange)
-            AnytypeContextMenuType.HIGHLIGHT -> init(contentView, HIGHLIGHT, editable, textRange)
+            ContextMenuType.TEXT -> init(contentView, DEFAULT, editable, textRange)
+            ContextMenuType.HEADER -> init(contentView, HEADER, editable, textRange)
+            ContextMenuType.HIGHLIGHT -> init(contentView, HIGHLIGHT, editable, textRange)
         }
     }
 
@@ -238,67 +251,118 @@ class ContextPopupWindow @JvmOverloads constructor(
         }
         view.scrollContainer.setOnScrollChangeListener { _, scrollX, _, oldScrollX, _ ->
             if (scrollX != oldScrollX) {
-                arrowRight.invisible()
+                if (scrollX == 0) arrowRight.visible() else arrowRight.invisible()
             } else {
                 arrowRight.visible()
             }
         }
     }
 
-    fun updateMarkupButtons(textRange: IntRange, editable: Editable) {
+    private fun createEnterAnimation(view: View): AnimatorSet? {
+        val animation = AnimatorSet()
+        animation.playTogether(
+            ObjectAnimator.ofFloat(view, View.ALPHA, 0f, 1f)
+                .setDuration(200)
+        )
+        return animation
+    }
+
+    /**
+     * Get the coordinates of this popup for positioning on the screen..
+     *
+     * @param viewPortOnScreen portion of screen we can draw in.
+     * @param selectedContentBounds This is the area of the interesting content that this popup
+     * should avoid obstructing
+     * @param windowLeftOnScreen parent window X margins
+     * @param windowTopOnScreen parent window Y margins
+     *
+     * @return x and y coordinates of popup window
+     */
+    fun refreshCoordinates(
+        viewPortOnScreen: Rect,
+        selectedContentBounds: Rect,
+        windowLeftOnScreen: Int,
+        windowTopOnScreen: Int
+    ): Point {
+
+        val availableHeightAboveContent = selectedContentBounds.top - viewPortOnScreen.top
+        val availableHeightBelowContent = viewPortOnScreen.bottom - selectedContentBounds.bottom
+        val margin = popupMargin * 2
+        val toolbarHeightWithVerticalMargin = popupHeight + margin
+        
+        val y = if (availableHeightAboveContent >= toolbarHeightWithVerticalMargin) {
+            // There is enough space at the top of the content.
+            selectedContentBounds.top - toolbarHeightWithVerticalMargin
+        } else if (availableHeightBelowContent >= toolbarHeightWithVerticalMargin) {
+            // There is enough space at the bottom of the content.
+            selectedContentBounds.bottom
+        } else if (availableHeightBelowContent >= popupHeight) {
+            // Just enough space to fit the toolbar with no vertical margins.
+            selectedContentBounds.bottom - popupMargin
+        } else {
+            // Not enough space. Prefer to position as high as possible.
+            viewPortOnScreen.top.coerceAtLeast(selectedContentBounds.top - toolbarHeightWithVerticalMargin)
+        }
+        return Point(0, 0.coerceAtLeast(y - windowTopOnScreen))
+    }
+
+    fun runShowAnimation() {
+        mShowAnimation?.start()
+    }
+
+    /**
+     * Updates buttons state, when markup changed in text
+     */
+    fun updateMarkupButtons(textRange: IntRange, spanned: Spanned) {
         contentView.btnBold.apply {
-            imageTintList = if (editable.isSpanInRange(
+            imageTintList = if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Bold::class.java
                 )
             ) tintColor else null
         }
         contentView.btnItalic.apply {
-            imageTintList = if (editable.isSpanInRange(
+            imageTintList = if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Italic::class.java
                 )
             ) tintColor else null
         }
         contentView.btnStroke.apply {
-            imageTintList = if (editable.isSpanInRange(
+            imageTintList = if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Strikethrough::class.java
                 )
             ) tintColor else null
         }
         contentView.btnCode.apply {
-            imageTintList = if (editable.isSpanInRange(
+            imageTintList = if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Keyboard::class.java
                 )
             ) tintColor else null
         }
         contentView.btnLink.apply {
-            imageTintList = if (editable.isSpanInRange(
+            imageTintList = if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Url::class.java
                 )
             ) tintColor else null
         }
         contentView.btnColor.apply {
-            if (editable.isSpanInRange(
+            if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.TextColor::class.java
                 )
             ) setTextColor(tintColor) else setTextColor(textDefaultColor)
         }
         contentView.btnBackground.apply {
-            if (editable.isSpanInRange(
+            if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Highlight::class.java
                 )
             ) setTextColor(tintColor) else setTextColor(textDefaultColor)
         }
-    }
-
-    fun show(anchorView: TextView, x: Int, y: Int) {
-        showAtLocation(anchorView, gravity, x, y)
     }
 }
 

@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 
 class EmptyActionMode(
+    private val onCreate: () -> Unit,
     private val onDestroy: () -> Unit
 ) : ActionMode.Callback2() {
 
@@ -13,6 +14,7 @@ class EmptyActionMode(
     }
 
     override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+        onCreate()
         return true
     }
 
@@ -22,6 +24,6 @@ class EmptyActionMode(
     }
 
     override fun onDestroyActionMode(mode: ActionMode?) {
-        onDestroy.invoke()
+        onDestroy()
     }
 }

@@ -1,5 +1,6 @@
 package com.agileburo.anytype.core_ui.state
 
+import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
 
@@ -39,10 +40,23 @@ data class ControlPanelState(
          * @property isVisible defines whether the toolbar is visible or not
          */
         data class Styling(
+            val target: Target? = null,
             override val isVisible: Boolean,
             val mode: StylingMode?,
             val type: StylingType?
-        ) : Toolbar()
+        ) : Toolbar() {
+
+            data class Target(
+                val text: String,
+                val color: String?,
+                val background: String?,
+                val alignment: Alignment?,
+                val isBold: Boolean,
+                val isItalic: Boolean,
+                val isCode: Boolean,
+                val isStrikethrough: Boolean
+            )
+        }
 
         data class MultiSelect(
             override val isVisible: Boolean

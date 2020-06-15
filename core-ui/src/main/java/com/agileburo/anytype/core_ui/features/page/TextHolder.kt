@@ -127,11 +127,11 @@ interface TextHolder {
         item.cursor?.let { content.setSelection(it) }
     }
 
-    fun setAlignment(alignment: BlockView.Alignment) {
+    fun setAlignment(alignment: Alignment) {
         content.gravity = when (alignment) {
-            BlockView.Alignment.START -> Gravity.START
-            BlockView.Alignment.CENTER -> Gravity.CENTER
-            BlockView.Alignment.END -> Gravity.END
+            Alignment.START -> Gravity.START
+            Alignment.CENTER -> Gravity.CENTER
+            Alignment.END -> Gravity.END
         }
     }
 

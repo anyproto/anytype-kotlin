@@ -1,10 +1,13 @@
 package com.agileburo.anytype.presentation.page
 
+import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.block.model.Block.Content.Text.Mark
+import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.page.ControlPanelMachine.*
 import kotlinx.coroutines.CoroutineScope
@@ -64,7 +67,8 @@ sealed class ControlPanelMachine {
         object OnMarkupTextColorSelected : Event()
 
 
-        object OnMarkupContextMenuTextColorClicked : Event()
+        data class OnMarkupContextMenuTextColorClicked(val target: Block) : Event()
+
         object OnMarkupContextMenuBackgroundColorClicked : Event()
 
         /**
@@ -76,6 +80,9 @@ sealed class ControlPanelMachine {
          * Represents an event when user selected a block text color on [Toolbar.Styling] toolbar.
          */
         object OnBlockTextColorSelected : Event()
+
+
+        object OnBlockStyleSelected : Event()
 
         /**
          * Represents an event when user selected block background color on [Toolbar.Styling] toolbar.
@@ -109,12 +116,14 @@ sealed class ControlPanelMachine {
 
         object OnBlockStyleToolbarCloseButtonClicked : Event()
 
-        object OnBlockActionToolbarTextColorClicked : Event()
-        object OnBlockActionToolbarBackgroundColorClicked : Event()
-        object OnBlockActionToolbarStyleClicked : Event()
+        data class OnBlockActionToolbarTextColorClicked(val target: Block) : Event()
+        data class OnBlockActionToolbarBackgroundColorClicked(val target: Block) : Event()
+        data class OnBlockActionToolbarStyleClicked(val target: Block) : Event()
 
         object OnEnterMultiSelectModeClicked : Event()
         object OnExitMultiSelectModeClicked : Event()
+
+        data class OnRefresh(val target: Block?) : Event()
     }
 
     /**
@@ -147,9 +156,26 @@ sealed class ControlPanelMachine {
                     isVisible = false
                 )
             )
-            is Event.OnBlockTextColorSelected -> state.copy()
-            is Event.OnBlockBackgroundColorSelected -> state.copy()
-            is Event.OnBlockAlignmentSelected -> state.copy()
+            is Event.OnBlockTextColorSelected -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    type = StylingType.TEXT_COLOR
+                )
+            )
+            is Event.OnBlockBackgroundColorSelected -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    type = StylingType.BACKGROUND
+                )
+            )
+            is Event.OnBlockAlignmentSelected -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    type = StylingType.STYLE
+                )
+            )
+            is Event.OnBlockStyleSelected -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    type = StylingType.STYLE
+                )
+            )
             is Event.OnAddBlockToolbarOptionSelected -> state.copy()
             is Event.OnMarkupBackgroundColorSelected -> state.copy(
                 stylingToolbar = state.stylingToolbar.copy(
@@ -191,7 +217,8 @@ sealed class ControlPanelMachine {
                 stylingToolbar = state.stylingToolbar.copy(
                     isVisible = true,
                     mode = StylingMode.BLOCK,
-                    type = StylingType.TEXT_COLOR
+                    type = StylingType.TEXT_COLOR,
+                    target = target(event.target)
                 )
             )
             is Event.OnBlockActionToolbarBackgroundColorClicked -> state.copy(
@@ -201,7 +228,8 @@ sealed class ControlPanelMachine {
                 stylingToolbar = state.stylingToolbar.copy(
                     isVisible = true,
                     mode = StylingMode.BLOCK,
-                    type = StylingType.BACKGROUND
+                    type = StylingType.BACKGROUND,
+                    target = target(event.target)
                 )
             )
             is Event.OnBlockActionToolbarStyleClicked -> state.copy(
@@ -211,9 +239,21 @@ sealed class ControlPanelMachine {
                 stylingToolbar = state.stylingToolbar.copy(
                     isVisible = true,
                     mode = StylingMode.BLOCK,
-                    type = StylingType.STYLE
+                    type = StylingType.STYLE,
+                    target = target(event.target)
                 )
             )
+            is Event.OnRefresh -> {
+                if (state.stylingToolbar.isVisible) {
+                    state.copy(
+                        stylingToolbar = state.stylingToolbar.copy(
+                            target = event.target?.let { target(it) }
+                        )
+                    )
+                } else {
+                    state.copy()
+                }
+            }
             is Event.OnEnterMultiSelectModeClicked -> state.copy(
                 mainToolbar = state.mainToolbar.copy(
                     isVisible = false
@@ -263,6 +303,34 @@ sealed class ControlPanelMachine {
                     }
                 }
             }
+        }
+
+        fun target(block: Block) : Toolbar.Styling.Target {
+            val content = block.content<Block.Content.Text>()
+            return Toolbar.Styling.Target(
+                text = content.text,
+                color = content.color,
+                background = content.backgroundColor,
+                alignment = content.align?.let { alignment ->
+                    when(alignment) {
+                        Block.Align.AlignLeft -> Alignment.START
+                        Block.Align.AlignRight -> Alignment.END
+                        Block.Align.AlignCenter -> Alignment.CENTER
+                    }
+                },
+                isBold = content.marks.any { mark ->
+                    mark.type == Mark.Type.BOLD && mark.range == 0..content.text.length
+                },
+                isItalic = content.marks.any { mark ->
+                    mark.type == Mark.Type.ITALIC && mark.range == 0..content.text.length
+                },
+                isCode = content.marks.any { mark ->
+                    mark.type == Mark.Type.KEYBOARD && mark.range == 0..content.text.length
+                },
+                isStrikethrough = content.marks.any { mark ->
+                    mark.type == Mark.Type.STRIKETHROUGH && mark.range == 0..content.text.length
+                }
+            )
         }
     }
 }

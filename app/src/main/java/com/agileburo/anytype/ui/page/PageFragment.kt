@@ -22,6 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
@@ -390,17 +391,17 @@ open class PageFragment :
                     }
                     is StylingEvent.Alignment.Left -> {
                         vm.onBlockAlignmentActionClicked(
-                            alignment = BlockView.Alignment.START
+                            alignment = Alignment.START
                         )
                     }
                     is StylingEvent.Alignment.Center -> {
                         vm.onBlockAlignmentActionClicked(
-                            alignment = BlockView.Alignment.CENTER
+                            alignment = Alignment.CENTER
                         )
                     }
                     is StylingEvent.Alignment.Right -> {
                         vm.onBlockAlignmentActionClicked(
-                            alignment = BlockView.Alignment.END
+                            alignment = Alignment.END
                         )
                     }
                 }
@@ -624,6 +625,7 @@ open class PageFragment :
 
         state.stylingToolbar.apply {
             if (isVisible) {
+                styleToolbar.target = target
                 hideSoftInput()
                 lifecycleScope.launch {
                     delay(300)

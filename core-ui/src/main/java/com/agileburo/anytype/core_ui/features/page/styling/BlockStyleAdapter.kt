@@ -5,15 +5,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.common.Alignment.*
 import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent.*
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType.*
+import com.agileburo.anytype.core_ui.state.ControlPanelState
 import kotlinx.android.synthetic.main.block_style_toolbar_background.view.*
 import kotlinx.android.synthetic.main.block_style_toolbar_color.view.*
 import kotlinx.android.synthetic.main.block_style_toolbar_style.view.*
 import timber.log.Timber
 
 class BlockStyleAdapter(
+    var target: ControlPanelState.Toolbar.Styling.Target? = null,
     private var pages: List<StylingType> = listOf(STYLE, TEXT_COLOR, BACKGROUND),
     private val onStylingEvent: (StylingEvent) -> Unit
 ) : RecyclerView.Adapter<BlockStyleAdapter.ViewHolder>() {
@@ -48,7 +51,7 @@ class BlockStyleAdapter(
 
     override fun getItemCount(): Int = pages.size
     override fun getItemViewType(position: Int): Int = pages[position].getViewType()
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(onStylingEvent)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(onStylingEvent, target)
 
     fun applyMarkupStylingMode() {
         Timber.d("Applying markup mode")
@@ -64,7 +67,10 @@ class BlockStyleAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        abstract fun bind(onStylingEvent: (StylingEvent) -> Unit)
+        abstract fun bind(
+            onStylingEvent: (StylingEvent) -> Unit,
+            target: ControlPanelState.Toolbar.Styling.Target? = null
+        )
 
         class StyleViewHolder(view: View) : ViewHolder(view) {
 
@@ -76,7 +82,19 @@ class BlockStyleAdapter(
             private val middle = itemView.alignmentMiddle
             private val right = itemView.alignmentRight
 
-            override fun bind(onStylingEvent: (StylingEvent) -> Unit) {
+            override fun bind(
+                onStylingEvent: (StylingEvent) -> Unit,
+                target: ControlPanelState.Toolbar.Styling.Target?
+            ) {
+
+                left.isSelected = target?.alignment == null || target.alignment == START
+                middle.isSelected = target?.alignment == CENTER
+                right.isSelected = target?.alignment == END
+                code.isSelected = target?.isCode ?: false
+                bold.isSelected = target?.isBold ?: false
+                italic.isSelected = target?.isItalic ?: false
+                strike.isSelected = target?.isStrikethrough ?: false
+
                 bold.setOnClickListener {
                     onStylingEvent(Markup.Bold)
                 }
@@ -121,7 +139,23 @@ class BlockStyleAdapter(
             private val teal = itemView.textColorTeal
             private val green = itemView.textColorGreen
 
-            override fun bind(onStylingEvent: (StylingEvent) -> Unit) {
+            override fun bind(
+                onStylingEvent: (StylingEvent) -> Unit,
+                target: ControlPanelState.Toolbar.Styling.Target?
+            ) {
+
+                default.isSelected = target?.color == null || target.color == ThemeColor.DEFAULT.title
+                grey.isSelected = target?.color == ThemeColor.GREY.title
+                yellow.isSelected = target?.color == ThemeColor.YELLOW.title
+                orange.isSelected = target?.color == ThemeColor.ORANGE.title
+                red.isSelected = target?.color == ThemeColor.RED.title
+                pink.isSelected = target?.color == ThemeColor.PINK.title
+                purple.isSelected = target?.color == ThemeColor.PURPLE.title
+                blue.isSelected = target?.color == ThemeColor.BLUE.title
+                ice.isSelected = target?.color == ThemeColor.ICE.title
+                teal.isSelected = target?.color == ThemeColor.TEAL.title
+                green.isSelected = target?.color == ThemeColor.GREEN.title
+
                 default.setOnClickListener {
                     onStylingEvent(Coloring.Text(color = ThemeColor.DEFAULT))
                 }
@@ -172,7 +206,23 @@ class BlockStyleAdapter(
             private val teal = itemView.backgroundColorTeal
             private val green = itemView.backgroundColorGreen
 
-            override fun bind(onStylingEvent: (StylingEvent) -> Unit) {
+            override fun bind(
+                onStylingEvent: (StylingEvent) -> Unit,
+                target: ControlPanelState.Toolbar.Styling.Target?
+            ) {
+
+                default.isSelected = target?.background == null || target.background == ThemeColor.DEFAULT.title
+                grey.isSelected = target?.background == ThemeColor.GREY.title
+                yellow.isSelected = target?.background == ThemeColor.YELLOW.title
+                orange.isSelected = target?.background == ThemeColor.ORANGE.title
+                red.isSelected = target?.background == ThemeColor.RED.title
+                pink.isSelected = target?.background == ThemeColor.PINK.title
+                purple.isSelected = target?.background == ThemeColor.PURPLE.title
+                blue.isSelected = target?.background == ThemeColor.BLUE.title
+                ice.isSelected = target?.background == ThemeColor.ICE.title
+                teal.isSelected = target?.background == ThemeColor.TEAL.title
+                green.isSelected = target?.background == ThemeColor.GREEN.title
+
                 default.setOnClickListener {
                     onStylingEvent(Coloring.Background(color = ThemeColor.DEFAULT))
                 }

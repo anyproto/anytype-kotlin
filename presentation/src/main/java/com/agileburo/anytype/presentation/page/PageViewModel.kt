@@ -3,6 +3,7 @@ package com.agileburo.anytype.presentation.page
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.ListenerType
@@ -72,6 +73,8 @@ class PageViewModel(
     SelectionStateHolder by orchestrator.memory.selections,
     TurnIntoActionReceiver,
     StateReducer<List<Block>, Event> by reducer {
+
+    private val views : List<BlockView> get() = orchestrator.stores.views.current()
 
     private var mode = EditorMode.EDITING
 
@@ -308,25 +311,45 @@ class PageViewModel(
         }
 
     private fun processRendering() {
-        viewModelScope.launch {
-            renderings
-                .stream()
-                .filter { it.isNotEmpty() }
-                .withLatestFrom(
-                    orchestrator.stores.focus.stream(),
-                    orchestrator.stores.details.stream()
-                ) { models, focus, details ->
-                    models.asMap().render(
-                        mode = mode,
-                        indent = INITIAL_INDENT,
-                        anchor = context,
-                        focus = focus,
-                        root = models.first { it.id == context },
-                        details = details
+
+        // stream to UI
+
+        orchestrator
+            .stores
+            .views
+            .stream()
+            .onEach { dispatchToUI(it) }
+            .launchIn(viewModelScope)
+
+        // renderize, in order to send to UI
+
+        renderings
+            .stream()
+            .filter { it.isNotEmpty() }
+            .onEach {
+                if (focus.value != null && focus.value != context) {
+                    controlPanelInteractor.onEvent(
+                        event = ControlPanelMachine.Event.OnRefresh(
+                            target = blocks.find { it.id == focus.value }
+                        )
                     )
                 }
-                .collect { dispatchToUI(it) }
-        }
+            }
+            .withLatestFrom(
+                orchestrator.stores.focus.stream(),
+                orchestrator.stores.details.stream()
+            ) { models, focus, details ->
+                models.asMap().render(
+                    mode = mode,
+                    indent = INITIAL_INDENT,
+                    anchor = context,
+                    focus = focus,
+                    root = models.first { it.id == context },
+                    details = details
+                )
+            }
+            .onEach { orchestrator.stores.views.update(it) }
+            .launchIn(viewModelScope)
     }
 
     private fun dispatchToUI(views: List<BlockView>) {
@@ -544,7 +567,7 @@ class PageViewModel(
                     context = context,
                     previous = previous,
                     pair = Pair(previous, target),
-                    previousLength = blocks.find { it.id == previous }?.let {  block ->
+                    previousLength = blocks.find { it.id == previous }?.let { block ->
                         if (block.content is Content.Text) {
                             block.content.asText().text.length
                         } else {
@@ -757,7 +780,9 @@ class PageViewModel(
             }
             Markup.Type.TEXT_COLOR -> {
                 controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnMarkupContextMenuTextColorClicked
+                    ControlPanelMachine.Event.OnMarkupContextMenuTextColorClicked(
+                        target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+                    )
                 )
             }
             else -> {
@@ -790,7 +815,11 @@ class PageViewModel(
         }
     }
 
-    fun onBlockAlignmentActionClicked(alignment: BlockView.Alignment) {
+    fun onBlockAlignmentActionClicked(alignment: Alignment) {
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.OnBlockAlignmentSelected
+        )
+
         val state = stateData.value
         if (state is ViewState.Success) {
             val blockView = state.blocks.first { it.id == focus.value }
@@ -806,7 +835,7 @@ class PageViewModel(
 
     private fun updateBlockAlignment(
         blockView: BlockView,
-        alignment: BlockView.Alignment
+        alignment: Alignment
     ) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
@@ -814,9 +843,9 @@ class PageViewModel(
                     context = context,
                     target = blockView.id,
                     alignment = when (alignment) {
-                        BlockView.Alignment.START -> Block.Align.AlignLeft
-                        BlockView.Alignment.CENTER -> Block.Align.AlignCenter
-                        BlockView.Alignment.END -> Block.Align.AlignRight
+                        Alignment.START -> Block.Align.AlignLeft
+                        Alignment.CENTER -> Block.Align.AlignCenter
+                        Alignment.END -> Block.Align.AlignRight
                     }
                 )
             )
@@ -854,6 +883,11 @@ class PageViewModel(
     }
 
     fun onBlockStyleMarkupActionClicked(action: Markup.Type) {
+
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.OnBlockStyleSelected
+        )
+
         val target = blocks.first { it.id == focus.value }
         val content = target.content as Content.Text
 
@@ -908,19 +942,25 @@ class PageViewModel(
             }
             ActionItemType.Color -> {
                 controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnBlockActionToolbarTextColorClicked
+                    ControlPanelMachine.Event.OnBlockActionToolbarTextColorClicked(
+                        target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+                    )
                 )
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Background -> {
                 controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnBlockActionToolbarBackgroundColorClicked
+                    ControlPanelMachine.Event.OnBlockActionToolbarBackgroundColorClicked(
+                        target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+                    )
                 )
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Style -> {
                 controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked
+                    ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
+                        target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+                    )
                 )
                 dispatch(Command.PopBackStack)
             }
@@ -1448,14 +1488,22 @@ class PageViewModel(
                 if (block.id == target) {
                     when (block) {
                         is BlockView.Bookmark.View -> block.copy(isSelected = isSelected(target))
-                        is BlockView.Bookmark.Placeholder -> block.copy(isSelected = isSelected(target))
+                        is BlockView.Bookmark.Placeholder -> block.copy(
+                            isSelected = isSelected(
+                                target
+                            )
+                        )
                         is BlockView.Bookmark.Error -> block.copy(isSelected = isSelected(target))
                         is BlockView.File.View -> block.copy(isSelected = isSelected(target))
                         is BlockView.File.Placeholder -> block.copy(isSelected = isSelected(target))
                         is BlockView.File.Upload -> block.copy(isSelected = isSelected(target))
                         is BlockView.File.Error -> block.copy(isSelected = isSelected(target))
                         is BlockView.Picture.View -> block.copy(isSelected = isSelected(target))
-                        is BlockView.Picture.Placeholder -> block.copy(isSelected = isSelected(target))
+                        is BlockView.Picture.Placeholder -> block.copy(
+                            isSelected = isSelected(
+                                target
+                            )
+                        )
                         is BlockView.Picture.Upload -> block.copy(isSelected = isSelected(target))
                         is BlockView.Picture.Error -> block.copy(isSelected = isSelected(target))
                         is BlockView.Video.View -> block.copy(isSelected = isSelected(target))

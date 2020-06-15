@@ -1,5 +1,6 @@
 package com.agileburo.anytype.presentation.mapper
 
+import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.model.UiBlock
@@ -112,10 +113,10 @@ fun Block.Content.File.toFileView(
     else -> throw IllegalStateException("Unexpected state: $state")
 }
 
-fun Block.Align.toView(): BlockView.Alignment = when (this) {
-    Block.Align.AlignLeft -> BlockView.Alignment.START
-    Block.Align.AlignCenter -> BlockView.Alignment.CENTER
-    Block.Align.AlignRight -> BlockView.Alignment.END
+fun Block.Align.toView(): Alignment = when (this) {
+    Block.Align.AlignLeft -> Alignment.START
+    Block.Align.AlignCenter -> Alignment.CENTER
+    Block.Align.AlignRight -> Alignment.END
 }
 
 fun Block.Content.Text.marks(): List<Markup.Mark> = marks.mapNotNull { mark ->

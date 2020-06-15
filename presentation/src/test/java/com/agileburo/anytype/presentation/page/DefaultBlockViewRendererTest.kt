@@ -1,6 +1,7 @@
 package com.agileburo.anytype.presentation.page
 
 import MockDataFactory
+import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.block.model.Block
@@ -146,7 +147,7 @@ class DefaultBlockViewRendererTest {
                 backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                 color = paragraph.content<Block.Content.Text>().color,
                 text = paragraph.content<Block.Content.Text>().text,
-                alignment = BlockView.Alignment.START
+                alignment = Alignment.START
             ),
             BlockView.Toggle(
                 isEmpty = false,
@@ -246,7 +247,7 @@ class DefaultBlockViewRendererTest {
                 backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                 color = paragraph.content<Block.Content.Text>().color,
                 text = paragraph.content<Block.Content.Text>().text,
-                alignment = BlockView.Alignment.END
+                alignment = Alignment.END
             ),
             BlockView.Toggle(
                 isEmpty = false,
@@ -390,7 +391,7 @@ class DefaultBlockViewRendererTest {
                 backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                 color = paragraph.content<Block.Content.Text>().color,
                 text = paragraph.content<Block.Content.Text>().text,
-                alignment = BlockView.Alignment.CENTER
+                alignment = Alignment.CENTER
             )
         )
 

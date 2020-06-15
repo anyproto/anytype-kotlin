@@ -15,6 +15,7 @@ import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
 import com.agileburo.anytype.core_ui.reactive.clicks
+import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar.Styling.Target
 import com.agileburo.anytype.core_utils.ext.dimen
 import kotlinx.android.synthetic.main.widget_block_style_toolbar.view.*
 import kotlinx.coroutines.channels.Channel
@@ -22,6 +23,13 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlin.properties.Delegates
 
 class BlockStyleToolbarWidget : ConstraintLayout {
+
+    var target: Target? by Delegates.observable<Target?>(null) { prop, old, new ->
+        if (new != old && new != null) {
+            blockStyleAdapter.target = new
+            blockStyleAdapter.notifyDataSetChanged()
+        }
+    }
 
     constructor(
         context: Context

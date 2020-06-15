@@ -4,7 +4,7 @@
 
 ### New features 🚀
 
-*
+* Styling toolbar shows currently applied style in block-styling mode (#503)
 
 ### Design & UX 🔳
 

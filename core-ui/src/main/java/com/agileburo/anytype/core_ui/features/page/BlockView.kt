@@ -1,10 +1,7 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.os.Parcelable
-import com.agileburo.anytype.core_ui.common.Checkable
-import com.agileburo.anytype.core_ui.common.Focusable
-import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.common.ViewType
+import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
@@ -712,7 +709,6 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     enum class Mode { READ, EDIT }
-    enum class Alignment { START, CENTER, END }
 
     companion object {
         const val FOOTER_ID = "FOOTER"

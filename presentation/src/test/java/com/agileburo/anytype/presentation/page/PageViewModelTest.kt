@@ -630,7 +630,7 @@ class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        testObserver.assertNoValue()
+        testObserver.assertValue(ViewState.Success(emptyList()))
 
         vm.open(root)
 
@@ -1109,7 +1109,7 @@ class PageViewModelTest {
 
         testObserver
             .assertValue(state)
-            .assertHistorySize(2)
+            .assertHistorySize(3)
 
         val userInput = MockDataFactory.randomString()
 
@@ -1133,7 +1133,7 @@ class PageViewModelTest {
 
         testObserver
             .assertValue(state)
-            .assertHistorySize(2)
+            .assertHistorySize(3)
     }
 
     @Test

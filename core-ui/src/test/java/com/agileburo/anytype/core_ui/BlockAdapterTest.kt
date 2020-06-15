@@ -25,7 +25,6 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.T
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.FOCUS_TIMEOUT_MILLIS
 import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
-import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget.Companion.TEXT_INPUT_WIDGET_INPUT_TYPE
 import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ext.hexColorCode
 import com.nhaarman.mockitokotlin2.mock
@@ -2103,7 +2102,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Paragraph)
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -2147,7 +2146,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -2252,7 +2251,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Title)
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -2295,7 +2294,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -2565,7 +2564,7 @@ class BlockAdapterTest {
         check(h3Holder is BlockViewHolder.HeaderThree)
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = h1Holder.content.inputType
         )
 
@@ -2575,7 +2574,7 @@ class BlockAdapterTest {
         )
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = h2Holder.content.inputType
         )
 
@@ -2585,7 +2584,7 @@ class BlockAdapterTest {
         )
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = h3Holder.content.inputType
         )
 
@@ -2658,7 +2657,7 @@ class BlockAdapterTest {
         // H1
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = h1Holder.content.inputType
         )
 
@@ -2691,7 +2690,7 @@ class BlockAdapterTest {
         // H2
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = h2Holder.content.inputType
         )
 
@@ -2724,7 +2723,7 @@ class BlockAdapterTest {
         // H3
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = h3Holder.content.inputType
         )
 
@@ -2883,7 +2882,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Highlight)
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -2927,7 +2926,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -3030,7 +3029,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Bulleted)
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -3073,7 +3072,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -3176,7 +3175,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Checkbox)
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -3219,7 +3218,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -3324,7 +3323,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Numbered)
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -3368,7 +3367,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -3477,7 +3476,7 @@ class BlockAdapterTest {
         check(holder is BlockViewHolder.Toggle)
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 
@@ -3522,7 +3521,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = TEXT_INPUT_WIDGET_INPUT_TYPE,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
             actual = holder.content.inputType
         )
 

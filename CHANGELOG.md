@@ -1,13 +1,15 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.35 (WIP)
+## Version 0.0.35
 
 ### New features 🚀
 
+* Custom markup context menu enabled by default. Test flight (#483)
 * Styling toolbar shows currently applied style in block-styling mode (#503)
 
 ### Design & UX 🔳
 
+* Second iteration for custom markup context menu: y-positioning (relative to text), button states (#483)
 * Inter (regular, medium, bold) is now the main font in the editor (#522)
 * Redesigned selected states for tabs in styling toolbar (#506)
 * Redesigned selected states for markup and alignment in styling toolbar (#506)
@@ -19,10 +21,6 @@
 * Should ignore split-line `enter` press in document's title (#513)
 * Setting cursor when pasting from anytype clipboard (#484)
 * Should focus document's title when first paragraph (as the first block in the document) is deleted (#498)
-
-### Middleware ⚙
-
-*
 
 ## Version 0.0.34
 

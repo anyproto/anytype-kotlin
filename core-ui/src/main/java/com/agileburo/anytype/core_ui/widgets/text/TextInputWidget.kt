@@ -64,10 +64,10 @@ class TextInputWidget : AppCompatEditText {
     }
 
     fun enableReadMode() {
-        multilineIme(
-            action = TEXT_INPUT_WIDGET_ACTION_GO,
-            inputType = InputType.TYPE_NULL
-        )
+        inputType = InputType.TYPE_NULL
+        setRawInputType(InputType.TYPE_NULL)
+        maxLines = Integer.MAX_VALUE
+        setHorizontallyScrolling(false)
         setTextIsSelectable(false)
     }
 

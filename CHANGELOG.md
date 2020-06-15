@@ -14,6 +14,7 @@
 
 ### Fixes & tech 🚒
 
+* Support suggestions for custom keyboards (#466)
 * Should ignore split-line `enter` press in document's title (#513)
 * Setting cursor when pasting from anytype clipboard (#484)
 * Should focus document's title when first paragraph (as the first block in the document) is deleted (#498)

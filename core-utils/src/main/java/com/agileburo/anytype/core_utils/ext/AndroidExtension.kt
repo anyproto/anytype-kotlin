@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
+import android.text.InputType
 import android.text.Spanned
 import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_DIP
@@ -158,6 +159,7 @@ fun Int.addDot(): String = "$this."
 fun EditText.multilineIme(action: Int, inputType: Int) {
     imeOptions = action
     this.inputType = inputType
+    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
     setHorizontallyScrolling(false)
     maxLines = Integer.MAX_VALUE
 }

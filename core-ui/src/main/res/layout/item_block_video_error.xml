@@ -26,6 +26,7 @@
             app:srcCompat="@drawable/ic_video" />
 
         <TextView
+            android:fontFamily="@font/inter_regular"
             android:id="@+id/tvError"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

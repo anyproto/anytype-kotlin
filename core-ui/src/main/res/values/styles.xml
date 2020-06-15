@@ -9,7 +9,7 @@
     </style>
 
     <style name="BlockTextContentStyle">
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">15sp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
@@ -50,9 +50,10 @@
     <style name="BlockHeaderThreeContentStyle">
         <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
         <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
-        <item name="android:fontFamily">@font/graphik_semibold</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
         <item name="android:background">@null</item>
         <item name="android:textStyle">bold</item>
+        <item name="text_size">17sp</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:paddingTop">19dp</item>
         <item name="android:paddingBottom">2dp</item>
@@ -75,7 +76,7 @@
 
     <style name="BlockCheckboxContentStyle">
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">15sp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
@@ -96,7 +97,7 @@
 
     <style name="BlockBulletContentStyle">
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:lineSpacingExtra">7sp</item>
         <item name="android:paddingTop">4dp</item>
@@ -109,7 +110,7 @@
 
     <style name="ToggleContentStyle">
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:lineSpacingExtra">9sp</item>
@@ -122,7 +123,7 @@
 
     <style name="BlockNumberedContentStyle">
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:lineSpacingExtra">7sp</item>
@@ -136,14 +137,14 @@
     <style name="BlockCodeContentStyle">
         <item name="android:inputType">textMultiLine|textNoSuggestions</item>
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:lineSpacingExtra">7sp</item>
         <item name="android:textColor">#2C2B27</item>
         <item name="android:textSize">15sp</item>
     </style>
 
     <style name="BlockCodeLanguageMenuStyle">
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:lineSpacingExtra">7sp</item>
         <item name="android:drawablePadding">4dp</item>
         <item name="android:drawableEnd">@drawable/ic_turn_into_arrow</item>
@@ -160,14 +161,14 @@
     </style>
 
     <style name="BlockBookmarkTitleStyle">
-        <item name="fontFamily">@font/graphik_regular</item>
+        <item name="fontFamily">@font/inter_medium</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">#2C2B27</item>
     </style>
 
     <style name="BlockBookmarkDescriptionStyle">
-        <item name="fontFamily">@font/graphik_regular</item>
-        <item name="android:textSize">11sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">13sp</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">2</item>
         <item name="android:textColor">#6C6A5F</item>
@@ -177,7 +178,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:singleLine">true</item>
         <item name="android:textColor">#2C2B27</item>
-        <item name="android:textSize">11sp</item>
+        <item name="android:textSize">13sp</item>
     </style>
 
     <style name="BlockFileFilenameContentStyle">
@@ -186,6 +187,7 @@
         <item name="android:layout_marginStart">6dp</item>
         <item name="android:layout_marginTop">3dp</item>
         <item name="android:layout_marginBottom">3dp</item>
+        <item name="fontFamily">@font/inter_regular</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">15sp</item>
     </style>
@@ -207,7 +209,7 @@
         <item name="android:inputType">textUri</item>
         <item name="android:textColorHint">#ACA996</item>
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="BlockContactContentStyle">
@@ -224,7 +226,7 @@
     </style>
 
     <style name="BlockHighlightContentStyle">
-        <item name="android:fontFamily">@font/graphik_regular_italic</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:background">@null</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">17sp</item>
@@ -257,13 +259,13 @@
     </style>
 
     <style name="AddBlockOrTurnIntoItemTitleStyle">
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">17sp</item>
     </style>
 
     <style name="AddBlockOrTurnIntoItemSubtitleStyle">
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textColor">#6C6A5F</item>
         <item name="android:textSize">13sp</item>
     </style>
@@ -313,7 +315,7 @@
     </style>
 
     <style name="BottomMultiSelectToolbarOptionStyle">
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">17sp</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:layout_width">wrap_content</item>

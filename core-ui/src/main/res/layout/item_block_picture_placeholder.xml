@@ -33,6 +33,7 @@
             android:layout_marginEnd="24dp"
             android:inputType="none"
             android:text="@string/hint_upload_image"
+            android:fontFamily="@font/inter_regular"
             android:textColor="#ACA996"
             app:layout_constraintBottom_toBottomOf="@+id/icPicture"
             app:layout_constraintEnd_toStartOf="@+id/btnPicPlaceholderMenu"

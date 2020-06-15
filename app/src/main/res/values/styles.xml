@@ -14,11 +14,11 @@
     </style>
 
     <style name="GraphikTextViewStyle" parent="Widget.MaterialComponents.TextView">
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="GraphikButtonStyle" parent="Widget.MaterialComponents.Button">
-        <item name="android:fontFamily">@font/graphik_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="WhiteProgressBar" parent="ThemeOverlay.AppCompat.Light">

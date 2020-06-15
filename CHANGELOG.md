@@ -8,6 +8,7 @@
 
 ### Design & UX 🔳
 
+* Inter (regular, medium, bold) is now the main font in the editor (#522)
 * Redesigned selected states for tabs in styling toolbar (#506)
 * Redesigned selected states for markup and alignment in styling toolbar (#506)
 * Redesigned selected states for background and text color tabs in styling toolbar (#506)

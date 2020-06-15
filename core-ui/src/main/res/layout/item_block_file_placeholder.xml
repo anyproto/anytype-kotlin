@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:ellipsize="end"
-            android:fontFamily="@font/graphik_regular"
+            android:fontFamily="@font/inter_regular"
             android:maxLines="1"
             android:text="@string/hint_upload_file"
             android:textColor="#ACA996"

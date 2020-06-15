@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:inputType="none"
+            android:fontFamily="@font/inter_regular"
             android:text="Loading, please wait"
             android:textColor="#ACA996"
             app:layout_constraintBottom_toBottomOf="@+id/icFile"

@@ -262,9 +262,7 @@ open class PageFragment :
         vm.open(id = extractDocumentId())
         pickiT = PickiT(requireContext(), this)
         setupOnBackPressedDispatcher()
-        if (BuildConfig.DEBUG) {
-            getEditorSettings()
-        }
+        getEditorSettings()
     }
 
     private fun setupOnBackPressedDispatcher() =
@@ -707,7 +705,7 @@ open class PageFragment :
 
     private fun getEditorSettings() {
         val editorSettings: EditorSettings? = arguments?.getParcelable(DEBUG_SETTINGS)
-        if (editorSettings?.customContextMenu == true) {
+        if (editorSettings == null || editorSettings.customContextMenu) {
             initContextMenuListener()
         }
     }

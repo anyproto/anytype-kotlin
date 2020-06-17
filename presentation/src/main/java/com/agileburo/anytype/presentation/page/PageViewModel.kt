@@ -771,17 +771,21 @@ class PageViewModel(
         }
     }
 
-    fun onMarkupActionClicked(markup: Markup.Type) {
+    fun onMarkupActionClicked(markup: Markup.Type, selection: IntRange) {
         when (markup) {
             Markup.Type.BACKGROUND_COLOR -> {
                 controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnMarkupContextMenuBackgroundColorClicked
+                    ControlPanelMachine.Event.OnMarkupContextMenuBackgroundColorClicked(
+                        target = blocks.first { it.id == orchestrator.stores.focus.current().id },
+                        selection = selection
+                    )
                 )
             }
             Markup.Type.TEXT_COLOR -> {
                 controlPanelInteractor.onEvent(
                     ControlPanelMachine.Event.OnMarkupContextMenuTextColorClicked(
-                        target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+                        target = blocks.first { it.id == orchestrator.stores.focus.current().id },
+                        selection = selection
                     )
                 )
             }
@@ -794,6 +798,10 @@ class PageViewModel(
     }
 
     fun onMarkupTextColorAction(color: String) {
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.OnMarkupTextColorSelected
+        )
+
         viewModelScope.launch {
             markups.send(
                 MarkupAction(
@@ -804,7 +812,19 @@ class PageViewModel(
         }
     }
 
+    fun onStyleBackgroundSlideClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnStyleBackgroundSlideClicked)
+    }
+
+    fun onStyleColorSlideClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnStyleColorSlideClicked)
+    }
+
     fun onMarkupBackgroundColorAction(color: String) {
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.OnMarkupBackgroundColorSelected
+        )
+
         viewModelScope.launch {
             markups.send(
                 MarkupAction(

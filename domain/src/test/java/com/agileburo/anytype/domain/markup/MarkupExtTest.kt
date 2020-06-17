@@ -347,6 +347,41 @@ class MarkupExtTest {
     }
 
     @Test
+    fun `should replace text color`() {
+
+        val range = 0..5
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = range,
+                param = MockDataFactory.randomString()
+            )
+        )
+
+        val color = Mark(
+            type = Mark.Type.TEXT_COLOR,
+            range = range,
+            param = MockDataFactory.randomString()
+        )
+
+        val result = given.addMark(color)
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = range,
+                param = color.param
+            )
+        )
+
+        assertEquals(
+            actual = result,
+            expected = expected
+        )
+    }
+
+    @Test
     fun `should replace the text color and background color already present in markup by the new ones`() {
 
         val range = 0..5

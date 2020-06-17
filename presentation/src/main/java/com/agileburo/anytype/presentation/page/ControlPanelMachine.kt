@@ -1,19 +1,24 @@
 package com.agileburo.anytype.presentation.page
 
 import com.agileburo.anytype.core_ui.common.Alignment
+import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar
 import com.agileburo.anytype.domain.block.model.Block
-import com.agileburo.anytype.domain.block.model.Block.Content.Text.Mark
 import com.agileburo.anytype.domain.ext.content
+import com.agileburo.anytype.domain.ext.overlap
+import com.agileburo.anytype.domain.misc.Overlap
 import com.agileburo.anytype.presentation.common.StateReducer
+import com.agileburo.anytype.presentation.mapper.marks
 import com.agileburo.anytype.presentation.page.ControlPanelMachine.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -41,8 +46,9 @@ sealed class ControlPanelMachine {
         /**
          * @return a stream of immutable states, as processed by [Reducer].
          */
-        fun state(): Flow<ControlPanelState> =
-            events.scan(ControlPanelState.init(), reducer.function)
+        fun state(): Flow<ControlPanelState> = events.scan(ControlPanelState.init(), reducer.function).onEach {
+            Timber.d("Emitting: $it")
+        }
     }
 
     /**
@@ -66,15 +72,23 @@ sealed class ControlPanelMachine {
          */
         object OnMarkupTextColorSelected : Event()
 
-
-        data class OnMarkupContextMenuTextColorClicked(val target: Block) : Event()
-
-        object OnMarkupContextMenuBackgroundColorClicked : Event()
-
         /**
          * Represents an event when user selected a background color on [Toolbar.Styling] toolbar.
          */
         object OnMarkupBackgroundColorSelected : Event()
+
+        object OnStyleBackgroundSlideClicked: Event()
+        object OnStyleColorSlideClicked: Event()
+
+        data class OnMarkupContextMenuTextColorClicked(
+            val selection: IntRange,
+            val target: Block
+        ) : Event()
+
+        data class OnMarkupContextMenuBackgroundColorClicked(
+            val selection: IntRange,
+            val target: Block
+        ) : Event()
 
         /**
          * Represents an event when user selected a block text color on [Toolbar.Styling] toolbar.
@@ -131,6 +145,11 @@ sealed class ControlPanelMachine {
      */
     class Reducer : StateReducer<ControlPanelState, Event> {
 
+        private val excl = listOf(Overlap.LEFT, Overlap.RIGHT, Overlap.OUTER)
+        private val incl = listOf(Overlap.EQUAL, Overlap.INNER, Overlap.LEFT, Overlap.RIGHT, Overlap.INNER_RIGHT, Overlap.INNER_LEFT)
+
+        var selection: IntRange? = null
+
         override val function: suspend (ControlPanelState, Event) -> ControlPanelState
             get() = { state, event ->
                 reduce(
@@ -141,19 +160,84 @@ sealed class ControlPanelMachine {
 
         override suspend fun reduce(state: ControlPanelState, event: Event) = when (event) {
             is Event.OnSelectionChanged -> {
-                if (state.focus == null)
-                    state.copy()
-                else {
-                    state.copy(
-                        mainToolbar = state.mainToolbar.copy(
-                            isVisible = (!state.multiSelect.isVisible && event.selection.first == event.selection.last)
+                when {
+                    state.focus == null -> state.copy()
+                    state.stylingToolbar.isVisible -> {
+                        if (state.stylingToolbar.mode == StylingMode.MARKUP) {
+
+                            val colorOverlaps = mutableListOf<Overlap>()
+                            val backgroundOverlaps = mutableListOf<Overlap>()
+
+                            val target = state.stylingToolbar.target
+                            val props = state.stylingToolbar.props
+
+                            var color: String? = null
+                            var background: String? = null
+
+                            target?.marks?.forEach { mark ->
+                                if (mark.type == Markup.Type.TEXT_COLOR) {
+                                    val range = mark.from..mark.to
+                                    val overlap = event.selection.overlap(range)
+                                    if (incl.contains(overlap))
+                                        color = mark.param
+                                    else
+                                        colorOverlaps.add(overlap)
+                                } else if (mark.type == Markup.Type.BACKGROUND_COLOR) {
+                                    val range = mark.from..mark.to
+                                    val overlap = range.overlap(event.selection)
+                                    if (incl.contains(overlap))
+                                        background = mark.param
+                                    else
+                                        backgroundOverlaps.add(overlap)
+                                }
+                            }
+
+                            if (color == null) {
+                                if (colorOverlaps.isEmpty() || colorOverlaps.none { value -> excl.contains(value) })
+                                    color = target?.color ?: ThemeColor.DEFAULT.title
+                            }
+
+                            if (background == null) {
+                                if (backgroundOverlaps.isEmpty() || backgroundOverlaps.none { value -> excl.contains(value) })
+                                    background = target?.background ?: ThemeColor.DEFAULT.title
+                            }
+
+                            selection = event.selection
+
+                            state.copy(
+                                stylingToolbar = state.stylingToolbar.copy(
+                                    props = props?.copy(
+                                        color = color,
+                                        background = background
+                                    )
+                                )
+                            )
+                        } else {
+                            state.copy()
+                        }
+                    }
+                    else -> {
+                        state.copy(
+                            mainToolbar = state.mainToolbar.copy(
+                                isVisible = (!state.multiSelect.isVisible && event.selection.first == event.selection.last)
+                            )
                         )
-                    )
+                    }
                 }
             }
+            is Event.OnStyleBackgroundSlideClicked -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    type = StylingType.BACKGROUND
+                )
+            )
+            is Event.OnStyleColorSlideClicked -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    type = StylingType.TEXT_COLOR
+                )
+            )
             is Event.OnMarkupTextColorSelected -> state.copy(
                 stylingToolbar = state.stylingToolbar.copy(
-                    isVisible = false
+                    type = StylingType.TEXT_COLOR
                 )
             )
             is Event.OnBlockTextColorSelected -> state.copy(
@@ -179,23 +263,116 @@ sealed class ControlPanelMachine {
             is Event.OnAddBlockToolbarOptionSelected -> state.copy()
             is Event.OnMarkupBackgroundColorSelected -> state.copy(
                 stylingToolbar = state.stylingToolbar.copy(
-                    isVisible = false
-                )
-            )
-            is Event.OnMarkupContextMenuTextColorClicked -> state.copy(
-                stylingToolbar = state.stylingToolbar.copy(
-                    isVisible = true,
-                    mode = StylingMode.MARKUP,
-                    type = StylingType.TEXT_COLOR
-                )
-            )
-            is Event.OnMarkupContextMenuBackgroundColorClicked -> state.copy(
-                stylingToolbar = state.stylingToolbar.copy(
-                    isVisible = true,
-                    mode = StylingMode.MARKUP,
                     type = StylingType.BACKGROUND
                 )
             )
+            is Event.OnMarkupContextMenuTextColorClicked -> {
+
+                selection = event.selection
+
+                val target = target(event.target)
+
+                var color: String? = null
+                var background: String? = null
+
+                val colorOverlaps = mutableListOf<Overlap>()
+                val backgroundOverlaps = mutableListOf<Overlap>()
+
+                target.marks.forEach { mark ->
+                    if (mark.type == Markup.Type.TEXT_COLOR) {
+                        val range = mark.from..mark.to
+                        val overlap = event.selection.overlap(range)
+                        if (incl.contains(overlap))
+                            color = mark.param
+                        else
+                            colorOverlaps.add(overlap)
+                    } else if (mark.type == Markup.Type.BACKGROUND_COLOR) {
+                        val range = mark.from..mark.to
+                        val overlap = event.selection.overlap(range)
+                        if (incl.contains(overlap))
+                            background = mark.param
+                        else
+                            backgroundOverlaps.add(overlap)
+                    }
+                }
+
+                if (color == null) {
+                    if (colorOverlaps.isEmpty() || colorOverlaps.none { value -> excl.contains(value) })
+                        color = target.color ?: ThemeColor.DEFAULT.title
+                }
+
+                if (background == null) {
+                    if (backgroundOverlaps.isEmpty() || backgroundOverlaps.none { value -> excl.contains(value) })
+                        background = target.background ?: ThemeColor.DEFAULT.title
+                }
+
+                val props = Toolbar.Styling.Props(
+                    isBold = target.isBold,
+                    isItalic = target.isItalic,
+                    isStrikethrough = target.isStrikethrough,
+                    isCode = target.isCode,
+                    color = color,
+                    background = background,
+                    alignment = target.alignment
+                )
+
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    stylingToolbar = state.stylingToolbar.copy(
+                        isVisible = true,
+                        mode = StylingMode.MARKUP,
+                        type = StylingType.TEXT_COLOR,
+                        target = target,
+                        props = props
+                    )
+                )
+            }
+            is Event.OnMarkupContextMenuBackgroundColorClicked -> {
+
+                selection = event.selection
+
+                val target = target(event.target)
+
+                var color: String? = null
+                var background: String? = null
+
+                target.marks.forEach { mark ->
+                    if (mark.type == Markup.Type.TEXT_COLOR) {
+                        val range = mark.from..mark.to
+                        if (range.overlap(event.selection) == Overlap.EQUAL)
+                            color = mark.param
+                    } else if (mark.type == Markup.Type.BACKGROUND_COLOR) {
+                        val range = mark.from..mark.to
+                        if (range.overlap(event.selection) == Overlap.EQUAL)
+                            background = mark.param
+                    }
+                }
+
+                val props = Toolbar.Styling.Props(
+                    isBold = target.isBold,
+                    isItalic = target.isItalic,
+                    isStrikethrough = target.isStrikethrough,
+                    isCode = target.isCode,
+                    color = color,
+                    background = background,
+                    alignment = target.alignment
+                )
+
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    stylingToolbar = state.stylingToolbar.copy(
+                        isVisible = true,
+                        mode = StylingMode.MARKUP,
+                        type = StylingType.BACKGROUND,
+                        target = target,
+                        props = props
+                    )
+                )
+            }
             is Event.OnClearFocusClicked -> ControlPanelState.init()
             is Event.OnTextInputClicked -> state.copy(
                 stylingToolbar = state.stylingToolbar.copy(
@@ -210,28 +387,54 @@ sealed class ControlPanelMachine {
                     isVisible = true
                 )
             )
-            is Event.OnBlockActionToolbarTextColorClicked -> state.copy(
-                mainToolbar = state.mainToolbar.copy(
-                    isVisible = false
-                ),
-                stylingToolbar = state.stylingToolbar.copy(
-                    isVisible = true,
-                    mode = StylingMode.BLOCK,
-                    type = StylingType.TEXT_COLOR,
-                    target = target(event.target)
+            is Event.OnBlockActionToolbarTextColorClicked -> {
+                val target = target(event.target)
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    stylingToolbar = state.stylingToolbar.copy(
+                        isVisible = true,
+                        mode = StylingMode.BLOCK,
+                        type = StylingType.TEXT_COLOR,
+                        target = target,
+                        props = Toolbar.Styling.Props(
+                            isBold = target.isBold,
+                            isItalic = target.isItalic,
+                            isStrikethrough = target.isStrikethrough,
+                            isCode = target.isCode,
+                            color = target.color ?: ThemeColor.DEFAULT.title,
+                            background = target.background ?: ThemeColor.DEFAULT.title,
+                            alignment = target.alignment
+                        )
+                    )
                 )
-            )
-            is Event.OnBlockActionToolbarBackgroundColorClicked -> state.copy(
-                mainToolbar = state.mainToolbar.copy(
-                    isVisible = false
-                ),
-                stylingToolbar = state.stylingToolbar.copy(
-                    isVisible = true,
-                    mode = StylingMode.BLOCK,
-                    type = StylingType.BACKGROUND,
-                    target = target(event.target)
+            }
+            is Event.OnBlockActionToolbarBackgroundColorClicked -> {
+
+                val target = target(event.target)
+
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    stylingToolbar = state.stylingToolbar.copy(
+                        isVisible = true,
+                        mode = StylingMode.BLOCK,
+                        type = StylingType.BACKGROUND,
+                        target = target,
+                        props = Toolbar.Styling.Props(
+                            isBold = target.isBold,
+                            isItalic = target.isItalic,
+                            isStrikethrough = target.isStrikethrough,
+                            isCode = target.isCode,
+                            color = target.color ?: ThemeColor.DEFAULT.title,
+                            background = target.background ?: ThemeColor.DEFAULT.title,
+                            alignment = target.alignment
+                        )
+                    )
                 )
-            )
+            }
             is Event.OnBlockActionToolbarStyleClicked -> state.copy(
                 mainToolbar = state.mainToolbar.copy(
                     isVisible = false
@@ -245,11 +448,66 @@ sealed class ControlPanelMachine {
             )
             is Event.OnRefresh -> {
                 if (state.stylingToolbar.isVisible) {
-                    state.copy(
-                        stylingToolbar = state.stylingToolbar.copy(
-                            target = event.target?.let { target(it) }
+                    if (state.stylingToolbar.mode == StylingMode.MARKUP) {
+                        event.target?.let { block ->
+
+                            val target = target(block)
+
+                            var color: String? = null
+                            var background: String? = null
+
+                            selection?.let {
+                                target.marks.forEach { mark ->
+                                    if (mark.type == Markup.Type.TEXT_COLOR) {
+                                        val range = mark.from..mark.to
+                                        if (range.overlap(it) == Overlap.EQUAL)
+                                            color = mark.param
+                                    } else if (mark.type == Markup.Type.BACKGROUND_COLOR) {
+                                        val range = mark.from..mark.to
+                                        if (range.overlap(it) == Overlap.EQUAL)
+                                            background = mark.param
+                                    }
+                                }
+
+                                val props = Toolbar.Styling.Props(
+                                    isBold = target.isBold,
+                                    isItalic = target.isItalic,
+                                    isStrikethrough = target.isStrikethrough,
+                                    isCode = target.isCode,
+                                    color = color,
+                                    background = background,
+                                    alignment = target.alignment
+                                )
+
+                                state.copy(
+                                    stylingToolbar = state.stylingToolbar.copy(
+                                        props = props,
+                                        target = target
+                                    )
+                                )
+                            } ?: state.copy()
+                        } ?: state.copy()
+                    } else {
+
+                        val target = event.target?.let { target(it) }
+
+                        state.copy(
+                            stylingToolbar = state.stylingToolbar.copy(
+                                target = target,
+                                props = target?.let {
+                                    Toolbar.Styling.Props(
+                                        isBold = it.isBold,
+                                        isItalic = it.isItalic,
+                                        isStrikethrough = it.isStrikethrough,
+                                        isCode = it.isCode,
+                                        color = it.color,
+                                        background = it.background,
+                                        alignment = it.alignment
+                                    )
+                                }
+                            )
                         )
-                    )
+                    }
                 } else {
                     state.copy()
                 }
@@ -305,31 +563,20 @@ sealed class ControlPanelMachine {
             }
         }
 
-        fun target(block: Block) : Toolbar.Styling.Target {
+        fun target(block: Block): Toolbar.Styling.Target {
             val content = block.content<Block.Content.Text>()
             return Toolbar.Styling.Target(
                 text = content.text,
                 color = content.color,
                 background = content.backgroundColor,
                 alignment = content.align?.let { alignment ->
-                    when(alignment) {
+                    when (alignment) {
                         Block.Align.AlignLeft -> Alignment.START
                         Block.Align.AlignRight -> Alignment.END
                         Block.Align.AlignCenter -> Alignment.CENTER
                     }
                 },
-                isBold = content.marks.any { mark ->
-                    mark.type == Mark.Type.BOLD && mark.range == 0..content.text.length
-                },
-                isItalic = content.marks.any { mark ->
-                    mark.type == Mark.Type.ITALIC && mark.range == 0..content.text.length
-                },
-                isCode = content.marks.any { mark ->
-                    mark.type == Mark.Type.KEYBOARD && mark.range == 0..content.text.length
-                },
-                isStrikethrough = content.marks.any { mark ->
-                    mark.type == Mark.Type.STRIKETHROUGH && mark.range == 0..content.text.length
-                }
+                marks = content.marks()
             )
         }
     }

@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.block_style_toolbar_style.view.*
 import timber.log.Timber
 
 class BlockStyleAdapter(
-    var target: ControlPanelState.Toolbar.Styling.Target? = null,
+    var props: ControlPanelState.Toolbar.Styling.Props? = null,
     private var pages: List<StylingType> = listOf(STYLE, TEXT_COLOR, BACKGROUND),
     private val onStylingEvent: (StylingEvent) -> Unit
 ) : RecyclerView.Adapter<BlockStyleAdapter.ViewHolder>() {
@@ -51,7 +51,7 @@ class BlockStyleAdapter(
 
     override fun getItemCount(): Int = pages.size
     override fun getItemViewType(position: Int): Int = pages[position].getViewType()
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(onStylingEvent, target)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(onStylingEvent, props)
 
     fun applyMarkupStylingMode() {
         Timber.d("Applying markup mode")
@@ -69,7 +69,7 @@ class BlockStyleAdapter(
 
         abstract fun bind(
             onStylingEvent: (StylingEvent) -> Unit,
-            target: ControlPanelState.Toolbar.Styling.Target? = null
+            target: ControlPanelState.Toolbar.Styling.Props? = null
         )
 
         class StyleViewHolder(view: View) : ViewHolder(view) {
@@ -84,9 +84,8 @@ class BlockStyleAdapter(
 
             override fun bind(
                 onStylingEvent: (StylingEvent) -> Unit,
-                target: ControlPanelState.Toolbar.Styling.Target?
+                target: ControlPanelState.Toolbar.Styling.Props?
             ) {
-
                 left.isSelected = target?.alignment == null || target.alignment == START
                 middle.isSelected = target?.alignment == CENTER
                 right.isSelected = target?.alignment == END
@@ -141,10 +140,9 @@ class BlockStyleAdapter(
 
             override fun bind(
                 onStylingEvent: (StylingEvent) -> Unit,
-                target: ControlPanelState.Toolbar.Styling.Target?
+                target: ControlPanelState.Toolbar.Styling.Props?
             ) {
-
-                default.isSelected = target?.color == null || target.color == ThemeColor.DEFAULT.title
+                default.isSelected = target?.color == ThemeColor.DEFAULT.title
                 grey.isSelected = target?.color == ThemeColor.GREY.title
                 yellow.isSelected = target?.color == ThemeColor.YELLOW.title
                 orange.isSelected = target?.color == ThemeColor.ORANGE.title
@@ -208,10 +206,10 @@ class BlockStyleAdapter(
 
             override fun bind(
                 onStylingEvent: (StylingEvent) -> Unit,
-                target: ControlPanelState.Toolbar.Styling.Target?
+                target: ControlPanelState.Toolbar.Styling.Props?
             ) {
 
-                default.isSelected = target?.background == null || target.background == ThemeColor.DEFAULT.title
+                default.isSelected = target?.background == ThemeColor.DEFAULT.title
                 grey.isSelected = target?.background == ThemeColor.GREY.title
                 yellow.isSelected = target?.background == ThemeColor.YELLOW.title
                 orange.isSelected = target?.background == ThemeColor.ORANGE.title

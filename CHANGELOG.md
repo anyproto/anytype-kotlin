@@ -1,5 +1,23 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.36 (WIP)
+
+### New features 🚀
+
+* Styling toolbar shows currently applied style in markup-styling mode (#525)
+
+### Design & UX 🔳
+
+*
+
+### Fixes & tech 🚒
+
+*
+
+### Middleware ⚙
+
+*
+
 ## Version 0.0.35
 
 ### New features 🚀

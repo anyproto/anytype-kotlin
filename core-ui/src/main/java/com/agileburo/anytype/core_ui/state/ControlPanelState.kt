@@ -1,6 +1,8 @@
 package com.agileburo.anytype.core_ui.state
 
 import com.agileburo.anytype.core_ui.common.Alignment
+import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.common.Span
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
 
@@ -17,8 +19,6 @@ data class ControlPanelState(
     val stylingToolbar: Toolbar.Styling,
     val multiSelect: Toolbar.MultiSelect
 ) {
-
-    fun isNotVisible(): Boolean = !mainToolbar.isVisible
 
     sealed class Toolbar {
 
@@ -41,21 +41,52 @@ data class ControlPanelState(
          */
         data class Styling(
             val target: Target? = null,
+            val props: Props? = null,
             override val isVisible: Boolean,
             val mode: StylingMode?,
             val type: StylingType?
         ) : Toolbar() {
 
+            /**
+             * Target's properties corresponding to current selection or styling mode.
+             */
+            data class Props(
+                val isBold: Boolean,
+                val isItalic: Boolean,
+                val isStrikethrough: Boolean,
+                val isCode: Boolean,
+                val color: String?,
+                val background: String?,
+                val alignment: Alignment?
+            )
+
+            /**
+             * Target block associated with this toolbar.
+             */
             data class Target(
                 val text: String,
                 val color: String?,
                 val background: String?,
                 val alignment: Alignment?,
-                val isBold: Boolean,
-                val isItalic: Boolean,
-                val isCode: Boolean,
-                val isStrikethrough: Boolean
-            )
+                val marks: List<Markup.Mark>
+            ) {
+
+                val isBold: Boolean = marks.any { mark ->
+                    mark.type == Markup.Type.BOLD && mark.from == 0 && mark.to == text.length
+                }
+
+                val isItalic: Boolean = marks.any { mark ->
+                    mark.type == Markup.Type.ITALIC && mark.from == 0 && mark.to == text.length
+                }
+
+                val isStrikethrough: Boolean = marks.any { mark ->
+                    mark.type == Markup.Type.STRIKETHROUGH && mark.from == 0 && mark.to == text.length
+                }
+
+                val isCode: Boolean = marks.any { mark ->
+                    mark.type == Markup.Type.KEYBOARD && mark.from == 0 && mark.to == text.length
+                }
+            }
         }
 
         data class MultiSelect(

@@ -7,6 +7,7 @@ import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
 import android.widget.TextView
 import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.extensions.preserveSelection
+import com.agileburo.anytype.core_ui.extensions.range
 import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuEvent
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.menu.TextBlockContextMenu
@@ -39,7 +40,7 @@ interface TextHolder {
     var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
 
     fun setup(
-        onMarkupActionClicked: (Markup.Type) -> Unit,
+        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
         menuType: ContextMenuType,
         listener: ((AnytypeContextMenuEvent) -> Unit)? = null
     ) {
@@ -267,7 +268,7 @@ interface TextHolder {
     }
 
     private fun setupSelectionActionMode(
-        onMarkupActionClicked: (Markup.Type) -> Unit,
+        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
         menuType: ContextMenuType,
         anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null
     ) {
@@ -293,7 +294,7 @@ interface TextHolder {
                     onTextColorClicked = { mode ->
                         preserveSelection {
                             content.hideKeyboard()
-                            onMarkupActionClicked(Markup.Type.TEXT_COLOR)
+                            onMarkupActionClicked(Markup.Type.TEXT_COLOR, content.range())
                             mode.finish()
                         }
                         false
@@ -301,12 +302,12 @@ interface TextHolder {
                     onBackgroundColorClicked = { mode ->
                         preserveSelection {
                             content.hideKeyboard()
-                            onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR)
+                            onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR, content.range())
                             mode.finish()
                         }
                         false
                     },
-                    onMenuItemClicked = { onMarkupActionClicked(it) }
+                    onMenuItemClicked = { onMarkupActionClicked(it, content.range()) }
                 )
             }
         }

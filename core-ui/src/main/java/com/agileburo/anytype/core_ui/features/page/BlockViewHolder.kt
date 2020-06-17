@@ -83,7 +83,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Paragraph(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit,
+        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
         override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
@@ -262,7 +262,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class HeaderOne(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit,
+        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
         override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) :
         BlockViewHolder(view), TextHolder, IndentableHolder {
@@ -353,7 +353,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class HeaderTwo(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit,
+        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
         override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
@@ -443,7 +443,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class HeaderThree(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit,
+        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
         override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
@@ -587,7 +587,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Checkbox(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit,
+        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
         override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
@@ -730,7 +730,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Bulleted(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit,
+        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
         override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
@@ -845,7 +845,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Numbered(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit,
+        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
         override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
@@ -969,7 +969,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Toggle(
         view: View,
-        onMarkupActionClicked: (Markup.Type) -> Unit,
+        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
         override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
@@ -1896,7 +1896,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     class Highlight(
-        view: View, onMarkupActionClicked: (Markup.Type) -> Unit,
+        view: View, onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
         override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) :
         BlockViewHolder(view), TextHolder, IndentableHolder {

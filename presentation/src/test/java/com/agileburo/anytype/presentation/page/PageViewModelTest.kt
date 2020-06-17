@@ -712,7 +712,7 @@ class PageViewModelTest {
             selection = firstTimeRange
         )
 
-        vm.onMarkupActionClicked(firstTimeMarkup)
+        vm.onMarkupActionClicked(firstTimeMarkup, firstTimeRange)
 
         val firstTimeExpected = ViewState.Success(
             listOf(
@@ -751,7 +751,7 @@ class PageViewModelTest {
             selection = secondTimeRange
         )
 
-        vm.onMarkupActionClicked(secondTimeMarkup)
+        vm.onMarkupActionClicked(secondTimeMarkup, secondTimeRange)
 
         val secondTimeExpected = ViewState.Success(
             listOf(
@@ -862,7 +862,7 @@ class PageViewModelTest {
             selection = firstTimeRange
         )
 
-        vm.onMarkupActionClicked(firstTimeMarkup)
+        vm.onMarkupActionClicked(firstTimeMarkup, firstTimeRange)
 
         val firstTimeExpected = ViewState.Success(
             listOf(
@@ -911,7 +911,7 @@ class PageViewModelTest {
             selection = secondTimeRange
         )
 
-        vm.onMarkupActionClicked(secondTimeMarkup)
+        vm.onMarkupActionClicked(secondTimeMarkup, secondTimeRange)
 
         val secondTimeExpected = ViewState.Success(
             listOf(
@@ -1004,7 +1004,7 @@ class PageViewModelTest {
             selection = range
         )
 
-        vm.onMarkupActionClicked(markup)
+        vm.onMarkupActionClicked(markup, range)
 
         val marks = listOf(
             Block.Content.Text.Mark(

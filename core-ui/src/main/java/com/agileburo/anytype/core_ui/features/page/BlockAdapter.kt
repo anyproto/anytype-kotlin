@@ -72,7 +72,7 @@ class BlockAdapter(
     private val onPageIconClicked: () -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
-    private val onMarkupActionClicked: (Markup.Type) -> Unit,
+    private val onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
     private val onLongClickListener: (String) -> Unit,
     private val clipboardInterceptor: ClipboardInterceptor,
     private val anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null

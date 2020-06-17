@@ -20,10 +20,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.extensions.range
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
@@ -402,6 +402,12 @@ open class PageFragment :
                             alignment = Alignment.END
                         )
                     }
+                    is StylingEvent.Sliding.Color -> {
+                        vm.onStyleColorSlideClicked()
+                    }
+                    is StylingEvent.Sliding.Background -> {
+                        vm.onStyleBackgroundSlideClicked()
+                    }
                 }
             }
         }
@@ -623,7 +629,7 @@ open class PageFragment :
 
         state.stylingToolbar.apply {
             if (isVisible) {
-                styleToolbar.target = target
+                styleToolbar.props = props
                 hideSoftInput()
                 lifecycleScope.launch {
                     delay(300)
@@ -737,7 +743,7 @@ open class PageFragment :
                     anchorView = originatingView,
                     parent = recycler,
                     onMarkupActionClicked = {
-                        vm.onMarkupActionClicked(it)
+                        vm.onMarkupActionClicked(it, originatingView.range())
                     }
                 )
         }

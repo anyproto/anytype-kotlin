@@ -21,4 +21,9 @@ sealed class StylingEvent {
         data class Text(val color: ThemeColor) : StylingEvent()
         data class Background(val color: ThemeColor) : StylingEvent()
     }
+
+    sealed class Sliding : StylingEvent() {
+        object Background : Sliding()
+        object Color : Sliding()
+    }
 }

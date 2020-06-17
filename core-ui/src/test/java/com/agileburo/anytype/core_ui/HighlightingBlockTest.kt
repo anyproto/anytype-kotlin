@@ -112,7 +112,7 @@ class HighlightingBlockTest {
             onParagraphTextChanged = { _, _ -> },
             onTitleTextChanged = onTitleTextChanged,
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
-            onMarkupActionClicked = {},
+            onMarkupActionClicked = { _, _ -> },
             onLongClickListener = {},
             onTitleTextInputClicked = {},
             onClickListener = {},

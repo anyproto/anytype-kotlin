@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import com.agileburo.anytype.core_ui.R
 
@@ -40,3 +41,5 @@ fun LinearLayout.addVerticalDivider(
         )
     }
 )
+
+fun TextView.range() : IntRange = selectionStart..selectionEnd

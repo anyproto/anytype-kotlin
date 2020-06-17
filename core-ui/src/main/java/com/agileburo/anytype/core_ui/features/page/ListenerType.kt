@@ -30,4 +30,6 @@ sealed class ListenerType {
     }
 
     data class LongClick(val target: String): ListenerType()
+
+    data class Page(val target: String): ListenerType()
 }

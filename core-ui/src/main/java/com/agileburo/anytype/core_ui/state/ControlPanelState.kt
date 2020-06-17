@@ -2,7 +2,6 @@ package com.agileburo.anytype.core_ui.state
 
 import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.common.Span
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
 
@@ -89,8 +88,14 @@ data class ControlPanelState(
             }
         }
 
+        /**
+         * Basic multi select mode toolbar state.
+         * @property isVisible defines whether we are in multi select mode or not
+         * @property count number of selected blocks
+         */
         data class MultiSelect(
-            override val isVisible: Boolean
+            override val isVisible: Boolean,
+            val count: Int = 0
         ) : Toolbar()
     }
 
@@ -117,7 +122,8 @@ data class ControlPanelState(
                 isVisible = false
             ),
             multiSelect = Toolbar.MultiSelect(
-                isVisible = false
+                isVisible = false,
+                count = 0
             ),
             stylingToolbar = Toolbar.Styling(
                 isVisible = false,

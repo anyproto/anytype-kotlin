@@ -139,10 +139,8 @@ open class PageFragment :
                 )
             },
             onFooterClicked = vm::onOutsideClicked,
-            onPageClicked = vm::onPageClicked,
             onTextInputClicked = vm::onTextInputClicked,
             onPageIconClicked = vm::onPageIconClicked,
-            onAddUrlClick = vm::onAddVideoUrlClicked,
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
             onMarkupActionClicked = vm::onMarkupActionClicked,
@@ -611,14 +609,22 @@ open class PageFragment :
 
         state.multiSelect.apply {
             if (isVisible) {
-                //recycler.apply { itemAnimator = DefaultItemAnimator() }
-                hideSoftInput()
-                Timber.d("Hiding top menu")
-                topToolbar.invisible()
-                lifecycleScope.launch {
-                    delay(300)
-                    bottomMenu.showWithAnimation()
-                    showSelectButton()
+                if (count == 0) {
+                    selectText.setText(R.string.select_all)
+                } else {
+                    selectText.setText(R.string.unselect_all)
+                }
+                bottomMenu.update(count)
+                if (!bottomMenu.isShowing) {
+                    //recycler.apply { itemAnimator = DefaultItemAnimator() }
+                    hideSoftInput()
+                    Timber.d("Hiding top menu")
+                    topToolbar.invisible()
+                    lifecycleScope.launch {
+                        delay(300)
+                        bottomMenu.showWithAnimation()
+                        showSelectButton()
+                    }
                 }
             } else {
                 //recycler.apply { itemAnimator = null }

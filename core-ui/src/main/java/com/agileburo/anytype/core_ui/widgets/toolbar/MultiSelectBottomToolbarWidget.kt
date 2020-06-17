@@ -7,9 +7,12 @@ import android.view.LayoutInflater
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.animation.doOnEnd
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_utils.ext.dimen
+import com.agileburo.anytype.core_utils.ext.invisible
+import com.agileburo.anytype.core_utils.ext.visible
 import kotlinx.android.synthetic.main.layout_bottom_multi_select_toolbar.view.*
 
 class MultiSelectBottomToolbarWidget : ConstraintLayout {
@@ -31,6 +34,8 @@ class MultiSelectBottomToolbarWidget : ConstraintLayout {
         inflate()
     }
 
+    var isShowing = false
+
     fun inflate() {
         LayoutInflater.from(context).inflate(R.layout.layout_bottom_multi_select_toolbar, this)
     }
@@ -47,6 +52,9 @@ class MultiSelectBottomToolbarWidget : ConstraintLayout {
             duration = ANIMATION_DURATION
             interpolator = DecelerateInterpolator()
             start()
+            doOnEnd {
+                isShowing = true
+            }
         }
     }
 
@@ -59,6 +67,19 @@ class MultiSelectBottomToolbarWidget : ConstraintLayout {
             duration = ANIMATION_DURATION
             interpolator = AccelerateInterpolator()
             start()
+            doOnEnd {
+                isShowing = false
+            }
+        }
+    }
+
+    fun update(count: Int) {
+        if (count == 0) {
+            title.visible()
+            controls.invisible()
+        } else {
+            title.invisible()
+            controls.visible()
         }
     }
 

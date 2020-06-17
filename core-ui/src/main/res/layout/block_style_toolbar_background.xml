@@ -79,7 +79,6 @@
         android:layout_marginEnd="8dp"
         app:constraint_referenced_ids="backgroundColorDefault,backgroundColorGrey,backgroundColorYellow,backgroundColorOrange,backgroundColorRed,backgroundColorPink,backgroundColorPurple,backgroundColorBlue,backgroundColorIce,backgroundColorTeal,backgroundColorGreen"
         app:flow_horizontalGap="0dp"
-        app:flow_horizontalSeparator="10dp"
         app:flow_horizontalStyle="packed"
         app:flow_maxElementsWrap="6"
         app:flow_verticalGap="0dp"

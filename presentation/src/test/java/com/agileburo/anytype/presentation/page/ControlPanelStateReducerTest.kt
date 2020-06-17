@@ -178,4 +178,116 @@ class ControlPanelStateReducerTest {
             actual = result
         )
     }
+
+    @Test
+    fun `should be zero selected blocks when enter selected state`() {
+
+        val id = MockDataFactory.randomUuid()
+
+        val nonSelected = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = false,
+                mode = null,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false,
+                count = 2
+            )
+        )
+
+        val selected = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = false,
+                mode = null,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = true,
+                count = 0
+            )
+        )
+
+        val result = runBlocking {
+            reducer.reduce(
+                state = nonSelected,
+                event = ControlPanelMachine.Event.OnEnterMultiSelectModeClicked
+            )
+        }
+
+        assertEquals(
+            expected = selected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should be three selected blocks when click on block`() {
+
+        val id = MockDataFactory.randomUuid()
+
+        val selectedZero = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = false,
+                mode = null,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = true,
+                count = 0
+            )
+        )
+
+        val expected = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = false,
+                mode = null,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = true,
+                count = 3
+            )
+        )
+
+        val result = runBlocking {
+            reducer.reduce(
+                state = selectedZero,
+                event = ControlPanelMachine.Event.OnMultiSelectModeBlockClick(count = 3)
+            )
+        }
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
 }

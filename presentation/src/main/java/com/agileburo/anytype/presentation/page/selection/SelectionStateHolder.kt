@@ -8,6 +8,7 @@ interface SelectionStateHolder {
     fun isSelected(target: Id): Boolean
     fun toggleSelection(target: Id)
     fun select(target: Id)
+    fun unselect(target: Id)
     fun clearSelections()
     fun currentSelection(): Set<Id>
 
@@ -33,6 +34,10 @@ interface SelectionStateHolder {
 
         override fun select(target: Id) {
             memory[target] = true
+        }
+
+        override fun unselect(target: Id) {
+            memory[target] = false
         }
 
         override fun clearSelections() {

@@ -4373,4 +4373,674 @@ class PageViewModelTest {
             )
         )
     }
+
+    @Test
+    fun `should enter multi select mode and selections should be empty`() {
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+
+        val paragraphs = listOf(
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = paragraphs.map { it.id }
+            )
+        ) + paragraphs
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        val testObserver = vm.state.test()
+
+        val title = BlockView.Title(
+            id = root,
+            text = null,
+            isFocused = false
+        )
+
+        val initial = listOf(
+            paragraphs[0].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[1].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[2].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            }
+        )
+
+        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+
+        vm.onEnterMultiSelectModeClicked()
+
+        coroutineTestRule.advanceTime(150)
+
+        assertEquals(
+            expected = 0,
+            actual = vm.currentSelection().size
+        )
+    }
+
+    @Test
+    fun `should be two selected blocks in multi select mode`() {
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+
+        val paragraphs = listOf(
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = paragraphs.map { it.id }
+            )
+        ) + paragraphs
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        val testObserver = vm.state.test()
+
+        val title = BlockView.Title(
+            id = root,
+            text = null,
+            isFocused = false
+        )
+
+        val initial = listOf(
+            paragraphs[0].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[1].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[2].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            }
+        )
+
+        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+
+        vm.onEnterMultiSelectModeClicked()
+
+        coroutineTestRule.advanceTime(150)
+
+        assertEquals(
+            expected = 0,
+            actual = vm.currentSelection().size
+        )
+
+        vm.onTextInputClicked(target = paragraphs[1].id)
+        vm.onTextInputClicked(target = paragraphs[2].id)
+
+        assertEquals(
+            expected = 2,
+            actual = vm.currentSelection().size
+        )
+    }
+
+    @Test
+    fun `should be zero selected blocks after done click`() {
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+
+        val paragraphs = listOf(
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = paragraphs.map { it.id }
+            )
+        ) + paragraphs
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        val testObserver = vm.state.test()
+
+        val title = BlockView.Title(
+            id = root,
+            text = null,
+            isFocused = false
+        )
+
+        val initial = listOf(
+            paragraphs[0].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[1].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[2].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            }
+        )
+
+        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+
+        vm.onEnterMultiSelectModeClicked()
+
+        coroutineTestRule.advanceTime(150)
+
+        assertEquals(
+            expected = 0,
+            actual = vm.currentSelection().size
+        )
+
+        vm.onTextInputClicked(target = paragraphs[1].id)
+        vm.onTextInputClicked(target = paragraphs[2].id)
+
+        assertEquals(
+            expected = 2,
+            actual = vm.currentSelection().size
+        )
+
+        vm.onExitMultiSelectModeClicked()
+
+        coroutineTestRule.advanceTime(300)
+
+        assertEquals(
+            expected = 0,
+            actual = vm.currentSelection().size
+        )
+    }
+
+    @Test
+    fun `should be four selected blocks after select all click`() {
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+
+        val paragraphs = listOf(
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = paragraphs.map { it.id }
+            )
+        ) + paragraphs
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        val testObserver = vm.state.test()
+
+        val title = BlockView.Title(
+            id = root,
+            text = null,
+            isFocused = false
+        )
+
+        val initial = listOf(
+            paragraphs[0].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[1].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[2].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[3].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            }
+        )
+
+        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+
+        vm.onEnterMultiSelectModeClicked()
+
+        coroutineTestRule.advanceTime(150)
+
+        assertEquals(
+            expected = 0,
+            actual = vm.currentSelection().size
+        )
+
+        vm.onMultiSelectModeSelectAllClicked()
+
+        coroutineTestRule.advanceTime(300)
+
+        assertEquals(
+            expected = 4,
+            actual = vm.currentSelection().size
+        )
+    }
+
+    @Test
+    fun `should be zero selected blocks after unselect all click`() {
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+
+        val paragraphs = listOf(
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = MockDataFactory.randomString(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = paragraphs.map { it.id }
+            )
+        ) + paragraphs
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.open(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        val testObserver = vm.state.test()
+
+        val title = BlockView.Title(
+            id = root,
+            text = null,
+            isFocused = false
+        )
+
+        val initial = listOf(
+            paragraphs[0].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[1].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[2].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            },
+            paragraphs[3].let { p ->
+                BlockView.Paragraph(
+                    id = p.id,
+                    marks = emptyList(),
+                    text = p.content<Block.Content.Text>().text
+                )
+            }
+        )
+
+        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+
+        vm.onEnterMultiSelectModeClicked()
+
+        coroutineTestRule.advanceTime(150)
+
+        assertEquals(
+            expected = 0,
+            actual = vm.currentSelection().size
+        )
+
+        vm.onTextInputClicked(target = paragraphs[2].id)
+        vm.onTextInputClicked(target = paragraphs[3].id)
+
+        assertEquals(
+            expected = 2,
+            actual = vm.currentSelection().size
+        )
+
+        vm.onMultiSelectModeSelectAllClicked()
+
+        coroutineTestRule.advanceTime(300)
+
+        assertEquals(
+            expected = 0,
+            actual = vm.currentSelection().size
+        )
+    }
 }

@@ -1467,8 +1467,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.Page,
-            onPageClicked: (String) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
             indentize(item)
 
@@ -1482,11 +1481,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 else -> icon.setImageResource(R.drawable.ic_block_page_without_emoji)
             }
 
-            title.setOnClickListener { onPageClicked(item.id) }
+            title.setOnClickListener { clicked(ListenerType.Page(item.id)) }
             title.setOnLongClickListener(
                 EditorLongClickListener(
                     t = item.id,
-                    click = onLongClickListener
+                    click = { clicked(ListenerType.LongClick(item.id)) }
                 )
             )
         }

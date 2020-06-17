@@ -136,6 +136,7 @@ sealed class ControlPanelMachine {
 
         object OnEnterMultiSelectModeClicked : Event()
         object OnExitMultiSelectModeClicked : Event()
+        data class OnMultiSelectModeBlockClick(val count : Int): Event()
 
         data class OnRefresh(val target: Block?) : Event()
     }
@@ -517,7 +518,8 @@ sealed class ControlPanelMachine {
                     isVisible = false
                 ),
                 multiSelect = state.multiSelect.copy(
-                    isVisible = true
+                    isVisible = true,
+                    count = 0
                 )
             )
             is Event.OnExitMultiSelectModeClicked -> state.copy(
@@ -561,6 +563,11 @@ sealed class ControlPanelMachine {
                     }
                 }
             }
+            is Event.OnMultiSelectModeBlockClick -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    count = event.count
+                )
+            )
         }
 
         fun target(block: Block): Toolbar.Styling.Target {

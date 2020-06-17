@@ -65,10 +65,8 @@ class BlockAdapter(
     private val onEndLineEnterClicked: (String, Editable) -> Unit,
     private val onEndLineEnterTitleClicked: (Editable) -> Unit,
     private val onFooterClicked: () -> Unit,
-    private val onPageClicked: (String) -> Unit,
     private val onTextInputClicked: (String) -> Unit,
     private val onClickListener: (ListenerType) -> Unit,
-    private val onAddUrlClick: (String, String) -> Unit,
     private val onPageIconClicked: () -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
@@ -740,8 +738,7 @@ class BlockAdapter(
             is BlockViewHolder.Page -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Page,
-                    onPageClicked = onPageClicked,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Bookmark -> {

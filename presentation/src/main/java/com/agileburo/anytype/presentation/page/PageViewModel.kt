@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.extensions.updateSelection
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
@@ -49,8 +50,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-const val EMPTY_PATH = ""
-
 class PageViewModel(
     private val openPage: OpenPage,
     private val closePage: ClosePage,
@@ -73,8 +72,6 @@ class PageViewModel(
     SelectionStateHolder by orchestrator.memory.selections,
     TurnIntoActionReceiver,
     StateReducer<List<Block>, Event> by reducer {
-
-    private val views : List<BlockView> get() = orchestrator.stores.views.current()
 
     private var mode = EditorMode.EDITING
 
@@ -1082,12 +1079,12 @@ class PageViewModel(
         )
     }
 
-    fun onAddLocalVideoClicked(blockId: String) {
+    private fun onAddLocalVideoClicked(blockId: String) {
         mediaBlockId = blockId
         dispatch(Command.OpenGallery(mediaType = MIME_VIDEO_ALL))
     }
 
-    fun onAddLocalPictureClicked(blockId: String) {
+    private fun onAddLocalPictureClicked(blockId: String) {
         mediaBlockId = blockId
         dispatch(Command.OpenGallery(mediaType = MIME_IMAGE_ALL))
     }
@@ -1112,7 +1109,7 @@ class PageViewModel(
         viewModelScope.launch { refresh() }
     }
 
-    fun onAddLocalFileClicked(blockId: String) {
+    private fun onAddLocalFileClicked(blockId: String) {
         mediaBlockId = blockId
         dispatch(Command.OpenGallery(mediaType = MIME_FILE_ALL))
     }
@@ -1214,41 +1211,32 @@ class PageViewModel(
         }
     }
 
-    fun onMultiSelectModeSelectAllClicked() {
+    fun onMultiSelectModeSelectAllClicked() =
         (stateData.value as ViewState.Success).let { state ->
-            val update = state.blocks.map { block ->
-                if (block.id != context) select(block.id)
-                when (block) {
-                    is BlockView.Paragraph -> block.copy(isSelected = true)
-                    is BlockView.HeaderOne -> block.copy(isSelected = true)
-                    is BlockView.HeaderTwo -> block.copy(isSelected = true)
-                    is BlockView.HeaderThree -> block.copy(isSelected = true)
-                    is BlockView.Highlight -> block.copy(isSelected = true)
-                    is BlockView.Checkbox -> block.copy(isSelected = true)
-                    is BlockView.Bulleted -> block.copy(isSelected = true)
-                    is BlockView.Numbered -> block.copy(isSelected = true)
-                    is BlockView.Toggle -> block.copy(isSelected = true)
-                    is BlockView.Bookmark.View -> block.copy(isSelected = true)
-                    is BlockView.Bookmark.Placeholder -> block.copy(isSelected = true)
-                    is BlockView.Bookmark.Error -> block.copy(isSelected = true)
-                    is BlockView.File.View -> block.copy(isSelected = true)
-                    is BlockView.File.Upload -> block.copy(isSelected = true)
-                    is BlockView.File.Placeholder -> block.copy(isSelected = true)
-                    is BlockView.File.Error -> block.copy(isSelected = true)
-                    is BlockView.Video.View -> block.copy(isSelected = true)
-                    is BlockView.Video.Upload -> block.copy(isSelected = true)
-                    is BlockView.Video.Placeholder -> block.copy(isSelected = true)
-                    is BlockView.Video.Error -> block.copy(isSelected = true)
-                    is BlockView.Picture.View -> block.copy(isSelected = true)
-                    is BlockView.Picture.Placeholder -> block.copy(isSelected = true)
-                    is BlockView.Picture.Error -> block.copy(isSelected = true)
-                    is BlockView.Picture.Upload -> block.copy(isSelected = true)
-                    else -> block
-                }
+            if (currentSelection().isEmpty()) {
+                onSelectAllClicked(state)
+            } else {
+                onUnselectAllClicked(state)
             }
-            stateData.postValue(ViewState.Success(update))
         }
-    }
+
+    private fun onSelectAllClicked(state: ViewState.Success) =
+        state.blocks.map { block ->
+            if (block.id != context) select(block.id)
+            block.updateSelection(newSelection = true)
+        }.let {
+            onMultiSelectModeBlockClicked()
+            stateData.postValue(ViewState.Success(it))
+        }
+
+    private fun onUnselectAllClicked(state: ViewState.Success) =
+        state.blocks.map { block ->
+            if (block.id != context) unselect(block.id)
+            block.updateSelection(newSelection = false)
+        }.let {
+            onMultiSelectModeBlockClicked()
+            stateData.postValue(ViewState.Success(it))
+        }
 
     fun onMultiSelectTurnIntoButtonClicked() {
         dispatch(Command.OpenMultiSelectTurnIntoPanel)
@@ -1353,24 +1341,10 @@ class PageViewModel(
         renderings.send(blocks)
     }
 
-    fun onPageClicked(id: String) {
-        if (mode == EditorMode.MULTI_SELECT) {
-            toggleSelection(id)
-            (stateData.value as ViewState.Success).let { state ->
-                val update = state.blocks.map { block ->
-                    if (block.id == id && block is BlockView.Page)
-                        block.copy(isSelected = isSelected(id))
-                    else
-                        block
-                }
-                stateData.postValue(ViewState.Success(update))
-            }
-        } else {
-            proceedWithOpeningPage(
-                target = blocks.first { it.id == id }.content<Content.Link>().target
-            )
-        }
-    }
+    private fun onPageClicked(target: String) =
+        proceedWithOpeningPage(
+            target = blocks.first { it.id == target }.content<Content.Link>().target
+        )
 
     fun onAddNewPageClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
@@ -1431,43 +1405,19 @@ class PageViewModel(
         }
     }
 
-    fun onBookmarkPlaceholderClicked(target: String) {
+    private fun onBookmarkPlaceholderClicked(target: String) =
         dispatch(
             command = Command.OpenBookmarkSetter(
                 context = context,
                 target = target
             )
         )
-    }
 
-    fun onBookmarkClicked(view: BlockView.Bookmark.View) {
-        if (mode == EditorMode.MULTI_SELECT) {
-            toggleSelection(view.id)
-            (stateData.value as ViewState.Success).let { state ->
-                val update = state.blocks.map { block ->
-                    if (block.id == view.id && block is BlockView.Bookmark.View)
-                        block.copy(isSelected = isSelected(view.id))
-                    else
-                        block
-                }
-                stateData.postValue(ViewState.Success(update))
-            }
-        } else {
-            dispatch(
-                command = Command.Browse(
-                    url = view.url
-                )
-            )
-        }
-    }
+    private fun onBookmarkClicked(view: BlockView.Bookmark.View) =
+        dispatch(command = Command.Browse(view.url))
 
-    fun onFailedBookmarkClicked(view: BlockView.Bookmark.Error) {
-        dispatch(
-            command = Command.Browse(
-                url = view.url
-            )
-        )
-    }
+    private fun onFailedBookmarkClicked(view: BlockView.Bookmark.Error) =
+        dispatch(command = Command.Browse(view.url))
 
     fun onTitleTextInputClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
@@ -1475,66 +1425,21 @@ class PageViewModel(
 
     fun onTextInputClicked(target: Id) {
         if (mode == EditorMode.MULTI_SELECT) {
-            toggleSelection(target)
-            (stateData.value as ViewState.Success).let { state ->
-                val update = state.blocks.map { block ->
-                    if (block.id == target)
-                        when (block) {
-                            is BlockView.Paragraph -> block.copy(isSelected = isSelected(target))
-                            is BlockView.HeaderOne -> block.copy(isSelected = isSelected(target))
-                            is BlockView.HeaderTwo -> block.copy(isSelected = isSelected(target))
-                            is BlockView.HeaderThree -> block.copy(isSelected = isSelected(target))
-                            is BlockView.Highlight -> block.copy(isSelected = isSelected(target))
-                            is BlockView.Checkbox -> block.copy(isSelected = isSelected(target))
-                            is BlockView.Bulleted -> block.copy(isSelected = isSelected(target))
-                            is BlockView.Numbered -> block.copy(isSelected = isSelected(target))
-                            is BlockView.Toggle -> block.copy(isSelected = isSelected(target))
-                            else -> block
-                        }
-                    else
-                        block
-                }
-                stateData.postValue(ViewState.Success(update))
-            }
+            onBlockMultiSelectClicked(target)
         } else {
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
         }
     }
 
-    private fun onNonTextBlockMultiSelectClicked(target: Id) {
+    private fun onBlockMultiSelectClicked(target: Id) {
         toggleSelection(target)
+        onMultiSelectModeBlockClicked()
         (stateData.value as ViewState.Success).let { state ->
             val update = state.blocks.map { block ->
-                if (block.id == target) {
-                    when (block) {
-                        is BlockView.Bookmark.View -> block.copy(isSelected = isSelected(target))
-                        is BlockView.Bookmark.Placeholder -> block.copy(
-                            isSelected = isSelected(
-                                target
-                            )
-                        )
-                        is BlockView.Bookmark.Error -> block.copy(isSelected = isSelected(target))
-                        is BlockView.File.View -> block.copy(isSelected = isSelected(target))
-                        is BlockView.File.Placeholder -> block.copy(isSelected = isSelected(target))
-                        is BlockView.File.Upload -> block.copy(isSelected = isSelected(target))
-                        is BlockView.File.Error -> block.copy(isSelected = isSelected(target))
-                        is BlockView.Picture.View -> block.copy(isSelected = isSelected(target))
-                        is BlockView.Picture.Placeholder -> block.copy(
-                            isSelected = isSelected(
-                                target
-                            )
-                        )
-                        is BlockView.Picture.Upload -> block.copy(isSelected = isSelected(target))
-                        is BlockView.Picture.Error -> block.copy(isSelected = isSelected(target))
-                        is BlockView.Video.View -> block.copy(isSelected = isSelected(target))
-                        is BlockView.Video.Placeholder -> block.copy(isSelected = isSelected(target))
-                        is BlockView.Video.Upload -> block.copy(isSelected = isSelected(target))
-                        is BlockView.Video.Error -> block.copy(isSelected = isSelected(target))
-                        else -> block
-                    }
-                } else {
+                if (block.id == target)
+                    block.updateSelection(newSelection = isSelected(target))
+                else
                     block
-                }
             }
             stateData.postValue(ViewState.Success(update))
         }
@@ -1574,97 +1479,103 @@ class PageViewModel(
             is ListenerType.Bookmark.View -> {
                 when (mode) {
                     EditorMode.EDITING -> onBookmarkClicked(clicked.item)
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.item.id)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.item.id)
                 }
             }
             is ListenerType.Bookmark.Placeholder -> {
                 when (mode) {
                     EditorMode.EDITING -> onBookmarkPlaceholderClicked(clicked.target)
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.Bookmark.Error -> {
                 when (mode) {
                     EditorMode.EDITING -> onFailedBookmarkClicked(clicked.item)
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.item.id)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.item.id)
                 }
             }
             is ListenerType.File.View -> {
                 when (mode) {
                     EditorMode.EDITING -> onFileClicked(clicked.target)
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.File.Placeholder -> {
                 when (mode) {
                     EditorMode.EDITING -> onAddLocalFileClicked(clicked.target)
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.File.Error -> {
                 when (mode) {
                     EditorMode.EDITING -> onAddLocalFileClicked(clicked.target)
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.File.Upload -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.Picture.View -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.Picture.Placeholder -> {
                 when (mode) {
                     EditorMode.EDITING -> onAddLocalPictureClicked(clicked.target)
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.Picture.Error -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.Picture.Upload -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.Video.View -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.Video.Placeholder -> {
                 when (mode) {
                     EditorMode.EDITING -> onAddLocalVideoClicked(clicked.target)
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.Video.Error -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.Video.Upload -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
-                    EditorMode.MULTI_SELECT -> onNonTextBlockMultiSelectClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
             is ListenerType.LongClick -> {
                 when (mode) {
                     EditorMode.EDITING -> onBlockLongPressedClicked(clicked.target)
                     EditorMode.MULTI_SELECT -> Unit
+                }
+            }
+            is ListenerType.Page -> {
+                when (mode) {
+                    EditorMode.EDITING -> onPageClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
         }
@@ -1677,22 +1588,6 @@ class PageViewModel(
             result.either(
                 fnL = { Timber.e(it, "Error while creating a new page on home dashboard") },
                 fnR = { id -> proceedWithOpeningPage(id) }
-            )
-        }
-    }
-
-    fun onAddVideoUrlClicked(blockId: String, url: String) {
-        viewModelScope.launch {
-            uploadUrl(
-                params = UploadUrl.Params(
-                    contextId = context,
-                    blockId = blockId,
-                    url = url,
-                    filePath = EMPTY_PATH
-                )
-            ).proceed(
-                failure = { Timber.e(it, "Error while upload new url for video block") },
-                success = { Timber.d("Upload Url Success") }
             )
         }
     }
@@ -1735,21 +1630,8 @@ class PageViewModel(
         dispatch(Command.OpenPagePicker(context))
     }
 
-    fun onFileClicked(id: String) {
-        if (mode == EditorMode.MULTI_SELECT) {
-            toggleSelection(id)
-            (stateData.value as ViewState.Success).let { state ->
-                val update = state.blocks.map { block ->
-                    if (block.id == id && block is BlockView.File.View)
-                        block.copy(isSelected = isSelected(id))
-                    else
-                        block
-                }
-                stateData.postValue(ViewState.Success(update))
-            }
-        } else {
-            dispatch(Command.RequestDownloadPermission(id))
-        }
+    private fun onFileClicked(id: String) {
+        dispatch(Command.RequestDownloadPermission(id))
     }
 
     fun startDownloadingFile(id: String) {
@@ -1766,8 +1648,12 @@ class PageViewModel(
         }
     }
 
-    fun onMediaBlockMenuClicked(id: String) {
-        updateFocus(id)
+    private fun onMultiSelectModeBlockClicked() {
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.OnMultiSelectModeBlockClick(
+                count = currentSelection().size
+            )
+        )
     }
 
     private fun addNewBlockAtTheEnd() {

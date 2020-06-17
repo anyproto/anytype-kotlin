@@ -35,6 +35,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/selectText"
                 style="@style/EditorMultiSelectSelectAllButtonTextStyle"
                 android:text="@string/select_all" />
 

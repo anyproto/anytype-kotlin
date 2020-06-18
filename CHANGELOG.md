@@ -5,10 +5,12 @@
 ### New features 🚀
 
 * Styling toolbar shows currently applied style in markup-styling mode (#525)
+* Wired document's icon with action menu (#529)
 
 ### Design & UX 🔳
 
-*
+* Redesigned page emoji icon picker (#531)
+* 
 
 ### Fixes & tech 🚒
 

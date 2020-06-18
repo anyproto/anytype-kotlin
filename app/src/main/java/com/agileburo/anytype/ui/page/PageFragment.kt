@@ -20,6 +20,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.ChangeBounds
+import androidx.transition.Fade
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
@@ -56,6 +58,7 @@ import com.agileburo.anytype.ui.base.NavigationFragment
 import com.agileburo.anytype.ui.menu.AnytypeContextMenu
 import com.agileburo.anytype.ui.page.modals.*
 import com.agileburo.anytype.ui.page.modals.actions.BlockActionToolbarFactory
+import com.agileburo.anytype.ui.page.modals.actions.DocumentIconActionMenu
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
@@ -515,8 +518,27 @@ open class PageFragment :
     private fun execute(event: EventWrapper<Command>) {
         event.getContentIfNotHandled()?.let { command ->
             when (command) {
-                is Command.OpenPagePicker -> {
-                    PageIconPickerFragment.newInstance(
+                is Command.OpenDocumentIconActionMenu -> {
+                    hideSoftInput()
+                    if (recycler.scrollY > 0) recycler.smoothScrollToPosition(0)
+                    val shared = recycler.getChildAt(0).findViewById<TextView>(R.id.logo)
+                    val fr = DocumentIconActionMenu.new(
+                        y = shared.y + dimen(R.dimen.dp_48),
+                        emoji = shared.text.toString(),
+                        target = command.target
+                    ).apply {
+                        enterTransition = Fade()
+                        exitTransition = Fade()
+                        sharedElementEnterTransition = ChangeBounds()
+                    }
+                    childFragmentManager.beginTransaction()
+                        .add(R.id.root, fr)
+                        .addToBackStack(null)
+                        .apply { addSharedElement(shared, getString(R.string.logo_transition)) }
+                        .commit()
+                }
+                is Command.OpenDocumentEmojiIconPicker -> {
+                    DocumentEmojiIconPickerFragment.newInstance(
                         context = requireArguments().getString(ID_KEY, ID_EMPTY_VALUE),
                         target = command.target
                     ).show(childFragmentManager, null)

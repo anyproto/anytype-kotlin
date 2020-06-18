@@ -5,7 +5,12 @@ import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.common.Url
 
 sealed class Command {
-    data class OpenPagePicker(
+
+    data class OpenDocumentIconActionMenu(
+        val target: String
+    ) : Command()
+
+    data class OpenDocumentEmojiIconPicker(
         val target: String
     ) : Command()
 

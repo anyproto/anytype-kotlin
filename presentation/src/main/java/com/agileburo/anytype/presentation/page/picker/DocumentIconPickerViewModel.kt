@@ -4,11 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.icon.SetIconName
-import com.agileburo.anytype.library_page_icon_picker_widget.model.PageIconPickerView
+import com.agileburo.anytype.library_page_icon_picker_widget.model.DocumentEmojiIconPickerView
 import com.agileburo.anytype.presentation.common.StateReducer
-import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModel.Contract.Event
-import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModel.Contract.State
-import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModel.ViewState
+import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModel.Contract.Event
+import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModel.Contract.State
+import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModel.ViewState
 import com.vdurmont.emoji.Emoji
 import com.vdurmont.emoji.EmojiManager
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +17,7 @@ import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 
-class PageIconPickerViewModel(
+class DocumentIconPickerViewModel(
     private val setIconName: SetIconName
 ) : ViewStateViewModel<ViewState>(), StateReducer<State, Event> {
 
@@ -30,10 +30,7 @@ class PageIconPickerViewModel(
 
 
     private val headers = listOf(
-        PageIconPickerView.Action.UploadPhoto,
-        PageIconPickerView.Action.PickRandomly,
-        PageIconPickerView.Action.ChooseEmoji,
-        PageIconPickerView.EmojiFilter
+        DocumentEmojiIconPickerView.EmojiFilter
     )
 
     init {
@@ -51,7 +48,6 @@ class PageIconPickerViewModel(
             .map { state ->
                 when {
                     state.error != null -> ViewState.Error(state.error)
-                    state.isLoading -> ViewState.Loading
                     state.isCompleted -> ViewState.Exit
                     else -> ViewState.Success(
                         views = headers + map(state.selection)
@@ -142,12 +138,12 @@ class PageIconPickerViewModel(
     }
 
     private suspend fun pickRandomEmoji(emojis: List<Emoji>): Emoji = withContext(Dispatchers.IO) {
-        emojis.random()
+        EmojiManager.getAll().random()
     }
 
     private suspend fun map(emojis: List<Emoji>) = withContext(Dispatchers.IO) {
         emojis.map { emoji ->
-            PageIconPickerView.Emoji(
+            DocumentEmojiIconPickerView.Emoji(
                 alias = emoji.aliases.first(),
                 /**
                  * Fix pirate flag emoji render, after fixing
@@ -176,7 +172,7 @@ class PageIconPickerViewModel(
     sealed class ViewState {
         object Loading : ViewState()
         object Exit : ViewState()
-        data class Success(val views: List<PageIconPickerView>) : ViewState()
+        data class Success(val views: List<DocumentEmojiIconPickerView>) : ViewState()
         data class Error(val message: String) : ViewState()
     }
 

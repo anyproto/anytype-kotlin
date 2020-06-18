@@ -1627,7 +1627,7 @@ class PageViewModel(
     }
 
     fun onPageIconClicked() {
-        dispatch(Command.OpenPagePicker(context))
+        dispatch(Command.OpenDocumentIconActionMenu(context))
     }
 
     private fun onFileClicked(id: String) {

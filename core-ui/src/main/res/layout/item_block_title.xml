@@ -8,6 +8,7 @@
     android:paddingEnd="20dp">
 
     <TextView
+        android:transitionName="@string/logo_transition"
         android:id="@+id/logo"
         android:layout_width="64dp"
         android:layout_height="64dp"

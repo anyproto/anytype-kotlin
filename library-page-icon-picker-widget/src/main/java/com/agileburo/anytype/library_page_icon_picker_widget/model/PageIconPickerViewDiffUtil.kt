@@ -3,8 +3,8 @@ package com.agileburo.anytype.library_page_icon_picker_widget.model
 import androidx.recyclerview.widget.DiffUtil
 
 class PageIconPickerViewDiffUtil(
-    private val old: List<PageIconPickerView>,
-    private val new: List<PageIconPickerView>
+    private val old: List<DocumentEmojiIconPickerView>,
+    private val new: List<DocumentEmojiIconPickerView>
 ) : DiffUtil.Callback() {
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

@@ -80,6 +80,7 @@
     <dimen name="dp_16">16dp</dimen>
     <dimen name="dp_12">12dp</dimen>
     <dimen name="dp_48">48dp</dimen>
+    <dimen name="dp_45">45dp</dimen>
     <dimen name="dp_203">203dp</dimen>
 
     <dimen name="roundedTextBorderRadius">4dp</dimen>

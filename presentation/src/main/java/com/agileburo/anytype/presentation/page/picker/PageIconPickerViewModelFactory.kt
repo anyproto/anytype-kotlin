@@ -9,7 +9,7 @@ class PageIconPickerViewModelFactory(
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T = PageIconPickerViewModel(
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T = DocumentIconPickerViewModel(
         setIconName = setIconName
     ) as T
 }

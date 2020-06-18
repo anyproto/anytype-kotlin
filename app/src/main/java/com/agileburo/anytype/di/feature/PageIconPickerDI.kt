@@ -4,7 +4,8 @@ import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.icon.SetIconName
 import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModelFactory
-import com.agileburo.anytype.ui.page.modals.PageIconPickerFragment
+import com.agileburo.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
+import com.agileburo.anytype.ui.page.modals.actions.DocumentIconActionMenu
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -19,7 +20,8 @@ interface PageIconPickerSubComponent {
         fun build(): PageIconPickerSubComponent
     }
 
-    fun inject(fragment: PageIconPickerFragment)
+    fun inject(fragment: DocumentEmojiIconPickerFragment)
+    fun inject(fragment: DocumentIconActionMenu)
 }
 
 @Module

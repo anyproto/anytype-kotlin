@@ -15,18 +15,18 @@ import com.agileburo.anytype.R
 import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.agileburo.anytype.di.common.componentManager
-import com.agileburo.anytype.library_page_icon_picker_widget.ui.PageIconPickerAdapter
-import com.agileburo.anytype.library_page_icon_picker_widget.ui.PageIconPickerViewHolder
-import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModel
-import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModel.Contract
-import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModel.ViewState
+import com.agileburo.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
+import com.agileburo.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerViewHolder
+import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModel
+import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModel.Contract
+import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModel.ViewState
 import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
 import javax.inject.Inject
 
-class PageIconPickerFragment : BaseBottomSheetFragment() {
+class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
 
     private val target: String
         get() = requireArguments()
@@ -44,22 +44,13 @@ class PageIconPickerFragment : BaseBottomSheetFragment() {
     private val vm by lazy {
         ViewModelProviders
             .of(this, factory)
-            .get(PageIconPickerViewModel::class.java)
+            .get(DocumentIconPickerViewModel::class.java)
     }
 
     private val pageIconPickerAdapter by lazy {
-        PageIconPickerAdapter(
+        DocumentEmojiIconPickerAdapter(
             views = emptyList(),
-            onUploadPhotoClicked = { toast(NOT_IMPLEMENTED_MESSAGE) },
             onFilterQueryChanged = { vm.onEvent(Contract.Event.OnFilterQueryChanged(it)) },
-            onSetRandomEmojiClicked = {
-                vm.onEvent(
-                    Contract.Event.OnSetRandomEmojiClicked(
-                        target = target,
-                        context = context
-                    )
-                )
-            },
             onEmojiClicked = { unicode, alias ->
                 vm.onEvent(
                     Contract.Event.OnEmojiClicked(
@@ -100,12 +91,9 @@ class PageIconPickerFragment : BaseBottomSheetFragment() {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int) =
                         when (val type = pageIconPickerAdapter.getItemViewType(position)) {
-                            PageIconPickerViewHolder.HOLDER_UPLOAD_PHOTO -> PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT
-                            PageIconPickerViewHolder.HOLDER_CHOOSE_EMOJI -> PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT
-                            PageIconPickerViewHolder.HOLDER_PICK_RANDOM_EMOJI -> PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT
-                            PageIconPickerViewHolder.HOLDER_EMOJI_CATEGORY_HEADER -> PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT
-                            PageIconPickerViewHolder.HOLDER_EMOJI_FILTER -> PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT
-                            PageIconPickerViewHolder.HOLDER_EMOJI_ITEM -> 1
+                            DocumentEmojiIconPickerViewHolder.HOLDER_EMOJI_ITEM -> 1
+                            DocumentEmojiIconPickerViewHolder.HOLDER_EMOJI_CATEGORY_HEADER -> PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT
+                            DocumentEmojiIconPickerViewHolder.HOLDER_EMOJI_FILTER -> PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT
                             else -> throw IllegalStateException("$UNEXPECTED_VIEW_TYPE_MESSAGE: $type")
                         }
                 }
@@ -113,15 +101,6 @@ class PageIconPickerFragment : BaseBottomSheetFragment() {
             adapter = pageIconPickerAdapter.apply {
                 setHasStableIds(true)
             }
-        }
-
-        remove.setOnClickListener {
-            vm.onEvent(
-                Contract.Event.OnRemoveEmojiSelected(
-                    context = context,
-                    target = target
-                )
-            )
         }
     }
 
@@ -171,7 +150,7 @@ class PageIconPickerFragment : BaseBottomSheetFragment() {
         fun newInstance(
             context: String,
             target: String
-        ) = PageIconPickerFragment().apply {
+        ) = DocumentEmojiIconPickerFragment().apply {
             arguments = bundleOf(ARG_CONTEXT_ID_KEY to context, ARG_TARGET_ID_KEY to target)
         }
 
@@ -181,7 +160,6 @@ class PageIconPickerFragment : BaseBottomSheetFragment() {
         private const val ARG_TARGET_ID_KEY = "arg.picker.target.id"
         private const val MISSING_TARGET_ERROR = "Missing target id"
         private const val MISSING_CONTEXT_ERROR = "Missing context id"
-        private const val NOT_IMPLEMENTED_MESSAGE = "Not implemented"
         private const val UNEXPECTED_VIEW_TYPE_MESSAGE = "Unexpected view type"
     }
 }

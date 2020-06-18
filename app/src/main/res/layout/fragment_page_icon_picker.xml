@@ -21,26 +21,6 @@
             android:layout_marginTop="6dp"
             android:background="@drawable/page_icon_picker_dragger_background" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
-            android:fontFamily="@font/graphik_semibold"
-            android:text="@string/page_icon"
-            android:textColor="@color/black"
-            android:textSize="17sp" />
-
-        <TextView
-            android:id="@+id/remove"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginTop="30dp"
-            android:text="@string/page_icon_picker_remove_text"
-            android:textColor="#ACA996"
-            android:textSize="17sp" />
-
     </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView

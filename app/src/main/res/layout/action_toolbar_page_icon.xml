@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#52000000">
+
+    <TextView
+        android:id="@+id/logo"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/rectangle_default_page_logo_background"
+        android:gravity="center"
+        android:textColor="@color/emoji_color"
+        android:textSize="28sp"
+        android:transitionName="@string/logo_transition"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="🚀" />
+
+    <androidx.cardview.widget.CardView
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:id="@+id/menu"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo"
+        app:layout_constraintWidth_percent="0.7">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/action_toolbar_page_icon_item" />
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

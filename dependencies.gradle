@@ -27,7 +27,7 @@ ext {
 
     // Third party libraries
     exoplayer_version = '2.11.3'
-    glide_version = '4.9.0'
+    glide_version = '4.11.0'
     dagger_version = '2.11'
     javaxAnnotations_version = '1.0'
     javaxInject_version = '1'
@@ -41,7 +41,7 @@ ext {
     table_view_version = '0.8.8'
     rxbinding_version = '3.0.0'
     permission_disp_version = '4.6.0'
-    pickt_version = "0.1.9"
+    pickt_version = "0.1.11"
 
     // Unit Testing
     robolectric_version = '4.3.1'

@@ -111,4 +111,9 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="unselect_all">Unselect all</string>
     <string name="failed_to_launch_wallet">Failed to launch wallet after retry.</string>
 
+    <string name="pickit_drive">Drive file was selected</string>
+    <string name="pickit_file_selected">File was selected from unknown provider</string>
+    <string name="pickit_local_file">Local file was selected</string>
+    <string name="pickit_waiting">Waiting to receive file...</string>
+
 </resources>

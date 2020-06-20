@@ -3,13 +3,17 @@ package com.agileburo.anytype.ui.page
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
@@ -20,6 +24,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.agileburo.anytype.BuildConfig
 import androidx.transition.ChangeBounds
 import androidx.transition.Fade
 import com.agileburo.anytype.R
@@ -194,7 +199,7 @@ open class PageFragment :
     }
 
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun startDownloadWithPermissionCheck(id: String) {
+    fun startDownload(id: String) {
         vm.startDownloadingFile(id)
     }
 
@@ -233,35 +238,13 @@ open class PageFragment :
         toast(getString(R.string.permission_write_never_ask_again))
     }
 
-    override fun PickiTonProgressUpdate(progress: Int) {
-        Timber.d("PickiTonProgressUpdate progress:$progress")
-    }
-
-    override fun PickiTonStartListener() {
-        vm.onChooseVideoFileFromMedia()
-        Timber.d("PickiTonStartListener")
-    }
-
-    override fun PickiTonCompleteListener(
-        path: String?,
-        wasDriveFile: Boolean,
-        wasUnknownProvider: Boolean,
-        wasSuccessful: Boolean,
-        Reason: String?
-    ) {
-        Timber.d(
-            "PickiTonCompleteListener path:$path, wasDriveFile:$wasDriveFile, wasUnknownProvider:$wasUnknownProvider, wasSuccessful:$wasSuccessful, reason:$Reason"
-        )
-        vm.onAddVideoFileClicked(filePath = path)
-    }
-
     @Inject
     lateinit var factory: PageViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vm.open(id = extractDocumentId())
-        pickiT = PickiT(requireContext(), this)
+        pickiT = PickiT(requireContext(), this, requireActivity())
         setupOnBackPressedDispatcher()
         getEditorSettings()
     }
@@ -484,7 +467,13 @@ open class PageFragment :
 
     override fun onDestroyView() {
         removeContextMenu()
+        clearPickit()
         super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        pickiT.deleteTemporaryFile()
+        super.onDestroy()
     }
 
     override fun onBlockActionClicked(id: String, action: ActionItemType) {
@@ -781,6 +770,100 @@ open class PageFragment :
     private fun removeContextMenu() {
         anytypeContextMenu?.finish()
         anytypeContextMenu = null
+    }
+
+    // ----------- PickiT Listeners ------------------------------
+
+    private var pickitProgressDialog: ProgressDialog? = null
+    private var pickitProgressBar: ProgressBar? = null
+    private var pickitAlertDialog: AlertDialog? = null
+
+    /**
+     *  When selecting a file from Google Drive, for example, the Uri will be returned before
+     *  the file is available (if it has not yet been cached/downloaded).
+     *  Google Drive will first have to download the file before we have access to it.
+     *  This can be used to let the user know that we(the application),
+     *  are waiting for the file to be returned.
+     */
+    override fun PickiTonUriReturned() {
+        pickitProgressDialog = ProgressDialog(requireContext()).apply {
+            setMessage(getString(R.string.pickit_waiting))
+            setCancelable(false)
+        }
+        pickitProgressDialog?.show()
+    }
+
+    /**
+     *  This will return the progress of the file creation (in percentage)
+     *  and will only be called if the selected file is not local
+     */
+    override fun PickiTonProgressUpdate(progress: Int) {
+        Timber.d("PickiTonProgressUpdate progress:$progress")
+        pickitProgressBar?.progress = progress
+    }
+
+    /**
+     *  This will be call once the file creations starts and will only be called
+     *  if the selected file is not local
+     */
+    override fun PickiTonStartListener() {
+        if (pickitProgressDialog?.isShowing == true) {
+            pickitProgressDialog?.cancel()
+        }
+        pickitAlertDialog = AlertDialog.Builder(requireContext(), R.style.SyncFromCloudDialog).apply {
+            val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_layout, null)
+            setView(view)
+            view.findViewById<Button>(R.id.btnCancel).setOnClickListener {
+                pickiT.cancelTask()
+                if (pickitAlertDialog?.isShowing == true) {
+                    pickitAlertDialog?.cancel()
+                }
+            }
+            pickitProgressBar = view.findViewById(R.id.mProgressBar)
+        }.create()
+        pickitAlertDialog?.show()
+        Timber.d("PickiTonStartListener")
+    }
+
+    /**
+     *  If the selected file was from Dropbox/Google Drive or OnDrive, then this will
+     *  be called after the file was created. If the selected file was a local file then this will
+     *  be called directly, returning the path as a String.
+     *  Additionally, a boolean will be returned letting you know if the file selected was
+     *  from Dropbox/Google Drive or OnDrive.
+     */
+    override fun PickiTonCompleteListener(
+        path: String?,
+        wasDriveFile: Boolean,
+        wasUnknownProvider: Boolean,
+        wasSuccessful: Boolean,
+        Reason: String?
+    ) {
+        Timber.d("PickiTonCompleteListener path:$path, wasDriveFile:$wasDriveFile, wasUnknownProvider:$wasUnknownProvider, wasSuccessful:$wasSuccessful, reason:$Reason")
+        if (pickitAlertDialog?.isShowing == true) {
+            pickitAlertDialog?.cancel()
+        }
+        if (BuildConfig.DEBUG) {
+            when {
+                wasDriveFile -> toast(getString(R.string.pickit_drive))
+                wasUnknownProvider -> toast(getString(R.string.pickit_file_selected))
+                else -> toast(getString(R.string.pickit_local_file))
+            }
+        }
+        when {
+            wasSuccessful -> onFilePathReady(path)
+            else -> toast("Error: $Reason")
+        }
+    }
+
+    private fun onFilePathReady(filePath: String?) {
+        vm.onAddVideoFileClicked(filePath)
+    }
+
+    private fun clearPickit() {
+        pickiT.cancelTask()
+        pickitAlertDialog?.dismiss()
+        pickitProgressDialog?.dismiss()
     }
 
     //------------ End of Anytype Custom Context Menu ------------

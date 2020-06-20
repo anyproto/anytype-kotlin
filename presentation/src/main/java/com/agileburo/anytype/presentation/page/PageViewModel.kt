@@ -1613,19 +1613,6 @@ class PageViewModel(
         }
     }
 
-    fun onChooseVideoFileFromMedia() {
-        try {
-            val targetBlock = blocks.first { it.id == mediaBlockId }
-            val targetContent = targetBlock.content as Content.File
-            val newContent = targetContent.copy(state = Content.File.State.UPLOADING)
-            val newBlock = targetBlock.copy(content = newContent)
-            rerenderingBlocks(newBlock)
-        } catch (e: Exception) {
-            Timber.e(e, "Error while update block:$mediaBlockId state to Uploading")
-            _error.value = "Can't load video for this block"
-        }
-    }
-
     fun onPageIconClicked() {
         dispatch(Command.OpenDocumentIconActionMenu(context))
     }

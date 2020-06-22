@@ -1,25 +1,23 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.36 (WIP)
+## Version 0.0.36
 
 ### New features 🚀
 
 * User can set image icon for document by choosing an image from device (#535)
 * Styling toolbar shows currently applied style in markup-styling mode (#525)
 * Wired document's icon with action menu (#529)
+* User can upload files from device's cloud (#537)
 
 ### Design & UX 🔳
 
 * Redesigned page emoji icon picker (#531)
-* 
+* Empty state (zero blocks selected) for multi-select mode (#527)
+* Uploading state for 
 
 ### Fixes & tech 🚒
 
-*
-
-### Middleware ⚙
-
-*
+* Fixed file permission issues on Android 10 and 11 (#334)
 
 ## Version 0.0.35
 

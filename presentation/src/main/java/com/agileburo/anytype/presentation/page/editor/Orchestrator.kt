@@ -31,6 +31,7 @@ class Orchestrator(
     private val downloadFile: DownloadFile,
     private val updateText: UpdateText,
     private val updateAlignment: UpdateAlignment,
+    private val uploadBlock: UploadBlock,
     private val setupBookmark: SetupBookmark,
     private val copy: Copy,
     private val paste: Paste,
@@ -277,6 +278,19 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = {}
+                    )
+                }
+                is Intent.Media.Upload -> {
+                    uploadBlock(
+                        params = UploadBlock.Params(
+                            contextId = intent.context,
+                            blockId = intent.target,
+                            url = intent.url,
+                            filePath = intent.filePath
+                        )
+                    ).proceed(
+                        failure = defaultOnError,
+                        success = defaultPayload
                     )
                 }
                 is Intent.Bookmark.SetupBookmark -> {

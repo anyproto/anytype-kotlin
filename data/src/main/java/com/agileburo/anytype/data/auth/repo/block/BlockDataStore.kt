@@ -25,7 +25,7 @@ interface BlockDataStore {
     suspend fun updateTextStyle(command: CommandEntity.UpdateStyle) : PayloadEntity
 
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
-    suspend fun uploadUrl(command: CommandEntity.UploadBlock)
+    suspend fun uploadBlock(command: CommandEntity.UploadBlock): PayloadEntity
     suspend fun dnd(command: CommandEntity.Dnd)
     suspend fun unlink(command: CommandEntity.Unlink): PayloadEntity
     suspend fun getConfig(): ConfigEntity

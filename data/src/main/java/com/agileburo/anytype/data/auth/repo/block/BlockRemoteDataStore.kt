@@ -54,9 +54,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: CommandEntity.UpdateAlignment
     ) : PayloadEntity = remote.updateAlignment(command)
 
-    override suspend fun uploadUrl(command: CommandEntity.UploadBlock) {
-        remote.uploadUrl(command)
-    }
+    override suspend fun uploadBlock(
+        command: CommandEntity.UploadBlock
+    ): PayloadEntity = remote.uploadBlock(command)
 
     override suspend fun create(
         command: CommandEntity.Create

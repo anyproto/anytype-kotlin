@@ -347,7 +347,7 @@ fun Command.SetDocumentImageIcon.toEntity() = CommandEntity.SetDocumentImageIcon
     context = context
 )
 
-fun Command.UploadVideoBlockUrl.toEntity(): CommandEntity.UploadBlock = CommandEntity.UploadBlock(
+fun Command.UploadBlock.toEntity(): CommandEntity.UploadBlock = CommandEntity.UploadBlock(
     contextId = contextId,
     blockId = blockId,
     url = url,

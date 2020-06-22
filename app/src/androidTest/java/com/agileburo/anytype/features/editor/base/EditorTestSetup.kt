@@ -51,7 +51,7 @@ open class EditorTestSetup {
     lateinit var updateAlignment: UpdateAlignment
     lateinit var replaceBlock: ReplaceBlock
     lateinit var setupBookmark: SetupBookmark
-    lateinit var uploadUrl: UploadUrl
+    lateinit var uploadBlock: UploadBlock
     lateinit var splitBlock: SplitBlock
     lateinit var createPage: CreatePage
     lateinit var updateBackgroundColor: UpdateBackgroundColor
@@ -123,7 +123,7 @@ open class EditorTestSetup {
         setupBookmark = SetupBookmark(repo)
         updateAlignment = UpdateAlignment(repo)
         updateTitle = UpdateTitle(repo)
-        uploadUrl = UploadUrl(repo)
+        uploadBlock = UploadBlock(repo)
         downloadFile = DownloadFile(
             downloader = mock(),
             context = Dispatchers.Main
@@ -151,7 +151,7 @@ open class EditorTestSetup {
             documentEventReducer = DocumentExternalEventReducer(),
             archiveDocument = archiveDocument,
             createDocument = createDocument,
-            uploadUrl = uploadUrl,
+            uploadUrl = uploadBlock,
             urlBuilder = urlBuilder,
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,

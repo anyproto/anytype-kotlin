@@ -872,7 +872,7 @@ open class PageFragment :
     }
 
     private fun onFilePathReady(filePath: String?) {
-        vm.onAddVideoFileClicked(filePath)
+        vm.onProceedWithFilePath(filePath)
     }
 
     private fun clearPickit() {

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.block.interactor.RemoveLinkMark
 import com.agileburo.anytype.domain.block.interactor.UpdateLinkMarks
-import com.agileburo.anytype.domain.block.interactor.UploadUrl
+import com.agileburo.anytype.domain.block.interactor.UploadBlock
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
@@ -23,7 +23,6 @@ open class PageViewModelFactory(
     private val interceptEvents: InterceptEvents,
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
-    private val uploadUrl: UploadUrl,
     private val documentEventReducer: StateReducer<List<Block>, Event>,
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
@@ -39,7 +38,6 @@ open class PageViewModelFactory(
             interceptEvents = interceptEvents,
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
-            uploadUrl = uploadUrl,
             createPage = createPage,
             reducer = documentEventReducer,
             urlBuilder = urlBuilder,

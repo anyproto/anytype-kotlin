@@ -17,7 +17,7 @@ import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.block.interactor.RemoveLinkMark
 import com.agileburo.anytype.domain.block.interactor.UpdateLinkMarks
-import com.agileburo.anytype.domain.block.interactor.UploadUrl
+import com.agileburo.anytype.domain.block.interactor.UploadBlock
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content
 import com.agileburo.anytype.domain.block.model.Block.Prototype
@@ -59,7 +59,6 @@ class PageViewModel(
     private val interceptEvents: InterceptEvents,
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
-    private val uploadUrl: UploadUrl,
     private val reducer: StateReducer<List<Block>, Event>,
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
@@ -1592,23 +1591,19 @@ class PageViewModel(
         }
     }
 
-    fun onAddVideoFileClicked(filePath: String?) {
+    fun onProceedWithFilePath(filePath: String?) {
         if (filePath == null) {
             Timber.d("Error while getting filePath")
             return
         }
-        uploadUrl(
-            scope = viewModelScope,
-            params = UploadUrl.Params(
-                contextId = context,
-                blockId = mediaBlockId,
-                url = "",
-                filePath = filePath
-            )
-        ) { result ->
-            result.either(
-                fnL = { Timber.e(it, "Error while upload new file path for video block") },
-                fnR = { Timber.d("Upload File Path Success") }
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Media.Upload(
+                    context = context,
+                    target = mediaBlockId,
+                    filePath = filePath,
+                    url = ""
+                )
             )
         }
     }

@@ -114,9 +114,8 @@ class BlockDataRepository(
         command: Command.SetupBookmark
     ): Payload = factory.remote.setupBookmark(command.toEntity()).toDomain()
 
-    override suspend fun uploadUrl(command: Command.UploadVideoBlockUrl) {
-        factory.remote.uploadUrl(command.toEntity())
-    }
+    override suspend fun uploadBlock(command: Command.UploadBlock): Payload =
+        factory.remote.uploadBlock(command.toEntity()).toDomain()
 
     override suspend fun undo(
         command: Command.Undo

@@ -195,13 +195,13 @@ sealed class Command {
     )
 
     /**
-     * Command for updating video block url
+     * Command for uploading media or file block
      * @property contextId context id
-     * @property blockId id of the video block
-     * @property url new valid url
+     * @property blockId id of the block
+     * @property url valid url
      * @property filePath file uri
      */
-    data class UploadVideoBlockUrl(
+    data class UploadBlock(
         val contextId: Id,
         val blockId: Id,
         val url: String,

@@ -45,9 +45,8 @@ class BlockMiddleware(
         )
     }
 
-    override suspend fun uploadUrl(command: CommandEntity.UploadBlock) {
-        middleware.uploadMediaBlockContent(command)
-    }
+    override suspend fun uploadBlock(command: CommandEntity.UploadBlock) : PayloadEntity =
+        middleware.uploadBlock(command)
 
     override suspend fun updateTextStyle(
         command: CommandEntity.UpdateStyle

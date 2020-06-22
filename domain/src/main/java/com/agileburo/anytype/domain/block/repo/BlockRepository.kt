@@ -73,9 +73,9 @@ interface BlockRepository {
     suspend fun closeDashboard(id: String)
 
     /**
-     * Upload url for video block.
+     * Upload media or file block by path or url.
      */
-    suspend fun uploadUrl(command: Command.UploadVideoBlockUrl)
+    suspend fun uploadBlock(command: Command.UploadBlock): Payload
 
     suspend fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon)
     suspend fun setDocumentImageIcon(command: Command.SetDocumentImageIcon)

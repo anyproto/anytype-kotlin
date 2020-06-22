@@ -55,7 +55,6 @@ class PageModule {
         removeLinkMark: RemoveLinkMark,
         createPage: CreatePage,
         createDocument: CreateDocument,
-        uploadUrl: UploadUrl,
         documentExternalEventReducer: DocumentExternalEventReducer,
         urlBuilder: UrlBuilder,
         renderer: DefaultBlockViewRenderer,
@@ -69,7 +68,6 @@ class PageModule {
         interceptEvents = interceptEvents,
         updateLinkMarks = updateLinkMarks,
         removeLinkMark = removeLinkMark,
-        uploadUrl = uploadUrl,
         documentEventReducer = documentExternalEventReducer,
         urlBuilder = urlBuilder,
         renderer = renderer,
@@ -162,7 +160,7 @@ class PageModule {
     @PerScreen
     fun provideUploadUrl(
         repo: BlockRepository
-    ): UploadUrl = UploadUrl(
+    ): UploadBlock = UploadBlock(
         repo = repo
     )
 
@@ -323,6 +321,7 @@ class PageModule {
         downloadFile: DownloadFile,
         updateTitle: UpdateTitle,
         updateText: UpdateText,
+        uploadBlock: UploadBlock,
         updateAlignment: UpdateAlignment,
         textInteractor: Interactor.TextInteractor,
         setupBookmark: SetupBookmark,
@@ -338,6 +337,7 @@ class PageModule {
         duplicateBlock = duplicateBlock,
         updateBackgroundColor = updateBackgroundColor,
         updateTextColor = updateTextColor,
+        uploadBlock = uploadBlock,
         splitBlock = splitBlock,
         mergeBlocks = mergeBlocks,
         unlinkBlocks = unlinkBlocks,

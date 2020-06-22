@@ -127,6 +127,12 @@ sealed class Intent {
             val name: String
         ) : Media()
 
+        class Upload(
+            val context: Id,
+            val target: Id,
+            val url: String,
+            val filePath: String
+        ) : Media()
     }
 
     sealed class Bookmark : Intent() {

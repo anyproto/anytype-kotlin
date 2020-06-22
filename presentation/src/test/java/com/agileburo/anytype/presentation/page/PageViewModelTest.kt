@@ -113,7 +113,7 @@ class PageViewModelTest {
     lateinit var downloadFile: DownloadFile
 
     @Mock
-    lateinit var uploadUrl: UploadUrl
+    lateinit var uploadBlock: UploadBlock
 
     @Mock
     lateinit var paste: Paste
@@ -4334,7 +4334,6 @@ class PageViewModelTest {
             removeLinkMark = removeLinkMark,
             reducer = DocumentExternalEventReducer(),
             urlBuilder = urlBuilder,
-            uploadUrl = uploadUrl,
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
@@ -4356,6 +4355,7 @@ class PageViewModelTest {
                 updateTextStyle = updateTextStyle,
                 updateBackgroundColor = updateBackgroundColor,
                 mergeBlocks = mergeBlocks,
+                uploadBlock = uploadBlock,
                 splitBlock = splitBlock,
                 unlinkBlocks = unlinkBlocks,
                 memory = memory,

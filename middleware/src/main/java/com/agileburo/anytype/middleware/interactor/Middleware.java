@@ -451,7 +451,7 @@ public class Middleware {
         return mapper.toPayload(response.getEvent());
     }
 
-    public void uploadMediaBlockContent(CommandEntity.UploadBlock command) throws Exception {
+    public PayloadEntity uploadBlock(CommandEntity.UploadBlock command) throws Exception {
         Block.Upload.Request request = Block.Upload.Request
                 .newBuilder()
                 .setFilePath(command.getFilePath())
@@ -469,6 +469,8 @@ public class Middleware {
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
+
+        return mapper.toPayload(response.getEvent());
     }
 
     public Pair<String, PayloadEntity> createBlock(

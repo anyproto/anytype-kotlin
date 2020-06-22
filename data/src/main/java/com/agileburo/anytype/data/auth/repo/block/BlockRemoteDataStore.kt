@@ -86,9 +86,13 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: CommandEntity.Split
     ): Pair<String, PayloadEntity> = remote.split(command)
 
-    override suspend fun setIconName(
-        command: CommandEntity.SetIconName
-    ) = remote.setIconName(command)
+    override suspend fun setDocumentEmojiIcon(
+        command: CommandEntity.SetDocumentEmojiIcon
+    ) = remote.setDocumentEmojiIcon(command)
+
+    override suspend fun setDocumentImageIcon(
+        command: CommandEntity.SetDocumentImageIcon
+    ) = remote.setDocumentImageIcon(command)
 
     override suspend fun setupBookmark(
         command: CommandEntity.SetupBookmark
@@ -113,4 +117,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun copy(
         command: CommandEntity.Copy
     ): Response.Clipboard.Copy = remote.copy(command)
+
+    override suspend fun uploadFile(
+        command: CommandEntity.UploadFile
+    ): String = remote.uploadFile(command)
 }

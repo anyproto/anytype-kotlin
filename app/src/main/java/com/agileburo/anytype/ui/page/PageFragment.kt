@@ -13,6 +13,7 @@ import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.addCallback
@@ -24,9 +25,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.agileburo.anytype.BuildConfig
 import androidx.transition.ChangeBounds
 import androidx.transition.Fade
+import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
@@ -64,6 +65,7 @@ import com.agileburo.anytype.ui.menu.AnytypeContextMenu
 import com.agileburo.anytype.ui.page.modals.*
 import com.agileburo.anytype.ui.page.modals.actions.BlockActionToolbarFactory
 import com.agileburo.anytype.ui.page.modals.actions.DocumentIconActionMenu
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
@@ -164,10 +166,10 @@ open class PageFragment :
         FirstItemInvisibilityDetector { isVisible ->
             if (isVisible) {
                 topToolbar.title.invisible()
-                topToolbar.icon.invisible()
+                topToolbar.container.invisible()
             } else {
                 topToolbar.title.visible()
-                topToolbar.icon.visible()
+                topToolbar.container.visible()
             }
         }
     }
@@ -509,12 +511,14 @@ open class PageFragment :
             when (command) {
                 is Command.OpenDocumentIconActionMenu -> {
                     hideSoftInput()
-                    if (recycler.scrollY > 0) recycler.smoothScrollToPosition(0)
-                    val shared = recycler.getChildAt(0).findViewById<TextView>(R.id.logo)
+                    recycler.smoothScrollToPosition(0)
+                    val shared =
+                        recycler.getChildAt(0).findViewById<FrameLayout>(R.id.documentIconContainer)
                     val fr = DocumentIconActionMenu.new(
                         y = shared.y + dimen(R.dimen.dp_48),
-                        emoji = shared.text.toString(),
-                        target = command.target
+                        emoji = command.emoji,
+                        target = command.target,
+                        image = command.image
                     ).apply {
                         enterTransition = Fade()
                         exitTransition = Fade()
@@ -606,7 +610,18 @@ open class PageFragment :
             view is BlockView.Title
         }?.let { view ->
             topToolbar.title.text = (view as BlockView.Title).text
-            topToolbar.icon.text = view.emoji
+            topToolbar.emoji.text = view.emoji
+            if (view.image != null) {
+                topToolbar.image.visible()
+                Glide
+                    .with(topToolbar.image)
+                    .load(view.image)
+                    .centerInside()
+                    .circleCrop()
+                    .into(topToolbar.image)
+            } else {
+                topToolbar.image.setImageDrawable(null)
+            }
         }
     }
 
@@ -676,7 +691,7 @@ open class PageFragment :
     }
 
     override fun onClipboardAction(action: ClipboardInterceptor.Action) {
-        when(action) {
+        when (action) {
             is ClipboardInterceptor.Action.Copy -> vm.onCopy(action.selection)
             is ClipboardInterceptor.Action.Paste -> vm.onPaste(action.selection)
         }

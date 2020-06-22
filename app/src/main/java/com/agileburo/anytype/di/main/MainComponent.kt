@@ -33,7 +33,7 @@ interface MainComponent {
     fun detailsReorderBuilder(): DetailsReorderSubComponent.Builder
     fun pageComponentBuilder(): PageSubComponent.Builder
     fun linkAddComponentBuilder(): LinkSubComponent.Builder
-    fun pageIconPickerBuilder(): PageIconPickerSubComponent.Builder
+    fun pageIconPickerBuilder(): DocumentIconPickerSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
     fun debugSettingsBuilder() : DebugSettingsSubComponent.Builder
 }

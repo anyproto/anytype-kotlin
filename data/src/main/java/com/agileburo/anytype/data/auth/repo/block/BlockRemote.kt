@@ -33,7 +33,8 @@ interface BlockRemote {
     suspend fun closePage(id: String)
     suspend fun openDashboard(contextId: String, id: String): PayloadEntity
     suspend fun closeDashboard(id: String)
-    suspend fun setIconName(command: CommandEntity.SetIconName)
+    suspend fun setDocumentEmojiIcon(command: CommandEntity.SetDocumentEmojiIcon)
+    suspend fun setDocumentImageIcon(command: CommandEntity.SetDocumentImageIcon)
     suspend fun uploadUrl(command: CommandEntity.UploadBlock)
     suspend fun setupBookmark(command: CommandEntity.SetupBookmark) : PayloadEntity
     suspend fun undo(command: CommandEntity.Undo) : PayloadEntity
@@ -41,4 +42,6 @@ interface BlockRemote {
     suspend fun archiveDocument(command: CommandEntity.ArchiveDocument)
     suspend fun paste(command: CommandEntity.Paste) : Response.Clipboard.Paste
     suspend fun copy(command: CommandEntity.Copy) : Response.Clipboard.Copy
+
+    suspend fun uploadFile(command: CommandEntity.UploadFile): String
 }

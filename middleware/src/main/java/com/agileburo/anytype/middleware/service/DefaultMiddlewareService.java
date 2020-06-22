@@ -4,6 +4,7 @@ import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
+import anytype.Commands.Rpc.UploadFile;
 import anytype.Commands.Rpc.Wallet;
 import lib.Lib;
 
@@ -333,6 +334,17 @@ public class DefaultMiddlewareService implements MiddlewareService {
         byte[] encoded = Lib.blockCopy(request.toByteArray());
         Block.Copy.Response response = Block.Copy.Response.parseFrom(encoded);
         if (response.getError() != null && response.getError().getCode() != Block.Copy.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
+    public UploadFile.Response uploadFile(UploadFile.Request request) throws Exception {
+        byte[] encoded = Lib.uploadFile(request.toByteArray());
+        UploadFile.Response response = UploadFile.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != UploadFile.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return response;

@@ -92,7 +92,7 @@ class GoalAdapter(
         class TitleHolder(view: View) : ViewHolder(view) {
 
             private val title = itemView.title
-            private val logo = itemView.logo
+            private val logo = itemView.emojiIcon
 
             fun bind(item: GoalView.Title) {
                 title.setText(item.title)

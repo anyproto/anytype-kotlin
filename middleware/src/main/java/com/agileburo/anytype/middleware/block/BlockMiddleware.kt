@@ -106,9 +106,13 @@ class BlockMiddleware(
         command: CommandEntity.Split
     ): Pair<String, PayloadEntity> = middleware.split(command)
 
-    override suspend fun setIconName(
-        command: CommandEntity.SetIconName
-    ) = middleware.setIconName(command)
+    override suspend fun setDocumentEmojiIcon(
+        command: CommandEntity.SetDocumentEmojiIcon
+    ) = middleware.setDocumentEmojiIcon(command)
+
+    override suspend fun setDocumentImageIcon(
+        command: CommandEntity.SetDocumentImageIcon
+    ) = middleware.setDocumentImageIcon(command)
 
     override suspend fun setupBookmark(
         command: CommandEntity.SetupBookmark
@@ -137,4 +141,8 @@ class BlockMiddleware(
     override suspend fun copy(
         command: CommandEntity.Copy
     ): Response.Clipboard.Copy = middleware.copy(command)
+
+    override suspend fun uploadFile(
+        command: CommandEntity.UploadFile
+    ): String = middleware.uploadFile(command).hash
 }

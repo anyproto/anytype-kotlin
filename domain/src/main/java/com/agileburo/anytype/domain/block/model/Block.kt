@@ -29,7 +29,7 @@ data class Block(
         private val default = map.withDefault { null }
 
         val name: String? by default
-        val icon: String? by default
+        val iconEmoji: String? by default
         val iconImage: String? by default
         val isArchived: Boolean? by default
 

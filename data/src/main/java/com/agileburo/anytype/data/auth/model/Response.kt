@@ -15,4 +15,10 @@ sealed class Response {
             val blocks: List<BlockEntity>
         ) : Clipboard()
     }
+
+    sealed class Media : Response() {
+        class Upload(
+            val hash: String
+        )
+    }
 }

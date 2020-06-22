@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.tools.SupportDragAndDropBehavior
-import com.agileburo.anytype.core_utils.ext.res
 import com.agileburo.anytype.core_utils.ext.shift
 import com.agileburo.anytype.presentation.desktop.DashboardView
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_desktop_page.view.*
 
 class DashboardAdapter(
@@ -59,10 +59,28 @@ class DashboardAdapter(
 
         class DocumentHolder(itemView: View) : ViewHolder(itemView) {
 
+            private val title = itemView.title
+            private val emoji = itemView.emoji
+            private val image = itemView.image
+
             fun bind(doc: DashboardView.Document, onClick: (DashboardView.Document) -> Unit) {
                 itemView.setOnClickListener { onClick(doc) }
-                itemView.title.text = doc.title ?: res(R.string.untitled)
-                itemView.emoji.text = doc.emoji ?: EMPTY_EMOJI
+
+                if (doc.title.isNullOrEmpty())
+                    title.setText(R.string.untitled)
+                else
+                    title.text = doc.title
+
+                emoji.text = doc.emoji ?: EMPTY_EMOJI
+
+                doc.image?.let { url ->
+                    Glide
+                        .with(image)
+                        .load(url)
+                        .centerInside()
+                        .circleCrop()
+                        .into(image)
+                }
             }
         }
     }

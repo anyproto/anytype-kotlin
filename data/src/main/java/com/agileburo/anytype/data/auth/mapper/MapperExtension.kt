@@ -336,10 +336,15 @@ fun Command.Split.toEntity(): CommandEntity.Split = CommandEntity.Split(
     style = BlockEntity.Content.Text.Style.valueOf(style.name)
 )
 
-fun Command.SetIconName.toEntity() = CommandEntity.SetIconName(
+fun Command.SetDocumentEmojiIcon.toEntity() = CommandEntity.SetDocumentEmojiIcon(
     target = target,
     context = context,
-    name = name
+    emoji = emoji
+)
+
+fun Command.SetDocumentImageIcon.toEntity() = CommandEntity.SetDocumentImageIcon(
+    hash = hash,
+    context = context
 )
 
 fun Command.UploadVideoBlockUrl.toEntity(): CommandEntity.UploadBlock = CommandEntity.UploadBlock(
@@ -406,6 +411,11 @@ fun Command.UpdateAlignment.toEntity(): CommandEntity.UpdateAlignment = CommandE
     context = context,
     targets = targets,
     alignment = alignment.toEntity()
+)
+
+fun Command.UploadFile.toEntity(): CommandEntity.UploadFile = CommandEntity.UploadFile(
+    path = path,
+    type = BlockEntity.Content.File.Type.valueOf(type.name)
 )
 
 fun Position.toEntity(): PositionEntity {

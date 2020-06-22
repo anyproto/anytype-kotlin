@@ -1,38 +1,34 @@
 package com.agileburo.anytype.domain.icon
 
 import com.agileburo.anytype.domain.base.BaseUseCase
-import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
 
 /**
- * Use-case for setting emoji icon's short name
+ * Use-case for setting emoji icon.
  */
-class SetIconName(private val repo: BlockRepository) : BaseUseCase<Any, SetIconName.Params>() {
+class SetDocumentEmojiIcon(private val repo: BlockRepository) :
+    BaseUseCase<Any, SetDocumentEmojiIcon.Params>() {
 
-    override suspend fun run(params: Params) = try {
-        repo.setIconName(
-            command = Command.SetIconName(
+    override suspend fun run(params: Params) = safe {
+        repo.setDocumentEmojiIcon(
+            command = Command.SetDocumentEmojiIcon(
                 context = params.context,
                 target = params.target,
-                name = params.name
+                emoji = params.emoji
             )
-        ).let {
-            Either.Right(it)
-        }
-    } catch (t: Throwable) {
-        Either.Left(t)
+        )
     }
 
     /**
-     * Params for setting icon name
-     * @property name emoji's short-name code
+     * Params for for setting document's emoji icon
+     * @property emoji emoji's unicode
      * @property target id of the target block (icon)
      * @property context id of the context for this operation
      */
     data class Params(
-        val name: String,
+        val emoji: String,
         val target: Id,
         val context: Id
     )

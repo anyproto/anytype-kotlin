@@ -177,7 +177,8 @@ fun Block.Content.Text.marks(): List<Markup.Mark> = marks.mapNotNull { mark ->
     }
 }
 
-fun HomeDashboard.toView(): List<DashboardView.Document> = children.mapNotNull { id ->
+fun HomeDashboard.toView(builder: UrlBuilder): List<DashboardView.Document> =
+    children.mapNotNull { id ->
     blocks.find { block -> block.id == id }?.let { model ->
         when (val content = model.content) {
             is Block.Content.Link -> {
@@ -187,9 +188,15 @@ fun HomeDashboard.toView(): List<DashboardView.Document> = children.mapNotNull {
                             id = model.id,
                             target = content.target,
                             title = details.details[content.target]?.name,
-                            emoji = details.details[content.target]?.icon?.let { name ->
+                            emoji = details.details[content.target]?.iconEmoji?.let { name ->
                                 if (name.isNotEmpty())
                                     name
+                                else
+                                    null
+                            },
+                            image = details.details[content.target]?.iconImage?.let { name ->
+                                if (name.isNotEmpty())
+                                    builder.image(name)
                                 else
                                     null
                             }

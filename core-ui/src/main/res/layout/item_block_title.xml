@@ -7,16 +7,29 @@
     android:paddingStart="20dp"
     android:paddingEnd="20dp">
 
-    <TextView
+    <FrameLayout
         android:transitionName="@string/logo_transition"
-        android:id="@+id/logo"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:background="@drawable/rectangle_default_page_logo_background"
-        android:gravity="center"
+        android:id="@+id/documentIconContainer"
         android:layout_marginTop="45dp"
-        android:textColor="@color/emoji_color"
-        android:textSize="28sp" />
+        android:layout_width="64dp"
+        android:layout_height="64dp">
+
+        <TextView
+            android:id="@+id/emojiIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/rectangle_default_page_logo_background"
+            android:gravity="center"
+            android:textColor="@color/emoji_color"
+            android:textSize="28sp" />
+
+        <ImageView
+            android:id="@+id/imageIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
 
     <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
         android:hint="@string/hint_title"

@@ -3,7 +3,8 @@ package com.agileburo.anytype.presentation.page.picker
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.base.Either
-import com.agileburo.anytype.domain.icon.SetIconName
+import com.agileburo.anytype.domain.icon.SetDocumentEmojiIcon
+import com.agileburo.anytype.domain.icon.SetDocumentImageIcon
 import com.agileburo.anytype.library_page_icon_picker_widget.model.DocumentEmojiIconPickerView
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModel.Contract.Event
@@ -15,10 +16,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class DocumentIconPickerViewModel(
-    private val setIconName: SetIconName
+    private val setEmojiIcon: SetDocumentEmojiIcon,
+    private val setImageIcon: SetDocumentImageIcon
 ) : ViewStateViewModel<ViewState>(), StateReducer<State, Event> {
 
     private val channel = ConflatedBroadcastChannel<Event>()
@@ -104,22 +108,36 @@ class DocumentIconPickerViewModel(
     private suspend fun setIconEmojiName(
         action: Contract.Action.SetEmoji
     ): Either<Throwable, Unit> = withContext(Dispatchers.IO) {
-        setIconName.run(
-            params = SetIconName.Params(
+        setEmojiIcon.run(
+            params = SetDocumentEmojiIcon.Params(
                 target = action.target,
-                name = action.unicode,
+                emoji = action.unicode,
                 context = action.context
             )
         )
     }
 
+    fun onImagePickedFromGallery(context: String, path: String) {
+        viewModelScope.launch {
+            setImageIcon(
+                SetDocumentImageIcon.Params(
+                    context = context,
+                    path = path
+                )
+            ).proceed(
+                failure = { Timber.e(it, "Error while setting document image icon") },
+                success = { stateData.postValue(ViewState.Exit) }
+            )
+        }
+    }
+
     private suspend fun clearIconEmojiName(
         action: Contract.Action.ClearEmoji
     ): Either<Throwable, Unit> = withContext(Dispatchers.IO) {
-        setIconName.run(
-            params = SetIconName.Params(
+        setEmojiIcon.run(
+            params = SetDocumentEmojiIcon.Params(
                 target = action.target,
-                name = "",
+                emoji = "",
                 context = action.context
             )
         )

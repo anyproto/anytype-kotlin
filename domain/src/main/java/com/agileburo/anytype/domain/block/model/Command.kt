@@ -1,8 +1,14 @@
 package com.agileburo.anytype.domain.block.model
 
+import com.agileburo.anytype.domain.common.Hash
 import com.agileburo.anytype.domain.common.Id
 
 sealed class Command {
+
+    class UploadFile(
+        val path: String,
+        val type: Block.Content.File.Type
+    )
 
     /**
      * Command for archiving a document
@@ -202,10 +208,26 @@ sealed class Command {
         val filePath: String
     )
 
-    data class SetIconName(
+    /**
+     * Command for setting document's emoji icon
+     * @property emoji emoji's unicode
+     * @property target id of the target block (icon)
+     * @property context id of the context for this operation
+     */
+    data class SetDocumentEmojiIcon(
         val context: Id,
         val target: Id,
-        val name: String
+        val emoji: String
+    )
+
+    /**
+     * Command for setting document's image icon
+     * @property hash image hash
+     * @property context id of the context for this operation
+     */
+    data class SetDocumentImageIcon(
+        val context: Id,
+        val hash: Hash
     )
 
     /**

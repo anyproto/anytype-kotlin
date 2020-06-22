@@ -1614,7 +1614,24 @@ class PageViewModel(
     }
 
     fun onPageIconClicked() {
-        dispatch(Command.OpenDocumentIconActionMenu(context))
+        val details = orchestrator.stores.details.current()
+        dispatch(
+            Command.OpenDocumentIconActionMenu(
+                target = context,
+                emoji = details.details[context]?.iconEmoji?.let { name ->
+                    if (name.isNotEmpty())
+                        name
+                    else
+                        null
+                },
+                image = details.details[context]?.iconImage?.let { name ->
+                    if (name.isNotEmpty())
+                        urlBuilder.image(name)
+                    else
+                        null
+                }
+            )
+        )
     }
 
     private fun onFileClicked(id: String) {

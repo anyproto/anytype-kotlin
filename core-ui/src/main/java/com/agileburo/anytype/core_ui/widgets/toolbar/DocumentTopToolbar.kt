@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.agileburo.anytype.core_ui.R
@@ -13,8 +15,10 @@ class DocumentTopToolbar : ConstraintLayout {
 
     val back: View get() = toolbarBackButton
     val menu: View get() = toolbarMenu
+    val container: FrameLayout get() = toolbarIconContainer
     val title: TextView get() = toolbarTitle
-    val icon: TextView get() = toolbarIcon
+    val emoji: TextView get() = toolbarEmojiIcon
+    val image: ImageView get() = toolbarImageIcon
 
     constructor(
         context: Context

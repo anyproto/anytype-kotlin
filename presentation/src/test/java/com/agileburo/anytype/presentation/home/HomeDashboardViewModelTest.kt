@@ -21,6 +21,7 @@ import com.agileburo.anytype.domain.emoji.Emoji
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.presentation.desktop.HomeDashboardEventConverter
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine
@@ -78,6 +79,14 @@ class HomeDashboardViewModelTest {
 
     private lateinit var vm: HomeDashboardViewModel
 
+    val config = Config(
+        home = MockDataFactory.randomUuid(),
+        gateway = MockDataFactory.randomUuid(),
+        profile = MockDataFactory.randomUuid()
+    )
+
+    val builder = UrlBuilder(config)
+
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
@@ -102,12 +111,6 @@ class HomeDashboardViewModelTest {
 
         // SETUP
 
-        val config = Config(
-            home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid(),
-            profile = MockDataFactory.randomUuid()
-        )
-
         val response = Either.Right(config)
 
         stubGetConfig(response)
@@ -126,12 +129,6 @@ class HomeDashboardViewModelTest {
     fun `should start observing events after receiving config`() {
 
         // SETUP
-
-        val config = Config(
-            home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid(),
-            profile = MockDataFactory.randomUuid()
-        )
 
         val response = Either.Right(config)
 
@@ -152,12 +149,6 @@ class HomeDashboardViewModelTest {
     fun `should start observing home dashboard after receiving config`() {
 
         // SETUP
-
-        val config = Config(
-            home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid(),
-            profile = MockDataFactory.randomUuid()
-        )
 
         val response = Either.Right(config)
 
@@ -208,12 +199,6 @@ class HomeDashboardViewModelTest {
     fun `should emit view state with dashboard when home dashboard loading started`() {
 
         // SETUP
-
-        val config = Config(
-            home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid(),
-            profile = MockDataFactory.randomUuid()
-        )
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
@@ -270,12 +255,6 @@ class HomeDashboardViewModelTest {
     fun `block dragging events do not alter overall state`() {
 
         // SETUP
-
-        val config = Config(
-            home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid(),
-            profile = MockDataFactory.randomUuid()
-        )
 
         val emoji = Emoji(
             unicode = MockDataFactory.randomString(),
@@ -379,7 +358,7 @@ class HomeDashboardViewModelTest {
                 dashboard,
                 pages.first(),
                 pages.last()
-            ).toHomeDashboard(dashboard.id).toView()
+            ).toHomeDashboard(dashboard.id).toView(builder)
         }
 
         val from = 0
@@ -399,12 +378,6 @@ class HomeDashboardViewModelTest {
 
     @Test
     fun `should start dispatching drag-and-drop actions when the dragged item is dropped`() {
-
-        val config = Config(
-            home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid(),
-            profile = MockDataFactory.randomUuid()
-        )
 
         val emoji = Emoji(
             unicode = MockDataFactory.randomString(),
@@ -465,7 +438,7 @@ class HomeDashboardViewModelTest {
         coroutineTestRule.advanceTime(delayInMillis)
 
         val views = runBlocking {
-            dashboard.toView()
+            dashboard.toView(builder)
         }
 
         val from = 0
@@ -498,12 +471,6 @@ class HomeDashboardViewModelTest {
     fun `should proceed with getting account and opening dashboard when view is created`() {
 
         // SETUP
-
-        val config = Config(
-            home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid(),
-            profile = MockDataFactory.randomUuid()
-        )
 
         stubGetConfig(Either.Right(config))
         stubObserveEvents(params = InterceptEvents.Params(context = config.home))

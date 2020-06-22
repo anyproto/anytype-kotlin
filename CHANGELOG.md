@@ -4,6 +4,7 @@
 
 ### New features 🚀
 
+* User can set image icon for document by choosing an image from device (#535)
 * Styling toolbar shows currently applied style in markup-styling mode (#525)
 * Wired document's icon with action menu (#529)
 

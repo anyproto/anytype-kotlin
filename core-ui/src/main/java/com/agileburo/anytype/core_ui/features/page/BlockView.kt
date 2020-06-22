@@ -151,6 +151,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val isFocused: Boolean,
         val text: String?,
         val emoji: String? = null,
+        val image: String? = null,
         override val mode: Mode = Mode.EDIT,
         override val cursor: Int? = null
     ) : BlockView(), Focusable, Cursor, Permission {

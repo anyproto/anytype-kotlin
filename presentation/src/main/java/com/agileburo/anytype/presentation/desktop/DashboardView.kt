@@ -7,6 +7,7 @@ sealed class DashboardView {
         val id: Id,
         val target: Id,
         val title: String? = null,
-        val emoji: String? = null
+        val emoji: String? = null,
+        val image: String? = null
     ) : DashboardView()
 }

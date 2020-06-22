@@ -3,11 +3,14 @@ package com.agileburo.anytype.domain.block.repo
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.clipboard.Copy
 import com.agileburo.anytype.domain.clipboard.Paste
+import com.agileburo.anytype.domain.common.Hash
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.event.model.Payload
 
 interface BlockRepository {
+
+    suspend fun uploadFile(command: Command.UploadFile): Hash
 
     suspend fun dnd(command: Command.Dnd)
     suspend fun unlink(command: Command.Unlink): Payload
@@ -74,7 +77,8 @@ interface BlockRepository {
      */
     suspend fun uploadUrl(command: Command.UploadVideoBlockUrl)
 
-    suspend fun setIconName(command: Command.SetIconName)
+    suspend fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon)
+    suspend fun setDocumentImageIcon(command: Command.SetDocumentImageIcon)
 
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
 

@@ -172,9 +172,15 @@ class DefaultBlockViewRenderer(
                     id = anchor,
                     isFocused = anchor == focus.id,
                     text = details.details[root.id]?.name,
-                    emoji = details.details[root.id]?.icon?.let { name ->
+                    emoji = details.details[root.id]?.iconEmoji?.let { name ->
                         if (name.isNotEmpty())
                             name
+                        else
+                            null
+                    },
+                    image = details.details[root.id]?.iconImage?.let { name ->
+                        if (name.isNotEmpty())
+                            urlBuilder.image(name)
                         else
                             null
                     },
@@ -448,7 +454,7 @@ class DefaultBlockViewRenderer(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
-        emoji = root.fields.icon?.let { name ->
+        emoji = root.fields.iconEmoji?.let { name ->
             if (name.isNotEmpty())
                 name
             else
@@ -465,7 +471,7 @@ class DefaultBlockViewRenderer(
     ): BlockView.Page = BlockView.Page(
         id = block.id,
         isEmpty = true,
-        emoji = details.details[content.target]?.icon?.let { name ->
+        emoji = details.details[content.target]?.iconEmoji?.let { name ->
             if (name.isNotEmpty())
                 name
             else

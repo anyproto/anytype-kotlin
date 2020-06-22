@@ -160,25 +160,33 @@ class MiddlewareTest {
 
         // SETUP
 
-        val command = CommandEntity.SetIconName(
+        val command = CommandEntity.SetDocumentEmojiIcon(
             context = MockDataFactory.randomUuid(),
             target = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString()
+            emoji = MockDataFactory.randomString()
         )
 
         val response = Block.Set.Details.Response.getDefaultInstance()
 
-        val key = "icon"
+        val emojiIconKey = "iconEmoji"
+        val imageIconKey = "iconImage"
 
-        val value = Value.newBuilder().setStringValue(command.name)
+        val emojiValue = Value.newBuilder().setStringValue(command.emoji)
 
-        val details = Block.Set.Details.Detail.newBuilder()
-            .setKey(key)
-            .setValue(value)
+        val emojiDetail = Block.Set.Details.Detail.newBuilder()
+            .setKey(emojiIconKey)
+            .setValue(emojiValue)
+
+        val imageValue = Value.newBuilder().setStringValue("")
+
+        val imageDetail = Block.Set.Details.Detail.newBuilder()
+            .setKey(imageIconKey)
+            .setValue(imageValue)
 
         val request = Block.Set.Details.Request.newBuilder()
             .setContextId(command.context)
-            .addDetails(details)
+            .addDetails(emojiDetail)
+            .addDetails(imageDetail)
             .build()
 
         service.stub {
@@ -187,7 +195,53 @@ class MiddlewareTest {
 
         // TESTING
 
-        middleware.setIconName(command)
+        middleware.setDocumentEmojiIcon(command)
+
+        verify(service, times(1)).blockSetDetails(request)
+        verifyNoMoreInteractions(service)
+    }
+
+    @Test
+    fun `should set image icon by updating document details`() {
+
+        // SETUP
+
+        val command = CommandEntity.SetDocumentImageIcon(
+            context = MockDataFactory.randomUuid(),
+            hash = MockDataFactory.randomUuid()
+        )
+
+        val response = Block.Set.Details.Response.getDefaultInstance()
+
+        val imageIconKey = "iconImage"
+
+        val imageIconValue = Value.newBuilder().setStringValue(command.hash)
+
+        val imageIconDetail = Block.Set.Details.Detail.newBuilder()
+            .setKey(imageIconKey)
+            .setValue(imageIconValue)
+
+        val emojiIconKey = "iconEmoji"
+
+        val emojiIconValue = Value.newBuilder().setStringValue("")
+
+        val emojiIconDetail = Block.Set.Details.Detail.newBuilder()
+            .setKey(emojiIconKey)
+            .setValue(emojiIconValue)
+
+        val request = Block.Set.Details.Request.newBuilder()
+            .setContextId(command.context)
+            .addDetails(imageIconDetail)
+            .addDetails(emojiIconDetail)
+            .build()
+
+        service.stub {
+            on { blockSetDetails(any()) } doReturn response
+        }
+
+        // TESTING
+
+        middleware.setDocumentImageIcon(command)
 
         verify(service, times(1)).blockSetDetails(request)
         verifyNoMoreInteractions(service)
@@ -383,6 +437,96 @@ class MiddlewareTest {
         middleware.split(command)
 
         verify(service, times(1)).blockSplit(request)
+        verifyNoMoreInteractions(service)
+    }
+
+    @Test
+    fun `should create request for uploading file as picture`() {
+
+        // SETUP
+
+        val path = MockDataFactory.randomString()
+
+        val command = CommandEntity.UploadFile(
+            path = path,
+            type = BlockEntity.Content.File.Type.IMAGE
+        )
+
+        val request = UploadFile.Request
+            .newBuilder()
+            .setLocalPath(path)
+            .setType(Models.Block.Content.File.Type.Image)
+            .build()
+
+        service.stub {
+            on { uploadFile(request) } doReturn UploadFile.Response.getDefaultInstance()
+        }
+
+        // TESTING
+
+        middleware.uploadFile(command)
+
+        verify(service, times(1)).uploadFile(request)
+        verifyNoMoreInteractions(service)
+    }
+
+    @Test
+    fun `should create request for uploading file as file`() {
+
+        // SETUP
+
+        val path = MockDataFactory.randomString()
+
+        val command = CommandEntity.UploadFile(
+            path = path,
+            type = BlockEntity.Content.File.Type.FILE
+        )
+
+        val request = UploadFile.Request
+            .newBuilder()
+            .setLocalPath(path)
+            .setType(Models.Block.Content.File.Type.File)
+            .build()
+
+        service.stub {
+            on { uploadFile(request) } doReturn UploadFile.Response.getDefaultInstance()
+        }
+
+        // TESTING
+
+        middleware.uploadFile(command)
+
+        verify(service, times(1)).uploadFile(request)
+        verifyNoMoreInteractions(service)
+    }
+
+    @Test
+    fun `should create request for uploading file as video`() {
+
+        // SETUP
+
+        val path = MockDataFactory.randomString()
+
+        val command = CommandEntity.UploadFile(
+            path = path,
+            type = BlockEntity.Content.File.Type.VIDEO
+        )
+
+        val request = UploadFile.Request
+            .newBuilder()
+            .setLocalPath(path)
+            .setType(Models.Block.Content.File.Type.Video)
+            .build()
+
+        service.stub {
+            on { uploadFile(request) } doReturn UploadFile.Response.getDefaultInstance()
+        }
+
+        // TESTING
+
+        middleware.uploadFile(command)
+
+        verify(service, times(1)).uploadFile(request)
         verifyNoMoreInteractions(service)
     }
 }

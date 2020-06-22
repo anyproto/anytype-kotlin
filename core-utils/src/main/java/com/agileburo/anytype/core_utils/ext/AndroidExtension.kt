@@ -55,6 +55,7 @@ fun RecyclerView.ViewHolder.res(@StringRes res: Int): String {
     return itemView.context.resources.getString(res)
 }
 
+@Deprecated("Fix getColumnIndex() issue!")
 fun Uri.parsePath(context: Context): String {
 
     val result: String?

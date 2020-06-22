@@ -125,7 +125,7 @@ class ComponentManager(private val main: MainComponent) {
     val pageIconPickerSubComponent = Component {
         main
             .pageIconPickerBuilder()
-            .pageIconPickerModule(PageIconPickerModule())
+            .documentIconPickerModule(DocumentIconPickerModule())
             .build()
     }
 

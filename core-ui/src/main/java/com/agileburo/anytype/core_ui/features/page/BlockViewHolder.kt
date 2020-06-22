@@ -68,6 +68,7 @@ import kotlinx.android.synthetic.main.item_block_text.view.*
 import kotlinx.android.synthetic.main.item_block_title.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import kotlinx.android.synthetic.main.item_block_video.view.*
+import timber.log.Timber
 import android.text.format.Formatter as FileSizeFormatter
 
 /**
@@ -172,7 +173,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
     ) : BlockViewHolder(view), TextHolder {
 
-        private val icon = itemView.logo
+        private val icon = itemView.documentIconContainer
+        private val image = itemView.imageIcon
+        private val emoji = itemView.emojiIcon
 
         override val root: View = itemView
         override val content: TextInputWidget = itemView.title
@@ -187,10 +190,23 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onFocusChanged: (String, Boolean) -> Unit,
             onPageIconClicked: () -> Unit
         ) {
+
+            Timber.d("Binding title view: $item")
+
+            item.image?.let { url ->
+                image.visible()
+                Glide
+                    .with(image)
+                    .load(url)
+                    .centerInside()
+                    .circleCrop()
+                    .into(image)
+            } ?: apply { image.setImageDrawable(null) }
+
             if (item.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
                 content.setText(item.text, BufferType.EDITABLE)
-                icon.text = item.emoji ?: EMPTY_EMOJI
+                emoji.text = item.emoji ?: EMPTY_EMOJI
             } else {
                 enableEditMode()
                 if (item.isFocused) setCursor(item)
@@ -202,10 +218,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onFocusChanged(item.id, hasFocus)
                     if (hasFocus) showKeyboard()
                 }
-                with(icon) {
-                    text = item.emoji ?: EMPTY_EMOJI
-                    setOnClickListener { onPageIconClicked() }
-                }
+                emoji.text = item.emoji ?: EMPTY_EMOJI
+                icon.setOnClickListener { onPageIconClicked() }
             }
         }
 
@@ -219,6 +233,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             payloads: List<Payload>,
             item: BlockView.Title
         ) {
+
+            Timber.d("Processing change payload $payloads for $item")
+
             payloads.forEach { payload ->
                 if (payload.changes.contains(TEXT_CHANGED)) {
                     content.pauseTextWatchers {

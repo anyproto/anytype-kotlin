@@ -16,7 +16,7 @@ import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.core_utils.ui.EqualSpacingItemDecoration
 import com.agileburo.anytype.core_utils.ui.EqualSpacingItemDecoration.Companion.GRID
 import com.agileburo.anytype.di.common.componentManager
-import com.agileburo.anytype.domain.emoji.Emojifier
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.State
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModel
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModelFactory
@@ -66,6 +66,9 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     @Inject
     lateinit var factory: HomeDashboardViewModelFactory
 
+    @Inject
+    lateinit var builder: UrlBuilder
+
     private val dashboardAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
@@ -103,7 +106,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
                 state.dashboard?.let { dashboard ->
                     lifecycleScope.launch {
                         val result = withContext(Dispatchers.IO) {
-                            dashboard.toView()
+                            dashboard.toView(builder)
                         }
                         dashboardAdapter.update(result)
                     }

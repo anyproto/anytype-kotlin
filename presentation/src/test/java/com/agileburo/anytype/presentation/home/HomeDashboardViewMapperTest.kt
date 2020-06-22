@@ -2,9 +2,11 @@ package com.agileburo.anytype.presentation.home
 
 import MockDataFactory
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
 import com.agileburo.anytype.domain.emoji.Emoji
 import com.agileburo.anytype.domain.emoji.Emojifier
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.presentation.desktop.DashboardView
 import com.agileburo.anytype.presentation.mapper.toView
 import com.nhaarman.mockitokotlin2.any
@@ -21,6 +23,14 @@ class HomeDashboardViewMapperTest {
 
     @Mock
     lateinit var emojifier: Emojifier
+
+    val builder = UrlBuilder(
+        config = Config(
+            home = MockDataFactory.randomUuid(),
+            gateway = MockDataFactory.randomUuid(),
+            profile = MockDataFactory.randomUuid()
+        )
+    )
 
     @Before
     fun setup() {
@@ -50,7 +60,7 @@ class HomeDashboardViewMapperTest {
         )
 
         val view = runBlocking {
-            dashboard.toView()
+            dashboard.toView(builder)
         }
 
         assertEquals(
@@ -90,7 +100,7 @@ class HomeDashboardViewMapperTest {
             onBlocking { fromShortName(any()) } doReturn emoji
         }
 
-        val view: List<DashboardView> = runBlocking { dashboard.toView() }
+        val view: List<DashboardView> = runBlocking { dashboard.toView(builder) }
 
         assertEquals(
             expected = listOf(

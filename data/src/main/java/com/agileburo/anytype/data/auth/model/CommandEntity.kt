@@ -5,6 +5,11 @@ package com.agileburo.anytype.data.auth.model
  */
 class CommandEntity {
 
+    class UploadFile(
+        val path: String,
+        val type: BlockEntity.Content.File.Type
+    )
+
     class ArchiveDocument(
         val context: String,
         val target: String
@@ -103,10 +108,15 @@ class CommandEntity {
         val index: Int
     )
 
-    data class SetIconName(
+    data class SetDocumentEmojiIcon(
         val context: String,
         val target: String,
-        val name: String
+        val emoji: String
+    )
+
+    data class SetDocumentImageIcon(
+        val context: String,
+        val hash: String
     )
 
     data class SetupBookmark(

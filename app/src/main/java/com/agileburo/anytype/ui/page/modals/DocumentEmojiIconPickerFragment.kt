@@ -20,7 +20,7 @@ import com.agileburo.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIco
 import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModel
 import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModel.Contract
 import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModel.ViewState
-import com.agileburo.anytype.presentation.page.picker.PageIconPickerViewModelFactory
+import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
@@ -39,7 +39,7 @@ class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
             ?: throw IllegalStateException(MISSING_CONTEXT_ERROR)
 
     @Inject
-    lateinit var factory: PageIconPickerViewModelFactory
+    lateinit var factory: DocumentIconPickerViewModelFactory
 
     private val vm by lazy {
         ViewModelProviders

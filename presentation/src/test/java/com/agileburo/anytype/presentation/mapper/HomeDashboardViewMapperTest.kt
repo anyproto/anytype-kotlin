@@ -2,17 +2,24 @@ package com.agileburo.anytype.presentation.mapper
 
 import MockDataFactory
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
-import com.agileburo.anytype.domain.emoji.Emojifier
-import com.agileburo.anytype.domain.ext.content
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertTrue
 
 class HomeDashboardViewMapperTest {
+
+    val config = Config(
+        home = MockDataFactory.randomUuid(),
+        gateway = MockDataFactory.randomUuid(),
+        profile = MockDataFactory.randomUuid()
+    )
+
+    val builder = UrlBuilder(config)
 
     @Before
     fun setup() {
@@ -64,7 +71,7 @@ class HomeDashboardViewMapperTest {
         )
 
         val result = runBlocking {
-            dashboard.toView()
+            dashboard.toView(builder)
         }
 
         assertTrue {

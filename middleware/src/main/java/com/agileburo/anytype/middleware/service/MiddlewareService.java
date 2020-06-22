@@ -4,6 +4,7 @@ import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
+import anytype.Commands.Rpc.UploadFile;
 import anytype.Commands.Rpc.Wallet;
 
 /**
@@ -69,4 +70,6 @@ public interface MiddlewareService {
     Block.Paste.Response blockPaste(Block.Paste.Request request) throws Exception;
 
     Block.Copy.Response blockCopy(Block.Copy.Request request) throws Exception;
+
+    UploadFile.Response uploadFile(UploadFile.Request request) throws Exception;
 }

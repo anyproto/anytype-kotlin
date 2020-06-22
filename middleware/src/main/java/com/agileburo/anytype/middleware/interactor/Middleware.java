@@ -19,6 +19,7 @@ import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
+import anytype.Commands.Rpc.UploadFile;
 import anytype.Commands.Rpc.Wallet;
 import anytype.model.Models;
 import anytype.model.Models.Range;
@@ -27,7 +28,8 @@ import timber.log.Timber;
 
 public class Middleware {
 
-    private final String iconKey = "icon";
+    private final String iconEmojiKey = "iconEmoji";
+    private final String iconImageKey = "iconImage";
     private final String nameKey = "name";
 
     private final MiddlewareService service;
@@ -666,20 +668,63 @@ public class Middleware {
         return new Pair<>(response.getBlockId(), mapper.toPayload(response.getEvent()));
     }
 
-    public void setIconName(CommandEntity.SetIconName command) throws Exception {
+    public void setDocumentEmojiIcon(CommandEntity.SetDocumentEmojiIcon command) throws Exception {
 
-        Value value = Value.newBuilder().setStringValue(command.getName()).build();
+        Value emojiValue = Value.newBuilder().setStringValue(command.getEmoji()).build();
+        Value imageValue = Value.newBuilder().setStringValue("").build();
 
-        Block.Set.Details.Detail details = Block.Set.Details.Detail
+        Block.Set.Details.Detail emojiDetail = Block.Set.Details.Detail
                 .newBuilder()
-                .setKey(iconKey)
-                .setValue(value)
+                .setKey(iconEmojiKey)
+                .setValue(emojiValue)
+                .build();
+
+        Block.Set.Details.Detail imageDetail = Block.Set.Details.Detail
+                .newBuilder()
+                .setKey(iconImageKey)
+                .setValue(imageValue)
                 .build();
 
         Block.Set.Details.Request request = Block.Set.Details.Request
                 .newBuilder()
                 .setContextId(command.getContext())
-                .addDetails(details)
+                .addDetails(emojiDetail)
+                .addDetails(imageDetail)
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Block.Set.Details.Response response = service.blockSetDetails(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+    }
+
+    public void setDocumentImageIcon(CommandEntity.SetDocumentImageIcon command) throws Exception {
+
+        Value imageValue = Value.newBuilder().setStringValue(command.getHash()).build();
+        Value emojiValue = Value.newBuilder().setStringValue("").build();
+
+        Block.Set.Details.Detail imageDetail = Block.Set.Details.Detail
+                .newBuilder()
+                .setKey(iconImageKey)
+                .setValue(imageValue)
+                .build();
+
+        Block.Set.Details.Detail emojiDetail = Block.Set.Details.Detail
+                .newBuilder()
+                .setKey(iconEmojiKey)
+                .setValue(emojiValue)
+                .build();
+
+        Block.Set.Details.Request request = Block.Set.Details.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .addDetails(imageDetail)
+                .addDetails(emojiDetail)
                 .build();
 
         if (BuildConfig.DEBUG) {
@@ -857,5 +902,41 @@ public class Middleware {
                 response.getHtmlSlot(),
                 mapper.toEntity(response.getAnySlotList())
         );
+    }
+
+    public Response.Media.Upload uploadFile(CommandEntity.UploadFile command) throws Exception {
+
+        Models.Block.Content.File.Type type = null;
+
+        switch (command.getType()) {
+            case FILE:
+                type = Models.Block.Content.File.Type.File;
+                break;
+            case IMAGE:
+                type = Models.Block.Content.File.Type.Image;
+                break;
+            case VIDEO:
+                type = Models.Block.Content.File.Type.Video;
+                break;
+            case NONE:
+                break;
+        }
+
+        UploadFile.Request request = UploadFile.Request.newBuilder()
+                .setLocalPath(command.getPath())
+                .setType(type)
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        UploadFile.Response response = service.uploadFile(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return new Response.Media.Upload(response.getHash());
     }
 }

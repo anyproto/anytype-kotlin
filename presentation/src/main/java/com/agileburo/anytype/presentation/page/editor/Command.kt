@@ -7,7 +7,9 @@ import com.agileburo.anytype.domain.common.Url
 sealed class Command {
 
     data class OpenDocumentIconActionMenu(
-        val target: String
+        val target: String,
+        val image: String?,
+        val emoji: String?
     ) : Command()
 
     data class OpenDocumentEmojiIconPicker(

@@ -34,11 +34,14 @@ interface BlockDataStore {
     suspend fun openProfile(id: String): PayloadEntity
     suspend fun closePage(id: String)
     suspend fun closeDashboard(id: String)
-    suspend fun setIconName(command: CommandEntity.SetIconName)
+    suspend fun setDocumentEmojiIcon(command: CommandEntity.SetDocumentEmojiIcon)
+    suspend fun setDocumentImageIcon(command: CommandEntity.SetDocumentImageIcon)
     suspend fun setupBookmark(command: CommandEntity.SetupBookmark) : PayloadEntity
     suspend fun undo(command: CommandEntity.Undo) : PayloadEntity
     suspend fun redo(command: CommandEntity.Redo) : PayloadEntity
     suspend fun archiveDocument(command: CommandEntity.ArchiveDocument)
     suspend fun paste(command: CommandEntity.Paste) : Response.Clipboard.Paste
     suspend fun copy(command: CommandEntity.Copy) : Response.Clipboard.Copy
+
+    suspend fun uploadFile(command: CommandEntity.UploadFile): String
 }

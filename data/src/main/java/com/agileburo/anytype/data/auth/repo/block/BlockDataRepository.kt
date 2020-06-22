@@ -6,6 +6,7 @@ import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.clipboard.Copy
 import com.agileburo.anytype.domain.clipboard.Paste
+import com.agileburo.anytype.domain.common.Hash
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.event.model.Payload
 
@@ -101,9 +102,13 @@ class BlockDataRepository(
         Pair(id, payload.toDomain())
     }
 
-    override suspend fun setIconName(
-        command: Command.SetIconName
-    ) = factory.remote.setIconName(command.toEntity())
+    override suspend fun setDocumentEmojiIcon(
+        command: Command.SetDocumentEmojiIcon
+    ) = factory.remote.setDocumentEmojiIcon(command.toEntity())
+
+    override suspend fun setDocumentImageIcon(
+        command: Command.SetDocumentImageIcon
+    ) = factory.remote.setDocumentImageIcon(command.toEntity())
 
     override suspend fun setupBookmark(
         command: Command.SetupBookmark
@@ -132,4 +137,8 @@ class BlockDataRepository(
     override suspend fun copy(
         command: Command.Copy
     ): Copy.Response = factory.remote.copy(command.toEntity()).toDomain()
+
+    override suspend fun uploadFile(
+        command: Command.UploadFile
+    ): Hash = factory.remote.uploadFile(command.toEntity())
 }

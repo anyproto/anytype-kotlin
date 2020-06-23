@@ -30,10 +30,6 @@ class ProfileViewModel(
         navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
     }
 
-    fun onAddProfileClicked() {
-        navigation.postValue(EventWrapper(AppNavigation.Command.OpenCreateAccount))
-    }
-
     fun onDebugSettingsClicked(){
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenDebugSettingsScreen))
     }
@@ -75,14 +71,6 @@ class ProfileViewModel(
 
     fun onPinCodeClicked() {
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPinCodeScreen))
-    }
-
-    fun onUpdateToggled(value: Boolean) {
-        // TODO update profile settings
-    }
-
-    fun onInviteToggled(value: Boolean) {
-        // TODO update profile settings
     }
 
     companion object DEBUG_SETTINGS {

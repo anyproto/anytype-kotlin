@@ -5,6 +5,7 @@ import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.di.common.componentManager
@@ -38,17 +39,11 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
     override fun render(state: ViewState<ProfileView>) {
         when (state) {
             is ViewState.Init -> {
+                wallpaperText.setOnClickListener { toast("Not implemented yet") }
                 logoutButton.setOnClickListener { vm.onLogoutClicked() }
-                updateToggle.setOnCheckedChangeListener { _, isChecked ->
-                    vm.onUpdateToggled(value = isChecked)
-                }
-                invitesToggle.setOnCheckedChangeListener { _, isChecked ->
-                    vm.onInviteToggled(value = isChecked)
-                }
-                pinCodeText.setOnClickListener { vm.onPinCodeClicked() }
+                pinCodeText.setOnClickListener { toast("Not implemented yet") }
                 keychainPhrase.setOnClickListener { vm.onKeyChainPhraseClicked() }
                 backButton.setOnClickListener { vm.onBackButtonClicked() }
-                switchProfileButton.setOnClickListener { vm.onAddProfileClicked() }
 
                 if (BuildConfig.DEBUG) {
                     with(debugSettingsButton) {

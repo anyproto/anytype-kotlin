@@ -72,6 +72,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="description_arrow_icon">Arrow icon</string>
     <string name="keychain_phrase">Keychain phrase</string>
     <string name="pin_code">Pin code</string>
+    <string name="your_page">Your public page</string>
     <string name="updates">Updates</string>
     <string name="log_out">Log out</string>
     <string name="keychain_phrase_text">Your Keychain phrase protects your account. You need it to sign in if you don\'t have access to your devices. Keep it in a safe place.</string>
@@ -115,5 +116,9 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="pickit_file_selected">File was selected from unknown provider</string>
     <string name="pickit_local_file">Local file was selected</string>
     <string name="pickit_waiting">Waiting to receive file...</string>
+    <string name="profile_wallpaper">Wallpaper</string>
+    <string name="content_desc_wallpaper">Wallpaper icon</string>
+    <string name="content_desc_key">Keychain icon</string>
+    <string name="content_desc_pin">Pin icon</string>
 
 </resources>

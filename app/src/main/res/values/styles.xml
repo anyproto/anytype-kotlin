@@ -93,4 +93,16 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
+    <style name="ProfileItem">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textColor">#2C2B27</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="ProfileItemDivider">
+        <item name="android:background">#EAE9E0</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:layout_marginEnd">20dp</item>
+    </style>
+
 </resources>

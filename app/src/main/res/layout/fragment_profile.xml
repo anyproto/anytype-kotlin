@@ -16,8 +16,8 @@
             android:id="@+id/backButtonContainer"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginStart="14dp"
-            android:layout_marginTop="12dp">
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_12">
 
             <ImageView
                 android:id="@+id/backButton"
@@ -59,10 +59,13 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="@dimen/dp_12"
+                    android:layout_marginEnd="12dp"
                     android:textColor="@color/black"
                     android:textSize="28sp"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:drawableEnd="@drawable/ic_profile_forward"
                     android:fontFamily="@font/graphik_semibold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -70,48 +73,20 @@
                     tools:text="Anton Pronkin" />
 
                 <TextView
-                    android:id="@+id/syncStatus"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="20dp"
-                    android:drawableStart="@drawable/ic_check_sync"
-                    android:drawablePadding="8dp"
-                    android:text="Synced with 32/129 peers"
-                    android:textColor="@color/black"
-                    android:textSize="15sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name"
-                    tools:text="Synced with 32/129 peers" />
-
-                <View
-                    android:id="@+id/divider"
                     android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@color/divider"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/syncStatus" />
-
-                <TextView
-                    android:id="@+id/switchProfileButton"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="@string/switch_profile"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="14dp"
+                    android:text="@string/your_page"
                     android:textColor="#ACA996"
                     android:textSize="15sp"
-                    android:textStyle="bold"
+                    android:fontFamily="@font/inter_regular"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/divider" />
+                    app:layout_constraintTop_toBottomOf="@+id/name" />
 
                 <ImageView
                     android:id="@+id/debugSettingsButton"
@@ -144,184 +119,102 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/keyIcon"
+                    android:id="@+id/icWallpaper"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="32dp"
-                    android:src="@drawable/ic_key"
+                    android:layout_marginTop="30dp"
+                    android:contentDescription="@string/content_desc_wallpaper"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/firstArrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:src="@drawable/ic_open"
-                    app:layout_constraintBottom_toBottomOf="@+id/keychainPhrase"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/keychainPhrase" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_wallpaper" />
 
                 <TextView
-                    android:id="@+id/keychainPhrase"
+                    android:id="@+id/wallpaperText"
+                    style="@style/ProfileItem"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="13dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/keychain_phrase"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:fontFamily="@font/graphik_medium"
-                    app:layout_constraintBottom_toBottomOf="@+id/keyIcon"
-                    app:layout_constraintEnd_toStartOf="@+id/firstArrow"
-                    app:layout_constraintStart_toEndOf="@+id/keyIcon"
-                    app:layout_constraintTop_toTopOf="@+id/keyIcon" />
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:drawableEnd="@drawable/ic_profile_forward"
+                    android:text="@string/profile_wallpaper"
+                    app:layout_constraintBottom_toBottomOf="@+id/icWallpaper"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/icWallpaper"
+                    app:layout_constraintTop_toTopOf="@+id/icWallpaper" />
 
                 <View
                     android:id="@+id/firstDivider"
                     android:layout_width="0dp"
-                    android:layout_height="0.5dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@color/divider"
-                    app:layout_constraintEnd_toEndOf="@+id/firstArrow"
-                    app:layout_constraintStart_toStartOf="@+id/keychainPhrase"
-                    app:layout_constraintTop_toBottomOf="@+id/keychainPhrase" />
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    style="@style/ProfileItemDivider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/icWallpaper" />
 
                 <ImageView
-                    android:id="@+id/pinCodeIcon"
+                    android:id="@+id/keyIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="12dp"
-                    android:src="@drawable/ic_pin"
+                    android:layout_marginTop="10dp"
+                    android:contentDescription="@string/content_desc_key"
+                    android:src="@drawable/ic_key"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/firstDivider" />
 
-                <ImageView
-                    android:id="@+id/secondArrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:src="@drawable/ic_open"
-                    app:layout_constraintBottom_toBottomOf="@+id/pinCodeText"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/pinCodeText" />
 
                 <TextView
-                    android:id="@+id/pinCodeText"
+                    android:id="@+id/keychainPhrase"
+                    style="@style/ProfileItem"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="13dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/pin_code"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:fontFamily="@font/graphik_medium"
-                    app:layout_constraintBottom_toBottomOf="@+id/pinCodeIcon"
-                    app:layout_constraintEnd_toStartOf="@+id/secondArrow"
-                    app:layout_constraintStart_toEndOf="@+id/pinCodeIcon"
-                    app:layout_constraintTop_toTopOf="@+id/pinCodeIcon" />
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:text="@string/keychain_phrase"
+                    android:drawableEnd="@drawable/ic_profile_forward"
+                    app:layout_constraintBottom_toBottomOf="@+id/keyIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/keyIcon"
+                    app:layout_constraintTop_toTopOf="@+id/keyIcon" />
 
                 <View
                     android:id="@+id/secondDivider"
                     android:layout_width="0dp"
-                    android:layout_height="0.5dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@color/divider"
-                    app:layout_constraintEnd_toEndOf="@+id/secondArrow"
-                    app:layout_constraintStart_toStartOf="@+id/pinCodeText"
-                    app:layout_constraintTop_toBottomOf="@+id/pinCodeText" />
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    style="@style/ProfileItemDivider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/keyIcon" />
 
                 <ImageView
-                    android:id="@+id/clockIcon"
+                    android:id="@+id/pinIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="12dp"
-                    android:src="@drawable/ic_clock"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/secondDivider" />
-
-                <Switch
-                    android:id="@+id/updateToggle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/updatesText"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/updatesText" />
-
-                <TextView
-                    android:id="@+id/updatesText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="13dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/updates"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:fontFamily="@font/graphik_medium"
-                    app:layout_constraintBottom_toBottomOf="@+id/clockIcon"
-                    app:layout_constraintEnd_toStartOf="@+id/updateToggle"
-                    app:layout_constraintStart_toEndOf="@+id/clockIcon"
-                    app:layout_constraintTop_toTopOf="@+id/clockIcon" />
-
-                <View
-                    android:id="@+id/thirdDivider"
-                    android:layout_width="0dp"
-                    android:layout_height="0.5dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@color/divider"
-                    app:layout_constraintEnd_toEndOf="@+id/updateToggle"
-                    app:layout_constraintStart_toStartOf="@+id/updatesText"
-                    app:layout_constraintTop_toBottomOf="@+id/updatesText" />
-
-                <ImageView
-                    android:id="@+id/invitesIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="12dp"
-                    android:src="@drawable/ic_invite"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/thirdDivider" />
-
-                <Switch
-                    android:id="@+id/invitesToggle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/invitesText"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/invitesText" />
-
-                <TextView
-                    android:id="@+id/invitesText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="13dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="Invites"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:fontFamily="@font/graphik_medium"
-                    app:layout_constraintBottom_toBottomOf="@+id/invitesIcon"
-                    app:layout_constraintEnd_toStartOf="@+id/invitesToggle"
-                    app:layout_constraintStart_toEndOf="@+id/invitesIcon"
-                    app:layout_constraintTop_toTopOf="@+id/invitesIcon" />
-
-                <View
-                    android:id="@+id/fourthDivider"
-                    android:layout_width="0dp"
-                    android:layout_height="0.5dp"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="20dp"
-                    android:background="@color/divider"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="31dp"
+                    android:contentDescription="@string/content_desc_pin"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/invitesToggle"
-                    app:layout_constraintStart_toStartOf="@+id/invitesText"
-                    app:layout_constraintTop_toBottomOf="@+id/invitesText" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/secondDivider"
+                    app:srcCompat="@drawable/ic_pin_code" />
+
+                <TextView
+                    android:id="@+id/pinCodeText"
+                    style="@style/ProfileItem"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:text="@string/pin_code"
+                    android:drawableEnd="@drawable/ic_profile_forward"
+                    app:layout_constraintBottom_toBottomOf="@+id/pinIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/pinIcon"
+                    app:layout_constraintTop_toTopOf="@+id/pinIcon" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -342,9 +235,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/log_out"
-                android:fontFamily="@font/graphik_medium"
-                android:textColor="#E1320A"
-                android:textSize="15sp" />
+                android:fontFamily="@font/inter_regular"
+                android:textColor="#ACA996"
+                android:textSize="17sp" />
 
         </androidx.cardview.widget.CardView>
 

@@ -1589,7 +1589,8 @@ class BlockAdapterTest {
             indent = MockDataFactory.randomInt(),
             emoji = null,
             isEmpty = MockDataFactory.randomBoolean(),
-            isArchived = MockDataFactory.randomBoolean()
+            isArchived = MockDataFactory.randomBoolean(),
+            image = null
         )
 
         val views = listOf(view)
@@ -3658,7 +3659,8 @@ class BlockAdapterTest {
             id = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
             isSelected = false,
-            emoji = null
+            emoji = null,
+            image = null
         )
 
         val updated = file.copy(isSelected = true)

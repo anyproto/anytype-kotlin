@@ -152,7 +152,11 @@
 
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
 
+
     <string name="untitled">Untitled</string>
+
+
+    <string name="loading">Loading…</string>
     <string name="error_while_loading">Error while loading</string>
     <string name="error_while_loading_picture">Error while \nloading picture</string>
     <string name="block_with_a_picture">Block with a picture</string>

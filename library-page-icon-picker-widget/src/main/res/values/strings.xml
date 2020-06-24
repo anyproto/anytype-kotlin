@@ -8,4 +8,15 @@
     <string name="content_description_loop_icon">Loop icon</string>
     <string name="page_icon">Page icon</string>
     <string name="page_icon_picker_remove_text">Remove</string>
+
+
+    <string name="category_smileys_and_people">Smileys &amp; People</string>
+    <string name="category_animals_and_nature">Animals &amp; Nature</string>
+    <string name="category_food_and_drink">Food &amp; Drink</string>
+    <string name="category_activity_and_sport">Activity &amp; Sport</string>
+    <string name="category_travel_and_places">Travel &amp; Places</string>
+    <string name="category_objects">Objects</string>
+    <string name="category_symbols">Symbols</string>
+    <string name="category_flags">Flags</string>
+
 </resources>

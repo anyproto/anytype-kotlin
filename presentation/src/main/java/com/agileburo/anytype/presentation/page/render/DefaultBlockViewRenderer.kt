@@ -477,6 +477,12 @@ class DefaultBlockViewRenderer(
             else
                 null
         },
+        image = details.details[content.target]?.iconImage?.let { name ->
+            if (name.isNotEmpty())
+                urlBuilder.image(name)
+            else
+                null
+        },
         text = details.details[content.target]?.name,
         indent = indent
     )

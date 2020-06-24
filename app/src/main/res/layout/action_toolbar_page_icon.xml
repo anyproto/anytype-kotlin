@@ -28,9 +28,16 @@
             tools:text="🚀" />
 
         <ImageView
+            android:id="@+id/emojiIconImage"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center" />
+
+        <ImageView
             android:id="@+id/imageIcon"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
     </FrameLayout>
 
     <androidx.cardview.widget.CardView

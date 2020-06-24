@@ -64,7 +64,7 @@ import com.agileburo.anytype.ui.base.NavigationFragment
 import com.agileburo.anytype.ui.menu.AnytypeContextMenu
 import com.agileburo.anytype.ui.page.modals.*
 import com.agileburo.anytype.ui.page.modals.actions.BlockActionToolbarFactory
-import com.agileburo.anytype.ui.page.modals.actions.DocumentIconActionMenu
+import com.agileburo.anytype.ui.page.modals.actions.DocumentIconActionMenuFragment
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
@@ -514,7 +514,7 @@ open class PageFragment :
                     recycler.smoothScrollToPosition(0)
                     val shared =
                         recycler.getChildAt(0).findViewById<FrameLayout>(R.id.documentIconContainer)
-                    val fr = DocumentIconActionMenu.new(
+                    val fr = DocumentIconActionMenuFragment.new(
                         y = shared.y + dimen(R.dimen.dp_48),
                         emoji = command.emoji,
                         target = command.target,
@@ -531,7 +531,7 @@ open class PageFragment :
                         .commit()
                 }
                 is Command.OpenDocumentEmojiIconPicker -> {
-                    DocumentEmojiIconPickerFragment.newInstance(
+                    DocumentEmojiIconPickerFragment.new(
                         context = requireArguments().getString(ID_KEY, ID_EMPTY_VALUE),
                         target = command.target
                     ).show(childFragmentManager, null)

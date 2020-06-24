@@ -608,6 +608,7 @@ class BlockViewDiffUtilTest {
             id = id,
             indent = MockDataFactory.randomInt(),
             emoji = null,
+            image = null,
             isSelected = false
         )
 

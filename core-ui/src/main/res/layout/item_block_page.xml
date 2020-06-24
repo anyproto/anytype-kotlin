@@ -34,12 +34,16 @@
             android:layout_gravity="center"
             android:contentDescription="@string/content_description_page_icon" />
 
-        <TextView
-            android:id="@+id/emoji"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@color/emoji_color" />
+        <ImageView
+            android:id="@+id/linkImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/linkEmoji"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center" />
 
     </FrameLayout>
 

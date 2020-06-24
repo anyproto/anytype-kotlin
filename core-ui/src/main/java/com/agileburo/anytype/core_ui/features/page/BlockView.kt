@@ -555,6 +555,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val isSelected: Boolean = false,
         val text: String? = null,
         val emoji: String?,
+        val image: String?,
         val isEmpty: Boolean = false,
         val isArchived: Boolean = false
     ) : BlockView(), Indentable, Selectable {

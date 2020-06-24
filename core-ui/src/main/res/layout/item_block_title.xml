@@ -14,15 +14,11 @@
         android:layout_width="64dp"
         android:layout_height="64dp">
 
-        <TextView
+        <ImageView
             android:id="@+id/emojiIcon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="@drawable/rectangle_default_page_logo_background"
-            android:gravity="center"
-            android:textColor="@color/emoji_color"
-            android:textSize="28sp" />
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center" />
 
         <ImageView
             android:id="@+id/imageIcon"

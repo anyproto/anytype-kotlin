@@ -8,8 +8,9 @@ import com.agileburo.anytype.domain.common.Id
 /**
  * Use-case for setting emoji icon.
  */
-class SetDocumentEmojiIcon(private val repo: BlockRepository) :
-    BaseUseCase<Any, SetDocumentEmojiIcon.Params>() {
+class SetDocumentEmojiIcon(
+    private val repo: BlockRepository
+) : BaseUseCase<Any, SetDocumentEmojiIcon.Params>() {
 
     override suspend fun run(params: Params) = safe {
         repo.setDocumentEmojiIcon(

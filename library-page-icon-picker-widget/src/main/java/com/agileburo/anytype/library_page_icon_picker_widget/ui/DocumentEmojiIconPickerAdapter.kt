@@ -6,7 +6,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.library_page_icon_picker_widget.R
-import com.agileburo.anytype.library_page_icon_picker_widget.model.DocumentEmojiIconPickerView
+import com.agileburo.anytype.library_page_icon_picker_widget.model.EmojiPickerView
 import com.agileburo.anytype.library_page_icon_picker_widget.model.PageIconPickerViewDiffUtil
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerViewHolder.Companion.HOLDER_EMOJI_CATEGORY_HEADER
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerViewHolder.Companion.HOLDER_EMOJI_FILTER
@@ -14,9 +14,9 @@ import com.agileburo.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIco
 import kotlinx.android.synthetic.main.item_page_icon_picker_emoji_filter.view.*
 
 class DocumentEmojiIconPickerAdapter(
-    private var views: List<DocumentEmojiIconPickerView>,
+    private var views: List<EmojiPickerView>,
     private val onFilterQueryChanged: (String) -> Unit,
-    private val onEmojiClicked: (String, String) -> Unit
+    private val onEmojiClicked: (String) -> Unit
 ) : RecyclerView.Adapter<DocumentEmojiIconPickerViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -61,18 +61,18 @@ class DocumentEmojiIconPickerAdapter(
     override fun onBindViewHolder(holder: DocumentEmojiIconPickerViewHolder, position: Int) {
         when (holder) {
             is DocumentEmojiIconPickerViewHolder.CategoryHeader -> {
-                holder.bind(views[position] as DocumentEmojiIconPickerView.GroupHeader)
+                holder.bind(views[position] as EmojiPickerView.GroupHeader)
             }
             is DocumentEmojiIconPickerViewHolder.EmojiItem -> {
                 holder.bind(
-                    item = views[position] as DocumentEmojiIconPickerView.Emoji,
+                    item = views[position] as EmojiPickerView.Emoji,
                     onEmojiClicked = onEmojiClicked
                 )
             }
         }
     }
 
-    fun update(update: List<DocumentEmojiIconPickerView>) {
+    fun update(update: List<EmojiPickerView>) {
         val result = DiffUtil.calculateDiff(
             PageIconPickerViewDiffUtil(
                 old = views,

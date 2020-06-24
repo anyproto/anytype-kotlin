@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content">
 
     <TextView
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:textAllCaps="true"
         android:id="@+id/category"
-        android:layout_width="wrap_content"
+        tools:text="Smileys and people"
         android:layout_height="wrap_content"
         android:fontFamily="@font/graphik_medium"
         android:textColor="@color/emoji_category_text_color"

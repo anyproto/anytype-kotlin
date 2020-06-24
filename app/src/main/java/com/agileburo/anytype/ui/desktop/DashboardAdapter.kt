@@ -8,8 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.tools.SupportDragAndDropBehavior
 import com.agileburo.anytype.core_utils.ext.shift
+import com.agileburo.anytype.emojifier.Emojifier
 import com.agileburo.anytype.presentation.desktop.DashboardView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_desktop_page.view.*
 
 class DashboardAdapter(
@@ -60,10 +62,13 @@ class DashboardAdapter(
         class DocumentHolder(itemView: View) : ViewHolder(itemView) {
 
             private val title = itemView.title
-            private val emoji = itemView.emoji
+            private val emoji = itemView.emojiIcon
             private val image = itemView.image
 
-            fun bind(doc: DashboardView.Document, onClick: (DashboardView.Document) -> Unit) {
+            fun bind(
+                doc: DashboardView.Document,
+                onClick: (DashboardView.Document) -> Unit
+            ) {
                 itemView.setOnClickListener { onClick(doc) }
 
                 if (doc.title.isNullOrEmpty())
@@ -71,7 +76,13 @@ class DashboardAdapter(
                 else
                     title.text = doc.title
 
-                emoji.text = doc.emoji ?: EMPTY_EMOJI
+                doc.emoji?.let { unicode ->
+                    Glide
+                        .with(emoji)
+                        .load(Emojifier.uri(unicode))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(emoji)
+                }
 
                 doc.image?.let { url ->
                     Glide
@@ -86,7 +97,6 @@ class DashboardAdapter(
     }
 
     fun update(views: List<DashboardView>) {
-
         val callback = DesktopDiffUtil(
             old = data,
             new = views

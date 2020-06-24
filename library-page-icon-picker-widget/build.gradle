@@ -50,6 +50,7 @@ dependencies {
 
     implementation project(':core-utils')
     implementation project(':core-ui')
+    implementation project(':library-emojifier')
 
     implementation applicationDependencies.appcompat
     implementation applicationDependencies.kotlin
@@ -61,6 +62,7 @@ dependencies {
     implementation applicationDependencies.recyclerView
     implementation applicationDependencies.constraintLayout
     implementation applicationDependencies.timber
+    implementation applicationDependencies.glide
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

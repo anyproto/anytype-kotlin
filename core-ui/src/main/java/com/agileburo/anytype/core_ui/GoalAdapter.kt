@@ -96,8 +96,6 @@ class GoalAdapter(
 
             fun bind(item: GoalView.Title) {
                 title.setText(item.title)
-                logo.text = "⛳"
-
             }
 
         }

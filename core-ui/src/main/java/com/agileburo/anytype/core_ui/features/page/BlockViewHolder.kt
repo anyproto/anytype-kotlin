@@ -39,8 +39,10 @@ import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
 import com.agileburo.anytype.core_utils.ext.*
+import com.agileburo.anytype.emojifier.Emojifier
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
@@ -203,10 +205,17 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     .into(image)
             } ?: apply { image.setImageDrawable(null) }
 
+            if (item.emoji != null) {
+                Glide
+                    .with(emoji)
+                    .load(Emojifier.uri(item.emoji))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(emoji)
+            }
+
             if (item.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
                 content.setText(item.text, BufferType.EDITABLE)
-                emoji.text = item.emoji ?: EMPTY_EMOJI
             } else {
                 enableEditMode()
                 if (item.isFocused) setCursor(item)
@@ -218,7 +227,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onFocusChanged(item.id, hasFocus)
                     if (hasFocus) showKeyboard()
                 }
-                emoji.text = item.emoji ?: EMPTY_EMOJI
                 icon.setOnClickListener { onPageIconClicked() }
             }
         }
@@ -1478,7 +1486,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val untitled = itemView.resources.getString(R.string.untitled)
         private val icon = itemView.pageIcon
-        private val emoji = itemView.emoji
+        private val emoji = itemView.linkEmoji
+        private val image = itemView.linkImage
         private val title = itemView.pageTitle
         private val guideline = itemView.pageGuideline
 
@@ -1493,9 +1502,31 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             title.text = if (item.text.isNullOrEmpty()) untitled else item.text
 
             when {
-                item.emoji != null -> emoji.text = item.emoji
-                item.isEmpty -> icon.setImageResource(R.drawable.ic_block_empty_page)
-                else -> icon.setImageResource(R.drawable.ic_block_page_without_emoji)
+                item.emoji != null -> {
+                    image.setImageDrawable(null)
+                    Glide
+                        .with(emoji)
+                        .load(Emojifier.uri(item.emoji))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(emoji)
+                }
+                item.image != null -> {
+                    image.visible()
+                    Glide
+                        .with(image)
+                        .load(item.image)
+                        .centerInside()
+                        .circleCrop()
+                        .into(image)
+                }
+                item.isEmpty -> {
+                    icon.setImageResource(R.drawable.ic_block_empty_page)
+                    image.setImageDrawable(null)
+                }
+                else -> {
+                    icon.setImageResource(R.drawable.ic_block_page_without_emoji)
+                    image.setImageDrawable(null)
+                }
             }
 
             title.setOnClickListener { clicked(ListenerType.Page(item.id)) }

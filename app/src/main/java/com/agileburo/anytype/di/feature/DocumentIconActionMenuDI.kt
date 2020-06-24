@@ -4,36 +4,34 @@ import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.icon.SetDocumentEmojiIcon
 import com.agileburo.anytype.domain.icon.SetDocumentImageIcon
-import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModelFactory
-import com.agileburo.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
-import com.agileburo.anytype.ui.page.modals.actions.DocumentIconActionMenu
+import com.agileburo.anytype.presentation.page.picker.DocumentIconActionMenuViewModelFactory
+import com.agileburo.anytype.ui.page.modals.actions.DocumentIconActionMenuFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
-@Subcomponent(modules = [DocumentIconPickerModule::class])
+@Subcomponent(modules = [DocumentIconActionMenuModule::class])
 @PerScreen
-interface DocumentIconPickerSubComponent {
+interface DocumentActionMenuSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
-        fun documentIconPickerModule(module: DocumentIconPickerModule): Builder
-        fun build(): DocumentIconPickerSubComponent
+        fun documentIconActionMenuModule(module: DocumentIconActionMenuModule): Builder
+        fun build(): DocumentActionMenuSubComponent
     }
 
-    fun inject(fragment: DocumentEmojiIconPickerFragment)
-    fun inject(fragment: DocumentIconActionMenu)
+    fun inject(fragment: DocumentIconActionMenuFragment)
 }
 
 @Module
-class DocumentIconPickerModule {
+class DocumentIconActionMenuModule {
 
     @Provides
     @PerScreen
-    fun provideDocumentIconPickerViewModelFactory(
+    fun provideDocumentIconActionMenuViewModelFactory(
         setEmojiIcon: SetDocumentEmojiIcon,
         setImageIcon: SetDocumentImageIcon
-    ): DocumentIconPickerViewModelFactory = DocumentIconPickerViewModelFactory(
+    ): DocumentIconActionMenuViewModelFactory = DocumentIconActionMenuViewModelFactory(
         setEmojiIcon = setEmojiIcon,
         setImageIcon = setImageIcon
     )

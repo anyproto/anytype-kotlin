@@ -17,21 +17,25 @@ import com.agileburo.anytype.core_utils.ext.parsePath
 import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.core_utils.ui.BaseFragment
 import com.agileburo.anytype.di.common.componentManager
+import com.agileburo.anytype.emojifier.Emojifier
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.ActionMenuAdapter
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.ActionMenuAdapter.Companion.OPTION_CHOOSE_EMOJI
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.ActionMenuAdapter.Companion.OPTION_CHOOSE_RANDOM_EMOJI
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.ActionMenuAdapter.Companion.OPTION_CHOOSE_UPLOAD_PHOTO
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.ActionMenuAdapter.Companion.OPTION_REMOVE
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.ActionMenuDivider
-import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModel
-import com.agileburo.anytype.presentation.page.picker.DocumentIconPickerViewModelFactory
+import com.agileburo.anytype.presentation.page.picker.DocumentIconActionMenuViewModel
+import com.agileburo.anytype.presentation.page.picker.DocumentIconActionMenuViewModel.Contract
+import com.agileburo.anytype.presentation.page.picker.DocumentIconActionMenuViewModel.ViewState
+import com.agileburo.anytype.presentation.page.picker.DocumentIconActionMenuViewModelFactory
 import com.agileburo.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.action_toolbar_page_icon.*
 import javax.inject.Inject
 
-class DocumentIconActionMenu : BaseFragment(R.layout.action_toolbar_page_icon),
-    Observer<DocumentIconPickerViewModel.ViewState> {
+class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page_icon),
+    Observer<ViewState> {
 
     private val target: String
         get() = requireArguments()
@@ -39,12 +43,12 @@ class DocumentIconActionMenu : BaseFragment(R.layout.action_toolbar_page_icon),
             ?: throw IllegalStateException(MISSING_TARGET_ERROR)
 
     @Inject
-    lateinit var factory: DocumentIconPickerViewModelFactory
+    lateinit var factory: DocumentIconActionMenuViewModelFactory
 
     private val vm by lazy {
         ViewModelProviders
             .of(this, factory)
-            .get(DocumentIconPickerViewModel::class.java)
+            .get(DocumentIconActionMenuViewModel::class.java)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -62,7 +66,13 @@ class DocumentIconActionMenu : BaseFragment(R.layout.action_toolbar_page_icon),
     }
 
     private fun setIcon() {
-        arguments?.getString(EMOJI_KEY)?.let { emoji -> emojiIcon.text = emoji }
+        arguments?.getString(EMOJI_KEY)?.let { unicode ->
+            Glide
+                .with(emojiIconImage)
+                .load(Emojifier.uri(unicode))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(emojiIconImage)
+        }
         arguments?.getString(IMAGE_KEY)?.let { url ->
             Glide
                 .with(icon)
@@ -120,20 +130,20 @@ class DocumentIconActionMenu : BaseFragment(R.layout.action_toolbar_page_icon),
                     OPTION_CHOOSE_EMOJI -> {
                         parentFragment?.childFragmentManager?.let { manager ->
                             manager.popBackStack()
-                            DocumentEmojiIconPickerFragment.newInstance(
+                            DocumentEmojiIconPickerFragment.new(
                                 context = target,
                                 target = target
                             ).show(manager, null)
                         }
                     }
                     OPTION_REMOVE -> vm.onEvent(
-                        DocumentIconPickerViewModel.Contract.Event.OnRemoveEmojiSelected(
+                        Contract.Event.OnRemoveEmojiSelected(
                             context = target,
                             target = target
                         )
                     )
                     OPTION_CHOOSE_RANDOM_EMOJI -> vm.onEvent(
-                        DocumentIconPickerViewModel.Contract.Event.OnSetRandomEmojiClicked(
+                        Contract.Event.OnSetRandomEmojiClicked(
                             context = target,
                             target = target
                         )
@@ -147,10 +157,11 @@ class DocumentIconActionMenu : BaseFragment(R.layout.action_toolbar_page_icon),
         }
     }
 
-    override fun onChanged(state: DocumentIconPickerViewModel.ViewState) {
+    override fun onChanged(state: ViewState) {
         when (state) {
-            is DocumentIconPickerViewModel.ViewState.Exit -> exit()
-            is DocumentIconPickerViewModel.ViewState.Error -> toast(state.message)
+            is ViewState.Exit -> exit()
+            is ViewState.Error -> toast(state.message)
+            is ViewState.Loading -> toast(getString(R.string.loading))
         }
     }
 
@@ -178,9 +189,11 @@ class DocumentIconActionMenu : BaseFragment(R.layout.action_toolbar_page_icon),
         if (resultCode == RESULT_OK && requestCode == SELECT_IMAGE_CODE) {
             data?.data?.let { uri ->
                 val path = uri.parsePath(requireContext())
-                vm.onImagePickedFromGallery(
-                    context = target,
-                    path = path
+                vm.onEvent(
+                    Contract.Event.OnImagePickedFromGallery(
+                        context = target,
+                        path = path
+                    )
                 )
             }
         }
@@ -200,11 +213,11 @@ class DocumentIconActionMenu : BaseFragment(R.layout.action_toolbar_page_icon),
     }
 
     override fun injectDependencies() {
-        componentManager().pageIconPickerSubComponent.get().inject(this)
+        componentManager().documentIconActionMenuComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().pageIconPickerSubComponent.release()
+        componentManager().documentIconActionMenuComponent.release()
     }
 
     companion object {
@@ -213,7 +226,7 @@ class DocumentIconActionMenu : BaseFragment(R.layout.action_toolbar_page_icon),
             emoji: String?,
             image: String?,
             target: String
-        ): DocumentIconActionMenu = DocumentIconActionMenu().apply {
+        ): DocumentIconActionMenuFragment = DocumentIconActionMenuFragment().apply {
             arguments = bundleOf(
                 Y_KEY to y,
                 EMOJI_KEY to emoji,
@@ -223,7 +236,7 @@ class DocumentIconActionMenu : BaseFragment(R.layout.action_toolbar_page_icon),
         }
 
         private const val SELECT_IMAGE_CODE = 1
-        const val REQUEST_PERMISSION_CODE = 2
+        private const val REQUEST_PERMISSION_CODE = 2
         private const val Y_KEY = "y"
         private const val EMOJI_KEY = "emoji"
         private const val IMAGE_KEY = "image_key"

@@ -26,6 +26,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_UPLOAD
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PROFILE_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TASK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
@@ -156,6 +157,24 @@ sealed class BlockView : ViewType, Parcelable {
         override val cursor: Int? = null
     ) : BlockView(), Focusable, Cursor, Permission {
         override fun getViewType() = HOLDER_TITLE
+    }
+
+    /**
+     * UI-model for a profile title block.
+     * @property id block's id
+     * @property text text content (i.e. title text)
+     * @property image image as a page's logo (if present)
+     */
+    @Parcelize
+    data class ProfileTitle(
+        override val id: String,
+        override val isFocused: Boolean,
+        val text: String?,
+        val image: String? = null,
+        override val mode: Mode = Mode.EDIT,
+        override val cursor: Int? = null
+    ) : BlockView(), Focusable, Cursor, Permission {
+        override fun getViewType() = HOLDER_PROFILE_TITLE
     }
 
     /**

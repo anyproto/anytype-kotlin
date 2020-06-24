@@ -8,11 +8,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.extensions.avatarColor
 import com.agileburo.anytype.core_ui.tools.DefaultDragAndDropBehavior
-import com.agileburo.anytype.core_utils.ext.dimen
-import com.agileburo.anytype.core_utils.ext.invisible
-import com.agileburo.anytype.core_utils.ext.toast
-import com.agileburo.anytype.core_utils.ext.visible
+import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.core_utils.ui.EqualSpacingItemDecoration
 import com.agileburo.anytype.core_utils.ui.EqualSpacingItemDecoration.Companion.GRID
 import com.agileburo.anytype.di.common.componentManager
@@ -34,7 +32,11 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
     private val profileObserver = Observer<ProfileView> { profile ->
         greeting.text = getString(R.string.greet, profile.name)
-        avatar.bind(name = profile.name)
+        val pos = profile.name.firstDigitByHash()
+        avatar.bind(
+            name = profile.name,
+            color = requireContext().avatarColor(pos)
+        )
         profile.avatar?.let { avatar.icon(it) }
     }
 

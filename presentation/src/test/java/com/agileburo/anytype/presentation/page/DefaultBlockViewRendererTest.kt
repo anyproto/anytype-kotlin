@@ -33,12 +33,14 @@ class DefaultBlockViewRendererTest {
             root: Block,
             anchor: Id,
             focus: Editor.Focus,
-            indent: Int
+            indent: Int,
+            details: Block.Details
         ): List<BlockView> = blocks.render(
             root = root,
             anchor = anchor,
             focus = focus,
-            indent = indent
+            indent = indent,
+            details = details
         )
     }
 
@@ -129,7 +131,8 @@ class DefaultBlockViewRendererTest {
                 root = page,
                 anchor = page.id,
                 focus = Editor.Focus.id(paragraph.id),
-                indent = 0
+                indent = 0,
+                details = Block.Details()
             )
         }
 
@@ -229,7 +232,8 @@ class DefaultBlockViewRendererTest {
                 root = page,
                 anchor = page.id,
                 focus = Editor.Focus.id(paragraph.id),
-                indent = 0
+                indent = 0,
+                details = Block.Details()
             )
         }
 
@@ -311,7 +315,8 @@ class DefaultBlockViewRendererTest {
                 root = page,
                 anchor = page.id,
                 focus = Editor.Focus.id(paragraph.id),
-                indent = 0
+                indent = 0,
+                details = Block.Details()
             )
         }
 
@@ -373,7 +378,8 @@ class DefaultBlockViewRendererTest {
                 root = page,
                 anchor = page.id,
                 focus = Editor.Focus.id(paragraph.id),
-                indent = 0
+                indent = 0,
+                details = Block.Details()
             )
         }
 
@@ -383,6 +389,223 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 text = null,
                 emoji = null
+            ),
+            BlockView.Paragraph(
+                isFocused = true,
+                id = paragraph.id,
+                marks = emptyList(),
+                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                color = paragraph.content<Block.Content.Text>().color,
+                text = paragraph.content<Block.Content.Text>().text,
+                alignment = Alignment.CENTER
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should add profile title when smart block is profile`() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.P,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val name = MockDataFactory.randomString()
+        val imageName = MockDataFactory.randomString()
+        val pageId = MockDataFactory.randomUuid()
+        val fields = Block.Fields(
+            map = mapOf(
+                "name" to name,
+                "iconImage" to imageName
+            )
+        )
+        val details = mapOf(pageId to fields)
+        val page = Block(
+            id = pageId,
+            children = listOf(paragraph.id),
+            fields = fields,
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PROFILE
+            )
+        )
+
+        val blocks = listOf(page, paragraph)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.id(paragraph.id),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.ProfileTitle(
+                id = page.id,
+                isFocused = false,
+                text = name,
+                image = UrlBuilder(config).image(imageName)
+            ),
+            BlockView.Paragraph(
+                isFocused = true,
+                id = paragraph.id,
+                marks = emptyList(),
+                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                color = paragraph.content<Block.Content.Text>().color,
+                text = paragraph.content<Block.Content.Text>().text,
+                alignment = Alignment.CENTER
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should add title when smart block is page`() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.P,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val name = MockDataFactory.randomString()
+        val imageName = MockDataFactory.randomString()
+        val pageId = MockDataFactory.randomUuid()
+        val fields = Block.Fields(
+            map = mapOf(
+                "name" to name,
+                "iconImage" to imageName
+            )
+        )
+        val details = mapOf(pageId to fields)
+        val page = Block(
+            id = pageId,
+            children = listOf(paragraph.id),
+            fields = fields,
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            )
+        )
+
+        val blocks = listOf(page, paragraph)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.id(paragraph.id),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title(
+                id = page.id,
+                isFocused = false,
+                text = name,
+                image = UrlBuilder(config).image(imageName)
+            ),
+            BlockView.Paragraph(
+                isFocused = true,
+                id = paragraph.id,
+                marks = emptyList(),
+                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                color = paragraph.content<Block.Content.Text>().color,
+                text = paragraph.content<Block.Content.Text>().text,
+                alignment = Alignment.CENTER
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should add title when page is not smart block`() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.P,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val name = MockDataFactory.randomString()
+        val imageName = MockDataFactory.randomString()
+        val pageId = MockDataFactory.randomUuid()
+        val fields = Block.Fields(
+            map = mapOf(
+                "name" to name,
+                "iconImage" to imageName
+            )
+        )
+        val details = mapOf(pageId to fields)
+        val page = Block(
+            id = pageId,
+            children = listOf(paragraph.id),
+            fields = fields,
+            content = Block.Content.Page(style = Block.Content.Page.Style.TASK)
+        )
+
+        val blocks = listOf(page, paragraph)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.id(paragraph.id),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title(
+                id = page.id,
+                isFocused = false,
+                text = name,
+                image = UrlBuilder(config).image(imageName)
             ),
             BlockView.Paragraph(
                 isFocused = true,

@@ -136,6 +136,7 @@
     <string name="modal_detail_name">Detail name</string>
     <string name="modal_detail_type">Detail type</string>
     <string name="hint_title">Title</string>
+    <string name="hint_profile_title">Name Surname</string>
     <string name="hint_paragraph">Paragraph</string>
     <string name="hint_header_one">Header 1</string>
     <string name="hint_quote">Quote</string>

@@ -166,36 +166,59 @@ class DefaultBlockViewRenderer(
         focus: Focus
     ) {
         if (anchor == root.id) {
-            result.add(
-                BlockView.Title(
-                    mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
-                    id = anchor,
-                    isFocused = anchor == focus.id,
-                    text = details.details[root.id]?.name,
-                    emoji = details.details[root.id]?.iconEmoji?.let { name ->
-                        if (name.isNotEmpty())
-                            name
-                        else
-                            null
-                    },
-                    image = details.details[root.id]?.iconImage?.let { name ->
-                        if (name.isNotEmpty())
-                            urlBuilder.image(name)
-                        else
-                            null
-                    },
-                    cursor = if (anchor == focus.id) {
-                        focus.cursor?.let { cursor ->
-                            when (cursor) {
-                                is Cursor.Start -> 0
-                                is Cursor.End -> details.details[root.id]?.name?.length ?: 0
-                                is Cursor.Range -> cursor.range.first
-                            }
-                        }
-                    } else {
-                        null
+
+            val cursor = if (anchor == focus.id) {
+                focus.cursor?.let { cursor ->
+                    when (cursor) {
+                        is Cursor.Start -> 0
+                        is Cursor.End -> details.details[root.id]?.name?.length ?: 0
+                        is Cursor.Range -> cursor.range.first
                     }
-                )
+                }
+            } else {
+                null
+            }
+            val viewMode =
+                if (mode == EditorMode.EDITING)
+                    BlockView.Mode.EDIT
+                else
+                    BlockView.Mode.READ
+            val text = details.details[root.id]?.name
+            val isFocused = anchor == focus.id
+            val type = (root.content as? Content.Smart)?.type
+            result.add(
+                if (type == Content.Smart.Type.PROFILE) {
+                    BlockView.ProfileTitle(
+                        mode = viewMode,
+                        id = anchor,
+                        isFocused = isFocused,
+                        text = text,
+                        image = details.details[root.id]?.iconImage?.let { name ->
+                            if (name.isNotEmpty()) urlBuilder.image(name) else null
+                        },
+                        cursor = cursor
+                    )
+                } else {
+                    BlockView.Title(
+                        mode = viewMode,
+                        id = anchor,
+                        isFocused = isFocused,
+                        text = text,
+                        emoji = details.details[root.id]?.iconEmoji?.let { name ->
+                            if (name.isNotEmpty())
+                                name
+                            else
+                                null
+                        },
+                        image = details.details[root.id]?.iconImage?.let { name ->
+                            if (name.isNotEmpty())
+                                urlBuilder.image(name)
+                            else
+                                null
+                        },
+                        cursor = cursor
+                    )
+                }
             )
         }
     }

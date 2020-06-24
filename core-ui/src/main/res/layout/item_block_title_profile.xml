@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp">
+
+    <FrameLayout
+        android:transitionName="@string/logo_transition"
+        android:id="@+id/documentIconContainer"
+        android:background="@drawable/circle_profile_icon"
+        android:layout_marginTop="48dp"
+        android:layout_width="96dp"
+        android:layout_height="96dp">
+
+        <ImageView
+            android:id="@+id/imageIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/imageText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/graphik_medium"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="44sp"
+            tools:text="S" />
+
+    </FrameLayout>
+
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="34sp"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/hint_profile_title"
+        android:textColorHint="#ACA996"
+        android:background="@null"
+        android:textColor="@color/black"
+        android:fontFamily="@font/graphik_semibold"
+        android:lineSpacingExtra="2sp"
+        android:layout_marginTop="15dp"
+        tools:text="Title" />
+
+</LinearLayout>

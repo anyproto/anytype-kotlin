@@ -36,7 +36,7 @@ class GetCurrentAccount(
         return Account(
             id = config.profile,
             name = name,
-            avatar = image?.let { builder.image(it) },
+            avatar = if (image.isNullOrEmpty()) null else builder.image(image),
             color = null
         )
     }

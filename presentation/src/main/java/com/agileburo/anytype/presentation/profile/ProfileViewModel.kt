@@ -18,6 +18,8 @@ class ProfileViewModel(
 ) : ViewStateViewModel<ViewState<ProfileView>>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
+    private var target = ""
+
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
         MutableLiveData()
 
@@ -30,6 +32,10 @@ class ProfileViewModel(
         navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
     }
 
+    fun onProfileCardClicked() {
+        navigate(EventWrapper(AppNavigation.Command.OpenPage(target)))
+    }
+
     fun onDebugSettingsClicked(){
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenDebugSettingsScreen))
     }
@@ -39,6 +45,7 @@ class ProfileViewModel(
             result.either(
                 fnL = { e -> Timber.e(e, "Error while getting account") },
                 fnR = { account ->
+                    target = account.id
                     stateData.postValue(
                         ViewState.Success(
                             data = ProfileView(

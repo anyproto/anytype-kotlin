@@ -63,6 +63,7 @@ abstract class BlockActionToolbar : Fragment() {
         when (val block = getBlock()) {
             is BlockView.Paragraph -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Title -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.ProfileTitle -> addButtons(view, ACTIONS.TEXT)
             is BlockView.HeaderOne -> addButtons(view, ACTIONS.TEXT)
             is BlockView.HeaderTwo -> addButtons(view, ACTIONS.TEXT)
             is BlockView.HeaderThree -> addButtons(view, ACTIONS.TEXT)

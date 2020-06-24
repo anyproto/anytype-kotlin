@@ -84,6 +84,19 @@
         <item>#E3F7D0</item>
     </array>
 
+    <array name="avatar_colors">
+        <item>#FFB522</item>
+        <item>#F55522</item>
+        <item>#2869E9</item>
+        <item>#9BB0B7</item>
+        <item>#FEE874</item>
+        <item>#136F41</item>
+        <item>#6A1036</item>
+        <item>#EFAEA1</item>
+        <item>#132877</item>
+        <item>#88CDF3</item>
+    </array>
+
     <color name="context_menu_selected_item">#ACA996</color>
 
     <color name="default_style_color_circle_outer_stroke_color">#FFB522</color>

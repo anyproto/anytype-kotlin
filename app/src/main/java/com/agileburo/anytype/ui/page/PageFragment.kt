@@ -607,21 +607,29 @@ open class PageFragment :
 
     private fun resetDocumentTitle(state: ViewState.Success) {
         state.blocks.firstOrNull { view ->
-            view is BlockView.Title
+            view is BlockView.Title || view is BlockView.ProfileTitle
         }?.let { view ->
-            topToolbar.title.text = (view as BlockView.Title).text
-            topToolbar.emoji.text = view.emoji
-            if (view.image != null) {
-                topToolbar.image.visible()
-                Glide
-                    .with(topToolbar.image)
-                    .load(view.image)
-                    .centerInside()
-                    .circleCrop()
-                    .into(topToolbar.image)
-            } else {
-                topToolbar.image.setImageDrawable(null)
+            when (view) {
+                is BlockView.Title -> resetTopToolbarTitle(view.text, view.emoji, view.image)
+                is BlockView.ProfileTitle -> resetTopToolbarTitle(view.text, null, view.image)
+                else -> {}
             }
+        }
+    }
+
+    private fun resetTopToolbarTitle(text: String?, emoji: String?, image: String?) {
+        topToolbar.title.text = text
+        if (emoji != null) topToolbar.emoji.text = emoji
+        if (image != null) {
+            topToolbar.image.visible()
+            Glide
+                .with(topToolbar.image)
+                .load(image)
+                .centerInside()
+                .circleCrop()
+                .into(topToolbar.image)
+        } else {
+            topToolbar.image.setImageDrawable(null)
         }
     }
 

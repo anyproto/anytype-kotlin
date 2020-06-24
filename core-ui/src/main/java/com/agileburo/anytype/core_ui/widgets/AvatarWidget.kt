@@ -54,11 +54,11 @@ class AvatarWidget : FrameLayout {
     }
 
 
-    fun bind(name: String) {
+    fun bind(name: String, color: Int? = null) {
         initials.visible()
         initials.text = if (name.isNotEmpty()) name.first().toUpperCase().toString() else ""
         icon.invisible()
-        backgroundTintList = ColorStateList.valueOf(randomColor(name))
+        backgroundTintList = ColorStateList.valueOf(color ?: randomColor(name))
     }
 
     private fun randomColor(name: String): Int {

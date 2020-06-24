@@ -39,6 +39,11 @@ class BlockViewDiffUtil(
                 changes.add(TEXT_CHANGED)
         }
 
+        if (newBlock is BlockView.ProfileTitle && oldBlock is BlockView.ProfileTitle) {
+            if (newBlock.text != oldBlock.text)
+                changes.add(TEXT_CHANGED)
+        }
+
         if (newBlock is BlockView.Text && oldBlock is BlockView.Text) {
             if (newBlock.text != oldBlock.text)
                 changes.add(TEXT_CHANGED)

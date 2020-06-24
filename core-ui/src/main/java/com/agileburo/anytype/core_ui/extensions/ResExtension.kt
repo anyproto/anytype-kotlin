@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import com.agileburo.anytype.core_ui.R
 
 fun Context.drawable(
     @DrawableRes id: Int
@@ -12,3 +13,12 @@ fun Context.drawable(
 fun Context.color(
     @ColorRes id: Int
 ) = ContextCompat.getColor(this, id)
+
+fun Context.avatarColor(
+    position: Int
+): Int {
+    val colors = resources.obtainTypedArray(R.array.avatar_colors)
+    val color = colors.getColor(position, 0)
+    colors.recycle()
+    return color
+}

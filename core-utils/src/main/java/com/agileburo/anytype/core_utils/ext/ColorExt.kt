@@ -1,5 +1,7 @@
 package com.agileburo.anytype.core_utils.ext
 
+import kotlin.math.abs
+
 /**
  * This method removes alpha from color.
  * @return Transparent color, when input is 0
@@ -13,3 +15,6 @@ fun Int.hexColorCode(): String =
     } else {
         String.format("#%06X", 0xFFFFFF and this)
     }
+
+fun String.firstDigitByHash(): Int =
+    abs(this.hashCode()).toString().firstOrNull()?.toString()?.toIntOrNull() ?: 0

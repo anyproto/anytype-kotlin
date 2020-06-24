@@ -5,6 +5,8 @@ import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.extensions.avatarColor
+import com.agileburo.anytype.core_utils.ext.firstDigitByHash
 import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.core_utils.ui.ViewState
@@ -44,6 +46,7 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
                 pinCodeText.setOnClickListener { toast("Not implemented yet") }
                 keychainPhrase.setOnClickListener { vm.onKeyChainPhraseClicked() }
                 backButton.setOnClickListener { vm.onBackButtonClicked() }
+                profileCardContainer.setOnClickListener { vm.onProfileCardClicked() }
 
                 if (BuildConfig.DEBUG) {
                     with(debugSettingsButton) {
@@ -54,7 +57,11 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
             }
             is ViewState.Success -> {
                 name.text = state.data.name
-                avatar.bind(state.data.name)
+                val pos = state.data.name.firstDigitByHash()
+                avatar.bind(
+                    name = state.data.name,
+                    color = requireContext().avatarColor(pos)
+                )
                 state.data.avatar?.let { avatar.icon(it) }
             }
         }

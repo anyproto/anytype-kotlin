@@ -1,6 +1,7 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.Editable
@@ -24,6 +25,7 @@ import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.common.isLinksPresent
 import com.agileburo.anytype.core_ui.common.toSpannable
+import com.agileburo.anytype.core_ui.extensions.avatarColor
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.extensions.tint
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.NUMBER_CHANGED
@@ -68,6 +70,10 @@ import kotlinx.android.synthetic.main.item_block_picture.view.*
 import kotlinx.android.synthetic.main.item_block_task.view.*
 import kotlinx.android.synthetic.main.item_block_text.view.*
 import kotlinx.android.synthetic.main.item_block_title.view.*
+import kotlinx.android.synthetic.main.item_block_title.view.documentIconContainer
+import kotlinx.android.synthetic.main.item_block_title.view.imageIcon
+import kotlinx.android.synthetic.main.item_block_title.view.title
+import kotlinx.android.synthetic.main.item_block_title_profile.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import kotlinx.android.synthetic.main.item_block_video.view.*
 import timber.log.Timber
@@ -282,6 +288,123 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         companion object {
             private const val EMPTY_EMOJI = ""
+        }
+    }
+
+    class ProfileTitle(
+        view: View,
+        override var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
+    ) : BlockViewHolder(view), TextHolder {
+
+        private val icon = itemView.documentIconContainer
+        private val iconText = itemView.imageText
+        private val image = itemView.imageIcon
+
+        override val root: View = itemView
+        override val content: TextInputWidget = itemView.title
+
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
+        }
+
+        fun bind(
+            item: BlockView.ProfileTitle,
+            onTitleTextChanged: (Editable) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit,
+            onPageIconClicked: () -> Unit
+        ) {
+
+            Timber.d("Binding profile title view: $item")
+
+            item.image?.let { url ->
+                image.visible()
+                Glide
+                    .with(image)
+                    .load(url)
+                    .centerInside()
+                    .circleCrop()
+                    .into(image)
+            } ?: apply {
+                val pos = item.text?.firstDigitByHash() ?: 0
+                icon.backgroundTintList = ColorStateList.valueOf(itemView.context.avatarColor(pos))
+                setIconText(item.text)
+                image.setImageDrawable(null)
+            }
+
+            if (item.mode == BlockView.Mode.READ) {
+                enableReadOnlyMode()
+                content.setText(item.text, BufferType.EDITABLE)
+            } else {
+                enableEditMode()
+                if (item.isFocused) setCursor(item)
+                focus(item.isFocused)
+                content.setText(item.text, BufferType.EDITABLE)
+                if (!item.text.isNullOrEmpty()) content.setSelection(item.text.length)
+                setupTextWatcher({ _, editable -> onTitleTextChanged(editable) }, item)
+                content.setOnFocusChangeListener { _, hasFocus ->
+                    onFocusChanged(item.id, hasFocus)
+                    if (hasFocus) showKeyboard()
+                }
+                icon.setOnClickListener { onPageIconClicked() }
+            }
+        }
+
+        private fun showKeyboard() {
+            content.postDelayed(KEYBOARD_SHOW_DELAY) {
+                imm().showSoftInput(content, SHOW_IMPLICIT)
+            }
+        }
+
+        fun processPayloads(
+            payloads: List<Payload>,
+            item: BlockView.ProfileTitle
+        ) {
+
+            Timber.d("Processing change payload $payloads for $item")
+
+            payloads.forEach { payload ->
+                if (payload.changes.contains(TEXT_CHANGED)) {
+                    setIconText(item.text)
+                    content.pauseTextWatchers {
+                        if (content.text.toString() != item.text) {
+                            content.setText(item.text, BufferType.EDITABLE)
+                        }
+                    }
+                }
+                if (payload.isCursorChanged) {
+                    if (item.isFocused) setCursor(item)
+                }
+                if (payload.focusChanged()) {
+                    focus(item.isFocused)
+                }
+                if (payload.readWriteModeChanged()) {
+                    if (item.mode == BlockView.Mode.EDIT)
+                        enableEditMode()
+                    else
+                        enableTitleReadOnlyMode()
+                }
+            }
+        }
+
+        fun focus(focused: Boolean) {
+            if (focused) {
+                content.requestFocus()
+                showKeyboard()
+            } else
+                content.clearFocus()
+        }
+
+        override fun enableBackspaceDetector(
+            onEmptyBlockBackspaceClicked: () -> Unit,
+            onNonEmptyBlockBackspaceClicked: () -> Unit
+        ) = Unit
+
+        private fun setIconText(name: String?) {
+            if (name.isNullOrEmpty()) {
+                iconText.text = ""
+            } else {
+                iconText.text = name.first().toUpperCase().toString()
+            }
         }
     }
 
@@ -2041,6 +2164,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     companion object {
         const val HOLDER_PARAGRAPH = 0
         const val HOLDER_TITLE = 1
+        const val HOLDER_PROFILE_TITLE = 35
         const val HOLDER_HEADER_ONE = 2
         const val HOLDER_HEADER_TWO = 3
         const val HOLDER_HEADER_THREE = 4

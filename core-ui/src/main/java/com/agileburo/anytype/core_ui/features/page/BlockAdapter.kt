@@ -31,6 +31,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_UPLOAD
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PROFILE_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TASK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
@@ -96,6 +97,16 @@ class BlockAdapter(
                 BlockViewHolder.Title(
                     view = inflater.inflate(
                         R.layout.item_block_title,
+                        parent,
+                        false
+                    ),
+                    actionModeListener = anytypeContextMenuListener
+                )
+            }
+            HOLDER_PROFILE_TITLE -> {
+                BlockViewHolder.ProfileTitle(
+                    view = inflater.inflate(
+                        R.layout.item_block_title_profile,
                         parent,
                         false
                     ),
@@ -426,6 +437,12 @@ class BlockAdapter(
                         item = blocks[position] as BlockView.Title
                     )
                 }
+                is BlockViewHolder.ProfileTitle -> {
+                    holder.processPayloads(
+                        payloads = payloads.typeOf(),
+                        item = blocks[position] as BlockView.ProfileTitle
+                    )
+                }
                 is BlockViewHolder.Numbered -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
@@ -597,6 +614,14 @@ class BlockAdapter(
             is BlockViewHolder.Title -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Title,
+                    onTitleTextChanged = onTitleTextChanged,
+                    onFocusChanged = onFocusChanged,
+                    onPageIconClicked = onPageIconClicked
+                )
+            }
+            is BlockViewHolder.ProfileTitle -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.ProfileTitle,
                     onTitleTextChanged = onTitleTextChanged,
                     onFocusChanged = onFocusChanged,
                     onPageIconClicked = onPageIconClicked
@@ -819,7 +844,7 @@ class BlockAdapter(
                 }
             }
 
-            if (holder is BlockViewHolder.Title) {
+            if (holder is BlockViewHolder.Title || holder is BlockViewHolder.ProfileTitle) {
                 holder.enableEnterKeyDetector(
                     onEndLineEnterClicked = { editable ->
                         onEndLineEnterTitleClicked(editable)
@@ -858,7 +883,7 @@ class BlockAdapter(
                 }
             )
 
-            if (holder is BlockViewHolder.Title)
+            if (holder is BlockViewHolder.Title || holder is BlockViewHolder.ProfileTitle)
                 holder.setOnClickListener { onTitleTextInputClicked() }
             else
                 holder.setOnClickListener { onTextInputClicked(blocks[holder.adapterPosition].id) }

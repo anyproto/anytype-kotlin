@@ -1,5 +1,7 @@
 package com.agileburo.anytype.emojifier
 
+import com.agileburo.anytype.emojifier.data.Emoji
+
 object Emojifier {
 
     /**
@@ -36,15 +38,19 @@ object Emojifier {
 
         var result: Pair<Int, Int>? = null
 
-        Emoji.data.forEachIndexed { idx, category ->
-            val index = category.indexOfFirst { emoji -> emoji == unicode }
-            if (index != -1) {
-                val pair = Pair(idx, index)
+        Emoji.DATA.forEachIndexed { categoryIndex, emojis ->
+            val emojiIndex = emojis.indexOfFirst { emoji -> emoji == unicode }
+            if (emojiIndex != -1) {
+                val pair = Pair(categoryIndex, emojiIndex)
                 result = pair
                 cache[unicode] = pair
                 return@forEachIndexed
             }
         }
         return result ?: throw IllegalStateException("Result not found for: $unicode")
+    }
+
+    object Config {
+        const val EMOJI_FILE = "emoji.json"
     }
 }

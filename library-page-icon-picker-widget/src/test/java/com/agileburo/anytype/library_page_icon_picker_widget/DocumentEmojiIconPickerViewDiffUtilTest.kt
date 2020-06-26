@@ -8,29 +8,6 @@ import kotlin.test.assertEquals
 class DocumentEmojiIconPickerViewDiffUtilTest {
 
     @Test
-    fun `two emoji-filter items should be considered the same`() {
-        val old = listOf(
-            EmojiPickerView.EmojiFilter
-        )
-
-        val new = listOf(
-            EmojiPickerView.EmojiFilter
-        )
-
-        val util = PageIconPickerViewDiffUtil(
-            old = old,
-            new = new
-        )
-
-        val result = util.areItemsTheSame(0, 0)
-
-        assertEquals(
-            expected = true,
-            actual = result
-        )
-    }
-
-    @Test
     fun `two emoji items should be considered the same`() {
 
         val page = 5

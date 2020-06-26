@@ -3,6 +3,8 @@ package com.agileburo.anytype.di.feature
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.icon.SetDocumentEmojiIcon
+import com.agileburo.anytype.emojifier.data.Emoji
+import com.agileburo.anytype.emojifier.suggest.EmojiSuggester
 import com.agileburo.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModelFactory
 import com.agileburo.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
 import dagger.Module
@@ -28,9 +30,12 @@ class DocumentEmojiIconPickerModule {
     @Provides
     @PerScreen
     fun provideDocumentEmojiIconPickerViewModel(
-        setEmojiIcon: SetDocumentEmojiIcon
+        setEmojiIcon: SetDocumentEmojiIcon,
+        emojiSuggester: EmojiSuggester
     ): DocumentEmojiIconPickerViewModelFactory = DocumentEmojiIconPickerViewModelFactory(
-        setEmojiIcon = setEmojiIcon
+        setEmojiIcon = setEmojiIcon,
+        emojiSuggester = emojiSuggester,
+        emojiProvider = Emoji
     )
 
     @Provides

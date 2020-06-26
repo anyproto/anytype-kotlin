@@ -25,6 +25,10 @@
         <item name="colorAccent">@color/white</item>
     </style>
 
+    <style name="GreyProgressBar" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorAccent">#ACA996</item>
+    </style>
+
     <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
     </style>

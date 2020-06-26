@@ -40,9 +40,18 @@ android {
 }
 
 dependencies {
-    implementation project(':domain')
+
+    def appDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
     def lib = rootProject.ext.libraryPageIconPicker
+
+    implementation project(':domain')
+    implementation project(':core-utils')
     implementation(lib.emojiJava) {
         exclude group: 'org.json', module: 'json'
     }
+    implementation appDependencies.gson
+    implementation appDependencies.coroutines
+
+    testImplementation unitTestDependencies.junit
 }

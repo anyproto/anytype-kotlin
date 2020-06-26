@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.icon.SetDocumentEmojiIcon
 import com.agileburo.anytype.domain.icon.SetDocumentImageIcon
-import com.agileburo.anytype.emojifier.Emoji
+import com.agileburo.anytype.emojifier.data.Emoji
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.page.picker.DocumentIconActionMenuViewModel.Contract.*
 import com.agileburo.anytype.presentation.page.picker.DocumentIconActionMenuViewModel.ViewState
@@ -71,7 +71,7 @@ class DocumentIconActionMenuViewModel(
                         success = { events.send(Event.OnCompleted) }
                     )
                     is Action.PickRandomEmoji -> {
-                        val random = Emoji.data.random().random()
+                        val random = Emoji.DATA.random().random()
                         events.send(
                             Event.OnRandomEmojiSelected(
                                 target = action.target,

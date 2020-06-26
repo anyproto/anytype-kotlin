@@ -8,6 +8,7 @@
     android:paddingEnd="20dp">
 
     <FrameLayout
+        android:background="@drawable/rectangle_default_page_logo_background"
         android:transitionName="@string/logo_transition"
         android:id="@+id/documentIconContainer"
         android:layout_marginTop="45dp"

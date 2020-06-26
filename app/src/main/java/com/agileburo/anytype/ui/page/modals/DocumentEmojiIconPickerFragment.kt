@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.agileburo.anytype.R
-import com.agileburo.anytype.core_utils.ext.toast
+import com.agileburo.anytype.core_utils.ext.invisible
+import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
@@ -27,7 +29,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
+open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
 
     private val target: String
         get() = requireArguments()
@@ -51,7 +53,6 @@ class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
     private val emojiPickerAdapter by lazy {
         DocumentEmojiIconPickerAdapter(
             views = emptyList(),
-            onFilterQueryChanged = { toast("not implemented yet") },
             onEmojiClicked = { unicode ->
                 vm.onEmojiClicked(
                     unicode = unicode,
@@ -82,10 +83,15 @@ class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecycler()
+        clearSearchText.setOnClickListener {
+            filterInputField.setText(EMPTY_FILTER_TEXT)
+            clearSearchText.invisible()
+        }
+        filterInputField.doAfterTextChanged { vm.onQueryChanged(it.toString()) }
     }
 
     private fun setupRecycler() {
-        recyler.apply {
+        pickerRecycler.apply {
             setItemViewCacheSize(EMOJI_RECYCLER_ITEM_VIEW_CACHE_SIZE)
             setHasFixedSize(true)
             layoutManager = GridLayoutManager(context, PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT).apply {
@@ -94,7 +100,6 @@ class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
                         when (val type = emojiPickerAdapter.getItemViewType(position)) {
                             DocumentEmojiIconPickerViewHolder.HOLDER_EMOJI_ITEM -> 1
                             DocumentEmojiIconPickerViewHolder.HOLDER_EMOJI_CATEGORY_HEADER -> PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT
-                            DocumentEmojiIconPickerViewHolder.HOLDER_EMOJI_FILTER -> PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT
                             else -> throw IllegalStateException("$UNEXPECTED_VIEW_TYPE_MESSAGE: $type")
                         }
                 }
@@ -107,7 +112,18 @@ class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
         super.onActivityCreated(savedInstanceState)
         vm.state().onEach { state ->
             when (state) {
-                is ViewState.Success -> emojiPickerAdapter.update(state.views)
+                is ViewState.Success -> {
+                    if (filterInputField.text.isNotEmpty())
+                        clearSearchText.visible()
+                    else
+                        clearSearchText.invisible()
+                    emojiPickerAdapter.update(state.views)
+                    progressBar.invisible()
+                }
+                is ViewState.Loading -> {
+                    clearSearchText.invisible()
+                    progressBar.visible()
+                }
                 is ViewState.Exit -> dismiss()
             }
         }.launchIn(lifecycleScope)
@@ -150,6 +166,7 @@ class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
             )
         }
 
+        private const val EMPTY_FILTER_TEXT = ""
         private const val PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT = 6
         private const val EMOJI_RECYCLER_ITEM_VIEW_CACHE_SIZE = 2000
         private const val ARG_CONTEXT_ID_KEY = "arg.picker.context.id"

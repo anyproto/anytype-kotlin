@@ -151,7 +151,6 @@ open class EditorTestSetup {
             documentEventReducer = DocumentExternalEventReducer(),
             archiveDocument = archiveDocument,
             createDocument = createDocument,
-            uploadUrl = uploadBlock,
             urlBuilder = urlBuilder,
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,
@@ -187,7 +186,8 @@ open class EditorTestSetup {
                     proxies = proxies,
                     stores = stores,
                     matcher = DefaultPatternMatcher()
-                )
+                ),
+                uploadBlock = uploadBlock
             )
         )
     }

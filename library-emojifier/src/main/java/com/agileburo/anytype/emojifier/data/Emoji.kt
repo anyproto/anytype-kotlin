@@ -1,8 +1,8 @@
-package com.agileburo.anytype.emojifier
+package com.agileburo.anytype.emojifier.data
 
-object Emoji {
+object Emoji : EmojiProvider {
 
-    val colors = listOf(
+    val COLORS = listOf(
         "🏻",
         "🏼",
         "🏽",
@@ -10,7 +10,7 @@ object Emoji {
         "🏿"
     )
 
-    val data: Array<Array<String>> = arrayOf(
+    val DATA: Array<Array<String>> = arrayOf(
         arrayOf(
             "😀",
             "😃",
@@ -3152,6 +3152,8 @@ object Emoji {
             "🇿🇼"
         )
     )
+
+    override val emojis: Array<Array<String>> get() = DATA
 
     const val CATEGORY_SMILEYS_AND_PEOPLE = 0
     const val CATEGORY_ANIMALS_AND_NATURE = 1

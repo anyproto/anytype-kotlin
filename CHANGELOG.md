@@ -1,5 +1,17 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.37
+
+### New features 🚀
+
+* Editable profile document (#504)
+* New emoji search engine in document-icon picker (#549) 
+
+### Design & UX 🔳
+
+* Using Apple emojis as document icons (#542)
+* Redesigned profile screen (#504)
+
 ## Version 0.0.36
 
 ### New features 🚀

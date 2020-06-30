@@ -47,6 +47,9 @@ abstract class NavigationFragment(
             is Command.OpenGoalsScreen -> navigation.openGoals()
             is Command.ExitToDesktop -> navigation.exitToDesktop()
             is Command.OpenDebugSettingsScreen -> navigation.openDebugSettings()
+            is Command.OpenPageNavigationScreen -> navigation.openPageNavigation(
+                command.target
+            )
         }
     }
 

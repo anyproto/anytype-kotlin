@@ -143,6 +143,12 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val navigationComponent = Component {
+        main.navigationComponentBuilder()
+            .pageNavigationModule(PageNavigationModule())
+            .build()
+    }
+
     class Component<T>(private val builder: () -> T) {
 
         private var instance: T? = null

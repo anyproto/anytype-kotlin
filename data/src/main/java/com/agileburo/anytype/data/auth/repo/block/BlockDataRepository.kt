@@ -9,6 +9,8 @@ import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Hash
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.event.model.Payload
+import com.agileburo.anytype.domain.page.navigation.PageInfo
+import com.agileburo.anytype.domain.page.navigation.PageInfoWithLinks
 
 class BlockDataRepository(
     private val factory: BlockDataStoreFactory
@@ -140,4 +142,10 @@ class BlockDataRepository(
     override suspend fun uploadFile(
         command: Command.UploadFile
     ): Hash = factory.remote.uploadFile(command.toEntity())
+
+    override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks =
+        factory.remote.getPageInfoWithLinks(pageId).toDomain()
+
+    override suspend fun getListPages(): List<PageInfo> =
+        factory.remote.getListPages().map { it.toDomain() }
 }

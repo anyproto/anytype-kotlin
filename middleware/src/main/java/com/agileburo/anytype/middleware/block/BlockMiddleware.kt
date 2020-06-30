@@ -1,11 +1,9 @@
 package com.agileburo.anytype.middleware.block
 
-import com.agileburo.anytype.data.auth.model.CommandEntity
-import com.agileburo.anytype.data.auth.model.ConfigEntity
-import com.agileburo.anytype.data.auth.model.PayloadEntity
-import com.agileburo.anytype.data.auth.model.Response
+import com.agileburo.anytype.data.auth.model.*
 import com.agileburo.anytype.data.auth.repo.block.BlockRemote
 import com.agileburo.anytype.middleware.converters.mark
+import com.agileburo.anytype.middleware.converters.toEntity
 import com.agileburo.anytype.middleware.interactor.Middleware
 
 class BlockMiddleware(
@@ -144,4 +142,10 @@ class BlockMiddleware(
     override suspend fun uploadFile(
         command: CommandEntity.UploadFile
     ): String = middleware.uploadFile(command).hash
+
+    override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinksEntity =
+        middleware.getPageInfoWithLinks(pageId).toEntity()
+
+    override suspend fun getListPages(): List<PageInfoEntity> =
+        middleware.listPages.map { it.toEntity() }
 }

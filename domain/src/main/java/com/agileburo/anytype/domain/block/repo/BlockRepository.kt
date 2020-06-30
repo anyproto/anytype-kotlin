@@ -7,6 +7,8 @@ import com.agileburo.anytype.domain.common.Hash
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.event.model.Payload
+import com.agileburo.anytype.domain.page.navigation.PageInfo
+import com.agileburo.anytype.domain.page.navigation.PageInfoWithLinks
 
 interface BlockRepository {
 
@@ -82,9 +84,12 @@ interface BlockRepository {
 
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
 
-    suspend fun undo(command: Command.Undo) : Payload
-    suspend fun redo(command: Command.Redo) : Payload
+    suspend fun undo(command: Command.Undo): Payload
+    suspend fun redo(command: Command.Redo): Payload
 
-    suspend fun copy(command: Command.Copy) : Copy.Response
-    suspend fun paste(command: Command.Paste) : Paste.Response
+    suspend fun copy(command: Command.Copy): Copy.Response
+    suspend fun paste(command: Command.Paste): Paste.Response
+
+    suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks
+    suspend fun getListPages(): List<PageInfo>
 }

@@ -120,5 +120,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="content_desc_wallpaper">Wallpaper icon</string>
     <string name="content_desc_key">Keychain icon</string>
     <string name="content_desc_pin">Pin icon</string>
+    <string name="nav_open_page">Open as page</string>
 
 </resources>

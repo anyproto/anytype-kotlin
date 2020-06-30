@@ -12,8 +12,4 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/default_toolbar_height" />
 
-    <com.agileburo.anytype.core_ui.widgets.toolbar.OptionToolbarWidget
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
 </LinearLayout>

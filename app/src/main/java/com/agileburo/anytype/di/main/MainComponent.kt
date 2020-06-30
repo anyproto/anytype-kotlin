@@ -36,5 +36,6 @@ interface MainComponent {
     fun documentActionMenuComponentBuilder(): DocumentActionMenuSubComponent.Builder
     fun documentEmojiIconPickerComponentBuilder(): DocumentEmojiIconPickerSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
-    fun debugSettingsBuilder() : DebugSettingsSubComponent.Builder
+    fun debugSettingsBuilder(): DebugSettingsSubComponent.Builder
+    fun navigationComponentBuilder(): PageNavigationSubComponent.Builder
 }

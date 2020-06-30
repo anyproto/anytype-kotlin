@@ -6,6 +6,7 @@ import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
 import anytype.Commands.Rpc.UploadFile;
 import anytype.Commands.Rpc.Wallet;
+import anytype.Commands.Rpc.Navigation;
 import lib.Lib;
 
 public class DefaultMiddlewareService implements MiddlewareService {
@@ -345,6 +346,28 @@ public class DefaultMiddlewareService implements MiddlewareService {
         byte[] encoded = Lib.uploadFile(request.toByteArray());
         UploadFile.Response response = UploadFile.Response.parseFrom(encoded);
         if (response.getError() != null && response.getError().getCode() != UploadFile.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
+    public Navigation.GetPageInfoWithLinks.Response pageInfoWithLinks(Navigation.GetPageInfoWithLinks.Request request) throws Exception {
+        byte[] encoded = Lib.navigationGetPageInfoWithLinks(request.toByteArray());
+        Navigation.GetPageInfoWithLinks.Response response = Navigation.GetPageInfoWithLinks.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Navigation.GetPageInfoWithLinks.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
+    public Navigation.ListPages.Response listPages(Navigation.ListPages.Request request) throws Exception {
+        byte[] encoded = Lib.navigationListPages(request.toByteArray());
+        Navigation.ListPages.Response response = Navigation.ListPages.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Navigation.ListPages.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return response;

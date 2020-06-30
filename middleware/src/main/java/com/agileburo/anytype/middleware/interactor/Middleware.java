@@ -19,8 +19,10 @@ import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
+import anytype.Commands.Rpc.Navigation;
 import anytype.Commands.Rpc.UploadFile;
 import anytype.Commands.Rpc.Wallet;
+import anytype.model.Localstore;
 import anytype.model.Models;
 import anytype.model.Models.Range;
 import kotlin.Pair;
@@ -940,5 +942,42 @@ public class Middleware {
         }
 
         return new Response.Media.Upload(response.getHash());
+    }
+
+    public Localstore.PageInfoWithLinks getPageInfoWithLinks(String pageId) throws Exception {
+        Navigation.GetPageInfoWithLinks.Request request = Navigation.GetPageInfoWithLinks.Request
+                .newBuilder()
+                .setPageId(pageId)
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Navigation.GetPageInfoWithLinks.Response response = service.pageInfoWithLinks(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return response.getPage();
+    }
+
+    public List<Localstore.PageInfo> getListPages() throws Exception {
+        Navigation.ListPages.Request request = Navigation.ListPages.Request
+                .newBuilder()
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Navigation.ListPages.Response response = service.listPages(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return response.getPagesList();
     }
 }

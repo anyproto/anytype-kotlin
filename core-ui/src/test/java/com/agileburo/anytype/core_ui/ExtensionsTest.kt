@@ -17,16 +17,6 @@ class ExtensionsTest {
     }
 
     @Test
-    fun `should return zero by null string`() {
-
-        val name = null
-
-        val result = name.firstDigitByHash()
-
-        assertEquals(expected = 0, actual = result)
-    }
-
-    @Test
     fun `should return zero by empty string`() {
 
         val name = ""

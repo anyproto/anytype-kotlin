@@ -1,9 +1,6 @@
 package com.agileburo.anytype.data.auth.repo.block
 
-import com.agileburo.anytype.data.auth.model.CommandEntity
-import com.agileburo.anytype.data.auth.model.ConfigEntity
-import com.agileburo.anytype.data.auth.model.PayloadEntity
-import com.agileburo.anytype.data.auth.model.Response
+import com.agileburo.anytype.data.auth.model.*
 import com.agileburo.anytype.domain.common.Id
 
 interface BlockDataStore {
@@ -44,4 +41,8 @@ interface BlockDataStore {
     suspend fun copy(command: CommandEntity.Copy) : Response.Clipboard.Copy
 
     suspend fun uploadFile(command: CommandEntity.UploadFile): String
+
+    suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinksEntity
+
+    suspend fun getListPages(): List<PageInfoEntity>
 }

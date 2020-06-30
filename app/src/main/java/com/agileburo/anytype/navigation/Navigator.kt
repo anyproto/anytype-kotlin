@@ -1,11 +1,13 @@
 package com.agileburo.anytype.navigation
 
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.agileburo.anytype.R
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.settings.EditorSettings
 import com.agileburo.anytype.ui.auth.Keys
+import com.agileburo.anytype.ui.navigation.PageNavigationFragment
 import com.agileburo.anytype.ui.page.PageFragment
 
 class Navigator : AppNavigation {
@@ -128,6 +130,10 @@ class Navigator : AppNavigation {
 
     override fun openDebugSettings() {
         navController?.navigate(R.id.action_profileScreen_to_debugSettingsFragment)
+    }
+
+    override fun openPageNavigation(target: String) {
+        //Todo
     }
 
     fun bind(navController: NavController) {

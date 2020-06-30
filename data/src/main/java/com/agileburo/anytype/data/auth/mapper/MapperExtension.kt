@@ -11,6 +11,9 @@ import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
+import com.agileburo.anytype.domain.page.navigation.PageInfo
+import com.agileburo.anytype.domain.page.navigation.PageInfoWithLinks
+import com.agileburo.anytype.domain.page.navigation.PageLinks
 
 fun AccountEntity.toDomain(): Account {
     return Account(
@@ -574,4 +577,25 @@ fun Response.Clipboard.Copy.toDomain() = Copy.Response(
     text = plain,
     html = html,
     blocks = blocks.map { it.toDomain() }
+)
+
+fun PageInfoWithLinksEntity.toDomain(): PageInfoWithLinks =
+    PageInfoWithLinks(
+        id = id,
+        pageInfo = pageInfo.toDomain(),
+        links = this.links.toDomain()
+    )
+
+fun PageLinksEntity.toDomain(): PageLinks =
+    PageLinks(
+        outbound = outbound.map { it.toDomain() },
+        inbound = inbound.map { it.toDomain() }
+    )
+
+fun PageInfoEntity.toDomain(): PageInfo = PageInfo(
+    id = id,
+    fields = Block.Fields(fields.map),
+    snippet = snippet,
+    hasInboundLinks = hasInboundLinks,
+    lastOpened = lastOpened
 )

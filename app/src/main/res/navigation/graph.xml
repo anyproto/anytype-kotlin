@@ -329,5 +329,15 @@
         android:name="com.agileburo.anytype.ui.settings.DebugSettingsFragment"
         android:label="DebugSettingsFragment"
         tools:layout="@layout/fragment_debug_settings"/>
+    <fragment
+        android:id="@+id/pageNavigationFragment"
+        android:name="com.agileburo.anytype.ui.navigation.PageNavigationFragment"
+        android:label="PageNavigationFragment"
+        tools:layout="@layout/fragment_page_navigation">
+        <argument
+            android:name="ID_KEY"
+            app:argType="string"
+            android:defaultValue='""' />
+    </fragment>
 
 </navigation>

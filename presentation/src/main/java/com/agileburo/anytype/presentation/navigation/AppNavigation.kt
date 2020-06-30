@@ -30,6 +30,7 @@ interface AppNavigation {
     fun exit()
     fun exitToDesktop()
     fun openDebugSettings()
+    fun openPageNavigation(target: String)
 
     sealed class Command {
 
@@ -61,6 +62,7 @@ interface AppNavigation {
         object OpenKanbanScreen : Command()
         object OpenGoalsScreen : Command()
         object OpenDebugSettingsScreen: Command()
+        data class OpenPageNavigationScreen(val target: String) : Command()
     }
 
     interface Provider {

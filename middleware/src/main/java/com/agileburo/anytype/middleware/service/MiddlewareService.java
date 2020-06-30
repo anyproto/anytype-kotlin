@@ -6,6 +6,7 @@ import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
 import anytype.Commands.Rpc.UploadFile;
 import anytype.Commands.Rpc.Wallet;
+import anytype.Commands.Rpc.Navigation;
 
 /**
  * Service for interacting with the backend.
@@ -72,4 +73,8 @@ public interface MiddlewareService {
     Block.Copy.Response blockCopy(Block.Copy.Request request) throws Exception;
 
     UploadFile.Response uploadFile(UploadFile.Request request) throws Exception;
+
+    Navigation.GetPageInfoWithLinks.Response pageInfoWithLinks(Navigation.GetPageInfoWithLinks.Request request) throws Exception;
+
+    Navigation.ListPages.Response listPages(Navigation.ListPages.Request request) throws Exception;
 }

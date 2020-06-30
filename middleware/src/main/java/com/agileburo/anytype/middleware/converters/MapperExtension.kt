@@ -1,11 +1,10 @@
 package com.agileburo.anytype.middleware.converters
 
 import anytype.Events
+import anytype.model.Localstore
 import anytype.model.Models.Account
 import anytype.model.Models.Block
-import com.agileburo.anytype.data.auth.model.AccountEntity
-import com.agileburo.anytype.data.auth.model.BlockEntity
-import com.agileburo.anytype.data.auth.model.PositionEntity
+import com.agileburo.anytype.data.auth.model.*
 import com.google.protobuf.Struct
 import com.google.protobuf.Value
 import timber.log.Timber
@@ -305,3 +304,22 @@ fun BlockEntity.Align.toMiddleware(): Block.Align = when (this) {
     BlockEntity.Align.AlignCenter -> Block.Align.AlignCenter
     BlockEntity.Align.AlignRight -> Block.Align.AlignRight
 }
+
+fun Localstore.PageInfo.toEntity(): PageInfoEntity = PageInfoEntity(
+    id = id,
+    fields = details.fields(),
+    lastOpened = lastOpened,
+    hasInboundLinks = hasInboundLinks,
+    snippet = snippet
+)
+
+fun Localstore.PageLinksInfo.toEntity() = PageLinksEntity(
+    inbound = inboundList.map { it.toEntity() },
+    outbound = outboundList.map { it.toEntity() }
+)
+
+fun Localstore.PageInfoWithLinks.toEntity() = PageInfoWithLinksEntity(
+    id = id,
+    pageInfo = info.toEntity(),
+    links = links.toEntity()
+)

@@ -1,8 +1,6 @@
 package com.agileburo.anytype.data.auth.repo.block
 
-import com.agileburo.anytype.data.auth.model.CommandEntity
-import com.agileburo.anytype.data.auth.model.PayloadEntity
-import com.agileburo.anytype.data.auth.model.Response
+import com.agileburo.anytype.data.auth.model.*
 import com.agileburo.anytype.domain.common.Id
 
 class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
@@ -121,4 +119,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun uploadFile(
         command: CommandEntity.UploadFile
     ): String = remote.uploadFile(command)
+
+    override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinksEntity =
+        remote.getPageInfoWithLinks(pageId)
+
+    override suspend fun getListPages(): List<PageInfoEntity> =
+        remote.getListPages()
 }

@@ -3,6 +3,7 @@ package com.agileburo.anytype.navigation
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import com.agileburo.anytype.R
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.settings.EditorSettings
@@ -133,7 +134,19 @@ class Navigator : AppNavigation {
     }
 
     override fun openPageNavigation(target: String) {
-        //Todo
+        val bundle = bundleOf(PageNavigationFragment.TARGET_ID_KEY to target)
+        navController?.navigate(R.id.pageNavigationFragment, bundle)
+    }
+
+    override fun exitToDesktopAndOpenPage(pageId: String) {
+        navController?.navigate(
+            R.id.desktopScreen,
+            bundleOf(PageFragment.ID_KEY to pageId),
+            navOptions {
+                popUpTo = R.id.desktopScreen
+                launchSingleTop = true
+            }
+        )
     }
 
     fun bind(navController: NavController) {

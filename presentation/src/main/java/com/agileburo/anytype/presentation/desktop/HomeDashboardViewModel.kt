@@ -58,6 +58,8 @@ class HomeDashboardViewModel(
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
+    private var targetPage = ""
+
     init {
         startProcessingState()
         proceedWithGettingConfig()
@@ -84,6 +86,7 @@ class HomeDashboardViewModel(
         getConfig(viewModelScope, Unit) { result ->
             result.either(
                 fnR = { config ->
+                    targetPage = config.home
                     startInterceptingEvents(context = config.home)
                     processDragAndDrop(context = config.home)
                 },
@@ -202,6 +205,18 @@ class HomeDashboardViewModel(
         }
     }
 
+    fun onNavigationDeepLink(pageId: String) {
+        closeDashboard(viewModelScope, CloseDashboard.Param.home()) { result ->
+            result.either(
+                fnL = { e ->
+                    Timber.e(e, "Error while closing a dashobard, dashboard is not opened")
+                    proceedToPage(pageId)
+                },
+                fnR = { proceedToPage(pageId) }
+            )
+        }
+    }
+
     private fun proceedToPage(id: String) {
         if (BuildConfig.DEBUG) {
             getEditorSettingsAndOpenPage(id)
@@ -234,6 +249,16 @@ class HomeDashboardViewModel(
 
     fun onProfileClicked() {
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenProfile))
+    }
+
+    fun onPageNavigationClicked() {
+        navigation.postValue(
+            EventWrapper(
+                AppNavigation.Command.OpenPageNavigationScreen(
+                    target = targetPage
+                )
+            )
+        )
     }
 
     /**

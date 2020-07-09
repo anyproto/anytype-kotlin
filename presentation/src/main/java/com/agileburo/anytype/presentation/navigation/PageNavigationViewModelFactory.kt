@@ -2,19 +2,22 @@ package com.agileburo.anytype.presentation.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.agileburo.anytype.domain.page.navigation.GetListPages
+import com.agileburo.anytype.domain.config.GetConfig
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.navigation.GetPageInfoWithLinks
 
 class PageNavigationViewModelFactory(
+    private val urlBuilder: UrlBuilder,
     private val getPageInfoWithLinks: GetPageInfoWithLinks,
-    private val getListPages: GetListPages
+    private val getConfig: GetConfig
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return PageNavigationViewModel(
+            urlBuilder = urlBuilder,
             getPageInfoWithLinks = getPageInfoWithLinks,
-            getListPages = getListPages
+            getConfig = getConfig
         ) as T
     }
 }

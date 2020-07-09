@@ -50,6 +50,7 @@ abstract class NavigationFragment(
             is Command.OpenPageNavigationScreen -> navigation.openPageNavigation(
                 command.target
             )
+            is Command.ExitToDesktopAndOpenPage -> navigation.exitToDesktopAndOpenPage(command.pageId)
         }
     }
 

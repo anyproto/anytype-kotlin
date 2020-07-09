@@ -106,4 +106,6 @@
     <dimen name="default_style_color_circle_inner_radius">24dp</dimen>
     <dimen name="default_style_color_outer_stroke_width">2dp</dimen>
 
+    <dimen name="default_page_links_bottom_offset">64dp</dimen>
+
 </resources>

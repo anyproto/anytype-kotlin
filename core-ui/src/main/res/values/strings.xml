@@ -209,5 +209,12 @@
 
     <string name="choose_emoji">Choose emoji</string>
     <string name="logo_transition">logo_transition</string>
+    <string name="page_nav_link_from">Link from</string>
+    <string name="page_nav_links_to">Links to</string>
+    <string name="filter_view_search_hint">Search</string>
+    <string name="filter_view_filter_hint">Filter</string>
+    <string name="content_desc_page_toolbar_search">Search pages</string>
+    <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
+    <string name="content_desc_page_toolbar_add_doc">Add new page</string>
 
 </resources>

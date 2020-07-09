@@ -2,12 +2,14 @@ package com.agileburo.anytype.presentation.mapper
 
 import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.features.navigation.PageLinkView
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.config.DebugSettings
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
 import com.agileburo.anytype.domain.misc.UrlBuilder
+import com.agileburo.anytype.domain.page.navigation.PageInfo
 import com.agileburo.anytype.presentation.desktop.DashboardView
 import com.agileburo.anytype.presentation.settings.EditorSettings
 
@@ -229,3 +231,19 @@ fun UiBlock.style(): Block.Content.Text.Style = when (this) {
 
 fun DebugSettings.toView(): EditorSettings =
     EditorSettings(customContextMenu = this.isAnytypeContextMenuEnabled)
+
+fun PageInfo.toView(urlBuilder: UrlBuilder): PageLinkView = PageLinkView(
+    id = id,
+    title = fields.name.orEmpty(),
+    subtitle = snippet.orEmpty(),
+    image = fields.toImageView(urlBuilder),
+    emoji = fields.toEmojiView()
+)
+
+fun Block.Fields.toImageView(urlBuilder: UrlBuilder): String? = this.iconImage.let { url ->
+    if (url.isNullOrBlank()) null else urlBuilder.image(url)
+}
+
+fun Block.Fields.toEmojiView(): String? = this.iconEmoji.let { emoji ->
+    if (emoji.isNullOrBlank()) null else emoji
+}

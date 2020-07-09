@@ -31,6 +31,7 @@ interface AppNavigation {
     fun exitToDesktop()
     fun openDebugSettings()
     fun openPageNavigation(target: String)
+    fun exitToDesktopAndOpenPage(pageId: String)
 
     sealed class Command {
 
@@ -47,7 +48,7 @@ interface AppNavigation {
         object SelectAccountScreen : Command()
         object EnterKeyChainScreen : Command()
         object WorkspaceScreen : Command()
-        data class OpenPage(val id: String, val editorSettings: EditorSettings?= null) : Command()
+        data class OpenPage(val id: String, val editorSettings: EditorSettings? = null) : Command()
         object OpenProfile : Command()
         object OpenKeychainScreen : Command()
         object OpenPinCodeScreen : Command()
@@ -63,6 +64,7 @@ interface AppNavigation {
         object OpenGoalsScreen : Command()
         object OpenDebugSettingsScreen: Command()
         data class OpenPageNavigationScreen(val target: String) : Command()
+        data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
     }
 
     interface Provider {

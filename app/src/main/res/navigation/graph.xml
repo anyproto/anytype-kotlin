@@ -41,6 +41,9 @@
         <action
             android:id="@+id/action_desktopScreen_to_goalsFragment"
             app:destination="@id/goalsFragment" />
+        <action
+            android:id="@+id/action_desktopScreen_to_pageNavigationFragment"
+            app:destination="@id/pageNavigationFragment" />
     </fragment>
 
     <fragment

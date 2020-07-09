@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.agileburo.anytype.core_ui.R
 
-class PageNavigationLinksFragment : Fragment(R.layout.fragment_navigation_links) {
+class PageNavigationLinksFragment : Fragment(R.layout.item_page_link_list) {
 
     companion object {
 

@@ -1241,6 +1241,16 @@ class PageViewModel(
         dispatch(Command.OpenMultiSelectTurnIntoPanel)
     }
 
+    fun onOpenPageNavigationButtonClicked() {
+        navigation.postValue(
+            EventWrapper(
+                AppNavigation.Command.OpenPageNavigationScreen(
+                    target = context
+                )
+            )
+        )
+    }
+
     override fun onTurnIntoBlockClicked(target: String, block: UiBlock) {
         if (block.isText() || block.isCode()) {
             proceedWithUpdatingTextStyle(

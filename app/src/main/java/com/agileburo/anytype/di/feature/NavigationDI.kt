@@ -2,7 +2,8 @@ package com.agileburo.anytype.di.feature
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.block.repo.BlockRepository
-import com.agileburo.anytype.domain.page.navigation.GetListPages
+import com.agileburo.anytype.domain.config.GetConfig
+import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.navigation.GetPageInfoWithLinks
 import com.agileburo.anytype.presentation.navigation.PageNavigationViewModelFactory
 import com.agileburo.anytype.ui.navigation.PageNavigationFragment
@@ -30,22 +31,27 @@ class PageNavigationModule {
 
     @PerScreen
     @Provides
-    fun getListPages(repo: BlockRepository): GetListPages =
-        GetListPages(repo = repo)
-
-    @PerScreen
-    @Provides
     fun provideGetPageInfoWithLinks(repo: BlockRepository): GetPageInfoWithLinks =
         GetPageInfoWithLinks(repo = repo)
 
     @PerScreen
     @Provides
     fun provideNavigationViewModelFactory(
+        urlBuilder: UrlBuilder,
         getPageInfoWithLinks: GetPageInfoWithLinks,
-        getListPages: GetListPages
+        getConfig: GetConfig
     ): PageNavigationViewModelFactory =
         PageNavigationViewModelFactory(
+            urlBuilder = urlBuilder,
             getPageInfoWithLinks = getPageInfoWithLinks,
-            getListPages = getListPages
+            getConfig = getConfig
         )
+
+    @Provides
+    @PerScreen
+    fun getConfigUseCase(
+        repo: BlockRepository
+    ): GetConfig = GetConfig(
+        repo = repo
+    )
 }

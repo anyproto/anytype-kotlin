@@ -21,8 +21,11 @@ import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModelFactory
 import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.profile.ProfileView
 import com.agileburo.anytype.ui.base.ViewStateFragment
+import com.agileburo.anytype.ui.page.PageFragment
 import kotlinx.android.synthetic.main.fragment_desktop.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -87,24 +90,32 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             navigation.observe(viewLifecycleOwner, navObserver)
             profile.observe(viewLifecycleOwner, profileObserver)
         }
+        
+        parseIntent()
+    }
 
-        vm.onViewCreated()
+    private fun parseIntent() {
+        val deepLinkPage = arguments?.getString(PageFragment.ID_KEY, null)
+        if (deepLinkPage != null) {
+            arguments?.remove(PageFragment.ID_KEY)
+
+            vm.onNavigationDeepLink(deepLinkPage)
+        } else {
+            vm.onViewCreated()
+        }
     }
 
     override fun render(state: State) {
         Timber.d("Rendering state: $state")
         when {
             state.isLoading -> {
-                fab.invisible()
-                progress.visible()
+                bottomToolbar.invisible()
             }
             state.error != null -> {
-                progress.invisible()
                 requireActivity().toast("Error: ${state.error}")
             }
             state.dashboard != null -> {
-                progress.invisible()
-                fab.visible()
+                bottomToolbar.visible()
                 state.dashboard?.let { dashboard ->
                     lifecycleScope.launch {
                         val result = withContext(Dispatchers.IO) {
@@ -136,8 +147,17 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             setHasFixedSize(true)
         }
 
-        fab.setOnClickListener { vm.onAddNewDocumentClicked() }
         avatar.setOnClickListener { vm.onProfileClicked() }
+
+        bottomToolbar
+            .navigationClicks()
+            .onEach { vm.onPageNavigationClicked() }
+            .launchIn(lifecycleScope)
+
+        bottomToolbar
+            .addPageClick()
+            .onEach { vm.onAddNewDocumentClicked() }
+            .launchIn(lifecycleScope)
     }
 
     override fun injectDependencies() {

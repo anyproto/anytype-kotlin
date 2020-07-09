@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.Button
 import android.widget.FrameLayout
@@ -329,7 +328,15 @@ open class PageFragment :
             .onEach { vm.onMultiSelectModeSelectAllClicked() }
             .launchIn(lifecycleScope)
 
-        fab.clicks().onEach { vm.onPlusButtonPressed() }.launchIn(lifecycleScope)
+        bottomToolbar
+            .navigationClicks()
+            .onEach { vm.onOpenPageNavigationButtonClicked()  }
+            .launchIn(lifecycleScope)
+
+        bottomToolbar
+            .addPageClick()
+            .onEach { vm.onPlusButtonPressed() }
+            .launchIn(lifecycleScope)
 
         topToolbar.menu.clicks().onEach { showToolbarMenu() }.launchIn(lifecycleScope)
 
@@ -487,22 +494,9 @@ open class PageFragment :
         if (focus.isEmpty()) {
             placeholder.requestFocus()
             hideKeyboard()
-            fab.apply {
-                scaleX = 0f
-                scaleY = 0f
-                visible()
-                animate()
-                    .scaleX(1.0f)
-                    .scaleY(1.0f)
-                    .apply {
-                        startDelay = FAB_SHOW_ANIMATION_START_DELAY
-                        duration = FAB_SHOW_ANIMATION_DURATION
-                        interpolator = AccelerateInterpolator()
-                    }
-                    .start()
-            }
+            bottomToolbar.visible()
         } else {
-            fab.gone()
+            bottomToolbar.gone()
         }
     }
 

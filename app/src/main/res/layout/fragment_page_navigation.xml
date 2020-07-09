@@ -1,116 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/motionLayout"
-    android:layout_height="match_parent"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="#9BB0B7">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/constraintLayout"
-        android:layout_width="0dp"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="#9BB0B7"
+        android:elevation="0dp"
+        app:elevation="0dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <include
+            android:id="@+id/pagePreviewContainer"
+            layout="@layout/view_page_preview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_8"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginEnd="@dimen/dp_8"
+            app:layout_scrollFlags="scroll|enterAlways" />
 
-            <TextView
-                android:id="@+id/btnOpenPage"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/rounded_button_add"
-                android:gravity="center"
-                android:paddingTop="7dp"
-                android:paddingBottom="7dp"
-                android:text="@string/nav_open_page"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvPageSubtitle" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_tab_layout">
 
-            <TextView
-                android:id="@+id/tvPageSubtitle"
-                android:layout_width="0dp"
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                style="@style/PageNavigationTab"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:ellipsize="end"
-                android:fontFamily="@font/inter_regular"
-                android:maxLines="3"
-                android:text="In addition to describing transitions between layouts, MotionLayout lets you animate any layout properties, as well. Moreover, it inherently supports seekable transitions. This means that you can instantly show any point within the transition based on some condition, such as touch input. MotionLayout also supports keyframes, enabling fully customized transitions to suit your needs."
-                android:textColor="#6C6A5F"
-                android:textSize="15sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvPageTitle"
-                tools:text="The Iraqi-British Zaha Hadid became famous for her intensely futuristic architecture characterized by curving faсt" />
+                android:background="@color/white"
+                app:tabBackground="@drawable/custom_tab_indicator"
+                app:tabTextAppearance="@style/TabTextStyle" />
+        </FrameLayout>
 
-            <TextView
-                android:id="@+id/tvPageTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="11dp"
-                android:layout_marginEnd="16dp"
-                android:fontFamily="@font/inter_medium"
-                android:text="Manage motion and widget animation with MotionLayout"
-                android:textColor="#2C2B27"
-                android:textSize="17sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/documentIconContainer"
-                tools:text="Zaha Hadid" />
-
-            <FrameLayout
-                android:id="@+id/documentIconContainer"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginStart="16dp"
-                android:background="@drawable/rectangle_default_page_logo_background"
-                android:transitionName="@string/logo_transition"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/emojiIcon"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center" />
-
-                <ImageView
-                    android:id="@+id/imageIcon"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-            </FrameLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <include
+        android:id="@+id/pagePreviewSmall"
+        layout="@layout/view_page_navigation_open_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:layout_marginBottom="16dp" />
+
+    <FrameLayout
+        android:id="@+id/filterContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminateTint="#FFB522" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

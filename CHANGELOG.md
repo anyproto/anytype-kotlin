@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.38
+
+### New features 🚀
+
+* New workspace-navigation screen integrated for home dashboard and pages (#552, #553, #556)
+
 ## Version 0.0.37
 
 ### New features 🚀

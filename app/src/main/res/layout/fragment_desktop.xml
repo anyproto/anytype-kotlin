@@ -32,28 +32,27 @@
 
     <com.agileburo.anytype.core_ui.widgets.AvatarWidget
         android:id="@+id/avatar"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginTop="46dp"
-        android:layout_marginEnd="20dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/circle_solid_default"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:text_size="36sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/greeting" />
 
     <TextView
         android:id="@+id/greeting"
+        style="@style/HomeDashboardGreetingStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="16dp"
-        android:fontFamily="@font/graphik_semibold"
-        android:textColor="@color/white"
-        android:textSize="34sp"
-        app:layout_constraintBottom_toBottomOf="@+id/avatar"
-        app:layout_constraintEnd_toStartOf="@+id/avatar"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/avatar"
-        tools:text="Hi, Konstantin" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Hi, Konstantin Ivanov" />
 
     <com.agileburo.anytype.core_ui.widgets.toolbar.DesktopBottomToolbar
         android:id="@+id/bottomToolbar"

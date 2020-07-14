@@ -5,9 +5,10 @@
         android:id="@+id/initials"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
         android:gravity="center"
-        android:textColor="@color/white"
-        android:textStyle="bold" />
+        android:fontFamily="@font/graphik_medium"
+        android:textColor="@color/white" />
 
     <ImageView
         android:id="@+id/icon"

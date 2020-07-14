@@ -2,6 +2,10 @@
 
 ## Version 0.0.39
 
+### Design & UX 🔳
+
+* Redesign avatar and greeting text sizes and relative positioning on home dashboard (#571)
+
 ### Fixes & tech 🚒
 
 * When creating a new nested page (B) inside some other page (A), the link block for the page B should be present on the page A when user navigates back to the page A (#561)

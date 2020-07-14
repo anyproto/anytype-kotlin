@@ -35,7 +35,7 @@ interface BlockRepository {
      * Creates a new document / page.
      * @return pair of values, where the first one is block id and the second one is target id.
      */
-    suspend fun createDocument(command: Command.CreateDocument): Pair<Id, Id>
+    suspend fun createDocument(command: Command.CreateDocument): Triple<Id, Id, Payload>
 
     suspend fun merge(command: Command.Merge): Payload
 

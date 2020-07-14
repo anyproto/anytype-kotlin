@@ -16,7 +16,7 @@ interface BlockRemote {
     suspend fun updateBackgroundColor(command: CommandEntity.UpdateBackgroundColor): PayloadEntity
     suspend fun updateAlignment(command: CommandEntity.UpdateAlignment) : PayloadEntity
 
-    suspend fun createDocument(command: CommandEntity.CreateDocument): Pair<String, String>
+    suspend fun createDocument(command: CommandEntity.CreateDocument): Triple<String, String, PayloadEntity>
     suspend fun updateDocumentTitle(command: CommandEntity.UpdateTitle)
     suspend fun updateText(command: CommandEntity.UpdateText)
     suspend fun updateTextStyle(command: CommandEntity.UpdateStyle) : PayloadEntity

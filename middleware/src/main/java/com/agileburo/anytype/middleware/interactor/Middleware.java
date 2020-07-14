@@ -26,6 +26,7 @@ import anytype.model.Localstore;
 import anytype.model.Models;
 import anytype.model.Models.Range;
 import kotlin.Pair;
+import kotlin.Triple;
 import timber.log.Timber;
 
 public class Middleware {
@@ -531,7 +532,7 @@ public class Middleware {
         return new Pair<>(response.getBlockId(), mapper.toPayload(response.getEvent()));
     }
 
-    public Pair<String, String> createDocument(CommandEntity.CreateDocument command) throws Exception {
+    public Triple<String, String, PayloadEntity> createDocument(CommandEntity.CreateDocument command) throws Exception {
 
         Models.Block.Position position = mapper.toMiddleware(command.getPosition());
 
@@ -552,7 +553,11 @@ public class Middleware {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
 
-        return new Pair<>(response.getBlockId(), response.getTargetId());
+        return new Triple<>(
+                response.getBlockId(),
+                response.getTargetId(),
+                mapper.toPayload(response.getEvent())
+        );
     }
 
     public void dnd(CommandEntity.Dnd command) throws Exception {

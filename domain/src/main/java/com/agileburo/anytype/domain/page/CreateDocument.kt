@@ -7,6 +7,7 @@ import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.event.model.Payload
 
 /**
  * Use-case for creating a new document.
@@ -14,7 +15,7 @@ import com.agileburo.anytype.domain.common.Id
  */
 class CreateDocument(
     private val repo: BlockRepository
-) : BaseUseCase<Pair<Id, Id>, CreateDocument.Params>() {
+) : BaseUseCase<CreateDocument.Result, CreateDocument.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.createDocument(
@@ -24,8 +25,14 @@ class CreateDocument(
                 prototype = params.prototype,
                 position = params.position
             )
-        ).let {
-            Either.Right(it)
+        ).let { (id, target, payload) ->
+            Either.Right(
+                Result(
+                    id = id,
+                    target = target,
+                    payload = payload
+                )
+            )
         }
     } catch (t: Throwable) {
         Either.Left(t)
@@ -43,5 +50,17 @@ class CreateDocument(
         val target: Id,
         val position: Position,
         val prototype: Block.Prototype.Page
+    )
+
+    /**
+     * Result for this use-case
+     * @property id id of the new block (link)
+     * @property target id of the target for this new block
+     * @property payload payload of events
+     */
+    data class Result(
+        val id: String,
+        val target: String,
+        val payload: Payload
     )
 }

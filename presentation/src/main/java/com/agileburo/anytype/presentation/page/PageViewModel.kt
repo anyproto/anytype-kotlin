@@ -17,7 +17,6 @@ import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.block.interactor.RemoveLinkMark
 import com.agileburo.anytype.domain.block.interactor.UpdateLinkMarks
-import com.agileburo.anytype.domain.block.interactor.UploadBlock
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content
 import com.agileburo.anytype.domain.block.model.Block.Prototype
@@ -1365,10 +1364,15 @@ class PageViewModel(
             prototype = Prototype.Page(style = Content.Page.Style.EMPTY)
         )
 
-        createDocument(scope = viewModelScope, params = params) { result ->
-            result.either(
-                fnL = { Timber.e(it, "Error while creating new page with params: $params") },
-                fnR = { (_, target) -> proceedWithOpeningPage(target) }
+        viewModelScope.launch {
+            createDocument(
+                params = params
+            ).proceed(
+                failure = { Timber.e(it, "Error while creating new page with params: $params") },
+                success = { result ->
+                    orchestrator.proxies.payloads.send(result.payload)
+                    proceedWithOpeningPage(result.target)
+                }
             )
         }
     }

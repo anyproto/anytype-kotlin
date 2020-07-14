@@ -81,7 +81,7 @@ class BlockMiddleware(
 
     override suspend fun createDocument(
         command: CommandEntity.CreateDocument
-    ): Pair<String, String> = middleware.createDocument(command)
+    ): Triple<String, String, PayloadEntity> = middleware.createDocument(command)
 
     override suspend fun duplicate(
         command: CommandEntity.Duplicate

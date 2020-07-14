@@ -84,7 +84,13 @@ class BlockDataRepository(
 
     override suspend fun createDocument(
         command: Command.CreateDocument
-    ) = factory.remote.createDocument(command.toEntity())
+    ): Triple<String, String, Payload> {
+        return factory.remote.createDocument(
+            command.toEntity()
+        ).let { (id, target, payload) ->
+            Triple(id, target, payload.toDomain())
+        }
+    }
 
     override suspend fun dnd(command: Command.Dnd) {
         factory.remote.dnd(command.toEntity())

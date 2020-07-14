@@ -138,6 +138,10 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.pageNavigationFragment, bundle)
     }
 
+    override fun openPageSearch() {
+        navController?.navigate(R.id.pageSearchFragment)
+    }
+
     override fun exitToDesktopAndOpenPage(pageId: String) {
         navController?.navigate(
             R.id.desktopScreen,

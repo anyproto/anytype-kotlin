@@ -338,6 +338,11 @@ open class PageFragment :
             .onEach { vm.onPlusButtonPressed() }
             .launchIn(lifecycleScope)
 
+        bottomToolbar
+            .searchClicks()
+            .onEach { vm.onPageSearchClicked() }
+            .launchIn(lifecycleScope)
+
         topToolbar.menu.clicks().onEach { showToolbarMenu() }.launchIn(lifecycleScope)
 
         topToolbar.back.clicks().onEach {

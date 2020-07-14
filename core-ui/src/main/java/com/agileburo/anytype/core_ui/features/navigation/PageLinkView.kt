@@ -10,3 +10,6 @@ data class PageLinkView(
 
 fun PageLinkView.isContainsText(text: String): Boolean = title.contains(text, true) ||
         subtitle.contains(text, true)
+
+fun List<PageLinkView>.filterBy(text: String): List<PageLinkView> =
+    if (text.isNotEmpty()) this.filter { it.isContainsText(text) } else this

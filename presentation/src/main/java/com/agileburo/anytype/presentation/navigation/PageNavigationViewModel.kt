@@ -3,6 +3,7 @@ package com.agileburo.anytype.presentation.navigation
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_utils.common.EventWrapper
+import com.agileburo.anytype.core_utils.ext.timber
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.config.GetConfig
@@ -37,8 +38,9 @@ class PageNavigationViewModel(
         stateData.postValue(ViewState.Loading)
         viewModelScope.launch {
             getPageInfoWithLinks.invoke(GetPageInfoWithLinks.Params(pageId = target)).proceed(
-                failure = {
-                    stateData.postValue(ViewState.Error(it.message ?: "Unknown error"))
+                failure = { error ->
+                    error.timber()
+                    stateData.postValue(ViewState.Error(error.message ?: "Unknown error"))
                 },
                 success = { response ->
                     with(response.pageInfoWithLinks) {

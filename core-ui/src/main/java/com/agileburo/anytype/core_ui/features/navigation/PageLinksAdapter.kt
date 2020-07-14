@@ -14,8 +14,7 @@ import kotlinx.android.synthetic.main.item_page_link.view.*
 
 class PageLinksAdapter(
     private val data: MutableList<PageLinkView>,
-    private val onClick: (String) -> Unit,
-    private var filterText: String = EMPTY
+    private val onClick: (String) -> Unit
 ) : RecyclerView.Adapter<PageLinksAdapter.PageLinkHolder>() {
 
     fun updateLinks(links: List<PageLinkView>) {
@@ -24,34 +23,17 @@ class PageLinksAdapter(
         notifyDataSetChanged()
     }
 
-    fun filterBy(filterText: String) {
-        this.filterText = filterText
-        notifyDataSetChanged()
-    }
-
-    fun clear() {
-        data.clear()
-        filterText = EMPTY
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageLinkHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_page_link, parent, false)
         return PageLinkHolder(view)
     }
 
-    override fun getItemCount(): Int = filterData().size
+    override fun getItemCount(): Int = data.size
 
     override fun onBindViewHolder(holderLink: PageLinkHolder, position: Int) {
-        holderLink.bind(filterData()[position], onClick)
+        holderLink.bind(data[position], onClick)
     }
-
-    private fun filterData(): List<PageLinkView> =
-        if (filterText.isNotEmpty()) {
-            data.filter { it.isContainsText(filterText) }
-        } else {
-            data
-        }
 
     class PageLinkHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -89,9 +71,5 @@ class PageLinksAdapter(
                     .into(icon)
             }
         }
-    }
-
-    companion object {
-        const val EMPTY = ""
     }
 }

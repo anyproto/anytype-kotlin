@@ -261,6 +261,10 @@ class HomeDashboardViewModel(
         )
     }
 
+    fun onPageSearchClicked() {
+        navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
+    }
+
     /**
      * Represents movements of blocks during block dragging action.
      * @param subject id of the block being dragged

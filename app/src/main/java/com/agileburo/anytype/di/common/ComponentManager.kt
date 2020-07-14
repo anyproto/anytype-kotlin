@@ -149,6 +149,12 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val pageSearchComponent = Component {
+        main.pageSearchComponentBuilder()
+            .pageSearchModule(PageSearchModule())
+            .build()
+    }
+
     class Component<T>(private val builder: () -> T) {
 
         private var instance: T? = null

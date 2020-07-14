@@ -342,5 +342,10 @@
             app:argType="string"
             android:defaultValue='""' />
     </fragment>
+    <fragment
+        android:id="@+id/pageSearchFragment"
+        android:name="com.agileburo.anytype.ui.search.PageSearchFragment"
+        android:label="PageSearchFragment"
+        tools:layout="@layout/fragment_page_search"/>
 
 </navigation>

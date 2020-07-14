@@ -122,5 +122,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="content_desc_pin">Pin icon</string>
     <string name="nav_open_page">Open as page</string>
     <string name="btn_nav_open">Open</string>
+    <string name="search_no_results">There are no pages named %1$s. Try creating a new one or search for something else.</string>
+    <string name="search_empty_pages">You have no pages to search for.</string>
 
 </resources>

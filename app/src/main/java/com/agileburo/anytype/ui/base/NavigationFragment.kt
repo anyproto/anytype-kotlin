@@ -51,6 +51,7 @@ abstract class NavigationFragment(
                 command.target
             )
             is Command.ExitToDesktopAndOpenPage -> navigation.exitToDesktopAndOpenPage(command.pageId)
+            is Command.OpenPageSearch -> navigation.openPageSearch()
         }
     }
 

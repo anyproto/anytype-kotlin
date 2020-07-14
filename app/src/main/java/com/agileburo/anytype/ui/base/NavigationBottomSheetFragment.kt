@@ -44,6 +44,7 @@ abstract class NavigationBottomSheetFragment : BaseBottomSheetFragment() {
                 command.target
             )
             is AppNavigation.Command.ExitToDesktopAndOpenPage -> navigation.exitToDesktopAndOpenPage(command.pageId)
+            is AppNavigation.Command.OpenPageSearch -> navigation.openPageSearch()
         }
     }
 

@@ -158,6 +158,11 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             .addPageClick()
             .onEach { vm.onAddNewDocumentClicked() }
             .launchIn(lifecycleScope)
+
+        bottomToolbar
+            .searchClicks()
+            .onEach { vm.onPageSearchClicked() }
+            .launchIn(lifecycleScope)
     }
 
     override fun injectDependencies() {

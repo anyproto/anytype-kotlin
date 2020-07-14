@@ -1657,6 +1657,10 @@ class PageViewModel(
         }
     }
 
+    fun onPageSearchClicked() {
+        navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
+    }
+
     private fun onMultiSelectModeBlockClicked() {
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.OnMultiSelectModeBlockClick(

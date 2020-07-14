@@ -24,6 +24,7 @@ class FilterView @JvmOverloads constructor(
     private val search: SearchView
     private val cancel: TextView
     private val sorting: View
+    private var links: MutableList<PageLinkView> = mutableListOf()
 
     var cancelClicked: (() -> Unit)? = null
     var pageClicked: ((String) -> Unit)? = null
@@ -56,7 +57,10 @@ class FilterView @JvmOverloads constructor(
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     if (newText != null && recycler.adapter != null) {
-                        (recycler.adapter as PageLinksAdapter).filterBy(newText)
+                        (recycler.adapter as PageLinksAdapter).let {
+                            val filtered = links.filterBy(newText)
+                            it.updateLinks(filtered)
+                        }
                     }
                     return false
                 }
@@ -65,13 +69,15 @@ class FilterView @JvmOverloads constructor(
     }
 
     fun bind(links: MutableList<PageLinkView>) {
+        this.links.clear()
+        this.links.addAll(links)
         if (recycler.adapter == null) {
             recycler.adapter = PageLinksAdapter(
-                data = links,
+                data = this.links,
                 onClick = { pageId -> pageClicked?.invoke(pageId) }
             )
         } else {
-            (recycler.adapter as PageLinksAdapter).updateLinks(links)
+            (recycler.adapter as PageLinksAdapter).updateLinks(this.links)
         }
     }
 }

@@ -29,10 +29,10 @@ enum class UiBlock {
         override fun category() = Category.LIST
     },
     PAGE {
-        override fun category() = Category.PAGE
+        override fun category() = Category.OBJECT
     },
-    EXISTING_PAGE {
-        override fun category() = Category.PAGE
+    LINK_TO_OBJECT {
+        override fun category() = Category.OBJECT
     },
     FILE {
         override fun category() = Category.OBJECT
@@ -46,13 +46,13 @@ enum class UiBlock {
     BOOKMARK {
         override fun category() = Category.OBJECT
     },
-    CODE {
-        override fun category() = Category.OBJECT
-    },
     LINE_DIVIDER {
         override fun category() = Category.OTHER
     },
     THREE_DOTS {
+        override fun category() = Category.OTHER
+    },
+    CODE {
         override fun category() = Category.OTHER
     };
 
@@ -65,6 +65,6 @@ enum class UiBlock {
     fun isCode() : Boolean = this == CODE
 
     enum class Category {
-        TEXT, LIST, PAGE, OBJECT, OTHER
+        TEXT, LIST, OBJECT, OTHER
     }
 }

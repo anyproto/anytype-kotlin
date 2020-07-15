@@ -39,7 +39,7 @@
 
     <string name="option_tool_task">Task</string>
     <string name="option_tool_page">Page</string>
-    <string name="option_tool_existing_page">Existing page</string>
+    <string name="option_tool_link_to_object">Link to object</string>
     <string name="option_tool_database">Database</string>
     <string name="option_tool_set">Set</string>
     <string name="option_tool_contact">Contact</string>
@@ -49,11 +49,10 @@
     <string name="option_media_picture">Picture</string>
     <string name="option_media_video">Video</string>
     <string name="option_media_bookmark">Bookmark</string>
-    <string name="option_media_code">Code</string>
 
     <string name="option_other_divider">Divider</string>
     <string name="option_other_dots">Dots</string>
-
+    <string name="option_other_code">Code</string>
 
     <string name="add_block_or_turn_into_subtitle_text">Write a plain text</string>
     <string name="add_block_or_turn_into_subtitle_header_one">Big headline of a chapter, paragraph or section</string>

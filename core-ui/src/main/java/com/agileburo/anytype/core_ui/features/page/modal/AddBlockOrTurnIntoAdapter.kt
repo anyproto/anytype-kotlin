@@ -88,7 +88,6 @@ class AddBlockOrTurnIntoAdapter(
                 when (section.category) {
                     UiBlock.Category.TEXT -> title.setText(R.string.toolbar_section_text)
                     UiBlock.Category.LIST -> title.setText(R.string.toolbar_section_list)
-                    UiBlock.Category.PAGE -> title.setText(R.string.toolbar_section_page)
                     UiBlock.Category.OBJECT -> title.setText(R.string.toolbar_section_objects)
                     UiBlock.Category.OTHER -> title.setText(R.string.toolbar_section_other)
                 }
@@ -156,9 +155,9 @@ class AddBlockOrTurnIntoAdapter(
                         title.setText(R.string.option_tool_page)
                         subtitle.setText(R.string.add_block_or_turn_into_subtitle_page)
                     }
-                    UiBlock.EXISTING_PAGE -> {
-                        icon.setBackgroundResource(R.drawable.ic_add_block_or_turn_into_existing_page)
-                        title.setText(R.string.option_tool_existing_page)
+                    UiBlock.LINK_TO_OBJECT -> {
+                        icon.setBackgroundResource(R.drawable.ic_add_block_or_turn_into_link_to_object)
+                        title.setText(R.string.option_tool_link_to_object)
                         subtitle.setText(R.string.add_block_or_turn_into_subtitle_existing_page)
                     }
                     UiBlock.FILE -> {
@@ -181,11 +180,6 @@ class AddBlockOrTurnIntoAdapter(
                         title.setText(R.string.option_media_bookmark)
                         subtitle.setText(R.string.add_block_or_turn_into_subtitle_bookmark)
                     }
-                    UiBlock.CODE -> {
-                        icon.setBackgroundResource(R.drawable.ic_add_block_or_turn_into_code)
-                        title.setText(R.string.option_media_code)
-                        subtitle.setText(R.string.add_block_or_turn_into_subtitle_code)
-                    }
                     UiBlock.LINE_DIVIDER -> {
                         icon.setBackgroundResource(R.drawable.ic_add_block_or_turn_into_line_divider)
                         title.setText(R.string.option_other_divider)
@@ -195,6 +189,11 @@ class AddBlockOrTurnIntoAdapter(
                         icon.setBackgroundResource(R.drawable.ic_add_block_or_turn_into_three_dots_divider)
                         title.setText(R.string.option_other_dots)
                         subtitle.setText(R.string.add_block_or_turn_into_subtitle_dots)
+                    }
+                    UiBlock.CODE -> {
+                        icon.setBackgroundResource(R.drawable.ic_add_block_or_turn_into_code)
+                        title.setText(R.string.option_other_code)
+                        subtitle.setText(R.string.add_block_or_turn_into_subtitle_code)
                     }
                 }
 
@@ -247,18 +246,17 @@ class AddBlockOrTurnIntoAdapter(
             AddBlockOrTurnIntoView.Item(type = UiBlock.BULLETED),
             AddBlockOrTurnIntoView.Item(type = UiBlock.NUMBERED),
             AddBlockOrTurnIntoView.Item(type = UiBlock.TOGGLE),
-            AddBlockOrTurnIntoView.Section(category = UiBlock.Category.PAGE),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.PAGE),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.EXISTING_PAGE),
             AddBlockOrTurnIntoView.Section(category = UiBlock.Category.OBJECT),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.PAGE),
             AddBlockOrTurnIntoView.Item(type = UiBlock.FILE),
             AddBlockOrTurnIntoView.Item(type = UiBlock.IMAGE),
             AddBlockOrTurnIntoView.Item(type = UiBlock.VIDEO),
             AddBlockOrTurnIntoView.Item(type = UiBlock.BOOKMARK),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.CODE),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.LINK_TO_OBJECT),
             AddBlockOrTurnIntoView.Section(category = UiBlock.Category.OTHER),
             AddBlockOrTurnIntoView.Item(type = UiBlock.LINE_DIVIDER),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.THREE_DOTS)
+            AddBlockOrTurnIntoView.Item(type = UiBlock.THREE_DOTS),
+            AddBlockOrTurnIntoView.Item(type = UiBlock.CODE)
         )
     }
 }

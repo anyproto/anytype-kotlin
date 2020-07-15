@@ -2,9 +2,14 @@
 
 ## Version 0.0.39
 
+### New features 🚀
+
+* Search-document-engine screen integrated on home dashboard and pages (#555)
+
 ### Design & UX 🔳
 
-* Redesign avatar and greeting text sizes and relative positioning on home dashboard (#571)
+* Redesigned avatar and greeting text sizes and relative positioning on home dashboard (#571)
+* Redesigned add-block/turn-into bottom sheet (new palette, updated categories) (#572, #569)
 
 ### Fixes & tech 🚒
 

@@ -11,6 +11,7 @@ import com.agileburo.anytype.emojifier.Emojifier
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_page_link.view.*
+import timber.log.Timber
 
 class PageLinksAdapter(
     private val data: MutableList<PageLinkView>,
@@ -64,11 +65,17 @@ class PageLinksAdapter(
                     .into(image)
             }
             if (link.emoji != null) {
-                Glide
-                    .with(icon)
-                    .load(Emojifier.uri(link.emoji))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(icon)
+                try {
+                    Emojifier.uri(link.emoji).let { uri ->
+                        Glide
+                            .with(icon)
+                            .load(uri)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(icon)
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "Error while searching emoji uri for link: $link")
+                }
             }
         }
     }

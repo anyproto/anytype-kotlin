@@ -6,6 +6,7 @@ import com.agileburo.anytype.domain.icon.SetDocumentEmojiIcon
 import com.agileburo.anytype.domain.icon.SetDocumentImageIcon
 import com.agileburo.anytype.presentation.page.picker.DocumentIconActionMenuViewModelFactory
 import com.agileburo.anytype.ui.page.modals.actions.DocumentIconActionMenuFragment
+import com.agileburo.anytype.ui.page.modals.actions.ProfileIconActionMenuFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -21,6 +22,7 @@ interface DocumentActionMenuSubComponent {
     }
 
     fun inject(fragment: DocumentIconActionMenuFragment)
+    fun inject(fragment: ProfileIconActionMenuFragment)
 }
 
 @Module

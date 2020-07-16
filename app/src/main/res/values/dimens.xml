@@ -23,5 +23,7 @@
 
     <dimen name="list_margin_start">20dp</dimen>
     <dimen name="editor_recycler_bottom_padding">64dp</dimen>
+    <dimen name="avatar_height_big">96dp</dimen>
+    <dimen name="avatar_width_big">96dp</dimen>
 
 </resources>

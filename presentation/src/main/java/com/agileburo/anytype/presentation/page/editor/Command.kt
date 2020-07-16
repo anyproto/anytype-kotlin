@@ -12,6 +12,12 @@ sealed class Command {
         val emoji: String?
     ) : Command()
 
+    data class OpenProfileIconActionMenu(
+        val target: String,
+        val image: String?,
+        val name: String?
+    ) : Command()
+
     data class OpenDocumentEmojiIconPicker(
         val target: String
     ) : Command()

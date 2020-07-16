@@ -1643,6 +1643,22 @@ class PageViewModel(
         )
     }
 
+    fun onProfileIconClicked() {
+        val details = orchestrator.stores.details.current()
+        dispatch(
+            Command.OpenProfileIconActionMenu(
+                target = context,
+                image = details.details[context]?.iconImage?.let { name ->
+                    if (name.isNotEmpty() && name.isNotBlank())
+                        urlBuilder.image(name)
+                    else
+                        null
+                },
+                name = details.details[context]?.name
+            )
+        )
+    }
+
     private fun onFileClicked(id: String) {
         dispatch(Command.RequestDownloadPermission(id))
     }

@@ -64,6 +64,7 @@ import com.agileburo.anytype.ui.menu.AnytypeContextMenu
 import com.agileburo.anytype.ui.page.modals.*
 import com.agileburo.anytype.ui.page.modals.actions.BlockActionToolbarFactory
 import com.agileburo.anytype.ui.page.modals.actions.DocumentIconActionMenuFragment
+import com.agileburo.anytype.ui.page.modals.actions.ProfileIconActionMenuFragment
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
@@ -150,6 +151,7 @@ open class PageFragment :
             onFooterClicked = vm::onOutsideClicked,
             onTextInputClicked = vm::onTextInputClicked,
             onPageIconClicked = vm::onPageIconClicked,
+            onProfileIconClicked = vm::onProfileIconClicked,
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
             onMarkupActionClicked = vm::onMarkupActionClicked,
@@ -511,13 +513,34 @@ open class PageFragment :
                 is Command.OpenDocumentIconActionMenu -> {
                     hideSoftInput()
                     recycler.smoothScrollToPosition(0)
-                    val shared =
-                        recycler.getChildAt(0).findViewById<FrameLayout>(R.id.documentIconContainer)
+                    val title = recycler.getChildAt(0)
+                    val shared = title.findViewById<FrameLayout>(R.id.documentIconContainer)
                     val fr = DocumentIconActionMenuFragment.new(
                         y = shared.y + dimen(R.dimen.dp_48),
                         emoji = command.emoji,
                         target = command.target,
                         image = command.image
+                    ).apply {
+                        enterTransition = Fade()
+                        exitTransition = Fade()
+                        sharedElementEnterTransition = ChangeBounds()
+                    }
+                    childFragmentManager.beginTransaction()
+                        .add(R.id.root, fr)
+                        .addToBackStack(null)
+                        .apply { addSharedElement(shared, getString(R.string.logo_transition)) }
+                        .commit()
+                }
+                is Command.OpenProfileIconActionMenu -> {
+                    hideSoftInput()
+                    recycler.smoothScrollToPosition(0)
+                    val title = recycler.getChildAt(0)
+                    val shared = title.findViewById<FrameLayout>(R.id.documentIconContainer)
+                    val fr = ProfileIconActionMenuFragment.new(
+                        y = shared.y + dimen(R.dimen.dp_48),
+                        target = command.target,
+                        image = command.image,
+                        name = command.name
                     ).apply {
                         enterTransition = Fade()
                         exitTransition = Fade()

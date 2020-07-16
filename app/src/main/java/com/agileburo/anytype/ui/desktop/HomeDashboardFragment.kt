@@ -2,6 +2,7 @@ package com.agileburo.anytype.ui.desktop
 
 import android.os.Bundle
 import android.view.View
+import android.view.View.OVER_SCROLL_NEVER
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
@@ -140,6 +141,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
         )
 
         desktopRecycler.apply {
+            overScrollMode = OVER_SCROLL_NEVER
             layoutManager = GridLayoutManager(context, COLUMN_COUNT)
             adapter = dashboardAdapter
             ItemTouchHelper(dndBehavior).attachToRecyclerView(this)

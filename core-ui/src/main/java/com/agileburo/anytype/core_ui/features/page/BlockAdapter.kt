@@ -69,6 +69,7 @@ class BlockAdapter(
     private val onTextInputClicked: (String) -> Unit,
     private val onClickListener: (ListenerType) -> Unit,
     private val onPageIconClicked: () -> Unit,
+    private val onProfileIconClicked: () -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
     private val onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
@@ -624,7 +625,7 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.ProfileTitle,
                     onTitleTextChanged = onTitleTextChanged,
                     onFocusChanged = onFocusChanged,
-                    onPageIconClicked = onPageIconClicked
+                    onProfileIconClicked = onProfileIconClicked
                 )
             }
             is BlockViewHolder.HeaderOne -> {

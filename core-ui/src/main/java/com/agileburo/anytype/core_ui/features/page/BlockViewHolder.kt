@@ -311,7 +311,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             item: BlockView.ProfileTitle,
             onTitleTextChanged: (Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            onPageIconClicked: () -> Unit
+            onProfileIconClicked: () -> Unit
         ) {
 
             Timber.d("Binding profile title view: $item")
@@ -345,7 +345,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onFocusChanged(item.id, hasFocus)
                     if (hasFocus) showKeyboard()
                 }
-                icon.setOnClickListener { onPageIconClicked() }
+                icon.setOnClickListener { onProfileIconClicked() }
             }
         }
 

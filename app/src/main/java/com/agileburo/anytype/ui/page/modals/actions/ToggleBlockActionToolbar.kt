@@ -43,5 +43,6 @@ class ToggleBlockActionToolbar : BlockActionToolbar() {
                 if (block.toggled) BlockViewHolder.Toggle.EXPANDED_ROTATION
                 else BlockViewHolder.Toggle.COLLAPSED_ROTATION
         }
+        setConstraints()
     }
 }

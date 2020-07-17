@@ -3028,11 +3028,9 @@ class PageViewModelTest {
 
     @Test
     fun `should create a new page block after currently focused block`() {
-
         val root = MockDataFactory.randomUuid()
         val paragraph = MockBlockFactory.makeParagraphBlock()
         val title = MockBlockFactory.makeTitleBlock()
-
         val page = listOf(
             Block(
                 id = root,
@@ -3047,7 +3045,6 @@ class PageViewModelTest {
             title,
             paragraph
         )
-
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
             emit(
@@ -3060,40 +3057,32 @@ class PageViewModelTest {
                 )
             )
         }
-
         stubObserveEvents(flow)
         stubOpenPage()
         buildViewModel()
-
         vm.open(root)
-
         coroutineTestRule.advanceTime(100)
-
         // TESTING
-
         vm.onBlockFocusChanged(
             id = title.id,
             hasFocus = true
         )
-
         vm.onAddBlockToolbarClicked()
-
         vm.onAddNewPageClicked()
-
-        verify(createDocument, times(1)).invoke(
-            scope = any(),
-            params = eq(
-                CreateDocument.Params(
-                    context = root,
-                    target = title.id,
-                    position = Position.BOTTOM,
-                    prototype = Block.Prototype.Page(
-                        style = Block.Content.Page.Style.EMPTY
+        runBlockingTest {
+            verify(createDocument, times(1)).invoke(
+                params = eq(
+                    CreateDocument.Params(
+                        context = root,
+                        target = title.id,
+                        position = Position.BOTTOM,
+                        prototype = Block.Prototype.Page(
+                            style = Block.Content.Page.Style.EMPTY
+                        )
                     )
                 )
-            ),
-            onResult = any()
-        )
+            )
+        }
     }
 
     @Test

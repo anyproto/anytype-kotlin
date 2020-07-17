@@ -25,5 +25,6 @@ class CodeBlockActionToolbar : BlockActionToolbar() {
             movementMethod = ScrollingMovementMethod()
             text = block.text
         }
+        setConstraints()
     }
 }

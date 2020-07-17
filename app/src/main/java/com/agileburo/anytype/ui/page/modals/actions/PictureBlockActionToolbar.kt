@@ -39,5 +39,6 @@ class PictureBlockActionToolbar : BlockActionToolbar() {
         view.findViewById<ImageView>(R.id.image).apply {
             Glide.with(this).load(item.url).into(this)
         }
+        setConstraints()
     }
 }

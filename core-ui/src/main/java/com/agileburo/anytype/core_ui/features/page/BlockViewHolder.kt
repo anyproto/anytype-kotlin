@@ -108,7 +108,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
 
             indentize(item)
@@ -126,7 +126,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 content.setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
-                        click = onLongClickListener
+                        click = { onBlockLongClick(root, it, clicked) }
                     )
                 )
 
@@ -429,7 +429,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
             if (block.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
@@ -463,7 +463,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             header.setOnLongClickListener(
                 EditorLongClickListener(
                     t = block.id,
-                    click = onLongClickListener
+                    click = { onBlockLongClick(root, it, clicked) }
                 )
             )
             indentize(block)
@@ -519,7 +519,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
             if (block.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
@@ -553,7 +553,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             header.setOnLongClickListener(
                 EditorLongClickListener(
                     t = block.id,
-                    click = onLongClickListener
+                    click = { onBlockLongClick(root, it, clicked) }
                 )
             )
             indentize(block)
@@ -609,7 +609,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
             if (block.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
@@ -643,7 +643,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             header.setOnLongClickListener(
                 EditorLongClickListener(
                     t = block.id,
-                    click = onLongClickListener
+                    click = { onBlockLongClick(root, it, clicked) }
                 )
             )
             indentize(block)
@@ -695,7 +695,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
             if (item.mode == BlockView.Mode.READ) {
                 content.setText(item.text)
@@ -709,7 +709,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 content.setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
-                        click = onLongClickListener
+                        click = { onBlockLongClick(root, it, clicked) }
                     )
                 )
 
@@ -756,7 +756,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onCheckboxClicked: (String) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
             indentize(item)
 
@@ -784,7 +784,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 content.setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
-                        click = onLongClickListener
+                        click = { onBlockLongClick(root, it, clicked) }
                     )
                 )
 
@@ -897,7 +897,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
             indentize(item)
 
@@ -926,7 +926,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 content.setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
-                        click = onLongClickListener
+                        click = { onBlockLongClick(root, it, clicked) }
                     )
                 )
 
@@ -1011,7 +1011,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
             indentize(item)
 
@@ -1042,7 +1042,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 content.setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
-                        click = onLongClickListener
+                        click = { onBlockLongClick(root, it, clicked) }
                     )
                 )
 
@@ -1141,7 +1141,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onFocusChanged: (String, Boolean) -> Unit,
             onToggleClicked: (String) -> Unit,
             onTogglePlaceholderClicked: (String) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
 
             indentize(item)
@@ -1173,7 +1173,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 content.setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
-                        click = onLongClickListener
+                        click = { onBlockLongClick(root, it, clicked) }
                     )
                 )
 
@@ -1308,7 +1308,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
-                        click = { clicked(ListenerType.LongClick(it)) })
+                        click = { onBlockLongClick(itemView, it, clicked) }
+                    )
                 )
             }
         }
@@ -1343,7 +1344,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = { clicked(ListenerType.LongClick(it)) })
+                            click = { onBlockLongClick(itemView, it, clicked) }
+                        )
                     )
                 }
             }
@@ -1379,7 +1381,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = { clicked(ListenerType.LongClick(it)) })
+                            click = { onBlockLongClick(itemView, it, clicked) }
+                        )
                     )
                 }
             }
@@ -1415,7 +1418,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = { clicked(ListenerType.LongClick(it)) })
+                            click = { onBlockLongClick(itemView, it, clicked) }
+                        )
                     )
                 }
             }
@@ -1453,7 +1457,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
-                        click = { clicked(ListenerType.LongClick(it)) }
+                        click = { onBlockLongClick(itemView, it, clicked) }
                     )
                 )
             }
@@ -1506,7 +1510,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = { clicked(ListenerType.LongClick(it)) }
+                            click = { onBlockLongClick(itemView, it, clicked) }
                         )
                     )
                 }
@@ -1543,7 +1547,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = { clicked(ListenerType.LongClick(it)) }
+                            click = { onBlockLongClick(itemView, it, clicked) }
                         )
                     )
                 }
@@ -1580,7 +1584,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = { clicked(ListenerType.LongClick(it)) }
+                            click = { onBlockLongClick(itemView, it, clicked) }
                         )
                     )
                 }
@@ -1656,7 +1660,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             title.setOnLongClickListener(
                 EditorLongClickListener(
                     t = item.id,
-                    click = { clicked(ListenerType.LongClick(item.id)) }
+                    click = { onBlockLongClick(itemView, it, clicked) }
                 )
             )
         }
@@ -1745,7 +1749,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
-                        click = { clicked(ListenerType.LongClick(it)) }
+                        click = { onBlockLongClick(itemView, it, clicked) }
                     )
                 )
             }
@@ -1792,7 +1796,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = { clicked(ListenerType.LongClick(it)) }
+                            click = { onBlockLongClick(itemView, it, clicked) }
                         )
                     )
                 }
@@ -1842,7 +1846,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = { clicked(ListenerType.LongClick(it)) }
+                            click = { onBlockLongClick(itemView, it, clicked) }
                         )
                     )
                 }
@@ -1914,7 +1918,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 setOnLongClickListener(
                     EditorLongClickListener(
                         t = item.id,
-                        click = { clicked(ListenerType.LongClick(it)) }
+                        click = { onBlockLongClick(itemView, it, clicked) }
                     )
                 )
             }
@@ -1951,7 +1955,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = { clicked(ListenerType.LongClick(it)) }
+                            click = { onBlockLongClick(itemView, it, clicked) }
                         )
                     )
                 }
@@ -1988,7 +1992,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = { clicked(ListenerType.LongClick(it)) }
+                            click = { onBlockLongClick(itemView, it, clicked) }
                         )
                     )
                 }
@@ -2025,7 +2029,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = { clicked(ListenerType.LongClick(it)) }
+                            click = { onBlockLongClick(itemView, it, clicked) }
                         )
                     )
                 }
@@ -2054,12 +2058,12 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.Divider,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
             itemView.setOnLongClickListener(
                 EditorLongClickListener(
                     t = item.id,
-                    click = onLongClickListener
+                    click = { onBlockLongClick(itemView, it, clicked) }
                 )
             )
         }
@@ -2086,7 +2090,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
-            onLongClickListener: (String) -> Unit
+            clicked: (ListenerType) -> Unit
         ) {
             //indentize(item)
 
@@ -2112,7 +2116,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnLongClickListener(
                         EditorLongClickListener(
                             t = item.id,
-                            click = onLongClickListener
+                            click = { onBlockLongClick(itemView, it, clicked) }
                         )
                     )
                     selectionDetector = {
@@ -2159,6 +2163,19 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         ) {
             footer.setOnClickListener { onFooterClicked() }
         }
+    }
+
+    fun onBlockLongClick(root: View, target: String, clicked: (ListenerType) -> Unit) {
+        val rect = PopupExtensions.calculateRectInWindow(root)
+        val dimensions = BlockDimensions(
+            left = rect.left,
+            top = rect.top,
+            bottom = rect.bottom,
+            right = rect.right,
+            height = root.height,
+            width = root.width
+        )
+        clicked(ListenerType.LongClick(target, dimensions))
     }
 
     companion object {

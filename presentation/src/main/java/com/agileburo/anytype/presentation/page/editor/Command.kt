@@ -1,5 +1,6 @@
 package com.agileburo.anytype.presentation.page.editor
 
+import com.agileburo.anytype.core_ui.features.page.BlockDimensions
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.common.Url
@@ -48,7 +49,8 @@ sealed class Command {
     object CloseKeyboard : Command()
 
     data class OpenActionBar(
-        val block: BlockView
+        val block: BlockView,
+        val dimensions: BlockDimensions
     ) : Command()
 
     data class Browse(

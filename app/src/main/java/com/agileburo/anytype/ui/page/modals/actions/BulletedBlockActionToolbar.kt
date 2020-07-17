@@ -37,5 +37,6 @@ class BulletedBlockActionToolbar : BlockActionToolbar() {
             color = block.backgroundColor,
             bgImage = backgroundView
         )
+        setConstraints()
     }
 }

@@ -1,11 +1,13 @@
 package com.agileburo.anytype.presentation.page
 
+import android.graphics.Rect
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.extensions.updateSelection
+import com.agileburo.anytype.core_ui.features.page.BlockDimensions
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
@@ -757,10 +759,13 @@ class PageViewModel(
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.id(id)) }
     }
 
-    fun onBlockLongPressedClicked(target: String) {
+    private fun onBlockLongPressedClicked(target: String, dimensions: BlockDimensions) {
         val state = stateData.value
         if (state is ViewState.Success) {
-            dispatch(Command.OpenActionBar(block = state.blocks.first { it.id == target }))
+            dispatch(Command.OpenActionBar(
+                block = state.blocks.first { it.id == target },
+                dimensions = dimensions
+            ))
         } else {
             Timber.e("onBlockLongPressedClicked, state:$state should be ViewState.Success, to get proper BlockView")
         }
@@ -1581,7 +1586,7 @@ class PageViewModel(
             }
             is ListenerType.LongClick -> {
                 when (mode) {
-                    EditorMode.EDITING -> onBlockLongPressedClicked(clicked.target)
+                    EditorMode.EDITING -> onBlockLongPressedClicked(clicked.target, clicked.dimensions)
                     EditorMode.MULTI_SELECT -> Unit
                 }
             }

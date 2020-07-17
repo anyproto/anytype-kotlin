@@ -33,5 +33,6 @@ class HeaderTwoBlockActionToolbar : BlockActionToolbar() {
             color = block.backgroundColor,
             bgImage = backgroundView
         )
+        setConstraints()
     }
 }

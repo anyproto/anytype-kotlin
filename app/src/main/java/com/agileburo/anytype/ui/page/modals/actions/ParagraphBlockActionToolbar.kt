@@ -36,5 +36,6 @@ class ParagraphBlockActionToolbar : BlockActionToolbar() {
             color = block.backgroundColor,
             bgImage = backgroundView
         )
+        setConstraints()
     }
 }

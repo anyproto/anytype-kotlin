@@ -33,5 +33,6 @@ class HeaderThreeBlockActionToolbar : BlockActionToolbar() {
             color = block.backgroundColor,
             bgImage = backgroundView
         )
+        setConstraints()
     }
 }

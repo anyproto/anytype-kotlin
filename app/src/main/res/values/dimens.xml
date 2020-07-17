@@ -26,4 +26,9 @@
     <dimen name="avatar_height_big">96dp</dimen>
     <dimen name="avatar_width_big">96dp</dimen>
 
+    <dimen name="action_toolbar_block_padding_top">16dp</dimen>
+    <dimen name="action_toolbar_block_padding_bottom">10dp</dimen>
+    <dimen name="action_toolbar_bar_margin_bottom">16dp</dimen>
+    <dimen name="action_toolbar_bar_margin_top">8dp</dimen>
+
 </resources>

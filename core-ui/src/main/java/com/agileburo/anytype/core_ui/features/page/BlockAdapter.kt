@@ -73,7 +73,6 @@ class BlockAdapter(
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
     private val onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
-    private val onLongClickListener: (String) -> Unit,
     private val clipboardInterceptor: ClipboardInterceptor,
     private val anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null
 ) : RecyclerView.Adapter<BlockViewHolder>() {
@@ -609,7 +608,7 @@ class BlockAdapter(
                     onTextChanged = onParagraphTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Title -> {
@@ -634,7 +633,7 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.HeaderTwo -> {
@@ -643,7 +642,7 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.HeaderThree -> {
@@ -652,7 +651,7 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Code -> {
@@ -661,7 +660,7 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Checkbox -> {
@@ -671,7 +670,7 @@ class BlockAdapter(
                     onCheckboxClicked = onCheckboxClicked,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Task -> {
@@ -685,7 +684,7 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Numbered -> {
@@ -694,7 +693,7 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Toggle -> {
@@ -705,7 +704,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     onTogglePlaceholderClicked = onTogglePlaceholderClicked,
                     onToggleClicked = onToggleClicked,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
             is BlockViewHolder.Contact -> {
@@ -814,7 +813,7 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Highlight,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
-                    onLongClickListener = onLongClickListener,
+                    clicked = onClickListener,
                     onSelectionChanged = onSelectionChanged
                 )
             }
@@ -824,7 +823,7 @@ class BlockAdapter(
             is BlockViewHolder.Divider -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Divider,
-                    onLongClickListener = onLongClickListener
+                    clicked = onClickListener
                 )
             }
         }

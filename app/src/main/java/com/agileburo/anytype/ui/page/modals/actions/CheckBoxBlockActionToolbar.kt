@@ -44,5 +44,6 @@ class CheckBoxBlockActionToolbar : BlockActionToolbar() {
             color = block.backgroundColor,
             bgImage = backgroundView
         )
+        setConstraints()
     }
 }

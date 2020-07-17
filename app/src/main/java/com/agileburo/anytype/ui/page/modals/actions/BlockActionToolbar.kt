@@ -5,27 +5,43 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.constraintlayout.widget.ConstraintSet.BOTTOM
+import androidx.constraintlayout.widget.ConstraintSet.TOP
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
+import androidx.transition.*
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.extensions.addVerticalDivider
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.extensions.drawable
+import com.agileburo.anytype.core_ui.features.page.BlockDimensions
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.core_ui.widgets.BlockActionBarItem
+import com.agileburo.anytype.core_utils.ext.PopupExtensions
 import com.agileburo.anytype.ui.page.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.action_toolbar.*
 import timber.log.Timber
+import kotlin.math.abs
 
 abstract class BlockActionToolbar : Fragment() {
 
     companion object {
         const val ARG_BLOCK = "arg.block"
+        const val ARG_BLOCK_DIMENSIONS = "arg.block.dimensions"
+
+        const val ANIM_DURATION = 300L
+        const val DEFAULT_MARGIN = 0
+        const val DIVIDER_HEIGHT = 1
+        const val DIVIDER_BIG_HEIGHT = 8
+        const val INTERPOLATOR_OVERSHOOT_TENSION = 1.6f
     }
 
     abstract fun initUi(view: View, colorView: ImageView? = null, backgroundView: ImageView? = null)
@@ -33,6 +49,7 @@ abstract class BlockActionToolbar : Fragment() {
     abstract fun blockLayout(): Int
 
     private var actionClick: (ActionItemType) -> Unit = {}
+    private var actionToolbarSize = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -112,20 +129,23 @@ abstract class BlockActionToolbar : Fragment() {
             actions.forEach { type ->
                 when (type) {
                     ActionItemType.Divider -> {
+                        actionToolbarSize += DIVIDER_HEIGHT
                         addVerticalDivider(
-                            height = 1,
+                            height = DIVIDER_HEIGHT,
                             alpha = 1.0f,
                             color = context.color(R.color.light_grayish)
                         )
                     }
                     ActionItemType.DividerExtended -> {
+                        actionToolbarSize += DIVIDER_BIG_HEIGHT
                         addVerticalDivider(
-                            height = 8,
+                            height = DIVIDER_BIG_HEIGHT,
                             alpha = 1.0f,
                             color = context.color(R.color.light_grayish)
                         )
                     }
                     ActionItemType.Background -> {
+                        actionToolbarSize += resources.getDimensionPixelSize(R.dimen.default_toolbar_action_item_height)
                         val item = createActionBarItem(
                             type = type,
                             context = requireContext(),
@@ -135,6 +155,7 @@ abstract class BlockActionToolbar : Fragment() {
                         backgroundView = item.findViewById(R.id.ivAction)
                     }
                     ActionItemType.Color -> {
+                        actionToolbarSize += resources.getDimensionPixelSize(R.dimen.default_toolbar_action_item_height)
                         val item = createActionBarItem(
                             type = type,
                             context = requireContext(),
@@ -144,6 +165,7 @@ abstract class BlockActionToolbar : Fragment() {
                         colorView = item.findViewById(R.id.ivAction)
                     }
                     else -> {
+                        actionToolbarSize += resources.getDimensionPixelSize(R.dimen.default_toolbar_action_item_height)
                         addView(
                             createActionBarItem(
                                 type = type,
@@ -235,6 +257,125 @@ abstract class BlockActionToolbar : Fragment() {
 
     private fun log(blockView: BlockView) {
         Timber.d("ActionBar, open block: $blockView")
+    }
+
+    private fun getUpdatedBlockDimensions(): BlockDimensions {
+        val blockPaddingTop =
+            resources.getDimensionPixelOffset(R.dimen.action_toolbar_block_padding_top)
+        val blockPaddingBottom =
+            resources.getDimensionPixelOffset(R.dimen.action_toolbar_block_padding_bottom)
+        val dimensions: BlockDimensions = arguments?.getParcelable(ARG_BLOCK_DIMENSIONS)!!
+        return dimensions.copy(
+            top = dimensions.top - blockPaddingTop,
+            bottom = dimensions.bottom + blockPaddingTop,
+            height = dimensions.height + blockPaddingTop + blockPaddingBottom
+        )
+    }
+
+    private fun createStartSet() : ConstraintSet = ConstraintSet().apply {
+        clone(requireContext(), R.layout.action_toolbar)
+        setScaleX(R.id.block_container, 0.9f)
+        setScaleY(R.id.block_container, 0.9f)
+        setVisibility(R.id.card, View.INVISIBLE)
+        setScaleX(R.id.card, 0.3f)
+        setScaleY(R.id.card, 0.3f)
+    }
+
+    private fun createEndSet(): ConstraintSet = ConstraintSet().apply {
+        clone(requireContext(), R.layout.action_toolbar)
+        setScaleX(R.id.block_container, 1f)
+        setScaleY(R.id.block_container, 1f)
+        setVisibility(R.id.card, View.VISIBLE)
+        setScaleX(R.id.card, 1f)
+        setScaleY(R.id.card, 1f)
+    }
+
+    private fun createTransitionSet() = TransitionSet().apply {
+        addTransition(ChangeBounds())
+        addTransition(ChangeTransform())
+        addTransition(Fade(Visibility.MODE_IN))
+        duration = ANIM_DURATION
+        interpolator = OvershootInterpolator(INTERPOLATOR_OVERSHOOT_TENSION)
+        ordering = TransitionSet.ORDERING_TOGETHER
+    }
+
+    fun setConstraints() {
+
+        container.doOnLayout {
+            val blockDimensions = getUpdatedBlockDimensions()
+            val barMarginBottom =
+                resources.getDimensionPixelOffset(R.dimen.action_toolbar_bar_margin_bottom)
+            val barMarginTop =
+                resources.getDimensionPixelOffset(R.dimen.action_toolbar_bar_margin_top)
+            val screenDimensions = PopupExtensions.calculateRectInWindow(container)
+            val anchorView = BlockActionToolbarHelper.getAnchorView(
+                screenTop = screenDimensions.top,
+                screenBottom = screenDimensions.bottom,
+                blockTop = blockDimensions.top,
+                blockBottom = blockDimensions.bottom,
+                barHeight = actionToolbarSize,
+                barMarginBottom = barMarginBottom,
+                barMarginTop = barMarginTop,
+                blockHeight = blockDimensions.height
+            )
+            val startSet = createStartSet()
+            val endSet = createEndSet()
+            val blockId = R.id.block_container
+            val containerId = R.id.container
+            val barId = R.id.card
+
+            when (anchorView) {
+                BlockActionToolbarHelper.AnchorView.ACTION_BAR -> {
+                    with(startSet) {
+                        if (blockDimensions.bottom < screenDimensions.bottom) {
+                            val blockMargin = screenDimensions.bottom - blockDimensions.bottom
+                            connect(blockId, BOTTOM, containerId, BOTTOM, blockMargin)
+                        } else {
+                            connect(blockId, BOTTOM, containerId, BOTTOM, DEFAULT_MARGIN)
+                            val translationY =
+                                (blockDimensions.bottom - screenDimensions.bottom).toFloat()
+                            setTranslationY(blockId, translationY)
+                        }
+                        connect(barId, TOP, blockId, BOTTOM, barMarginTop)
+                    }
+                    with(endSet) {
+                        connect(blockId, BOTTOM, barId, TOP, barMarginTop)
+                        connect(barId, BOTTOM, containerId, BOTTOM, barMarginBottom)
+                    }
+                }
+                BlockActionToolbarHelper.AnchorView.BLOCK_GRAVITY_TOP -> {
+                    with (startSet) {
+                        connect(blockId, TOP, containerId, TOP, DEFAULT_MARGIN)
+                        val translationY =
+                            (abs(blockDimensions.top) + screenDimensions.top).toFloat()
+                        setTranslationY(blockId, -translationY)
+                        connect(barId, TOP, blockId, BOTTOM, barMarginTop)
+                    }
+                    with (endSet) {
+                        connect(blockId, TOP, containerId, TOP, barMarginTop)
+                        connect(barId, TOP, blockId, BOTTOM, barMarginTop)
+                    }
+                }
+                BlockActionToolbarHelper.AnchorView.BLOCK -> {
+                    with (startSet) {
+                        val blockMargin = blockDimensions.top - screenDimensions.top
+                        connect(blockId, TOP, containerId, TOP, blockMargin)
+                        connect(barId, TOP, blockId, BOTTOM, barMarginTop)
+                    }
+                    with(endSet) {
+                        val blockMargin = blockDimensions.top - screenDimensions.top
+                        connect(blockId, TOP, containerId, TOP, blockMargin)
+                        connect(barId, TOP, blockId, BOTTOM, barMarginTop)
+                    }
+                }
+            }
+
+            startSet.applyTo(container)
+            container.post {
+                TransitionManager.beginDelayedTransition(container, createTransitionSet())
+                endSet.applyTo(container)
+            }
+        }
     }
 
     object ACTIONS {

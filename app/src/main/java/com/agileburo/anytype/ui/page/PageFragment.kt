@@ -155,7 +155,6 @@ open class PageFragment :
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
             onMarkupActionClicked = vm::onMarkupActionClicked,
-            onLongClickListener = vm::onBlockLongPressedClicked,
             onTitleTextInputClicked = vm::onTitleTextInputClicked,
             onClickListener = vm::onClickListener,
             clipboardInterceptor = this,
@@ -587,7 +586,14 @@ open class PageFragment :
                     hideKeyboard()
                     childFragmentManager.beginTransaction()
                         .setCustomAnimations(R.anim.action_bar_enter, R.anim.action_bar_exit)
-                        .add(R.id.root, BlockActionToolbarFactory.newInstance(command.block), null)
+                        .add(
+                            R.id.root,
+                            BlockActionToolbarFactory.newInstance(
+                                block = command.block,
+                                dimensions = command.dimensions
+                            ),
+                            null
+                        )
                         .addToBackStack(null)
                         .commit()
                 }

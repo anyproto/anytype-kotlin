@@ -38,6 +38,8 @@
     <dimen name="default_toolbar_section_item_spacing_first">16dp</dimen>
     <dimen name="default_toolbar_section_item_spacing_last">16dp</dimen>
 
+
+    <dimen name="default_toolbar_action_item_height">44dp</dimen>
     <dimen name="default_toolbar_action_item_spacing">8dp</dimen>
     <dimen name="default_toolbar_action_item_spacing_first">16dp</dimen>
     <dimen name="default_toolbar_action_item_spacing_last">16dp</dimen>

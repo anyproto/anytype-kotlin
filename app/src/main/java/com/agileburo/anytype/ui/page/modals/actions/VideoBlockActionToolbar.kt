@@ -59,5 +59,6 @@ class VideoBlockActionToolbar : BlockActionToolbar() {
             player.prepare(mediaSource, false, false)
             this.player = player
         }
+        setConstraints()
     }
 }

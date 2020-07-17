@@ -58,5 +58,6 @@ class FileBlockActionToolbar : BlockActionToolbar() {
                 MimeTypes.Category.OTHER -> setImageResource(R.drawable.ic_mime_other)
             }
         }
+        setConstraints()
     }
 }

@@ -29,7 +29,7 @@ sealed class ListenerType {
         data class Error(val target: String) : Video()
     }
 
-    data class LongClick(val target: String): ListenerType()
+    data class LongClick(val target: String, val dimensions: BlockDimensions) : ListenerType()
 
     data class Page(val target: String): ListenerType()
 }

@@ -33,5 +33,6 @@ class PageBlockActionToolbar : BlockActionToolbar() {
             block.isEmpty -> icon.setImageResource(R.drawable.ic_block_empty_page)
             else -> icon.setImageResource(R.drawable.ic_block_page_without_emoji)
         }
+        setConstraints()
     }
 }

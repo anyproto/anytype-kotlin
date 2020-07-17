@@ -25,5 +25,6 @@ class HighlightBlockActionToolbar : BlockActionToolbar() {
             movementMethod = ScrollingMovementMethod()
             text = block.text
         }
+        setConstraints()
     }
 }

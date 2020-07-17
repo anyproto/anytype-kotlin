@@ -902,6 +902,15 @@ class PageViewModel(
         }
     }
 
+    fun onBlockStyleLinkClicked() {
+        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val range = IntRange(
+            start = 0,
+            endInclusive = target.content<Content.Text>().text.length.dec()
+        )
+        stateData.value = ViewState.OpenLinkScreen(context, target, range)
+    }
+
     fun onBlockStyleMarkupActionClicked(action: Markup.Type) {
 
         controlPanelInteractor.onEvent(

@@ -6,6 +6,7 @@
 
 * Search-document-engine screen integrated on home dashboard and pages (#555)
 * Picking/removing avatar image for profile document (#568)
+* Setting links via block-styling toolbar (#559)
 
 ### Design & UX 🔳
 

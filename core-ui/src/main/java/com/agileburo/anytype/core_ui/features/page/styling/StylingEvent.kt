@@ -13,8 +13,9 @@ sealed class StylingEvent {
     sealed class Markup : StylingEvent() {
         object Bold : Markup()
         object Italic : Markup()
-        object Strikethrough : Markup()
+        object StrikeThrough : Markup()
         object Code : Markup()
+        object Link : Markup()
     }
 
     sealed class Coloring : StylingEvent() {

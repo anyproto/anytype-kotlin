@@ -21,7 +21,7 @@
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toStartOf="@+id/divider1"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -129,12 +129,12 @@
     <FrameLayout
         android:id="@+id/alignmentLeft"
         style="@style/BlockStyleToolbarLeftBlockStyle"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/divider4"
+        app:layout_constraintEnd_toStartOf="@+id/alignmentMiddle"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider2">
+        app:layout_constraintTop_toBottomOf="@+id/bold">
 
         <ImageView
             android:id="@+id/alignmentRightIcon"
@@ -158,10 +158,10 @@
         android:id="@+id/alignmentMiddle"
         style="@style/BlockStyleToolbarMiddleBlockStyle"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/divider5"
+        app:layout_constraintEnd_toStartOf="@+id/alignmentRight"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/divider4"
-        app:layout_constraintTop_toBottomOf="@+id/divider2">
+        app:layout_constraintStart_toEndOf="@+id/alignmentLeft"
+        app:layout_constraintTop_toBottomOf="@+id/italic">
 
         <ImageView
             android:id="@+id/alignmentMiddleIcon"
@@ -185,10 +185,11 @@
         android:id="@+id/alignmentRight"
         style="@style/BlockStyleToolbarRightBlockStyle"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/setUrlButton"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/divider5"
-        app:layout_constraintTop_toBottomOf="@+id/divider2">
+        app:layout_constraintStart_toEndOf="@+id/alignmentMiddle"
+        app:layout_constraintTop_toBottomOf="@+id/strikethrough">
 
         <ImageView
             android:id="@+id/alignmentLeftIcon"
@@ -196,6 +197,26 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/ic_toolbar_style_align_right_selector" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/setUrlButton"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_toolbar_style_set_link_selector"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/code">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/ic_toolbar_style_link_selector" />
 
     </FrameLayout>
 

@@ -78,6 +78,7 @@ class BlockStyleAdapter(
             private val italic = itemView.italic
             private val strike = itemView.strikethrough
             private val code = itemView.code
+            private val link = itemView.setUrlButton
             private val left = itemView.alignmentLeft
             private val middle = itemView.alignmentMiddle
             private val right = itemView.alignmentRight
@@ -86,6 +87,7 @@ class BlockStyleAdapter(
                 onStylingEvent: (StylingEvent) -> Unit,
                 target: ControlPanelState.Toolbar.Styling.Props?
             ) {
+
                 left.isSelected = target?.alignment == null || target.alignment == START
                 middle.isSelected = target?.alignment == CENTER
                 right.isSelected = target?.alignment == END
@@ -93,6 +95,7 @@ class BlockStyleAdapter(
                 bold.isSelected = target?.isBold ?: false
                 italic.isSelected = target?.isItalic ?: false
                 strike.isSelected = target?.isStrikethrough ?: false
+                link.isSelected = target?.isLinked ?: false
 
                 bold.setOnClickListener {
                     onStylingEvent(Markup.Bold)
@@ -103,11 +106,15 @@ class BlockStyleAdapter(
                 }
 
                 strike.setOnClickListener {
-                    onStylingEvent(Markup.Strikethrough)
+                    onStylingEvent(Markup.StrikeThrough)
                 }
 
                 code.setOnClickListener {
                     onStylingEvent(Markup.Code)
+                }
+
+                link.setOnClickListener {
+                    onStylingEvent(Markup.Link)
                 }
 
                 left.setOnClickListener {

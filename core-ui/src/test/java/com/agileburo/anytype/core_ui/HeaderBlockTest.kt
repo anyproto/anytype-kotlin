@@ -363,6 +363,7 @@ class HeaderBlockTest {
             onFooterClicked = {},
             onTextInputClicked = {},
             onPageIconClicked = {},
+            onProfileIconClicked = {},
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
             onParagraphTextChanged = { _, _ -> },

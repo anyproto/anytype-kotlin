@@ -298,19 +298,19 @@
 
     <style name="BlockStyleToolbarLeftBlockStyle">
         <item name="android:background">@drawable/bg_toolbar_style_block_left_selector</item>
-        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">48dp</item>
     </style>
 
     <style name="BlockStyleToolbarMiddleBlockStyle">
         <item name="android:background">@drawable/bg_toolbar_style_block_middle_selector</item>
-        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">48dp</item>
     </style>
 
     <style name="BlockStyleToolbarRightBlockStyle">
         <item name="android:background">@drawable/bg_toolbar_style_block_right_selector</item>
-        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">48dp</item>
     </style>
 

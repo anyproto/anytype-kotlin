@@ -376,7 +376,7 @@ open class PageFragment :
                             action = Markup.Type.ITALIC
                         )
                     }
-                    is StylingEvent.Markup.Strikethrough -> {
+                    is StylingEvent.Markup.StrikeThrough -> {
                         vm.onBlockStyleMarkupActionClicked(
                             action = Markup.Type.STRIKETHROUGH
                         )
@@ -385,6 +385,9 @@ open class PageFragment :
                         vm.onBlockStyleMarkupActionClicked(
                             action = Markup.Type.KEYBOARD
                         )
+                    }
+                    is StylingEvent.Markup.Link -> {
+                        vm.onBlockStyleLinkClicked()
                     }
                     is StylingEvent.Alignment.Left -> {
                         vm.onBlockAlignmentActionClicked(

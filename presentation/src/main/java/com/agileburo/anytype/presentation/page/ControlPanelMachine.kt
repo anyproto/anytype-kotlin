@@ -312,6 +312,7 @@ sealed class ControlPanelMachine {
                     isItalic = target.isItalic,
                     isStrikethrough = target.isStrikethrough,
                     isCode = target.isCode,
+                    isLinked = target.isLinked,
                     color = color,
                     background = background,
                     alignment = target.alignment
@@ -356,6 +357,7 @@ sealed class ControlPanelMachine {
                     isItalic = target.isItalic,
                     isStrikethrough = target.isStrikethrough,
                     isCode = target.isCode,
+                    isLinked = target.isLinked,
                     color = color,
                     background = background,
                     alignment = target.alignment
@@ -404,6 +406,7 @@ sealed class ControlPanelMachine {
                             isItalic = target.isItalic,
                             isStrikethrough = target.isStrikethrough,
                             isCode = target.isCode,
+                            isLinked = target.isLinked,
                             color = target.color ?: ThemeColor.DEFAULT.title,
                             background = target.background ?: ThemeColor.DEFAULT.title,
                             alignment = target.alignment
@@ -429,6 +432,7 @@ sealed class ControlPanelMachine {
                             isItalic = target.isItalic,
                             isStrikethrough = target.isStrikethrough,
                             isCode = target.isCode,
+                            isLinked = target.isLinked,
                             color = target.color ?: ThemeColor.DEFAULT.title,
                             background = target.background ?: ThemeColor.DEFAULT.title,
                             alignment = target.alignment
@@ -436,17 +440,31 @@ sealed class ControlPanelMachine {
                     )
                 )
             }
-            is Event.OnBlockActionToolbarStyleClicked -> state.copy(
-                mainToolbar = state.mainToolbar.copy(
-                    isVisible = false
-                ),
-                stylingToolbar = state.stylingToolbar.copy(
-                    isVisible = true,
-                    mode = StylingMode.BLOCK,
-                    type = StylingType.STYLE,
-                    target = target(event.target)
+            is Event.OnBlockActionToolbarStyleClicked -> {
+                val target = target(event.target)
+                val props = Toolbar.Styling.Props(
+                    isBold = target.isBold,
+                    isItalic = target.isItalic,
+                    isStrikethrough = target.isStrikethrough,
+                    isCode = target.isCode,
+                    isLinked = target.isLinked,
+                    color = target.color,
+                    background = target.background,
+                    alignment = target.alignment
                 )
-            )
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    stylingToolbar = state.stylingToolbar.copy(
+                        isVisible = true,
+                        mode = StylingMode.BLOCK,
+                        type = StylingType.STYLE,
+                        target = target(event.target),
+                        props = props
+                    )
+                )
+            }
             is Event.OnRefresh -> {
                 if (state.stylingToolbar.isVisible) {
                     if (state.stylingToolbar.mode == StylingMode.MARKUP) {
@@ -475,6 +493,7 @@ sealed class ControlPanelMachine {
                                     isItalic = target.isItalic,
                                     isStrikethrough = target.isStrikethrough,
                                     isCode = target.isCode,
+                                    isLinked = target.isLinked,
                                     color = color,
                                     background = background,
                                     alignment = target.alignment
@@ -501,6 +520,7 @@ sealed class ControlPanelMachine {
                                         isItalic = it.isItalic,
                                         isStrikethrough = it.isStrikethrough,
                                         isCode = it.isCode,
+                                        isLinked = it.isLinked,
                                         color = it.color,
                                         background = it.background,
                                         alignment = it.alignment

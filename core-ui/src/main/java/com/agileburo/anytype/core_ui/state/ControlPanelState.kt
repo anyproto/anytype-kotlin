@@ -54,6 +54,7 @@ data class ControlPanelState(
                 val isItalic: Boolean,
                 val isStrikethrough: Boolean,
                 val isCode: Boolean,
+                val isLinked: Boolean,
                 val color: String?,
                 val background: String?,
                 val alignment: Alignment?
@@ -84,6 +85,10 @@ data class ControlPanelState(
 
                 val isCode: Boolean = marks.any { mark ->
                     mark.type == Markup.Type.KEYBOARD && mark.from == 0 && mark.to == text.length
+                }
+
+                val isLinked: Boolean = marks.any { mark ->
+                    mark.type == Markup.Type.LINK && mark.from == 0 && mark.to == text.length
                 }
             }
         }

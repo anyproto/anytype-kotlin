@@ -3769,6 +3769,7 @@ class BlockAdapterTest {
             onFooterClicked = {},
             onTextInputClicked = {},
             onPageIconClicked = {},
+            onProfileIconClicked = {},
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
             onParagraphTextChanged = { _, _ -> },

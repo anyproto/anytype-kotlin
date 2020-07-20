@@ -24,6 +24,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_page_navigation.*
 import kotlinx.android.synthetic.main.view_page_navigation_open_bottom.*
 import kotlinx.android.synthetic.main.view_page_preview.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class PageNavigationFragment
@@ -118,16 +119,20 @@ class PageNavigationFragment
                 }
 
                 state.data.emoji?.let { emoji ->
-                    Glide
-                        .with(emojiIcon)
-                        .load(Emojifier.uri(emoji))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(emojiIcon)
-                    Glide
-                        .with(avatarSmall)
-                        .load(Emojifier.uri(emoji))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(avatarSmall)
+                    try {
+                        Glide
+                            .with(emojiIcon)
+                            .load(Emojifier.uri(emoji))
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(emojiIcon)
+                        Glide
+                            .with(avatarSmall)
+                            .load(Emojifier.uri(emoji))
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(avatarSmall)
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error while setting emoji icon for: $emoji")
+                    }
                 }
 
                 (viewPager.adapter as? PageNavigationAdapter)?.setPageLinks(

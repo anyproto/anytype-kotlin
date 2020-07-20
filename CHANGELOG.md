@@ -16,6 +16,7 @@
 
 ### Fixes & tech 🚒
 
+* Should not crash app when opening the archive from the workspace-navigation-structure screen (#582)
 * Should not crash app when opening _link to_ tab on workspace-navigation-structure screen (#576)
 * When creating a new nested page (B) inside some other page (A), the link block for the page B should be present on the page A when user navigates back to the page A (#561)
 

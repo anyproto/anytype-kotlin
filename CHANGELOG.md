@@ -10,6 +10,7 @@
 
 ### Design & UX 🔳
 
+* New animation for action menu (#464)
 * Redesigned avatar and greeting text sizes and relative positioning on home dashboard (#571)
 * Redesigned add-block/turn-into bottom sheet (new palette, updated categories) (#572, #569)
 

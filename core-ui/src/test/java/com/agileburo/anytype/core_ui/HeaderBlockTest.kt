@@ -371,7 +371,6 @@ class HeaderBlockTest {
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
             onMarkupActionClicked = { _, _ -> },
             onTitleTextInputClicked = {},
-            onProfileIconClicked = {},
             onClickListener = {},
             clipboardInterceptor = clipboardInterceptor
         )

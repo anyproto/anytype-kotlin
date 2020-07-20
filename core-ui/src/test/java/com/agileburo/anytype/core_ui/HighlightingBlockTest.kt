@@ -114,7 +114,6 @@ class HighlightingBlockTest {
             onMarkupActionClicked = { _, _ -> },
             onTitleTextInputClicked = {},
             onClickListener = {},
-            onProfileIconClicked = {},
             clipboardInterceptor = clipboardInterceptor
         )
     }

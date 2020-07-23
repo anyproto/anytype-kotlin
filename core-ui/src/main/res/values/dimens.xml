@@ -109,5 +109,13 @@
     <dimen name="default_style_color_outer_stroke_width">2dp</dimen>
 
     <dimen name="default_page_links_bottom_offset">64dp</dimen>
+    
+    <dimen name="mention_span_image_size_default">16dp</dimen>
+    <dimen name="mention_span_image_size_header_three">18dp</dimen>
+    <dimen name="mention_span_image_size_header_two">22dp</dimen>
+    <dimen name="mention_span_image_size_header_one">28dp</dimen>
+    <dimen name="mention_span_image_padding_default">4dp</dimen>
+    <dimen name="mention_span_image_padding_header_two">5dp</dimen>
+    <dimen name="mention_span_image_padding_header_one">6dp</dimen>
 
 </resources>

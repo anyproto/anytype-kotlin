@@ -88,6 +88,9 @@ fun List<Block.Content.Text.Mark>.marks(): List<BlockEntity.Content.Text.Mark> =
             Block.Content.Text.Mark.Type.Link -> {
                 BlockEntity.Content.Text.Mark.Type.LINK
             }
+            Block.Content.Text.Mark.Type.Mention -> {
+                BlockEntity.Content.Text.Mark.Type.MENTION
+            }
             else -> throw IllegalStateException("Unexpected mark type: ${mark.type.name}")
         }
     )

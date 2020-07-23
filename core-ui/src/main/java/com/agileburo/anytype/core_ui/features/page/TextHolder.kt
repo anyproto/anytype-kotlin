@@ -1,6 +1,7 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.text.Editable
+import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
@@ -47,6 +48,40 @@ interface TextHolder {
         with(content) {
             setSpannableFactory(DefaultSpannableFactory())
             setupSelectionActionMode(onMarkupActionClicked, menuType, listener)
+        }
+    }
+
+    fun setBlockText(text: String, markup: Markup, clicked: (ListenerType) -> Unit) =
+        when (markup.marks.isEmpty()) {
+            true -> content.setText(text)
+            false -> setBlockSpannableText(markup, clicked)
+        }
+
+    private fun setBlockSpannableText(markup: Markup, clicked: (ListenerType) -> Unit) =
+        when (markup.marks.any { it.type == Markup.Type.MENTION }) {
+            true -> setSpannableWithMention(markup, clicked)
+            false -> setSpannable(markup)
+        }
+
+    private fun setSpannable(markup: Markup) {
+        content.setText(markup.toSpannable(), TextView.BufferType.SPANNABLE)
+    }
+
+    fun getMentionImageSizeAndPadding(): Pair<Int, Int>
+
+    private fun setSpannableWithMention(markup: Markup, clicked: (ListenerType) -> Unit) {
+        content.movementMethod = LinkMovementMethod.getInstance()
+        with(content) {
+            val sizes = getMentionImageSizeAndPadding()
+            setText(
+                markup.toSpannable(
+                    context = context,
+                    mentionImageSize = sizes.first,
+                    mentionImagePadding = sizes.second,
+                    click = { clicked(ListenerType.Mention(it)) }
+                ),
+                TextView.BufferType.SPANNABLE
+            )
         }
     }
 

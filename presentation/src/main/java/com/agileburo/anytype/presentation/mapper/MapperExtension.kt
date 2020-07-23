@@ -175,6 +175,14 @@ fun Block.Content.Text.marks(): List<Markup.Mark> = marks.mapNotNull { mark ->
                 type = Markup.Type.KEYBOARD
             )
         }
+        Block.Content.Text.Mark.Type.MENTION -> {
+            Markup.Mark(
+                from = mark.range.first,
+                to = mark.range.last,
+                type = Markup.Type.MENTION,
+                param = mark.param
+            )
+        }
         else -> null
     }
 }

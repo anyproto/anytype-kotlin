@@ -24,7 +24,6 @@ import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.common.isLinksPresent
-import com.agileburo.anytype.core_ui.common.toSpannable
 import com.agileburo.anytype.core_ui.extensions.avatarColor
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.extensions.tint
@@ -115,7 +114,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             if (item.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
-                setText(item)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
                 setTextColor(item)
                 select(item)
             } else {
@@ -136,7 +135,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     content.setLinksClickable()
                 }
 
-                setText(item)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
                 setTextColor(item)
 
                 setFocus(item)
@@ -155,8 +154,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        private fun setText(item: BlockView.Paragraph) {
-            content.setText(item.toSpannable(), BufferType.SPANNABLE)
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
+            Pair(
+                first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default),
+                second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
+            )
         }
 
         private fun setTextColor(
@@ -286,6 +288,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onNonEmptyBlockBackspaceClicked: () -> Unit
         ) = Unit
 
+        /**
+         * Mention is not used in Title
+         */
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0,0)
+
         companion object {
             private const val EMPTY_EMOJI = ""
         }
@@ -354,6 +361,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 imm().showSoftInput(content, SHOW_IMPLICIT)
             }
         }
+
+        /**
+         * Mention is not used in ProfileTitle
+         */
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0,0)
 
         fun processPayloads(
             payloads: List<Payload>,
@@ -434,13 +446,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             if (block.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
                 select(block)
-                setBlockText(block)
+                setBlockText(text = block.text, markup = block, clicked = clicked)
                 setBlockTextColor(block.color)
             } else {
                 enableEditMode()
                 select(block)
                 setLinksClickable(block)
-                setBlockText(block)
+                setBlockText(text = block.text, markup = block, clicked = clicked)
                 setBlockTextColor(block.color)
                 setFocus(block)
                 if (block.isFocused) setCursor(block)
@@ -475,11 +487,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             )
         }
 
-        private fun setBlockText(block: BlockView.HeaderOne) {
-            if (block.marks.isNotEmpty())
-                header.setText(block.toSpannable(), BufferType.SPANNABLE)
-            else
-                header.setText(block.text)
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
+            Pair(
+                first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_header_one),
+                second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_header_one)
+            )
         }
 
         private fun setBlockTextColor(color: String?) {
@@ -524,13 +536,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             if (block.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
                 select(block)
-                setBlockText(block)
+                setBlockText(text = block.text, markup = block, clicked = clicked)
                 setBlockTextColor(block.color)
             } else {
                 enableEditMode()
                 select(block)
                 setLinksClickable(block)
-                setBlockText(block)
+                setBlockText(text = block.text, markup = block, clicked = clicked)
                 setBlockTextColor(block.color)
                 setFocus(block)
                 if (block.isFocused) setCursor(block)
@@ -565,11 +577,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             )
         }
 
-        private fun setBlockText(block: BlockView.HeaderTwo) {
-            if (block.marks.isNotEmpty())
-                header.setText(block.toSpannable(), BufferType.SPANNABLE)
-            else
-                header.setText(block.text)
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
+            Pair(
+                first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_header_two),
+                second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_header_two)
+            )
         }
 
         private fun setBlockTextColor(color: String?) {
@@ -614,13 +626,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             if (block.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
                 select(block)
-                setBlockText(block)
+                setBlockText(text = block.text, markup = block, clicked = clicked)
                 setBlockTextColor(block.color)
             } else {
                 enableEditMode()
                 select(block)
                 setLinksClickable(block)
-                setBlockText(block)
+                setBlockText(text = block.text, markup = block, clicked = clicked)
                 setBlockTextColor(block.color)
                 setFocus(block)
                 if (block.isFocused) setCursor(block)
@@ -655,18 +667,18 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             )
         }
 
-        private fun setBlockText(block: BlockView.HeaderThree) {
-            if (block.marks.isNotEmpty())
-                header.setText(block.toSpannable(), BufferType.SPANNABLE)
-            else
-                header.setText(block.text)
-        }
-
         private fun setBlockTextColor(color: String?) {
             if (color != null)
                 setTextColor(color)
             else
                 setTextColor(content.context.color(R.color.black))
+        }
+
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
+            Pair(
+                first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_header_three),
+                second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
+            )
         }
 
         /**
@@ -728,6 +740,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
+        /**
+         * Mention is not used in Code
+         */
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0,0)
+
         override fun select(item: BlockView.Selectable) {
             root.isSelected = item.isSelected
         }
@@ -771,10 +788,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     isSelected = checkbox.isActivated
                 )
                 checkbox.isActivated = item.isChecked
-                if (item.marks.isNotEmpty())
-                    content.setText(item.toSpannable(), BufferType.SPANNABLE)
-                else
-                    content.setText(item.text)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
             } else {
 
                 enableEditMode()
@@ -801,10 +815,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     content.setLinksClickable()
                 }
 
-                if (item.marks.isNotEmpty())
-                    content.setText(item.toSpannable(), BufferType.SPANNABLE)
-                else
-                    content.setText(item.text)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
 
                 if (item.isFocused) setCursor(item)
 
@@ -837,6 +848,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onSelectionChangedEvent(it, ContextMenuType.TEXT)
                 }
             }
+        }
+
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
+            Pair(
+                first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default),
+                second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
+            )
         }
 
         override fun indentize(item: BlockView.Indentable) {
@@ -907,10 +925,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
                 select(item)
 
-                if (item.marks.isNotEmpty())
-                    content.setText(item.toSpannable(), BufferType.SPANNABLE)
-                else
-                    content.setText(item.text)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
 
                 if (item.color != null)
                     setTextColor(item.color)
@@ -936,10 +951,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     content.setLinksClickable()
                 }
 
-                if (item.marks.isNotEmpty())
-                    content.setText(item.toSpannable(), BufferType.SPANNABLE)
-                else
-                    content.setText(item.text)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
 
                 if (item.color != null) {
                     setTextColor(item.color)
@@ -966,6 +978,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onSelectionChangedEvent(it, ContextMenuType.TEXT)
                 }
             }
+        }
+
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
+            Pair(
+                first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default),
+                second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
+            )
         }
 
         override fun setTextColor(color: String) {
@@ -1027,7 +1046,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
                 number.text = item.number.addDot()
 
-                content.setText(item.toSpannable(), BufferType.SPANNABLE)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
 
                 if (item.color != null)
                     setTextColor(item.color)
@@ -1058,7 +1077,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     content.setLinksClickable()
                 }
 
-                content.setText(item.toSpannable(), BufferType.SPANNABLE)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
 
                 if (item.color != null)
                     setTextColor(item.color)
@@ -1084,6 +1103,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onSelectionChangedEvent(it, ContextMenuType.TEXT)
                 }
             }
+        }
+
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
+            Pair(
+                first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default),
+                second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
+            )
         }
 
         override fun processChangePayload(
@@ -1152,7 +1178,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
                 select(item)
 
-                content.setText(item.toSpannable(), BufferType.SPANNABLE)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
 
                 if (item.color != null)
                     setTextColor(item.color)
@@ -1182,7 +1208,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
 
                 content.clearTextWatchers()
-                content.setText(item.toSpannable(), BufferType.SPANNABLE)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
 
                 if (item.color != null) {
                     setTextColor(item.color)
@@ -1218,6 +1244,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setOnClickListener { onTogglePlaceholderClicked(item.id) }
                 }
             }
+        }
+
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
+            Pair(
+                first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default),
+                second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
+            )
         }
 
         override fun indentize(item: BlockView.Indentable) {
@@ -2096,11 +2129,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             if (item.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()
-                setText(item)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
             } else {
                 enableEditMode()
                 setLinksClickable(item)
-                setText(item)
+                setBlockText(text = item.text, markup = item, clicked = clicked)
                 if (item.isFocused) setCursor(item)
                 setFocus(item)
                 with(content) {
@@ -2137,15 +2170,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        private fun setText(item: BlockView.Highlight) {
-            if (item.marks.isNotEmpty())
-                content.setText(item.toSpannable(), BufferType.SPANNABLE)
-            else
-                content.setText(item.text)
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
+            Pair(
+                first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default),
+                second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
+            )
         }
 
         /**
-         *  Should be set before @[setText]!
+         *  Should be set before @[setBlockText]!
          */
         private fun setLinksClickable(block: BlockView.Highlight) {
             if (block.marks.isLinksPresent()) {

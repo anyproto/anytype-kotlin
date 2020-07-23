@@ -32,4 +32,6 @@ sealed class ListenerType {
     data class LongClick(val target: String, val dimensions: BlockDimensions) : ListenerType()
 
     data class Page(val target: String): ListenerType()
+
+    data class Mention(val target: String): ListenerType()
 }

@@ -43,7 +43,8 @@ data class BlockEntity(
                     UNDERSCORED,
                     LINK,
                     TEXT_COLOR,
-                    BACKGROUND_COLOR
+                    BACKGROUND_COLOR,
+                    MENTION
                 }
             }
 

@@ -724,7 +724,7 @@ open class PageFragment :
         ).apply {
             duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
             interpolator = DecelerateInterpolator()
-            doOnEnd { topToolbar.visible() }
+            doOnEnd { topToolbar?.visible() }
             start()
         }
     }

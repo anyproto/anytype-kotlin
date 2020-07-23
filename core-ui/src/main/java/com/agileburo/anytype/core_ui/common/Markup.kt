@@ -1,12 +1,18 @@
 package com.agileburo.anytype.core_ui.common
 
+import android.content.Context
 import android.os.Parcelable
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.style.ClickableSpan
+import android.view.View
+import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.widgets.text.MentionSpan
 import com.agileburo.anytype.core_utils.ext.VALUE_ROUNDED
 import com.agileburo.anytype.core_utils.ext.removeSpans
 import kotlinx.android.parcel.Parcelize
+import timber.log.Timber
 
 /**
  * Classes implementing this interface should support markup rendering.
@@ -51,7 +57,8 @@ interface Markup {
         TEXT_COLOR,
         BACKGROUND_COLOR,
         LINK,
-        KEYBOARD
+        KEYBOARD,
+        MENTION
     }
 
     companion object {
@@ -60,7 +67,12 @@ interface Markup {
     }
 }
 
-fun Markup.toSpannable() = SpannableStringBuilder(body).apply {
+fun Markup.toSpannable(
+    context: Context? = null,
+    click: ((String) -> Unit)? = null,
+    mentionImageSize: Int = 0,
+    mentionImagePadding: Int = 0
+) = SpannableStringBuilder(body).apply {
     marks.forEach { mark ->
         when (mark.type) {
             Markup.Type.ITALIC -> setSpan(
@@ -112,6 +124,36 @@ fun Markup.toSpannable() = SpannableStringBuilder(body).apply {
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
+            }
+            Markup.Type.MENTION -> {
+                if (!mark.param.isNullOrBlank() && context != null) {
+                    setSpan(
+                        MentionSpan(
+                            context = context,
+                            imageSize = mentionImageSize,
+                            imagePadding = mentionImagePadding,
+                            //todo Setting up default drawable, will be fixed in feature
+                            mResourceId = R.drawable.ic_mention_deafult,
+                            bitmap = null
+                        ),
+                        mark.from,
+                        mark.to,
+                        Markup.DEFAULT_SPANNABLE_FLAG
+                    )
+                    val clickableSpan = object : ClickableSpan() {
+                        override fun onClick(widget: View) {
+                            click?.invoke( mark.param)
+                        }
+                    }
+                    setSpan(
+                        clickableSpan,
+                        mark.from,
+                        mark.to,
+                        Markup.DEFAULT_SPANNABLE_FLAG
+                    )
+                } else {
+                    Timber.e("Get Mention span without param!")
+                }
             }
         }
     }
@@ -171,6 +213,7 @@ fun Editable.setMarkup(markup: Markup) {
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
+            Markup.Type.MENTION -> Unit
         }
     }
 }

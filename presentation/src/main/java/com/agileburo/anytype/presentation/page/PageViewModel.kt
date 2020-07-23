@@ -1368,6 +1368,11 @@ class PageViewModel(
             target = blocks.first { it.id == target }.content<Content.Link>().target
         )
 
+    private fun onMentionClicked(target: String) {
+        proceedWithClearingFocus()
+        proceedWithOpeningPage(target = target)
+    }
+
     fun onAddNewPageClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
@@ -1603,6 +1608,12 @@ class PageViewModel(
                 when (mode) {
                     EditorMode.EDITING -> onPageClicked(clicked.target)
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                }
+            }
+            is ListenerType.Mention -> {
+                when (mode) {
+                    EditorMode.EDITING -> onMentionClicked(clicked.target)
+                    EditorMode.MULTI_SELECT -> Unit
                 }
             }
         }

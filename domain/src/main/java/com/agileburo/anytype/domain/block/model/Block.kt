@@ -119,7 +119,8 @@ data class Block(
                     UNDERSCORED,
                     LINK,
                     TEXT_COLOR,
-                    BACKGROUND_COLOR
+                    BACKGROUND_COLOR,
+                    MENTION
                 }
             }
 

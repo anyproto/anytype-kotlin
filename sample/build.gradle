@@ -48,6 +48,8 @@ dependencies {
 
     implementation 'com.github.HBiSoft:PickiT:0.1.9'
 
+    implementation applicationDependencies.glide
+
     implementation 'com.vdurmont:emoji-java:5.1.1'
 
     implementation project(':core-utils')

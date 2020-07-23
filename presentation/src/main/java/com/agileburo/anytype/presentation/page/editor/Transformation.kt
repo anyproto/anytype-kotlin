@@ -32,6 +32,7 @@ sealed class Transformation {
                     Markup.Type.LINK -> Block.Content.Text.Mark.Type.LINK
                     Markup.Type.BACKGROUND_COLOR -> Block.Content.Text.Mark.Type.BACKGROUND_COLOR
                     Markup.Type.KEYBOARD -> Block.Content.Text.Mark.Type.KEYBOARD
+                    Markup.Type.MENTION -> Block.Content.Text.Mark.Type.MENTION
                 },
                 param = param
             )
@@ -104,6 +105,7 @@ fun Block.markup(
             Markup.Type.LINK -> Block.Content.Text.Mark.Type.LINK
             Markup.Type.BACKGROUND_COLOR -> Block.Content.Text.Mark.Type.BACKGROUND_COLOR
             Markup.Type.KEYBOARD -> Block.Content.Text.Mark.Type.KEYBOARD
+            Markup.Type.MENTION -> Block.Content.Text.Mark.Type.MENTION
         },
         param = param
     )

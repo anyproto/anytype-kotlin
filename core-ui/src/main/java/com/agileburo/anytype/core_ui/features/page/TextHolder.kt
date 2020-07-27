@@ -14,6 +14,7 @@ import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.menu.TextBlockContextMenu
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
+import com.agileburo.anytype.core_ui.tools.MentionTextWatcher
 import com.agileburo.anytype.core_ui.widgets.actionmode.EmptyActionMode
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget.Companion.TEXT_INPUT_WIDGET_ACTION_GO
@@ -185,6 +186,11 @@ interface TextHolder {
         content.addTextChangedListener(
             DefaultTextWatcher { text ->
                 onTextChanged(item.id, text)
+            }
+        )
+        content.addTextChangedListener(
+            MentionTextWatcher{
+                Timber.d("get mention event : $it")
             }
         )
     }

@@ -2,13 +2,11 @@ package com.agileburo.anytype.presentation.home
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.agileburo.anytype.core_utils.ext.shift
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.base.Either
-import com.agileburo.anytype.domain.block.interactor.DragAndDrop
+import com.agileburo.anytype.domain.block.interactor.Move
 import com.agileburo.anytype.domain.block.model.Block
-import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.config.DebugSettings
 import com.agileburo.anytype.domain.config.GetConfig
@@ -22,11 +20,9 @@ import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.CreatePage
-import com.agileburo.anytype.emojifier.data.Emoji
 import com.agileburo.anytype.presentation.desktop.HomeDashboardEventConverter
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine
 import com.agileburo.anytype.presentation.desktop.HomeDashboardViewModel
-import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.profile.ProfileView
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
@@ -36,7 +32,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -75,7 +70,7 @@ class HomeDashboardViewModelTest {
     lateinit var getDebugSettings: GetDebugSettings
 
     @Mock
-    lateinit var dnd: DragAndDrop
+    lateinit var move: Move
 
     private lateinit var vm: HomeDashboardViewModel
 
@@ -99,7 +94,7 @@ class HomeDashboardViewModelTest {
             closeDashboard = closeDashboard,
             createPage = createPage,
             getConfig = getConfig,
-            dragAndDrop = dnd,
+            move = move,
             interceptEvents = interceptEvents,
             eventConverter = HomeDashboardEventConverter.DefaultConverter(),
             getDebugSettings = getDebugSettings

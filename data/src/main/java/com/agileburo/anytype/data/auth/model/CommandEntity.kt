@@ -78,7 +78,7 @@ class CommandEntity {
         val prototype: BlockEntity.Prototype.Page
     )
 
-    class Dnd(
+    class Move(
         val contextId: String,
         val dropTargetId: String,
         val dropTargetContextId: String,

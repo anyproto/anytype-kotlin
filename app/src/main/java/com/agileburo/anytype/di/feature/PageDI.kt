@@ -325,6 +325,7 @@ class PageModule {
         updateAlignment: UpdateAlignment,
         textInteractor: Interactor.TextInteractor,
         setupBookmark: SetupBookmark,
+        move: Move,
         copy: Copy,
         paste: Paste,
         undo: Undo,
@@ -352,6 +353,7 @@ class PageModule {
         updateText = updateText,
         updateAlignment = updateAlignment,
         setupBookmark = setupBookmark,
+        move = move,
         paste = paste,
         copy = copy
     )
@@ -412,5 +414,13 @@ class PageModule {
     ) : Copy = Copy(
         repo = repo,
         clipboard = clipboard
+    )
+
+    @Provides
+    @PerScreen
+    fun provideMoveUseCase(
+        repo: BlockRepository
+    ): Move = Move(
+        repo = repo
     )
 }

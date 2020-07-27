@@ -1,6 +1,5 @@
 package com.agileburo.anytype.presentation.page
 
-import android.graphics.Rect
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -1195,12 +1194,25 @@ class PageViewModel(
         }
     }
 
+    fun onEnterScrollAndMoveClicked() {
+        mode = EditorMode.SCROLL_AND_MOVE
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnEnterScrollAndMoveModeClicked)
+    }
+
+    fun onExitScrollAndMoveClicked() {
+        mode = EditorMode.MULTI_SELECT
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnExitScrollAndMoveModeClicked)
+    }
+
     fun onMultiSelectModeDeleteClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMultiSelectDeleteClicked)
+        val selected = currentSelection().toList()
+        clearSelections()
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Unlink(
                     context = context,
-                    targets = currentSelection().toList(),
+                    targets = selected,
                     next = null,
                     previous = null,
                     effects = listOf(SideEffect.ClearMultiSelectSelection)
@@ -1492,6 +1504,48 @@ class PageViewModel(
         }
     }
 
+    fun onApplyScrollAndMove(
+        target: Id,
+        ratio: Float
+    ) {
+        val block = blocks.first { it.id == target }
+
+        // TODO refact range check
+
+        val position = when (ratio) {
+            in 0.0..0.2 -> Position.TOP
+            in 0.2..0.8 -> Position.INNER
+            in 0.8..1.0 -> Position.BOTTOM
+            else -> throw IllegalStateException("Unexpected ratio: $ratio")
+        }
+
+        val targetContext = if (block.content is Content.Link && position == Position.INNER) {
+            block.content<Content.Link>().target
+        } else {
+            context
+        }
+
+        val selected = currentSelection().toList()
+
+        clearSelections()
+
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnApplyScrollAndMoveClicked)
+
+        mode = EditorMode.MULTI_SELECT
+
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Document.Move(
+                    context = context,
+                    target = target,
+                    targetContext = targetContext,
+                    blocks = selected,
+                    position = position
+                )
+            )
+        }
+    }
+
     fun onCopy(
         range: IntRange
     ) {
@@ -1512,108 +1566,142 @@ class PageViewModel(
                 when (mode) {
                     EditorMode.EDITING -> onBookmarkClicked(clicked.item)
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.item.id)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.Bookmark.Placeholder -> {
                 when (mode) {
                     EditorMode.EDITING -> onBookmarkPlaceholderClicked(clicked.target)
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.Bookmark.Error -> {
                 when (mode) {
                     EditorMode.EDITING -> onFailedBookmarkClicked(clicked.item)
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.item.id)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.File.View -> {
                 when (mode) {
                     EditorMode.EDITING -> onFileClicked(clicked.target)
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.File.Placeholder -> {
                 when (mode) {
                     EditorMode.EDITING -> onAddLocalFileClicked(clicked.target)
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.File.Error -> {
                 when (mode) {
                     EditorMode.EDITING -> onAddLocalFileClicked(clicked.target)
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.File.Upload -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.Picture.View -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.Picture.Placeholder -> {
                 when (mode) {
                     EditorMode.EDITING -> onAddLocalPictureClicked(clicked.target)
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.Picture.Error -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.Picture.Upload -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.Video.View -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.Video.Placeholder -> {
                 when (mode) {
                     EditorMode.EDITING -> onAddLocalVideoClicked(clicked.target)
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.Video.Error -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.Video.Upload -> {
                 when (mode) {
                     EditorMode.EDITING -> Unit
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.LongClick -> {
                 when (mode) {
                     EditorMode.EDITING -> onBlockLongPressedClicked(clicked.target, clicked.dimensions)
                     EditorMode.MULTI_SELECT -> Unit
+                    EditorMode.SCROLL_AND_MOVE -> {
+                    }
                 }
             }
             is ListenerType.Page -> {
                 when (mode) {
                     EditorMode.EDITING -> onPageClicked(clicked.target)
                     EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.SCROLL_AND_MOVE -> Unit
                 }
             }
             is ListenerType.Mention -> {
                 when (mode) {
                     EditorMode.EDITING -> onMentionClicked(clicked.target)
                     EditorMode.MULTI_SELECT -> Unit
+                    EditorMode.SCROLL_AND_MOVE -> Unit
                 }
             }
         }

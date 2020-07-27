@@ -100,6 +100,7 @@ data class ControlPanelState(
          */
         data class MultiSelect(
             override val isVisible: Boolean,
+            val isScrollAndMoveEnabled: Boolean = false,
             val count: Int = 0
         ) : Toolbar()
     }

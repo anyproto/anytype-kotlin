@@ -2,7 +2,7 @@ package com.agileburo.anytype.di.feature
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
-import com.agileburo.anytype.domain.block.interactor.DragAndDrop
+import com.agileburo.anytype.domain.block.interactor.Move
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.config.GetDebugSettings
@@ -48,7 +48,7 @@ class HomeDashboardModule {
         createPage: CreatePage,
         closeDashboard: CloseDashboard,
         getConfig: GetConfig,
-        dnd: DragAndDrop,
+        move: Move,
         interceptEvents: InterceptEvents,
         eventConverter: HomeDashboardEventConverter,
         getDebugSettings: GetDebugSettings
@@ -58,7 +58,7 @@ class HomeDashboardModule {
         createPage = createPage,
         closeDashboard = closeDashboard,
         getConfig = getConfig,
-        dnd = dnd,
+        move = move,
         interceptEvents = interceptEvents,
         eventConverter = eventConverter,
         getDebugSettings = getDebugSettings
@@ -108,9 +108,9 @@ class HomeDashboardModule {
 
     @Provides
     @PerScreen
-    fun provideDragAndDropUseCase(
+    fun provideMoveUseCase(
         repo: BlockRepository
-    ): DragAndDrop = DragAndDrop(
+    ): Move = Move(
         repo = repo
     )
 

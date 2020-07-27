@@ -4,6 +4,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
+import android.graphics.Point
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Environment
@@ -16,6 +17,7 @@ import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
@@ -187,4 +189,12 @@ fun View.indentize(indent: Int, defIndent: Int, margin: Int) =
 
 fun Fragment.clipboard() : ClipboardManager {
     return requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+}
+
+fun Fragment.screen(): Point {
+    val wm = (requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager)
+    val display = wm.defaultDisplay
+    val p = Point()
+    display.getSize(p)
+    return p
 }

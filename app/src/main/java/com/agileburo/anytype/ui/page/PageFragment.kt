@@ -5,12 +5,14 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ProgressBar
@@ -19,6 +21,7 @@ import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -34,6 +37,7 @@ import com.agileburo.anytype.core_ui.extensions.range
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
+import com.agileburo.anytype.core_ui.features.page.scrollandmove.*
 import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuEvent
@@ -91,12 +95,37 @@ open class PageFragment :
     ClipboardInterceptor,
     PickiTCallbacks {
 
+    private val screen: Point by lazy { screen() }
+
+    private val scrollAndMoveTargetDescriptor: ScrollAndMoveTargetDescriptor by lazy {
+        DefaultScrollAndMoveTargetDescriptor()
+    }
+
+    private val scrollAndMoveTopMargin by lazy {
+        dimen(R.dimen.dp_48)
+    }
+
+    private val scrollAndMoveStateListener by lazy {
+        ScrollAndMoveStateListener { searchScrollAndMoveTarget() }
+    }
+
+    private val scrollAndMoveTargetHighlighter by lazy {
+        ScrollAndMoveTargetHighlighter(
+            drawable = drawable(R.drawable.scroll_and_move_divider),
+            screen = screen,
+            padding = dimen(R.dimen.scroll_and_move_start_end_padding),
+            descriptor = scrollAndMoveTargetDescriptor
+        )
+    }
+
     private val vm by lazy {
         ViewModelProviders
             .of(this, factory)
             .get(PageViewModel::class.java)
     }
+
     private lateinit var pickiT: PickiT
+
     private var anytypeContextMenu: AnytypeContextMenu? = null
 
     private val pageAdapter by lazy {
@@ -160,6 +189,37 @@ open class PageFragment :
             clipboardInterceptor = this,
             anytypeContextMenuListener = anytypeContextMenuListener
         )
+    }
+
+    private fun searchScrollAndMoveTarget() {
+
+        val centerX = screen.x / 2f
+        val centerY = (targeter.y + targeter.height / 2) - scrollAndMoveTopMargin
+
+        val target = recycler.findChildViewUnder(centerX, centerY)
+
+        if (target == null) {
+            scrollAndMoveTargetDescriptor.clear()
+        } else {
+            val position = recycler.getChildAdapterPosition(target)
+            val top = target.top
+            val height = target.height
+
+            val ratio = if (centerY < top) {
+                val delta = top - centerY
+                delta / height
+            } else {
+                val delta = centerY - top
+                delta / height
+            }
+
+            scrollAndMoveTargetDescriptor.update(
+                target = ScrollAndMoveTarget(
+                    position = position,
+                    ratio = ratio
+                )
+            )
+        }
     }
 
     private val titleVisibilityDetector by lazy {
@@ -320,6 +380,21 @@ open class PageFragment :
             .launchIn(lifecycleScope)
 
         bottomMenu
+            .enterScrollAndMove()
+            .onEach { vm.onEnterScrollAndMoveClicked() }
+            .launchIn(lifecycleScope)
+
+        bottomMenu
+            .applyScrollAndMoveClicks()
+            .onEach { onApplyScrollAndMoveClicked() }
+            .launchIn(lifecycleScope)
+
+        bottomMenu
+            .exitScrollAndMoveClicks()
+            .onEach { vm.onExitScrollAndMoveClicked() }
+            .launchIn(lifecycleScope)
+
+        bottomMenu
             .turnIntoClicks()
             .onEach { vm.onMultiSelectTurnIntoButtonClicked() }
             .launchIn(lifecycleScope)
@@ -331,7 +406,7 @@ open class PageFragment :
 
         bottomToolbar
             .navigationClicks()
-            .onEach { vm.onOpenPageNavigationButtonClicked()  }
+            .onEach { vm.onOpenPageNavigationButtonClicked() }
             .launchIn(lifecycleScope)
 
         bottomToolbar
@@ -418,6 +493,15 @@ open class PageFragment :
             styleToolbar.closeButtonClicks().collect {
                 vm.onCloseBlockStyleToolbarClicked()
             }
+        }
+    }
+
+    private fun onApplyScrollAndMoveClicked() {
+        scrollAndMoveTargetDescriptor.current()?.let { target ->
+            vm.onApplyScrollAndMove(
+                target = pageAdapter.views[target.position].id,
+                ratio = target.ratio
+            )
         }
     }
 
@@ -643,7 +727,8 @@ open class PageFragment :
             when (view) {
                 is BlockView.Title -> resetTopToolbarTitle(view.text, view.emoji, view.image)
                 is BlockView.ProfileTitle -> resetTopToolbarTitle(view.text, null, view.image)
-                else -> {}
+                else -> {
+                }
             }
         }
     }
@@ -677,7 +762,7 @@ open class PageFragment :
                 if (count == 0) {
                     selectText.setText(R.string.select_all)
                 } else {
-                    selectText.setText(R.string.unselect_all)
+                    selectText.text = getString(R.string.unselect_all, count)
                 }
                 bottomMenu.update(count)
                 if (!bottomMenu.isShowing) {
@@ -696,6 +781,10 @@ open class PageFragment :
                 bottomMenu.hideWithAnimation()
                 hideSelectButton()
             }
+            if (isScrollAndMoveEnabled)
+                enterScrollAndMove()
+            else
+                exitScrollAndMove()
         }
 
         state.stylingToolbar.apply {
@@ -714,6 +803,52 @@ open class PageFragment :
                 recycler.updatePadding(bottom = dimen(R.dimen.default_toolbar_height))
             }
         }
+    }
+
+    private fun enterScrollAndMove() {
+        if (recycler.itemDecorationCount == 0) {
+
+            val offset = recycler.computeVerticalScrollOffset()
+
+            recycler.addItemDecoration(scrollAndMoveTargetHighlighter)
+
+            if (offset < screen.y / 3) {
+                lifecycleScope.launch {
+                    delay(100)
+                    recycler.smoothScrollBy(0, screen.y / 3)
+                }
+            }
+
+            showTargeterWithAnimation()
+
+            recycler.addOnScrollListener(scrollAndMoveStateListener)
+            bottomMenu.showScrollAndMoveModeControls()
+            bottomMenu.hideMultiSelectControls()
+        }
+    }
+
+    private fun showTargeterWithAnimation() {
+        targeter.translationY = -targeter.y
+        ObjectAnimator.ofFloat(
+            targeter,
+            TARGETER_ANIMATION_PROPERTY,
+            0f
+        ).apply {
+            duration = 300
+            doOnStart { targeter.visible() }
+            interpolator = OvershootInterpolator()
+            start()
+        }
+    }
+
+    private fun exitScrollAndMove() {
+        recycler.apply {
+            removeItemDecoration(scrollAndMoveTargetHighlighter)
+            removeOnScrollListener(scrollAndMoveStateListener)
+        }
+        targeter.invisible()
+        bottomMenu.hideScrollAndMoveModeControls()
+        scrollAndMoveTargetDescriptor.clear()
     }
 
     private fun hideSelectButton() {
@@ -864,17 +999,19 @@ open class PageFragment :
         if (pickitProgressDialog?.isShowing == true) {
             pickitProgressDialog?.cancel()
         }
-        pickitAlertDialog = AlertDialog.Builder(requireContext(), R.style.SyncFromCloudDialog).apply {
-            val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_layout, null)
-            setView(view)
-            view.findViewById<Button>(R.id.btnCancel).setOnClickListener {
-                pickiT.cancelTask()
-                if (pickitAlertDialog?.isShowing == true) {
-                    pickitAlertDialog?.cancel()
+        pickitAlertDialog =
+            AlertDialog.Builder(requireContext(), R.style.SyncFromCloudDialog).apply {
+                val view =
+                    LayoutInflater.from(requireContext()).inflate(R.layout.dialog_layout, null)
+                setView(view)
+                view.findViewById<Button>(R.id.btnCancel).setOnClickListener {
+                    pickiT.cancelTask()
+                    if (pickitAlertDialog?.isShowing == true) {
+                        pickitAlertDialog?.cancel()
+                    }
                 }
-            }
-            pickitProgressBar = view.findViewById(R.id.mProgressBar)
-        }.create()
+                pickitProgressBar = view.findViewById(R.id.mProgressBar)
+            }.create()
         pickitAlertDialog?.show()
         Timber.d("PickiTonStartListener")
     }
@@ -926,6 +1063,7 @@ open class PageFragment :
         const val ID_KEY = "id"
         const val DEBUG_SETTINGS = "debug_settings"
         const val ID_EMPTY_VALUE = ""
+
         const val NOT_IMPLEMENTED_MESSAGE = "Not implemented."
 
         const val FAB_SHOW_ANIMATION_START_DELAY = 250L
@@ -934,6 +1072,7 @@ open class PageFragment :
         const val SELECT_BUTTON_SHOW_ANIMATION_DURATION = 200L
         const val SELECT_BUTTON_HIDE_ANIMATION_DURATION = 200L
         const val SELECT_BUTTON_ANIMATION_PROPERTY = "translationY"
+        const val TARGETER_ANIMATION_PROPERTY = "translationY"
     }
 
     override fun onDismissBlockActionToolbar() {

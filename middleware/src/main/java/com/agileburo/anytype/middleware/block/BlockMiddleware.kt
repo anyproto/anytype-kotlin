@@ -87,8 +87,8 @@ class BlockMiddleware(
         command: CommandEntity.Duplicate
     ): Pair<String, PayloadEntity> = middleware.duplicate(command)
 
-    override suspend fun dnd(command: CommandEntity.Dnd) {
-        middleware.dnd(command)
+    override suspend fun move(command: CommandEntity.Move): PayloadEntity {
+        return middleware.move(command)
     }
 
     override suspend fun unlink(

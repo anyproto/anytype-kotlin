@@ -92,8 +92,8 @@ class BlockDataRepository(
         }
     }
 
-    override suspend fun dnd(command: Command.Dnd) {
-        factory.remote.dnd(command.toEntity())
+    override suspend fun move(command: Command.Move): Payload {
+        return factory.remote.move(command.toEntity()).toDomain()
     }
 
     override suspend fun unlink(

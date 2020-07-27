@@ -23,7 +23,7 @@ interface BlockDataStore {
 
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
     suspend fun uploadBlock(command: CommandEntity.UploadBlock): PayloadEntity
-    suspend fun dnd(command: CommandEntity.Dnd)
+    suspend fun move(command: CommandEntity.Move): PayloadEntity
     suspend fun unlink(command: CommandEntity.Unlink): PayloadEntity
     suspend fun getConfig(): ConfigEntity
     suspend fun createPage(parentId: String): String

@@ -199,7 +199,7 @@
     <string name="action_bar_rename">Rename</string>
     <string name="more">More</string>
     <string name="done">Done</string>
-    <string name="select_or_drag_and_drop_blocks">Select or drag and drop blocks</string>
+    <string name="select_scroll_and_move_blocks">To start, select blocks</string>
     <string name="block_code_menu_title">Language</string>
 
     <string name="undo">Undo</string>
@@ -215,5 +215,6 @@
     <string name="content_desc_page_toolbar_search">Search pages</string>
     <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
     <string name="content_desc_page_toolbar_add_doc">Add new page</string>
+    <string name="move">Move</string>
 
 </resources>

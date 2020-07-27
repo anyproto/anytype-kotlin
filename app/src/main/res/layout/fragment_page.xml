@@ -112,4 +112,26 @@
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
         tools:visibility="visible"/>
 
+    <FrameLayout
+        android:visibility="invisible"
+        android:layout_gravity="center_vertical"
+        android:id="@+id/targeter"
+        android:layout_width="match_parent"
+        android:layout_height="8dp">
+
+        <ImageView
+            android:rotation="180"
+            android:src="@drawable/ic_scroll_and_move_target_anchor"
+            android:layout_width="8dp"
+            android:layout_gravity="start"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:src="@drawable/ic_scroll_and_move_target_anchor"
+            android:layout_width="8dp"
+            android:layout_gravity="end"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

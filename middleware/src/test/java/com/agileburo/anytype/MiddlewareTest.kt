@@ -328,7 +328,7 @@ class MiddlewareTest {
 
         val context = MockDataFactory.randomUuid()
 
-        val command = CommandEntity.Dnd(
+        val command = CommandEntity.Move(
             contextId = context,
             dropTargetContextId = context,
             blockIds = listOf(MockDataFactory.randomUuid()),
@@ -353,7 +353,7 @@ class MiddlewareTest {
 
         // TESTING
 
-        middleware.dnd(command)
+        middleware.move(command)
 
         verify(service, times(1)).blockListMove(request)
         verifyNoMoreInteractions(service)

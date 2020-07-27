@@ -142,6 +142,9 @@ class PageViewModelTest {
     @Mock
     lateinit var updateTitle: UpdateTitle
 
+    @Mock
+    lateinit var move: Move
+
     private lateinit var vm: PageViewModel
 
     @Before
@@ -4358,7 +4361,8 @@ class PageViewModelTest {
                 updateAlignment = updateAlignment,
                 setupBookmark = setupBookmark,
                 paste = paste,
-                copy = copy
+                copy = copy,
+                move = move
             )
         )
     }

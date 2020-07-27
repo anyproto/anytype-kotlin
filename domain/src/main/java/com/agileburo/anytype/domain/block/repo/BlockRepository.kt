@@ -14,7 +14,7 @@ interface BlockRepository {
 
     suspend fun uploadFile(command: Command.UploadFile): Hash
 
-    suspend fun dnd(command: Command.Dnd)
+    suspend fun move(command: Command.Move): Payload
     suspend fun unlink(command: Command.Unlink): Payload
 
     suspend fun archiveDocument(command: Command.ArchiveDocument)

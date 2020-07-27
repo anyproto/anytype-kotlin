@@ -136,7 +136,12 @@ sealed class ControlPanelMachine {
 
         object OnEnterMultiSelectModeClicked : Event()
         object OnExitMultiSelectModeClicked : Event()
+        object OnMultiSelectDeleteClicked : Event()
         data class OnMultiSelectModeBlockClick(val count : Int): Event()
+
+        object OnApplyScrollAndMoveClicked : Event()
+        object OnExitScrollAndMoveModeClicked : Event()
+        object OnEnterScrollAndMoveModeClicked : Event()
 
         data class OnRefresh(val target: Block?) : Event()
     }
@@ -545,10 +550,17 @@ sealed class ControlPanelMachine {
             is Event.OnExitMultiSelectModeClicked -> state.copy(
                 focus = null,
                 multiSelect = state.multiSelect.copy(
-                    isVisible = false
+                    isVisible = false,
+                    isScrollAndMoveEnabled = false,
+                    count = 0
                 ),
                 mainToolbar = state.mainToolbar.copy(
                     isVisible = false
+                )
+            )
+            is Event.OnMultiSelectDeleteClicked -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    count = 0
                 )
             )
             is Event.OnFocusChanged -> {
@@ -586,6 +598,22 @@ sealed class ControlPanelMachine {
             is Event.OnMultiSelectModeBlockClick -> state.copy(
                 multiSelect = state.multiSelect.copy(
                     count = event.count
+                )
+            )
+            is Event.OnExitScrollAndMoveModeClicked -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    isScrollAndMoveEnabled = false
+                )
+            )
+            is Event.OnEnterScrollAndMoveModeClicked -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    isScrollAndMoveEnabled = true
+                )
+            )
+            is Event.OnApplyScrollAndMoveClicked -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    count = 0,
+                    isScrollAndMoveEnabled = false
                 )
             )
         }

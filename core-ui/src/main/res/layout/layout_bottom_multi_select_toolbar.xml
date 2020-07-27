@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
+    android:layout_height="48dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
@@ -8,7 +10,7 @@
         android:layout_height="0dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:paddingStart="20dp"
-        android:paddingEnd="10dp"
+        android:paddingEnd="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/convert"
         app:layout_constraintHorizontal_bias="0.5"
@@ -17,12 +19,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <TextView
-            style="@style/BottomMultiSelectToolbarOptionStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
             android:layout_gravity="center"
-            android:text="@string/action_bar_delete" />
+            android:src="@drawable/ic_multi_select_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </FrameLayout>
 
@@ -31,20 +32,19 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/more"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/delete"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            style="@style/BottomMultiSelectToolbarOptionStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
             android:layout_gravity="center"
-            android:text="@string/turn_into" />
+            android:src="@drawable/ic_multi_select_turn_into"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </FrameLayout>
 
@@ -54,18 +54,37 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/convert"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            style="@style/BottomMultiSelectToolbarOptionStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
             android:layout_gravity="center"
-            android:text="@string/copy" />
+            android:src="@drawable/ic_multi_select_copy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/enterScrollAndMove"
+        style="@style/BottomMultiSelectToolbarOptionStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/more"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_gravity="center"
+            android:src="@drawable/ic_scroll_and_move"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
 
     </FrameLayout>
 
@@ -89,13 +108,19 @@
 
     </FrameLayout>
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/controls"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="convert,more,delete,enterScrollAndMove" />
+
     <FrameLayout
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -104,17 +129,57 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/select_or_drag_and_drop_blocks"
-            android:textColor="#2AA7EE"
+            android:text="@string/select_scroll_and_move_blocks"
+            android:textColor="#FFB522"
             android:textSize="13sp" />
 
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/applyScrollAndMove"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/done"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/move"
+            android:textColor="#ACA996"
+            android:textSize="17sp" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/exitScrollAndMove"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/applyScrollAndMove"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/cancel"
+            android:textColor="#ACA996"
+            android:textSize="17sp" />
+
+    </FrameLayout>
+
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/controls"
+        android:id="@+id/scrollandMoveControls"
+        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:constraint_referenced_ids="convert,more,delete" />
+        app:constraint_referenced_ids="applyScrollAndMove,exitScrollAndMove" />
 
-</merge>
+</androidx.constraintlayout.widget.ConstraintLayout>

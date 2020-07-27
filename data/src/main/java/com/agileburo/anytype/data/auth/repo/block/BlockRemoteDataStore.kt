@@ -64,8 +64,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: CommandEntity.CreateDocument
     ): Triple<String, String, PayloadEntity> = remote.createDocument(command)
 
-    override suspend fun dnd(command: CommandEntity.Dnd) {
-        remote.dnd(command)
+    override suspend fun move(command: CommandEntity.Move): PayloadEntity {
+        return remote.move(command)
     }
 
     override suspend fun duplicate(

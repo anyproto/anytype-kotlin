@@ -22,7 +22,7 @@ interface BlockRemote {
     suspend fun updateTextStyle(command: CommandEntity.UpdateStyle) : PayloadEntity
 
     suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox)
-    suspend fun dnd(command: CommandEntity.Dnd)
+    suspend fun move(command: CommandEntity.Move): PayloadEntity
     suspend fun getConfig(): ConfigEntity
     suspend fun createPage(parentId: String): String
     suspend fun openPage(id: String): PayloadEntity

@@ -560,7 +560,7 @@ public class Middleware {
         );
     }
 
-    public void dnd(CommandEntity.Dnd command) throws Exception {
+    public PayloadEntity move(CommandEntity.Move command) throws Exception {
         Models.Block.Position position = mapper.toMiddleware(command.getPosition());
 
         BlockList.Move.Request request = BlockList.Move.Request
@@ -581,6 +581,8 @@ public class Middleware {
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
+
+        return mapper.toPayload(response.getEvent());
     }
 
     public Pair<String, PayloadEntity> duplicate(CommandEntity.Duplicate command) throws Exception {

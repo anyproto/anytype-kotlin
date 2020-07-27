@@ -3,7 +3,7 @@ package com.agileburo.anytype.presentation.desktop
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
-import com.agileburo.anytype.domain.block.interactor.DragAndDrop
+import com.agileburo.anytype.domain.block.interactor.Move
 import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.config.GetDebugSettings
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
@@ -17,7 +17,7 @@ class HomeDashboardViewModelFactory(
     private val closeDashboard: CloseDashboard,
     private val createPage: CreatePage,
     private val getConfig: GetConfig,
-    private val dnd: DragAndDrop,
+    private val move: Move,
     private val interceptEvents: InterceptEvents,
     private val eventConverter: HomeDashboardEventConverter,
     private val getDebugSettings: GetDebugSettings
@@ -31,7 +31,7 @@ class HomeDashboardViewModelFactory(
             closeDashboard = closeDashboard,
             createPage = createPage,
             getConfig = getConfig,
-            dragAndDrop = dnd,
+            move = move,
             interceptEvents = interceptEvents,
             eventConverter = eventConverter,
             getDebugSettings = getDebugSettings

@@ -31,4 +31,6 @@
     <dimen name="action_toolbar_bar_margin_bottom">16dp</dimen>
     <dimen name="action_toolbar_bar_margin_top">8dp</dimen>
 
+    <dimen name="scroll_and_move_start_end_padding">8dp</dimen>
+
 </resources>

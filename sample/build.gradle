@@ -42,10 +42,6 @@ dependencies {
 
     def applicationDependencies = rootProject.ext.mainApplication
 
-    def protobufDependencies = rootProject.ext.protobuf
-
-    implementation protobufDependencies.protobufJava
-
     implementation 'com.github.HBiSoft:PickiT:0.1.9'
 
     implementation applicationDependencies.glide
@@ -54,13 +50,9 @@ dependencies {
 
     implementation project(':core-utils')
     implementation project(':core-ui')
-    implementation project(':library-page-icon-picker-widget')
-    implementation project(':middleware')
-    implementation project(':protobuf')
 
     implementation applicationDependencies.timber
 
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation applicationDependencies.fragment
     implementation 'androidx.appcompat:appcompat:1.1.0'

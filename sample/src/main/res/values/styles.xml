@@ -1,11 +1,11 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/orange</item>
+        <item name="colorPrimaryDark">@color/anytype_text_teal</item>
+        <item name="colorAccent">@color/anytype_text_blue</item>
 <!--        <item name="android:dialogTheme">@style/AppBottomSheetDialogTheme</item>-->
         <item name="alertDialogTheme">@style/DialogTheme</item>
 <!--        <item name="android:alertDialogTheme">?alertDialogTheme</item>-->

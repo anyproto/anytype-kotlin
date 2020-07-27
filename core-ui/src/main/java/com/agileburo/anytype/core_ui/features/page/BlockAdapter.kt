@@ -77,6 +77,8 @@ class BlockAdapter(
     private val anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
+    val views: List<BlockView> get() = blocks
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
 
         val inflater = LayoutInflater.from(parent.context)

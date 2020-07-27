@@ -2,22 +2,23 @@ package com.agileburo.anytype.domain.block.interactor
 
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.base.Either
-import com.agileburo.anytype.domain.block.interactor.DragAndDrop.Params
-import com.agileburo.anytype.domain.block.model.Command.Dnd
+import com.agileburo.anytype.domain.block.interactor.Move.Params
+import com.agileburo.anytype.domain.block.model.Command.Move
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.event.model.Payload
 
 /**
- * Use-case for drag-and-drop actions (can be applied to a page or a dashboard).
+ * Use-case for moving a group of blocks (cross-document, inside one document, one block after another, etc).
  * @see Params for details.
  */
-class DragAndDrop(
+class Move(
     private val repo: BlockRepository
-) : BaseUseCase<Unit, Params>() {
+) : BaseUseCase<Payload, Params>() {
 
     override suspend fun run(params: Params) = try {
-        repo.dnd(
-            command = Dnd(
+        repo.move(
+            command = Move(
                 contextId = params.context,
                 targetId = params.targetId,
                 targetContextId = params.targetContext,
@@ -32,7 +33,7 @@ class DragAndDrop(
     }
 
     /**
-     * Params for a drag-and-drop action
+     * Params for moving a group of blocks.
      * @param context context for this action (i.e. a page's id or a dashboard's id)
      * @param targetId id of the target block (i.e. target of a drag-and-drop action)
      * @param blockIds id of the blocks that are being dragged and dropped (as opposed to the target block).

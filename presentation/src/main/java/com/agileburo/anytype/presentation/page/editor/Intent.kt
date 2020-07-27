@@ -20,6 +20,14 @@ sealed class Intent {
             val context: Id,
             val title: String
         ) : Document()
+
+        class Move(
+            val context: Id,
+            val target: Id,
+            val targetContext: Id,
+            val blocks: List<Id>,
+            val position: Position
+        ) : Document()
     }
 
     sealed class CRUD : Intent() {

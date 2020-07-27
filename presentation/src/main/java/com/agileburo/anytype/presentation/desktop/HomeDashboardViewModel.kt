@@ -8,7 +8,7 @@ import com.agileburo.anytype.core_utils.ext.withLatestFrom
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.base.BaseUseCase
-import com.agileburo.anytype.domain.block.interactor.DragAndDrop
+import com.agileburo.anytype.domain.block.interactor.Move
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.GetConfig
@@ -38,7 +38,7 @@ class HomeDashboardViewModel(
     private val closeDashboard: CloseDashboard,
     private val createPage: CreatePage,
     private val getConfig: GetConfig,
-    private val dragAndDrop: DragAndDrop,
+    private val move: Move,
     private val interceptEvents: InterceptEvents,
     private val eventConverter: HomeDashboardEventConverter,
     private val getDebugSettings: GetDebugSettings
@@ -117,7 +117,7 @@ class HomeDashboardViewModel(
             dropChanges
                 .withLatestFrom(movementChanges) { a, b -> Pair(a, b) }
                 .mapLatest { (subject, movement) ->
-                    DragAndDrop.Params(
+                    Move.Params(
                         context = context,
                         targetContext = context,
                         position = movement.direction,
@@ -126,7 +126,7 @@ class HomeDashboardViewModel(
                     )
                 }
                 .collect { param ->
-                    dragAndDrop(viewModelScope, param) { result ->
+                    move(viewModelScope, param) { result ->
                         result.either(
                             fnL = { Timber.e(it, "Error while DND for: $param") },
                             fnR = { Timber.d("Successfull DND for: $param") }

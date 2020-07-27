@@ -307,8 +307,8 @@ fun Command.Create.toEntity(): CommandEntity.Create {
     )
 }
 
-fun Command.Dnd.toEntity(): CommandEntity.Dnd {
-    return CommandEntity.Dnd(
+fun Command.Move.toEntity(): CommandEntity.Move {
+    return CommandEntity.Move(
         contextId = contextId,
         dropTargetId = targetId,
         dropTargetContextId = targetContextId,

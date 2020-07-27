@@ -1,5 +1,16 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.40
+
+### New features 🚀
+
+* Test flight for scroll-and-move feature (#567)
+
+### Fixes & tech 🚒
+
+* Added new custom span for rendering mentions in text blocks (#563)
+* Added new text watcher for intercepting mention-related events (#574)
+
 ## Version 0.0.39
 
 ### New features 🚀

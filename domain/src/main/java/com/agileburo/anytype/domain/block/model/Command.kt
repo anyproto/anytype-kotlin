@@ -142,7 +142,7 @@ sealed class Command {
         val prototype: Block.Prototype.Page
     )
 
-    class Dnd(
+    class Move(
         val contextId: Id,
         val targetId: Id,
         val targetContextId: Id,

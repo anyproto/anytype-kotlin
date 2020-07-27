@@ -30,6 +30,7 @@ import com.agileburo.anytype.utils.TestUtils.withRecyclerView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.android.synthetic.main.fragment_page.*
+import org.hamcrest.CoreMatchers.anyOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -217,7 +218,8 @@ class ClipboardTesting : EditorTestSetup() {
 
         // Press "Paste"
 
-        onView(withText("Вставить")).inRoot(isPlatformPopup()).perform(click());
+        onView(anyOf(withText("Вставить"), withText("Paste"))).inRoot(isPlatformPopup())
+            .perform(click());
 
         // Check results
 
@@ -490,7 +492,8 @@ class ClipboardTesting : EditorTestSetup() {
 
         // Press "Paste"
 
-        onView(withText("Вставить")).inRoot(isPlatformPopup()).perform(click());
+        onView(anyOf(withText("Вставить"), withText("Paste"))).inRoot(isPlatformPopup())
+            .perform(click());
 
         // Check results
 

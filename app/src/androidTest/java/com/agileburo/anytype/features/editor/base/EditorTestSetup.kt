@@ -55,6 +55,7 @@ open class EditorTestSetup {
     lateinit var splitBlock: SplitBlock
     lateinit var createPage: CreatePage
     lateinit var updateBackgroundColor: UpdateBackgroundColor
+    lateinit var move: Move
 
     @Mock
     lateinit var openPage: OpenPage
@@ -138,6 +139,7 @@ open class EditorTestSetup {
             clipboard = clipboard,
             matcher = uriMatcher
         )
+        move = Move(repo)
 
         updateBackgroundColor = UpdateBackgroundColor(repo)
 
@@ -187,7 +189,8 @@ open class EditorTestSetup {
                     stores = stores,
                     matcher = DefaultPatternMatcher()
                 ),
-                uploadBlock = uploadBlock
+                uploadBlock = uploadBlock,
+                move = move
             )
         )
     }

@@ -1170,6 +1170,34 @@ class PageViewModel(
         }
     }
 
+    fun onBlockToolbarStyleClicked() {
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
+                target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+            )
+        )
+    }
+
+    fun onBlockToolbarBlockActionsClicked() {
+        dispatch(
+            Command.Measure(
+                target = orchestrator.stores.focus.current().id
+            )
+        )
+    }
+
+    fun onMeasure(target: Id, dimensions: BlockDimensions) {
+        val state = stateData.value
+        if (state is ViewState.Success) {
+            dispatch(
+                Command.OpenActionBar(
+                    block = state.blocks.first { it.id == target },
+                    dimensions = dimensions
+                )
+            )
+        }
+    }
+
     fun onAddBlockToolbarClicked() {
         dispatch(Command.OpenAddBlockPanel)
     }

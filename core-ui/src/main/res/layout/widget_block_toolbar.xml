@@ -1,84 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/default_toolbar_height">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:id="@+id/add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:contentDescription="@string/content_description_add_block"
-        android:src="@drawable/ic_toolbar_add_block_selector"
-        android:stateListAnimator="@animator/scale_shrink"
+    <FrameLayout
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:id="@+id/addBlockButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/changeStyleButton"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/turnIntoToggle"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="16dp"
+        <ImageView
+            android:id="@+id/addBlockIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_block_toolbar_add_new" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:id="@+id/changeStyleButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/add"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/blockActionsButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/addBlockButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
-    <ImageView
-        android:id="@+id/arrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:background="@drawable/ic_block_toolbar_turn_into_arrow_selector"
-        android:contentDescription="@string/content_description_turn_into_arrow"
+        <ImageView
+            android:id="@+id/changeStyleIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_block_toolbar_block_style" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:id="@+id/blockActionsButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/turnIntoToggle"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/multiSelectModeButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/changeStyleButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
-    <ImageView
-        android:id="@+id/keyboard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:contentDescription="@string/content_description_hide_keyboard_button"
-        android:src="@drawable/ic_toolbar_keyboard"
-        android:stateListAnimator="@animator/scale_shrink"
+        <ImageView
+            android:id="@+id/blockActionsIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_block_toolbar_block_actions" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:id="@+id/multiSelectModeButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/hideKeyboardButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/blockActionsButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageView
+            android:id="@+id/multiSelectModeIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_block_toolbar_multi_select_mode" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/hideKeyboardButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/multiSelectModeButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
-    <ImageView
-        android:id="@+id/actions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:contentDescription="@string/content_description_show_actions"
-        android:src="@drawable/ic_toolbar_actions_selector"
-        android:stateListAnimator="@animator/scale_shrink"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/keyboard"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/hideKeyboardIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_block_toolbar_hide_keyboard" />
 
-    <ImageView
-        android:id="@+id/color"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:contentDescription="@string/content_description_show_colors"
-        android:src="@drawable/ic_toolbar_color_selector"
-        android:stateListAnimator="@animator/scale_shrink"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/actions"
-        app:layout_constraintTop_toTopOf="parent" />
+    </FrameLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

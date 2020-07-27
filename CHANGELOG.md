@@ -1,5 +1,13 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.41 (WIP)
+
+### New features 🚀
+
+### Design & UX 🔳
+
+* Redesigned block toolbar (#590)
+
 ## Version 0.0.40
 
 ### New features 🚀

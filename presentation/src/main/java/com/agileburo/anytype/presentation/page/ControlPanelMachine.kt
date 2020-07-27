@@ -134,6 +134,8 @@ sealed class ControlPanelMachine {
         data class OnBlockActionToolbarBackgroundColorClicked(val target: Block) : Event()
         data class OnBlockActionToolbarStyleClicked(val target: Block) : Event()
 
+        data class OnBlockToolbarStyleClicked(val target: Block) : Event()
+
         object OnEnterMultiSelectModeClicked : Event()
         object OnExitMultiSelectModeClicked : Event()
         object OnMultiSelectDeleteClicked : Event()
@@ -446,6 +448,31 @@ sealed class ControlPanelMachine {
                 )
             }
             is Event.OnBlockActionToolbarStyleClicked -> {
+                val target = target(event.target)
+                val props = Toolbar.Styling.Props(
+                    isBold = target.isBold,
+                    isItalic = target.isItalic,
+                    isStrikethrough = target.isStrikethrough,
+                    isCode = target.isCode,
+                    isLinked = target.isLinked,
+                    color = target.color,
+                    background = target.background,
+                    alignment = target.alignment
+                )
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    stylingToolbar = state.stylingToolbar.copy(
+                        isVisible = true,
+                        mode = StylingMode.BLOCK,
+                        type = StylingType.STYLE,
+                        target = target(event.target),
+                        props = props
+                    )
+                )
+            }
+            is Event.OnBlockToolbarStyleClicked -> {
                 val target = target(event.target)
                 val props = Toolbar.Styling.Props(
                     isBold = target.isBold,

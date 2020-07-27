@@ -34,6 +34,8 @@ sealed class Command {
 
     object OpenAddBlockPanel : Command()
 
+    data class Measure(val target: Id) : Command()
+
     data class OpenTurnIntoPanel(
         val target: Id
     ) : Command()

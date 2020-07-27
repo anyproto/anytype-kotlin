@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.reactive.clicks
-import kotlinx.android.synthetic.main.widget_block_toolbar_new.view.*
+import kotlinx.android.synthetic.main.widget_block_toolbar.view.*
 
 class BlockToolbarWidget : ConstraintLayout {
 
@@ -27,11 +27,13 @@ class BlockToolbarWidget : ConstraintLayout {
         inflate()
     }
 
-    fun unfocusClicks() = unfocus.clicks()
-    fun enterMultiSelectModeClicks() = structure.clicks()
-    fun addBlockClicks() = add.clicks()
+    fun hideKeyboardClicks() = hideKeyboardButton.clicks()
+    fun enterMultiSelectModeClicks() = multiSelectModeButton.clicks()
+    fun addBlockClicks() = addBlockButton.clicks()
+    fun changeStyleClicks() = changeStyleButton.clicks()
+    fun openBlockActionClicks() = blockActionsButton.clicks()
 
     private fun inflate() {
-        LayoutInflater.from(context).inflate(R.layout.widget_block_toolbar_new, this)
+        LayoutInflater.from(context).inflate(R.layout.widget_block_toolbar, this)
     }
 }

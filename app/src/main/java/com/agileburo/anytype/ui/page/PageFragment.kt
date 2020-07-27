@@ -22,6 +22,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.view.get
 import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -35,6 +36,7 @@ import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.extensions.range
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
+import com.agileburo.anytype.core_ui.features.page.BlockDimensions
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.*
@@ -349,20 +351,23 @@ open class PageFragment :
             addOnScrollListener(titleVisibilityDetector)
         }
 
-        toolbar
-            .unfocusClicks()
-            .onEach { vm.onHideKeyboardClicked() }
-            .launchIn(lifecycleScope)
-
-        toolbar
-            .addBlockClicks()
-            .onEach { vm.onAddBlockToolbarClicked() }
-            .launchIn(lifecycleScope)
-
-        toolbar
-            .enterMultiSelectModeClicks()
-            .onEach { vm.onEnterMultiSelectModeClicked() }
-            .launchIn(lifecycleScope)
+        toolbar.apply {
+            enterMultiSelectModeClicks()
+                .onEach { vm.onEnterMultiSelectModeClicked() }
+                .launchIn(lifecycleScope)
+            addBlockClicks()
+                .onEach { vm.onAddBlockToolbarClicked() }
+                .launchIn(lifecycleScope)
+            hideKeyboardClicks()
+                .onEach { vm.onHideKeyboardClicked() }
+                .launchIn(lifecycleScope)
+            changeStyleClicks()
+                .onEach { vm.onBlockToolbarStyleClicked() }
+                .launchIn(lifecycleScope)
+            openBlockActionClicks()
+                .onEach { vm.onBlockToolbarBlockActionsClicked() }
+                .launchIn(lifecycleScope)
+        }
 
         bottomMenu
             .doneClicks()
@@ -686,6 +691,24 @@ open class PageFragment :
                 }
                 is Command.CloseKeyboard -> {
                     hideSoftInput()
+                }
+                is Command.Measure -> {
+                    val views = pageAdapter.views
+                    val position = views.indexOfFirst { it.id == command.target }
+                    val target = recycler[position]
+                    val rect = PopupExtensions.calculateRectInWindow(target)
+                    val dimensions = BlockDimensions(
+                        left = rect.left,
+                        top = rect.top,
+                        bottom = rect.bottom,
+                        right = rect.right,
+                        height = root.height,
+                        width = root.width
+                    )
+                    vm.onMeasure(
+                        target = command.target,
+                        dimensions = dimensions
+                    )
                 }
                 is Command.Browse -> {
                     try {

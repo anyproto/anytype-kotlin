@@ -10,6 +10,10 @@
 
 * Redesigned block toolbar (#590)
 
+### Fixes & tech 🚒
+
+* Should not navigate to congratulation screen (designed for sign-up flow) after sign-in (#606)
+
 ## Version 0.0.40
 
 ### New features 🚀

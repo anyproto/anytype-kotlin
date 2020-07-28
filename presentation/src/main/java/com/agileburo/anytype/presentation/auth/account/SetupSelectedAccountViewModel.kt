@@ -28,10 +28,12 @@ class SetupSelectedAccountViewModel(
         ) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while selecting account with id: $id") },
-                fnR = {
-                    navigation.postValue(EventWrapper(AppNavigation.Command.CongratulationScreen))
-                }
+                fnR = { navigateToHomeDashboard() }
             )
         }
+    }
+
+    private fun navigateToHomeDashboard() {
+        navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromLogin))
     }
 }

@@ -11,6 +11,7 @@ import com.agileburo.anytype.middleware.interactor.Middleware
 import com.agileburo.anytype.middleware.interactor.MiddlewareFactory
 import com.agileburo.anytype.middleware.interactor.MiddlewareMapper
 import com.agileburo.anytype.middleware.service.MiddlewareService
+import com.google.protobuf.Struct
 import com.google.protobuf.Value
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
@@ -66,7 +67,8 @@ class MiddlewareTest {
             prototype = BlockEntity.Prototype.Page(
                 style = BlockEntity.Content.Page.Style.EMPTY
             ),
-            position = PositionEntity.INNER
+            position = PositionEntity.INNER,
+            emoji = null
         )
 
         val response = Block.CreatePage.Response
@@ -80,6 +82,66 @@ class MiddlewareTest {
             .setContextId(command.context)
             .setTargetId(command.target)
             .setPosition(Models.Block.Position.Inner)
+            .setDetails(Struct.getDefaultInstance())
+            .build()
+
+        service.stub {
+            on { blockCreatePage(any()) } doReturn response
+        }
+
+        // TESTING
+
+        val (block, target) = middleware.createDocument(command)
+
+        verify(service, times(1)).blockCreatePage(request)
+
+        assertEquals(
+            expected = response.blockId,
+            actual = block
+        )
+
+        assertEquals(
+            expected = response.targetId,
+            actual = target
+        )
+    }
+
+    @Test
+    fun `should create request to create new document with emoji`() {
+
+        // SETUP
+
+        val emoji = "🎒"
+
+        val command = CommandEntity.CreateDocument(
+            context = MockDataFactory.randomUuid(),
+            target = MockDataFactory.randomUuid(),
+            prototype = BlockEntity.Prototype.Page(
+                style = BlockEntity.Content.Page.Style.EMPTY
+            ),
+            position = PositionEntity.INNER,
+            emoji = emoji
+        )
+
+        val response = Block.CreatePage.Response
+            .newBuilder()
+            .setBlockId(MockDataFactory.randomUuid())
+            .setTargetId(MockDataFactory.randomUuid())
+            .build()
+
+        val request = Block.CreatePage.Request
+            .newBuilder()
+            .setContextId(command.context)
+            .setTargetId(command.target)
+            .setPosition(Models.Block.Position.Inner)
+            .setDetails(
+                Struct.newBuilder()
+                    .putFields(
+                        "iconEmoji",
+                        Value.newBuilder().setStringValue(emoji).build()
+                    )
+                    .build()
+            )
             .build()
 
         service.stub {

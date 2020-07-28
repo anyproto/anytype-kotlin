@@ -4,6 +4,8 @@
 
 ### New features 🚀
 
+* Setting random emoji icon when creating a new page (#603)
+
 ### Design & UX 🔳
 
 * Redesigned block toolbar (#590)

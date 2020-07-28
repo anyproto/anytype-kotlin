@@ -11,6 +11,7 @@ import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.event.interactor.EventChannel
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
+import com.agileburo.anytype.domain.icon.DocumentEmojiIconProvider
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.presentation.desktop.HomeDashboardEventConverter
@@ -93,9 +94,11 @@ class HomeDashboardModule {
     @Provides
     @PerScreen
     fun provideCreatePageUseCase(
-        repo: BlockRepository
+        repo: BlockRepository,
+        documentEmojiIconProvider: DocumentEmojiIconProvider
     ): CreatePage = CreatePage(
-        repo = repo
+        repo = repo,
+        documentEmojiIconProvider = documentEmojiIconProvider
     )
 
     @Provides

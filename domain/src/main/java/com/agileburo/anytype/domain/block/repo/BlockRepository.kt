@@ -65,7 +65,7 @@ interface BlockRepository {
     suspend fun getConfig(): Config
 
     @Deprecated("Should be replaced by createDocument() command")
-    suspend fun createPage(parentId: String): Id
+    suspend fun createPage(parentId: String, emoji: String? = null): Id
 
     suspend fun openPage(id: String): Payload
     suspend fun openProfile(id: String) : Payload

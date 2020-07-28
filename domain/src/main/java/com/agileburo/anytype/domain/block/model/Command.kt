@@ -134,12 +134,14 @@ sealed class Command {
      * @property target id of the block associated with the block we need to create
      * @property position position of the block that we need to create in relation with the target block
      * @property prototype a prototype of the block we would like to create
+     * @property emoji random emoji for new page
      */
     class CreateDocument(
         val context: Id,
         val target: Id,
         val position: Position,
-        val prototype: Block.Prototype.Page
+        val prototype: Block.Prototype.Page,
+        val emoji: String?
     )
 
     class Move(

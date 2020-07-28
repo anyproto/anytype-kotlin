@@ -396,7 +396,8 @@ fun Command.CreateDocument.toEntity() = CommandEntity.CreateDocument(
     context = context,
     target = target,
     prototype = prototype.toEntity(),
-    position = position.toEntity()
+    position = position.toEntity(),
+    emoji = emoji
 )
 
 fun Command.Replace.toEntity() = CommandEntity.Replace(

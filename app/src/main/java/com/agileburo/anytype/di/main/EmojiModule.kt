@@ -2,6 +2,8 @@ package com.agileburo.anytype.di.main
 
 
 import android.content.Context
+import com.agileburo.anytype.domain.icon.DocumentEmojiIconProvider
+import com.agileburo.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.agileburo.anytype.emojifier.suggest.EmojiSuggester
 import com.agileburo.anytype.emojifier.suggest.data.DefaultEmojiSuggestStorage
 import com.agileburo.anytype.emojifier.suggest.data.DefaultEmojiSuggester
@@ -37,5 +39,11 @@ class EmojiModule {
     @Singleton
     fun provideEmojiSuggestStorage(context: Context): EmojiSuggestStorage {
         return DefaultEmojiSuggestStorage(context, Gson())
+    }
+
+    @Provides
+    @Singleton
+    fun provideDocumentEmojiIconProvider(): DocumentEmojiIconProvider {
+        return DefaultDocumentEmojiIconProvider()
     }
 }

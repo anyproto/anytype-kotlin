@@ -75,7 +75,8 @@ class CommandEntity {
         val context: String,
         val target: String,
         val position: PositionEntity,
-        val prototype: BlockEntity.Prototype.Page
+        val prototype: BlockEntity.Prototype.Page,
+        val emoji: String?
     )
 
     class Move(

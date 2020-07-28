@@ -21,7 +21,8 @@ class BlockMiddleware(
         middleware.closeDashboard(id)
     }
 
-    override suspend fun createPage(parentId: String): String = middleware.createPage(parentId)
+    override suspend fun createPage(parentId: String, emoji: String?): String =
+        middleware.createPage(parentId, emoji)
 
     override suspend fun openPage(id: String): PayloadEntity = middleware.openBlock(id)
     override suspend fun openProfile(id: String): PayloadEntity = middleware.openBlock(id)

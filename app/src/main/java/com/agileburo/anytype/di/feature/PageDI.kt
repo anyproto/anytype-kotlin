@@ -12,6 +12,7 @@ import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.download.Downloader
 import com.agileburo.anytype.domain.event.interactor.EventChannel
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
+import com.agileburo.anytype.domain.icon.DocumentEmojiIconProvider
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.domain.page.bookmark.SetupBookmark
@@ -199,9 +200,11 @@ class PageModule {
     @Provides
     @PerScreen
     fun provideCreatePageUseCase(
-        repo: BlockRepository
+        repo: BlockRepository,
+        documentEmojiIconProvider: DocumentEmojiIconProvider
     ): CreatePage = CreatePage(
-        repo = repo
+        repo = repo,
+        documentEmojiIconProvider = documentEmojiIconProvider
     )
 
     @Provides
@@ -257,9 +260,11 @@ class PageModule {
     @Provides
     @PerScreen
     fun provideCreateDocumentUseCase(
-        repo: BlockRepository
+        repo: BlockRepository,
+        documentEmojiIconProvider: DocumentEmojiIconProvider
     ): CreateDocument = CreateDocument(
-        repo = repo
+        repo = repo,
+        documentEmojiProvider = documentEmojiIconProvider
     )
 
     @Provides

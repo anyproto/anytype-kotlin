@@ -11,6 +11,7 @@ import com.agileburo.anytype.middleware.model.CreateAccountResponse;
 import com.agileburo.anytype.middleware.model.CreateWalletResponse;
 import com.agileburo.anytype.middleware.model.SelectAccountResponse;
 import com.agileburo.anytype.middleware.service.MiddlewareService;
+import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 
 import java.util.List;
@@ -229,10 +230,29 @@ public class Middleware {
         return mapper.toPayload(response.getEvent());
     }
 
-    public String createPage(String parentId) throws Exception {
+    public String createPage(String parentId, String emoji) throws Exception {
+
+        Value emojiValue = null;
+
+        if (emoji != null) {
+            emojiValue = Value.newBuilder().setStringValue(emoji).build();
+        }
+
+        Struct details;
+
+        if (emojiValue != null) {
+            details = Struct
+                    .newBuilder()
+                    .putFields(iconEmojiKey, emojiValue)
+                    .build();
+        } else {
+            details = Struct.getDefaultInstance();
+        }
+
         Block.CreatePage.Request request = Block.CreatePage.Request
                 .newBuilder()
                 .setContextId(parentId)
+                .setDetails(details)
                 .setPosition(Models.Block.Position.Inner)
                 .build();
 
@@ -534,6 +554,23 @@ public class Middleware {
 
     public Triple<String, String, PayloadEntity> createDocument(CommandEntity.CreateDocument command) throws Exception {
 
+        Value emojiValue = null;
+
+        if (command.getEmoji() != null) {
+            emojiValue = Value.newBuilder().setStringValue(command.getEmoji()).build();
+        }
+
+        Struct details;
+
+        if (emojiValue != null) {
+            details = Struct
+                    .newBuilder()
+                    .putFields(iconEmojiKey, emojiValue)
+                    .build();
+        } else {
+            details = Struct.getDefaultInstance();
+        }
+
         Models.Block.Position position = mapper.toMiddleware(command.getPosition());
 
         Block.CreatePage.Request request = Block.CreatePage.Request
@@ -541,6 +578,7 @@ public class Middleware {
                 .setContextId(command.getContext())
                 .setTargetId(command.getTarget())
                 .setPosition(position)
+                .setDetails(details)
                 .build();
 
         if (BuildConfig.DEBUG) {

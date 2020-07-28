@@ -8,13 +8,15 @@ import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.event.model.Payload
+import com.agileburo.anytype.domain.icon.DocumentEmojiIconProvider
 
 /**
  * Use-case for creating a new document.
  * Should return a pair of ids, where the first one is block id, the second one is target id.
  */
 class CreateDocument(
-    private val repo: BlockRepository
+    private val repo: BlockRepository,
+    private val documentEmojiProvider: DocumentEmojiIconProvider
 ) : BaseUseCase<CreateDocument.Result, CreateDocument.Params>() {
 
     override suspend fun run(params: Params) = try {
@@ -23,7 +25,8 @@ class CreateDocument(
                 context = params.context,
                 target = params.target,
                 prototype = params.prototype,
-                position = params.position
+                position = params.position,
+                emoji = documentEmojiProvider.random()
             )
         ).let { (id, target, payload) ->
             Either.Right(

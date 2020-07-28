@@ -5,24 +5,32 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.MainConfig
+import com.agileburo.anytype.domain.icon.DocumentEmojiIconProvider
 
 /**
  * A use-case for creating a new page.
  * Currently used for creating a new page inside a dashboard.
  */
 class CreatePage(
-    private val repo: BlockRepository
+    private val repo: BlockRepository,
+    private val documentEmojiIconProvider: DocumentEmojiIconProvider
 ) : BaseUseCase<Id, CreatePage.Params>() {
 
     override suspend fun run(params: Params) = try {
         if (params.id == MainConfig.HOME_DASHBOARD_ID) {
             repo.getConfig().let { config ->
-                repo.createPage(config.home).let {
+                repo.createPage(
+                    parentId = config.home,
+                    emoji = documentEmojiIconProvider.random()
+                ).let {
                     Either.Right(it)
                 }
             }
         } else {
-            repo.createPage(params.id).let {
+            repo.createPage(
+                parentId = params.id,
+                emoji = documentEmojiIconProvider.random()
+            ).let {
                 Either.Right(it)
             }
         }

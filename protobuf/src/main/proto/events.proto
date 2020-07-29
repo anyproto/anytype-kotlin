@@ -35,12 +35,15 @@ message Event {
             Block.Set.Align blockSetAlign = 15;
             Block.Set.Details blockSetDetails = 16;
             Block.Set.Div blockSetDiv = 17;
+            Block.Set.Dataview.Records blockSetDataviewRecords = 18;
+            Block.Set.Dataview.View blockSetDataviewView = 19;
+            Block.Delete.Dataview.View blockDeleteDataviewView = 20;
 
-            Block.Show blockShow = 20;
-            User.Block.Join userBlockJoin = 21;
-            User.Block.Left userBlockLeft = 22;
-            User.Block.SelectRange userBlockSelectRange = 23;
-            User.Block.TextRange userBlockTextRange = 24;
+            Block.Show blockShow = 30;
+            User.Block.Join userBlockJoin = 31;
+            User.Block.Left userBlockLeft = 32;
+            User.Block.SelectRange userBlockSelectRange = 33;
+            User.Block.TextRange userBlockTextRange = 34;
 
             Ping ping = 100;
 
@@ -108,6 +111,13 @@ message Event {
         */
         message Delete {
             repeated string blockIds = 1;
+
+            message Dataview {
+                message View {
+                    string id = 1; // dataview block's id
+                    string viewId = 2; // view id to remove
+                }
+            }
         }
 
         message MarksInfo {
@@ -119,6 +129,30 @@ message Event {
             message Details {
                 string id = 1;
                 google.protobuf.Struct details = 2;
+            }
+
+
+            message Dataview {
+                // sent when the active view's visible records have been
+                // changed either by the view settings(filters/sort/limit/offset) or by the data itself
+                message Records {
+                    string id = 1; // dataview block's id
+                    string viewId = 2; // view id, client should double check this to make sure client doesn't switch the active view in the middle
+                    repeated google.protobuf.Struct updated = 3; // existing records updated
+                    repeated google.protobuf.Struct inserted = 4; // block of new records to insert
+                    uint32 insertPosition = 5; // position to insert
+                    repeated string removed = 6;
+                    uint32 total = 7; // total number of records
+                }
+
+                // sent when the view settings have been changed
+                message View {
+                    string id = 1; // dataview block's id
+                    string viewId = 2; // view id, client should double check this to make sure client doesn't switch the active view in the middle
+                    anytype.model.Block.Content.Dataview.View view = 3;
+                    uint32 offset = 4; // middleware will try to preserve the current aciveview's offset&limit but may reset it in case it becomes invalid or not actual anymore
+                    uint32 limit = 5;
+                }
             }
 
             message Fields {
@@ -281,6 +315,180 @@ message Event {
 
             }
         }
+
+        message Fill {
+
+            message Details {
+                string id = 1;
+                google.protobuf.Struct details = 2;
+            }
+
+            message DatabaseRecords {
+                string id = 1;
+                repeated google.protobuf.Struct records = 2;
+            }
+
+            message Fields {
+                string id = 1;
+                google.protobuf.Struct fields = 2;
+            }
+
+            message ChildrenIds {
+                string id = 1;
+                repeated string childrenIds = 2;
+            }
+
+            message Restrictions {
+                string id = 1;
+                anytype.model.Block.Restrictions restrictions = 2;
+            }
+
+            message BackgroundColor {
+                string id = 1;
+                string backgroundColor = 2;
+            }
+
+            message Align {
+                string id = 1;
+                anytype.model.Block.Align align = 2;
+            }
+
+
+            message Text {
+                string id = 1;
+                TText text = 2;
+                Style style = 3;
+                Marks marks = 4;
+                Checked checked = 5;
+                Color color = 6;
+
+                message TText {
+                    string value = 1;
+                }
+
+                message Style {
+                    anytype.model.Block.Content.Text.Style value = 1;
+                }
+
+                message Marks {
+                    anytype.model.Block.Content.Text.Marks value = 1;
+                }
+
+                message Checked {
+                    bool value = 1;
+                }
+
+                message Color {
+                    string value = 1;
+                }
+
+            }
+
+            message Div {
+                string id = 1;
+                Style style = 2;
+
+                message Style {
+                    anytype.model.Block.Content.Div.Style value = 1;
+                }
+            }
+
+
+            message File {
+                string id = 1;
+                Type type = 2;
+                State state = 3;
+                Mime mime = 4;
+                Hash hash = 5;
+                Name name = 6;
+                Size size = 7;
+
+                message Name {
+                    string value = 1;
+                }
+
+                message Width {
+                    int32 value = 1;
+                }
+
+                message State {
+                    anytype.model.Block.Content.File.State value = 1;
+                }
+
+                message Type {
+                    anytype.model.Block.Content.File.Type value = 1;
+                }
+
+                message Hash {
+                    string value = 1;
+                }
+
+                message Mime {
+                    string value = 1;
+                }
+
+                message Size {
+                    int64 value = 1;
+                }
+            }
+
+
+            message Link {
+                string id = 1;
+                TargetBlockId targetBlockId = 2;
+                Style style = 3;
+                Fields fields = 4;
+
+                message TargetBlockId {
+                    string value = 1;
+                }
+
+                message Style {
+                    anytype.model.Block.Content.Link.Style value = 1;
+                }
+
+                message Fields {
+                    google.protobuf.Struct value = 1;
+                }
+
+            }
+
+            message Bookmark {
+                string id = 1;
+                Url url = 2;
+                Title title = 3;
+                Description description = 4;
+                ImageHash imageHash = 5;
+                FaviconHash faviconHash = 6;
+                Type type = 7;
+
+                message Url {
+                    string value = 1;
+                }
+
+                message Title {
+                    string value = 1;
+                }
+
+                message Description {
+                    string value = 1;
+                }
+
+                message ImageHash {
+                    string value = 1;
+                }
+
+                message FaviconHash {
+                    string value = 1;
+                }
+
+                message Type {
+                    anytype.model.LinkPreview.Type value = 1;
+                }
+
+            }
+        }
+
     }
 
     message User {
@@ -351,10 +559,12 @@ message Event {
 
 enum SmartBlockType {
     Page = 0;
-    Home = 1;
-    ProfilePage = 2;
-    Archive = 3;
-    Breadcrumbs = 4;
+    Home = 1; // have only Link simpleblocks
+    ProfilePage = 2; // just a usual page for now
+    Archive = 3; // have only Link simpleblocks
+    Breadcrumbs = 4; // have only Link simpleblocks
+
+    Set = 5; // only have dataview simpleblock
 }
 
 message ResponseEvent {

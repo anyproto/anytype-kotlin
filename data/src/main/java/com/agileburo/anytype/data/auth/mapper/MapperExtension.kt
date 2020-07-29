@@ -597,6 +597,5 @@ fun PageInfoEntity.toDomain(): PageInfo = PageInfo(
     id = id,
     fields = Block.Fields(fields.map),
     snippet = snippet,
-    hasInboundLinks = hasInboundLinks,
-    lastOpened = lastOpened
+    hasInboundLinks = hasInboundLinks
 )

@@ -191,6 +191,95 @@ message Block {
 
         message Dataview {
             string databaseId = 1;
+            repeated View views = 2;
+            string schemaURL = 3;
+
+            message View {
+                string id = 1;
+                Type type = 2;
+                string name = 3;
+                repeated Sort sorts = 4;
+                repeated Filter filters = 5;
+                repeated Relation relations = 6; // relations fields/columns options, also used to provide the order
+
+                enum Type {
+                    Table = 0;
+                    List = 1;
+                    Gallery = 2;
+                    Kanban = 3;
+                }
+            }
+
+            message Relation {
+                string id = 1;
+                bool isVisible = 2;
+                int32 width = 3; // the displayed column % calculated based on other visible relations
+
+                oneof options {
+                    EmptyOptions emptyOptions = 10;
+                    DateOptions dateOptions = 11;
+                }
+
+                message EmptyOptions {
+                }
+
+                message DateOptions {
+                    bool includeTime = 1;
+                    TimeFormat timeFormat = 2;
+                    DateFormat dateFormat = 3;
+                }
+
+                enum DateFormat {
+                    MonthAbbrBeforeDay = 0; // Jul 30, 2020
+                    MonthAbbrAfterDay = 1; // 30 Jul 2020
+                    Short = 2; // 30/07/2020
+                    ShortUS = 3; // 07/30/2020
+                    ISO = 4; // 2020-07-30
+                }
+
+                enum TimeFormat {
+                    Format12 = 0;
+                    Format24 = 1;
+                }
+            }
+
+            message Sort {
+                string relationId = 1;
+                Type type = 2;
+
+                enum Type {
+                    Asc = 0;
+                    Desc = 1;
+                }
+            }
+
+            message Filter {
+                Operator operator = 1;
+                string relationId = 2;
+                string relationProperty = 5;
+                Condition condition = 3;
+                google.protobuf.Value value = 4;
+
+                enum Operator {
+                    And = 0;
+                    Or = 1;
+                }
+
+                enum Condition {
+                    Equal = 0;
+                    NotEqual = 1;
+                    Greater = 2;
+                    Less = 3;
+                    GreaterOrEqual = 4;
+                    LessOrEqual = 5;
+                    Like = 6;
+                    NotLike = 7;
+                    In = 8;
+                    NotIn = 9;
+                    Empty = 10;
+                    NotEmpty = 11;
+                }
+            }
         }
     }
 }

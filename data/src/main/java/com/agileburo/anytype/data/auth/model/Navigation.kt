@@ -4,7 +4,6 @@ data class PageInfoEntity(
     val id: String,
     val fields: BlockEntity.Fields,
     val snippet: String?,
-    val lastOpened: Long,
     val hasInboundLinks: Boolean
 )
 

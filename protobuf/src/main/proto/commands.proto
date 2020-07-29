@@ -205,6 +205,7 @@ message Rpc {
                 }
             }
 
+            // commands acceptable only for text blocks, others will be ignored
             message Text {
                 message Style {
                     message Request {
@@ -235,6 +236,30 @@ message Rpc {
                         string contextId = 1;
                         repeated string blockIds = 2;
                         string color = 3;
+                    }
+
+                    message Response {
+                        Error error = 1;
+                        ResponseEvent event = 2;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+                message Mark {
+                    message Request {
+                        string contextId = 1;
+                        repeated string blockIds = 2;
+                        anytype.model.Block.Content.Text.Mark mark = 3;
                     }
 
                     message Response {
@@ -468,7 +493,6 @@ message Rpc {
                 }
             }
         }
-
 
         message Copy {
             message Request {
@@ -1016,8 +1040,65 @@ message Rpc {
                     }
                 }
             }
-        }
 
+            message Dataview {
+                message View {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2; // id of dataview block to update
+                        string viewId = 3; // id of view to update
+                        anytype.model.Block.Content.Dataview.View view = 4;
+                    }
+
+                    message Response {
+                        Error error = 1;
+                        ResponseEvent event = 2;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+
+                // set the current active view (persisted only within a session)
+                message ActiveView {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2; // id of dataview block
+                        string viewId = 3; // id of active view
+                        uint32 offset = 4;
+                        uint32 limit = 5;
+                    }
+
+                    message Response {
+                        Error error = 1;
+                        ResponseEvent event = 2;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+
+            }
+
+        }
 
         message Bookmark {
             message Fetch {
@@ -1307,6 +1388,35 @@ message Rpc {
          *     3. Front <- MW: Event.Block.Show(newPage)
         */
         message Create {
+            message Dataview {
+                message View {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2; // id of dataview block to insert the new block
+                        anytype.model.Block.Content.Dataview.View view = 4;
+                    }
+
+                    message Response {
+                        Error error = 1;
+                        ResponseEvent event = 2;
+                        string viewId = 3;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+            }
+
+            // common simple block command
             message Request {
                 string contextId = 1; // id of the context block
                 string targetId = 2; // id of the closest block
@@ -1361,9 +1471,9 @@ message Rpc {
             }
         }
 
-    /*
-     * Remove blocks from the childrenIds of its parents
-    */
+        /*
+         * Remove blocks from the childrenIds of its parents
+        */
         message Unlink {
             message Request {
                 string contextId = 1; // id of the context block
@@ -1384,6 +1494,35 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         // ...
+                    }
+                }
+            }
+        }
+
+        message Delete {
+            message Dataview {
+                message View {
+                    message Request {
+                        string contextId = 1; // id of the context block
+                        string blockId = 2; // id of the dataview
+                        string viewId = 4; // id of the view to remove
+                    }
+
+                    message Response {
+                        Error error = 1;
+                        ResponseEvent event = 2;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
                     }
                 }
             }
@@ -1557,7 +1696,7 @@ message Rpc {
                         FAILED_TO_RUN_NODE = 105;
                         WALLET_RECOVER_NOT_PERFORMED = 106;
                         FAILED_TO_STOP_RUNNING_NODE = 107;
-
+                        ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
                     }
                 }
             }
@@ -1596,6 +1735,8 @@ message Rpc {
                         LOCAL_REPO_NOT_EXISTS_AND_MNEMONIC_NOT_SET = 105;
                         FAILED_TO_STOP_SEARCHER_NODE = 106;
                         FAILED_TO_RECOVER_PREDEFINED_BLOCKS = 107;
+                        ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
+
                     }
                 }
             }

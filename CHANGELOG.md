@@ -15,6 +15,10 @@
 * Drag-and-drop area issues on home dashboard (#570)
 * Should not navigate to congratulation screen (designed for sign-up flow) after sign-in (#606)
 
+### Middleware ⚙
+
+* Updated middleware protocol to `0.12.2` (#454)
+
 ## Version 0.0.40
 
 ### New features 🚀

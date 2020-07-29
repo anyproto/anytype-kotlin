@@ -311,7 +311,6 @@ fun BlockEntity.Align.toMiddleware(): Block.Align = when (this) {
 fun Localstore.PageInfo.toEntity(): PageInfoEntity = PageInfoEntity(
     id = id,
     fields = details.fields(),
-    lastOpened = lastOpened,
     hasInboundLinks = hasInboundLinks,
     snippet = snippet
 )

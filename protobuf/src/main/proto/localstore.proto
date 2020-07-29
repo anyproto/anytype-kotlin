@@ -13,7 +13,6 @@ message PageInfo {
     google.protobuf.Struct details = 2;
     string snippet = 3;
     State state = 4;
-    int64 lastOpened = 5;
     bool hasInboundLinks = 6;
 }
 

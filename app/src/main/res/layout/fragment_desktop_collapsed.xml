@@ -23,6 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:lineSpacingExtra="2sp"
             android:layout_marginTop="43dp"
             android:layout_marginEnd="20dp"
             tools:text="Hi, Konstantin Ivanov" />

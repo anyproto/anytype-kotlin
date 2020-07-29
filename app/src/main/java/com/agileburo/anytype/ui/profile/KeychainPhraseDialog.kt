@@ -42,14 +42,9 @@ class KeychainPhraseDialog : BottomSheetDialogFragment(), Observer<ViewState<Str
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.dialog_keychain_phrase, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        init()
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        vm.state.observe(this, this)
+        vm.state.observe(viewLifecycleOwner, this)
     }
 
     override fun onChanged(state: ViewState<String>) {
@@ -64,10 +59,6 @@ class KeychainPhraseDialog : BottomSheetDialogFragment(), Observer<ViewState<Str
                 // TODO
             }
         }
-    }
-
-    private fun init() {
-        doneButton.setOnClickListener { dismiss() }
     }
 
     private fun injectDependencies() {

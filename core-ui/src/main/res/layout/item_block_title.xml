@@ -11,7 +11,7 @@
         android:background="@drawable/rectangle_default_page_logo_background"
         android:transitionName="@string/logo_transition"
         android:id="@+id/documentIconContainer"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="32dp"
         android:layout_width="64dp"
         android:layout_height="64dp">
 

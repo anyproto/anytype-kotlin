@@ -2,21 +2,20 @@
 <androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:layoutDescription="@xml/collapsing_toolbar_home_dashboard"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
-    android:background="@drawable/background_desktop">
+    android:background="@drawable/background_desktop"
+    android:clipChildren="false">
 
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="0dp"
-        app:layout_constraintHeight_percent="0.5"
         android:layout_height="0dp"
         android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/greeting"

@@ -80,7 +80,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="i_ve_written_it_down">i\'ve written it down</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
 
-    <string name="greet">Hi, %1$s!</string>
+    <string name="greet">Hi, %1$s</string>
     <string name="organize_everything">Organize everything</string>
     <string name="setting_up_the_wallet">Setting up the wallet…</string>
     <string name="sign_clock">⏳</string>

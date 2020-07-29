@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Transition
+        app:constraintSetEnd="@layout/fragment_desktop_collapsed"
+        app:constraintSetStart="@layout/fragment_desktop">
+        <OnSwipe
+            app:dragDirection="dragUp"
+            app:touchAnchorId="@id/desktopRecycler"
+            app:touchAnchorSide="top" />
+    </Transition>
+</MotionScene>

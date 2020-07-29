@@ -32,5 +32,7 @@
     <dimen name="action_toolbar_bar_margin_top">8dp</dimen>
 
     <dimen name="scroll_and_move_start_end_padding">8dp</dimen>
+    <dimen name="height_avatar_on_dashboard">80dp</dimen>
+    <dimen name="width_avatar_on_dashboard">80dp</dimen>
 
 </resources>

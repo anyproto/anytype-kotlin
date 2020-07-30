@@ -8,10 +8,10 @@
 
 ### Design & UX 🔳
 
+* Enhanced scroll & move targeting (#610)
 * Redesigned block toolbar (#590)
 * Redesigned keychain dialog screen (#614)
 * Checked and fixed line-spacing values for text blocks in editor (#614)
-
 
 ### Fixes & tech 🚒
 

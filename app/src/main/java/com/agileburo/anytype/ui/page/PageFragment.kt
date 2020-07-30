@@ -76,10 +76,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
 import kotlinx.android.synthetic.main.fragment_page.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import permissions.dispatcher.*
 import timber.log.Timber
@@ -99,6 +98,12 @@ open class PageFragment :
 
     private val screen: Point by lazy { screen() }
 
+    private val scrollAndMoveStateChannel = Channel<Int>()
+
+    init {
+        processScrollAndMoveStateChanges()
+    }
+
     private val scrollAndMoveTargetDescriptor: ScrollAndMoveTargetDescriptor by lazy {
         DefaultScrollAndMoveTargetDescriptor()
     }
@@ -108,7 +113,11 @@ open class PageFragment :
     }
 
     private val scrollAndMoveStateListener by lazy {
-        ScrollAndMoveStateListener { searchScrollAndMoveTarget() }
+        ScrollAndMoveStateListener {
+            lifecycleScope.launch {
+                scrollAndMoveStateChannel.send(it)
+            }
+        }
     }
 
     private val scrollAndMoveTargetHighlighter by lazy {
@@ -928,6 +937,15 @@ open class PageFragment :
 
     private fun renderError(message: String) {
         toast(message)
+    }
+
+    private fun processScrollAndMoveStateChanges() {
+        lifecycleScope.launch {
+            scrollAndMoveStateChannel
+                .consumeAsFlow()
+                .mapLatest { searchScrollAndMoveTarget() }
+                .collect()
+        }
     }
 
     override fun injectDependencies() {

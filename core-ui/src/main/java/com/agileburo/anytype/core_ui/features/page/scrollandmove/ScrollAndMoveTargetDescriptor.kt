@@ -7,7 +7,8 @@ interface ScrollAndMoveTargetDescriptor {
     fun current(): ScrollAndMoveTarget?
 
     companion object {
-        val START_RANGE = 0.0..0.2
-        val END_RANGE = 0.8..1.0
+        val START_RANGE = 0.0..0.25
+        val END_RANGE = 0.75..1.0
+        val INNER_RANGE = 0.25..0.75
     }
 }

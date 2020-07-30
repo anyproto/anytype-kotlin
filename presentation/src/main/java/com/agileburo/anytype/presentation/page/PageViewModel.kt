@@ -10,6 +10,9 @@ import com.agileburo.anytype.core_ui.features.page.BlockDimensions
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
+import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.END_RANGE
+import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
+import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
@@ -1541,9 +1544,9 @@ class PageViewModel(
         // TODO refact range check
 
         val position = when (ratio) {
-            in 0.0..0.2 -> Position.TOP
-            in 0.2..0.8 -> Position.INNER
-            in 0.8..1.0 -> Position.BOTTOM
+            in START_RANGE -> Position.TOP
+            in END_RANGE -> Position.BOTTOM
+            in INNER_RANGE -> Position.INNER
             else -> throw IllegalStateException("Unexpected ratio: $ratio")
         }
 

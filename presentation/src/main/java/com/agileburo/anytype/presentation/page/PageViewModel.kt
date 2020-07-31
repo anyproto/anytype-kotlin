@@ -1174,19 +1174,27 @@ class PageViewModel(
     }
 
     fun onBlockToolbarStyleClicked() {
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        if (orchestrator.stores.focus.current().id == context) {
+            _error.value = "Changing style for title currently not supported"
+        } else {
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
+                    target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+                )
             )
-        )
+        }
     }
 
     fun onBlockToolbarBlockActionsClicked() {
-        dispatch(
-            Command.Measure(
-                target = orchestrator.stores.focus.current().id
+        if (orchestrator.stores.focus.current().id == context) {
+            _error.value = "Not implemented for title"
+        } else {
+            dispatch(
+                Command.Measure(
+                    target = orchestrator.stores.focus.current().id
+                )
             )
-        )
+        }
     }
 
     fun onMeasure(target: Id, dimensions: BlockDimensions) {

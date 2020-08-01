@@ -102,6 +102,62 @@ fun List<Block>.numbers(): Map<Id, Int> {
     return numbers
 }
 
+/**
+ * Adds Text.Mark.Mention with params to block and updates block text with mention title and space
+ *
+ * @param mentionText page title
+ * @param mentionId page id to add as Markup param
+ * @param from add [mentionText] from this position in text
+ * @param mentionTrigger char @ + some entered text, will be removed from text
+ * @return block with updated marks and text
+ */
+fun Block.addMention(mentionText: String, mentionId: String, from: Int, mentionTrigger: String): Block {
+
+    val content = this.content.asText()
+    val marks = content.marks
+
+    //We are adding space behind mention
+    val newText = "$mentionText "
+
+    val updateMarks = marks.shift(
+        from = from,
+        length = newText.length - mentionTrigger.length
+    )
+        .addMark(
+            mark = Content.Text.Mark(
+                type = Content.Text.Mark.Type.MENTION,
+                range = IntRange(
+                    start = from,
+                    endInclusive = from + mentionText.length
+                ),
+                param = mentionId
+            )
+        )
+
+    return this.copy(
+        content = Content.Text(
+            marks = updateMarks,
+            style = this.textStyle(),
+            text = content.text.replaceRangeWithWord(
+                replace = newText,
+                from = from,
+                to = from + mentionTrigger.length
+            )
+        )
+    )
+}
+
+/**
+ * Insert [replace] word in String starting from index [from],
+ * also removed all chars in range [from]..[to]
+ */
+fun String.replaceRangeWithWord(replace: String, from: Int, to: Int): String {
+    check(from in 0..this.length && to in 0..this.length)
+    val start = this.substring(0, from)
+    val end = this.substring(to, this.length)
+    return "$start$replace$end"
+}
+
 inline fun <reified T> Block.content(): T {
     return content as T
 }

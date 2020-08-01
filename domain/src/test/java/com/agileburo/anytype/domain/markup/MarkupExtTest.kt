@@ -11,6 +11,114 @@ import kotlin.test.assertTrue
 class MarkupExtTest {
 
     @Test
+    fun `should not update marks ranges when length is zero`() {
+        val given = listOf(
+            Mark(range = IntRange(10, 15), type = Mark.Type.BOLD)
+        )
+
+        val from = 0
+        val length = 0
+
+        val result = given.shift(
+            from = from,
+            length = length
+        )
+
+        val expected = listOf(
+            Mark(range = IntRange(10, 15), type = Mark.Type.BOLD)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should not update marks ranges when no marks after from`() {
+        val given = listOf(
+            Mark(range = IntRange(0, 5), type = Mark.Type.BOLD)
+        )
+
+        val from = 6
+        val length = 13
+
+        val result = given.shift(
+            from = from,
+            length = length
+        )
+
+        val expected = listOf(
+            Mark(range = IntRange(0, 5), type = Mark.Type.BOLD)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should update marks ranges with length`() {
+        val given = listOf(
+            Mark(range = IntRange(0, 5), type = Mark.Type.BOLD),
+            Mark(range = IntRange(23, 31), type = Mark.Type.STRIKETHROUGH),
+            Mark(range = IntRange(23, 31), type = Mark.Type.ITALIC),
+            Mark(range = IntRange(32, 43), type = Mark.Type.LINK, param = "https://anytype.io/")
+        )
+
+        val from = 6
+        val length = 13
+
+        val result = given.shift(
+            from = from,
+            length = length
+        )
+
+        val expected = listOf(
+            Mark(range = IntRange(0, 5), type = Mark.Type.BOLD),
+            Mark(range = IntRange(36, 44), type = Mark.Type.STRIKETHROUGH),
+            Mark(range = IntRange(36, 44), type = Mark.Type.ITALIC),
+            Mark(range = IntRange(45, 56), type = Mark.Type.LINK, param = "https://anytype.io/")
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should update marks ranges with length add overlay`() {
+        val given = listOf(
+            Mark(range = IntRange(0, 10), type = Mark.Type.BOLD),
+            Mark(range = IntRange(3, 8), type = Mark.Type.ITALIC),
+            Mark(range = IntRange(23, 31), type = Mark.Type.STRIKETHROUGH),
+            Mark(range = IntRange(32, 43), type = Mark.Type.LINK, param = "https://anytype.io/")
+        )
+
+        val from = 4
+        val length = 5
+
+        val result = given.shift(
+            from = from,
+            length = length
+        )
+
+        val expected = listOf(
+            Mark(range = IntRange(0, 15), type = Mark.Type.BOLD),
+            Mark(range = IntRange(3, 13), type = Mark.Type.ITALIC),
+            Mark(range = IntRange(28, 36), type = Mark.Type.STRIKETHROUGH),
+            Mark(range = IntRange(37, 48), type = Mark.Type.LINK, param = "https://anytype.io/")
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
     fun `should sort two bold markups according to their start range`() {
 
         val given = listOf(

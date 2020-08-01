@@ -242,3 +242,33 @@ fun IntRange.overlap(target: IntRange): Overlap = when {
     first < target.first && last >= target.first -> Overlap.LEFT
     else -> Overlap.RIGHT
 }
+
+/**
+ * Recalculate marks ranges
+ *
+ * @param from start position for shifting markup ranges
+ * @param length defines the number of positions to shift
+ * @return
+ */
+
+fun List<Mark>.shift(from: Int, length: Int): List<Mark> {
+    val updated = arrayListOf<Mark>()
+    this.map { mark ->
+        var newFrom = mark.range.first
+        var newTo = mark.range.last
+        if ((newFrom <= from) && (newTo > from)) {
+            newTo += length
+        } else {
+            if (newFrom >= from) {
+                newFrom += length
+                newTo += length
+            }
+        }
+        updated.add(
+            mark.copy(
+                range = IntRange(newFrom, newTo)
+            )
+        )
+    }
+    return updated
+}

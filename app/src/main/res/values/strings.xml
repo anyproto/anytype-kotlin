@@ -1,5 +1,7 @@
 <resources>
+
     <string name="app_name">Anytype</string>
+    <string name="amplitude_api_key">d4a910f56d6b05f2b9bd47041bd2fcda</string>
 
     <string name="example_1">
         To layout text on Android, the system does a lot of work. Each glyph is resolved — dependent on font, locale, size, font features (like bold or italic). Then the system will resolve rules for how they line up, combine, or merge as they form words. After all that, the words can finally be wrapped into available space.

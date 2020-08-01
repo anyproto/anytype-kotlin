@@ -3,6 +3,7 @@ package com.agileburo.anytype.presentation.splash
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
@@ -20,6 +21,7 @@ import timber.log.Timber
  * on 2019-10-21.
  */
 class SplashViewModel(
+    private val analytics: Analytics,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
     private val launchWallet: LaunchWallet,
     private val launchAccount: LaunchAccount

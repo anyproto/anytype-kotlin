@@ -15,6 +15,7 @@
 
 ### Fixes & tech 🚒
 
+* Setup analytics module (#618)
 * Turn-into in multi-select mode should not break selected/unselected-state-related logic (#621)
 * App should not crash when user presses change-style button or open-action-menu button on block-toolbar when document's title is focused (#620)
 * Drag-and-drop area issues on home dashboard (#570)

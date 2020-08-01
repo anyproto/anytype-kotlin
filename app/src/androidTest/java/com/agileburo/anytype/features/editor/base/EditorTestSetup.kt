@@ -16,6 +16,7 @@ import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
+import com.agileburo.anytype.domain.icon.DocumentEmojiIconProvider
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.domain.page.bookmark.SetupBookmark
@@ -88,8 +89,12 @@ open class EditorTestSetup {
     lateinit var uriMatcher: Clipboard.UriMatcher
     @Mock
     lateinit var repo: BlockRepository
+
     @Mock
     lateinit var clipboard: Clipboard
+
+    @Mock
+    lateinit var documentEmojiIconProvider: DocumentEmojiIconProvider
 
     val root: String = "rootId123"
 
@@ -115,9 +120,9 @@ open class EditorTestSetup {
         MockitoAnnotations.initMocks(this)
 
         splitBlock = SplitBlock(repo)
-        createPage = CreatePage(repo)
+        createPage = CreatePage(repo, documentEmojiIconProvider)
         archiveDocument = ArchiveDocument(repo)
-        createDocument = CreateDocument(repo)
+        createDocument = CreateDocument(repo, documentEmojiIconProvider)
         undo = Undo(repo)
         redo = Redo(repo)
         replaceBlock = ReplaceBlock(repo)

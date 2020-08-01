@@ -2,6 +2,7 @@ package com.agileburo.anytype.presentation.splash
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.agileburo.anytype.domain.auth.interactor.LaunchAccount
@@ -36,6 +37,9 @@ class SplashViewModelTest {
     @Mock
     lateinit var launchWallet: LaunchWallet
 
+    @Mock
+    lateinit var analytics: Analytics
+
     lateinit var vm: SplashViewModel
 
 
@@ -45,7 +49,8 @@ class SplashViewModelTest {
         vm = SplashViewModel(
             checkAuthorizationStatus = checkAuthorizationStatus,
             launchAccount = launchAccount,
-            launchWallet = launchWallet
+            launchWallet = launchWallet,
+            analytics = analytics
         )
     }
 

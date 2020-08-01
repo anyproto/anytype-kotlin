@@ -1,5 +1,6 @@
 package com.agileburo.anytype.di.main
 
+import com.agileburo.anytype.app.AndroidApplication
 import com.agileburo.anytype.di.feature.*
 import dagger.Component
 import javax.inject.Singleton
@@ -14,10 +15,13 @@ import javax.inject.Singleton
         DeviceModule::class,
         UtilModule::class,
         EmojiModule::class,
-        ClipboardModule::class
+        ClipboardModule::class,
+        AnalyticsModule::class
     ]
 )
 interface MainComponent {
+    fun inject(app: AndroidApplication)
+
     fun authComponentBuilder(): AuthSubComponent.Builder
     fun profileComponentBuilder(): ProfileSubComponent.Builder
     fun splashComponentBuilder(): SplashSubComponent.Builder

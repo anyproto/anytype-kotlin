@@ -78,6 +78,10 @@ ext {
 
     room_version = '2.2.0'
 
+    // Analytics
+
+    amplitude_version = '2.23.2'
+
     mainApplication = [
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             coroutines:                 "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version",
@@ -174,5 +178,9 @@ ext {
 
     libraryPageIconPicker = [
             emojiJava:          "com.vdurmont:emoji-java:5.1.1"
+    ]
+
+    analytics = [
+            amplitude:       "com.amplitude:android-sdk:$amplitude_version"
     ]
 }

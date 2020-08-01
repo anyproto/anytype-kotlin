@@ -1,5 +1,6 @@
 package com.agileburo.anytype.di.feature
 
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.agileburo.anytype.domain.auth.interactor.LaunchAccount
@@ -39,13 +40,14 @@ class SplashModule {
     fun provideSplashViewModelFactory(
         checkAuthorizationStatus: CheckAuthorizationStatus,
         launchAccount: LaunchAccount,
-        launchWallet: LaunchWallet
+        launchWallet: LaunchWallet,
+        analytics: Analytics
     ): SplashViewModelFactory = SplashViewModelFactory(
         checkAuthorizationStatus = checkAuthorizationStatus,
         launchAccount = launchAccount,
-        launchWallet = launchWallet
+        launchWallet = launchWallet,
+        analytics = analytics
     )
-
 
     @PerScreen
     @Provides

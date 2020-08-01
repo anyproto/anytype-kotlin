@@ -85,12 +85,14 @@ dependencies {
     implementation project(':library-kanban-widget')
     implementation project(':library-page-icon-picker-widget')
     implementation project(':library-emojifier')
+    implementation project(':analytics')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
     def acceptanceTesting = rootProject.ext.acceptanceTesting
     def devDependencies = rootProject.ext.development
     def databaseDependencies = rootProject.ext.db
+    def analyticsDependencies = rootProject.ext.analytics
 
 
     //Compile time dependencies
@@ -130,6 +132,8 @@ dependencies {
 
     implementation devDependencies.stetho
     implementation applicationDependencies.exoPlayer
+
+    implementation analyticsDependencies.amplitude
 
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.junit

@@ -30,6 +30,10 @@ import timber.log.Timber
  */
 sealed class ControlPanelMachine {
 
+    companion object {
+        const val NO_BLOCK_SELECTED = 0
+    }
+
     /**
      * @property scope coroutine scope (state machine runs inside this scope)
      */
@@ -139,6 +143,7 @@ sealed class ControlPanelMachine {
         object OnEnterMultiSelectModeClicked : Event()
         object OnExitMultiSelectModeClicked : Event()
         object OnMultiSelectDeleteClicked : Event()
+        object OnMultiSelectTurnIntoBlockClicked : Event()
         data class OnMultiSelectModeBlockClick(val count : Int): Event()
 
         object OnApplyScrollAndMoveClicked : Event()
@@ -571,7 +576,7 @@ sealed class ControlPanelMachine {
                 ),
                 multiSelect = state.multiSelect.copy(
                     isVisible = true,
-                    count = 0
+                    count = NO_BLOCK_SELECTED
                 )
             )
             is Event.OnExitMultiSelectModeClicked -> state.copy(
@@ -579,7 +584,7 @@ sealed class ControlPanelMachine {
                 multiSelect = state.multiSelect.copy(
                     isVisible = false,
                     isScrollAndMoveEnabled = false,
-                    count = 0
+                    count = NO_BLOCK_SELECTED
                 ),
                 mainToolbar = state.mainToolbar.copy(
                     isVisible = false
@@ -587,7 +592,12 @@ sealed class ControlPanelMachine {
             )
             is Event.OnMultiSelectDeleteClicked -> state.copy(
                 multiSelect = state.multiSelect.copy(
-                    count = 0
+                    count = NO_BLOCK_SELECTED
+                )
+            )
+            is Event.OnMultiSelectTurnIntoBlockClicked -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    count = NO_BLOCK_SELECTED
                 )
             )
             is Event.OnFocusChanged -> {
@@ -639,7 +649,7 @@ sealed class ControlPanelMachine {
             )
             is Event.OnApplyScrollAndMoveClicked -> state.copy(
                 multiSelect = state.multiSelect.copy(
-                    count = 0,
+                    count = NO_BLOCK_SELECTED,
                     isScrollAndMoveEnabled = false
                 )
             )

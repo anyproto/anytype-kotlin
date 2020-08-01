@@ -1217,7 +1217,7 @@ class PageViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnEnterMultiSelectModeClicked)
         mode = EditorMode.MULTI_SELECT
         viewModelScope.launch {
-            delay(150)
+            delay(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
             refresh()
         }
     }
@@ -1329,10 +1329,13 @@ class PageViewModel(
         if (block.isText() || block.isCode()) {
             val targets = currentSelection().toList()
             clearSelections()
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMultiSelectTurnIntoBlockClicked)
             proceedWithUpdatingTextStyle(
                 style = block.style(),
                 targets = targets
             )
+        } else {
+            _error.value = "Cannot convert selected blocks to $block"
         }
     }
 
@@ -1856,6 +1859,7 @@ class PageViewModel(
     companion object {
         const val EMPTY_FOCUS_ID = ""
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
+        const val DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE = 150L
         const val INITIAL_INDENT = 0
     }
 

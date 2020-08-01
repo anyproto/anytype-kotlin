@@ -224,4 +224,18 @@ open class EditorPresentationTestSetup {
             onBlocking { build() } doReturn flow
         }
     }
+
+    fun stubUpdateTextStyle(
+        params: UpdateTextStyle.Params? = null,
+        events: List<Event> = emptyList()
+    ) {
+        updateTextStyle.stub {
+            onBlocking { invoke(params ?: any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = events
+                )
+            )
+        }
+    }
 }

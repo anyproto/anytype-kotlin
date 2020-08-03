@@ -1552,13 +1552,14 @@ class PageViewModel(
     ) {
         val block = blocks.first { it.id == target }
 
-        // TODO refact range check
-
         val position = when (ratio) {
             in START_RANGE -> Position.TOP
             in END_RANGE -> Position.BOTTOM
             in INNER_RANGE -> Position.INNER
-            else -> throw IllegalStateException("Unexpected ratio: $ratio")
+            else -> {
+                if (ratio > 1) Position.BOTTOM
+                else throw IllegalStateException("Unexpected ratio: $ratio")
+            }
         }
 
         val targetContext = if (block.content is Content.Link && position == Position.INNER) {

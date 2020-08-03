@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.END_RANGE
+import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
 
 class ScrollAndMoveTargetHighlighter(
@@ -54,8 +55,11 @@ class ScrollAndMoveTargetHighlighter(
                     in END_RANGE -> {
                         drawBelowTarget(parent, child, c)
                     }
-                    else -> {
+                    in INNER_RANGE -> {
                         if (position != TITLE_POSITION) highlightTarget(parent, child, c)
+                    }
+                    else -> {
+                        if (ratio > 1) drawBelowTarget(parent, child, c)
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.agileburo.anytype.core_ui.features.page.scrollandmove
 
+
 class DefaultScrollAndMoveTargetDescriptor : ScrollAndMoveTargetDescriptor {
 
     var target: ScrollAndMoveTarget? = null
@@ -10,7 +11,7 @@ class DefaultScrollAndMoveTargetDescriptor : ScrollAndMoveTargetDescriptor {
 
     override fun current(): ScrollAndMoveTarget? = target
 
-    override fun update(description: ScrollAndMoveTarget) {
-        target = description
+    override fun update(target: ScrollAndMoveTarget) {
+        this.target = target
     }
 }

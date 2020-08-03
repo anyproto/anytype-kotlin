@@ -205,9 +205,17 @@ open class PageFragment :
     private fun searchScrollAndMoveTarget() {
 
         val centerX = screen.x / 2f
-        val centerY = (targeter.y + targeter.height / 2) - scrollAndMoveTopMargin
 
-        val target = recycler.findChildViewUnder(centerX, centerY)
+        val centerY = (targeter.y + (targeter.height / 2f)) - scrollAndMoveTopMargin
+
+        var target : View? = recycler.findChildViewUnder(centerX, centerY)
+
+        if (target == null) {
+            target = recycler.findChildViewUnder(centerX, centerY - 5)
+            if (target == null) {
+                target = recycler.findChildViewUnder(centerX, centerY + 5)
+            }
+        }
 
         if (target == null) {
             scrollAndMoveTargetDescriptor.clear()
@@ -944,7 +952,7 @@ open class PageFragment :
             scrollAndMoveStateChannel
                 .consumeAsFlow()
                 .mapLatest { searchScrollAndMoveTarget() }
-                .collect()
+                .collect { recycler.invalidate() }
         }
     }
 

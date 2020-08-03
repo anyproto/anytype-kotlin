@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.41 (WIP)
+## Version 0.0.41
 
 ### New features 🚀
 
@@ -15,11 +15,11 @@
 
 ### Fixes & tech 🚒
 
-* Setup analytics module (#618)
 * Turn-into in multi-select mode should not break selected/unselected-state-related logic (#621)
 * App should not crash when user presses change-style button or open-action-menu button on block-toolbar when document's title is focused (#620)
 * Drag-and-drop area issues on home dashboard (#570)
 * Should not navigate to congratulation screen (designed for sign-up flow) after sign-in (#606)
+* Setup analytics module (#618)
 
 ### Middleware ⚙
 

@@ -8,14 +8,14 @@ class ComponentManager(private val main: MainComponent) {
     val mainComponent = main
 
     private val authComponent = Component {
-        main.authComponentBuilder().authModule(AuthModule()).build()
+        main.authComponentBuilder().authModule(AuthModule).build()
     }
 
     val startLoginComponent = Component {
         authComponent
             .get()
             .startLoginComponentBuilder()
-            .startLoginModule(StartLoginModule())
+            .startLoginModule(StartLoginModule)
             .build()
     }
 
@@ -23,7 +23,7 @@ class ComponentManager(private val main: MainComponent) {
         authComponent
             .get()
             .createAccountComponentBuilder()
-            .createAccountModule(CreateAccountModule())
+            .createAccountModule(CreateAccountModule)
             .build()
     }
 
@@ -31,7 +31,7 @@ class ComponentManager(private val main: MainComponent) {
         authComponent
             .get()
             .setupNewAccountComponentBuilder()
-            .setupNewAccountModule(SetupNewAccountModule())
+            .setupNewAccountModule(SetupNewAccountModule)
             .build()
     }
 
@@ -39,7 +39,7 @@ class ComponentManager(private val main: MainComponent) {
         authComponent
             .get()
             .setupSelectedAccountComponentBuilder()
-            .setupSelectedAccountModule(SetupSelectedAccountModule())
+            .setupSelectedAccountModule(SetupSelectedAccountModule)
             .build()
     }
 
@@ -47,7 +47,7 @@ class ComponentManager(private val main: MainComponent) {
         authComponent
             .get()
             .selectAccountComponentBuilder()
-            .selectAccountModule(SelectAccountModule())
+            .selectAccountModule(SelectAccountModule)
             .build()
     }
 
@@ -55,7 +55,7 @@ class ComponentManager(private val main: MainComponent) {
         authComponent
             .get()
             .keychainLoginComponentBuilder()
-            .keychainLoginModule(KeychainLoginModule())
+            .keychainLoginModule(KeychainLoginModule)
             .build()
     }
 
@@ -83,7 +83,7 @@ class ComponentManager(private val main: MainComponent) {
     val keychainPhraseComponent = Component {
         main
             .keychainPhraseComponentBuilder()
-            .keychainPhraseModule(KeychainPhraseModule())
+            .keychainPhraseModule(KeychainPhraseModule)
             .build()
     }
 

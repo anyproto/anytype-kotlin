@@ -119,8 +119,9 @@ interface KeychainLoginSubComponent {
 }
 
 @Module
-class AuthModule {
+object AuthModule {
 
+    @JvmStatic
     @PerFeature
     @Provides
     fun provideSession(): Session {
@@ -129,8 +130,9 @@ class AuthModule {
 }
 
 @Module
-class StartLoginModule {
+object StartLoginModule {
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideStartLoginViewModelFactory(
@@ -143,6 +145,7 @@ class StartLoginModule {
         )
     }
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideSetupWalletUseCase(
@@ -155,8 +158,9 @@ class StartLoginModule {
 }
 
 @Module
-class CreateAccountModule {
+object CreateAccountModule {
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideCreateAccountViewModelFactory(
@@ -169,8 +173,9 @@ class CreateAccountModule {
 }
 
 @Module
-class SetupNewAccountModule {
+object SetupNewAccountModule {
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideSetupAccountViewModelFactory(
@@ -183,6 +188,7 @@ class SetupNewAccountModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideCreateAccountUseCase(
@@ -195,8 +201,9 @@ class SetupNewAccountModule {
 }
 
 @Module
-class SetupSelectedAccountModule {
+object SetupSelectedAccountModule {
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideSetupSelectedAccountViewModelFactory(
@@ -209,6 +216,7 @@ class SetupSelectedAccountModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideSelectAccountUseCase(
@@ -221,8 +229,9 @@ class SetupSelectedAccountModule {
 }
 
 @Module
-class SelectAccountModule {
+object SelectAccountModule {
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideSelectAccountViewModelFactory(
@@ -235,6 +244,7 @@ class SelectAccountModule {
         )
     }
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideRecoverAccountUseCase(repository: AuthRepository): StartLoadingAccounts {
@@ -243,6 +253,7 @@ class SelectAccountModule {
         )
     }
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideObserveAccountsUseCase(
@@ -255,8 +266,9 @@ class SelectAccountModule {
 }
 
 @Module
-class KeychainLoginModule {
+object KeychainLoginModule {
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideKeychainLoginViewModelFactory(
@@ -271,6 +283,7 @@ class KeychainLoginModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideRecoverWalletUseCase(
@@ -281,6 +294,7 @@ class KeychainLoginModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideSaveMnemonicUseCase(

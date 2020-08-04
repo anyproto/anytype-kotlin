@@ -26,8 +26,9 @@ interface KeychainPhraseSubComponent {
 }
 
 @Module
-class KeychainPhraseModule {
+object KeychainPhraseModule {
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideKeychainPhraseViewModelFactory(
@@ -36,6 +37,7 @@ class KeychainPhraseModule {
         getMnemonic = getMnemonic
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideGetMnemonicUseCase(

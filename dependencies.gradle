@@ -28,7 +28,7 @@ ext {
     // Third party libraries
     exoplayer_version = '2.11.3'
     glide_version = '4.11.0'
-    dagger_version = '2.11'
+    dagger_version = '2.28.3'
     javaxAnnotations_version = '1.0'
     javaxInject_version = '1'
     retrofit_version = '2.3.0'

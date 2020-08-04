@@ -13,6 +13,7 @@
 ### Fixes & tech 🚒
 
 * DI/Dagger optimizations (#626)
+* Updated Dagger to `2.28.3` (#627)
 
 ## Version 0.0.41
 

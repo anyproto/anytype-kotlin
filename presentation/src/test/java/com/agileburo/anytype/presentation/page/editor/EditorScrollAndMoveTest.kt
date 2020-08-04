@@ -114,6 +114,12 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                         isVisible = true,
                         isScrollAndMoveEnabled = true,
                         count = 1
+                    ),
+                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                        isVisible = false,
+                        cursorCoordinate = null,
+                        mentionFilter = null,
+                        mentionFrom = null
                     )
                 )
             )
@@ -206,6 +212,12 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                         isVisible = true,
                         isScrollAndMoveEnabled = false,
                         count = 1
+                    ),
+                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                        isVisible = false,
+                        cursorCoordinate = null,
+                        mentionFilter = null,
+                        mentionFrom = null
                     )
                 )
             )
@@ -302,6 +314,12 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                         isVisible = true,
                         isScrollAndMoveEnabled = false,
                         count = 0
+                    ),
+                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                        isVisible = false,
+                        cursorCoordinate = null,
+                        mentionFilter = null,
+                        mentionFrom = null
                     )
                 )
             )

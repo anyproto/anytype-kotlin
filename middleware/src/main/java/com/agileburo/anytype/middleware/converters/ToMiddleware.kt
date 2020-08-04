@@ -122,6 +122,7 @@ fun BlockEntity.Content.Text.Mark.mark(): Mark = when (type) {
         Mark.newBuilder()
             .setType(Block.Content.Text.Mark.Type.Mention)
             .setRange(range.range())
+            .setParam(param)
             .build()
     }
     else -> throw IllegalStateException("Unsupported mark type: ${type.name}")

@@ -74,7 +74,8 @@ class BlockAdapter(
     private val onToggleClicked: (String) -> Unit,
     private val onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
     private val clipboardInterceptor: ClipboardInterceptor,
-    private val anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null
+    private val anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null,
+    private val onMentionEvent: (MentionEvent) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     val views: List<BlockView> get() = blocks
@@ -414,7 +415,8 @@ class BlockAdapter(
                         payloads = payloads.typeOf(),
                         item = blocks[position],
                         onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged
+                        onSelectionChanged = onSelectionChanged,
+                        clicked = onClickListener
                     )
                 }
                 is BlockViewHolder.Bulleted -> {
@@ -422,7 +424,8 @@ class BlockAdapter(
                         payloads = payloads.typeOf(),
                         item = blocks[position],
                         onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged
+                        onSelectionChanged = onSelectionChanged,
+                        clicked = onClickListener
                     )
                 }
                 is BlockViewHolder.Checkbox -> {
@@ -430,7 +433,8 @@ class BlockAdapter(
                         payloads = payloads.typeOf(),
                         item = blocks[position],
                         onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged
+                        onSelectionChanged = onSelectionChanged,
+                        clicked = onClickListener
                     )
                 }
                 is BlockViewHolder.Title -> {
@@ -450,7 +454,8 @@ class BlockAdapter(
                         payloads = payloads.typeOf(),
                         item = blocks[position],
                         onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged
+                        onSelectionChanged = onSelectionChanged,
+                        clicked = onClickListener
                     )
                 }
                 is BlockViewHolder.HeaderOne -> {
@@ -458,7 +463,8 @@ class BlockAdapter(
                         payloads = payloads.typeOf(),
                         item = blocks[position],
                         onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged
+                        onSelectionChanged = onSelectionChanged,
+                        clicked = onClickListener
                     )
                 }
                 is BlockViewHolder.HeaderTwo -> {
@@ -466,7 +472,8 @@ class BlockAdapter(
                         payloads = payloads.typeOf(),
                         item = blocks[position],
                         onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged
+                        onSelectionChanged = onSelectionChanged,
+                        clicked = onClickListener
                     )
                 }
                 is BlockViewHolder.HeaderThree -> {
@@ -474,7 +481,8 @@ class BlockAdapter(
                         payloads = payloads.typeOf(),
                         item = blocks[position],
                         onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged
+                        onSelectionChanged = onSelectionChanged,
+                        clicked = onClickListener
                     )
                 }
                 is BlockViewHolder.Toggle -> {
@@ -482,7 +490,8 @@ class BlockAdapter(
                         payloads = payloads.typeOf(),
                         item = blocks[position],
                         onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged
+                        onSelectionChanged = onSelectionChanged,
+                        clicked = onClickListener
                     )
                 }
                 is BlockViewHolder.Highlight -> {
@@ -490,7 +499,8 @@ class BlockAdapter(
                         payloads = payloads.typeOf(),
                         item = blocks[position],
                         onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged
+                        onSelectionChanged = onSelectionChanged,
+                        clicked = onClickListener
                     )
                 }
                 is BlockViewHolder.File -> {
@@ -594,7 +604,8 @@ class BlockAdapter(
                         payloads = payloads.typeOf(),
                         item = blocks[position],
                         onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged
+                        onSelectionChanged = onSelectionChanged,
+                        clicked = onClickListener
                     )
                 }
                 else -> throw IllegalStateException("Unexpected view holder: $holder")
@@ -610,7 +621,8 @@ class BlockAdapter(
                     onTextChanged = onParagraphTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
-                    clicked = onClickListener
+                    clicked = onClickListener,
+                    onMentionEvent = onMentionEvent
                 )
             }
             is BlockViewHolder.Title -> {

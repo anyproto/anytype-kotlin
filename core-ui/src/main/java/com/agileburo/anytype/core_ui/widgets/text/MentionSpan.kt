@@ -8,6 +8,7 @@ import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.text.style.DynamicDrawableSpan
+import com.agileburo.anytype.core_ui.common.Span
 import java.lang.ref.WeakReference
 
 class MentionSpan constructor(
@@ -15,8 +16,9 @@ class MentionSpan constructor(
     private var mResourceId: Int = 0,
     private var bitmap: Bitmap? = null,
     private var imageSize: Int,
-    private var imagePadding: Int
-) : DynamicDrawableSpan() {
+    private var imagePadding: Int,
+    val param: String
+) : DynamicDrawableSpan(), Span {
 
     private val endPaddingPx = 4
     private var mDrawable: Drawable? = null

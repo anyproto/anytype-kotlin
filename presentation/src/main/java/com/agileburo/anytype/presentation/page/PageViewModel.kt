@@ -6,16 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.extensions.updateSelection
-import com.agileburo.anytype.core_ui.features.page.BlockDimensions
-import com.agileburo.anytype.core_ui.features.page.BlockView
-import com.agileburo.anytype.core_ui.features.page.ListenerType
-import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
+import com.agileburo.anytype.core_ui.features.page.*
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.END_RANGE
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
+import com.agileburo.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
@@ -30,14 +28,17 @@ import com.agileburo.anytype.domain.editor.Editor
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
+import com.agileburo.anytype.domain.ext.addMention
 import com.agileburo.anytype.domain.ext.asMap
 import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.domain.ext.textStyle
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
+import com.agileburo.anytype.domain.page.navigation.GetListPages
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.common.SupportCommand
 import com.agileburo.anytype.presentation.mapper.style
+import com.agileburo.anytype.presentation.mapper.toMentionView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
 import com.agileburo.anytype.presentation.page.ControlPanelMachine.Interactor
@@ -65,7 +66,8 @@ class PageViewModel(
     private val reducer: StateReducer<List<Block>, Event>,
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
-    private val orchestrator: Orchestrator
+    private val orchestrator: Orchestrator,
+    private val getListPages: GetListPages
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -107,6 +109,11 @@ class PageViewModel(
      * Open gallery and search media files for block with that id
      */
     private var mediaBlockId = ""
+
+    /**
+     * Current position of last mentionFilter or -1 if none
+     */
+    private var mentionFrom = -1
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
@@ -1835,6 +1842,93 @@ class PageViewModel(
 
     fun onPageSearchClicked() {
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
+    }
+
+    fun onMentionEvent(mentionEvent: MentionEvent) {
+        when (mentionEvent) {
+            is MentionEvent.MentionSuggestText -> {
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnMentionFilterText(
+                        text = mentionEvent.text.toString()
+                    )
+                )
+            }
+            is MentionEvent.MentionSuggestStart -> {
+                mentionFrom = mentionEvent.mentionStart
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnShowMentionToolbar(
+                        cursorCoordinate = mentionEvent.cursorCoordinate,
+                        mentionFrom = mentionEvent.mentionStart
+                    )
+                )
+                viewModelScope.launch {
+                    getListPages.invoke(Unit).proceed(
+                        failure = { it.timber() },
+                        success = { response ->
+                            controlPanelInteractor.onEvent(
+                                ControlPanelMachine.Event.OnGetMentionsList(
+                                    mentions = response.listPages.map { it.toMentionView() }
+                                )
+                            )
+                        }
+                    )
+                }
+            }
+            MentionEvent.MentionSuggestStop -> {
+                mentionFrom = -1
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnHideMentionToolbar
+                )
+            }
+        }
+    }
+
+    fun onAddMentionNewPageClicked() {
+        onAddNewPageClicked()
+    }
+
+    fun onMentionSuggestClick(mention: Mention, mentionTrigger: String) {
+        Timber.d("onAddMentionClicked, suggest:$mention, from:$mentionFrom")
+
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMentionClicked)
+
+        val target = blocks.first { it.id == focus.value }
+
+        val new = target.addMention(
+            mentionText = mention.title,
+            mentionId = mention.id,
+            from = mentionFrom,
+            mentionTrigger = mentionTrigger
+        )
+
+        blocks = blocks.map { block ->
+            if (block.id != target.id)
+                block
+            else
+                new
+        }
+
+        viewModelScope.launch {
+            val position = mentionFrom + mention.title.length + 1
+            orchestrator.stores.focus.update(
+                t = Editor.Focus(
+                    id = new.id,
+                    cursor = Editor.Cursor.Range(IntRange(position, position))
+                )
+            )
+            refresh()
+        }
+
+        viewModelScope.launch {
+            proceedWithUpdatingText(
+                intent = Intent.Text.UpdateText(
+                    context = context,
+                    target = new.id,
+                    text = new.content<Content.Text>().text,
+                    marks = new.content<Content.Text>().marks
+                )
+            )
+        }
     }
 
     private fun onMultiSelectModeBlockClicked() {

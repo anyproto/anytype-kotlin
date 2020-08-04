@@ -224,7 +224,8 @@ class HeaderBlockTest {
             ),
             item = updated,
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -279,7 +280,8 @@ class HeaderBlockTest {
             ),
             item = updated,
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -334,7 +336,8 @@ class HeaderBlockTest {
             ),
             item = updated,
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -372,7 +375,8 @@ class HeaderBlockTest {
             onMarkupActionClicked = { _, _ -> },
             onTitleTextInputClicked = {},
             onClickListener = {},
-            clipboardInterceptor = clipboardInterceptor
+            clipboardInterceptor = clipboardInterceptor,
+            onMentionEvent = {}
         )
     }
 }

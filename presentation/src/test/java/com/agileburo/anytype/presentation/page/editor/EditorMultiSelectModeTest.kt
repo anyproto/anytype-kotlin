@@ -109,6 +109,12 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         isVisible = true,
                         isScrollAndMoveEnabled = false,
                         count = 0
+                    ),
+                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                        isVisible = false,
+                        cursorCoordinate = null,
+                        mentionFilter = null,
+                        mentionFrom = null
                     )
                 )
             )
@@ -205,6 +211,12 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         isVisible = true,
                         isScrollAndMoveEnabled = false,
                         count = 0
+                    ),
+                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                        isVisible = false,
+                        cursorCoordinate = null,
+                        mentionFilter = null,
+                        mentionFrom = null
                     )
                 )
             )

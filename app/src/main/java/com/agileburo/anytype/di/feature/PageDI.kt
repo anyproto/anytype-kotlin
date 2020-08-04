@@ -16,6 +16,7 @@ import com.agileburo.anytype.domain.icon.DocumentEmojiIconProvider
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.domain.page.bookmark.SetupBookmark
+import com.agileburo.anytype.domain.page.navigation.GetListPages
 import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
 import com.agileburo.anytype.presentation.page.Editor
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
@@ -61,7 +62,8 @@ object PageModule {
         urlBuilder: UrlBuilder,
         renderer: DefaultBlockViewRenderer,
         archiveDocument: ArchiveDocument,
-        interactor: Orchestrator
+        interactor: Orchestrator,
+        getListPages: GetListPages
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -74,8 +76,14 @@ object PageModule {
         urlBuilder = urlBuilder,
         renderer = renderer,
         archiveDocument = archiveDocument,
-        interactor = interactor
+        interactor = interactor,
+        getListPages = getListPages
     )
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun getListPages(repo: BlockRepository): GetListPages = GetListPages(repo = repo)
 
     @JvmStatic
     @Provides

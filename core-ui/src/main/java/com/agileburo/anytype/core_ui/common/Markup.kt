@@ -134,7 +134,8 @@ fun Markup.toSpannable(
                             imagePadding = mentionImagePadding,
                             //todo Setting up default drawable, will be fixed in feature
                             mResourceId = R.drawable.ic_mention_deafult,
-                            bitmap = null
+                            bitmap = null,
+                            param = mark.param
                         ),
                         mark.from,
                         mark.to,
@@ -152,7 +153,11 @@ fun Markup.toSpannable(
                         Markup.DEFAULT_SPANNABLE_FLAG
                     )
                 } else {
-                    Timber.e("Get Mention span without param!")
+                    if (context == null) {
+                        Timber.e("Context for MentionSpan is null!")
+                    } else {
+                        Timber.e("Get MentionSpan without param!")
+                    }
                 }
             }
         }

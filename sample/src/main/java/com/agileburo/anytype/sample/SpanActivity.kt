@@ -37,7 +37,8 @@ class SpanActivity : AppCompatActivity() {
                             R.drawable.ic_baseline_4k_24,
                             resource,
                             16.px,
-                            0
+                            0,
+                            ""
                         ),
                         8,
                         9,
@@ -65,7 +66,8 @@ class SpanActivity : AppCompatActivity() {
                 context = this,
                 mResourceId = R.drawable.ic_mention_deafult,
                 imageSize = 16.px,
-                imagePadding = 0
+                imagePadding = 0,
+                param = ""
             ),
             0,
             6,
@@ -77,7 +79,7 @@ class SpanActivity : AppCompatActivity() {
 
         val spannableString2 = SpannableString("Строка с маркапом и болдом")
         spannableString2.setSpan(
-            MentionSpan(this, R.drawable.ic_baseline_4k_24, null, 16.px, 0),
+            MentionSpan(this, R.drawable.ic_baseline_4k_24, null, 16.px, 0, ""),
             9,
             10,
             0
@@ -86,7 +88,7 @@ class SpanActivity : AppCompatActivity() {
 
         val spannableString3 = SpannableString("Строка с маркапом и болдом")
         spannableString3.setSpan(
-            MentionSpan(this, R.drawable.ic_baseline_4k_24, null, 16.px, 0),
+            MentionSpan(this, R.drawable.ic_baseline_4k_24, null, 16.px, 0, ""),
             9,
             17,
             0

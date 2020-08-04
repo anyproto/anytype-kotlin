@@ -7,6 +7,7 @@ import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar
+import com.agileburo.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.domain.ext.overlap
@@ -151,6 +152,12 @@ sealed class ControlPanelMachine {
         object OnEnterScrollAndMoveModeClicked : Event()
 
         data class OnRefresh(val target: Block?) : Event()
+
+        data class OnShowMentionToolbar(val cursorCoordinate: Int, val mentionFrom: Int) : Event()
+        data class OnMentionFilterText(val text: String) : Event()
+        data class OnGetMentionsList(val mentions: List<Mention>) : Event()
+        object OnMentionClicked : Event()
+        object OnHideMentionToolbar : Event()
     }
 
     /**
@@ -162,6 +169,24 @@ sealed class ControlPanelMachine {
         private val incl = listOf(Overlap.EQUAL, Overlap.INNER, Overlap.LEFT, Overlap.RIGHT, Overlap.INNER_RIGHT, Overlap.INNER_LEFT)
 
         var selection: IntRange? = null
+
+        private fun onSelectionChangedMentionState(
+            state: Toolbar.MentionToolbar,
+            start: Int
+        ): Toolbar.MentionToolbar {
+            val from = state.mentionFrom
+            return if (state.isVisible && from != null && start < from) {
+                state.copy(
+                    isVisible = false,
+                    cursorCoordinate = null,
+                    mentionFrom = null,
+                    updateList = false,
+                    mentionFilter = null,
+                    mentions = emptyList())
+            } else {
+                state.copy()
+            }
+        }
 
         override val function: suspend (ControlPanelState, Event) -> ControlPanelState
             get() = { state, event ->
@@ -223,16 +248,29 @@ sealed class ControlPanelMachine {
                                         color = color,
                                         background = background
                                     )
+                                ),
+                                mentionToolbar = onSelectionChangedMentionState(
+                                    state = state.mentionToolbar,
+                                    start = event.selection.first
                                 )
                             )
                         } else {
-                            state.copy()
+                            state.copy(
+                                mentionToolbar = onSelectionChangedMentionState(
+                                    state = state.mentionToolbar,
+                                    start = event.selection.first
+                                )
+                            )
                         }
                     }
                     else -> {
                         state.copy(
                             mainToolbar = state.mainToolbar.copy(
                                 isVisible = (!state.multiSelect.isVisible && event.selection.first == event.selection.last)
+                            ),
+                            mentionToolbar = onSelectionChangedMentionState(
+                                state = state.mentionToolbar,
+                                start = event.selection.first
                             )
                         )
                     }
@@ -602,7 +640,15 @@ sealed class ControlPanelMachine {
             )
             is Event.OnFocusChanged -> {
                 when {
-                    state.multiSelect.isVisible -> state.copy()
+                    state.multiSelect.isVisible -> state.copy(
+                        mentionToolbar = state.mentionToolbar.copy(
+                            isVisible = false,
+                            cursorCoordinate = null,
+                            mentionFrom = null,
+                            mentionFilter = null,
+                            mentions = emptyList()
+                        )
+                    )
                     !state.mainToolbar.isVisible -> state.copy(
                         mainToolbar = state.mainToolbar.copy(
                             isVisible = true
@@ -615,6 +661,13 @@ sealed class ControlPanelMachine {
                             type = ControlPanelState.Focus.Type.valueOf(
                                 value = event.style.name
                             )
+                        ),
+                        mentionToolbar = state.mentionToolbar.copy(
+                            isVisible = false,
+                            cursorCoordinate = null,
+                            mentionFrom = null,
+                            mentionFilter = null,
+                            mentions = emptyList()
                         )
                     )
                     else -> {
@@ -627,6 +680,13 @@ sealed class ControlPanelMachine {
                             ),
                             stylingToolbar = state.stylingToolbar.copy(
                                 isVisible = false
+                            ),
+                            mentionToolbar = state.mentionToolbar.copy(
+                                isVisible = false,
+                                cursorCoordinate = null,
+                                mentionFrom = null,
+                                mentionFilter = null,
+                                mentions = emptyList()
                             )
                         )
                     }
@@ -651,6 +711,47 @@ sealed class ControlPanelMachine {
                 multiSelect = state.multiSelect.copy(
                     count = NO_BLOCK_SELECTED,
                     isScrollAndMoveEnabled = false
+                )
+            )
+            is Event.OnShowMentionToolbar -> state.copy(
+                mentionToolbar = state.mentionToolbar.copy(
+                    isVisible = true,
+                    cursorCoordinate = event.cursorCoordinate,
+                    mentionFilter = "",
+                    updateList = false,
+                    mentionFrom = event.mentionFrom
+                )
+            )
+            is Event.OnHideMentionToolbar -> state.copy(
+                mentionToolbar = state.mentionToolbar.copy(
+                    isVisible = false,
+                    cursorCoordinate = null,
+                    updateList = true,
+                    mentionFrom = null,
+                    mentionFilter = null,
+                    mentions = emptyList()
+                )
+            )
+            is Event.OnGetMentionsList -> state.copy(
+                mentionToolbar = state.mentionToolbar.copy(
+                    mentions = event.mentions,
+                    updateList = true
+                )
+            )
+            is Event.OnMentionClicked -> state.copy(
+                mentionToolbar = state.mentionToolbar.copy(
+                    isVisible = false,
+                    cursorCoordinate = null,
+                    mentionFrom = null,
+                    updateList = true,
+                    mentionFilter = null,
+                    mentions = emptyList()
+                )
+            )
+            is Event.OnMentionFilterText -> state.copy(
+                mentionToolbar = state.mentionToolbar.copy(
+                    mentionFilter = event.text,
+                    updateList = false
                 )
             )
         }

@@ -3,10 +3,14 @@ package com.agileburo.anytype.core_ui.extensions
 import android.content.Context
 import android.content.res.ColorStateList
 import android.view.View
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+import com.agileburo.anytype.core_utils.ext.PopupExtensions
+import com.agileburo.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 
 fun Context.toast(
     msg: CharSequence,
@@ -41,5 +45,17 @@ fun LinearLayout.addVerticalDivider(
         )
     }
 )
+
+fun EditText.cursorYBottomCoordinate(): Int {
+    with(this.layout) {
+        val pos = selectionStart
+        val line = getLineForOffset(pos)
+        val baseLine = getLineBaseline(line)
+        val ascent = getLineAscent(line)
+        val rect = calculateRectInWindow(this@cursorYBottomCoordinate)
+
+        return baseLine + ascent + rect.bottom - scrollY
+    }
+}
 
 fun TextView.range() : IntRange = selectionStart..selectionEnd

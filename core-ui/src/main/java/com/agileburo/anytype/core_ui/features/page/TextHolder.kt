@@ -7,6 +7,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
 import android.widget.TextView
 import com.agileburo.anytype.core_ui.common.*
+import com.agileburo.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.agileburo.anytype.core_ui.extensions.preserveSelection
 import com.agileburo.anytype.core_ui.extensions.range
 import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuEvent
@@ -71,6 +72,7 @@ interface TextHolder {
     fun getMentionImageSizeAndPadding(): Pair<Int, Int>
 
     private fun setSpannableWithMention(markup: Markup, clicked: (ListenerType) -> Unit) {
+        content.dismissMentionWatchers()
         content.movementMethod = LinkMovementMethod.getInstance()
         with(content) {
             val sizes = getMentionImageSizeAndPadding()
@@ -161,7 +163,12 @@ interface TextHolder {
     }
 
     fun setCursor(item: BlockView.Cursor) {
-        item.cursor?.let { content.setSelection(it) }
+        item.cursor?.let {
+            val length = content.text?.length ?: 0
+            if (it in 0..length) {
+                content.setSelection(it)
+            }
+        }
     }
 
     fun setAlignment(alignment: Alignment) {
@@ -181,7 +188,8 @@ interface TextHolder {
 
     fun setupTextWatcher(
         onTextChanged: (String, Editable) -> Unit,
-        item: BlockView
+        item: BlockView,
+        onMentionEvent: ((MentionEvent) -> Unit)? = null
     ) {
         content.addTextChangedListener(
             DefaultTextWatcher { text ->
@@ -189,8 +197,22 @@ interface TextHolder {
             }
         )
         content.addTextChangedListener(
-            MentionTextWatcher{
-                Timber.d("get mention event : $it")
+            MentionTextWatcher{state ->
+                when (state) {
+                    is MentionTextWatcher.MentionTextWatcherState.Start -> {
+                        onMentionEvent?.invoke(MentionEvent.MentionSuggestStart(
+                            cursorCoordinate = content.cursorYBottomCoordinate(),
+                            mentionStart = state.start
+                        ))
+                    }
+                    MentionTextWatcher.MentionTextWatcherState.Stop -> {
+                        onMentionEvent?.invoke(MentionEvent.MentionSuggestStop)
+                    }
+
+                    is MentionTextWatcher.MentionTextWatcherState.Text -> {
+                        onMentionEvent?.invoke(MentionEvent.MentionSuggestText(state.text))
+                    }
+                }
             }
         )
     }
@@ -215,7 +237,8 @@ interface TextHolder {
         payloads: List<BlockViewDiffUtil.Payload>,
         item: BlockView,
         onTextChanged: (String, Editable) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit
+        onSelectionChanged: (String, IntRange) -> Unit,
+        clicked: (ListenerType) -> Unit
     ) = payloads.forEach { payload ->
 
         Timber.d("Processing $payload for new view:\n$item")
@@ -224,10 +247,19 @@ interface TextHolder {
 
             if (payload.textChanged()) {
                 content.pauseTextWatchers {
-                    if (item is Markup)
-                        content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
-                    else
-                        content.setText(item.text)
+
+                    when (item) {
+                        is BlockView.Paragraph -> {
+                            setBlockText(text = item.text, markup = item, clicked = clicked)
+                        }
+                        else -> {
+                            if (item is Markup)
+                                content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
+                            else
+                                content.setText(item.text)
+                        }
+                    }
+
                 }
             } else if (payload.markupChanged()) {
                 if (item is Markup) setMarkup(item)

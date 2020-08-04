@@ -5,6 +5,7 @@ import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.navigation.PageLinkView
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.model.UiBlock
+import com.agileburo.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.config.DebugSettings
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
@@ -255,3 +256,15 @@ fun Block.Fields.toImageView(urlBuilder: UrlBuilder): String? = this.iconImage.l
 fun Block.Fields.toEmojiView(): String? = this.iconEmoji.let { emoji ->
     if (emoji.isNullOrBlank()) null else emoji
 }
+
+fun PageInfo.toMentionView() = Mention(
+    id = id,
+    title = fields.getName(),
+    image = fields.iconImage,
+    emoji = fields.iconEmoji
+)
+
+fun Block.Fields.getName(): String =
+    this.name.let { name ->
+        if (name.isNullOrBlank()) "Untitled" else name
+    }

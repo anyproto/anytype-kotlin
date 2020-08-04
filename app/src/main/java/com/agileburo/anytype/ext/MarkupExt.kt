@@ -4,6 +4,7 @@ import android.text.Editable
 import android.text.Spanned
 import com.agileburo.anytype.core_ui.common.Span
 import com.agileburo.anytype.core_ui.common.ThemeColor
+import com.agileburo.anytype.core_ui.widgets.text.MentionSpan
 import com.agileburo.anytype.domain.block.model.Block.Content.Text.Mark
 import com.agileburo.anytype.domain.ext.overlap
 import com.agileburo.anytype.domain.misc.Overlap
@@ -46,6 +47,11 @@ fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).
             range = getSpanStart(span)..getSpanEnd(span),
             type = Mark.Type.LINK,
             param = span.url
+        )
+        is MentionSpan -> Mark(
+            range = getSpanStart(span)..getSpanEnd(span),
+            type = Mark.Type.MENTION,
+            param = span.param
         )
         else -> null
     }

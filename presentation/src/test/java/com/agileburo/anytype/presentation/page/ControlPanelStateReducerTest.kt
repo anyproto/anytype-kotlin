@@ -51,6 +51,223 @@ class ControlPanelStateReducerTest {
     }
 
     @Test
+    fun `state should hide mentions when cursor before mentions start and widget is visible`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = false,
+                mode = null,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = true,
+                cursorCoordinate = 333,
+                mentionFilter = "start",
+                mentionFrom = 10
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnSelectionChanged(
+            selection = IntRange(9,9)
+        )
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `state should not hide mentions when cursor after mention start`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = false,
+                mode = null,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = true,
+                cursorCoordinate = 333,
+                mentionFilter = "start",
+                mentionFrom = 10
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnSelectionChanged(
+            selection = IntRange(11,11)
+        )
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = true,
+                cursorCoordinate = 333,
+                mentionFilter = "start",
+                mentionFrom = 10
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `state should hide mentions after focus changed`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = false,
+                mode = null,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = true,
+                cursorCoordinate = 333,
+                mentionFilter = "start",
+                mentionFrom = 10
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnFocusChanged(
+            id = MockDataFactory.randomUuid(),
+            style = Block.Content.Text.Style.P
+        )
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            focus = ControlPanelState.Focus(
+                id = event.id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `state should hide mentions after selection chaged`() {
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = MockDataFactory.randomUuid(),
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = false,
+                mode = null,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = true,
+                cursorCoordinate = 333,
+                mentionFilter = "start",
+                mentionFrom = 10
+            )
+        )
+
+        val event = ControlPanelMachine.Event.OnSelectionChanged(
+            selection = IntRange(8, 8)
+        )
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
     fun `state should have only focus changed`() {
 
         val given = ControlPanelState(
@@ -68,6 +285,12 @@ class ControlPanelStateReducerTest {
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
             )
         )
 
@@ -114,6 +337,12 @@ class ControlPanelStateReducerTest {
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
             )
         )
 
@@ -152,6 +381,12 @@ class ControlPanelStateReducerTest {
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
             )
         )
 
@@ -200,6 +435,12 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false,
                 count = 2
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
             )
         )
 
@@ -219,6 +460,12 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
                 count = 0
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
             )
         )
 
@@ -256,6 +503,12 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
                 count = 0
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
             )
         )
 
@@ -275,6 +528,12 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
                 count = 3
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
             )
         )
 

@@ -4,6 +4,7 @@ import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
+import com.agileburo.anytype.core_ui.widgets.toolbar.adapter.Mention
 
 /**
  * Control panels are UI-elements that allow user to interact with blocks on a page.
@@ -16,7 +17,8 @@ data class ControlPanelState(
     val focus: Focus? = null,
     val mainToolbar: Toolbar.Main,
     val stylingToolbar: Toolbar.Styling,
-    val multiSelect: Toolbar.MultiSelect
+    val multiSelect: Toolbar.MultiSelect,
+    val mentionToolbar: Toolbar.MentionToolbar
 ) {
 
     sealed class Toolbar {
@@ -103,6 +105,23 @@ data class ControlPanelState(
             val isScrollAndMoveEnabled: Boolean = false,
             val count: Int = 0
         ) : Toolbar()
+
+        /**
+         * Toolbar with list of mentions and add new page item.
+         * @property isVisible defines whether the toolbar is visible or not
+         * @property mentionFrom first position of the mentionFilter in text
+         * @property mentionFilter sequence of symbol @ and characters, using for filtering mentions
+         * @property cursorCoordinate y coordinate bottom of the cursor, using for define top border of the toolbar
+         * @property mentions list of all mentions
+         */
+        data class MentionToolbar(
+            override val isVisible: Boolean,
+            val mentionFrom: Int?,
+            val mentionFilter: String?,
+            val cursorCoordinate: Int?,
+            val updateList: Boolean = false,
+            val mentions: List<Mention> = emptyList()
+        ) : Toolbar()
     }
 
     /**
@@ -135,6 +154,14 @@ data class ControlPanelState(
                 isVisible = false,
                 type = null,
                 mode = null
+            ),
+            mentionToolbar = Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                updateList = false,
+                mentionFrom = null,
+                mentions = emptyList()
             ),
             focus = null
         )

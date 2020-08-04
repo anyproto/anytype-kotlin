@@ -118,4 +118,10 @@
     <dimen name="mention_span_image_padding_header_two">5dp</dimen>
     <dimen name="mention_span_image_padding_header_one">6dp</dimen>
 
+    <dimen name="mention_suggester_item_height">40dp</dimen>
+    <dimen name="mention_list_padding_top">4dp</dimen>
+    <dimen name="mention_list_padding_bottom">5dp</dimen>
+    <dimen name="mention_suggester_padding_top">10dp</dimen>
+    <dimen name="mention_divider_height">1dp</dimen>
+
 </resources>

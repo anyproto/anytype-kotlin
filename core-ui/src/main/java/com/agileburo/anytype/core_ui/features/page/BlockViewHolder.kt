@@ -107,7 +107,8 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onTextChanged: (String, Editable) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            clicked: (ListenerType) -> Unit
+            clicked: (ListenerType) -> Unit,
+            onMentionEvent: (MentionEvent) -> Unit
         ) {
 
             indentize(item)
@@ -141,7 +142,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 setFocus(item)
                 if (item.isFocused) setCursor(item)
 
-                setupTextWatcher(onTextChanged, item)
+                setupTextWatcher(
+                    onTextChanged = onTextChanged,
+                    onMentionEvent = onMentionEvent,
+                    item = item
+                )
 
                 content.setOnFocusChangeListener { _, focused ->
                     item.isFocused = focused
@@ -1116,9 +1121,10 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             payloads: List<Payload>,
             item: BlockView,
             onTextChanged: (String, Editable) -> Unit,
-            onSelectionChanged: (String, IntRange) -> Unit
+            onSelectionChanged: (String, IntRange) -> Unit,
+            clicked: (ListenerType) -> Unit
         ) {
-            super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged)
+            super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked)
             payloads.forEach { payload ->
                 if (payload.changes.contains(NUMBER_CHANGED))
                     number.text = "${(item as BlockView.Numbered).number}"
@@ -1275,10 +1281,11 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             payloads: List<Payload>,
             item: BlockView,
             onTextChanged: (String, Editable) -> Unit,
-            onSelectionChanged: (String, IntRange) -> Unit
+            onSelectionChanged: (String, IntRange) -> Unit,
+            clicked: (ListenerType) -> Unit
         ) {
             check(item is BlockView.Toggle) { "Expected a toggle block, but was: $item" }
-            super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged)
+            super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked)
             payloads.forEach { payload ->
                 if (payload.changes.contains(TOGGLE_EMPTY_STATE_CHANGED))
                     placeholder.isVisible = item.isEmpty

@@ -197,7 +197,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -249,7 +250,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -302,7 +304,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -365,7 +368,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -532,7 +536,8 @@ class BlockAdapterTest {
             ),
             item = focused,
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -632,7 +637,8 @@ class BlockAdapterTest {
             ),
             item = updated,
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -1527,7 +1533,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -1580,7 +1587,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -1843,7 +1851,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -1989,7 +1998,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -2352,7 +2362,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -2385,7 +2396,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -2418,7 +2430,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -2521,7 +2534,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -2621,7 +2635,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -2767,7 +2782,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -2913,7 +2929,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -3062,7 +3079,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -3216,7 +3234,8 @@ class BlockAdapterTest {
                 )
             ),
             onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> }
+            onTextChanged = { _, _ -> },
+            clicked = {}
         )
 
         assertEquals(
@@ -3455,7 +3474,8 @@ class BlockAdapterTest {
             onMarkupActionClicked = { _, _ -> },
             onTitleTextInputClicked = {},
             onClickListener = {},
-            clipboardInterceptor = clipboardInterceptor
+            clipboardInterceptor = clipboardInterceptor,
+            onMentionEvent = {}
         )
     }
 }

@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.Button
 import android.widget.FrameLayout
@@ -20,9 +21,13 @@ import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.get
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -30,6 +35,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.ChangeBounds
 import androidx.transition.Fade
+import androidx.transition.TransitionManager
+import androidx.transition.TransitionSet
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Alignment
@@ -50,10 +57,12 @@ import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_ui.tools.FirstItemInvisibilityDetector
+import com.agileburo.anytype.core_ui.tools.MentionFooterItemDecorator
 import com.agileburo.anytype.core_ui.tools.OutsideClickDetector
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.*
+import com.agileburo.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.domain.block.model.Block.Content.Text
 import com.agileburo.anytype.domain.common.Id
@@ -129,6 +138,10 @@ open class PageFragment :
         )
     }
 
+    private val footerMentionDecorator by lazy {
+        MentionFooterItemDecorator(screen = screen)
+    }
+
     private val vm by lazy {
         ViewModelProviders
             .of(this, factory)
@@ -198,7 +211,8 @@ open class PageFragment :
             onTitleTextInputClicked = vm::onTitleTextInputClicked,
             onClickListener = vm::onClickListener,
             clipboardInterceptor = this,
-            anytypeContextMenuListener = anytypeContextMenuListener
+            anytypeContextMenuListener = anytypeContextMenuListener,
+            onMentionEvent = vm::onMentionEvent
         )
     }
 
@@ -447,6 +461,11 @@ open class PageFragment :
             hideSoftInput()
             vm.onBackButtonPressed()
         }.launchIn(lifecycleScope)
+
+        mentionSuggesterToolbar.setupClicks(
+            mentionClick = vm::onMentionSuggestClick,
+            newPageClick = vm::onAddMentionNewPageClicked
+        )
 
         lifecycleScope.launch {
             styleToolbar.events.collect { event ->
@@ -843,6 +862,60 @@ open class PageFragment :
                 recycler.updatePadding(bottom = dimen(R.dimen.default_toolbar_height))
             }
         }
+
+        state.mentionToolbar.apply {
+            if (isVisible) {
+                if (!mentionSuggesterToolbar.isVisible) {
+                    showMentionToolbar(this)
+                }
+                if (updateList) {
+                    mentionSuggesterToolbar.addItems(mentions)
+                }
+                mentionFilter?.let {
+                    mentionSuggesterToolbar.updateFilter(it)
+                }
+            } else {
+                mentionSuggesterToolbar.invisible()
+                recycler.removeItemDecoration(footerMentionDecorator)
+            }
+        }
+    }
+
+    private fun showMentionToolbar(state: ControlPanelState.Toolbar.MentionToolbar) {
+        state.cursorCoordinate?.let { cursorCoordinate ->
+            val parentBottom = calculateRectInWindow(recycler).bottom
+            val toolbarHeight = mentionSuggesterToolbar.getMentionSuggesterWidgetMinHeight()
+            val minPosY = parentBottom - toolbarHeight
+
+            if (minPosY <= cursorCoordinate) {
+                val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoordinate)
+                recycler.addItemDecoration(footerMentionDecorator)
+                recycler.post {
+                    recycler.smoothScrollBy(0, scrollY)
+                }
+            }
+            mentionSuggesterToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                height = toolbarHeight
+            }
+            val set = ConstraintSet().apply {
+                clone(sheet)
+                setVisibility(R.id.mentionSuggesterToolbar, View.VISIBLE)
+                connect(
+                    R.id.mentionSuggesterToolbar,
+                    ConstraintSet.BOTTOM,
+                    R.id.sheet,
+                    ConstraintSet.BOTTOM
+                )
+            }
+            val transitionSet = TransitionSet().apply {
+                addTransition(ChangeBounds())
+                duration = SHOW_MENTION_TRANSITION_DURATION
+                interpolator = LinearInterpolator()
+                ordering = TransitionSet.ORDERING_TOGETHER
+            }
+            TransitionManager.beginDelayedTransition(sheet, transitionSet)
+            set.applyTo(sheet)
+        }
     }
 
     private fun enterScrollAndMove() {
@@ -1118,6 +1191,7 @@ open class PageFragment :
         const val FAB_SHOW_ANIMATION_START_DELAY = 250L
         const val FAB_SHOW_ANIMATION_DURATION = 100L
 
+        const val SHOW_MENTION_TRANSITION_DURATION = 150L
         const val SELECT_BUTTON_SHOW_ANIMATION_DURATION = 200L
         const val SELECT_BUTTON_HIDE_ANIMATION_DURATION = 200L
         const val SELECT_BUTTON_ANIMATION_PROPERTY = "translationY"

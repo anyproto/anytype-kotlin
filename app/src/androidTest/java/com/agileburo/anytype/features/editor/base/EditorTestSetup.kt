@@ -20,6 +20,7 @@ import com.agileburo.anytype.domain.icon.DocumentEmojiIconProvider
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.domain.page.bookmark.SetupBookmark
+import com.agileburo.anytype.domain.page.navigation.GetListPages
 import com.agileburo.anytype.mocking.MockDataFactory
 import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
 import com.agileburo.anytype.presentation.page.Editor
@@ -72,6 +73,8 @@ open class EditorTestSetup {
     lateinit var updateCheckbox: UpdateCheckbox
     @Mock
     lateinit var unlinkBlocks: UnlinkBlocks
+    @Mock
+    lateinit var getListPages: GetListPages
     @Mock
     lateinit var duplicateBlock: DuplicateBlock
     @Mock
@@ -164,6 +167,7 @@ open class EditorTestSetup {
                 counter = Counter.Default(),
                 toggleStateHolder = ToggleStateHolder.Default()
             ),
+            getListPages = getListPages,
             interactor = Orchestrator(
                 createBlock = createBlock,
                 splitBlock = splitBlock,

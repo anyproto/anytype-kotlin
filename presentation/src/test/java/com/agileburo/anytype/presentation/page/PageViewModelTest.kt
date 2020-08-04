@@ -24,6 +24,7 @@ import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.domain.page.bookmark.SetupBookmark
+import com.agileburo.anytype.domain.page.navigation.GetListPages
 import com.agileburo.anytype.presentation.MockBlockFactory
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.page.editor.Command
@@ -99,6 +100,9 @@ class PageViewModelTest {
 
     @Mock
     lateinit var splitBlock: SplitBlock
+
+    @Mock
+    lateinit var getListPages: GetListPages
 
     @Mock
     lateinit var createPage: CreatePage
@@ -4318,6 +4322,7 @@ class PageViewModelTest {
         )
 
         vm = PageViewModel(
+            getListPages = getListPages,
             openPage = openPage,
             closePage = closePage,
             createPage = createPage,

@@ -28,18 +28,11 @@ object MentionHelper {
         mentionPosition != NO_MENTION_POSITION && start <= mentionPosition && after < count
 
     /**
-     * return subsequence from [startIndex] to [predicate] or end of sequence with limit [takeNumber]
+     * return subsequence from [startIndex] to end of sequence with limit [takeNumber]
      */
-    fun getSubSequenceBeforePredicate(
+    fun getSubSequenceFromStartWithLimit(
         s: CharSequence,
-        predicate: Char,
         startIndex: Int,
         takeNumber: Int
-    ): CharSequence =
-        s.indexOf(predicate, startIndex = startIndex).let { pos ->
-            if (pos != -1)
-                s.subSequence(startIndex = startIndex, endIndex = pos).take(takeNumber)
-            else
-                s.subSequence(startIndex = startIndex, endIndex = s.length).take(takeNumber)
-        }
+    ): CharSequence = s.subSequence(startIndex = startIndex, endIndex = s.length).take(takeNumber)
 }

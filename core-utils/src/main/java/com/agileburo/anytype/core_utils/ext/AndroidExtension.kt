@@ -1,5 +1,6 @@
 package com.agileburo.anytype.core_utils.ext
 
+import android.app.Activity
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
@@ -193,6 +194,14 @@ fun Fragment.clipboard() : ClipboardManager {
 
 fun Fragment.screen(): Point {
     val wm = (requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager)
+    val display = wm.defaultDisplay
+    val p = Point()
+    display.getSize(p)
+    return p
+}
+
+fun Activity.screen(): Point {
+    val wm = (getSystemService(Context.WINDOW_SERVICE) as WindowManager)
     val display = wm.defaultDisplay
     val p = Point()
     display.getSize(p)

@@ -14,6 +14,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
 import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
+import com.agileburo.anytype.core_ui.tools.MentionTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.agileburo.anytype.core_ui.widgets.text.highlight.HighlightDrawer
 import com.agileburo.anytype.core_utils.ext.multilineIme
@@ -97,6 +98,10 @@ class TextInputWidget : AppCompatEditText {
     fun clearTextWatchers() {
         watchers.forEach { super.removeTextChangedListener(it) }
         watchers.clear()
+    }
+
+    fun dismissMentionWatchers() {
+        watchers.filterIsInstance(MentionTextWatcher::class.java).forEach { it.onDismiss() }
     }
 
     fun pauseTextWatchers(block: () -> Unit) = synchronized(this) {

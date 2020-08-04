@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.agileburo.anytype.domain.block.interactor.RemoveLinkMark
 import com.agileburo.anytype.domain.block.interactor.UpdateLinkMarks
-import com.agileburo.anytype.domain.block.interactor.UploadBlock
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
+import com.agileburo.anytype.domain.page.navigation.GetListPages
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.page.editor.Orchestrator
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
@@ -26,7 +26,8 @@ open class PageViewModelFactory(
     private val documentEventReducer: StateReducer<List<Block>, Event>,
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
-    private val interactor: Orchestrator
+    private val interactor: Orchestrator,
+    private val getListPages: GetListPages
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -43,7 +44,8 @@ open class PageViewModelFactory(
             urlBuilder = urlBuilder,
             renderer = renderer,
             createDocument = createDocument,
-            orchestrator = interactor
+            orchestrator = interactor,
+            getListPages = getListPages
         ) as T
     }
 }

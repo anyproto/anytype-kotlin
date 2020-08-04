@@ -215,6 +215,8 @@
     <string name="content_desc_page_toolbar_search">Search pages</string>
     <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
     <string name="content_desc_page_toolbar_add_doc">Add new page</string>
+    <string name="content_desc_mention_suggester_icon">Mention suggester icon</string>
     <string name="move">Move</string>
+    <string name="mention_suggester_new_page">Create new page</string>
 
 </resources>

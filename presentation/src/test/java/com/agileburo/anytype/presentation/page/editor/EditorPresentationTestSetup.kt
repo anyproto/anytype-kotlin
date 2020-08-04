@@ -17,6 +17,7 @@ import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.domain.page.bookmark.SetupBookmark
+import com.agileburo.anytype.domain.page.navigation.GetListPages
 import com.agileburo.anytype.presentation.page.DocumentExternalEventReducer
 import com.agileburo.anytype.presentation.page.Editor
 import com.agileburo.anytype.presentation.page.PageViewModel
@@ -48,6 +49,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var updateText: UpdateText
+
+    @Mock
+    lateinit var getListPages: GetListPages
 
     @Mock
     lateinit var updateCheckbox: UpdateCheckbox
@@ -138,6 +142,7 @@ open class EditorPresentationTestSetup {
         )
 
         return PageViewModel(
+            getListPages = getListPages,
             openPage = openPage,
             closePage = closePage,
             createPage = createPage,

@@ -9,14 +9,16 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class ConfigModule {
+object ConfigModule {
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideApplicationConfig(configurator: Configurator): Config {
         return Configuration(configurator).init()
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideConfigurator(): Configurator {

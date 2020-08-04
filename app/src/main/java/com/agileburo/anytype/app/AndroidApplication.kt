@@ -9,7 +9,9 @@ import com.agileburo.anytype.R
 import com.agileburo.anytype.analytics.tracker.AmplitudeTracker
 import com.agileburo.anytype.core_utils.tools.CrashlyticsTree
 import com.agileburo.anytype.di.common.ComponentManager
-import com.agileburo.anytype.di.main.*
+import com.agileburo.anytype.di.main.ContextModule
+import com.agileburo.anytype.di.main.DaggerMainComponent
+import com.agileburo.anytype.di.main.MainComponent
 import com.amplitude.api.Amplitude
 import com.facebook.stetho.Stetho
 import timber.log.Timber
@@ -24,11 +26,6 @@ class AndroidApplication : Application() {
         DaggerMainComponent
             .builder()
             .contextModule(ContextModule(this))
-            .dataModule(DataModule())
-            .configModule(ConfigModule())
-            .utilModule(UtilModule())
-            .deviceModule(DeviceModule())
-            .analyticsModule(AnalyticsModule())
             .build()
     }
 

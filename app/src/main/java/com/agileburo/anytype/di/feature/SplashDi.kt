@@ -33,8 +33,9 @@ interface SplashSubComponent {
 }
 
 @Module
-class SplashModule {
+object SplashModule {
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideSplashViewModelFactory(
@@ -49,6 +50,7 @@ class SplashModule {
         analytics = analytics
     )
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideCheckAuthorizationStatusUseCase(
@@ -57,6 +59,7 @@ class SplashModule {
         repository = authRepository
     )
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideLaunchAccountUseCase(
@@ -68,6 +71,7 @@ class SplashModule {
             pathProvider = pathProvider
         )
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideLaunchWalletUseCase(

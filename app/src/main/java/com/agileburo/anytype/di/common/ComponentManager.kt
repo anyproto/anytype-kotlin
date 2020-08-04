@@ -62,7 +62,7 @@ class ComponentManager(private val main: MainComponent) {
     val profileComponent = Component {
         main
             .profileComponentBuilder()
-            .profileModule(ProfileModule())
+            .profileModule(ProfileModule)
             .build()
     }
 
@@ -76,7 +76,7 @@ class ComponentManager(private val main: MainComponent) {
     val splashLoginComponent = Component {
         main
             .splashComponentBuilder()
-            .module(SplashModule())
+            .module(SplashModule)
             .build()
     }
 
@@ -90,7 +90,7 @@ class ComponentManager(private val main: MainComponent) {
     val desktopComponent = Component {
         main
             .homeDashboardComponentBuilder()
-            .homeDashboardModule(HomeDashboardModule())
+            .homeDashboardModule(HomeDashboardModule)
             .build()
     }
 
@@ -104,7 +104,7 @@ class ComponentManager(private val main: MainComponent) {
     val pageComponent = ComponentMap {
         main
             .pageComponentBuilder()
-            .pageModule(PageModule())
+            .pageModule(PageModule)
             .build()
     }
 
@@ -145,13 +145,13 @@ class ComponentManager(private val main: MainComponent) {
 
     val navigationComponent = Component {
         main.navigationComponentBuilder()
-            .pageNavigationModule(PageNavigationModule())
+            .pageNavigationModule(PageNavigationModule)
             .build()
     }
 
     val pageSearchComponent = Component {
         main.pageSearchComponentBuilder()
-            .pageSearchModule(PageSearchModule())
+            .pageSearchModule(PageSearchModule)
             .build()
     }
 

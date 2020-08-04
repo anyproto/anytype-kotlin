@@ -24,12 +24,14 @@ interface PageSearchSubComponent {
 }
 
 @Module
-class PageSearchModule {
+object PageSearchModule {
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun getListPages(repo: BlockRepository): GetListPages = GetListPages(repo = repo)
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun providePageSearchViewModelFactory(

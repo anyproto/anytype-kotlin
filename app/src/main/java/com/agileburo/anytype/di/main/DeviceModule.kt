@@ -11,20 +11,23 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class DeviceModule {
+object DeviceModule {
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideDownloader(
         device: Device
     ): Downloader = DataDownloader(device = device)
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideDevice(
         downloader: AndroidDeviceDownloader
     ): Device = AndroidDevice(downloader = downloader)
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideDeviceDownloader(

@@ -29,13 +29,15 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class DataModule {
+object DataModule {
 
+    @JvmStatic
     @Provides
     fun providePathProvider(context: Context): PathProvider {
         return DefaultPathProvider(context)
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideAuthRepository(
@@ -46,6 +48,7 @@ class DataModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideAuthDataStoreFactory(
@@ -58,6 +61,7 @@ class DataModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideAuthCacheDataStore(
@@ -68,6 +72,7 @@ class DataModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideAuthCache(
@@ -80,6 +85,7 @@ class DataModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideDebugSettingsCache(
@@ -90,6 +96,7 @@ class DataModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideInfrastructureRepository(
@@ -100,18 +107,21 @@ class DataModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideAnytypeDatabase(context: Context): AnytypeDatabase {
         return AnytypeDatabase.get(context)
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideSharedPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideAuthRemoteDataStore(
@@ -122,6 +132,7 @@ class DataModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideAuthRemote(
@@ -134,6 +145,7 @@ class DataModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideBlockRepository(
@@ -144,6 +156,7 @@ class DataModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideBlockDataStoreFactory(
@@ -154,6 +167,7 @@ class DataModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideBlockRemoteDataStore(
@@ -164,12 +178,14 @@ class DataModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideBlockRemote(
         middleware: Middleware
     ): BlockRemote = BlockMiddleware(middleware = middleware)
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideMiddleware(
@@ -178,18 +194,22 @@ class DataModule {
         mapper: MiddlewareMapper
     ): Middleware = Middleware(service, factory, mapper)
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideMiddlewareFactory(): MiddlewareFactory = MiddlewareFactory()
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideMiddlewareMapper(): MiddlewareMapper = MiddlewareMapper()
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideMiddlewareService(): MiddlewareService = DefaultMiddlewareService()
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideDatabaseRepo(): DatabaseRepository = DatabaseDataRepository()

@@ -1,5 +1,19 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.42 (WIP)
+
+### New features 🚀
+
+*
+
+### Design & UX 🔳
+
+*
+
+### Fixes & tech 🚒
+
+* DI/Dagger optimizations (#626)
+
 ## Version 0.0.41
 
 ### New features 🚀

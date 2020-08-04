@@ -17,14 +17,16 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class ClipboardModule {
+object ClipboardModule {
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideClipboardRepository(
         factory: ClipboardDataStore.Factory
     ) : Clipboard = ClipboardDataRepository(factory)
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideClipboardDataStoreFactory(
@@ -32,6 +34,7 @@ class ClipboardModule {
         system: ClipboardDataStore.System
     ) : ClipboardDataStore.Factory = ClipboardDataStore.Factory(storage, system)
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideClipboardStorage(
@@ -39,24 +42,28 @@ class ClipboardModule {
         serializer: Serializer
     ) : ClipboardDataStore.Storage = AnytypeClipboardStorage(context, serializer)
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideClipboardSystem(
         cm: ClipboardManager
     ) : ClipboardDataStore.System = AnytypeClipboard(cm)
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideClipboardManager(
         context: Context
     ) : ClipboardManager = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideUriMatcher() : Clipboard.UriMatcher = ClipboardDataUriMatcher(
         matcher = AnytypeUriMatcher()
     )
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideSerializer() : Serializer = ClipboardSerializer()

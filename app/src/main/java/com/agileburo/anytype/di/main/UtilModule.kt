@@ -7,8 +7,9 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class UtilModule {
+object UtilModule {
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideUrlBuilder(config: Config): UrlBuilder {

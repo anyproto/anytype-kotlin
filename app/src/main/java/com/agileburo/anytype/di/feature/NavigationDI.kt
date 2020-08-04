@@ -27,13 +27,15 @@ interface PageNavigationSubComponent {
 }
 
 @Module
-class PageNavigationModule {
+object PageNavigationModule {
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideGetPageInfoWithLinks(repo: BlockRepository): GetPageInfoWithLinks =
         GetPageInfoWithLinks(repo = repo)
 
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideNavigationViewModelFactory(
@@ -47,6 +49,7 @@ class PageNavigationModule {
             getConfig = getConfig
         )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun getConfigUseCase(

@@ -29,8 +29,9 @@ interface ProfileSubComponent {
 }
 
 @Module
-class ProfileModule {
+object ProfileModule {
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideProfileViewModelFactory(
@@ -41,12 +42,14 @@ class ProfileModule {
         getCurrentAccount = getCurrentAccount
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideLogoutUseCase(
         repository: AuthRepository
     ): Logout = Logout(repository)
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideGetAccountUseCase(

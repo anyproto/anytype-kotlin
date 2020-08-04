@@ -15,8 +15,9 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class EmojiModule {
+object EmojiModule {
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideEmojiSuggester(
@@ -29,18 +30,21 @@ class EmojiModule {
         )
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideEmojiSuggesterCache(): EmojiSuggesterCache {
         return EmojiSuggesterCache.DefaultCache()
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideEmojiSuggestStorage(context: Context): EmojiSuggestStorage {
         return DefaultEmojiSuggestStorage(context, Gson())
     }
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideDocumentEmojiIconProvider(): DocumentEmojiIconProvider {

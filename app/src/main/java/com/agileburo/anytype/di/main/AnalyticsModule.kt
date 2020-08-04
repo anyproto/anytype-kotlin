@@ -9,12 +9,14 @@ import kotlinx.coroutines.GlobalScope
 import javax.inject.Singleton
 
 @Module
-class AnalyticsModule {
+object AnalyticsModule {
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideAnalytics(): Analytics = DefaultAnalytics()
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideAmplitudeTracker(

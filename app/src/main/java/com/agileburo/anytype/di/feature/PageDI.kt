@@ -44,8 +44,9 @@ interface PageSubComponent {
 }
 
 @Module
-class PageModule {
+object PageModule {
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun providePageViewModelFactory(
@@ -76,6 +77,7 @@ class PageModule {
         interactor = interactor
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideOpenPageUseCase(
@@ -84,6 +86,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideClosePageUseCase(
@@ -92,6 +95,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideUpdateBlockUseCase(
@@ -100,6 +104,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideCreateBlockUseCase(
@@ -108,6 +113,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideInterceptEventsUseCase(
@@ -117,6 +123,7 @@ class PageModule {
         context = Dispatchers.IO
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideUpdateCheckboxUseCase(
@@ -125,6 +132,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideUnlinkBlocksUseCase(
@@ -133,6 +141,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideDuplicateBlockUseCase(
@@ -141,6 +150,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideMergeBlocksUseCase(
@@ -149,6 +159,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideSplitBlockUseCase(
@@ -157,6 +168,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideUploadUrl(
@@ -165,14 +177,17 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideUpdateLinkMarks(): UpdateLinkMarks = UpdateLinkMarks()
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideRemoveLinkMark(): RemoveLinkMark = RemoveLinkMark()
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideUpdateTextStyleUseCase(
@@ -181,6 +196,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideUpdateTextColorUseCase(
@@ -189,6 +205,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideUpdateBackgroundColorUseCase(
@@ -197,6 +214,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideCreatePageUseCase(
@@ -207,6 +225,7 @@ class PageModule {
         documentEmojiIconProvider = documentEmojiIconProvider
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideDownloadFileUseCase(
@@ -216,6 +235,7 @@ class PageModule {
         context = Dispatchers.Main
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideDefaultBlockViewRenderer(
@@ -228,19 +248,23 @@ class PageModule {
         counter = counter
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideToggler(): ToggleStateHolder = ToggleStateHolder.Default()
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideCounter(): Counter = Counter.Default()
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideDocumentExternalEventReducer(): DocumentExternalEventReducer =
         DocumentExternalEventReducer()
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideUndoUseCase(
@@ -249,6 +273,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideRedoUseCase(
@@ -257,6 +282,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideCreateDocumentUseCase(
@@ -267,6 +293,7 @@ class PageModule {
         documentEmojiProvider = documentEmojiIconProvider
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideArchiveDocumentUseCase(
@@ -275,6 +302,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideReplaceBlockUseCase(
@@ -283,6 +311,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideUpdateTitleUseCase(
@@ -291,14 +320,17 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun providePatternMatcher(): DefaultPatternMatcher = DefaultPatternMatcher()
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideSelectionStateHolder(): SelectionStateHolder = SelectionStateHolder.Default()
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideMemory(
@@ -307,6 +339,7 @@ class PageModule {
         selections = selectionStateHolder
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideInteractor(
@@ -363,14 +396,17 @@ class PageModule {
         copy = copy
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideProxer(): Editor.Proxer = Editor.Proxer()
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideStorage(): Editor.Storage = Editor.Storage()
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideTextInteractor(
@@ -383,6 +419,7 @@ class PageModule {
         matcher = matcher
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideUpdateAlignmentUseCase(
@@ -391,6 +428,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideSetupBookmarkUseCase(
@@ -399,6 +437,7 @@ class PageModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideClipboardPasteUseCase(
@@ -411,6 +450,7 @@ class PageModule {
         matcher = matcher
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideCopyUseCase(
@@ -421,6 +461,7 @@ class PageModule {
         clipboard = clipboard
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideMoveUseCase(

@@ -11,26 +11,30 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class EventModule {
+object EventModule {
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideEventChannel(
         channel: EventDataChannel
     ): EventChannel = channel
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideEventDataChannel(
         remote: EventRemoteChannel
     ): EventDataChannel = EventDataChannel(remote)
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideEventRemoteChannel(
         proxy: EventProxy
     ): EventRemoteChannel = MiddlewareEventChannel(events = proxy)
 
+    @JvmStatic
     @Provides
     @Singleton
     fun provideEventProxy(): EventProxy {

@@ -39,8 +39,9 @@ interface HomeDashboardSubComponent {
 }
 
 @Module
-class HomeDashboardModule {
+object HomeDashboardModule {
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideDesktopViewModelFactory(
@@ -65,16 +66,18 @@ class HomeDashboardModule {
         getDebugSettings = getDebugSettings
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideGetAccountUseCase(
         repository: BlockRepository,
         builder: UrlBuilder
     ): GetCurrentAccount = GetCurrentAccount(
-            repo = repository,
-            builder = builder
+        repo = repository,
+        builder = builder
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideOpenDashboardUseCase(
@@ -83,6 +86,7 @@ class HomeDashboardModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideCloseDashboardUseCase(
@@ -91,6 +95,7 @@ class HomeDashboardModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideCreatePageUseCase(
@@ -101,6 +106,7 @@ class HomeDashboardModule {
         documentEmojiIconProvider = documentEmojiIconProvider
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun getConfigUseCase(
@@ -109,6 +115,7 @@ class HomeDashboardModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideMoveUseCase(
@@ -117,6 +124,7 @@ class HomeDashboardModule {
         repo = repo
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideInterceptEvents(
@@ -126,12 +134,14 @@ class HomeDashboardModule {
         channel = channel
     )
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideEventConverter(): HomeDashboardEventConverter {
         return HomeDashboardEventConverter.DefaultConverter()
     }
 
+    @JvmStatic
     @Provides
     @PerScreen
     fun provideGetDebugSettings(

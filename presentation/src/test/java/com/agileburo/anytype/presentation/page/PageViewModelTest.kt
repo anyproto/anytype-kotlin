@@ -174,7 +174,7 @@ class PageViewModelTest {
         buildViewModel()
         stubOpenPage(context = id)
 
-        vm.open(id)
+        vm.onStart(id)
 
         runBlockingTest { verify(openPage, times(1)).invoke(param) }
     }
@@ -235,7 +235,7 @@ class PageViewModelTest {
 
         buildViewModel(builder)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(1001)
 
@@ -325,7 +325,7 @@ class PageViewModelTest {
         stubOpenPage(context = pageId)
         stubUpdateText()
 
-        vm.open(pageId)
+        vm.onStart(pageId)
         vm.onTextChanged(id = blockId, text = text, marks = emptyList())
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
@@ -349,7 +349,7 @@ class PageViewModelTest {
         stubOpenPage(context = pageId)
         buildViewModel()
 
-        vm.open(pageId)
+        vm.onStart(pageId)
 
         vm.onTextChanged(id = blockId, text = text, marks = emptyList())
         vm.onTextChanged(id = blockId, text = text, marks = emptyList())
@@ -451,7 +451,7 @@ class PageViewModelTest {
 
         stubOpenPage()
         buildViewModel(builder)
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(200)
 
@@ -520,7 +520,7 @@ class PageViewModelTest {
 
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         vm.onBlockFocusChanged(id = paragraph.id, hasFocus = true)
 
@@ -598,7 +598,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel(builder)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -639,7 +639,7 @@ class PageViewModelTest {
 
         testObserver.assertValue(ViewState.Success(emptyList()))
 
-        vm.open(root)
+        vm.onStart(root)
 
         testObserver.assertValue(ViewState.Loading)
     }
@@ -702,7 +702,7 @@ class PageViewModelTest {
 
         buildViewModel(builder)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -852,7 +852,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel(builder)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -999,7 +999,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1093,7 +1093,7 @@ class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        vm.open(root)
+        vm.onStart(root)
 
         testObserver.assertValue(ViewState.Loading)
 
@@ -1195,7 +1195,7 @@ class PageViewModelTest {
 
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1281,7 +1281,7 @@ class PageViewModelTest {
 
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1335,7 +1335,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(1001)
 
@@ -1370,7 +1370,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(1001)
 
@@ -1476,7 +1476,7 @@ class PageViewModelTest {
 
         buildViewModel(builder)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(500)
 
@@ -1556,7 +1556,7 @@ class PageViewModelTest {
 
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(1000)
 
@@ -1604,7 +1604,7 @@ class PageViewModelTest {
         )
 
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(1001)
 
@@ -1652,7 +1652,7 @@ class PageViewModelTest {
 
         // TESTING
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(1001)
 
@@ -1721,7 +1721,7 @@ class PageViewModelTest {
         stubObserveEvents(events)
         buildViewModel(builder)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(pageOpenedDelay)
 
@@ -1802,7 +1802,7 @@ class PageViewModelTest {
         buildViewModel()
         stubUnlinkBlocks(root)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1859,7 +1859,7 @@ class PageViewModelTest {
         stubObserveEvents(events)
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1901,7 +1901,7 @@ class PageViewModelTest {
         stubCreateBlock(root)
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1954,7 +1954,7 @@ class PageViewModelTest {
         stubCreateBlock(root)
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2009,7 +2009,7 @@ class PageViewModelTest {
 
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2063,7 +2063,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2112,7 +2112,7 @@ class PageViewModelTest {
 
         stubUpdateTextColor(root)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2169,7 +2169,7 @@ class PageViewModelTest {
         stubCreateBlock(root)
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2231,7 +2231,7 @@ class PageViewModelTest {
         stubCreateBlock(root)
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2326,7 +2326,7 @@ class PageViewModelTest {
 
         // TESTING
 
-        vm.open(root)
+        vm.onStart(root)
 
         vm.onBlockFocusChanged(
             id = child,
@@ -2425,7 +2425,7 @@ class PageViewModelTest {
         stubCreateBlock(root)
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2493,7 +2493,7 @@ class PageViewModelTest {
         stubUpdateText()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2577,7 +2577,7 @@ class PageViewModelTest {
         stubUpdateTextStyle()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2645,7 +2645,7 @@ class PageViewModelTest {
         stubCreateBlock(root)
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(startDelay)
 
@@ -2699,7 +2699,7 @@ class PageViewModelTest {
         stubUpdateText()
         stubSplitBlocks(root)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2806,7 +2806,7 @@ class PageViewModelTest {
         stubUpdateText()
         stubSplitBlocks(root)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2878,7 +2878,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2940,7 +2940,7 @@ class PageViewModelTest {
 
         stubDownloadFile()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3002,7 +3002,7 @@ class PageViewModelTest {
         stubCreateBlock(root)
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3067,7 +3067,7 @@ class PageViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage()
         buildViewModel()
-        vm.open(root)
+        vm.onStart(root)
         coroutineTestRule.advanceTime(100)
         // TESTING
         vm.onBlockFocusChanged(
@@ -3132,7 +3132,7 @@ class PageViewModelTest {
         buildViewModel()
         stubCreateBlock(root)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3201,7 +3201,7 @@ class PageViewModelTest {
         stubCreateBlock(root = root)
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3278,7 +3278,7 @@ class PageViewModelTest {
             )
         }
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3343,7 +3343,7 @@ class PageViewModelTest {
             )
         }
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3399,7 +3399,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3463,7 +3463,7 @@ class PageViewModelTest {
         stubClosePage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3542,7 +3542,7 @@ class PageViewModelTest {
 
         stubReplaceBlock(root)
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3619,7 +3619,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3702,7 +3702,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3760,7 +3760,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3852,7 +3852,7 @@ class PageViewModelTest {
 
         stubUpdateTitle()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3945,7 +3945,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -4121,7 +4121,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -4439,7 +4439,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -4556,7 +4556,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -4681,7 +4681,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -4825,7 +4825,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 
@@ -4968,7 +4968,7 @@ class PageViewModelTest {
         stubOpenPage()
         buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         coroutineTestRule.advanceTime(100)
 

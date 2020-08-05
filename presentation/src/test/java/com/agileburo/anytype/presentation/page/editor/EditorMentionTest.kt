@@ -85,7 +85,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.open(root)
+        vm.onStart(root)
 
         vm.apply {
             onBlockFocusChanged(

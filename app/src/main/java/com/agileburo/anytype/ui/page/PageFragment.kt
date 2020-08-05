@@ -222,7 +222,7 @@ open class PageFragment :
 
         val centerY = (targeter.y + (targeter.height / 2f)) - scrollAndMoveTopMargin
 
-        var target : View? = recycler.findChildViewUnder(centerX, centerY)
+        var target: View? = recycler.findChildViewUnder(centerX, centerY)
 
         if (target == null) {
             target = recycler.findChildViewUnder(centerX, centerY - 5)
@@ -338,10 +338,19 @@ open class PageFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        vm.open(id = extractDocumentId())
         pickiT = PickiT(requireContext(), this, requireActivity())
         setupOnBackPressedDispatcher()
         getEditorSettings()
+    }
+
+    override fun onStart() {
+        vm.onStart(id = extractDocumentId())
+        super.onStart()
+    }
+
+    override fun onStop() {
+        vm.onStop()
+        super.onStop()
     }
 
     private fun setupOnBackPressedDispatcher() =

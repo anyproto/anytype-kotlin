@@ -48,6 +48,8 @@ import com.agileburo.anytype.presentation.page.render.BlockViewRenderer
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.agileburo.anytype.presentation.page.selection.SelectionStateHolder
 import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -76,6 +78,8 @@ class PageViewModel(
     SelectionStateHolder by orchestrator.memory.selections,
     TurnIntoActionReceiver,
     StateReducer<List<Block>, Event> by reducer {
+
+    private val eventSubscription: CoroutineScope = CloseableCoroutineScope()
 
     private var mode = EditorMode.EDITING
 
@@ -123,7 +127,6 @@ class PageViewModel(
         startProcessingFocusChanges()
         startProcessingTitleChanges()
         startProcessingControlPanelViewState()
-        startObservingEvents()
         startObservingPayload()
         startObservingErrors()
         processRendering()
@@ -162,16 +165,6 @@ class PageViewModel(
                 .payloads
                 .stream()
                 .map { payload -> processEvents(payload.events) }
-                .collect { viewModelScope.launch { refresh() } }
-        }
-    }
-
-    private fun startObservingEvents() {
-        viewModelScope.launch {
-            interceptEvents
-                .build()
-                .filter { events -> events.any { it.context == context } }
-                .map { events -> processEvents(events) }
                 .collect { viewModelScope.launch { refresh() } }
         }
     }
@@ -409,11 +402,18 @@ class PageViewModel(
         }
     }
 
-    fun open(id: String) {
+    fun onStart(id: Id) {
 
         context = id
 
         stateData.postValue(ViewState.Loading)
+
+        eventSubscription.launch {
+            interceptEvents
+                .build(InterceptEvents.Params(context))
+                .map { events -> processEvents(events) }
+                .collect { refresh() }
+        }
 
         viewModelScope.launch {
             openPage(OpenPage.Params(id)).proceed(
@@ -1977,5 +1977,12 @@ class PageViewModel(
 
         controlPanelInteractor.channel.cancel()
         titleChannel.cancel()
+
+        Timber.d("onCleared")
+    }
+
+    fun onStop() {
+        Timber.d("onStop")
+        eventSubscription.cancel()
     }
 }

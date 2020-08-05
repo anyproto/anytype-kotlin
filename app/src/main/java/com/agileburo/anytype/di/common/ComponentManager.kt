@@ -104,7 +104,8 @@ class ComponentManager(private val main: MainComponent) {
     val pageComponent = ComponentMap {
         main
             .pageComponentBuilder()
-            .pageModule(PageModule)
+            .session(EditorSessionModule)
+            .usecase(EditorUseCaseModule)
             .build()
     }
 

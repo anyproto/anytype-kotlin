@@ -31,25 +31,48 @@ import dagger.Provides
 import dagger.Subcomponent
 import kotlinx.coroutines.Dispatchers
 
-@Subcomponent(modules = [PageModule::class])
+@Subcomponent(modules = [EditorSessionModule::class, EditorUseCaseModule::class])
 @PerScreen
 interface PageSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
-        fun pageModule(module: PageModule): Builder
+        fun session(module: EditorSessionModule): Builder
+        fun usecase(module: EditorUseCaseModule): Builder
         fun build(): PageSubComponent
     }
 
     fun inject(fragment: PageFragment)
 }
 
+
+/**
+ * Sesssion-related dependencies, session being defined as active work with a document visible to our user.
+ * Hence, these dependencies are stateful and therefore should not be shared between different sessions of the same document.
+ * Consider the following navigation scenario: Document A > Document B > Document A'.
+ * In this case, statetul dependencies should not be shared between A and A'.
+ */
 @Module
-object PageModule {
+object EditorSessionModule {
 
     @JvmStatic
     @Provides
-    @PerScreen
+    fun provideToggler(): ToggleStateHolder = ToggleStateHolder.Default()
+
+    @JvmStatic
+    @Provides
+    fun provideCounter(): Counter = Counter.Default()
+
+    @JvmStatic
+    @Provides
+    fun provideProxer(): Editor.Proxer = Editor.Proxer()
+
+    @JvmStatic
+    @Provides
+    fun provideStorage(): Editor.Storage = Editor.Storage()
+
+    @JvmStatic
+    @Provides
     fun providePageViewModelFactory(
         openPage: OpenPage,
         closePage: ClosePage,
@@ -79,6 +102,109 @@ object PageModule {
         interactor = interactor,
         getListPages = getListPages
     )
+
+    @JvmStatic
+    @Provides
+    fun provideDefaultBlockViewRenderer(
+        urlBuilder: UrlBuilder,
+        toggleStateHolder: ToggleStateHolder,
+        counter: Counter
+    ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
+        urlBuilder = urlBuilder,
+        toggleStateHolder = toggleStateHolder,
+        counter = counter
+    )
+
+    @JvmStatic
+    @Provides
+    fun provideDocumentExternalEventReducer(): DocumentExternalEventReducer =
+        DocumentExternalEventReducer()
+
+    @JvmStatic
+    @Provides
+    fun providePatternMatcher(): DefaultPatternMatcher = DefaultPatternMatcher()
+
+    @JvmStatic
+    @Provides
+    fun provideSelectionStateHolder(): SelectionStateHolder = SelectionStateHolder.Default()
+
+    @JvmStatic
+    @Provides
+    fun provideMemory(
+        selectionStateHolder: SelectionStateHolder
+    ): Editor.Memory = Editor.Memory(
+        selections = selectionStateHolder
+    )
+
+    @JvmStatic
+    @Provides
+    fun provideInteractor(
+        storage: Editor.Storage,
+        proxer: Editor.Proxer,
+        memory: Editor.Memory,
+        createBlock: CreateBlock,
+        replaceBlock: ReplaceBlock,
+        duplicateBlock: DuplicateBlock,
+        updateTextColor: UpdateTextColor,
+        updateBackgroundColor: UpdateBackgroundColor,
+        splitBlock: SplitBlock,
+        mergeBlocks: MergeBlocks,
+        unlinkBlocks: UnlinkBlocks,
+        updateTextStyle: UpdateTextStyle,
+        updateCheckbox: UpdateCheckbox,
+        downloadFile: DownloadFile,
+        updateTitle: UpdateTitle,
+        updateText: UpdateText,
+        uploadBlock: UploadBlock,
+        updateAlignment: UpdateAlignment,
+        setupBookmark: SetupBookmark,
+        matcher: DefaultPatternMatcher,
+        move: Move,
+        copy: Copy,
+        paste: Paste,
+        undo: Undo,
+        redo: Redo
+    ): Orchestrator = Orchestrator(
+        stores = storage,
+        createBlock = createBlock,
+        replaceBlock = replaceBlock,
+        proxies = proxer,
+        duplicateBlock = duplicateBlock,
+        updateBackgroundColor = updateBackgroundColor,
+        updateTextColor = updateTextColor,
+        uploadBlock = uploadBlock,
+        splitBlock = splitBlock,
+        mergeBlocks = mergeBlocks,
+        unlinkBlocks = unlinkBlocks,
+        undo = undo,
+        redo = redo,
+        updateTextStyle = updateTextStyle,
+        updateCheckbox = updateCheckbox,
+        memory = memory,
+        downloadFile = downloadFile,
+        updateTitle = updateTitle,
+        textInteractor = Interactor.TextInteractor(
+            proxies = proxer,
+            stores = storage,
+            matcher = matcher
+        ),
+        updateText = updateText,
+        updateAlignment = updateAlignment,
+        setupBookmark = setupBookmark,
+        move = move,
+        paste = paste,
+        copy = copy
+    )
+}
+
+/**
+ * These dependencies are stateless and therefore should be shared between different sessions of the same document.
+ * In other words, if document A is opened twice (as A and A'), use-cases will be shared between all its sessions.
+ * Consider the following navigation scenario: Document A > Document B > Document A'
+ * The same documents have the same use-case dependencies, in order to avoid instance-creation overhead.
+ */
+@Module
+object EditorUseCaseModule {
 
     @JvmStatic
     @PerScreen
@@ -246,35 +372,6 @@ object PageModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideDefaultBlockViewRenderer(
-        urlBuilder: UrlBuilder,
-        toggleStateHolder: ToggleStateHolder,
-        counter: Counter
-    ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
-        urlBuilder = urlBuilder,
-        toggleStateHolder = toggleStateHolder,
-        counter = counter
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideToggler(): ToggleStateHolder = ToggleStateHolder.Default()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideCounter(): Counter = Counter.Default()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideDocumentExternalEventReducer(): DocumentExternalEventReducer =
-        DocumentExternalEventReducer()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideUndoUseCase(
         repo: BlockRepository
     ): Undo = Undo(
@@ -331,105 +428,6 @@ object PageModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun providePatternMatcher(): DefaultPatternMatcher = DefaultPatternMatcher()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideSelectionStateHolder(): SelectionStateHolder = SelectionStateHolder.Default()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideMemory(
-        selectionStateHolder: SelectionStateHolder
-    ): Editor.Memory = Editor.Memory(
-        selections = selectionStateHolder
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideInteractor(
-        storage: Editor.Storage,
-        proxer: Editor.Proxer,
-        memory: Editor.Memory,
-        createBlock: CreateBlock,
-        replaceBlock: ReplaceBlock,
-        duplicateBlock: DuplicateBlock,
-        updateTextColor: UpdateTextColor,
-        updateBackgroundColor: UpdateBackgroundColor,
-        splitBlock: SplitBlock,
-        mergeBlocks: MergeBlocks,
-        unlinkBlocks: UnlinkBlocks,
-        updateTextStyle: UpdateTextStyle,
-        updateCheckbox: UpdateCheckbox,
-        downloadFile: DownloadFile,
-        updateTitle: UpdateTitle,
-        updateText: UpdateText,
-        uploadBlock: UploadBlock,
-        updateAlignment: UpdateAlignment,
-        textInteractor: Interactor.TextInteractor,
-        setupBookmark: SetupBookmark,
-        move: Move,
-        copy: Copy,
-        paste: Paste,
-        undo: Undo,
-        redo: Redo
-    ): Orchestrator = Orchestrator(
-        stores = storage,
-        createBlock = createBlock,
-        replaceBlock = replaceBlock,
-        proxies = proxer,
-        duplicateBlock = duplicateBlock,
-        updateBackgroundColor = updateBackgroundColor,
-        updateTextColor = updateTextColor,
-        uploadBlock = uploadBlock,
-        splitBlock = splitBlock,
-        mergeBlocks = mergeBlocks,
-        unlinkBlocks = unlinkBlocks,
-        undo = undo,
-        redo = redo,
-        updateTextStyle = updateTextStyle,
-        updateCheckbox = updateCheckbox,
-        memory = memory,
-        downloadFile = downloadFile,
-        updateTitle = updateTitle,
-        textInteractor = textInteractor,
-        updateText = updateText,
-        updateAlignment = updateAlignment,
-        setupBookmark = setupBookmark,
-        move = move,
-        paste = paste,
-        copy = copy
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideProxer(): Editor.Proxer = Editor.Proxer()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideStorage(): Editor.Storage = Editor.Storage()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideTextInteractor(
-        proxer: Editor.Proxer,
-        storage: Editor.Storage,
-        matcher: DefaultPatternMatcher
-    ): Interactor.TextInteractor = Interactor.TextInteractor(
-        proxies = proxer,
-        stores = storage,
-        matcher = matcher
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideUpdateAlignmentUseCase(
         repo: BlockRepository
     ): UpdateAlignment = UpdateAlignment(
@@ -452,7 +450,7 @@ object PageModule {
         repo: BlockRepository,
         clipboard: Clipboard,
         matcher: Clipboard.UriMatcher
-    ) : Paste = Paste(
+    ): Paste = Paste(
         repo = repo,
         clipboard = clipboard,
         matcher = matcher
@@ -464,7 +462,7 @@ object PageModule {
     fun provideCopyUseCase(
         repo: BlockRepository,
         clipboard: Clipboard
-    ) : Copy = Copy(
+    ): Copy = Copy(
         repo = repo,
         clipboard = clipboard
     )

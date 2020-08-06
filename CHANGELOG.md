@@ -12,6 +12,7 @@
 
 ### Fixes & tech 🚒
 
+* Should not crash the app when opening action menu for currently focused block (#635)
 * DI/Dagger optimizations (#626)
 * Updated Dagger to `2.28.3` (#627)
 

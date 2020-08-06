@@ -25,7 +25,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
-import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -740,8 +739,9 @@ open class PageFragment :
                 is Command.Measure -> {
                     val views = pageAdapter.views
                     val position = views.indexOfFirst { it.id == command.target }
-                    val target = recycler[position]
-                    val rect = PopupExtensions.calculateRectInWindow(target)
+                    val lm = recycler.layoutManager as? LinearLayoutManager
+                    val target = lm?.findViewByPosition(position)
+                    val rect = calculateRectInWindow(target)
                     val dimensions = BlockDimensions(
                         left = rect.left,
                         top = rect.top,

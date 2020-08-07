@@ -17,6 +17,10 @@
 * Updated Dagger to `2.28.3` (#627)
 * Safely setting emoji icon on home dashboard and in editor if image not found in our data set when searching by unicode (#638)
 
+### Middleware ⚙
+
+* Updated middleware protocol to `0.13.0` (#454)
+
 ## Version 0.0.41
 
 ### New features 🚀

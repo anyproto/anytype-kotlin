@@ -1295,6 +1295,7 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                        ANYTYPE_NEEDS_UPGRADE = 10; // failed to read unknown data format – need to upgrade anytype
                         // ...
                     }
                 }

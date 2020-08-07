@@ -1,0 +1,88 @@
+syntax = "proto3";
+package anytype;
+option go_package = "pb";
+
+import "models.proto";
+
+import "events.proto";
+import "google/protobuf/struct.proto";
+
+// the element of change tree used to store and internal apply smartBlock history
+message Change {
+    // ids of previous changes
+    repeated string previous_ids = 1;
+    // id of the last snapshot
+    string last_snapshot_id = 2;
+    // ids of the last changes with details content
+    repeated string previous_details_ids = 5;
+    // set of actions to apply
+    repeated Content content = 3;
+    // snapshot - when not null, the content will ignoring
+    Snapshot snapshot = 4;
+    // file keys related to changes content
+    repeated FileKeys fileKeys = 6;
+    // creation timestamp
+    int64 timestamp = 7;
+
+    message Snapshot {
+        // logId -> lastChangeId
+        map<string, string> logHeads = 1;
+        // snapshot data
+        anytype.model.SmartBlockSnapshotBase data = 2;
+        // all file keys related to doc
+        repeated FileKeys fileKeys = 3;
+    }
+
+    message FileKeys {
+        string hash = 1;
+        map<string, string> keys = 2;
+    }
+
+    message Content {
+        oneof value {
+            BlockCreate blockCreate = 1;
+            BlockUpdate blockUpdate = 2;
+            BlockRemove blockRemove = 3;
+            BlockMove blockMove = 4;
+            BlockDuplicate blockDuplicate = 5;
+            DetailsSet detailsSet = 100;
+            DetailsUnset detailsUnset = 101;
+        }
+    }
+
+    message BlockCreate {
+        string targetId = 1;
+        anytype.model.Block.Position position = 2;
+        repeated anytype.model.Block blocks = 3;
+    }
+
+    message BlockUpdate {
+        repeated Event.Message events = 2;
+    }
+
+    message BlockRemove {
+        repeated string ids = 1;
+    }
+
+    message BlockMove {
+        string targetId = 1;
+        anytype.model.Block.Position position = 2;
+        repeated string ids = 3;
+    }
+
+    message BlockDuplicate {
+        string targetId = 1;
+        anytype.model.Block.Position position = 2;
+        repeated string ids = 3;
+    }
+
+    message DetailsSet {
+        string key = 1;
+        google.protobuf.Value value = 2;
+    }
+
+    message DetailsUnset {
+        string key = 1;
+    }
+
+}

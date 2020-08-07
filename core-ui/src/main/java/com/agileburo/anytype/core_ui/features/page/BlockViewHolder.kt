@@ -218,13 +218,18 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     .into(image)
             } ?: apply { image.setImageDrawable(null) }
 
-            if (item.emoji != null) {
-                Glide
-                    .with(emoji)
-                    .load(Emojifier.uri(item.emoji))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(emoji)
+            try {
+                if (item.emoji != null) {
+                    Glide
+                        .with(emoji)
+                        .load(Emojifier.uri(item.emoji))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(emoji)
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Could not set emoji icon")
             }
+
 
             if (item.mode == BlockView.Mode.READ) {
                 enableReadOnlyMode()

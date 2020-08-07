@@ -15,6 +15,7 @@
 * Should not crash the app when opening action menu for currently focused block (#635)
 * DI/Dagger optimizations (#626)
 * Updated Dagger to `2.28.3` (#627)
+* Safely setting emoji icon on home dashboard and in editor if image not found in our data set when searching by unicode (#638)
 
 ## Version 0.0.41
 

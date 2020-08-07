@@ -13,6 +13,7 @@ import com.agileburo.anytype.presentation.desktop.DashboardView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_desktop_page.view.*
+import timber.log.Timber
 
 class DashboardAdapter(
     private var data: MutableList<DashboardView>,
@@ -76,12 +77,16 @@ class DashboardAdapter(
                 else
                     title.text = doc.title
 
-                doc.emoji?.let { unicode ->
-                    Glide
-                        .with(emoji)
-                        .load(Emojifier.uri(unicode))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(emoji)
+                try {
+                    doc.emoji?.let { unicode ->
+                        Glide
+                            .with(emoji)
+                            .load(Emojifier.uri(unicode))
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(emoji)
+                    }
+                } catch (e: Throwable) {
+                    Timber.e(e, "Could not set emoji icon")
                 }
 
                 doc.image?.let { url ->

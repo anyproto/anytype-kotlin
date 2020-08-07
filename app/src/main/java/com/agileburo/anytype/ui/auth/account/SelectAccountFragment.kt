@@ -51,11 +51,11 @@ class SelectAccountFragment : NavigationFragment(R.layout.fragment_select_accoun
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        vm.state.observe(this, Observer { state ->
+        vm.state.observe(viewLifecycleOwner, Observer { state ->
             profileAdapter.update(state)
         })
 
-        vm.observeNavigation().observe(this, navObserver)
+        vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
     }
 
     override fun injectDependencies() {

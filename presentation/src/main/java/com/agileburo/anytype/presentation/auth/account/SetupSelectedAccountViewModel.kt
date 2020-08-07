@@ -15,6 +15,8 @@ class SetupSelectedAccountViewModel(
     private val pathProvider: PathProvider
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
+    val error = MutableLiveData<String>()
+
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
         MutableLiveData()
 
@@ -27,7 +29,10 @@ class SetupSelectedAccountViewModel(
             )
         ) { result ->
             result.either(
-                fnL = { Timber.e(it, "Error while selecting account with id: $id") },
+                fnL = {
+                    error.postValue(ERROR_MESSAGE)
+                    Timber.e(it, "Error while selecting account with id: $id")
+                },
                 fnR = { navigateToHomeDashboard() }
             )
         }
@@ -35,5 +40,9 @@ class SetupSelectedAccountViewModel(
 
     private fun navigateToHomeDashboard() {
         navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromLogin))
+    }
+
+    companion object {
+        const val ERROR_MESSAGE = "An error occured while starting account..."
     }
 }

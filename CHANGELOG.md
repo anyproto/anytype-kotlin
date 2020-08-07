@@ -16,6 +16,7 @@
 * DI/Dagger optimizations (#626)
 * Updated Dagger to `2.28.3` (#627)
 * Safely setting emoji icon on home dashboard and in editor if image not found in our data set when searching by unicode (#638)
+* Show error if we failed to start account while sign-in (#633)
 
 ### Middleware ⚙
 

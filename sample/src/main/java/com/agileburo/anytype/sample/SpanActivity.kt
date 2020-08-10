@@ -35,7 +35,7 @@ class SpanActivity : AppCompatActivity() {
                         MentionSpan(
                             this@SpanActivity,
                             R.drawable.ic_baseline_4k_24,
-                            resource,
+                            getDrawable(R.drawable.ic_block_empty_page),
                             16.px,
                             0,
                             ""

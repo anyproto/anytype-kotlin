@@ -18,7 +18,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
 
-@Config(sdk = [Build.VERSION_CODES.P])
+@Config(sdk = [Build.VERSION_CODES.O])
 @RunWith(RobolectricTestRunner::class)
 class BlockAdapterCursorBindingTest {
 

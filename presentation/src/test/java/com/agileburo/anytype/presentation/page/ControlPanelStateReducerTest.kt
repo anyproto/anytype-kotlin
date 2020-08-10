@@ -472,7 +472,7 @@ class ControlPanelStateReducerTest {
         val result = runBlocking {
             reducer.reduce(
                 state = nonSelected,
-                event = ControlPanelMachine.Event.OnEnterMultiSelectModeClicked
+                event = ControlPanelMachine.Event.MultiSelect.OnEnter
             )
         }
 
@@ -540,7 +540,7 @@ class ControlPanelStateReducerTest {
         val result = runBlocking {
             reducer.reduce(
                 state = selectedZero,
-                event = ControlPanelMachine.Event.OnMultiSelectModeBlockClick(count = 3)
+                event = ControlPanelMachine.Event.MultiSelect.OnBlockClick(count = 3)
             )
         }
 

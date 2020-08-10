@@ -44,9 +44,15 @@ data class ControlPanelState(
             val target: Target? = null,
             val props: Props? = null,
             override val isVisible: Boolean,
-            val mode: StylingMode?,
-            val type: StylingType?
+            val mode: StylingMode? = null,
+            val type: StylingType? = null
         ) : Toolbar() {
+
+            companion object {
+                fun reset() = Styling(
+                    isVisible = false
+                )
+            }
 
             /**
              * Target's properties corresponding to current selection or styling mode.
@@ -121,7 +127,18 @@ data class ControlPanelState(
             val cursorCoordinate: Int?,
             val updateList: Boolean = false,
             val mentions: List<Mention> = emptyList()
-        ) : Toolbar()
+        ) : Toolbar() {
+            companion object {
+                fun reset(): MentionToolbar = MentionToolbar(
+                    isVisible = false,
+                    mentionFilter = null,
+                    mentionFrom = null,
+                    cursorCoordinate = null,
+                    mentions = emptyList(),
+                    updateList = false
+                )
+            }
+        }
     }
 
     /**

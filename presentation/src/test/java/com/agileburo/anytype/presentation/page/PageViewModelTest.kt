@@ -157,10 +157,10 @@ class PageViewModelTest {
     }
 
     @Test
-    fun `should start observing events when view model is initialized`() {
+    fun `should not start observing events when view model is initialized`() {
         stubObserveEvents()
         buildViewModel()
-        verify(interceptEvents, times(1)).build()
+        verifyZeroInteractions(interceptEvents)
     }
 
     @Test
@@ -216,28 +216,22 @@ class PageViewModelTest {
             paragraph
         )
 
-        stubOpenPage(context = root)
-
-        val flow: Flow<List<Event>> = flow {
-            delay(1000)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
+        stubOpenPage(
+            context = root,
+            events = listOf(
+                Event.Command.ShowBlock(
+                    root = root,
+                    blocks = page,
+                    context = root
                 )
             )
-        }
+        )
 
-        stubObserveEvents(flow)
+        stubObserveEvents()
 
         buildViewModel(builder)
 
         vm.onStart(root)
-
-        coroutineTestRule.advanceTime(1001)
 
         val expected = ViewState.Success(
             blocks = listOf(
@@ -571,7 +565,7 @@ class PageViewModelTest {
         val text = MockDataFactory.randomString()
 
         interceptEvents.stub {
-            onBlocking { build() } doReturn flow {
+            onBlocking { build(any()) } doReturn flow {
                 delay(100)
                 emit(
                     listOf(
@@ -684,7 +678,7 @@ class PageViewModelTest {
         )
 
         interceptEvents.stub {
-            onBlocking { build() } doReturn flow {
+            onBlocking { build(any()) } doReturn flow {
                 delay(100)
                 emit(
                     listOf(
@@ -699,6 +693,8 @@ class PageViewModelTest {
         }
 
         stubOpenPage()
+
+        stubUpdateText()
 
         buildViewModel(builder)
 
@@ -3183,27 +3179,20 @@ class PageViewModelTest {
             paragraph
         )
 
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
+        stubObserveEvents()
+        stubOpenPage(
+            events = listOf(
+                Event.Command.ShowBlock(
+                    root = root,
+                    blocks = page,
+                    context = root
                 )
             )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
+        )
         stubCreateBlock(root = root)
         buildViewModel()
 
         vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
 
         // TESTING
 
@@ -4217,7 +4206,7 @@ class PageViewModelTest {
 
     private fun stubObserveEvents(flow: Flow<List<Event>> = flowOf()) {
         interceptEvents.stub {
-            onBlocking { build() } doReturn flow
+            onBlocking { build(any()) } doReturn flow
         }
     }
 

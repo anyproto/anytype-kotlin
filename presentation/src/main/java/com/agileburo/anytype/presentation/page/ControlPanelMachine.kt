@@ -6,6 +6,7 @@ import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
 import com.agileburo.anytype.core_ui.state.ControlPanelState
+import com.agileburo.anytype.core_ui.state.ControlPanelState.Companion.init
 import com.agileburo.anytype.core_ui.state.ControlPanelState.Toolbar
 import com.agileburo.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.agileburo.anytype.domain.block.model.Block
@@ -19,10 +20,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * State machine for control panels consisting of [Interactor], [ControlPanelState], [Event] and [Reducer]
@@ -51,9 +50,7 @@ sealed class ControlPanelMachine {
         /**
          * @return a stream of immutable states, as processed by [Reducer].
          */
-        fun state(): Flow<ControlPanelState> = events.scan(ControlPanelState.init(), reducer.function).onEach {
-            Timber.d("Emitting: $it")
-        }
+        fun state(): Flow<ControlPanelState> = events.scan(init(), reducer.function)
     }
 
     /**
@@ -82,9 +79,6 @@ sealed class ControlPanelMachine {
          */
         object OnMarkupBackgroundColorSelected : Event()
 
-        object OnStyleBackgroundSlideClicked: Event()
-        object OnStyleColorSlideClicked: Event()
-
         data class OnMarkupContextMenuTextColorClicked(
             val selection: IntRange,
             val target: Block
@@ -108,10 +102,6 @@ sealed class ControlPanelMachine {
          */
         object OnBlockBackgroundColorSelected : Event()
 
-        /**
-         * Represents an event when user selected alignment on [Toolbar.Styling] toolbar.
-         */
-        object OnBlockAlignmentSelected : Event()
 
         /**
          * Represents an event when user cleares the current focus by closing keyboard.
@@ -133,31 +123,59 @@ sealed class ControlPanelMachine {
             val style: Block.Content.Text.Style
         ) : Event()
 
-        object OnBlockStyleToolbarCloseButtonClicked : Event()
-
         data class OnBlockActionToolbarTextColorClicked(val target: Block) : Event()
         data class OnBlockActionToolbarBackgroundColorClicked(val target: Block) : Event()
         data class OnBlockActionToolbarStyleClicked(val target: Block) : Event()
 
-        data class OnBlockToolbarStyleClicked(val target: Block) : Event()
+        /**
+         * Styling-toolbar-related events
+         */
 
-        object OnEnterMultiSelectModeClicked : Event()
-        object OnExitMultiSelectModeClicked : Event()
-        object OnMultiSelectDeleteClicked : Event()
-        object OnMultiSelectTurnIntoBlockClicked : Event()
-        data class OnMultiSelectModeBlockClick(val count : Int): Event()
+        sealed class StylingToolbar : Event() {
 
-        object OnApplyScrollAndMoveClicked : Event()
-        object OnExitScrollAndMoveModeClicked : Event()
-        object OnEnterScrollAndMoveModeClicked : Event()
+            object OnBackgroundSlideSelected : StylingToolbar()
+            object OnColorSlideSelected : StylingToolbar()
+
+            /**
+             * Represents an event when user selected alignment on [Toolbar.Styling] toolbar.
+             */
+            object OnAlignmentSelected : StylingToolbar()
+
+            object OnClose : StylingToolbar()
+        }
+
+        /**
+         * Multi-select-related events
+         */
+        sealed class MultiSelect : Event() {
+            object OnEnter : MultiSelect()
+            object OnExit : MultiSelect()
+            object OnDelete : MultiSelect()
+            object OnTurnInto : MultiSelect()
+            data class OnBlockClick(val count: Int) : MultiSelect()
+        }
+
+        /**
+         * Scroll-and-move-related events.
+         */
+        sealed class SAM : Event() {
+            object OnApply : SAM()
+            object OnExit : SAM()
+            object OnEnter : SAM()
+        }
+
+        /**
+         * Mention-related events.
+         */
+        sealed class Mentions : Event() {
+            data class OnStart(val cursorCoordinate: Int, val mentionFrom: Int) : Mentions()
+            data class OnQuery(val text: String) : Mentions()
+            data class OnResult(val mentions: List<Mention>) : Mentions()
+            object OnMentionClicked : Mentions()
+            object OnStop : Mentions()
+        }
 
         data class OnRefresh(val target: Block?) : Event()
-
-        data class OnShowMentionToolbar(val cursorCoordinate: Int, val mentionFrom: Int) : Event()
-        data class OnMentionFilterText(val text: String) : Event()
-        data class OnGetMentionsList(val mentions: List<Mention>) : Event()
-        object OnMentionClicked : Event()
-        object OnHideMentionToolbar : Event()
     }
 
     /**
@@ -166,126 +184,45 @@ sealed class ControlPanelMachine {
     class Reducer : StateReducer<ControlPanelState, Event> {
 
         private val excl = listOf(Overlap.LEFT, Overlap.RIGHT, Overlap.OUTER)
-        private val incl = listOf(Overlap.EQUAL, Overlap.INNER, Overlap.LEFT, Overlap.RIGHT, Overlap.INNER_RIGHT, Overlap.INNER_LEFT)
+        private val incl = listOf(
+            Overlap.EQUAL,
+            Overlap.INNER,
+            Overlap.LEFT,
+            Overlap.RIGHT,
+            Overlap.INNER_RIGHT,
+            Overlap.INNER_LEFT
+        )
 
         var selection: IntRange? = null
 
-        private fun onSelectionChangedMentionState(
-            state: Toolbar.MentionToolbar,
-            start: Int
-        ): Toolbar.MentionToolbar {
-            val from = state.mentionFrom
-            return if (state.isVisible && from != null && start < from) {
-                state.copy(
-                    isVisible = false,
-                    cursorCoordinate = null,
-                    mentionFrom = null,
-                    updateList = false,
-                    mentionFilter = null,
-                    mentions = emptyList())
-            } else {
-                state.copy()
-            }
-        }
-
         override val function: suspend (ControlPanelState, Event) -> ControlPanelState
-            get() = { state, event ->
-                reduce(
-                    state,
-                    event
-                ).also { Timber.d("Reducing event:\n$event") }
-            }
+            get() = { state, event -> reduce(state, event) }
 
         override suspend fun reduce(state: ControlPanelState, event: Event) = when (event) {
             is Event.OnSelectionChanged -> {
                 when {
                     state.focus == null -> state.copy()
                     state.stylingToolbar.isVisible -> {
-                        if (state.stylingToolbar.mode == StylingMode.MARKUP) {
-
-                            val colorOverlaps = mutableListOf<Overlap>()
-                            val backgroundOverlaps = mutableListOf<Overlap>()
-
-                            val target = state.stylingToolbar.target
-                            val props = state.stylingToolbar.props
-
-                            var color: String? = null
-                            var background: String? = null
-
-                            target?.marks?.forEach { mark ->
-                                if (mark.type == Markup.Type.TEXT_COLOR) {
-                                    val range = mark.from..mark.to
-                                    val overlap = event.selection.overlap(range)
-                                    if (incl.contains(overlap))
-                                        color = mark.param
-                                    else
-                                        colorOverlaps.add(overlap)
-                                } else if (mark.type == Markup.Type.BACKGROUND_COLOR) {
-                                    val range = mark.from..mark.to
-                                    val overlap = range.overlap(event.selection)
-                                    if (incl.contains(overlap))
-                                        background = mark.param
-                                    else
-                                        backgroundOverlaps.add(overlap)
-                                }
-                            }
-
-                            if (color == null) {
-                                if (colorOverlaps.isEmpty() || colorOverlaps.none { value -> excl.contains(value) })
-                                    color = target?.color ?: ThemeColor.DEFAULT.title
-                            }
-
-                            if (background == null) {
-                                if (backgroundOverlaps.isEmpty() || backgroundOverlaps.none { value -> excl.contains(value) })
-                                    background = target?.background ?: ThemeColor.DEFAULT.title
-                            }
-
-                            selection = event.selection
-
-                            state.copy(
-                                stylingToolbar = state.stylingToolbar.copy(
-                                    props = props?.copy(
-                                        color = color,
-                                        background = background
-                                    )
-                                ),
-                                mentionToolbar = onSelectionChangedMentionState(
-                                    state = state.mentionToolbar,
-                                    start = event.selection.first
-                                )
-                            )
-                        } else {
-                            state.copy(
-                                mentionToolbar = onSelectionChangedMentionState(
-                                    state = state.mentionToolbar,
-                                    start = event.selection.first
-                                )
-                            )
-                        }
+                        handleSelectionChangeForStylingToolbar(event, state)
                     }
+                    state.mentionToolbar.isVisible -> state.copy(
+                        mentionToolbar = handleSelectionChangeEventForMentionState(
+                            state = state.mentionToolbar,
+                            start = event.selection.first
+                        )
+                    )
                     else -> {
                         state.copy(
                             mainToolbar = state.mainToolbar.copy(
-                                isVisible = (!state.multiSelect.isVisible && event.selection.first == event.selection.last)
-                            ),
-                            mentionToolbar = onSelectionChangedMentionState(
-                                state = state.mentionToolbar,
-                                start = event.selection.first
+                                isVisible = true
                             )
                         )
                     }
                 }
             }
-            is Event.OnStyleBackgroundSlideClicked -> state.copy(
-                stylingToolbar = state.stylingToolbar.copy(
-                    type = StylingType.BACKGROUND
-                )
-            )
-            is Event.OnStyleColorSlideClicked -> state.copy(
-                stylingToolbar = state.stylingToolbar.copy(
-                    type = StylingType.TEXT_COLOR
-                )
-            )
+            is Event.StylingToolbar -> {
+                handleStylingToolbarEvent(event, state)
+            }
             is Event.OnMarkupTextColorSelected -> state.copy(
                 stylingToolbar = state.stylingToolbar.copy(
                     type = StylingType.TEXT_COLOR
@@ -301,11 +238,6 @@ sealed class ControlPanelMachine {
                     type = StylingType.BACKGROUND
                 )
             )
-            is Event.OnBlockAlignmentSelected -> state.copy(
-                stylingToolbar = state.stylingToolbar.copy(
-                    type = StylingType.STYLE
-                )
-            )
             is Event.OnBlockStyleSelected -> state.copy(
                 stylingToolbar = state.stylingToolbar.copy(
                     type = StylingType.STYLE
@@ -318,56 +250,9 @@ sealed class ControlPanelMachine {
                 )
             )
             is Event.OnMarkupContextMenuTextColorClicked -> {
-
                 selection = event.selection
-
                 val target = target(event.target)
-
-                var color: String? = null
-                var background: String? = null
-
-                val colorOverlaps = mutableListOf<Overlap>()
-                val backgroundOverlaps = mutableListOf<Overlap>()
-
-                target.marks.forEach { mark ->
-                    if (mark.type == Markup.Type.TEXT_COLOR) {
-                        val range = mark.from..mark.to
-                        val overlap = event.selection.overlap(range)
-                        if (incl.contains(overlap))
-                            color = mark.param
-                        else
-                            colorOverlaps.add(overlap)
-                    } else if (mark.type == Markup.Type.BACKGROUND_COLOR) {
-                        val range = mark.from..mark.to
-                        val overlap = event.selection.overlap(range)
-                        if (incl.contains(overlap))
-                            background = mark.param
-                        else
-                            backgroundOverlaps.add(overlap)
-                    }
-                }
-
-                if (color == null) {
-                    if (colorOverlaps.isEmpty() || colorOverlaps.none { value -> excl.contains(value) })
-                        color = target.color ?: ThemeColor.DEFAULT.title
-                }
-
-                if (background == null) {
-                    if (backgroundOverlaps.isEmpty() || backgroundOverlaps.none { value -> excl.contains(value) })
-                        background = target.background ?: ThemeColor.DEFAULT.title
-                }
-
-                val props = Toolbar.Styling.Props(
-                    isBold = target.isBold,
-                    isItalic = target.isItalic,
-                    isStrikethrough = target.isStrikethrough,
-                    isCode = target.isCode,
-                    isLinked = target.isLinked,
-                    color = color,
-                    background = background,
-                    alignment = target.alignment
-                )
-
+                val props = getMarkupLevelStylingProps(target, event.selection)
                 state.copy(
                     mainToolbar = state.mainToolbar.copy(
                         isVisible = false
@@ -382,37 +267,9 @@ sealed class ControlPanelMachine {
                 )
             }
             is Event.OnMarkupContextMenuBackgroundColorClicked -> {
-
                 selection = event.selection
-
                 val target = target(event.target)
-
-                var color: String? = null
-                var background: String? = null
-
-                target.marks.forEach { mark ->
-                    if (mark.type == Markup.Type.TEXT_COLOR) {
-                        val range = mark.from..mark.to
-                        if (range.overlap(event.selection) == Overlap.EQUAL)
-                            color = mark.param
-                    } else if (mark.type == Markup.Type.BACKGROUND_COLOR) {
-                        val range = mark.from..mark.to
-                        if (range.overlap(event.selection) == Overlap.EQUAL)
-                            background = mark.param
-                    }
-                }
-
-                val props = Toolbar.Styling.Props(
-                    isBold = target.isBold,
-                    isItalic = target.isItalic,
-                    isStrikethrough = target.isStrikethrough,
-                    isCode = target.isCode,
-                    isLinked = target.isLinked,
-                    color = color,
-                    background = background,
-                    alignment = target.alignment
-                )
-
+                val props = getMarkupLevelStylingProps(target, event.selection)
                 state.copy(
                     mainToolbar = state.mainToolbar.copy(
                         isVisible = false
@@ -426,19 +283,9 @@ sealed class ControlPanelMachine {
                     )
                 )
             }
-            is Event.OnClearFocusClicked -> ControlPanelState.init()
+            is Event.OnClearFocusClicked -> init()
             is Event.OnTextInputClicked -> state.copy(
-                stylingToolbar = state.stylingToolbar.copy(
-                    isVisible = false
-                )
-            )
-            is Event.OnBlockStyleToolbarCloseButtonClicked -> state.copy(
-                stylingToolbar = state.stylingToolbar.copy(
-                    isVisible = false
-                ),
-                mainToolbar = state.mainToolbar.copy(
-                    isVisible = true
-                )
+                stylingToolbar = Toolbar.Styling.reset()
             )
             is Event.OnBlockActionToolbarTextColorClicked -> {
                 val target = target(event.target)
@@ -465,9 +312,7 @@ sealed class ControlPanelMachine {
                 )
             }
             is Event.OnBlockActionToolbarBackgroundColorClicked -> {
-
                 val target = target(event.target)
-
                 state.copy(
                     mainToolbar = state.mainToolbar.copy(
                         isVisible = false
@@ -515,160 +360,39 @@ sealed class ControlPanelMachine {
                     )
                 )
             }
-            is Event.OnBlockToolbarStyleClicked -> {
-                val target = target(event.target)
-                val props = Toolbar.Styling.Props(
-                    isBold = target.isBold,
-                    isItalic = target.isItalic,
-                    isStrikethrough = target.isStrikethrough,
-                    isCode = target.isCode,
-                    isLinked = target.isLinked,
-                    color = target.color,
-                    background = target.background,
-                    alignment = target.alignment
-                )
-                state.copy(
-                    mainToolbar = state.mainToolbar.copy(
-                        isVisible = false
-                    ),
-                    stylingToolbar = state.stylingToolbar.copy(
-                        isVisible = true,
-                        mode = StylingMode.BLOCK,
-                        type = StylingType.STYLE,
-                        target = target(event.target),
-                        props = props
-                    )
-                )
-            }
             is Event.OnRefresh -> {
                 if (state.stylingToolbar.isVisible) {
-                    if (state.stylingToolbar.mode == StylingMode.MARKUP) {
-                        event.target?.let { block ->
-
-                            val target = target(block)
-
-                            var color: String? = null
-                            var background: String? = null
-
-                            selection?.let {
-                                target.marks.forEach { mark ->
-                                    if (mark.type == Markup.Type.TEXT_COLOR) {
-                                        val range = mark.from..mark.to
-                                        if (range.overlap(it) == Overlap.EQUAL)
-                                            color = mark.param
-                                    } else if (mark.type == Markup.Type.BACKGROUND_COLOR) {
-                                        val range = mark.from..mark.to
-                                        if (range.overlap(it) == Overlap.EQUAL)
-                                            background = mark.param
-                                    }
-                                }
-
-                                val props = Toolbar.Styling.Props(
-                                    isBold = target.isBold,
-                                    isItalic = target.isItalic,
-                                    isStrikethrough = target.isStrikethrough,
-                                    isCode = target.isCode,
-                                    isLinked = target.isLinked,
-                                    color = color,
-                                    background = background,
-                                    alignment = target.alignment
-                                )
-
-                                state.copy(
-                                    stylingToolbar = state.stylingToolbar.copy(
-                                        props = props,
-                                        target = target
-                                    )
-                                )
-                            } ?: state.copy()
-                        } ?: state.copy()
-                    } else {
-
-                        val target = event.target?.let { target(it) }
-
-                        state.copy(
-                            stylingToolbar = state.stylingToolbar.copy(
-                                target = target,
-                                props = target?.let {
-                                    Toolbar.Styling.Props(
-                                        isBold = it.isBold,
-                                        isItalic = it.isItalic,
-                                        isStrikethrough = it.isStrikethrough,
-                                        isCode = it.isCode,
-                                        isLinked = it.isLinked,
-                                        color = it.color,
-                                        background = it.background,
-                                        alignment = it.alignment
-                                    )
-                                }
-                            )
-                        )
-                    }
+                    handleRefreshForMarkupLevelStyling(state, event)
                 } else {
                     state.copy()
                 }
             }
-            is Event.OnEnterMultiSelectModeClicked -> state.copy(
-                mainToolbar = state.mainToolbar.copy(
-                    isVisible = false
-                ),
-                multiSelect = state.multiSelect.copy(
-                    isVisible = true,
-                    count = NO_BLOCK_SELECTED
-                )
-            )
-            is Event.OnExitMultiSelectModeClicked -> state.copy(
-                focus = null,
-                multiSelect = state.multiSelect.copy(
-                    isVisible = false,
-                    isScrollAndMoveEnabled = false,
-                    count = NO_BLOCK_SELECTED
-                ),
-                mainToolbar = state.mainToolbar.copy(
-                    isVisible = false
-                )
-            )
-            is Event.OnMultiSelectDeleteClicked -> state.copy(
-                multiSelect = state.multiSelect.copy(
-                    count = NO_BLOCK_SELECTED
-                )
-            )
-            is Event.OnMultiSelectTurnIntoBlockClicked -> state.copy(
-                multiSelect = state.multiSelect.copy(
-                    count = NO_BLOCK_SELECTED
-                )
-            )
+            is Event.MultiSelect -> {
+                handleMultiSelectEvent(event, state)
+            }
+            is Event.SAM -> {
+                handleScrollAndMoveEvent(event, state)
+            }
+            is Event.Mentions -> {
+                handleMentionEvent(event, state)
+            }
             is Event.OnFocusChanged -> {
                 when {
                     state.multiSelect.isVisible -> state.copy(
-                        mentionToolbar = state.mentionToolbar.copy(
-                            isVisible = false,
-                            cursorCoordinate = null,
-                            mentionFrom = null,
-                            mentionFilter = null,
-                            mentions = emptyList()
-                        )
+                        mentionToolbar = Toolbar.MentionToolbar.reset()
                     )
                     !state.mainToolbar.isVisible -> state.copy(
                         mainToolbar = state.mainToolbar.copy(
                             isVisible = true
                         ),
-                        stylingToolbar = state.stylingToolbar.copy(
-                            isVisible = false
-                        ),
+                        stylingToolbar = Toolbar.Styling.reset(),
                         focus = ControlPanelState.Focus(
                             id = event.id,
                             type = ControlPanelState.Focus.Type.valueOf(
                                 value = event.style.name
                             )
                         ),
-                        mentionToolbar = state.mentionToolbar.copy(
-                            isVisible = false,
-                            cursorCoordinate = null,
-                            mentionFrom = null,
-                            mentionFilter = null,
-                            mentions = emptyList()
-                        )
+                        mentionToolbar = Toolbar.MentionToolbar.reset()
                     )
                     else -> {
                         state.copy(
@@ -681,39 +405,179 @@ sealed class ControlPanelMachine {
                             stylingToolbar = state.stylingToolbar.copy(
                                 isVisible = false
                             ),
-                            mentionToolbar = state.mentionToolbar.copy(
-                                isVisible = false,
-                                cursorCoordinate = null,
-                                mentionFrom = null,
-                                mentionFilter = null,
-                                mentions = emptyList()
-                            )
+                            mentionToolbar = Toolbar.MentionToolbar.reset()
                         )
                     }
                 }
             }
-            is Event.OnMultiSelectModeBlockClick -> state.copy(
-                multiSelect = state.multiSelect.copy(
-                    count = event.count
+        }
+
+        private fun handleRefreshForMarkupLevelStyling(
+            state: ControlPanelState,
+            event: Event.OnRefresh
+        ): ControlPanelState {
+            return if (state.stylingToolbar.mode == StylingMode.MARKUP) {
+                if (event.target != null) {
+                    val target = target(event.target)
+                    selection?.let {
+                        val props = getMarkupLevelStylingProps(target, it)
+                        state.copy(
+                            stylingToolbar = state.stylingToolbar.copy(
+                                props = props,
+                                target = target
+                            )
+                        )
+                    } ?: state.copy()
+                } else {
+                    state.copy()
+                }
+            } else {
+                val target = event.target?.let { target(it) }
+                state.copy(
+                    stylingToolbar = state.stylingToolbar.copy(
+                        target = target,
+                        props = target?.let {
+                            Toolbar.Styling.Props(
+                                isBold = it.isBold,
+                                isItalic = it.isItalic,
+                                isStrikethrough = it.isStrikethrough,
+                                isCode = it.isCode,
+                                isLinked = it.isLinked,
+                                color = it.color,
+                                background = it.background,
+                                alignment = it.alignment
+                            )
+                        }
+                    )
+                )
+            }
+        }
+
+        private fun getMarkupLevelStylingProps(
+            target: Toolbar.Styling.Target,
+            selection: IntRange
+        ): Toolbar.Styling.Props {
+
+            var color: String? = null
+            var background: String? = null
+
+            val colorOverlaps = mutableListOf<Overlap>()
+            val backgroundOverlaps = mutableListOf<Overlap>()
+
+            target.marks.forEach { mark ->
+                if (mark.type == Markup.Type.TEXT_COLOR) {
+                    val range = mark.from..mark.to
+                    val overlap = selection.overlap(range)
+                    if (incl.contains(overlap))
+                        color = mark.param
+                    else
+                        colorOverlaps.add(overlap)
+                } else if (mark.type == Markup.Type.BACKGROUND_COLOR) {
+                    val range = mark.from..mark.to
+                    val overlap = selection.overlap(range)
+                    if (incl.contains(overlap))
+                        background = mark.param
+                    else
+                        backgroundOverlaps.add(overlap)
+                }
+            }
+
+            if (color == null) {
+                if (colorOverlaps.isEmpty() || colorOverlaps.none { value -> excl.contains(value) })
+                    color = target.color ?: ThemeColor.DEFAULT.title
+            }
+
+            if (background == null) {
+                if (backgroundOverlaps.isEmpty() || backgroundOverlaps.none { value ->
+                        excl.contains(
+                            value
+                        )
+                    })
+                    background = target.background ?: ThemeColor.DEFAULT.title
+            }
+
+            return Toolbar.Styling.Props(
+                isBold = target.isBold,
+                isItalic = target.isItalic,
+                isStrikethrough = target.isStrikethrough,
+                isCode = target.isCode,
+                isLinked = target.isLinked,
+                color = color,
+                background = background,
+                alignment = target.alignment
+            )
+        }
+
+        private fun handleSelectionChangeForStylingToolbar(
+            event: Event.OnSelectionChanged,
+            state: ControlPanelState
+        ): ControlPanelState {
+            return if (event.selection.first != event.selection.last) {
+                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
+                    val target = state.stylingToolbar.target
+                    selection = event.selection
+                    if (target != null) {
+                        state.copy(
+                            stylingToolbar = state.stylingToolbar.copy(
+                                props = getMarkupLevelStylingProps(
+                                    target = target,
+                                    selection = event.selection
+                                )
+                            )
+                        )
+                    } else {
+                        state.copy()
+                    }
+                } else {
+                    state.copy(
+                        mainToolbar = state.mainToolbar.copy(
+                            isVisible = true
+                        ),
+                        stylingToolbar = Toolbar.Styling.reset()
+                    )
+                }
+            } else {
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = true
+                    ),
+                    stylingToolbar = Toolbar.Styling.reset()
+                )
+            }
+        }
+
+        private fun handleStylingToolbarEvent(
+            event: Event.StylingToolbar,
+            state: ControlPanelState
+        ): ControlPanelState = when (event) {
+            is Event.StylingToolbar.OnBackgroundSlideSelected -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    type = StylingType.BACKGROUND
                 )
             )
-            is Event.OnExitScrollAndMoveModeClicked -> state.copy(
-                multiSelect = state.multiSelect.copy(
-                    isScrollAndMoveEnabled = false
+            is Event.StylingToolbar.OnColorSlideSelected -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    type = StylingType.TEXT_COLOR
                 )
             )
-            is Event.OnEnterScrollAndMoveModeClicked -> state.copy(
-                multiSelect = state.multiSelect.copy(
-                    isScrollAndMoveEnabled = true
+            is Event.StylingToolbar.OnAlignmentSelected -> state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    type = StylingType.STYLE
                 )
             )
-            is Event.OnApplyScrollAndMoveClicked -> state.copy(
-                multiSelect = state.multiSelect.copy(
-                    count = NO_BLOCK_SELECTED,
-                    isScrollAndMoveEnabled = false
+            is Event.StylingToolbar.OnClose -> state.copy(
+                stylingToolbar = Toolbar.Styling.reset(),
+                mainToolbar = state.mainToolbar.copy(
+                    isVisible = true
                 )
             )
-            is Event.OnShowMentionToolbar -> state.copy(
+        }
+
+        private fun handleMentionEvent(
+            event: Event.Mentions,
+            state: ControlPanelState
+        ): ControlPanelState = when (event) {
+            is Event.Mentions.OnStart -> state.copy(
                 mentionToolbar = state.mentionToolbar.copy(
                     isVisible = true,
                     cursorCoordinate = event.cursorCoordinate,
@@ -722,7 +586,7 @@ sealed class ControlPanelMachine {
                     mentionFrom = event.mentionFrom
                 )
             )
-            is Event.OnHideMentionToolbar -> state.copy(
+            is Event.Mentions.OnStop -> state.copy(
                 mentionToolbar = state.mentionToolbar.copy(
                     isVisible = false,
                     cursorCoordinate = null,
@@ -732,13 +596,13 @@ sealed class ControlPanelMachine {
                     mentions = emptyList()
                 )
             )
-            is Event.OnGetMentionsList -> state.copy(
+            is Event.Mentions.OnResult -> state.copy(
                 mentionToolbar = state.mentionToolbar.copy(
                     mentions = event.mentions,
                     updateList = true
                 )
             )
-            is Event.OnMentionClicked -> state.copy(
+            is Event.Mentions.OnMentionClicked -> state.copy(
                 mentionToolbar = state.mentionToolbar.copy(
                     isVisible = false,
                     cursorCoordinate = null,
@@ -748,7 +612,7 @@ sealed class ControlPanelMachine {
                     mentions = emptyList()
                 )
             )
-            is Event.OnMentionFilterText -> state.copy(
+            is Event.Mentions.OnQuery -> state.copy(
                 mentionToolbar = state.mentionToolbar.copy(
                     mentionFilter = event.text,
                     updateList = false
@@ -756,7 +620,89 @@ sealed class ControlPanelMachine {
             )
         }
 
-        fun target(block: Block): Toolbar.Styling.Target {
+        private fun handleMultiSelectEvent(
+            event: Event.MultiSelect,
+            state: ControlPanelState
+        ): ControlPanelState = when (event) {
+            is Event.MultiSelect.OnEnter -> state.copy(
+                mainToolbar = state.mainToolbar.copy(
+                    isVisible = false
+                ),
+                multiSelect = state.multiSelect.copy(
+                    isVisible = true,
+                    count = NO_BLOCK_SELECTED
+                )
+            )
+            is Event.MultiSelect.OnExit -> state.copy(
+                focus = null,
+                multiSelect = state.multiSelect.copy(
+                    isVisible = false,
+                    isScrollAndMoveEnabled = false,
+                    count = NO_BLOCK_SELECTED
+                ),
+                mainToolbar = state.mainToolbar.copy(
+                    isVisible = false
+                )
+            )
+            is Event.MultiSelect.OnDelete -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    count = NO_BLOCK_SELECTED
+                )
+            )
+            is Event.MultiSelect.OnTurnInto -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    count = NO_BLOCK_SELECTED
+                )
+            )
+            is Event.MultiSelect.OnBlockClick -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    count = event.count
+                )
+            )
+        }
+
+        private fun handleScrollAndMoveEvent(
+            event: Event.SAM,
+            state: ControlPanelState
+        ): ControlPanelState = when (event) {
+            is Event.SAM.OnExit -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    isScrollAndMoveEnabled = false
+                )
+            )
+            is Event.SAM.OnEnter -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    isScrollAndMoveEnabled = true
+                )
+            )
+            is Event.SAM.OnApply -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    count = NO_BLOCK_SELECTED,
+                    isScrollAndMoveEnabled = false
+                )
+            )
+        }
+
+        private fun handleSelectionChangeEventForMentionState(
+            state: Toolbar.MentionToolbar,
+            start: Int
+        ): Toolbar.MentionToolbar {
+            val from = state.mentionFrom
+            return if (state.isVisible && from != null && start < from) {
+                state.copy(
+                    isVisible = false,
+                    cursorCoordinate = null,
+                    mentionFrom = null,
+                    updateList = false,
+                    mentionFilter = null,
+                    mentions = emptyList()
+                )
+            } else {
+                state.copy()
+            }
+        }
+
+        private fun target(block: Block): Toolbar.Styling.Target {
             val content = block.content<Block.Content.Text>()
             return Toolbar.Styling.Target(
                 text = content.text,

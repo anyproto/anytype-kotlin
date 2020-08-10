@@ -227,7 +227,7 @@ fun Editable.setMentionSpan(
                 context = context,
                 imageSize = mentionImageSize,
                 imagePadding = mentionImagePadding,
-                mResourceId = R.drawable.ic_mention_deafult,
+                mResourceId = R.drawable.ic_block_page_without_emoji,
                 param = mark.param
             ),
             mark.from,

@@ -8,6 +8,8 @@ import kotlin.test.assertTrue
 
 class MentionHelperTest {
 
+    private val PREDICATE_CHAR = ' '
+
     @Test
     fun `should find mention in the middle of the block`() {
 
@@ -17,10 +19,11 @@ class MentionHelperTest {
         val result = getSubSequenceFromStartWithLimit(
             s = text,
             startIndex = startIndex,
-            takeNumber = 20
+            takeNumber = 20,
+            predicate = PREDICATE_CHAR
         )
 
-        val expected = "@mention after"
+        val expected = "@mention"
 
         assertEquals(expected = expected, actual = result)
     }
@@ -34,7 +37,8 @@ class MentionHelperTest {
         val result = getSubSequenceFromStartWithLimit(
             s = text,
             startIndex = startIndex,
-            takeNumber = 11
+            takeNumber = 11,
+            predicate = PREDICATE_CHAR
         )
 
         val expected = "@mentionAnd"
@@ -51,10 +55,11 @@ class MentionHelperTest {
         val result = getSubSequenceFromStartWithLimit(
             s = text,
             startIndex = startIndex,
-            takeNumber = 20
+            takeNumber = 20,
+            predicate = PREDICATE_CHAR
         )
 
-        val expected = "@mention after"
+        val expected = "@mention"
 
         assertEquals(expected = expected, actual = result)
     }
@@ -68,7 +73,8 @@ class MentionHelperTest {
         val result = getSubSequenceFromStartWithLimit(
             s = text,
             startIndex = startIndex,
-            takeNumber = 11
+            takeNumber = 11,
+            predicate = PREDICATE_CHAR
         )
 
         val expected = "@mentionRea"
@@ -85,7 +91,8 @@ class MentionHelperTest {
         val result = getSubSequenceFromStartWithLimit(
             s = text,
             startIndex = startIndex,
-            takeNumber = 11
+            takeNumber = 11,
+            predicate = PREDICATE_CHAR
         )
 
         val expected = ""
@@ -102,10 +109,29 @@ class MentionHelperTest {
         val result = getSubSequenceFromStartWithLimit(
             s = text,
             startIndex = startIndex,
-            takeNumber = 11
+            takeNumber = 11,
+            predicate = PREDICATE_CHAR
         )
 
         val expected = "@"
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should find first word in text`() {
+
+        val text = "text without mention"
+        val startIndex = 0
+
+        val result = getSubSequenceFromStartWithLimit(
+            s = text,
+            startIndex = startIndex,
+            takeNumber = 11,
+            predicate = PREDICATE_CHAR
+        )
+
+        val expected = "text"
 
         assertEquals(expected = expected, actual = result)
     }
@@ -119,7 +145,8 @@ class MentionHelperTest {
         val result = getSubSequenceFromStartWithLimit(
             s = text,
             startIndex = startIndex,
-            takeNumber = -11
+            takeNumber = -11,
+            predicate = PREDICATE_CHAR
         )
 
         val expected = "text"
@@ -136,7 +163,8 @@ class MentionHelperTest {
         val result = getSubSequenceFromStartWithLimit(
             s = text,
             startIndex = startIndex,
-            takeNumber = 0
+            takeNumber = 0,
+            predicate = PREDICATE_CHAR
         )
 
         val expected = "text"

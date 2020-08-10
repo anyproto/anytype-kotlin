@@ -32,7 +32,13 @@ object MentionHelper {
      */
     fun getSubSequenceFromStartWithLimit(
         s: CharSequence,
+        predicate: Char,
         startIndex: Int,
         takeNumber: Int
-    ): CharSequence = s.subSequence(startIndex = startIndex, endIndex = s.length).take(takeNumber)
+    ): CharSequence = s.indexOf(predicate, startIndex = startIndex).let { pos ->
+        if (pos != -1)
+            s.subSequence(startIndex = startIndex, endIndex = pos).take(takeNumber)
+        else
+            s.subSequence(startIndex = startIndex, endIndex = s.length).take(takeNumber)
+    }
 }

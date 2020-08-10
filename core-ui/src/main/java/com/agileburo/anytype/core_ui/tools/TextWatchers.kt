@@ -82,6 +82,7 @@ class MentionTextWatcher(
         if (mentionCharPosition != NO_MENTION_POSITION) {
             getSubSequenceFromStartWithLimit(
                 s = text,
+                predicate = SPACE_CHAR,
                 startIndex = mentionCharPosition,
                 takeNumber = MENTION_SNIPPET_MAX_LENGTH
             ).let { subSequence ->

@@ -1,11 +1,9 @@
 package com.agileburo.anytype.core_ui.widgets.text
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.text.style.DynamicDrawableSpan
 import com.agileburo.anytype.core_ui.common.Span
@@ -14,7 +12,7 @@ import java.lang.ref.WeakReference
 class MentionSpan constructor(
     private var context: Context,
     private var mResourceId: Int = 0,
-    private var bitmap: Bitmap? = null,
+    private var drawable: Drawable? = null,
     private var imageSize: Int,
     private var imagePadding: Int,
     val param: String
@@ -25,22 +23,6 @@ class MentionSpan constructor(
     private var mDrawableRef: WeakReference<Drawable>? = null
 
     override fun getDrawable(): Drawable = mDrawable ?: initDrawable()
-
-    private fun initDrawable(): Drawable {
-        val d = if (bitmap != null) {
-            BitmapDrawable(context.resources, bitmap).apply {
-                val mWidth = imageSize * intrinsicWidth / intrinsicHeight
-                setBounds(0, 0, mWidth, imageSize)
-            }
-        } else {
-            context.resources.getDrawable(mResourceId, null).apply {
-                val mWidth = imageSize * intrinsicWidth / intrinsicHeight
-                setBounds(0, 0, mWidth, imageSize)
-            }
-        }
-        mDrawable = d
-        return d
-    }
 
     override fun getSize(
         paint: Paint,
@@ -92,9 +74,27 @@ class MentionSpan constructor(
     }
 
     private fun getCachedDrawable(): Drawable {
-        if (mDrawableRef == null || mDrawableRef?.get() == null) {
-            mDrawableRef = WeakReference(drawable)
+        val wr = mDrawableRef
+        val d = wr?.get()
+        if (d != null)
+            return d
+        val newDrawable = getDrawable()
+        mDrawableRef = WeakReference(newDrawable)
+        return newDrawable
+    }
+
+    private fun initDrawable(): Drawable {
+        val d = drawable?.setBounds(imageSize) ?: run {
+            context.resources.getDrawable(mResourceId, null)
+                .setBounds(imageSize)
         }
-        return mDrawableRef!!.get()!!
+        mDrawable = d
+        return d
     }
 }
+
+fun Drawable.setBounds(imageSize: Int): Drawable =
+    this.apply {
+        val mWidth = imageSize * intrinsicWidth / intrinsicHeight
+        setBounds(0, 0, mWidth, imageSize)
+    }

@@ -1,7 +1,6 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.text.Editable
-import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
@@ -22,6 +21,7 @@ import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget.Companion.TEXT
 import com.agileburo.anytype.core_utils.ext.hideKeyboard
 import com.agileburo.anytype.core_utils.ext.imm
 import com.agileburo.anytype.core_utils.text.BackspaceKeyDetector
+import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
 
 /**
@@ -73,7 +73,7 @@ interface TextHolder {
 
     private fun setSpannableWithMention(markup: Markup, clicked: (ListenerType) -> Unit) {
         content.dismissMentionWatchers()
-        content.movementMethod = LinkMovementMethod.getInstance()
+        content.movementMethod = BetterLinkMovementMethod.getInstance()
         with(content) {
             val sizes = getMentionImageSizeAndPadding()
             setText(
@@ -179,11 +179,20 @@ interface TextHolder {
         }
     }
 
-    fun setMarkup(markup: Markup) {
+    fun setMarkup(markup: Markup, clicked: (ListenerType) -> Unit) {
         if (markup.marks.isLinksPresent()) {
             content.setLinksClickable()
         }
-        content.text?.setMarkup(markup)
+        with(content) {
+            val sizes = getMentionImageSizeAndPadding()
+            text?.setMarkup(
+                markup = markup,
+                context = context,
+                mentionImageSize = sizes.first,
+                mentionImagePadding = sizes.second,
+                click = { clicked(ListenerType.Mention(it)) })
+        }
+
     }
 
     fun setupTextWatcher(
@@ -262,7 +271,7 @@ interface TextHolder {
 
                 }
             } else if (payload.markupChanged()) {
-                if (item is Markup) setMarkup(item)
+                if (item is Markup) setMarkup(item, clicked)
                 actionModeListener?.invoke(AnytypeContextMenuEvent.MarkupChanged)
             }
 

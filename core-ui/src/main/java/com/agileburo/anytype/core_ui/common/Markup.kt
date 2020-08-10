@@ -9,6 +9,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.widgets.text.MentionSpan
+import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.VALUE_ROUNDED
 import com.agileburo.anytype.core_utils.ext.removeSpans
 import kotlinx.android.parcel.Parcelize
@@ -126,45 +127,25 @@ fun Markup.toSpannable(
                 )
             }
             Markup.Type.MENTION -> {
-                if (!mark.param.isNullOrBlank() && context != null) {
-                    setSpan(
-                        MentionSpan(
-                            context = context,
-                            imageSize = mentionImageSize,
-                            imagePadding = mentionImagePadding,
-                            //todo Setting up default drawable, will be fixed in feature
-                            mResourceId = R.drawable.ic_mention_deafult,
-                            bitmap = null,
-                            param = mark.param
-                        ),
-                        mark.from,
-                        mark.to,
-                        Markup.DEFAULT_SPANNABLE_FLAG
+                context?.let {
+                    setMentionSpan(
+                        mark = mark,
+                        context = it,
+                        click = click,
+                        mentionImageSize = mentionImageSize,
+                        mentionImagePadding = mentionImagePadding
                     )
-                    val clickableSpan = object : ClickableSpan() {
-                        override fun onClick(widget: View) {
-                            click?.invoke( mark.param)
-                        }
-                    }
-                    setSpan(
-                        clickableSpan,
-                        mark.from,
-                        mark.to,
-                        Markup.DEFAULT_SPANNABLE_FLAG
-                    )
-                } else {
-                    if (context == null) {
-                        Timber.e("Context for MentionSpan is null!")
-                    } else {
-                        Timber.e("Get MentionSpan without param!")
-                    }
-                }
+                } ?: run { Timber.d("Mention Span context is null") }
             }
         }
     }
 }
 
-fun Editable.setMarkup(markup: Markup) {
+fun Editable.setMarkup(markup: Markup,
+                       context: Context? = null,
+                       click: ((String) -> Unit)? = null,
+                       mentionImageSize: Int = 0,
+                       mentionImagePadding: Int = 0) {
     removeSpans<Span>()
     markup.marks.forEach { mark ->
         when (mark.type) {
@@ -218,9 +199,57 @@ fun Editable.setMarkup(markup: Markup) {
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
-            Markup.Type.MENTION -> Unit
+            Markup.Type.MENTION -> {
+                context?.let {
+                    setMentionSpan(
+                        mark = mark,
+                        context = it,
+                        click = click,
+                        mentionImageSize = mentionImageSize,
+                        mentionImagePadding = mentionImagePadding
+                    )
+                } ?: run { Timber.d("Mention Span context is null") }
+            }
         }
     }
 }
 
-fun List<Markup.Mark>.isLinksPresent(): Boolean = this.any { it.type == Markup.Type.LINK }
+fun Editable.setMentionSpan(
+    mark : Markup.Mark,
+    context: Context,
+    click: ((String) -> Unit)? = null,
+    mentionImageSize: Int = 0,
+    mentionImagePadding: Int = 0
+) : Editable = this.apply {
+    if (!mark.param.isNullOrBlank()) {
+        setSpan(
+            MentionSpan(
+                context = context,
+                imageSize = mentionImageSize,
+                imagePadding = mentionImagePadding,
+                mResourceId = R.drawable.ic_mention_deafult,
+                param = mark.param
+            ),
+            mark.from,
+            mark.to,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        val clickableSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                (widget as? TextInputWidget)?.enableReadMode()
+                click?.invoke( mark.param)
+            }
+        }
+        setSpan(
+            clickableSpan,
+            mark.from,
+            mark.to,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+    } else {
+        Timber.e("Get MentionSpan without param!")
+    }
+}
+
+fun List<Markup.Mark>.isLinksPresent(): Boolean =
+    this.any { it.type == Markup.Type.LINK || it.type == Markup.Type.MENTION }

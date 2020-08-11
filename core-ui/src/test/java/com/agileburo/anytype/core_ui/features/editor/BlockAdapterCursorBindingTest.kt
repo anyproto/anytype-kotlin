@@ -37,7 +37,7 @@ class BlockAdapterCursorBindingTest {
             text = text,
             id = MockDataFactory.randomUuid(),
             isFocused = true,
-            cursor = MockDataFactory.randomInt(text.length.dec())
+            cursor = 3
         )
 
         val views = listOf(block)
@@ -72,7 +72,7 @@ class BlockAdapterCursorBindingTest {
             text = text,
             id = MockDataFactory.randomUuid(),
             isFocused = true,
-            cursor = MockDataFactory.randomInt(text.length.dec())
+            cursor = 3
         )
 
         val views = listOf(block)
@@ -107,7 +107,7 @@ class BlockAdapterCursorBindingTest {
             text = text,
             id = MockDataFactory.randomUuid(),
             isFocused = true,
-            cursor = MockDataFactory.randomInt(text.length.dec())
+            cursor = 3
         )
 
         val views = listOf(block)
@@ -142,7 +142,7 @@ class BlockAdapterCursorBindingTest {
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = true,
-            cursor = MockDataFactory.randomInt(text.length.dec())
+            cursor = 3
         )
 
         val views = listOf(block)
@@ -178,7 +178,7 @@ class BlockAdapterCursorBindingTest {
             id = MockDataFactory.randomUuid(),
             isFocused = true,
             indent = 0,
-            cursor = MockDataFactory.randomInt(text.length.dec()),
+            cursor = 3,
             color = null,
             backgroundColor = null
         )
@@ -216,7 +216,7 @@ class BlockAdapterCursorBindingTest {
             id = MockDataFactory.randomUuid(),
             isFocused = true,
             indent = 0,
-            cursor = MockDataFactory.randomInt(text.length.dec())
+            cursor = 3
         )
 
         val views = listOf(block)
@@ -252,7 +252,7 @@ class BlockAdapterCursorBindingTest {
             id = MockDataFactory.randomUuid(),
             isFocused = true,
             indent = 0,
-            cursor = MockDataFactory.randomInt(text.length.dec())
+            cursor = 3
         )
 
         val views = listOf(block)
@@ -288,7 +288,7 @@ class BlockAdapterCursorBindingTest {
             id = MockDataFactory.randomUuid(),
             isFocused = true,
             indent = 0,
-            cursor = MockDataFactory.randomInt(text.length.dec()),
+            cursor = 3,
             number = 1
         )
 
@@ -325,7 +325,7 @@ class BlockAdapterCursorBindingTest {
             id = MockDataFactory.randomUuid(),
             isFocused = true,
             indent = 0,
-            cursor = MockDataFactory.randomInt(text.length.dec())
+            cursor = 3
         )
 
         val views = listOf(block)

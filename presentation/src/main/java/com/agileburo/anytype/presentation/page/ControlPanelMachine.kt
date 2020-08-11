@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * State machine for control panels consisting of [Interactor], [ControlPanelState], [Event] and [Reducer]
@@ -45,7 +46,8 @@ sealed class ControlPanelMachine {
         val channel: Channel<Event> = Channel()
         private val events: Flow<Event> = channel.consumeAsFlow()
 
-        fun onEvent(event: Event) = scope.launch { channel.send(event) }
+        fun onEvent(event: Event) =
+            scope.launch { channel.send(event) }.also { Timber.d("Event: $event") }
 
         /**
          * @return a stream of immutable states, as processed by [Reducer].
@@ -284,9 +286,16 @@ sealed class ControlPanelMachine {
                 )
             }
             is Event.OnClearFocusClicked -> init()
-            is Event.OnTextInputClicked -> state.copy(
-                stylingToolbar = Toolbar.Styling.reset()
-            )
+            is Event.OnTextInputClicked -> {
+                if (state.stylingToolbar.isVisible) {
+                    state.copy(
+                        stylingToolbar = Toolbar.Styling.reset(),
+                        mainToolbar = state.mainToolbar.copy(isVisible = true)
+                    )
+                } else {
+                    state.copy()
+                }
+            }
             is Event.OnBlockActionToolbarTextColorClicked -> {
                 val target = target(event.target)
                 state.copy(
@@ -512,6 +521,7 @@ sealed class ControlPanelMachine {
             event: Event.OnSelectionChanged,
             state: ControlPanelState
         ): ControlPanelState {
+            Timber.d("handleSelectionChangeForStylingToolbar")
             return if (event.selection.first != event.selection.last) {
                 if (state.stylingToolbar.mode == StylingMode.MARKUP) {
                     val target = state.stylingToolbar.target
@@ -529,20 +539,10 @@ sealed class ControlPanelMachine {
                         state.copy()
                     }
                 } else {
-                    state.copy(
-                        mainToolbar = state.mainToolbar.copy(
-                            isVisible = true
-                        ),
-                        stylingToolbar = Toolbar.Styling.reset()
-                    )
+                    state.copy()
                 }
             } else {
-                state.copy(
-                    mainToolbar = state.mainToolbar.copy(
-                        isVisible = true
-                    ),
-                    stylingToolbar = Toolbar.Styling.reset()
-                )
+                state.copy()
             }
         }
 

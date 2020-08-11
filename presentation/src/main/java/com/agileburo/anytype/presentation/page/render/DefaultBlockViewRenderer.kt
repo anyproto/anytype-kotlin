@@ -53,6 +53,18 @@ class DefaultBlockViewRenderer(
                         Content.Text.Style.P -> {
                             counter.reset()
                             result.add(paragraph(mode, block, content, focus, indent))
+                            if (block.children.isNotEmpty()) {
+                                result.addAll(
+                                    render(
+                                        mode = mode,
+                                        focus = focus,
+                                        indent = indent.inc(),
+                                        anchor = block.id,
+                                        root = root,
+                                        details = details
+                                    )
+                                )
+                            }
                         }
                         Content.Text.Style.NUMBERED -> {
                             counter.inc()
@@ -66,6 +78,18 @@ class DefaultBlockViewRenderer(
                                     indent
                                 )
                             )
+                            if (block.children.isNotEmpty()) {
+                                result.addAll(
+                                    render(
+                                        mode = mode,
+                                        focus = focus,
+                                        indent = indent.inc(),
+                                        anchor = block.id,
+                                        root = root,
+                                        details = details
+                                    )
+                                )
+                            }
                         }
                         Content.Text.Style.TOGGLE -> {
                             counter.reset()
@@ -111,10 +135,34 @@ class DefaultBlockViewRenderer(
                         Content.Text.Style.BULLET -> {
                             counter.reset()
                             result.add(bulleted(mode, block, content, focus, indent))
+                            if (block.children.isNotEmpty()) {
+                                result.addAll(
+                                    render(
+                                        mode = mode,
+                                        focus = focus,
+                                        indent = indent.inc(),
+                                        anchor = block.id,
+                                        root = root,
+                                        details = details
+                                    )
+                                )
+                            }
                         }
                         Content.Text.Style.CHECKBOX -> {
                             counter.reset()
                             result.add(checkbox(mode, block, content, focus, indent))
+                            if (block.children.isNotEmpty()) {
+                                result.addAll(
+                                    render(
+                                        mode = mode,
+                                        focus = focus,
+                                        indent = indent.inc(),
+                                        anchor = block.id,
+                                        root = root,
+                                        details = details
+                                    )
+                                )
+                            }
                         }
                         Content.Text.Style.CODE_SNIPPET -> {
                             counter.reset()

@@ -17,7 +17,6 @@ import android.view.animation.OvershootInterpolator
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -40,7 +39,6 @@ import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.extensions.range
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockDimensions
 import com.agileburo.anytype.core_ui.features.page.BlockView
@@ -48,8 +46,6 @@ import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.*
 import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
-import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuEvent
-import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.menu.DocumentPopUpMenu
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.reactive.clicks
@@ -72,9 +68,7 @@ import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.presentation.page.editor.Command
 import com.agileburo.anytype.presentation.page.editor.ViewState
-import com.agileburo.anytype.presentation.settings.EditorSettings
 import com.agileburo.anytype.ui.base.NavigationFragment
-import com.agileburo.anytype.ui.menu.AnytypeContextMenu
 import com.agileburo.anytype.ui.page.modals.*
 import com.agileburo.anytype.ui.page.modals.actions.BlockActionToolbarFactory
 import com.agileburo.anytype.ui.page.modals.actions.DocumentIconActionMenuFragment
@@ -150,8 +144,6 @@ open class PageFragment :
 
     private lateinit var pickiT: PickiT
 
-    private var anytypeContextMenu: AnytypeContextMenu? = null
-
     private val pageAdapter by lazy {
         BlockAdapter(
             blocks = mutableListOf(),
@@ -211,7 +203,6 @@ open class PageFragment :
             onTitleTextInputClicked = vm::onTitleTextInputClicked,
             onClickListener = vm::onClickListener,
             clipboardInterceptor = this,
-            anytypeContextMenuListener = anytypeContextMenuListener,
             onMentionEvent = vm::onMentionEvent
         )
     }
@@ -618,7 +609,6 @@ open class PageFragment :
     }
 
     override fun onDestroyView() {
-        removeContextMenu()
         clearPickit()
         super.onDestroyView()
     }
@@ -1061,49 +1051,6 @@ open class PageFragment :
     }
 
     private fun getEditorSettings() {
-        val editorSettings: EditorSettings? = arguments?.getParcelable(DEBUG_SETTINGS)
-        if (editorSettings == null || editorSettings.customContextMenu) {
-            initContextMenuListener()
-        }
-    }
-
-    //------------ Anytype Custom Context Menu ------------
-
-    private var anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null
-
-    private fun initContextMenuListener() {
-        anytypeContextMenuListener = {
-            when (it) {
-                AnytypeContextMenuEvent.Detached -> removeContextMenu()
-                is AnytypeContextMenuEvent.Selected -> onAnytypeContextMenuEvent(it.view, it.type)
-                is AnytypeContextMenuEvent.Create -> onAnytypeContextMenuEvent(it.view, it.type)
-                AnytypeContextMenuEvent.MarkupChanged -> anytypeContextMenu?.showAtLocation()
-            }
-        }
-    }
-
-    private fun onAnytypeContextMenuEvent(
-        originatingView: TextView,
-        type: ContextMenuType
-    ) {
-        if (anytypeContextMenu == null) {
-            anytypeContextMenu =
-                AnytypeContextMenu(
-                    type = type,
-                    context = requireContext(),
-                    anchorView = originatingView,
-                    parent = recycler,
-                    onMarkupActionClicked = {
-                        vm.onMarkupActionClicked(it, originatingView.range())
-                    }
-                )
-        }
-        anytypeContextMenu?.showAtLocation()
-    }
-
-    private fun removeContextMenu() {
-        anytypeContextMenu?.finish()
-        anytypeContextMenu = null
     }
 
     // ----------- PickiT Listeners ------------------------------

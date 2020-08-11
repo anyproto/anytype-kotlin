@@ -9,13 +9,11 @@ import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.agileburo.anytype.core_ui.extensions.preserveSelection
 import com.agileburo.anytype.core_ui.extensions.range
-import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuEvent
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.menu.TextBlockContextMenu
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.tools.MentionTextWatcher
-import com.agileburo.anytype.core_ui.widgets.actionmode.EmptyActionMode
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget.Companion.TEXT_INPUT_WIDGET_ACTION_GO
 import com.agileburo.anytype.core_utils.ext.hideKeyboard
@@ -40,16 +38,13 @@ interface TextHolder {
      */
     val content: TextInputWidget
 
-    var actionModeListener: ((AnytypeContextMenuEvent) -> Unit)?
-
     fun setup(
         onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
-        menuType: ContextMenuType,
-        listener: ((AnytypeContextMenuEvent) -> Unit)? = null
+        menuType: ContextMenuType
     ) {
         with(content) {
             setSpannableFactory(DefaultSpannableFactory())
-            setupSelectionActionMode(onMarkupActionClicked, menuType, listener)
+            setupSelectionActionMode(onMarkupActionClicked, menuType)
         }
     }
 
@@ -272,7 +267,6 @@ interface TextHolder {
                 }
             } else if (payload.markupChanged()) {
                 if (item is Markup) setMarkup(item, clicked)
-                actionModeListener?.invoke(AnytypeContextMenuEvent.MarkupChanged)
             }
 
             try {
@@ -338,60 +332,31 @@ interface TextHolder {
         content.enableReadMode()
     }
 
-    fun onSelectionChangedEvent(range: IntRange, menuType: ContextMenuType) {
-        if (range.first != range.last) {
-            actionModeListener?.invoke(
-                AnytypeContextMenuEvent.Selected(
-                    view = content,
-                    type = menuType
-                )
-            )
-        }
-    }
-
     private fun setupSelectionActionMode(
         onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
-        menuType: ContextMenuType,
-        anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null
+        menuType: ContextMenuType
     ) {
         with(content) {
-            if (anytypeContextMenuListener != null) {
-                customSelectionActionModeCallback = EmptyActionMode(
-                    onCreate = {
-                        anytypeContextMenuListener(
-                            AnytypeContextMenuEvent.Create(
-                                view = content,
-                                type = menuType
-                            )
-                        )
-                    },
-                    onDestroy = {
-                        anytypeContextMenuListener(AnytypeContextMenuEvent.Detached)
+            customSelectionActionModeCallback = TextBlockContextMenu(
+                menuType = menuType,
+                onTextColorClicked = { mode ->
+                    preserveSelection {
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.TEXT_COLOR, content.range())
+                        mode.finish()
                     }
-                )
-                actionModeListener = anytypeContextMenuListener
-            } else {
-                customSelectionActionModeCallback = TextBlockContextMenu(
-                    menuType = menuType,
-                    onTextColorClicked = { mode ->
-                        preserveSelection {
-                            content.hideKeyboard()
-                            onMarkupActionClicked(Markup.Type.TEXT_COLOR, content.range())
-                            mode.finish()
-                        }
-                        false
-                    },
-                    onBackgroundColorClicked = { mode ->
-                        preserveSelection {
-                            content.hideKeyboard()
-                            onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR, content.range())
-                            mode.finish()
-                        }
-                        false
-                    },
-                    onMenuItemClicked = { onMarkupActionClicked(it, content.range()) }
-                )
-            }
+                    false
+                },
+                onBackgroundColorClicked = { mode ->
+                    preserveSelection {
+                        content.hideKeyboard()
+                        onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR, content.range())
+                        mode.finish()
+                    }
+                    false
+                },
+                onMenuItemClicked = { onMarkupActionClicked(it, content.range()) }
+            )
         }
     }
 }

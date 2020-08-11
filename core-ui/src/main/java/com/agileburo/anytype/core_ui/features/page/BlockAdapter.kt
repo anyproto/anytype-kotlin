@@ -39,7 +39,6 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
-import com.agileburo.anytype.core_ui.menu.AnytypeContextMenuEvent
 import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_utils.ext.typeOf
 import timber.log.Timber
@@ -74,7 +73,6 @@ class BlockAdapter(
     private val onToggleClicked: (String) -> Unit,
     private val onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
     private val clipboardInterceptor: ClipboardInterceptor,
-    private val anytypeContextMenuListener: ((AnytypeContextMenuEvent) -> Unit)? = null,
     private val onMentionEvent: (MentionEvent) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
@@ -92,8 +90,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked,
-                    actionModeListener = anytypeContextMenuListener
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_TITLE -> {
@@ -102,8 +99,7 @@ class BlockAdapter(
                         R.layout.item_block_title,
                         parent,
                         false
-                    ),
-                    actionModeListener = anytypeContextMenuListener
+                    )
                 )
             }
             HOLDER_PROFILE_TITLE -> {
@@ -112,8 +108,7 @@ class BlockAdapter(
                         R.layout.item_block_title_profile,
                         parent,
                         false
-                    ),
-                    actionModeListener = anytypeContextMenuListener
+                    )
                 )
             }
             HOLDER_HEADER_ONE -> {
@@ -123,8 +118,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked,
-                    actionModeListener = anytypeContextMenuListener
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_HEADER_TWO -> {
@@ -134,8 +128,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked,
-                    actionModeListener = anytypeContextMenuListener
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_HEADER_THREE -> {
@@ -145,8 +138,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked,
-                    actionModeListener = anytypeContextMenuListener
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_CODE_SNIPPET -> {
@@ -155,8 +147,7 @@ class BlockAdapter(
                         R.layout.item_block_code_snippet,
                         parent,
                         false
-                    ),
-                    actionModeListener = anytypeContextMenuListener
+                    )
                 )
             }
             HOLDER_CHECKBOX -> {
@@ -166,8 +157,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked,
-                    actionModeListener = anytypeContextMenuListener
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_TASK -> {
@@ -186,8 +176,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked,
-                    actionModeListener = anytypeContextMenuListener
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_NUMBERED -> {
@@ -197,8 +186,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked,
-                    actionModeListener = anytypeContextMenuListener
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_TOGGLE -> {
@@ -208,8 +196,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked,
-                    actionModeListener = anytypeContextMenuListener
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_CONTACT -> {
@@ -381,8 +368,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked,
-                    actionModeListener = anytypeContextMenuListener
+                    onMarkupActionClicked = onMarkupActionClicked
                 )
             }
             HOLDER_FOOTER -> {

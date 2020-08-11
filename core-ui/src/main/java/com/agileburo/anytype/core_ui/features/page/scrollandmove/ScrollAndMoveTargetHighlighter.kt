@@ -12,7 +12,8 @@ import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTa
 
 class ScrollAndMoveTargetHighlighter(
     private val screen: Point,
-    private val drawable: Drawable,
+    private val rectangle: Drawable,
+    private val line: Drawable,
     private val padding: Int,
     private val descriptor: ScrollAndMoveTargetDescriptor
 ) : RecyclerView.ItemDecoration() {
@@ -74,9 +75,8 @@ class ScrollAndMoveTargetHighlighter(
         val left = padding
         val right = parent.width - padding
         val top = child.bottom
-        val bottom = child.bottom + drawable.intrinsicHeight
-        drawable.apply {
-            alpha = DEFAULT_ALPHA
+        val bottom = child.bottom + rectangle.intrinsicHeight
+        line.apply {
             setBounds(left, top, right, bottom)
             draw(c)
         }
@@ -90,9 +90,8 @@ class ScrollAndMoveTargetHighlighter(
         val left = padding
         val right = parent.width - padding
         val top = child.top
-        val bottom = child.top + drawable.intrinsicHeight
-        drawable.apply {
-            alpha = DEFAULT_ALPHA
+        val bottom = child.top + rectangle.intrinsicHeight
+        line.apply {
             setBounds(left, top, right, bottom)
             draw(c)
         }
@@ -103,19 +102,18 @@ class ScrollAndMoveTargetHighlighter(
         child: View,
         c: Canvas
     ) {
-        val left = 0
-        val right = parent.width
+        val left = padding
+        val right = parent.width - padding
         val top = child.top
         val bottom = child.bottom
-        drawable.apply {
-            alpha = HIGHLIGHT_ALPHA
+        rectangle.apply {
             setBounds(left, top, right, bottom)
             draw(c)
         }
     }
 
     companion object {
-        const val HIGHLIGHT_ALPHA = 50
+        const val HIGHLIGHT_ALPHA = 255
         const val DEFAULT_ALPHA = 255
         const val TITLE_POSITION = 0
     }

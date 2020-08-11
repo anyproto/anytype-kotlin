@@ -48,8 +48,8 @@ class MultiSelectBottomToolbarWidget : ConstraintLayout {
     fun copyClicks() = more.clicks()
 
     fun enterScrollAndMove() = enterScrollAndMove.clicks()
-    fun applyScrollAndMoveClicks() = applyScrollAndMove.clicks()
-    fun exitScrollAndMoveClicks() = exitScrollAndMove.clicks()
+    fun applyScrollAndMoveClicks() = move1.clicks()
+    fun exitScrollAndMoveClicks() = cancel1.clicks()
 
     fun showWithAnimation() {
         ObjectAnimator.ofFloat(this, ANIMATED_PROPERTY, 0f).apply {
@@ -83,10 +83,12 @@ class MultiSelectBottomToolbarWidget : ConstraintLayout {
 
     fun showScrollAndMoveModeControls() {
         scrollandMoveControls.visible()
+        done.invisible()
     }
 
     fun hideScrollAndMoveModeControls() {
         scrollandMoveControls.invisible()
+        done.visible()
     }
 
     fun update(count: Int) {

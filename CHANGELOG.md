@@ -8,7 +8,8 @@
 
 ### Design & UX 🔳
 
-*
+* New design for scroll-and-move targeting (#636)
+* Enhanced scroll & move targeting (#636)
 
 ### Fixes & tech 🚒
 

@@ -25,10 +25,10 @@
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <FrameLayout
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:id="@+id/select"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:translationY="-48dp"
@@ -106,10 +106,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             tools:visibility="visible" />
+
+        <com.agileburo.anytype.core_ui.widgets.ScrollAndMoveHintWidget
+            android:id="@+id/scrollAndMoveHint"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/topToolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -120,27 +130,28 @@
         android:layout_gravity="bottom"
         android:visibility="invisible"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <FrameLayout
-        android:visibility="invisible"
-        android:layout_gravity="center_vertical"
         android:id="@+id/targeter"
         android:layout_width="match_parent"
-        android:layout_height="8dp">
+        android:layout_height="8dp"
+        android:layout_gravity="center_vertical"
+        android:alpha="0.5"
+        android:visibility="invisible">
 
         <ImageView
-            android:rotation="180"
-            android:src="@drawable/ic_scroll_and_move_target_anchor"
             android:layout_width="8dp"
+            android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:layout_height="match_parent" />
+            android:rotation="180"
+            android:src="@drawable/ic_scroll_and_move_target_anchor" />
 
         <ImageView
-            android:src="@drawable/ic_scroll_and_move_target_anchor"
             android:layout_width="8dp"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:layout_height="match_parent" />
+            android:src="@drawable/ic_scroll_and_move_target_anchor" />
 
     </FrameLayout>
 

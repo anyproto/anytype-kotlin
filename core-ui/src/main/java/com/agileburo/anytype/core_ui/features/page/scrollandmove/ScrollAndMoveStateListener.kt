@@ -5,8 +5,8 @@ import androidx.recyclerview.widget.RecyclerView
 class ScrollAndMoveStateListener(
     val onStateChanged: (Int) -> Unit
 ) : RecyclerView.OnScrollListener() {
-    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-        super.onScrollStateChanged(recyclerView, newState)
-        onStateChanged(newState)
+    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+        super.onScrolled(recyclerView, dx, dy)
+        onStateChanged(dy)
     }
 }

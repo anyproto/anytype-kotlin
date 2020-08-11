@@ -1523,9 +1523,9 @@ class PageViewModel(
     }
 
     private fun onBlockMultiSelectClicked(target: Id) {
-        toggleSelection(target)
-        onMultiSelectModeBlockClicked()
-        (stateData.value as ViewState.Success).let { state ->
+        (stateData.value as? ViewState.Success)?.let { state ->
+            toggleSelection(target)
+            onMultiSelectModeBlockClicked()
             val update = state.blocks.map { block ->
                 if (block.id == target)
                     block.updateSelection(newSelection = isSelected(target))

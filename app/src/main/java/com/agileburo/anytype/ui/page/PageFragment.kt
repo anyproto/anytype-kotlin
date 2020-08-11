@@ -130,7 +130,8 @@ open class PageFragment :
 
     private val scrollAndMoveTargetHighlighter by lazy {
         ScrollAndMoveTargetHighlighter(
-            drawable = drawable(R.drawable.scroll_and_move_divider),
+            rectangle = drawable(R.drawable.scroll_and_move_rectangle),
+            line = drawable(R.drawable.scroll_and_move_line),
             screen = screen,
             padding = dimen(R.dimen.scroll_and_move_start_end_padding),
             descriptor = scrollAndMoveTargetDescriptor
@@ -827,6 +828,7 @@ open class PageFragment :
 
         state.multiSelect.apply {
             if (isVisible) {
+                select.visible()
                 if (count == 0) {
                     selectText.setText(R.string.select_all)
                 } else {
@@ -839,7 +841,7 @@ open class PageFragment :
                     Timber.d("Hiding top menu")
                     topToolbar.invisible()
                     lifecycleScope.launch {
-                        delay(300)
+                        delay(DELAY_BEFORE_INIT_SAM_SEARCH)
                         bottomMenu.showWithAnimation()
                         showSelectButton()
                     }
@@ -945,7 +947,17 @@ open class PageFragment :
 
             recycler.addOnScrollListener(scrollAndMoveStateListener)
             bottomMenu.showScrollAndMoveModeControls()
+            select.invisible()
+
+            scrollAndMoveHint.showWithAnimation()
+
             bottomMenu.hideMultiSelectControls()
+
+            lifecycleScope.launch {
+                delay(300)
+                searchScrollAndMoveTarget()
+                recycler.invalidate()
+            }
         }
     }
 
@@ -968,6 +980,7 @@ open class PageFragment :
             removeItemDecoration(scrollAndMoveTargetHighlighter)
             removeOnScrollListener(scrollAndMoveStateListener)
         }
+        scrollAndMoveHint.hideWithAnimation()
         targeter.invisible()
         bottomMenu.hideScrollAndMoveModeControls()
         scrollAndMoveTargetDescriptor.clear()
@@ -1034,6 +1047,7 @@ open class PageFragment :
             scrollAndMoveStateChannel
                 .consumeAsFlow()
                 .mapLatest { searchScrollAndMoveTarget() }
+                .debounce(SAM_DEBOUNCE)
                 .collect { recycler.invalidate() }
         }
     }
@@ -1205,6 +1219,9 @@ open class PageFragment :
         const val SELECT_BUTTON_HIDE_ANIMATION_DURATION = 200L
         const val SELECT_BUTTON_ANIMATION_PROPERTY = "translationY"
         const val TARGETER_ANIMATION_PROPERTY = "translationY"
+
+        const val SAM_DEBOUNCE = 100L
+        const val DELAY_BEFORE_INIT_SAM_SEARCH = 300L
     }
 
     override fun onDismissBlockActionToolbar() {

@@ -1,10 +1,11 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.42 (WIP)
+## Version 0.0.42
 
 ### New features 🚀
 
-*
+* Mention suggests (#574)
+* Editable mentions (#573)
 
 ### Design & UX 🔳
 
@@ -13,6 +14,7 @@
 
 ### Fixes & tech 🚒
 
+* Turn off custom context menu (#594)
 * Should not crash the app when opening action menu for currently focused block (#635)
 * DI/Dagger optimizations (#626)
 * Refactored `ControlPanelMachine` (#634)

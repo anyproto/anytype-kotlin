@@ -100,7 +100,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     class Paragraph(
         view: View,
         onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
-    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder, SupportNesting {
 
         override val root: View = itemView
         override val content: TextInputWidget = itemView.textContent
@@ -754,7 +754,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     class Checkbox(
         view: View,
         onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
-    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder, SupportNesting {
 
         var mode = BlockView.Mode.EDIT
 
@@ -896,7 +896,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     class Bulleted(
         view: View,
         onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
-    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder, SupportNesting {
 
         val indent = itemView.bulletIndent
         private val bullet = itemView.bullet
@@ -1010,7 +1010,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     class Numbered(
         view: View,
         onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
-    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder, SupportNesting {
 
         private val container = itemView.numberedBlockContentContainer
         val number = itemView.number
@@ -1140,7 +1140,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     class Toggle(
         view: View,
         onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
-    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder, SupportNesting {
 
         private var mode = BlockView.Mode.EDIT
 
@@ -1637,7 +1637,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Page(view: View) : BlockViewHolder(view), IndentableHolder {
+    class Page(view: View) : BlockViewHolder(view), IndentableHolder, SupportNesting {
 
         private val untitled = itemView.resources.getString(R.string.untitled)
         private val icon = itemView.pageIcon

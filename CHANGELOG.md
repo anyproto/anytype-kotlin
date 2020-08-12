@@ -5,6 +5,7 @@
 ### New features 🚀
 
 * Support block indentation for paragraphs, checkboxes, bulleted and numbered lists (#617)
+* Scroll-and-move restrictions (#616)
 
 ### Design & UX 🔳
 

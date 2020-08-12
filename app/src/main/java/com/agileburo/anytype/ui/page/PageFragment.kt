@@ -124,7 +124,8 @@ open class PageFragment :
 
     private val scrollAndMoveTargetHighlighter by lazy {
         ScrollAndMoveTargetHighlighter(
-            rectangle = drawable(R.drawable.scroll_and_move_rectangle),
+            targeted = drawable(R.drawable.scroll_and_move_rectangle),
+            disabled = drawable(R.drawable.scroll_and_move_disabled),
             line = drawable(R.drawable.scroll_and_move_line),
             screen = screen,
             padding = dimen(R.dimen.scroll_and_move_start_end_padding),

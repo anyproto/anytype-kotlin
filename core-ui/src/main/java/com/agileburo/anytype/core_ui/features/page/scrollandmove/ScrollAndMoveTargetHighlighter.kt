@@ -6,13 +6,15 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.agileburo.anytype.core_ui.features.page.SupportNesting
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.END_RANGE
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
 
 class ScrollAndMoveTargetHighlighter(
     private val screen: Point,
-    private val rectangle: Drawable,
+    private val targeted: Drawable,
+    private val disabled: Drawable,
     private val line: Drawable,
     private val padding: Int,
     private val descriptor: ScrollAndMoveTargetDescriptor
@@ -75,7 +77,7 @@ class ScrollAndMoveTargetHighlighter(
         val left = padding
         val right = parent.width - padding
         val top = child.bottom
-        val bottom = child.bottom + rectangle.intrinsicHeight
+        val bottom = child.bottom + targeted.intrinsicHeight
         line.apply {
             setBounds(left, top, right, bottom)
             draw(c)
@@ -90,7 +92,7 @@ class ScrollAndMoveTargetHighlighter(
         val left = padding
         val right = parent.width - padding
         val top = child.top
-        val bottom = child.top + rectangle.intrinsicHeight
+        val bottom = child.top + targeted.intrinsicHeight
         line.apply {
             setBounds(left, top, right, bottom)
             draw(c)
@@ -106,10 +108,19 @@ class ScrollAndMoveTargetHighlighter(
         val right = parent.width - padding
         val top = child.top
         val bottom = child.bottom
-        rectangle.apply {
-            setBounds(left, top, right, bottom)
-            draw(c)
-        }
+
+        val holder = parent.findContainingViewHolder(child)
+
+        if (holder is SupportNesting)
+            targeted.apply {
+                setBounds(left, top, right, bottom)
+                draw(c)
+            }
+        else
+            disabled.apply {
+                setBounds(left, top, right, bottom)
+                draw(c)
+            }
     }
 
     companion object {

@@ -147,6 +147,23 @@ fun Block.addMention(mentionText: String, mentionId: String, from: Int, mentionT
     )
 }
 
+fun Block.supportNesting(): Boolean {
+    val supported = listOf(
+        Content.Text.Style.P,
+        Content.Text.Style.CHECKBOX,
+        Content.Text.Style.NUMBERED,
+        Content.Text.Style.TOGGLE,
+        Content.Text.Style.CHECKBOX,
+        Content.Text.Style.BULLET
+    )
+    return when (content) {
+        is Content.Text -> supported.contains(content.style)
+        is Content.Smart -> true
+        is Content.Link -> true
+        else -> false
+    }
+}
+
 /**
  * Insert [replace] word in String starting from index [from],
  * also removed all chars in range [from]..[to]

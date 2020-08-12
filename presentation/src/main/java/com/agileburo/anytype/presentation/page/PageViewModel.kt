@@ -28,10 +28,7 @@ import com.agileburo.anytype.domain.editor.Editor
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
-import com.agileburo.anytype.domain.ext.addMention
-import com.agileburo.anytype.domain.ext.asMap
-import com.agileburo.anytype.domain.ext.content
-import com.agileburo.anytype.domain.ext.textStyle
+import com.agileburo.anytype.domain.ext.*
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.domain.page.navigation.GetListPages
@@ -1555,42 +1552,53 @@ class PageViewModel(
         target: Id,
         ratio: Float
     ) {
+
         val block = blocks.first { it.id == target }
 
-        val position = when (ratio) {
-            in START_RANGE -> Position.TOP
-            in END_RANGE -> Position.BOTTOM
-            in INNER_RANGE -> Position.INNER
-            else -> {
-                if (ratio > 1) Position.BOTTOM
-                else throw IllegalStateException("Unexpected ratio: $ratio")
+        if (block.supportNesting()) {
+
+            val selected = currentSelection().toList()
+
+            if (selected.contains(target)) {
+                _error.value = CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR
+                return
             }
-        }
 
-        val targetContext = if (block.content is Content.Link && position == Position.INNER) {
-            block.content<Content.Link>().target
-        } else {
-            context
-        }
+            val position = when (ratio) {
+                in START_RANGE -> Position.TOP
+                in END_RANGE -> Position.BOTTOM
+                in INNER_RANGE -> Position.INNER
+                else -> {
+                    if (ratio > 1) Position.BOTTOM
+                    else throw IllegalStateException("Unexpected ratio: $ratio")
+                }
+            }
 
-        val selected = currentSelection().toList()
+            val targetContext = if (block.content is Content.Link && position == Position.INNER) {
+                block.content<Content.Link>().target
+            } else {
+                context
+            }
 
-        clearSelections()
+            clearSelections()
 
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
 
-        mode = EditorMode.MULTI_SELECT
+            mode = EditorMode.MULTI_SELECT
 
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Document.Move(
-                    context = context,
-                    target = target,
-                    targetContext = targetContext,
-                    blocks = selected,
-                    position = position
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Document.Move(
+                        context = context,
+                        target = target,
+                        targetContext = targetContext,
+                        blocks = selected,
+                        position = position
+                    )
                 )
-            )
+            }
+        } else {
+            _error.value = CANNOT_BE_PARENT_ERROR
         }
     }
 
@@ -1940,6 +1948,8 @@ class PageViewModel(
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
         const val DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE = 150L
         const val INITIAL_INDENT = 0
+        const val CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR = "A block cannot be dropped inside itself."
+        const val CANNOT_BE_PARENT_ERROR = "This block does not support nesting."
     }
 
     data class MarkupAction(

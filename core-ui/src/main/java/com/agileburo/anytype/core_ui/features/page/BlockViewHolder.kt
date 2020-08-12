@@ -86,6 +86,15 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     interface IndentableHolder {
         fun indentize(item: BlockView.Indentable)
+        fun processIndentChange(
+            item: BlockView,
+            payloads: List<Payload>
+        ) {
+            for (payload in payloads) {
+                if (payload.isIndentChanged && item is BlockView.Indentable)
+                    indentize(item)
+            }
+        }
     }
 
     class Paragraph(
@@ -295,7 +304,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         /**
          * Mention is not used in Title
          */
-        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0,0)
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0, 0)
 
         companion object {
             private const val EMPTY_EMOJI = ""
@@ -366,7 +375,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         /**
          * Mention is not used in ProfileTitle
          */
-        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0,0)
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0, 0)
 
         fun processPayloads(
             payloads: List<Payload>,
@@ -735,7 +744,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         /**
          * Mention is not used in Code
          */
-        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0,0)
+        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0, 0)
 
         override fun select(item: BlockView.Selectable) {
             root.isSelected = item.isSelected
@@ -749,7 +758,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         var mode = BlockView.Mode.EDIT
 
-        private val checkbox: ImageView = itemView.checkboxIcon
+        val checkbox: ImageView = itemView.checkboxIcon
         private val container = itemView.checkboxBlockContentContainer
         override val content: TextInputWidget = itemView.checkboxContent
         override val root: View = itemView
@@ -889,7 +898,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
-        private val indent = itemView.bulletIndent
+        val indent = itemView.bulletIndent
         private val bullet = itemView.bullet
         private val container = itemView.bulletBlockContainer
         override val content: TextInputWidget = itemView.bulletedListContent
@@ -1004,7 +1013,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         private val container = itemView.numberedBlockContentContainer
-        private val number = itemView.number
+        val number = itemView.number
         override val content: TextInputWidget = itemView.numberedListContent
         override val root: View = itemView
 
@@ -2089,9 +2098,9 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     class Highlight(
-        view: View, onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
-    ) :
-        BlockViewHolder(view), TextHolder, IndentableHolder {
+        view: View,
+        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
+    ) : BlockViewHolder(view), TextHolder, IndentableHolder {
 
         override val content: TextInputWidget = itemView.highlightContent
         override val root: View = itemView

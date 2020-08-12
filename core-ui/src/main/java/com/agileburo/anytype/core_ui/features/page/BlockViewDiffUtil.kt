@@ -111,8 +111,8 @@ class BlockViewDiffUtil(
         val changes: List<Int>
     ) {
 
-        val isCursorChanged : Boolean
-        get() = changes.contains(CURSOR_CHANGED)
+        val isIndentChanged: Boolean get() = changes.contains(INDENT_CHANGED)
+        val isCursorChanged: Boolean get() = changes.contains(CURSOR_CHANGED)
 
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)

@@ -395,206 +395,211 @@ class BlockAdapter(
     ) {
         when {
             payloads.isEmpty() -> onBindViewHolder(holder, position)
-            else -> when (holder) {
-                is BlockViewHolder.Paragraph -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged,
-                        clicked = onClickListener
-                    )
+            else -> {
+                if (holder is BlockViewHolder.IndentableHolder) {
+                    holder.processIndentChange(blocks[position], payloads.typeOf())
                 }
-                is BlockViewHolder.Bulleted -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged,
-                        clicked = onClickListener
-                    )
+                when (holder) {
+                    is BlockViewHolder.Paragraph -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position],
+                            onTextChanged = onParagraphTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            clicked = onClickListener
+                        )
+                    }
+                    is BlockViewHolder.Bulleted -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position],
+                            onTextChanged = onParagraphTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            clicked = onClickListener
+                        )
+                    }
+                    is BlockViewHolder.Checkbox -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position],
+                            onTextChanged = onParagraphTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            clicked = onClickListener
+                        )
+                    }
+                    is BlockViewHolder.Title -> {
+                        holder.processPayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.Title
+                        )
+                    }
+                    is BlockViewHolder.ProfileTitle -> {
+                        holder.processPayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.ProfileTitle
+                        )
+                    }
+                    is BlockViewHolder.Numbered -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position],
+                            onTextChanged = onParagraphTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            clicked = onClickListener
+                        )
+                    }
+                    is BlockViewHolder.HeaderOne -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position],
+                            onTextChanged = onParagraphTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            clicked = onClickListener
+                        )
+                    }
+                    is BlockViewHolder.HeaderTwo -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position],
+                            onTextChanged = onParagraphTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            clicked = onClickListener
+                        )
+                    }
+                    is BlockViewHolder.HeaderThree -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position],
+                            onTextChanged = onParagraphTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            clicked = onClickListener
+                        )
+                    }
+                    is BlockViewHolder.Toggle -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position],
+                            onTextChanged = onParagraphTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            clicked = onClickListener
+                        )
+                    }
+                    is BlockViewHolder.Highlight -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position],
+                            onTextChanged = onParagraphTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            clicked = onClickListener
+                        )
+                    }
+                    is BlockViewHolder.File -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.File.Placeholder -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.File.Error -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.File.Upload -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Picture -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Picture.Placeholder -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Picture.Error -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Picture.Upload -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Video -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Video.Placeholder -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Video.Error -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Video.Upload -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Page -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Bookmark -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Bookmark.Placeholder -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Bookmark.Error -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is BlockViewHolder.Code -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position],
+                            onTextChanged = onParagraphTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            clicked = onClickListener
+                        )
+                    }
+                    else -> throw IllegalStateException("Unexpected view holder: $holder")
                 }
-                is BlockViewHolder.Checkbox -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged,
-                        clicked = onClickListener
-                    )
-                }
-                is BlockViewHolder.Title -> {
-                    holder.processPayloads(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position] as BlockView.Title
-                    )
-                }
-                is BlockViewHolder.ProfileTitle -> {
-                    holder.processPayloads(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position] as BlockView.ProfileTitle
-                    )
-                }
-                is BlockViewHolder.Numbered -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged,
-                        clicked = onClickListener
-                    )
-                }
-                is BlockViewHolder.HeaderOne -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged,
-                        clicked = onClickListener
-                    )
-                }
-                is BlockViewHolder.HeaderTwo -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged,
-                        clicked = onClickListener
-                    )
-                }
-                is BlockViewHolder.HeaderThree -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged,
-                        clicked = onClickListener
-                    )
-                }
-                is BlockViewHolder.Toggle -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged,
-                        clicked = onClickListener
-                    )
-                }
-                is BlockViewHolder.Highlight -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged,
-                        clicked = onClickListener
-                    )
-                }
-                is BlockViewHolder.File -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.File.Placeholder -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.File.Error -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.File.Upload -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Picture -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Picture.Placeholder -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Picture.Error -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Picture.Upload -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Video -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Video.Placeholder -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Video.Error -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Video.Upload -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Page -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Bookmark -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Bookmark.Placeholder -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Bookmark.Error -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position]
-                    )
-                }
-                is BlockViewHolder.Code -> {
-                    holder.processChangePayload(
-                        payloads = payloads.typeOf(),
-                        item = blocks[position],
-                        onTextChanged = onParagraphTextChanged,
-                        onSelectionChanged = onSelectionChanged,
-                        clicked = onClickListener
-                    )
-                }
-                else -> throw IllegalStateException("Unexpected view holder: $holder")
             }
         }
     }
@@ -850,7 +855,13 @@ class BlockAdapter(
                         onEndLineEnterTitleClicked(editable)
                     },
                     onSplitLineEnterClicked = { index ->
-                        onSplitLineEnterClicked(blocks[holder.adapterPosition].id, index, holder.content.text!!)
+                        holder.content.text?.let { editable ->
+                            onSplitLineEnterClicked(
+                                blocks[holder.adapterPosition].id,
+                                index,
+                                editable
+                            )
+                        }
                     }
                 )
             } else {
@@ -859,7 +870,13 @@ class BlockAdapter(
                         onEndLineEnterClicked(blocks[holder.adapterPosition].id, editable)
                     },
                     onSplitLineEnterClicked = { index ->
-                        onSplitLineEnterClicked(blocks[holder.adapterPosition].id, index, holder.content.text!!)
+                        holder.content.text?.let { editable ->
+                            onSplitLineEnterClicked(
+                                blocks[holder.adapterPosition].id,
+                                index,
+                                editable
+                            )
+                        }
                     }
                 )
             }
@@ -875,7 +892,12 @@ class BlockAdapter(
                 },
                 onNonEmptyBlockBackspaceClicked = {
                     if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                        onNonEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id, holder.content.text!!)
+                        holder.content.text?.let { editable ->
+                            onNonEmptyBlockBackspaceClicked(
+                                blocks[holder.adapterPosition].id,
+                                editable
+                            )
+                        }
                         Timber.d("Proceed onNonEmptyBlockBackspaceClicked for adapter position:${holder.adapterPosition}")
                     } else {
                         Timber.e("Can't proceed with onNonEmptyBlockBackspaceClicked, because holder.adapter position is NO_POSITION")

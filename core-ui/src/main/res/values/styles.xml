@@ -327,11 +327,14 @@
     </style>
 
     <style name="BlockMediaRootLayoutStyle">
+        <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginTop">1dp</item>
         <item name="android:layout_marginBottom">1dp</item>
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:paddingTop">6dp</item>
         <item name="android:paddingBottom">6dp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
     </style>
 
     <style name="ActionModePopupButton">

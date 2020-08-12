@@ -1,5 +1,19 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.43 (WIP)
+
+### New features 🚀
+
+* Support block indentation for paragraphs, checkboxes, bulleted and numbered lists (#617)
+
+### Design & UX 🔳
+
+*
+
+### Fixes & tech 🚒
+
+*
+
 ## Version 0.0.42
 
 ### New features 🚀

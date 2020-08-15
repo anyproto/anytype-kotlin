@@ -37,7 +37,7 @@ open class BlockAdapterTestSetup {
             onProfileIconClicked = {},
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
-            onParagraphTextChanged = { _, _ -> },
+            onParagraphTextChanged = {},
             onTitleTextChanged = onTitleTextChanged,
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
             onMarkupActionClicked = { _, _ -> },

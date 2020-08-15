@@ -54,4 +54,5 @@ dependencies {
     androidTestImplementation acceptanceTesting.androidJUnit
     androidTestImplementation acceptanceTesting.testRules
     testImplementation unitTestDependencies.archCoreTesting
+    testImplementation unitTestDependencies.coroutineTesting
 }

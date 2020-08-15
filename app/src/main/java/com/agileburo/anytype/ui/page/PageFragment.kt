@@ -160,13 +160,7 @@ open class PageFragment :
                     marks = editable.extractMarks()
                 )
             },
-            onParagraphTextChanged = { id, editable ->
-                vm.onParagraphTextChanged(
-                    id = id,
-                    text = editable.toString(),
-                    marks = editable.extractMarks()
-                )
-            },
+            onParagraphTextChanged = vm::onParagraphTextChanged,
             onSelectionChanged = vm::onSelectionChanged,
             onCheckboxClicked = vm::onCheckboxClicked,
             onFocusChanged = vm::onBlockFocusChanged,

@@ -52,7 +52,7 @@ import timber.log.Timber
  */
 class BlockAdapter(
     private var blocks: List<BlockView>,
-    private val onParagraphTextChanged: (String, Editable) -> Unit,
+    private val onParagraphTextChanged: (BlockView.Paragraph) -> Unit,
     private val onTextChanged: (String, Editable) -> Unit,
     private val onTitleTextChanged: (Editable) -> Unit,
     private val onTitleTextInputClicked: () -> Unit,
@@ -404,7 +404,14 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onParagraphTextChanged,
+                            onTextChanged = { _, editable ->
+                                val p = (blocks[position] as BlockView.Paragraph)
+                                p.apply {
+                                    text = editable.toString()
+                                    marks = editable.marks()
+                                }
+                                onParagraphTextChanged(p)
+                            },
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -413,7 +420,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onParagraphTextChanged,
+                            onTextChanged = onTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -422,7 +429,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onParagraphTextChanged,
+                            onTextChanged = onTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -443,7 +450,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onParagraphTextChanged,
+                            onTextChanged = onTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -452,7 +459,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onParagraphTextChanged,
+                            onTextChanged = onTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -461,7 +468,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onParagraphTextChanged,
+                            onTextChanged = onTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -470,7 +477,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onParagraphTextChanged,
+                            onTextChanged = onTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -479,7 +486,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onParagraphTextChanged,
+                            onTextChanged = onTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -488,7 +495,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onParagraphTextChanged,
+                            onTextChanged = onTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -593,7 +600,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onParagraphTextChanged,
+                            onTextChanged = onTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )

@@ -23,6 +23,7 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content
 import com.agileburo.anytype.domain.block.model.Block.Prototype
 import com.agileburo.anytype.domain.block.model.Position
+import com.agileburo.anytype.domain.common.Document
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.editor.Editor
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
@@ -34,6 +35,7 @@ import com.agileburo.anytype.domain.page.*
 import com.agileburo.anytype.domain.page.navigation.GetListPages
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.common.SupportCommand
+import com.agileburo.anytype.presentation.mapper.mark
 import com.agileburo.anytype.presentation.mapper.style
 import com.agileburo.anytype.presentation.mapper.toMentionView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
@@ -83,22 +85,32 @@ class PageViewModel(
     private val controlPanelInteractor = Interactor(viewModelScope)
     val controlPanelViewState = MutableLiveData<ControlPanelState>()
 
-    private val renderings = Proxy.Subject<List<Block>>()
+    /**
+     * Sends renderized document to UI
+     */
+    private val renderCommand = Proxy.Subject<Unit>()
+
+    /**
+     * Renderizes document, create views from it, dispatches them to [renderCommand]
+     */
+    private val renderizePipeline = Proxy.Subject<Document>()
+
     private val selections = Proxy.Subject<Pair<Id, IntRange>>()
-    private val markups = Proxy.Subject<MarkupAction>()
+
+    private val markupActionPipeline = Proxy.Subject<MarkupAction>()
 
     private val titleChannel = Channel<String>()
     private val titleChanges = titleChannel.consumeAsFlow()
 
     /**
-     * Currently opened page id.
+     * Currently opened document id.
      */
-    var context: String = ""
+    var context: String = EMPTY_CONTEXT
 
     /**
-     * Current set of blocks on this page.
+     * Current document
      */
-    var blocks: List<Block> = emptyList()
+    var blocks: Document = emptyList()
 
     private val _focus: MutableLiveData<Id> = MutableLiveData()
     val focus: LiveData<Id> = _focus
@@ -200,7 +212,7 @@ class PageViewModel(
     }
 
     private fun processMarkupChanges() {
-        markups
+        markupActionPipeline
             .stream()
             .withLatestFrom(
                 selections
@@ -310,16 +322,15 @@ class PageViewModel(
 
         // stream to UI
 
-        orchestrator
-            .stores
-            .views
+        renderCommand
             .stream()
+            .switchToLatestFrom(orchestrator.stores.views.stream())
             .onEach { dispatchToUI(it) }
             .launchIn(viewModelScope)
 
         // renderize, in order to send to UI
 
-        renderings
+        renderizePipeline
             .stream()
             .filter { it.isNotEmpty() }
             .onEach {
@@ -344,7 +355,10 @@ class PageViewModel(
                     details = details
                 )
             }
-            .onEach { orchestrator.stores.views.update(it) }
+            .onEach { views ->
+                orchestrator.stores.views.update(views)
+                renderCommand.send(Unit)
+            }
             .launchIn(viewModelScope)
     }
 
@@ -524,19 +538,21 @@ class PageViewModel(
     }
 
     fun onParagraphTextChanged(
-        id: String,
-        text: String,
-        marks: List<Content.Text.Mark>
+        view: BlockView.Paragraph
     ) {
+
         val update = TextUpdate.Pattern(
-            target = id,
-            text = text,
-            markup = marks
+            target = view.id,
+            text = view.text,
+            markup = view.marks.map { it.mark() }
         )
-        Timber.d("onParagraphTextChanged: $update")
-        viewModelScope.launch {
-            orchestrator.proxies.changes.send(update)
-        }
+
+        val store = orchestrator.stores.views
+        val old = store.current()
+        val new = old.map { if (it.id == view.id) view else it }
+
+        viewModelScope.launch { store.update(new) }
+        viewModelScope.launch { orchestrator.proxies.changes.send(update) }
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {
@@ -766,15 +782,13 @@ class PageViewModel(
     }
 
     private fun onBlockLongPressedClicked(target: String, dimensions: BlockDimensions) {
-        val state = stateData.value
-        if (state is ViewState.Success) {
-            dispatch(Command.OpenActionBar(
-                block = state.blocks.first { it.id == target },
+        val views = orchestrator.stores.views.current()
+        dispatch(
+            Command.OpenActionBar(
+                block = views.first { it.id == target },
                 dimensions = dimensions
-            ))
-        } else {
-            Timber.e("onBlockLongPressedClicked, state:$state should be ViewState.Success, to get proper BlockView")
-        }
+            )
+        )
     }
 
     fun onMarkupActionClicked(markup: Markup.Type, selection: IntRange) {
@@ -797,7 +811,7 @@ class PageViewModel(
             }
             else -> {
                 viewModelScope.launch {
-                    markups.send(MarkupAction(type = markup))
+                    markupActionPipeline.send(MarkupAction(type = markup))
                 }
             }
         }
@@ -809,7 +823,7 @@ class PageViewModel(
         )
 
         viewModelScope.launch {
-            markups.send(
+            markupActionPipeline.send(
                 MarkupAction(
                     type = Markup.Type.TEXT_COLOR,
                     param = color
@@ -832,7 +846,7 @@ class PageViewModel(
         )
 
         viewModelScope.launch {
-            markups.send(
+            markupActionPipeline.send(
                 MarkupAction(
                     type = Markup.Type.BACKGROUND_COLOR,
                     param = color
@@ -1200,15 +1214,13 @@ class PageViewModel(
     }
 
     fun onMeasure(target: Id, dimensions: BlockDimensions) {
-        val state = stateData.value
-        if (state is ViewState.Success) {
-            dispatch(
-                Command.OpenActionBar(
-                    block = state.blocks.first { it.id == target },
-                    dimensions = dimensions
-                )
+        val views = orchestrator.stores.views.current()
+        dispatch(
+            Command.OpenActionBar(
+                block = views.first { it.id == target },
+                dimensions = dimensions
             )
-        }
+        )
     }
 
     fun onAddBlockToolbarClicked() {
@@ -1416,7 +1428,7 @@ class PageViewModel(
 
     private suspend fun refresh() {
         Timber.d("Refreshing: $blocks")
-        renderings.send(blocks)
+        renderizePipeline.send(blocks)
     }
 
     private fun onPageClicked(target: String) =
@@ -1944,6 +1956,7 @@ class PageViewModel(
     }
 
     companion object {
+        const val EMPTY_CONTEXT = ""
         const val EMPTY_FOCUS_ID = ""
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
         const val DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE = 150L
@@ -1966,8 +1979,8 @@ class PageViewModel(
         orchestrator.proxies.saves.cancel()
 
         selections.cancel()
-        markups.cancel()
-        renderings.cancel()
+        markupActionPipeline.cancel()
+        renderizePipeline.cancel()
 
         controlPanelInteractor.channel.cancel()
         titleChannel.cancel()

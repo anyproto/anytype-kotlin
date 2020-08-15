@@ -1645,9 +1645,12 @@ class BlockAdapterTest {
 
         var triggered = false
 
+        val txt = MockDataFactory.randomString()
+
         val title = BlockView.Title(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
+            cursor = txt.length,
             isFocused = true
         )
 
@@ -3468,7 +3471,7 @@ class BlockAdapterTest {
             onProfileIconClicked = {},
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
-            onParagraphTextChanged = { _, _ -> },
+            onParagraphTextChanged = {},
             onTitleTextChanged = onTitleTextChanged,
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
             onMarkupActionClicked = { _, _ -> },

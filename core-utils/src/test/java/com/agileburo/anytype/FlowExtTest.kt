@@ -1,16 +1,52 @@
 package com.agileburo.anytype
 
+import com.agileburo.anytype.core_utils.ext.switchToLatestFrom
 import com.agileburo.anytype.core_utils.ext.withLatestFrom
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class FlowExtTest {
+
+
+    @Test
+    fun `should emit latest value from B whenever A emits something`() = runBlockingTest {
+
+        val aChannel = Channel<Int>()
+        val bChannel = Channel<String>()
+
+        val aFlow = aChannel.consumeAsFlow()
+        val bFlow = bChannel.consumeAsFlow()
+
+        launch {
+            val result = aFlow.switchToLatestFrom(bFlow).toList()
+            assertEquals(
+                expected = listOf("A", "B", "D"),
+                actual = result
+            )
+        }
+
+        launch {
+            bChannel.send("A")
+            aChannel.send(1)
+            bChannel.send("B")
+            aChannel.send(2)
+            bChannel.send("C")
+            bChannel.send("D")
+            aChannel.send(2)
+            bChannel.send("E")
+            bChannel.send("F")
+            bChannel.send("G")
+        }
+
+        aChannel.close()
+        bChannel.close()
+    }
 
     @Test
     fun `should apply withLatestFrom operator for several streams`() = runBlocking {

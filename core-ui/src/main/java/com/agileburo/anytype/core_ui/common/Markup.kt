@@ -28,7 +28,7 @@ interface Markup {
     /**
      * List of marks associated with the text body.
      */
-    val marks: List<Mark>
+    var marks: List<Mark>
 
     /**
      * @property from caracter index where this markup starts (inclusive)

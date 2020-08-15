@@ -268,3 +268,42 @@ fun Block.Fields.getName(): String =
     this.name.let { name ->
         if (name.isNullOrBlank()) "Untitled" else name
     }
+
+fun Markup.Mark.mark(): Block.Content.Text.Mark = when (type) {
+    Markup.Type.BOLD -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.BOLD
+    )
+    Markup.Type.ITALIC -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.ITALIC
+    )
+    Markup.Type.STRIKETHROUGH -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+    )
+    Markup.Type.TEXT_COLOR -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.TEXT_COLOR,
+        param = param
+    )
+    Markup.Type.BACKGROUND_COLOR -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.BACKGROUND_COLOR,
+        param = param
+    )
+    Markup.Type.LINK -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.LINK,
+        param = param
+    )
+    Markup.Type.KEYBOARD -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.KEYBOARD
+    )
+    Markup.Type.MENTION -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.MENTION,
+        param = param
+    )
+}

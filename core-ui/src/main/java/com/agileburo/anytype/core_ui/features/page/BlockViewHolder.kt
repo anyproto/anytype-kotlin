@@ -111,7 +111,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(
             item: BlockView.Paragraph,
-            onTextChanged: (String, Editable) -> Unit,
+            onTextChanged: (BlockView.Paragraph) -> Unit,
             onSelectionChanged: (String, IntRange) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             clicked: (ListenerType) -> Unit,
@@ -150,7 +150,13 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 if (item.isFocused) setCursor(item)
 
                 setupTextWatcher(
-                    onTextChanged = onTextChanged,
+                    onTextChanged = { _, editable ->
+                        item.apply {
+                            text = editable.toString()
+                            marks = editable.marks()
+                        }
+                        onTextChanged(item)
+                    },
                     onMentionEvent = onMentionEvent,
                     item = item
                 )
@@ -242,7 +248,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 if (item.isFocused) setCursor(item)
                 focus(item.isFocused)
                 content.setText(item.text, BufferType.EDITABLE)
-                if (!item.text.isNullOrEmpty()) content.setSelection(item.text.length)
+                setCursor(item)
                 setupTextWatcher({ _, editable -> onTitleTextChanged(editable) }, item)
                 content.setOnFocusChangeListener { _, hasFocus ->
                     onFocusChanged(item.id, hasFocus)
@@ -356,7 +362,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 if (item.isFocused) setCursor(item)
                 focus(item.isFocused)
                 content.setText(item.text, BufferType.EDITABLE)
-                if (!item.text.isNullOrEmpty()) content.setSelection(item.text.length)
+                setCursor(item)
                 setupTextWatcher({ _, editable -> onTitleTextChanged(editable) }, item)
                 content.setOnFocusChangeListener { _, hasFocus ->
                     onFocusChanged(item.id, hasFocus)

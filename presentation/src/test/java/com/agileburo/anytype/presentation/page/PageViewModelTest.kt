@@ -631,8 +631,6 @@ class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        testObserver.assertValue(ViewState.Success(emptyList()))
-
         vm.onStart(root)
 
         testObserver.assertValue(ViewState.Loading)
@@ -1086,6 +1084,7 @@ class PageViewModelTest {
         stubObserveEvents(events)
         stubOpenPage()
         buildViewModel(builder)
+        stubUpdateText()
 
         val testObserver = vm.state.test()
 
@@ -1112,7 +1111,7 @@ class PageViewModelTest {
 
         testObserver
             .assertValue(state)
-            .assertHistorySize(3)
+            .assertHistorySize(2)
 
         val userInput = MockDataFactory.randomString()
 
@@ -1136,7 +1135,7 @@ class PageViewModelTest {
 
         testObserver
             .assertValue(state)
-            .assertHistorySize(3)
+            .assertHistorySize(2)
     }
 
     @Test
@@ -3528,7 +3527,6 @@ class PageViewModelTest {
         stubOpenPage()
         stubReplaceBlock(root = root)
         buildViewModel()
-
         stubReplaceBlock(root)
 
         vm.onStart(root)
@@ -3540,9 +3538,11 @@ class PageViewModelTest {
         val update = "1. "
 
         vm.onParagraphTextChanged(
-            id = paragraph.id,
-            marks = paragraph.content<Block.Content.Text>().marks,
-            text = update
+            BlockView.Paragraph(
+                id = paragraph.id,
+                marks = emptyList(),
+                text = update
+            )
         )
 
         runBlockingTest {
@@ -3690,6 +3690,8 @@ class PageViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage()
         buildViewModel()
+        stubUpdateText()
+        stubReplaceBlock(root)
 
         vm.onStart(root)
 
@@ -3700,9 +3702,11 @@ class PageViewModelTest {
         val update = "1. "
 
         vm.onParagraphTextChanged(
-            id = paragraph.id,
-            marks = paragraph.content<Block.Content.Text>().marks,
-            text = update
+            BlockView.Paragraph(
+                id = paragraph.id,
+                marks = emptyList(),
+                text = update
+            )
         )
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)

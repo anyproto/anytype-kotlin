@@ -9,7 +9,7 @@
 
 ### Design & UX 🔳
 
-*
+* Added app icon (#596)
 
 ### Fixes & tech 🚒
 

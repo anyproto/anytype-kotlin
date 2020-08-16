@@ -8,17 +8,28 @@ import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.reactive.clicks
 import kotlinx.android.synthetic.main.widget_page_bottom_toolbar.view.*
 
-class PageBottomToolbar @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+class MainBottomToolbar : ConstraintLayout {
+
+    constructor(context: Context) : this(context, null)
+
+    constructor(
+        context: Context,
+        attrs: AttributeSet?
+    ) : this(context, attrs, 0)
+
+    constructor(
+        context: Context,
+        attrs: AttributeSet?,
+        defStyleAttr: Int
+    ) : super(context, attrs, defStyleAttr) {
+        inflate(context)
+    }
 
     fun searchClicks() = btnSearch.clicks()
     fun navigationClicks() = btnNavigation.clicks()
     fun addPageClick() = btnAddDoc.clicks()
 
-    init {
+    private fun inflate(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.widget_page_bottom_toolbar, this, true)
     }
 }

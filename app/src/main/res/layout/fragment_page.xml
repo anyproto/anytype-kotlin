@@ -123,11 +123,14 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.agileburo.anytype.core_ui.widgets.toolbar.PageBottomToolbar
+    <com.agileburo.anytype.core_ui.widgets.toolbar.MainBottomToolbar
         android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:background="#FFFFFF"
+        android:clickable="true"
+        android:focusable="true"
         android:visibility="invisible"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
         tools:visibility="visible" />

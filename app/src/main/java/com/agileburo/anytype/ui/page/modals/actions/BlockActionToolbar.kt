@@ -93,7 +93,6 @@ abstract class BlockActionToolbar : Fragment() {
                     addButtons(view, ACTIONS.TEXT)
                 }
             }
-            is BlockView.Task -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Bulleted -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Numbered -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Toggle -> addButtons(view, ACTIONS.TEXT)

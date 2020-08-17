@@ -13,6 +13,7 @@
 ### Fixes & tech 🚒
 
 * Image size issues (#648)
+* Removed task-block-related legacy
 
 ## Version 0.0.43
 

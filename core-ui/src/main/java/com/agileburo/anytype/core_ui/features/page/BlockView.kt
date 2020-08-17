@@ -27,7 +27,6 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_UPLOAD
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PROFILE_TITLE
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TASK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO
@@ -313,21 +312,6 @@ sealed class BlockView : ViewType, Parcelable {
     ) : BlockView(), Markup, Focusable, Text, Cursor, Checkable, Indentable, Permission, Selectable {
         override fun getViewType() = HOLDER_CHECKBOX
         override val body: String = text
-    }
-
-    /**
-     * UI-model for task blocks.
-     * @property id block's id
-     * @property text task's content text
-     * @property checked immutable taks state (whether this task is completed or not)
-     */
-    @Parcelize
-    data class Task(
-        override val id: String,
-        var text: String,
-        val checked: Boolean = false
-    ) : BlockView() {
-        override fun getViewType() = HOLDER_TASK
     }
 
     /**

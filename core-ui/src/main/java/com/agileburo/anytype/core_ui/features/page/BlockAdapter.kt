@@ -32,7 +32,6 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_UPLOAD
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PROFILE_TITLE
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TASK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_TOGGLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO
@@ -158,15 +157,6 @@ class BlockAdapter(
                         false
                     ),
                     onMarkupActionClicked = onMarkupActionClicked
-                )
-            }
-            HOLDER_TASK -> {
-                BlockViewHolder.Task(
-                    view = inflater.inflate(
-                        R.layout.item_block_task,
-                        parent,
-                        false
-                    )
                 )
             }
             HOLDER_BULLET -> {
@@ -683,11 +673,6 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener
-                )
-            }
-            is BlockViewHolder.Task -> {
-                holder.bind(
-                    item = blocks[position] as BlockView.Task
                 )
             }
             is BlockViewHolder.Bulleted -> {

@@ -65,7 +65,6 @@ import kotlinx.android.synthetic.main.item_block_highlight.view.*
 import kotlinx.android.synthetic.main.item_block_numbered.view.*
 import kotlinx.android.synthetic.main.item_block_page.view.*
 import kotlinx.android.synthetic.main.item_block_picture.view.*
-import kotlinx.android.synthetic.main.item_block_task.view.*
 import kotlinx.android.synthetic.main.item_block_text.view.*
 import kotlinx.android.synthetic.main.item_block_title.view.*
 import kotlinx.android.synthetic.main.item_block_title.view.documentIconContainer
@@ -886,17 +885,6 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     if (isSelected) R.color.checkbox_state_checked else R.color.black
                 )
             )
-    }
-
-    class Task(view: View) : BlockViewHolder(view) {
-
-        private val checkbox = itemView.taskIcon
-        private val content = itemView.taskContent
-
-        fun bind(item: BlockView.Task) {
-            checkbox.isSelected = item.checked
-            content.text = item.text
-        }
     }
 
     class Bulleted(

@@ -16,7 +16,6 @@ object BlockActionToolbarFactory {
         is BlockView.Highlight -> newInstance(block, dimensions)
         is BlockView.Code -> newInstance(block, dimensions)
         is BlockView.Checkbox -> newInstance(block, dimensions)
-        is BlockView.Task -> newInstance(block, dimensions)
         is BlockView.Bulleted -> newInstance(block, dimensions)
         is BlockView.Numbered -> newInstance(block, dimensions)
         is BlockView.Toggle -> newInstance(block, dimensions)
@@ -110,14 +109,6 @@ object BlockActionToolbarFactory {
 
     fun newInstance(block: BlockView.Numbered, dimensions: BlockDimensions): NumberedBlockActionToolbar =
         NumberedBlockActionToolbar().apply {
-            arguments = bundleOf(
-                BlockActionToolbar.ARG_BLOCK to block,
-                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
-            )
-        }
-
-    fun newInstance(block: BlockView.Task, dimensions: BlockDimensions): TaskBlockActionToolbar =
-        TaskBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
                 BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions

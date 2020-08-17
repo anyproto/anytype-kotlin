@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.43 (WIP)
+## Version 0.0.43
 
 ### New features 🚀
 
@@ -9,11 +9,14 @@
 
 ### Design & UX 🔳
 
+* Changed main bottom-toolbar background (#660)
 * Added app icon (#596)
 
 ### Fixes & tech 🚒
 
+* Render-state syncing (from GUI to VM, from VM to GUI) refactoring (#663) 
 * After updating document's image, this image is only updated after reopening the document (#642)
+* Event subscription lifecycle issues (#675)
 
 ## Version 0.0.42
 

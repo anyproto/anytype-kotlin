@@ -158,7 +158,7 @@
 
     <string name="loading">Loading…</string>
     <string name="error_while_loading">Error while loading</string>
-    <string name="error_while_loading_picture">Error while \nloading picture</string>
+    <string name="error_while_loading_picture">Error while loading picture</string>
     <string name="block_with_a_picture">Block with a picture</string>
     <string name="tap_here_to_insert_a_bookmark_url">Tap here to insert a bookmark url</string>
     <string name="add_a_web_bookmark">Add a web bookmark</string>

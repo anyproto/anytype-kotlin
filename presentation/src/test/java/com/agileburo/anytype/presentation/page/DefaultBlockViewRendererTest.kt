@@ -461,7 +461,7 @@ class DefaultBlockViewRendererTest {
                 id = page.id,
                 isFocused = false,
                 text = name,
-                image = UrlBuilder(config).image(imageName)
+                image = UrlBuilder(config).thumbnail(imageName)
             ),
             BlockView.Paragraph(
                 isFocused = true,
@@ -534,7 +534,7 @@ class DefaultBlockViewRendererTest {
                 id = page.id,
                 isFocused = false,
                 text = name,
-                image = UrlBuilder(config).image(imageName)
+                image = UrlBuilder(config).thumbnail(imageName)
             ),
             BlockView.Paragraph(
                 isFocused = true,
@@ -606,7 +606,7 @@ class DefaultBlockViewRendererTest {
                 id = page.id,
                 isFocused = false,
                 text = name,
-                image = UrlBuilder(config).image(imageName)
+                image = UrlBuilder(config).thumbnail(imageName)
             ),
             BlockView.Paragraph(
                 isFocused = true,

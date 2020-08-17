@@ -242,7 +242,7 @@ class DefaultBlockViewRenderer(
                         isFocused = isFocused,
                         text = text,
                         image = details.details[root.id]?.iconImage?.let { name ->
-                            if (name.isNotEmpty()) urlBuilder.image(name) else null
+                            if (name.isNotEmpty()) urlBuilder.thumbnail(name) else null
                         },
                         cursor = cursor
                     )
@@ -260,7 +260,7 @@ class DefaultBlockViewRenderer(
                         },
                         image = details.details[root.id]?.iconImage?.let { name ->
                             if (name.isNotEmpty())
-                                urlBuilder.image(name)
+                                urlBuilder.thumbnail(name)
                             else
                                 null
                         },

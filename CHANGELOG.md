@@ -1,5 +1,19 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.44 (WIP)
+
+### New features 🚀
+
+*
+
+### Design & UX 🔳
+
+*
+
+### Fixes & tech 🚒
+
+* Image size issues (#648)
+
 ## Version 0.0.43
 
 ### New features 🚀

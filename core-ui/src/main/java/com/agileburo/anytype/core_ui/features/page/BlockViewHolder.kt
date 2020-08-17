@@ -1926,6 +1926,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 isFirstResource: Boolean
             ): Boolean {
                 error.visible()
+                Timber.e(e, "Error while loading picture")
                 return false
             }
 

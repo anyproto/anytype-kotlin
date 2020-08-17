@@ -187,7 +187,7 @@ class MapperExtensionKtTest {
             size = size,
             mime = mime,
             hash = hash,
-            url = urlBuilder.video(hash),
+            url = urlBuilder.image(hash),
             indent = indent
         )
 

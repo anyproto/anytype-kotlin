@@ -36,7 +36,7 @@ fun Block.Content.File.toPictureView(
         name = name,
         mime = mime,
         hash = hash,
-        url = urlBuilder.video(hash),
+        url = urlBuilder.image(hash),
         indent = indent,
         mode = mode
     )

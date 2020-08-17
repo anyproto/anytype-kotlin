@@ -12,7 +12,12 @@ class UrlBuilder(val config: Config) {
     /**
      * Builds image url for given [hash]
      */
-    fun image(hash: String?): Url = config.gateway + IMAGE_PATH + hash
+    fun image(hash: String?): Url = config.gateway + IMAGE_PATH + hash + DEFAULT_WIDTH_PARAM
+
+    /**
+     * Builds small image url for given [hash]
+     */
+    fun thumbnail(hash: String?): Url = config.gateway + IMAGE_PATH + hash + THUMBNAIL_WIDTH_PARAM
 
     /**
      * Builds file url for given [hash]
@@ -27,5 +32,7 @@ class UrlBuilder(val config: Config) {
     companion object {
         const val IMAGE_PATH = "/image/"
         const val FILE_PATH = "/file/"
+        const val DEFAULT_WIDTH_PARAM = "?width=1080"
+        const val THUMBNAIL_WIDTH_PARAM = "?width=540"
     }
 }

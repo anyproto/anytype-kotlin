@@ -1405,6 +1405,9 @@ class PageViewModel(
                     is Content.Bookmark -> {
                         addNewBlockAtTheEnd()
                     }
+                    is Content.File -> {
+                        addNewBlockAtTheEnd()
+                    }
                     else -> {
                         Timber.d("Outside-click has been ignored.")
                     }

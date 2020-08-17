@@ -193,7 +193,7 @@ open class EditorPresentationTestSetup {
     }
 
     fun stubOpenDocument(
-        document: List<Block>,
+        document: List<Block> = emptyList(),
         details: Block.Details = Block.Details()
     ) {
         openPage.stub {
@@ -225,9 +225,7 @@ open class EditorPresentationTestSetup {
     }
 
     fun stubObserveEvents(flow: Flow<List<Event>> = flowOf()) {
-        interceptEvents.stub {
-            onBlocking { build() } doReturn flow
-        }
+        interceptEvents.stub { onBlocking { build() } doReturn flow }
     }
 
     fun stubUpdateTextStyle(

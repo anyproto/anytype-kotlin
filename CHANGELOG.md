@@ -13,7 +13,7 @@
 
 ### Fixes & tech 🚒
 
-*
+* After updating document's image, this image is only updated after reopening the document (#642)
 
 ## Version 0.0.42
 

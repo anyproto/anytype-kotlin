@@ -47,8 +47,7 @@ import com.agileburo.anytype.presentation.page.render.BlockViewRenderer
 import com.agileburo.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.agileburo.anytype.presentation.page.selection.SelectionStateHolder
 import com.agileburo.anytype.presentation.page.toggle.ToggleStateHolder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -78,7 +77,7 @@ class PageViewModel(
     TurnIntoActionReceiver,
     StateReducer<List<Block>, Event> by reducer {
 
-    private val eventSubscription: CoroutineScope = CloseableCoroutineScope()
+    private var eventSubscription: Job? = null
 
     private var mode = EditorMode.EDITING
 
@@ -190,6 +189,7 @@ class PageViewModel(
 
     private suspend fun processEvents(events: List<Event>) {
         Timber.d("Blocks before handling events: $blocks")
+        Timber.d("Events: $events")
         events.forEach { event ->
             if (event is Event.Command.ShowBlock) {
                 orchestrator.stores.details.update(event.details)
@@ -414,12 +414,13 @@ class PageViewModel(
     }
 
     fun onStart(id: Id) {
+        Timber.d("onStart")
 
         context = id
 
         stateData.postValue(ViewState.Loading)
 
-        eventSubscription.launch {
+        eventSubscription = viewModelScope.launch {
             interceptEvents
                 .build(InterceptEvents.Params(context))
                 .map { events -> processEvents(events) }
@@ -1990,6 +1991,6 @@ class PageViewModel(
 
     fun onStop() {
         Timber.d("onStop")
-        eventSubscription.cancel()
+        eventSubscription?.cancel()
     }
 }

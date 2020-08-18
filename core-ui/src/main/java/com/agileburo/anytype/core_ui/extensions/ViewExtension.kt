@@ -8,8 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
-import com.agileburo.anytype.core_utils.ext.PopupExtensions
+import com.agileburo.anytype.core_ui.features.page.BlockDimensions
 import com.agileburo.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 
 fun Context.toast(
@@ -59,3 +58,15 @@ fun EditText.cursorYBottomCoordinate(): Int {
 }
 
 fun TextView.range() : IntRange = selectionStart..selectionEnd
+
+fun View.dimensions(): BlockDimensions {
+    val rect = calculateRectInWindow(this)
+    return BlockDimensions(
+        left = rect.left,
+        top = rect.top,
+        bottom = rect.bottom,
+        right = rect.right,
+        height = this.height,
+        width = this.width
+    )
+}

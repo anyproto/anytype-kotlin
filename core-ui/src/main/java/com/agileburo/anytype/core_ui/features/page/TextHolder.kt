@@ -298,7 +298,7 @@ interface TextHolder {
             if (item.mode == BlockView.Mode.EDIT) {
                 content.clearTextWatchers()
                 setupTextWatcher(onTextChanged, item)
-                content.selectionDetector = { onSelectionChanged(item.id, it) }
+                content.selectionWatcher = { onSelectionChanged(item.id, it) }
                 enableEditMode()
             } else {
                 enableReadOnlyMode()
@@ -320,7 +320,7 @@ interface TextHolder {
 
     fun enableReadOnlyMode() {
         content.enableReadMode()
-        content.selectionDetector = null
+        content.selectionWatcher = null
         content.clearTextWatchers()
     }
 

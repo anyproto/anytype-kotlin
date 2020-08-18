@@ -33,7 +33,7 @@ class TextInputWidget : AppCompatEditText {
 
     private var highlightDrawer: HighlightDrawer? = null
 
-    var selectionDetector: ((IntRange) -> Unit)? = null
+    var selectionWatcher: ((IntRange) -> Unit)? = null
 
     var clipboardInterceptor: ClipboardInterceptor? = null
 
@@ -124,7 +124,7 @@ class TextInputWidget : AppCompatEditText {
 
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
         Timber.d("New selection: $selStart - $selEnd")
-        selectionDetector?.invoke(selStart..selEnd)
+        selectionWatcher?.invoke(selStart..selEnd)
         super.onSelectionChanged(selStart, selEnd)
     }
 

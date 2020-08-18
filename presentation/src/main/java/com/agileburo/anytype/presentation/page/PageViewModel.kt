@@ -1762,6 +1762,12 @@ class PageViewModel(
                 EditorMode.SCROLL_AND_MOVE -> Unit
             }
         }
+        is ListenerType.EditableBlock -> {
+            //Todo block view refactoring
+        }
+        ListenerType.TitleBlock -> {
+            //Todo block view refactoring
+        }
     }
 
     fun onPlusButtonPressed() {

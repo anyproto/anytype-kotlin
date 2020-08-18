@@ -113,6 +113,14 @@ class BlockViewDiffUtil(
 
         val isIndentChanged: Boolean get() = changes.contains(INDENT_CHANGED)
         val isCursorChanged: Boolean get() = changes.contains(CURSOR_CHANGED)
+        val isMarkupChanged: Boolean get() = changes.contains(MARKUP_CHANGED)
+        val isTextChanged: Boolean get() = changes.contains(TEXT_CHANGED)
+        val isTextColorChanged: Boolean get() = changes.contains(TEXT_COLOR_CHANGED)
+        val isFocusChanged: Boolean get() = changes.contains(FOCUS_CHANGED)
+        val isBackgroundColorChanged: Boolean get() = changes.contains(BACKGROUND_COLOR_CHANGED)
+        val isModeChanged: Boolean get() = changes.contains(READ_WRITE_MODE_CHANGED)
+        val isSelectionChanged: Boolean get() = changes.contains(SELECTION_CHANGED)
+        val isAlignmentChanged: Boolean get() = changes.contains(ALIGNMENT_CHANGED)
 
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)
@@ -122,6 +130,7 @@ class BlockViewDiffUtil(
         fun readWriteModeChanged() = changes.contains(READ_WRITE_MODE_CHANGED)
         fun selectionChanged() = changes.contains(SELECTION_CHANGED)
         fun alignmentChanged() = changes.contains(ALIGNMENT_CHANGED)
+
     }
 
     companion object {

@@ -164,7 +164,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     item.isFocused = focused
                     onFocusChanged(item.id, focused)
                 }
-                content.selectionDetector = {
+                content.selectionWatcher = {
                     onSelectionChanged(item.id, it)
                 }
             }
@@ -480,7 +480,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                             onTextChanged(block.id, text)
                         }
                     )
-                    selectionDetector = {
+                    selectionWatcher = {
                         onSelectionChanged(block.id, it)
                     }
                 }
@@ -568,7 +568,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                             onTextChanged(block.id, text)
                         }
                     )
-                    selectionDetector = {
+                    selectionWatcher = {
                         onSelectionChanged(block.id, it)
                     }
                 }
@@ -656,7 +656,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                             onTextChanged(block.id, text)
                         }
                     )
-                    selectionDetector = {
+                    selectionWatcher = {
                         onSelectionChanged(block.id, it)
                     }
                 }
@@ -742,7 +742,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     item.isFocused = focused
                     onFocusChanged(item.id, focused)
                 }
-                content.selectionDetector = { onSelectionChanged(item.id, it) }
+                content.selectionWatcher = { onSelectionChanged(item.id, it) }
             }
         }
 
@@ -848,7 +848,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     }
                 )
 
-                content.selectionDetector = {
+                content.selectionWatcher = {
                     onSelectionChanged(item.id, it)
                 }
             }
@@ -965,7 +965,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onFocusChanged(item.id, hasFocus)
                 }
 
-                content.selectionDetector = {
+                content.selectionWatcher = {
                     onSelectionChanged(item.id, it)
                 }
             }
@@ -1088,7 +1088,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onFocusChanged(item.id, hasFocus)
                 }
 
-                content.selectionDetector = {
+                content.selectionWatcher = {
                     onSelectionChanged(item.id, it)
                 }
             }
@@ -1215,7 +1215,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     item.isFocused = focused
                     onFocusChanged(item.id, focused)
                 }
-                content.selectionDetector = {
+                content.selectionWatcher = {
                     onSelectionChanged(item.id, it)
                 }
 
@@ -2141,7 +2141,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                             click = { onBlockLongClick(itemView, it, clicked) }
                         )
                     )
-                    selectionDetector = {
+                    selectionWatcher = {
                         onSelectionChanged(item.id, it)
                     }
                 }

@@ -1718,7 +1718,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -1800,7 +1800,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNotNull(holder.content.selectionDetector)
+        assertNotNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -1844,7 +1844,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNotNull(holder.content.selectionDetector)
+        assertNotNull(holder.content.selectionWatcher)
 
         holder.processChangePayload(
             item = updated,
@@ -1868,7 +1868,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -1909,7 +1909,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2074,7 +2074,7 @@ class BlockAdapterTest {
             actual = h1Holder.content.isTextSelectable
         )
 
-        assertNull(h1Holder.content.selectionDetector)
+        assertNull(h1Holder.content.selectionWatcher)
 
         assertEquals(
             expected = InputType.TYPE_NULL,
@@ -2086,7 +2086,7 @@ class BlockAdapterTest {
             actual = h2Holder.content.isTextSelectable
         )
 
-        assertNull(h2Holder.content.selectionDetector)
+        assertNull(h2Holder.content.selectionWatcher)
 
         assertEquals(
             expected = InputType.TYPE_NULL,
@@ -2098,7 +2098,7 @@ class BlockAdapterTest {
             actual = h3Holder.content.isTextSelectable
         )
 
-        assertNull(h3Holder.content.selectionDetector)
+        assertNull(h3Holder.content.selectionWatcher)
     }
 
     @Test
@@ -2488,7 +2488,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2652,7 +2652,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2693,7 +2693,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2799,7 +2799,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2840,7 +2840,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2946,7 +2946,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2988,7 +2988,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -3096,7 +3096,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -3139,7 +3139,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -3251,7 +3251,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionDetector)
+        assertNull(holder.content.selectionWatcher)
     }
 
     @Test

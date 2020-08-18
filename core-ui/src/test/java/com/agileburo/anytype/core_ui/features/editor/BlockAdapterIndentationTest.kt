@@ -6,6 +6,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.MockDataFactory
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderOne
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderThree
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderTwo
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
@@ -101,7 +104,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderOne)
+        check(holder is HeaderOne)
 
         // Testing
 
@@ -154,7 +157,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderTwo)
+        check(holder is HeaderTwo)
 
         // Testing
 
@@ -207,7 +210,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderThree)
+        check(holder is HeaderThree)
 
         // Testing
 

@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.Span
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderOne
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderThree
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderTwo
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
@@ -51,7 +54,7 @@ class HeaderBlockTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderOne)
+        check(holder is HeaderOne)
 
         // Testing
 
@@ -101,7 +104,7 @@ class HeaderBlockTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderTwo)
+        check(holder is HeaderTwo)
 
         // Testing
 
@@ -151,7 +154,7 @@ class HeaderBlockTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderThree)
+        check(holder is HeaderThree)
 
         // Testing
 
@@ -214,7 +217,7 @@ class HeaderBlockTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderOne)
+        check(holder is HeaderOne)
 
         holder.processChangePayload(
             payloads = listOf(
@@ -270,7 +273,7 @@ class HeaderBlockTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderTwo)
+        check(holder is HeaderTwo)
 
         holder.processChangePayload(
             payloads = listOf(
@@ -326,7 +329,7 @@ class HeaderBlockTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderThree)
+        check(holder is HeaderThree)
 
         holder.processChangePayload(
             payloads = listOf(

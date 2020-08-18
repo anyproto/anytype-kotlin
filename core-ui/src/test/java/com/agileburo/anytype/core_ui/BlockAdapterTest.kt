@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.agileburo.anytype.core_ui.common.ThemeColor
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderOne
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderThree
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderTwo
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
@@ -905,7 +908,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderOne)
+        check(holder is HeaderOne)
 
         val actual = holder.content.paddingLeft
 
@@ -938,7 +941,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderTwo)
+        check(holder is HeaderTwo)
 
         val actual = holder.content.paddingLeft
 
@@ -971,7 +974,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.HeaderThree)
+        check(holder is HeaderThree)
 
         val actual = holder.content.paddingLeft
 
@@ -2060,9 +2063,9 @@ class BlockAdapterTest {
         adapter.onBindViewHolder(h2Holder, 1)
         adapter.onBindViewHolder(h3Holder, 2)
 
-        check(h1Holder is BlockViewHolder.HeaderOne)
-        check(h2Holder is BlockViewHolder.HeaderTwo)
-        check(h3Holder is BlockViewHolder.HeaderThree)
+        check(h1Holder is HeaderOne)
+        check(h2Holder is HeaderTwo)
+        check(h3Holder is HeaderThree)
 
         assertEquals(
             expected = InputType.TYPE_NULL,
@@ -2191,12 +2194,12 @@ class BlockAdapterTest {
         adapter.onBindViewHolder(h3SelectedHolder, 4)
         adapter.onBindViewHolder(h3NotSelectedHolder, 5)
 
-        check(h1SelectedHolder is BlockViewHolder.HeaderOne)
-        check(h1NotSelectedHolder is BlockViewHolder.HeaderOne)
-        check(h2SelectedHolder is BlockViewHolder.HeaderTwo)
-        check(h2NotSelectedHolder is BlockViewHolder.HeaderTwo)
-        check(h3SelectedHolder is BlockViewHolder.HeaderThree)
-        check(h3NotSelectedHolder is BlockViewHolder.HeaderThree)
+        check(h1SelectedHolder is HeaderOne)
+        check(h1NotSelectedHolder is HeaderOne)
+        check(h2SelectedHolder is HeaderTwo)
+        check(h2NotSelectedHolder is HeaderTwo)
+        check(h3SelectedHolder is HeaderThree)
+        check(h3NotSelectedHolder is HeaderThree)
 
         assertTrue { h1SelectedHolder.content.isSelected }
         assertFalse { h1NotSelectedHolder.content.isSelected }
@@ -2250,9 +2253,9 @@ class BlockAdapterTest {
         adapter.onBindViewHolder(h2Holder, 1)
         adapter.onBindViewHolder(h3Holder, 2)
 
-        check(h1Holder is BlockViewHolder.HeaderOne)
-        check(h2Holder is BlockViewHolder.HeaderTwo)
-        check(h3Holder is BlockViewHolder.HeaderThree)
+        check(h1Holder is HeaderOne)
+        check(h2Holder is HeaderTwo)
+        check(h3Holder is HeaderThree)
 
         assertEquals(
             expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
@@ -2339,9 +2342,9 @@ class BlockAdapterTest {
         adapter.onBindViewHolder(h2Holder, 1)
         adapter.onBindViewHolder(h3Holder, 2)
 
-        check(h1Holder is BlockViewHolder.HeaderOne)
-        check(h2Holder is BlockViewHolder.HeaderTwo)
-        check(h3Holder is BlockViewHolder.HeaderThree)
+        check(h1Holder is HeaderOne)
+        check(h2Holder is HeaderTwo)
+        check(h3Holder is HeaderThree)
 
         // Testing
 

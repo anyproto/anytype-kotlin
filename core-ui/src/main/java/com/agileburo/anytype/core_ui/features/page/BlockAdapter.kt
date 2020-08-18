@@ -7,6 +7,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderOne
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderThree
+import com.agileburo.anytype.core_ui.features.editor.holders.HeaderTwo
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
@@ -111,7 +114,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_HEADER_ONE -> {
-                BlockViewHolder.HeaderOne(
+                HeaderOne(
                     view = inflater.inflate(
                         R.layout.item_block_header_one,
                         parent,
@@ -121,7 +124,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_HEADER_TWO -> {
-                BlockViewHolder.HeaderTwo(
+                HeaderTwo(
                     view = inflater.inflate(
                         R.layout.item_block_header_two,
                         parent,
@@ -131,7 +134,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_HEADER_THREE -> {
-                BlockViewHolder.HeaderThree(
+                HeaderThree(
                     view = inflater.inflate(
                         R.layout.item_block_header_three,
                         parent,
@@ -445,7 +448,7 @@ class BlockAdapter(
                             clicked = onClickListener
                         )
                     }
-                    is BlockViewHolder.HeaderOne -> {
+                    is HeaderOne -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
@@ -454,7 +457,7 @@ class BlockAdapter(
                             clicked = onClickListener
                         )
                     }
-                    is BlockViewHolder.HeaderTwo -> {
+                    is HeaderTwo -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
@@ -463,7 +466,7 @@ class BlockAdapter(
                             clicked = onClickListener
                         )
                     }
-                    is BlockViewHolder.HeaderThree -> {
+                    is HeaderThree -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
@@ -629,7 +632,7 @@ class BlockAdapter(
                     onProfileIconClicked = onProfileIconClicked
                 )
             }
-            is BlockViewHolder.HeaderOne -> {
+            is HeaderOne -> {
                 holder.bind(
                     block = blocks[position] as BlockView.HeaderOne,
                     onTextChanged = onTextChanged,
@@ -638,7 +641,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.HeaderTwo -> {
+            is HeaderTwo -> {
                 holder.bind(
                     block = blocks[position] as BlockView.HeaderTwo,
                     onTextChanged = onTextChanged,
@@ -647,7 +650,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.HeaderThree -> {
+            is HeaderThree -> {
                 holder.bind(
                     block = blocks[position] as BlockView.HeaderThree,
                     onTextChanged = onTextChanged,

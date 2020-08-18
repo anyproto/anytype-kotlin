@@ -1013,7 +1013,11 @@ class PageViewModel(
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Download -> {
-                _error.value = "Download not implemented"
+                viewModelScope.launch {
+                    dispatch(Command.PopBackStack)
+                    delay(300)
+                    dispatch(Command.RequestDownloadPermission(id))
+                }
             }
             ActionItemType.Replace -> {
                 _error.value = "Replace not implemented"
@@ -1841,13 +1845,19 @@ class PageViewModel(
     }
 
     fun startDownloadingFile(id: String) {
+
+        _error.value = "Downloading file in background..."
+
         val block = blocks.first { it.id == id }
         val file = block.content<Content.File>()
 
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Media.DownloadFile(
-                    url = urlBuilder.file(file.hash),
+                    url = when (file.type) {
+                        Content.File.Type.IMAGE -> urlBuilder.image(file.hash)
+                        else -> urlBuilder.file(file.hash)
+                    },
                     name = file.name.orEmpty()
                 )
             )

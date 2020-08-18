@@ -4,7 +4,7 @@
 
 ### New features 🚀
 
-*
+* Download media (video and images) (#681)
 
 ### Design & UX 🔳
 

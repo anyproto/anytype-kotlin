@@ -1138,7 +1138,7 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private var mode = BlockView.Mode.EDIT
 
-        private val toggle = itemView.toggle
+        val toggle = itemView.toggle
         private val line = itemView.guideline
         private val placeholder = itemView.togglePlaceholder
         private val container = itemView.toolbarBlockContentContainer
@@ -1219,17 +1219,16 @@ sealed class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     onSelectionChanged(item.id, it)
                 }
 
-                toggle.apply {
-                    rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
-                    setOnClickListener {
-                        if (mode == BlockView.Mode.EDIT)
-                            onToggleClicked(item.id)
-                    }
-                }
-
                 placeholder.apply {
                     isVisible = item.isEmpty && item.toggled
                     setOnClickListener { onTogglePlaceholderClicked(item.id) }
+                }
+            }
+
+            toggle.apply {
+                rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
+                setOnClickListener {
+                    if (mode == BlockView.Mode.EDIT) onToggleClicked(item.id)
                 }
             }
         }

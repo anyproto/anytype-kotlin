@@ -228,6 +228,15 @@ open class EditorPresentationTestSetup {
         interceptEvents.stub { onBlocking { build() } doReturn flow }
     }
 
+    fun stubInterceptEvents(
+        params: InterceptEvents.Params = InterceptEvents.Params(context = root),
+        flow: Flow<List<Event>> = flowOf()
+    ) {
+        interceptEvents.stub {
+            onBlocking { build(params) } doReturn flow
+        }
+    }
+
     fun stubUpdateTextStyle(
         params: UpdateTextStyle.Params? = null,
         events: List<Event> = emptyList()

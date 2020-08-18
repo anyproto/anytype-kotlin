@@ -5,8 +5,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
-import com.nhaarman.mockitokotlin2.*
-import kotlinx.coroutines.flow.flowOf
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -52,14 +53,10 @@ class EditorEventSubscriptionTest : EditorPresentationTestSetup() {
 
         val document = listOf(page, a)
 
-        stubOpenDocument(document = document)
-        stubObserveEvents()
-
         val params = InterceptEvents.Params(context = root)
 
-        interceptEvents.stub {
-            onBlocking { build(params) } doReturn flowOf()
-        }
+        stubOpenDocument(document = document)
+        stubInterceptEvents(params)
 
         val vm = buildViewModel()
 

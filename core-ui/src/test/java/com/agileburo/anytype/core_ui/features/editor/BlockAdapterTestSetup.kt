@@ -19,7 +19,8 @@ open class BlockAdapterTestSetup {
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
         onTitleTextChanged: (Editable) -> Unit = {},
         onEndLineEnterTitleClicked: (Editable) -> Unit = {},
-        onTextChanged: (String, Editable) -> Unit = { _, _ -> }
+        onTextChanged: (String, Editable) -> Unit = { _, _ -> },
+        onToggleClicked: (String) -> Unit = {}
     ): BlockAdapter {
         return BlockAdapter(
             blocks = views,
@@ -36,7 +37,7 @@ open class BlockAdapterTestSetup {
             onPageIconClicked = {},
             onProfileIconClicked = {},
             onTogglePlaceholderClicked = {},
-            onToggleClicked = {},
+            onToggleClicked = onToggleClicked,
             onParagraphTextChanged = {},
             onTitleTextChanged = onTitleTextChanged,
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,

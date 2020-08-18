@@ -14,7 +14,8 @@
 
 * Updated `Kotlin` (`1.4.0`) and `Coroutines` (`1.3.9`) (#682)
 * Image size issues (#648)
-* Removed task-block-related legacy
+* Toggle's button stops working when switching from multi-select to edit mode (#643)
+* Removed task-block-related legacy (#679)
 
 ## Version 0.0.43
 

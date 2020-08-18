@@ -12,6 +12,12 @@
 
 ### Fixes & tech 🚒
 
+* Library/framework updates (#687)
+    * AAC `Navigation`,
+    * AndroidX `Core`, `ConstraintLayout`, `RecyclerView`, `Fragment`, `Lifecycle`
+    * Kotlin `DOKKA`
+    * `Protobuf` Gradle plugin
+    * Firebase `Crashlytics` Gradle plugin
 * Updated `Kotlin` (`1.4.0`) and `Coroutines` (`1.3.9`) (#682)
 * Image size issues (#648)
 * Toggle's button stops working when switching from multi-select to edit mode (#643)

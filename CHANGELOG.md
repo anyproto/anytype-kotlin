@@ -12,6 +12,7 @@
 
 ### Fixes & tech 🚒
 
+* Updated `Kotlin` (`1.4.0`) and `Coroutines` (`1.3.9`) (#682)
 * Image size issues (#648)
 * Removed task-block-related legacy
 

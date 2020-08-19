@@ -196,7 +196,7 @@ class BlockAdapterCursorBindingTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Highlight)
+        check(holder is Highlight)
 
         // Testing
 

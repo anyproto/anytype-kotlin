@@ -2484,7 +2484,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Highlight)
+        check(holder is Highlight)
 
         assertEquals(
             expected = InputType.TYPE_NULL,
@@ -2528,7 +2528,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Highlight)
+        check(holder is Highlight)
 
         // Testing
 
@@ -2582,7 +2582,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Highlight)
+        check(holder is Highlight)
 
         assertEquals(
             expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
@@ -2624,7 +2624,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Highlight)
+        check(holder is Highlight)
 
         // Testing
 

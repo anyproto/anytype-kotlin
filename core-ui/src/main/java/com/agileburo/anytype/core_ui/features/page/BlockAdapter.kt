@@ -349,7 +349,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_HIGHLIGHT -> {
-                BlockViewHolder.Highlight(
+                Highlight(
                     view = inflater.inflate(
                         R.layout.item_block_highlight,
                         parent,
@@ -469,7 +469,7 @@ class BlockAdapter(
                             clicked = onClickListener
                         )
                     }
-                    is BlockViewHolder.Highlight -> {
+                    is Highlight -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
@@ -788,7 +788,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Highlight -> {
+            is Highlight -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Highlight,
                     onTextChanged = onTextChanged,

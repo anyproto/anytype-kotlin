@@ -8,8 +8,8 @@ object BlockActionToolbarFactory {
 
     fun newInstance(block: BlockView, dimensions: BlockDimensions) = when (block) {
         is BlockView.Paragraph -> newInstance(block, dimensions)
-        is BlockView.Title -> TODO()
-        is BlockView.ProfileTitle -> TODO()
+        is BlockView.Title.Document -> TODO()
+        is BlockView.Title.Profile -> TODO()
         is BlockView.Header.One -> newInstance(block, dimensions)
         is BlockView.Header.Two -> newInstance(block, dimensions)
         is BlockView.Header.Three -> newInstance(block, dimensions)

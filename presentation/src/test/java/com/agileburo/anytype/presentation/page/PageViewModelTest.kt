@@ -235,7 +235,7 @@ class PageViewModelTest {
 
         val expected = ViewState.Success(
             blocks = listOf(
-                BlockView.Title(
+                BlockView.Title.Document(
                     isFocused = false,
                     id = root,
                     text = null
@@ -452,7 +452,7 @@ class PageViewModelTest {
         val expected =
             ViewState.Success(
                 listOf(
-                    BlockView.Title(
+                    BlockView.Title.Document(
                         isFocused = false,
                         id = root,
                         text = null
@@ -598,7 +598,7 @@ class PageViewModelTest {
 
         val beforeUpdate = ViewState.Success(
             listOf(
-                BlockView.Title(
+                BlockView.Title.Document(
                     isFocused = false,
                     id = root,
                     text = null
@@ -717,7 +717,7 @@ class PageViewModelTest {
 
         val firstTimeExpected = ViewState.Success(
             listOf(
-                BlockView.Title(
+                BlockView.Title.Document(
                     isFocused = false,
                     id = root,
                     text = null
@@ -756,7 +756,7 @@ class PageViewModelTest {
 
         val secondTimeExpected = ViewState.Success(
             listOf(
-                BlockView.Title(
+                BlockView.Title.Document(
                     isFocused = false,
                     id = root,
                     text = null
@@ -867,7 +867,7 @@ class PageViewModelTest {
 
         val firstTimeExpected = ViewState.Success(
             listOf(
-                BlockView.Title(
+                BlockView.Title.Document(
                     isFocused = false,
                     id = page.id,
                     text = null
@@ -916,7 +916,7 @@ class PageViewModelTest {
 
         val secondTimeExpected = ViewState.Success(
             listOf(
-                BlockView.Title(
+                BlockView.Title.Document(
                     isFocused = false,
                     id = page.id,
                     text = null
@@ -1096,7 +1096,7 @@ class PageViewModelTest {
 
         val state = ViewState.Success(
             listOf(
-                BlockView.Title(
+                BlockView.Title.Document(
                     isFocused = false,
                     id = root,
                     text = null
@@ -1480,7 +1480,7 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    BlockView.Title(
+                    BlockView.Title.Document(
                         isFocused = false,
                         id = root,
                         text = null
@@ -1499,7 +1499,7 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    BlockView.Title(
+                    BlockView.Title.Document(
                         isFocused = false,
                         id = root,
                         text = null
@@ -1725,7 +1725,7 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    BlockView.Title(
+                    BlockView.Title.Document(
                         isFocused = false,
                         id = root,
                         text = null
@@ -1757,7 +1757,7 @@ class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    BlockView.Title(
+                    BlockView.Title.Document(
                         isFocused = false,
                         id = root,
                         text = null
@@ -2332,7 +2332,7 @@ class PageViewModelTest {
 
         val before = ViewState.Success(
             blocks = listOf(
-                BlockView.Title(
+                BlockView.Title.Document(
                     id = root,
                     text = null,
                     isFocused = false
@@ -2373,7 +2373,7 @@ class PageViewModelTest {
 
         val after = ViewState.Success(
             blocks = listOf(
-                BlockView.Title(
+                BlockView.Title.Document(
                     id = root,
                     text = null,
                     isFocused = false
@@ -3946,7 +3946,7 @@ class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             id = root,
             text = null,
             isFocused = false
@@ -4122,7 +4122,7 @@ class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             id = root,
             text = null,
             isFocused = false
@@ -4440,7 +4440,7 @@ class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             id = root,
             text = null,
             isFocused = false
@@ -4557,7 +4557,7 @@ class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             id = root,
             text = null,
             isFocused = false
@@ -4682,7 +4682,7 @@ class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             id = root,
             text = null,
             isFocused = false
@@ -4826,7 +4826,7 @@ class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             id = root,
             text = null,
             isFocused = false
@@ -4969,7 +4969,7 @@ class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             id = root,
             text = null,
             isFocused = false

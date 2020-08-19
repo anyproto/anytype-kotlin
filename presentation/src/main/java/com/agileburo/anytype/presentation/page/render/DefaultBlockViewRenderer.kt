@@ -236,7 +236,7 @@ class DefaultBlockViewRenderer(
             val type = (root.content as? Content.Smart)?.type
             result.add(
                 if (type == Content.Smart.Type.PROFILE) {
-                    BlockView.ProfileTitle(
+                    BlockView.Title.Profile(
                         mode = viewMode,
                         id = anchor,
                         isFocused = isFocused,
@@ -247,7 +247,7 @@ class DefaultBlockViewRenderer(
                         cursor = cursor
                     )
                 } else {
-                    BlockView.Title(
+                    BlockView.Title.Document(
                         mode = viewMode,
                         id = anchor,
                         isFocused = isFocused,
@@ -521,7 +521,7 @@ class DefaultBlockViewRenderer(
         content: Content.Text,
         root: Block,
         focus: Focus
-    ): BlockView.Title = BlockView.Title(
+    ): BlockView.Title.Document = BlockView.Title.Document(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,

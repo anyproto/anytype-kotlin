@@ -4,6 +4,8 @@ import android.content.res.ColorStateList
 import android.text.Editable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.postDelayed
 import com.agileburo.anytype.core_ui.extensions.avatarColor
@@ -26,51 +28,18 @@ import kotlinx.android.synthetic.main.item_block_title.view.title
 import kotlinx.android.synthetic.main.item_block_title_profile.view.*
 import timber.log.Timber
 
-class Title(view: View) : BlockViewHolder(view), TextHolder {
+sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
-    private val icon = itemView.documentIconContainer
-    private val image = itemView.imageIcon
-    private val emoji = itemView.emojiIcon
-
+    abstract val icon: FrameLayout
+    abstract val image: ImageView
     override val root: View = itemView
-    override val content: TextInputWidget = itemView.title
-
-    init {
-        content.setSpannableFactory(DefaultSpannableFactory())
-    }
 
     fun bind(
         item: BlockView.Title,
         onTitleTextChanged: (Editable) -> Unit,
-        onFocusChanged: (String, Boolean) -> Unit,
-        onPageIconClicked: () -> Unit
+        onFocusChanged: (String, Boolean) -> Unit
     ) {
-
-        Timber.d("Binding title view: $item")
-
-        item.image?.let { url ->
-            image.visible()
-            Glide
-                .with(image)
-                .load(url)
-                .centerInside()
-                .circleCrop()
-                .into(image)
-        } ?: apply { image.setImageDrawable(null) }
-
-        try {
-            if (item.emoji != null) {
-                Glide
-                    .with(emoji)
-                    .load(Emojifier.uri(item.emoji))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(emoji)
-            }
-        } catch (e: Throwable) {
-            Timber.e(e, "Could not set emoji icon")
-        }
-
-
+        setImage(item)
         if (item.mode == BlockView.Mode.READ) {
             enableReadOnlyMode()
             content.setText(item.text, TextView.BufferType.EDITABLE)
@@ -85,8 +54,19 @@ class Title(view: View) : BlockViewHolder(view), TextHolder {
                 onFocusChanged(item.id, hasFocus)
                 if (hasFocus) showKeyboard()
             }
-            icon.setOnClickListener { onPageIconClicked() }
         }
+    }
+
+    open fun setImage(item: BlockView.Title) {
+        item.image?.let { url ->
+            image.visible()
+            Glide
+                .with(image)
+                .load(url)
+                .centerInside()
+                .circleCrop()
+                .into(image)
+        } ?: apply { image.setImageDrawable(null) }
     }
 
     private fun showKeyboard() {
@@ -99,7 +79,6 @@ class Title(view: View) : BlockViewHolder(view), TextHolder {
         payloads: List<BlockViewDiffUtil.Payload>,
         item: BlockView.Title
     ) {
-
         Timber.d("Processing change payload $payloads for $item")
 
         payloads.forEach { payload ->
@@ -138,131 +117,101 @@ class Title(view: View) : BlockViewHolder(view), TextHolder {
         onNonEmptyBlockBackspaceClicked: () -> Unit
     ) = Unit
 
-    /**
-     * Mention is not used in Title
-     */
     override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0, 0)
 
-    companion object {
-        private const val EMPTY_EMOJI = ""
-    }
-}
+    class Document(view: View) : Title(view) {
 
-class ProfileTitle(view: View) : BlockViewHolder(view), TextHolder {
+        override val icon: FrameLayout = itemView.documentIconContainer
+        override val image: ImageView = itemView.imageIcon
+        private val emoji: ImageView = itemView.emojiIcon
 
-    private val icon = itemView.documentIconContainer
-    private val iconText = itemView.imageText
-    private val image = itemView.imageIcon
+        override val root: View = itemView
+        override val content: TextInputWidget = itemView.title
 
-    override val root: View = itemView
-    override val content: TextInputWidget = itemView.title
-
-    init {
-        content.setSpannableFactory(DefaultSpannableFactory())
-    }
-
-    fun bind(
-        item: BlockView.ProfileTitle,
-        onTitleTextChanged: (Editable) -> Unit,
-        onFocusChanged: (String, Boolean) -> Unit,
-        onProfileIconClicked: () -> Unit
-    ) {
-
-        Timber.d("Binding profile title view: $item")
-
-        item.image?.let { url ->
-            image.visible()
-            Glide
-                .with(image)
-                .load(url)
-                .centerInside()
-                .circleCrop()
-                .into(image)
-        } ?: apply {
-            val pos = item.text?.firstDigitByHash() ?: 0
-            icon.backgroundTintList = ColorStateList.valueOf(itemView.context.avatarColor(pos))
-            setIconText(item.text)
-            image.setImageDrawable(null)
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
         }
 
-        if (item.mode == BlockView.Mode.READ) {
-            enableReadOnlyMode()
-            content.setText(item.text, TextView.BufferType.EDITABLE)
-        } else {
-            enableEditMode()
-            if (item.isFocused) setCursor(item)
-            focus(item.isFocused)
-            content.setText(item.text, TextView.BufferType.EDITABLE)
-            setCursor(item)
-            setupTextWatcher({ _, editable -> onTitleTextChanged(editable) }, item)
-            content.setOnFocusChangeListener { _, hasFocus ->
-                onFocusChanged(item.id, hasFocus)
-                if (hasFocus) showKeyboard()
+        fun bind(
+            item: BlockView.Title.Document,
+            onTitleTextChanged: (Editable) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit,
+            onPageIconClicked: () -> Unit
+        ) {
+            super.bind(
+                item = item,
+                onTitleTextChanged = onTitleTextChanged,
+                onFocusChanged = onFocusChanged
+            )
+            setEmoji(item)
+            if (item.mode == BlockView.Mode.EDIT) {
+                icon.setOnClickListener { onPageIconClicked() }
             }
-            icon.setOnClickListener { onProfileIconClicked() }
+        }
+
+        private fun setEmoji(item: BlockView.Title.Document) {
+            try {
+                if (item.emoji != null) {
+                    Glide
+                        .with(emoji)
+                        .load(Emojifier.uri(item.emoji))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(emoji)
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Could not set emoji icon")
+            }
         }
     }
 
-    private fun showKeyboard() {
-        content.postDelayed(KEYBOARD_SHOW_DELAY) {
-            imm().showSoftInput(content, InputMethodManager.SHOW_IMPLICIT)
+    class Profile(view: View) : Title(view) {
+
+        override val icon: FrameLayout = itemView.documentIconContainer
+        override val image: ImageView = itemView.imageIcon
+        override val content: TextInputWidget = itemView.title
+
+        private val iconText = itemView.imageText
+
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
         }
-    }
 
-    /**
-     * Mention is not used in ProfileTitle
-     */
-    override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0, 0)
+        fun bind(
+            item: BlockView.Title.Profile,
+            onTitleTextChanged: (Editable) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit,
+            onProfileIconClicked: () -> Unit
+        ) {
+            Timber.d("Binding profile title view: $item")
+            super.bind(item, onTitleTextChanged, onFocusChanged)
+            if (item.mode == BlockView.Mode.EDIT) {
+                icon.setOnClickListener { onProfileIconClicked() }
+            }
+        }
 
-    fun processPayloads(
-        payloads: List<BlockViewDiffUtil.Payload>,
-        item: BlockView.ProfileTitle
-    ) {
-
-        Timber.d("Processing change payload $payloads for $item")
-
-        payloads.forEach { payload ->
-            if (payload.changes.contains(BlockViewDiffUtil.TEXT_CHANGED)) {
+        override fun setImage(item: BlockView.Title) {
+            item.image?.let { url ->
+                image.visible()
+                Glide
+                    .with(image)
+                    .load(url)
+                    .centerInside()
+                    .circleCrop()
+                    .into(image)
+            } ?: apply {
+                val pos = item.text?.firstDigitByHash() ?: 0
+                icon.backgroundTintList = ColorStateList.valueOf(itemView.context.avatarColor(pos))
                 setIconText(item.text)
-                content.pauseTextWatchers {
-                    if (content.text.toString() != item.text) {
-                        content.setText(item.text, TextView.BufferType.EDITABLE)
-                    }
-                }
-            }
-            if (payload.isCursorChanged) {
-                if (item.isFocused) setCursor(item)
-            }
-            if (payload.focusChanged()) {
-                focus(item.isFocused)
-            }
-            if (payload.readWriteModeChanged()) {
-                if (item.mode == BlockView.Mode.EDIT)
-                    enableEditMode()
-                else
-                    enableTitleReadOnlyMode()
+                image.setImageDrawable(null)
             }
         }
-    }
 
-    fun focus(focused: Boolean) {
-        if (focused) {
-            content.requestFocus()
-            showKeyboard()
-        } else
-            content.clearFocus()
-    }
-
-    override fun enableBackspaceDetector(
-        onEmptyBlockBackspaceClicked: () -> Unit,
-        onNonEmptyBlockBackspaceClicked: () -> Unit
-    ) = Unit
-
-    private fun setIconText(name: String?) {
-        if (name.isNullOrEmpty()) {
-            iconText.text = ""
-        } else {
-            iconText.text = name.first().toUpperCase().toString()
+        private fun setIconText(name: String?) {
+            if (name.isNullOrEmpty()) {
+                iconText.text = ""
+            } else {
+                iconText.text = name.first().toUpperCase().toString()
+            }
         }
     }
 }

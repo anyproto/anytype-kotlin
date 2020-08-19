@@ -139,42 +139,50 @@ sealed class BlockView : ViewType, Parcelable {
         override val body: String get() = text
     }
 
+    sealed class Title : BlockView(), Focusable, Cursor, Permission {
+
+        abstract val image: String?
+        abstract var text: String?
+
+        @Parcelize
+        data class Document(
+            override val id: String,
+            override val isFocused: Boolean,
+            override var text: String?,
+            val emoji: String? = null,
+            override val image: String? = null,
+            override val mode: Mode = Mode.EDIT,
+            override val cursor: Int? = null
+        ) : BlockView.Title() {
+            override fun getViewType() = HOLDER_TITLE
+        }
+
+        /**
+         * UI-model for a profile title block.
+         * @property id block's id
+         * @property text text content (i.e. title text)
+         * @property image image as a page's logo (if present)
+         */
+        @Parcelize
+        data class Profile(
+            override val id: String,
+            override val isFocused: Boolean,
+            override var text: String?,
+            override val image: String? = null,
+            override val mode: Mode = Mode.EDIT,
+            override val cursor: Int? = null
+        ) : BlockView.Title() {
+            override fun getViewType() = HOLDER_PROFILE_TITLE
+        }
+
+    }
+
     /**
      * UI-model for a title block.
      * @property id block's id
      * @property text text content (i.e. title text)
      * @property emoji emoji as a page's logo (if present)
      */
-    @Parcelize
-    data class Title(
-        override val id: String,
-        override val isFocused: Boolean,
-        var text: String?,
-        val emoji: String? = null,
-        val image: String? = null,
-        override val mode: Mode = Mode.EDIT,
-        override val cursor: Int? = null
-    ) : BlockView(), Focusable, Cursor, Permission {
-        override fun getViewType() = HOLDER_TITLE
-    }
-
-    /**
-     * UI-model for a profile title block.
-     * @property id block's id
-     * @property text text content (i.e. title text)
-     * @property image image as a page's logo (if present)
-     */
-    @Parcelize
-    data class ProfileTitle(
-        override val id: String,
-        override val isFocused: Boolean,
-        var text: String?,
-        val image: String? = null,
-        override val mode: Mode = Mode.EDIT,
-        override val cursor: Int? = null
-    ) : BlockView(), Focusable, Cursor, Permission {
-        override fun getViewType() = HOLDER_PROFILE_TITLE
-    }
 
     sealed class Header() : BlockView(), Text, Markup, Cursor, Focusable, Indentable, Permission,
         Selectable, Alignable {

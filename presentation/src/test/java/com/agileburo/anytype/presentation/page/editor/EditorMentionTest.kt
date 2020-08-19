@@ -117,7 +117,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             assertValue(
                 ViewState.Success(
                     blocks = listOf(
-                        BlockView.Title(
+                        BlockView.Title.Document(
                             id = root,
                             isFocused = false,
                             text = null,

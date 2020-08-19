@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.features.editor.holders.*
+import com.agileburo.anytype.core_ui.features.editor.holders.Title.Document
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
@@ -24,7 +25,6 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.S
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.FOCUS_TIMEOUT_MILLIS
 import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_utils.ext.dimen
 import com.agileburo.anytype.core_utils.ext.hexColorCode
@@ -389,7 +389,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = false,
@@ -413,7 +413,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         // Testing
 
@@ -651,7 +651,7 @@ class BlockAdapterTest {
     @Test
     fun `should create title view holder`() {
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = MockDataFactory.randomBoolean()
@@ -668,7 +668,7 @@ class BlockAdapterTest {
         val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
 
         assertEquals(
-            expected = Title::class,
+            expected = Document::class,
             actual = holder::class
         )
     }
@@ -678,7 +678,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = MockDataFactory.randomBoolean()
@@ -698,7 +698,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         val text = holder.content.text.toString()
 
@@ -713,7 +713,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = MockDataFactory.randomBoolean()
@@ -735,7 +735,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         // Testing
 
@@ -766,7 +766,7 @@ class BlockAdapterTest {
 
         val events = mutableListOf<Pair<String, Boolean>>()
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = false
@@ -789,7 +789,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         // Testing
 
@@ -815,7 +815,7 @@ class BlockAdapterTest {
 
         val events = mutableListOf<Pair<String, String>>()
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = MockDataFactory.randomBoolean()
@@ -840,10 +840,10 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         Robolectric.getForegroundThreadScheduler().apply {
-            advanceBy(FOCUS_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+            advanceBy(BlockViewHolder.FOCUS_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
         }
 
         assertEquals(
@@ -1495,7 +1495,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = false
@@ -1517,7 +1517,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         // Testing
 
@@ -1549,7 +1549,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = true
@@ -1571,7 +1571,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         // Testing
 
@@ -1605,7 +1605,7 @@ class BlockAdapterTest {
 
         val events = mutableListOf<Editable>()
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = true
@@ -1628,7 +1628,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         // Testing
 
@@ -1648,7 +1648,7 @@ class BlockAdapterTest {
 
         val txt = MockDataFactory.randomString()
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             cursor = txt.length,
@@ -1671,7 +1671,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         // Testing
 
@@ -1877,7 +1877,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
@@ -1898,7 +1898,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         assertEquals(
             expected = InputType.TYPE_NULL,
@@ -1918,7 +1918,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
@@ -1939,7 +1939,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         assertEquals(
             expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
@@ -1957,7 +1957,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title(
+        val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
@@ -1980,7 +1980,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Title)
+        check(holder is Document)
 
         // Testing
 

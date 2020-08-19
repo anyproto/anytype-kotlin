@@ -776,11 +776,15 @@ open class PageFragment :
 
     private fun resetDocumentTitle(state: ViewState.Success) {
         state.blocks.firstOrNull { view ->
-            view is BlockView.Title || view is BlockView.ProfileTitle
+            view is BlockView.Title.Document || view is BlockView.Title.Profile
         }?.let { view ->
             when (view) {
-                is BlockView.Title -> resetTopToolbarTitle(view.text, view.emoji, view.image)
-                is BlockView.ProfileTitle -> resetTopToolbarTitle(view.text, null, view.image)
+                is BlockView.Title.Document -> resetTopToolbarTitle(
+                    view.text,
+                    view.emoji,
+                    view.image
+                )
+                is BlockView.Title.Profile -> resetTopToolbarTitle(view.text, null, view.image)
                 else -> {
                 }
             }

@@ -137,7 +137,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title(
+            BlockView.Title.Document(
                 id = page.id,
                 isFocused = false,
                 text = null,
@@ -238,7 +238,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title(
+            BlockView.Title.Document(
                 id = page.id,
                 isFocused = false,
                 text = null,
@@ -321,7 +321,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title(
+            BlockView.Title.Document(
                 id = page.id,
                 isFocused = false,
                 text = null,
@@ -384,7 +384,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title(
+            BlockView.Title.Document(
                 id = page.id,
                 isFocused = false,
                 text = null,
@@ -457,7 +457,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.ProfileTitle(
+            BlockView.Title.Profile(
                 id = page.id,
                 isFocused = false,
                 text = name,
@@ -530,7 +530,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title(
+            BlockView.Title.Document(
                 id = page.id,
                 isFocused = false,
                 text = name,
@@ -602,7 +602,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title(
+            BlockView.Title.Document(
                 id = page.id,
                 isFocused = false,
                 text = name,
@@ -692,7 +692,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title(
+            BlockView.Title.Document(
                 id = page.id,
                 isFocused = false,
                 text = null,
@@ -803,7 +803,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title(
+            BlockView.Title.Document(
                 id = page.id,
                 isFocused = false,
                 text = null,
@@ -911,7 +911,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title(
+            BlockView.Title.Document(
                 id = page.id,
                 isFocused = false,
                 text = null,
@@ -1031,7 +1031,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title(
+            BlockView.Title.Document(
                 id = page.id,
                 isFocused = false,
                 text = null,

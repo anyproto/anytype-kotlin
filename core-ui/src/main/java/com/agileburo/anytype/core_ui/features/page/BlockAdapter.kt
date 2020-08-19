@@ -94,7 +94,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_TITLE -> {
-                Title(
+                Title.Document(
                     view = inflater.inflate(
                         R.layout.item_block_title,
                         parent,
@@ -103,7 +103,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_PROFILE_TITLE -> {
-                ProfileTitle(
+                Title.Profile(
                     view = inflater.inflate(
                         R.layout.item_block_title_profile,
                         parent,
@@ -425,16 +425,16 @@ class BlockAdapter(
                             clicked = onClickListener
                         )
                     }
-                    is Title -> {
+                    is Title.Document -> {
                         holder.processPayloads(
                             payloads = payloads.typeOf(),
                             item = blocks[position] as BlockView.Title
                         )
                     }
-                    is ProfileTitle -> {
+                    is Title.Profile -> {
                         holder.processPayloads(
                             payloads = payloads.typeOf(),
-                            item = blocks[position] as BlockView.ProfileTitle
+                            item = blocks[position] as BlockView.Title.Profile
                         )
                     }
                     is BlockViewHolder.Numbered -> {
@@ -614,17 +614,17 @@ class BlockAdapter(
                     onMentionEvent = onMentionEvent
                 )
             }
-            is Title -> {
+            is Title.Document -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Title,
+                    item = blocks[position] as BlockView.Title.Document,
                     onTitleTextChanged = onTitleTextChanged,
                     onFocusChanged = onFocusChanged,
                     onPageIconClicked = onPageIconClicked
                 )
             }
-            is ProfileTitle -> {
+            is Title.Profile -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.ProfileTitle,
+                    item = blocks[position] as BlockView.Title.Profile,
                     onTitleTextChanged = onTitleTextChanged,
                     onFocusChanged = onFocusChanged,
                     onProfileIconClicked = onProfileIconClicked
@@ -842,7 +842,7 @@ class BlockAdapter(
                 }
             }
 
-            if (holder is Title || holder is ProfileTitle) {
+            if (holder is Title.Document || holder is Title.Profile) {
                 holder.enableEnterKeyDetector(
                     onEndLineEnterClicked = { editable ->
                         onEndLineEnterTitleClicked(editable)
@@ -898,7 +898,7 @@ class BlockAdapter(
                 }
             )
 
-            if (holder is Title || holder is ProfileTitle)
+            if (holder is Title.Document || holder is Title.Profile)
                 holder.setOnClickListener { onTitleTextInputClicked() }
             else
                 holder.setOnClickListener { onTextInputClicked(blocks[holder.adapterPosition].id) }

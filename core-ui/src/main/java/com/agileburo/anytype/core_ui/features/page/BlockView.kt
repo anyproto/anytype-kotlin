@@ -290,7 +290,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false,
         override val cursor: Int? = null
-    ) : BlockView(), Text, Markup, Focusable, Cursor, Indentable, Permission, Selectable {
+    ) : BlockView(), TXT {
         override fun getViewType() = HOLDER_HIGHLIGHT
         override val body: String = text
     }

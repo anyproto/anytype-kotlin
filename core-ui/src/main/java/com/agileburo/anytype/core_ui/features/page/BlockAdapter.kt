@@ -8,6 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.editor.holders.*
+import com.agileburo.anytype.core_ui.features.editor.holders.error.BookmarkError
+import com.agileburo.anytype.core_ui.features.editor.holders.error.FileError
+import com.agileburo.anytype.core_ui.features.editor.holders.error.PictureError
+import com.agileburo.anytype.core_ui.features.editor.holders.error.VideoError
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
@@ -223,7 +227,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_FILE_ERROR -> {
-                BlockViewHolder.File.Error(
+                FileError(
                     view = inflater.inflate(
                         R.layout.item_block_file_error,
                         parent,
@@ -259,7 +263,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_VIDEO_ERROR -> {
-                BlockViewHolder.Video.Error(
+                VideoError(
                     view = inflater.inflate(
                         R.layout.item_block_video_error,
                         parent,
@@ -295,7 +299,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_BOOKMARK_ERROR -> {
-                BlockViewHolder.Bookmark.Error(
+                BookmarkError(
                     view = inflater.inflate(
                         R.layout.item_block_bookmark_error,
                         parent,
@@ -331,7 +335,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_PICTURE_ERROR -> {
-                BlockViewHolder.Picture.Error(
+                PictureError(
                     view = inflater.inflate(
                         R.layout.item_block_picture_error,
                         parent,
@@ -490,7 +494,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.File.Error -> {
+                    is FileError -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -514,7 +518,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Picture.Error -> {
+                    is PictureError -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -538,7 +542,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Video.Error -> {
+                    is VideoError -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -568,7 +572,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Bookmark.Error -> {
+                    is BookmarkError -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -698,9 +702,9 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.File.Error -> {
+            is FileError -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.File.Error,
+                    item = blocks[position] as BlockView.Error.File,
                     clicked = onClickListener
                 )
             }
@@ -734,9 +738,9 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Video.Error -> {
+            is VideoError -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Video.Error,
+                    item = blocks[position] as BlockView.Error.Video,
                     clicked = onClickListener
                 )
             }
@@ -758,11 +762,13 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Bookmark.Error -> {
+            is BookmarkError -> {
+                val item = blocks[position] as BlockView.Error.Bookmark
                 holder.bind(
-                    item = blocks[position] as BlockView.Bookmark.Error,
+                    item = item,
                     clicked = onClickListener
                 )
+                holder.setUrl(item.url)
             }
             is BlockViewHolder.Picture -> {
                 holder.bind(
@@ -776,9 +782,9 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Picture.Error -> {
+            is PictureError -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Picture.Error,
+                    item = blocks[position] as BlockView.Error.Picture,
                     clicked = onClickListener
                 )
             }

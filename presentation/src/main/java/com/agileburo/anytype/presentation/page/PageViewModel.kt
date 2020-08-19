@@ -1524,7 +1524,7 @@ class PageViewModel(
     private fun onBookmarkClicked(view: BlockView.Bookmark.View) =
         dispatch(command = Command.Browse(view.url))
 
-    private fun onFailedBookmarkClicked(view: BlockView.Bookmark.Error) =
+    private fun onFailedBookmarkClicked(view: BlockView.Error.Bookmark) =
         dispatch(command = Command.Browse(view.url))
 
     fun onTitleTextInputClicked() {

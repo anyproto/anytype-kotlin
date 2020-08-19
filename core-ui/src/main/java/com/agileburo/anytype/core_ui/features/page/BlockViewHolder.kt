@@ -209,43 +209,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
             }
         }
-
-        class Error(view: View) : BlockViewHolder(view), IndentableHolder {
-
-            fun bind(
-                item: BlockView.File.Error,
-                clicked: (ListenerType) -> Unit
-            ) {
-                indentize(item)
-                with(itemView) {
-                    isSelected = item.isSelected
-                    setOnClickListener { clicked(ListenerType.File.Error(item.id)) }
-                    setOnLongClickListener(
-                        EditorLongClickListener(
-                            t = item.id,
-                            click = { onBlockLongClick(itemView, it, clicked) }
-                        )
-                    )
-                }
-            }
-
-            override fun indentize(item: BlockView.Indentable) {
-                itemView.indentize(
-                    indent = item.indent,
-                    defIndent = dimen(R.dimen.indent),
-                    margin = dimen(R.dimen.bookmark_default_margin_start)
-                )
-            }
-
-            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
-                check(item is BlockView.File.Error) { "Expected a file error block, but was: $item" }
-                payloads.forEach { payload ->
-                    if (payload.changes.contains(SELECTION_CHANGED)) {
-                        itemView.isSelected = item.isSelected
-                    }
-                }
-            }
-        }
     }
 
     class Video(view: View) : BlockViewHolder(view), IndentableHolder {
@@ -298,43 +261,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             payloads.forEach { payload ->
                 if (payload.changes.contains(SELECTION_CHANGED)) {
                     itemView.isSelected = item.isSelected
-                }
-            }
-        }
-
-        class Error(view: View) : BlockViewHolder(view), IndentableHolder {
-
-            fun bind(
-                item: BlockView.Video.Error,
-                clicked: (ListenerType) -> Unit
-            ) {
-                indentize(item)
-                with(itemView) {
-                    isSelected = item.isSelected
-                    setOnClickListener { clicked(ListenerType.Video.Error(item.id)) }
-                    setOnLongClickListener(
-                        EditorLongClickListener(
-                            t = item.id,
-                            click = { onBlockLongClick(itemView, it, clicked) }
-                        )
-                    )
-                }
-            }
-
-            override fun indentize(item: BlockView.Indentable) {
-                itemView.indentize(
-                    indent = item.indent,
-                    defIndent = dimen(R.dimen.indent),
-                    margin = dimen(R.dimen.bookmark_default_margin_start)
-                )
-            }
-
-            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
-                check(item is BlockView.Video.Error) { "Expected a video error block, but was: $item" }
-                payloads.forEach { payload ->
-                    if (payload.changes.contains(SELECTION_CHANGED)) {
-                        itemView.isSelected = item.isSelected
-                    }
                 }
             }
         }
@@ -437,56 +363,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private fun select(isSelected: Boolean) {
             itemView.isSelected = isSelected
         }
-
-        class Error(view: View) : BlockViewHolder(view), IndentableHolder {
-
-            private val root = itemView.bookmarkErrorRoot
-            private val url = itemView.errorBookmarkUrl
-
-            fun bind(
-                item: BlockView.Bookmark.Error,
-                clicked: (ListenerType) -> Unit
-            ) {
-                indentize(item)
-                select(item.isSelected)
-                url.text = item.url
-                with(root) {
-                    setOnClickListener {
-                        clicked(ListenerType.Bookmark.Error(item))
-                    }
-                    setOnLongClickListener(
-                        EditorLongClickListener(
-                            t = item.id,
-                            click = { onBlockLongClick(itemView, it, clicked) }
-                        )
-                    )
-                }
-            }
-
-            override fun indentize(item: BlockView.Indentable) {
-                root.indentize(
-                    indent = item.indent,
-                    defIndent = dimen(R.dimen.indent),
-                    margin = dimen(R.dimen.bookmark_default_margin_start)
-                )
-            }
-
-            fun processChangePayload(
-                payloads: List<Payload>,
-                item: BlockView
-            ) {
-                check(item is BlockView.Bookmark.Error) { "Expected a bookmark error block, but was: $item" }
-                payloads.forEach { payload ->
-                    if (payload.selectionChanged()) {
-                        select(item.isSelected)
-                    }
-                }
-            }
-
-            private fun select(isSelected: Boolean) {
-                root.isSelected = isSelected
-            }
-        }
     }
 
     class Picture(view: View) : BlockViewHolder(view), IndentableHolder {
@@ -550,43 +426,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             payloads.forEach { payload ->
                 if (payload.changes.contains(SELECTION_CHANGED)) {
                     itemView.isSelected = item.isSelected
-                }
-            }
-        }
-
-        class Error(view: View) : BlockViewHolder(view), IndentableHolder {
-
-            fun bind(
-                item: BlockView.Picture.Error,
-                clicked: (ListenerType) -> Unit
-            ) {
-                indentize(item)
-                with(itemView) {
-                    isSelected = item.isSelected
-                    setOnClickListener { clicked(ListenerType.Picture.Error(item.id)) }
-                    setOnLongClickListener(
-                        EditorLongClickListener(
-                            t = item.id,
-                            click = { onBlockLongClick(itemView, it, clicked) }
-                        )
-                    )
-                }
-            }
-
-            override fun indentize(item: BlockView.Indentable) {
-                itemView.indentize(
-                    indent = item.indent,
-                    defIndent = dimen(R.dimen.indent),
-                    margin = dimen(R.dimen.bookmark_default_margin_start)
-                )
-            }
-
-            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
-                check(item is BlockView.Picture.Error) { "Expected a picture error block, but was: $item" }
-                payloads.forEach { payload ->
-                    if (payload.changes.contains(SELECTION_CHANGED)) {
-                        itemView.isSelected = item.isSelected
-                    }
                 }
             }
         }

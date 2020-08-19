@@ -5,7 +5,7 @@ sealed class ListenerType {
     sealed class Bookmark : ListenerType() {
         data class View(val item: BlockView.Bookmark.View) : Bookmark()
         data class Placeholder(val target: String) : Bookmark()
-        data class Error(val item: BlockView.Bookmark.Error) : Bookmark()
+        data class Error(val item: BlockView.Error.Bookmark) : Bookmark()
     }
 
     sealed class File: ListenerType() {

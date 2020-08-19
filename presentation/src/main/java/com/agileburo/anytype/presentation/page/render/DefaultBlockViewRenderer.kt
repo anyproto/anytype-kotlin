@@ -473,7 +473,7 @@ class DefaultBlockViewRenderer(
                 mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
             )
         } else {
-            BlockView.Bookmark.Error(
+            BlockView.Error.Bookmark(
                 id = block.id,
                 url = url,
                 indent = indent,

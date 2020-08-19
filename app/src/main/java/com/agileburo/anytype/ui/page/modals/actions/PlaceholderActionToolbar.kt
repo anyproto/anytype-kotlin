@@ -2,7 +2,10 @@ package com.agileburo.anytype.ui.page.modals.actions
 
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
@@ -31,5 +34,18 @@ class PlaceholderActionToolbar : BlockActionToolbar() {
     override fun getBlock(): BlockView = block
 
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
+        when (block.getViewType()) {
+            HOLDER_BOOKMARK_PLACEHOLDER -> initPlaceholder(view)
+            else -> Unit
+        }
+    }
+
+    private fun initPlaceholder(view: View) {
+        view.findViewById<ConstraintLayout>(R.id.bookmarkPlaceholderRoot)
+            .updateLayoutParams<LayoutParams> {
+                this.apply {
+                    rightMargin = 0
+                }
+            }
     }
 }

@@ -14,6 +14,9 @@ import androidx.test.core.app.ApplicationProvider
 import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.features.editor.holders.*
 import com.agileburo.anytype.core_ui.features.editor.holders.Title.Document
+import com.agileburo.anytype.core_ui.features.editor.holders.error.FileError
+import com.agileburo.anytype.core_ui.features.editor.holders.error.PictureError
+import com.agileburo.anytype.core_ui.features.editor.holders.error.VideoError
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
@@ -1107,7 +1110,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.File.Error)
+        check(holder is FileError)
 
         val actual = holder.itemView.marginLeft
 
@@ -1262,7 +1265,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Video.Error)
+        check(holder is VideoError)
 
         val actual = holder.itemView.marginLeft
 
@@ -1457,7 +1460,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Picture.Error)
+        check(holder is PictureError)
 
         val actual = holder.itemView.marginLeft
 

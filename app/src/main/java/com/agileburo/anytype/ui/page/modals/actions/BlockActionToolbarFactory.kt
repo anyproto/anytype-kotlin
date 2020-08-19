@@ -22,19 +22,19 @@ object BlockActionToolbarFactory {
         is BlockView.File.View -> newInstance(block, dimensions)
         is BlockView.Upload.File -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.File -> newInstance(block, dimensions)
-        is BlockView.File.Error -> newInstance(block, dimensions)
+        is BlockView.Error.File -> newInstance(block, dimensions)
         is BlockView.Video.View -> newInstance(block, dimensions)
         is BlockView.Upload.Video -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.Video -> newInstance(block, dimensions)
-        is BlockView.Video.Error -> newInstance(block, dimensions)
+        is BlockView.Error.Video -> newInstance(block, dimensions)
         is BlockView.Page -> newInstance(block, dimensions)
         is BlockView.Divider -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.Bookmark -> newInstance(block, dimensions)
         is BlockView.Bookmark.View -> newInstance(block, dimensions)
-        is BlockView.Bookmark.Error -> newInstance(block, dimensions)
+        is BlockView.Error.Bookmark -> newInstance(block, dimensions)
         is BlockView.Picture.View -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.Picture -> newInstance(block, dimensions)
-        is BlockView.Picture.Error -> newInstance(block, dimensions)
+        is BlockView.Error.Picture -> newInstance(block, dimensions)
         is BlockView.Upload.Picture -> newInstance(block, dimensions)
     }
 
@@ -81,6 +81,17 @@ object BlockActionToolbarFactory {
         dimensions: BlockDimensions
     ): HeaderThreeBlockActionToolbar =
         HeaderThreeBlockActionToolbar().apply {
+            arguments = bundleOf(
+                BlockActionToolbar.ARG_BLOCK to block,
+                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
+            )
+        }
+
+    fun newInstance(
+        block: BlockView.Error,
+        dimensions: BlockDimensions
+    ): ErrorActionToolbar =
+        ErrorActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
                 BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions

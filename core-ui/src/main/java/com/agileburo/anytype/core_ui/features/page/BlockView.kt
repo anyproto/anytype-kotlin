@@ -414,6 +414,69 @@ sealed class BlockView : ViewType, Parcelable {
         override val body: String = text
     }
 
+    sealed class Error: BlockView(), Indentable, Parcelable, Selectable, Permission {
+        abstract override val id: String
+        abstract override val indent: Int
+        abstract override val mode: Mode
+        abstract override val isSelected: Boolean
+
+        /**
+         * UI-model for block containing video, with state ERROR.
+         * @property id block's id
+         */
+        @Parcelize
+        data class File(
+            override val id: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
+        ) : Error() {
+            override fun getViewType() = HOLDER_FILE_ERROR
+        }
+
+        /**
+         * UI-model for block containing video, with state ERROR.
+         * @property id block's id
+         */
+        @Parcelize
+        data class Video(
+            override val id: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
+        ) : Error() {
+            override fun getViewType() = HOLDER_VIDEO_ERROR
+        }
+
+        /**
+         * UI-model for block containing image, with state ERROR.
+         */
+        @Parcelize
+        data class Picture(
+            override val id: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
+        ) : Error() {
+            override fun getViewType() = HOLDER_PICTURE_ERROR
+        }
+
+        /**
+         * UI-model for a bookmark view in error state
+         * @property url url originally entered by user to create a bookmark
+         */
+        @Parcelize
+        data class Bookmark(
+            override val id: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
+            val url: String
+        ) : Error() {
+            override fun getViewType(): Int = HOLDER_BOOKMARK_ERROR
+        }
+    }
+
     sealed class Upload : BlockView(), Indentable, Parcelable, Selectable, Permission {
         abstract override val id: String
         abstract override val indent: Int
@@ -550,20 +613,6 @@ sealed class BlockView : ViewType, Parcelable {
         ) : BlockView.File(id) {
             override fun getViewType() = HOLDER_FILE
         }
-
-        /**
-         * UI-model for block containing file, with state ERROR.
-         * @property id block's id
-         */
-        @Parcelize
-        data class Error(
-            override val id: String,
-            override val indent: Int,
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
-        ) : BlockView.File(id) {
-            override fun getViewType() = HOLDER_FILE_ERROR
-        }
     }
 
     /**
@@ -590,20 +639,6 @@ sealed class BlockView : ViewType, Parcelable {
             val url: String
         ) : BlockView.Video(id) {
             override fun getViewType() = HOLDER_VIDEO
-        }
-
-        /**
-         * UI-model for block containing video, with state ERROR.
-         * @property id block's id
-         */
-        @Parcelize
-        data class Error(
-            override val id: String,
-            override val indent: Int,
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
-        ) : BlockView.Video(id) {
-            override fun getViewType() = HOLDER_VIDEO_ERROR
         }
     }
 
@@ -670,21 +705,6 @@ sealed class BlockView : ViewType, Parcelable {
         ) : Bookmark(id = id) {
             override fun getViewType() = HOLDER_BOOKMARK
         }
-
-        /**
-         * UI-model for a bookmark view in error state
-         * @property url url originally entered by user to create a bookmark
-         */
-        @Parcelize
-        data class Error(
-            override val id: String,
-            override val indent: Int,
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false,
-            val url: String
-        ) : Bookmark(id = id) {
-            override fun getViewType(): Int = HOLDER_BOOKMARK_ERROR
-        }
     }
 
     /**
@@ -711,19 +731,6 @@ sealed class BlockView : ViewType, Parcelable {
             val url: String
         ) : BlockView.Picture(id) {
             override fun getViewType() = HOLDER_PICTURE
-        }
-
-        /**
-         * UI-model for block containing image, with state ERROR.
-         */
-        @Parcelize
-        data class Error(
-            override val id: String,
-            override val indent: Int,
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
-        ) : BlockView.Picture(id) {
-            override fun getViewType() = HOLDER_PICTURE_ERROR
         }
     }
 

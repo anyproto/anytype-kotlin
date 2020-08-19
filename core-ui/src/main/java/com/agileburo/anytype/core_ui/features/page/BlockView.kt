@@ -314,6 +314,10 @@ sealed class BlockView : ViewType, Parcelable {
         override fun getViewType() = HOLDER_CODE_SNIPPET
     }
 
+    interface TXT : Markup, Focusable, Text, Cursor, Indentable, Permission, Selectable {
+        val id: String
+    }
+
     /**
      * UI-model for checkbox blocks.
      * @property id block's id
@@ -333,7 +337,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false,
         override val cursor: Int? = null
-    ) : BlockView(), Markup, Focusable, Text, Cursor, Checkable, Indentable, Permission, Selectable {
+    ) : BlockView(), TXT, Checkable {
         override fun getViewType() = HOLDER_CHECKBOX
         override val body: String = text
     }
@@ -357,7 +361,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val mode: Mode = Mode.EDIT,
         override val isSelected: Boolean = false,
         override val cursor: Int? = null
-    ) : BlockView(), Markup, Focusable, Cursor, Text, Indentable, Permission, Selectable {
+    ) : BlockView(), TXT {
         override fun getViewType() = HOLDER_BULLET
         override val body: String = text
     }
@@ -382,7 +386,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val isSelected: Boolean = false,
         override val cursor: Int? = null,
         val number: Int
-    ) : BlockView(), Markup, Focusable, Cursor, Text, Indentable, Permission, Selectable {
+    ) : BlockView(), TXT {
         override fun getViewType() = HOLDER_NUMBERED
         override val body: String = text
     }
@@ -408,7 +412,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val cursor: Int? = null,
         val toggled: Boolean = false,
         val isEmpty: Boolean = false
-    ) : BlockView(), Markup, Focusable, Text, Cursor, Indentable, Permission, Selectable {
+    ) : BlockView(), TXT {
         override fun getViewType() = HOLDER_TOGGLE
         override val body: String = text
     }

@@ -5,11 +5,11 @@ import android.view.View
 import androidx.core.view.isVisible
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.common.isLinksPresent
-import com.agileburo.anytype.core_ui.extensions.color
-import com.agileburo.anytype.core_ui.features.page.*
+import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
+import com.agileburo.anytype.core_ui.features.page.ListenerType
+import com.agileburo.anytype.core_ui.features.page.SupportNesting
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
-import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.dimen
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item_block_toggle.view.*
 class Toggle(
     view: View,
     onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
-) : BlockViewHolder(view), TextHolder, BlockViewHolder.IndentableHolder, SupportNesting {
+) : Text(view), SupportNesting {
 
     private var mode = BlockView.Mode.EDIT
 
@@ -42,66 +42,22 @@ class Toggle(
         clicked: (ListenerType) -> Unit
     ) {
 
+        super.bind(
+            item = item,
+            onTextChanged = onTextChanged,
+            onSelectionChanged = onSelectionChanged,
+            onFocusChanged = onFocusChanged,
+            clicked = clicked
+        )
+
         indentize(item)
 
         if (item.mode == BlockView.Mode.READ) {
-
-            enableReadOnlyMode()
-
-            select(item)
-
-            setBlockText(text = item.text, markup = item, clicked = clicked)
-
-            if (item.color != null)
-                setTextColor(item.color)
-            else
-                setTextColor(content.context.color(R.color.black))
-
             placeholder.isVisible = false
-
             toggle.apply {
                 rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
             }
         } else {
-
-            enableEditMode()
-
-            select(item)
-
-            content.setOnLongClickListener(
-                EditorLongClickListener(
-                    t = item.id,
-                    click = { onBlockLongClick(root, it, clicked) }
-                )
-            )
-
-            if (item.marks.isLinksPresent()) {
-                content.setLinksClickable()
-            }
-
-            content.clearTextWatchers()
-            setBlockText(text = item.text, markup = item, clicked = clicked)
-
-            if (item.color != null) {
-                setTextColor(item.color)
-            } else {
-                setTextColor(content.context.color(R.color.black))
-            }
-
-            if (item.isFocused) setCursor(item)
-
-            setFocus(item)
-
-            setupTextWatcher(onTextChanged, item)
-
-            content.setOnFocusChangeListener { _, focused ->
-                item.isFocused = focused
-                onFocusChanged(item.id, focused)
-            }
-            content.selectionWatcher = {
-                onSelectionChanged(item.id, it)
-            }
-
             placeholder.apply {
                 isVisible = item.isEmpty && item.toggled
                 setOnClickListener { onTogglePlaceholderClicked(item.id) }

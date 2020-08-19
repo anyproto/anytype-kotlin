@@ -8,12 +8,11 @@ import android.widget.TextView
 import androidx.core.view.updatePadding
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.common.isLinksPresent
 import com.agileburo.anytype.core_ui.extensions.color
-import com.agileburo.anytype.core_ui.features.page.*
+import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.features.page.ListenerType
+import com.agileburo.anytype.core_ui.features.page.SupportNesting
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
-import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
-import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.dimen
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -21,7 +20,7 @@ import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 class Checkbox(
     view: View,
     onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
-) : BlockViewHolder(view), TextHolder, BlockViewHolder.IndentableHolder, SupportNesting {
+) : Text(view), SupportNesting {
 
     var mode = BlockView.Mode.EDIT
 
@@ -42,76 +41,28 @@ class Checkbox(
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit
     ) {
-        indentize(item)
-
-        if (item.mode == BlockView.Mode.READ) {
-            enableReadOnlyMode()
-
-            select(item)
-
-            updateTextColor(
-                context = itemView.context,
-                view = content,
-                isSelected = checkbox.isActivated
-            )
-            checkbox.isActivated = item.isChecked
-            setBlockText(text = item.text, markup = item, clicked = clicked)
-        } else {
-
-            enableEditMode()
-
-            select(item)
-
-            content.setOnLongClickListener(
-                EditorLongClickListener(
-                    t = item.id,
-                    click = { onBlockLongClick(root, it, clicked) }
-                )
-            )
-
-            content.clearTextWatchers()
-            checkbox.isActivated = item.isChecked
-
-            updateTextColor(
-                context = itemView.context,
-                view = content,
-                isSelected = checkbox.isActivated
-            )
-
-            if (item.marks.isLinksPresent()) {
-                content.setLinksClickable()
-            }
-
-            setBlockText(text = item.text, markup = item, clicked = clicked)
-
-            if (item.isFocused) setCursor(item)
-
-            setFocus(item)
-
+        super.bind(
+            item = item,
+            onTextChanged = onTextChanged,
+            onFocusChanged = onFocusChanged,
+            onSelectionChanged = onSelectionChanged,
+            clicked = clicked
+        )
+        checkbox.isActivated = item.isChecked
+        updateTextColor(
+            context = itemView.context,
+            view = content,
+            isSelected = checkbox.isActivated
+        )
+        if (item.mode == BlockView.Mode.EDIT) {
             checkbox.setOnClickListener {
-                if (mode == BlockView.Mode.EDIT) {
-                    checkbox.isActivated = !checkbox.isActivated
-                    updateTextColor(
-                        context = itemView.context,
-                        view = content,
-                        isSelected = checkbox.isActivated
-                    )
-                    onCheckboxClicked(item.id)
-                }
-            }
-
-            content.setOnFocusChangeListener { _, hasFocus ->
-                onFocusChanged(item.id, hasFocus)
-            }
-
-            content.addTextChangedListener(
-                DefaultTextWatcher { text ->
-                    onTextChanged(item.id, text)
-                }
-            )
-
-            content.selectionWatcher = {
-                onSelectionChanged(item.id, it)
+                checkbox.isActivated = !checkbox.isActivated
+                updateTextColor(
+                    context = itemView.context,
+                    view = content,
+                    isSelected = checkbox.isActivated
+                )
+                onCheckboxClicked(item.id)
             }
         }
     }

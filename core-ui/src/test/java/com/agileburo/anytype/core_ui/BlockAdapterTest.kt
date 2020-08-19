@@ -18,6 +18,9 @@ import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.Bookma
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
+import com.agileburo.anytype.core_ui.features.editor.holders.upload.FileUpload
+import com.agileburo.anytype.core_ui.features.editor.holders.upload.PictureUpload
+import com.agileburo.anytype.core_ui.features.editor.holders.upload.VideoUpload
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
@@ -1117,7 +1120,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to file upload view`() {
 
-        val view = BlockView.File.Upload(
+        val view = BlockView.Upload.File(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
@@ -1134,7 +1137,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.File.Upload)
+        check(holder is FileUpload)
 
         val actual = holder.itemView.marginLeft
 
@@ -1182,7 +1185,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to video placeholder view`() {
 
-        val view = BlockView.MediaPlaceholder.File(
+        val view = BlockView.MediaPlaceholder.Video(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
@@ -1212,7 +1215,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to video upload view`() {
 
-        val view = BlockView.Video.Upload(
+        val view = BlockView.Upload.Video(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
@@ -1229,7 +1232,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Video.Upload)
+        check(holder is VideoUpload)
 
         val actual = holder.itemView.marginLeft
 
@@ -1467,7 +1470,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to picture upload view`() {
 
-        val view = BlockView.Picture.Upload(
+        val view = BlockView.Upload.Picture(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
@@ -1484,7 +1487,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Picture.Upload)
+        check(holder is PictureUpload)
 
         val actual = holder.itemView.marginLeft
 

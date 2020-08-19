@@ -98,11 +98,11 @@ abstract class BlockActionToolbar : Fragment() {
             is BlockView.Toggle -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Contact -> TODO()
             is BlockView.File.View -> addButtons(view, ACTIONS.FILE)
-            is BlockView.File.Upload -> addButtons(view, ACTIONS.FILE)
+            is BlockView.Upload.File -> addButtons(view, ACTIONS.FILE)
             is BlockView.MediaPlaceholder.File -> addButtons(view, ACTIONS.FILE)
             is BlockView.File.Error -> addButtons(view, ACTIONS.FILE)
             is BlockView.Video.View -> addButtons(view, ACTIONS.VIDEO_PICTURE)
-            is BlockView.Video.Upload -> addButtons(view, ACTIONS.VIDEO_PICTURE)
+            is BlockView.Upload.Video -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             is BlockView.MediaPlaceholder.Video -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             is BlockView.Video.Error -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             is BlockView.Page -> addButtons(view, ACTIONS.PAGE)
@@ -113,7 +113,7 @@ abstract class BlockActionToolbar : Fragment() {
             is BlockView.Picture.View -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             is BlockView.MediaPlaceholder.Picture -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             is BlockView.Picture.Error -> addButtons(view, ACTIONS.VIDEO_PICTURE)
-            is BlockView.Picture.Upload -> addButtons(view, ACTIONS.VIDEO_PICTURE)
+            is BlockView.Upload.Picture -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             BlockView.Footer -> TODO()
         }
         if (BuildConfig.DEBUG) {

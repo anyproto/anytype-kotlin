@@ -12,6 +12,9 @@ import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.Bookma
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
+import com.agileburo.anytype.core_ui.features.editor.holders.upload.FileUpload
+import com.agileburo.anytype.core_ui.features.editor.holders.upload.PictureUpload
+import com.agileburo.anytype.core_ui.features.editor.holders.upload.VideoUpload
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
@@ -222,7 +225,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_FILE_UPLOAD -> {
-                BlockViewHolder.File.Upload(
+                FileUpload(
                     view = inflater.inflate(
                         R.layout.item_block_file_uploading,
                         parent,
@@ -258,7 +261,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_VIDEO_UPLOAD -> {
-                BlockViewHolder.Video.Upload(
+                VideoUpload(
                     view = inflater.inflate(
                         R.layout.item_block_video_uploading,
                         parent,
@@ -330,7 +333,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_PICTURE_UPLOAD -> {
-                BlockViewHolder.Picture.Upload(
+                PictureUpload(
                     view = inflater.inflate(
                         R.layout.item_block_picture_uploading,
                         parent,
@@ -513,7 +516,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.File.Upload -> {
+                    is FileUpload -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -537,7 +540,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Picture.Upload -> {
+                    is PictureUpload -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -561,7 +564,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Video.Upload -> {
+                    is VideoUpload -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -726,9 +729,9 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.File.Upload -> {
+            is FileUpload -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.File.Upload,
+                    item = blocks[position] as BlockView.Upload.File,
                     clicked = onClickListener
                 )
             }
@@ -744,15 +747,15 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Video.Upload -> {
+            is VideoUpload -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Video.Upload,
+                    item = blocks[position] as BlockView.Upload.Video,
                     clicked = onClickListener
                 )
             }
             is VideoPlaceholder -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.MediaPlaceholder.File,
+                    item = blocks[position] as BlockView.MediaPlaceholder.Video,
                     clicked = onClickListener
                 )
             }
@@ -804,9 +807,9 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Picture.Upload -> {
+            is PictureUpload -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Picture.Upload,
+                    item = blocks[position] as BlockView.Upload.Picture,
                     clicked = onClickListener
                 )
             }

@@ -46,7 +46,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bookmark_error.view.*
-import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
 import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
@@ -867,43 +866,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
             }
         }
-
-        class Upload(view: View) : BlockViewHolder(view), IndentableHolder {
-
-            fun bind(
-                item: BlockView.File.Upload,
-                clicked: (ListenerType) -> Unit
-            ) {
-                indentize(item)
-                with(itemView) {
-                    isSelected = item.isSelected
-                    setOnClickListener { clicked(ListenerType.File.Upload(item.id)) }
-                    setOnLongClickListener(
-                        EditorLongClickListener(
-                            t = item.id,
-                            click = { onBlockLongClick(itemView, it, clicked) }
-                        )
-                    )
-                }
-            }
-
-            override fun indentize(item: BlockView.Indentable) {
-                itemView.indentize(
-                    indent = item.indent,
-                    defIndent = dimen(R.dimen.indent),
-                    margin = dimen(R.dimen.bookmark_default_margin_start)
-                )
-            }
-
-            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
-                check(item is BlockView.File.Upload) { "Expected a file upload block, but was: $item" }
-                payloads.forEach { payload ->
-                    if (payload.changes.contains(SELECTION_CHANGED)) {
-                        itemView.isSelected = item.isSelected
-                    }
-                }
-            }
-        }
     }
 
     class Video(view: View) : BlockViewHolder(view), IndentableHolder {
@@ -989,43 +951,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             fun processChangePayload(payloads: List<Payload>, item: BlockView) {
                 check(item is BlockView.Video.Error) { "Expected a video error block, but was: $item" }
-                payloads.forEach { payload ->
-                    if (payload.changes.contains(SELECTION_CHANGED)) {
-                        itemView.isSelected = item.isSelected
-                    }
-                }
-            }
-        }
-
-        class Upload(view: View) : BlockViewHolder(view), IndentableHolder {
-
-            fun bind(
-                item: BlockView.Video.Upload,
-                clicked: (ListenerType) -> Unit
-            ) {
-                indentize(item)
-                with(itemView) {
-                    isSelected = item.isSelected
-                    setOnClickListener { clicked(ListenerType.Video.Upload(item.id)) }
-                    setOnLongClickListener(
-                        EditorLongClickListener(
-                            t = item.id,
-                            click = { onBlockLongClick(itemView, it, clicked) }
-                        )
-                    )
-                }
-            }
-
-            override fun indentize(item: BlockView.Indentable) {
-                itemView.indentize(
-                    indent = item.indent,
-                    defIndent = dimen(R.dimen.indent),
-                    margin = dimen(R.dimen.bookmark_default_margin_start)
-                )
-            }
-
-            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
-                check(item is BlockView.Video.Upload) { "Expected a video upload block, but was: $item" }
                 payloads.forEach { payload ->
                     if (payload.changes.contains(SELECTION_CHANGED)) {
                         itemView.isSelected = item.isSelected
@@ -1350,43 +1275,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             fun processChangePayload(payloads: List<Payload>, item: BlockView) {
                 check(item is BlockView.Picture.Error) { "Expected a picture error block, but was: $item" }
-                payloads.forEach { payload ->
-                    if (payload.changes.contains(SELECTION_CHANGED)) {
-                        itemView.isSelected = item.isSelected
-                    }
-                }
-            }
-        }
-
-        class Upload(view: View) : BlockViewHolder(view), IndentableHolder {
-
-            fun bind(
-                item: BlockView.Picture.Upload,
-                clicked: (ListenerType) -> Unit
-            ) {
-                indentize(item)
-                with(itemView) {
-                    isSelected = item.isSelected
-                    setOnClickListener { clicked(ListenerType.Picture.Upload(item.id)) }
-                    setOnLongClickListener(
-                        EditorLongClickListener(
-                            t = item.id,
-                            click = { onBlockLongClick(itemView, it, clicked) }
-                        )
-                    )
-                }
-            }
-
-            override fun indentize(item: BlockView.Indentable) {
-                itemView.indentize(
-                    indent = item.indent,
-                    defIndent = dimen(R.dimen.indent),
-                    margin = dimen(R.dimen.bookmark_default_margin_start)
-                )
-            }
-
-            fun processChangePayload(payloads: List<Payload>, item: BlockView) {
-                check(item is BlockView.Picture.Upload) { "Expected a picture upload block, but was: $item" }
                 payloads.forEach { payload ->
                     if (payload.changes.contains(SELECTION_CHANGED)) {
                         itemView.isSelected = item.isSelected

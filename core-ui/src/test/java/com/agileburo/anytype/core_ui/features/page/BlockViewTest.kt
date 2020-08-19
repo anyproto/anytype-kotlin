@@ -40,7 +40,7 @@ class BlockViewTest {
 
     @Test
     fun `should return video block with view type Uploading`() {
-        val block = BlockView.Video.Upload(
+        val block = BlockView.Upload.Video(
             id = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt()
         )

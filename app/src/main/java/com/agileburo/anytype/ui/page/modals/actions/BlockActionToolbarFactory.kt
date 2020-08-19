@@ -21,11 +21,11 @@ object BlockActionToolbarFactory {
         is BlockView.Toggle -> newInstance(block, dimensions)
         is BlockView.Contact -> TODO()
         is BlockView.File.View -> newInstance(block, dimensions)
-        is BlockView.File.Upload -> newInstance(block, dimensions)
+        is BlockView.Upload.File -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.File -> newInstance(block, dimensions)
         is BlockView.File.Error -> newInstance(block, dimensions)
         is BlockView.Video.View -> newInstance(block, dimensions)
-        is BlockView.Video.Upload -> newInstance(block, dimensions)
+        is BlockView.Upload.Video -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.Video -> newInstance(block, dimensions)
         is BlockView.Video.Error -> newInstance(block, dimensions)
         is BlockView.Page -> newInstance(block, dimensions)
@@ -36,7 +36,7 @@ object BlockActionToolbarFactory {
         is BlockView.Picture.View -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.Picture -> newInstance(block, dimensions)
         is BlockView.Picture.Error -> newInstance(block, dimensions)
-        is BlockView.Picture.Upload -> newInstance(block, dimensions)
+        is BlockView.Upload.Picture -> newInstance(block, dimensions)
         BlockView.Footer -> TODO()
     }
 
@@ -150,6 +150,17 @@ object BlockActionToolbarFactory {
         dimensions: BlockDimensions
     ): PlaceholderActionToolbar =
         PlaceholderActionToolbar().apply {
+            arguments = bundleOf(
+                BlockActionToolbar.ARG_BLOCK to block,
+                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
+            )
+        }
+
+    fun newInstance(
+        block: BlockView.Upload,
+        dimensions: BlockDimensions
+    ): UploadActionToolbar =
+        UploadActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
                 BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions

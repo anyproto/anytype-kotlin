@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.agileburo.anytype.core_ui.MockDataFactory
-import com.agileburo.anytype.core_ui.features.editor.holders.HeaderOne
-import com.agileburo.anytype.core_ui.features.editor.holders.HeaderThree
-import com.agileburo.anytype.core_ui.features.editor.holders.HeaderTwo
+import com.agileburo.anytype.core_ui.features.editor.holders.*
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
@@ -234,7 +232,7 @@ class BlockAdapterCursorBindingTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Checkbox)
+        check(holder is Checkbox)
 
         // Testing
 
@@ -270,7 +268,7 @@ class BlockAdapterCursorBindingTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Bulleted)
+        check(holder is Bulleted)
 
         // Testing
 
@@ -307,7 +305,7 @@ class BlockAdapterCursorBindingTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Numbered)
+        check(holder is Numbered)
 
         // Testing
 
@@ -343,7 +341,7 @@ class BlockAdapterCursorBindingTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Toggle)
+        check(holder is Toggle)
 
         // Testing
 

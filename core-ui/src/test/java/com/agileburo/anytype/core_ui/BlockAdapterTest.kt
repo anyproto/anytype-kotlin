@@ -1012,7 +1012,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Checkbox)
+        check(holder is Checkbox)
 
         val actual = holder.itemView.checkboxIcon.paddingLeft
 
@@ -1047,7 +1047,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Toggle)
+        check(holder is Toggle)
 
         val actual =
             (holder.itemView.guideline.layoutParams as ConstraintLayout.LayoutParams).guideBegin
@@ -2689,7 +2689,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Bulleted)
+        check(holder is Bulleted)
 
         assertEquals(
             expected = InputType.TYPE_NULL,
@@ -2730,7 +2730,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Bulleted)
+        check(holder is Bulleted)
 
         assertEquals(
             expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
@@ -2771,7 +2771,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Bulleted)
+        check(holder is Bulleted)
 
         // Testing
 
@@ -2836,7 +2836,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Checkbox)
+        check(holder is Checkbox)
 
         assertEquals(
             expected = InputType.TYPE_NULL,
@@ -2877,7 +2877,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Checkbox)
+        check(holder is Checkbox)
 
         assertEquals(
             expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
@@ -2918,7 +2918,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Checkbox)
+        check(holder is Checkbox)
 
         // Testing
 
@@ -2984,7 +2984,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Numbered)
+        check(holder is Numbered)
 
         assertEquals(
             expected = InputType.TYPE_NULL,
@@ -3026,7 +3026,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Numbered)
+        check(holder is Numbered)
 
         assertEquals(
             expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
@@ -3068,7 +3068,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Numbered)
+        check(holder is Numbered)
 
         // Testing
 
@@ -3135,7 +3135,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Toggle)
+        check(holder is Toggle)
 
         assertEquals(
             expected = InputType.TYPE_NULL,
@@ -3180,7 +3180,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Toggle)
+        check(holder is Toggle)
 
         assertEquals(
             expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
@@ -3223,7 +3223,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Toggle)
+        check(holder is Toggle)
 
         // Testing
 

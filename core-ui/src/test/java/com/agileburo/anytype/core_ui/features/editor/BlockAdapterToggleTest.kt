@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.MockDataFactory
+import com.agileburo.anytype.core_ui.features.editor.holders.Toggle
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
@@ -50,7 +51,7 @@ class BlockAdapterToggleTest : BlockAdapterTestSetup() {
 
         // TESTING
 
-        check(holder is BlockViewHolder.Toggle)
+        check(holder is Toggle)
 
         // Performing click in read-mode
 

@@ -7,8 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.toSpannable
+import com.agileburo.anytype.core_ui.features.editor.holders.Toggle
 import com.agileburo.anytype.core_ui.features.page.BlockView
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 
 class ToggleBlockActionToolbar : BlockActionToolbar() {
 
@@ -40,8 +40,8 @@ class ToggleBlockActionToolbar : BlockActionToolbar() {
         )
         view.findViewById<ImageView>(R.id.toggle).apply {
             rotation =
-                if (block.toggled) BlockViewHolder.Toggle.EXPANDED_ROTATION
-                else BlockViewHolder.Toggle.COLLAPSED_ROTATION
+                if (block.toggled) Toggle.EXPANDED_ROTATION
+                else Toggle.COLLAPSED_ROTATION
         }
         setConstraints()
     }

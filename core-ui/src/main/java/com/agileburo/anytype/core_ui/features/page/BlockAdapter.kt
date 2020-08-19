@@ -158,7 +158,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_CHECKBOX -> {
-                BlockViewHolder.Checkbox(
+                Checkbox(
                     view = inflater.inflate(
                         R.layout.item_block_checkbox,
                         parent,
@@ -168,7 +168,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_BULLET -> {
-                BlockViewHolder.Bulleted(
+                Bulleted(
                     view = inflater.inflate(
                         R.layout.item_block_bulleted,
                         parent,
@@ -178,7 +178,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_NUMBERED -> {
-                BlockViewHolder.Numbered(
+                Numbered(
                     view = inflater.inflate(
                         R.layout.item_block_numbered,
                         parent,
@@ -188,7 +188,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_TOGGLE -> {
-                BlockViewHolder.Toggle(
+                Toggle(
                     view = inflater.inflate(
                         R.layout.item_block_toggle,
                         parent,
@@ -414,7 +414,7 @@ class BlockAdapter(
                             clicked = onClickListener
                         )
                     }
-                    is BlockViewHolder.Bulleted -> {
+                    is Bulleted -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
@@ -423,7 +423,7 @@ class BlockAdapter(
                             clicked = onClickListener
                         )
                     }
-                    is BlockViewHolder.Checkbox -> {
+                    is Checkbox -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
@@ -444,7 +444,7 @@ class BlockAdapter(
                             item = blocks[position] as BlockView.Title.Profile
                         )
                     }
-                    is BlockViewHolder.Numbered -> {
+                    is Numbered -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
@@ -480,7 +480,7 @@ class BlockAdapter(
                             clicked = onClickListener
                         )
                     }
-                    is BlockViewHolder.Toggle -> {
+                    is Toggle -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
@@ -673,7 +673,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Checkbox -> {
+            is Checkbox -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Checkbox,
                     onTextChanged = onTextChanged,
@@ -683,7 +683,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Bulleted -> {
+            is Bulleted -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Bulleted,
                     onTextChanged = onTextChanged,
@@ -692,7 +692,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Numbered -> {
+            is Numbered -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Numbered,
                     onTextChanged = onTextChanged,
@@ -701,7 +701,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Toggle -> {
+            is Toggle -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Toggle,
                     onTextChanged = onTextChanged,

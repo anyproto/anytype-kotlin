@@ -14,7 +14,6 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_UPLOAD
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FOOTER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_ONE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_THREE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_TWO
@@ -33,7 +32,6 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
-import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -745,20 +743,5 @@ sealed class BlockView : ViewType, Parcelable {
         }
     }
 
-    /**
-     * Footer block. Just holds space at the end of the page.
-     */
-    @Parcelize
-    object Footer : BlockView() {
-        @IgnoredOnParcel
-        override val id: String = FOOTER_ID
-
-        override fun getViewType() = HOLDER_FOOTER
-    }
-
     enum class Mode { READ, EDIT }
-
-    companion object {
-        const val FOOTER_ID = "FOOTER"
-    }
 }

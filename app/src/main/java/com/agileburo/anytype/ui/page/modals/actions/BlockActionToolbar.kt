@@ -114,7 +114,6 @@ abstract class BlockActionToolbar : Fragment() {
             is BlockView.MediaPlaceholder.Picture -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             is BlockView.Picture.Error -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             is BlockView.Upload.Picture -> addButtons(view, ACTIONS.VIDEO_PICTURE)
-            BlockView.Footer -> TODO()
         }
         if (BuildConfig.DEBUG) {
             log(getBlock())

@@ -37,7 +37,6 @@ object BlockActionToolbarFactory {
         is BlockView.MediaPlaceholder.Picture -> newInstance(block, dimensions)
         is BlockView.Picture.Error -> newInstance(block, dimensions)
         is BlockView.Upload.Picture -> newInstance(block, dimensions)
-        BlockView.Footer -> TODO()
     }
 
     fun newInstance(block: BlockView.Page, dimensions: BlockDimensions): PageBlockActionToolbar =

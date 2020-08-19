@@ -36,10 +36,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bookmark_error.view.*
-import kotlinx.android.synthetic.main.item_block_bulleted.view.*
-import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
-import kotlinx.android.synthetic.main.item_block_contact.view.*
 import kotlinx.android.synthetic.main.item_block_file.view.*
 import kotlinx.android.synthetic.main.item_block_highlight.view.*
 import kotlinx.android.synthetic.main.item_block_page.view.*
@@ -219,17 +216,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         override fun select(item: BlockView.Selectable) {
             root.isSelected = item.isSelected
-        }
-    }
-
-    class Contact(view: View) : BlockViewHolder(view) {
-
-        private val name = itemView.name
-        private val avatar = itemView.avatar
-
-        fun bind(item: BlockView.Contact) {
-            name.text = item.name
-            avatar.bind(item.name)
         }
     }
 
@@ -742,21 +728,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Divider(view: View) : BlockViewHolder(view) {
-
-        fun bind(
-            item: BlockView.Divider,
-            clicked: (ListenerType) -> Unit
-        ) {
-            itemView.setOnLongClickListener(
-                EditorLongClickListener(
-                    t = item.id,
-                    click = { onBlockLongClick(itemView, it, clicked) }
-                )
-            )
-        }
-    }
-
     class Highlight(
         view: View,
         onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
@@ -840,17 +811,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    class Footer(view: View) : BlockViewHolder(view) {
-
-        private val footer = itemView
-
-        fun bind(
-            onFooterClicked: () -> Unit
-        ) {
-            footer.setOnClickListener { onFooterClicked() }
-        }
-    }
-
     fun onBlockLongClick(root: View, target: String, clicked: (ListenerType) -> Unit) {
         val rect = PopupExtensions.calculateRectInWindow(root)
         val dimensions = BlockDimensions(
@@ -873,15 +833,12 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_HEADER_THREE = 4
         const val HOLDER_CODE_SNIPPET = 5
         const val HOLDER_CHECKBOX = 6
-        const val HOLDER_TASK = 7
         const val HOLDER_BULLET = 8
         const val HOLDER_NUMBERED = 9
         const val HOLDER_TOGGLE = 10
-        const val HOLDER_CONTACT = 11
         const val HOLDER_PAGE = 13
         const val HOLDER_DIVIDER = 16
         const val HOLDER_HIGHLIGHT = 17
-        const val HOLDER_FOOTER = 18
 
         const val HOLDER_VIDEO = 19
         const val HOLDER_VIDEO_PLACEHOLDER = 20

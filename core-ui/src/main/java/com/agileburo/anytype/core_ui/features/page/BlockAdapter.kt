@@ -21,13 +21,11 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BULLET
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CHECKBOX
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CODE_SNIPPET
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CONTACT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_PLACEHOLDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_UPLOAD
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FOOTER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_ONE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_THREE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HEADER_TWO
@@ -197,15 +195,6 @@ class BlockAdapter(
                     onMarkupActionClicked = onMarkupActionClicked
                 )
             }
-            HOLDER_CONTACT -> {
-                BlockViewHolder.Contact(
-                    view = inflater.inflate(
-                        R.layout.item_block_contact,
-                        parent,
-                        false
-                    )
-                )
-            }
             HOLDER_FILE -> {
                 BlockViewHolder.File(
                     view = inflater.inflate(
@@ -351,7 +340,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_DIVIDER -> {
-                BlockViewHolder.Divider(
+                Divider(
                     view = inflater.inflate(
                         R.layout.item_block_divider,
                         parent,
@@ -367,15 +356,6 @@ class BlockAdapter(
                         false
                     ),
                     onMarkupActionClicked = onMarkupActionClicked
-                )
-            }
-            HOLDER_FOOTER -> {
-                BlockViewHolder.Footer(
-                    view = inflater.inflate(
-                        R.layout.item_block_footer,
-                        parent,
-                        false
-                    )
                 )
             }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
@@ -712,11 +692,6 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Contact -> {
-                holder.bind(
-                    item = blocks[position] as BlockView.Contact
-                )
-            }
             is BlockViewHolder.File -> {
                 holder.bind(
                     item = blocks[position] as BlockView.File.View,
@@ -822,10 +797,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged
                 )
             }
-            is BlockViewHolder.Footer -> {
-                holder.bind(onFooterClicked)
-            }
-            is BlockViewHolder.Divider -> {
+            is Divider -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Divider,
                     clicked = onClickListener

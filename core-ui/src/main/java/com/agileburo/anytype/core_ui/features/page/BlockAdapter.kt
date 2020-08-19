@@ -147,7 +147,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_CODE_SNIPPET -> {
-                BlockViewHolder.Code(
+                Code(
                     view = inflater.inflate(
                         R.layout.item_block_code_snippet,
                         parent,
@@ -268,7 +268,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_PAGE -> {
-                BlockViewHolder.Page(
+                Page(
                     view = inflater.inflate(
                         R.layout.item_block_page,
                         parent,
@@ -550,7 +550,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Page -> {
+                    is Page -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -574,7 +574,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Code -> {
+                    is Code -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
@@ -644,7 +644,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Code -> {
+            is Code -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Code,
                     onTextChanged = onTextChanged,
@@ -740,7 +740,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Page -> {
+            is Page -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Page,
                     clicked = onClickListener

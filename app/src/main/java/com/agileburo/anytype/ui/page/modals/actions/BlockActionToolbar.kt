@@ -96,7 +96,6 @@ abstract class BlockActionToolbar : Fragment() {
             is BlockView.Bulleted -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Numbered -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Toggle -> addButtons(view, ACTIONS.TEXT)
-            is BlockView.Contact -> TODO()
             is BlockView.File.View -> addButtons(view, ACTIONS.FILE)
             is BlockView.Upload.File -> addButtons(view, ACTIONS.FILE)
             is BlockView.MediaPlaceholder.File -> addButtons(view, ACTIONS.FILE)

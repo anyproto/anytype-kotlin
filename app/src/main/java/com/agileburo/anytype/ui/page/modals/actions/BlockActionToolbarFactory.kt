@@ -19,7 +19,6 @@ object BlockActionToolbarFactory {
         is BlockView.Bulleted -> newInstance(block, dimensions)
         is BlockView.Numbered -> newInstance(block, dimensions)
         is BlockView.Toggle -> newInstance(block, dimensions)
-        is BlockView.Contact -> TODO()
         is BlockView.File.View -> newInstance(block, dimensions)
         is BlockView.Upload.File -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.File -> newInstance(block, dimensions)

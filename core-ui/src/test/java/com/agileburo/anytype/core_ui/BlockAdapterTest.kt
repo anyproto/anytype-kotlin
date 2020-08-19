@@ -1296,7 +1296,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Page)
+        check(holder is Page)
 
         val actual =
             (holder.itemView.pageGuideline.layoutParams as ConstraintLayout.LayoutParams).guideBegin
@@ -3385,7 +3385,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Page)
+        check(holder is Page)
 
         // Testing
 

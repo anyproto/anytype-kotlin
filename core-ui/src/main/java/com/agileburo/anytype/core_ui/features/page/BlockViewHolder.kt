@@ -23,10 +23,8 @@ import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
 import com.agileburo.anytype.core_utils.ext.*
-import com.agileburo.anytype.emojifier.Emojifier
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
@@ -36,10 +34,8 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import kotlinx.android.synthetic.main.item_block_bookmark_error.view.*
-import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import kotlinx.android.synthetic.main.item_block_file.view.*
 import kotlinx.android.synthetic.main.item_block_highlight.view.*
-import kotlinx.android.synthetic.main.item_block_page.view.*
 import kotlinx.android.synthetic.main.item_block_picture.view.*
 import kotlinx.android.synthetic.main.item_block_text.view.*
 import kotlinx.android.synthetic.main.item_block_video.view.*
@@ -161,61 +157,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             content.updatePadding(
                 left = dimen(R.dimen.default_document_content_padding_start) + item.indent * dimen(R.dimen.indent)
             )
-        }
-    }
-
-    class Code(view: View) : BlockViewHolder(view), TextHolder {
-
-        override val root: View
-            get() = itemView
-        override val content: TextInputWidget
-            get() = itemView.snippet
-
-        fun bind(
-            item: BlockView.Code,
-            onTextChanged: (String, Editable) -> Unit,
-            onSelectionChanged: (String, IntRange) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit,
-            clicked: (ListenerType) -> Unit
-        ) {
-            if (item.mode == BlockView.Mode.READ) {
-                content.setText(item.text)
-                enableReadOnlyMode()
-                select(item)
-            } else {
-                enableEditMode()
-
-                select(item)
-
-                content.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = { onBlockLongClick(root, it, clicked) }
-                    )
-                )
-
-                content.clearTextWatchers()
-
-                content.setText(item.text)
-                setFocus(item)
-
-                setupTextWatcher(onTextChanged, item)
-
-                content.setOnFocusChangeListener { _, focused ->
-                    item.isFocused = focused
-                    onFocusChanged(item.id, focused)
-                }
-                content.selectionWatcher = { onSelectionChanged(item.id, it) }
-            }
-        }
-
-        /**
-         * Mention is not used in Code
-         */
-        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0, 0)
-
-        override fun select(item: BlockView.Selectable) {
-            root.isSelected = item.isSelected
         }
     }
 
@@ -399,78 +340,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     if (payload.changes.contains(SELECTION_CHANGED)) {
                         itemView.isSelected = item.isSelected
                     }
-                }
-            }
-        }
-    }
-
-    class Page(view: View) : BlockViewHolder(view), IndentableHolder, SupportNesting {
-
-        private val untitled = itemView.resources.getString(R.string.untitled)
-        private val icon = itemView.pageIcon
-        private val emoji = itemView.linkEmoji
-        private val image = itemView.linkImage
-        private val title = itemView.pageTitle
-        private val guideline = itemView.pageGuideline
-
-        fun bind(
-            item: BlockView.Page,
-            clicked: (ListenerType) -> Unit
-        ) {
-            indentize(item)
-
-            itemView.isSelected = item.isSelected
-
-            title.text = if (item.text.isNullOrEmpty()) untitled else item.text
-
-            when {
-                item.emoji != null -> {
-                    image.setImageDrawable(null)
-                    Glide
-                        .with(emoji)
-                        .load(Emojifier.uri(item.emoji))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(emoji)
-                }
-                item.image != null -> {
-                    image.visible()
-                    Glide
-                        .with(image)
-                        .load(item.image)
-                        .centerInside()
-                        .circleCrop()
-                        .into(image)
-                }
-                item.isEmpty -> {
-                    icon.setImageResource(R.drawable.ic_block_empty_page)
-                    image.setImageDrawable(null)
-                }
-                else -> {
-                    icon.setImageResource(R.drawable.ic_block_page_without_emoji)
-                    image.setImageDrawable(null)
-                }
-            }
-
-            title.setOnClickListener { clicked(ListenerType.Page(item.id)) }
-            title.setOnLongClickListener(
-                EditorLongClickListener(
-                    t = item.id,
-                    click = { onBlockLongClick(itemView, it, clicked) }
-                )
-            )
-        }
-
-        override fun indentize(item: BlockView.Indentable) {
-            guideline.setGuidelineBegin(
-                item.indent * dimen(R.dimen.indent)
-            )
-        }
-
-        fun processChangePayload(payloads: List<Payload>, item: BlockView) {
-            check(item is BlockView.Page) { "Expected a page block, but was: $item" }
-            payloads.forEach { payload ->
-                if (payload.changes.contains(SELECTION_CHANGED)) {
-                    itemView.isSelected = item.isSelected
                 }
             }
         }

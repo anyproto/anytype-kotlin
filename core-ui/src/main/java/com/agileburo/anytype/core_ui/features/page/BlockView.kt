@@ -8,7 +8,6 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BULLET
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CHECKBOX
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CODE_SNIPPET
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CONTACT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_ERROR
@@ -413,21 +412,6 @@ sealed class BlockView : ViewType, Parcelable {
     ) : BlockView(), TXT {
         override fun getViewType() = HOLDER_TOGGLE
         override val body: String = text
-    }
-
-    /**
-     * UI-model for a contact block.
-     * @property id block's
-     * @property name a person's name
-     * @property avatar a person's avatar image
-     */
-    @Parcelize
-    data class Contact(
-        override val id: String,
-        val name: String,
-        val avatar: String
-    ) : BlockView() {
-        override fun getViewType() = HOLDER_CONTACT
     }
 
     sealed class Upload : BlockView(), Indentable, Parcelable, Selectable, Permission {

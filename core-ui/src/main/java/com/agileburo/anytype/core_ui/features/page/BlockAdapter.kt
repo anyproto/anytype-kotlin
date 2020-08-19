@@ -634,7 +634,7 @@ class BlockAdapter(
             }
             is HeaderOne -> {
                 holder.bind(
-                    block = blocks[position] as BlockView.HeaderOne,
+                    block = blocks[position] as BlockView.Header.One,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
@@ -643,7 +643,7 @@ class BlockAdapter(
             }
             is HeaderTwo -> {
                 holder.bind(
-                    block = blocks[position] as BlockView.HeaderTwo,
+                    block = blocks[position] as BlockView.Header.Two,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
@@ -652,7 +652,7 @@ class BlockAdapter(
             }
             is HeaderThree -> {
                 holder.bind(
-                    block = blocks[position] as BlockView.HeaderThree,
+                    block = blocks[position] as BlockView.Header.Three,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,

@@ -296,7 +296,7 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         content: Content.Text,
         indent: Int
-    ): BlockView.HeaderThree = BlockView.HeaderThree(
+    ): BlockView.Header.Three = BlockView.Header.Three(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
@@ -315,7 +315,7 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         content: Content.Text,
         indent: Int
-    ): BlockView.HeaderTwo = BlockView.HeaderTwo(
+    ): BlockView.Header.Two = BlockView.Header.Two(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
@@ -334,7 +334,7 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         content: Content.Text,
         indent: Int
-    ): BlockView.HeaderOne = BlockView.HeaderOne(
+    ): BlockView.Header.One = BlockView.Header.One(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,

@@ -4,9 +4,9 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 
 fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.Paragraph -> copy(isSelected = newSelection)
-    is BlockView.HeaderOne -> copy(isSelected = newSelection)
-    is BlockView.HeaderTwo -> copy(isSelected = newSelection)
-    is BlockView.HeaderThree -> copy(isSelected = newSelection)
+    is BlockView.Header.One -> copy(isSelected = newSelection)
+    is BlockView.Header.Two -> copy(isSelected = newSelection)
+    is BlockView.Header.Three -> copy(isSelected = newSelection)
     is BlockView.Highlight -> copy(isSelected = newSelection)
     is BlockView.Code -> copy(isSelected = newSelection)
     is BlockView.Checkbox -> copy(isSelected = newSelection)

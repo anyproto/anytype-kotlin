@@ -890,7 +890,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to header-one view`() {
 
-        val view = BlockView.HeaderOne(
+        val view = BlockView.Header.One(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt()
@@ -923,7 +923,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to header-two view`() {
 
-        val view = BlockView.HeaderTwo(
+        val view = BlockView.Header.Two(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt()
@@ -956,7 +956,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to header-three view`() {
 
-        val view = BlockView.HeaderThree(
+        val view = BlockView.Header.Three(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt()
@@ -2024,21 +2024,21 @@ class BlockAdapterTest {
 
         // Setup
 
-        val h1 = BlockView.HeaderOne(
+        val h1 = BlockView.Header.One(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
             indent = 0
         )
 
-        val h2 = BlockView.HeaderTwo(
+        val h2 = BlockView.Header.Two(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
             indent = 0
         )
 
-        val h3 = BlockView.HeaderThree(
+        val h3 = BlockView.Header.Three(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
@@ -2109,7 +2109,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val h1Selected = BlockView.HeaderOne(
+        val h1Selected = BlockView.Header.One(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
@@ -2117,7 +2117,7 @@ class BlockAdapterTest {
             indent = 0
         )
 
-        val h1Notselected = BlockView.HeaderOne(
+        val h1Notselected = BlockView.Header.One(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
@@ -2125,7 +2125,7 @@ class BlockAdapterTest {
             indent = 0
         )
 
-        val h2Selected = BlockView.HeaderTwo(
+        val h2Selected = BlockView.Header.Two(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
@@ -2133,7 +2133,7 @@ class BlockAdapterTest {
             indent = 0
         )
 
-        val h2Notselected = BlockView.HeaderTwo(
+        val h2Notselected = BlockView.Header.Two(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
@@ -2141,7 +2141,7 @@ class BlockAdapterTest {
             indent = 0
         )
 
-        val h3Selected = BlockView.HeaderThree(
+        val h3Selected = BlockView.Header.Three(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
@@ -2149,7 +2149,7 @@ class BlockAdapterTest {
             indent = 0
         )
 
-        val h3Notselected = BlockView.HeaderThree(
+        val h3Notselected = BlockView.Header.Three(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
@@ -2214,21 +2214,21 @@ class BlockAdapterTest {
 
         // Setup
 
-        val h1 = BlockView.HeaderOne(
+        val h1 = BlockView.Header.One(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
             indent = 0
         )
 
-        val h2 = BlockView.HeaderTwo(
+        val h2 = BlockView.Header.Two(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
             indent = 0
         )
 
-        val h3 = BlockView.HeaderThree(
+        val h3 = BlockView.Header.Three(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
@@ -2293,21 +2293,21 @@ class BlockAdapterTest {
 
         // Setup
 
-        val h1 = BlockView.HeaderOne(
+        val h1 = BlockView.Header.One(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
             indent = 0
         )
 
-        val h2 = BlockView.HeaderTwo(
+        val h2 = BlockView.Header.Two(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
             indent = 0
         )
 
-        val h3 = BlockView.HeaderThree(
+        val h3 = BlockView.Header.Three(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,

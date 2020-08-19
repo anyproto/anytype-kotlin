@@ -9,7 +9,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 
 class HeaderThreeBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.HeaderThree
+    lateinit var block: BlockView.Header.Three
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

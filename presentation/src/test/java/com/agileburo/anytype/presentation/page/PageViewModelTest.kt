@@ -1509,7 +1509,7 @@ class PageViewModelTest {
                         text = paragraph.content<Block.Content.Text>().text,
                         backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
                     ),
-                    BlockView.HeaderOne(
+                    BlockView.Header.One(
                         id = new.id,
                         text = new.content<Block.Content.Text>().text,
                         backgroundColor = new.content<Block.Content.Text>().backgroundColor,

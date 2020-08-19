@@ -81,9 +81,9 @@ abstract class BlockActionToolbar : Fragment() {
             is BlockView.Paragraph -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Title -> addButtons(view, ACTIONS.TEXT)
             is BlockView.ProfileTitle -> addButtons(view, ACTIONS.TEXT)
-            is BlockView.HeaderOne -> addButtons(view, ACTIONS.TEXT)
-            is BlockView.HeaderTwo -> addButtons(view, ACTIONS.TEXT)
-            is BlockView.HeaderThree -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.Header.One -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.Header.Two -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.Header.Three -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Highlight -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Code -> addButtons(view, ACTIONS.CODE)
             is BlockView.Checkbox -> {

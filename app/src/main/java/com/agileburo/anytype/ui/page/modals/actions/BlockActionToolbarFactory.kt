@@ -10,9 +10,9 @@ object BlockActionToolbarFactory {
         is BlockView.Paragraph -> newInstance(block, dimensions)
         is BlockView.Title -> TODO()
         is BlockView.ProfileTitle -> TODO()
-        is BlockView.HeaderOne -> newInstance(block, dimensions)
-        is BlockView.HeaderTwo -> newInstance(block, dimensions)
-        is BlockView.HeaderThree -> newInstance(block, dimensions)
+        is BlockView.Header.One -> newInstance(block, dimensions)
+        is BlockView.Header.Two -> newInstance(block, dimensions)
+        is BlockView.Header.Three -> newInstance(block, dimensions)
         is BlockView.Highlight -> newInstance(block, dimensions)
         is BlockView.Code -> newInstance(block, dimensions)
         is BlockView.Checkbox -> newInstance(block, dimensions)
@@ -56,7 +56,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.HeaderOne, dimensions: BlockDimensions): HeaderOneBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Header.One,
+        dimensions: BlockDimensions
+    ): HeaderOneBlockActionToolbar =
         HeaderOneBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
@@ -64,7 +67,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.HeaderTwo, dimensions: BlockDimensions): HeaderTwoBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Header.Two,
+        dimensions: BlockDimensions
+    ): HeaderTwoBlockActionToolbar =
         HeaderTwoBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
@@ -73,7 +79,7 @@ object BlockActionToolbarFactory {
         }
 
     fun newInstance(
-        block: BlockView.HeaderThree,
+        block: BlockView.Header.Three,
         dimensions: BlockDimensions
     ): HeaderThreeBlockActionToolbar =
         HeaderThreeBlockActionToolbar().apply {

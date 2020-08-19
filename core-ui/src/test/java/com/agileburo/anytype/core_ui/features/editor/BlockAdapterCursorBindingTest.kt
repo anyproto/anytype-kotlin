@@ -71,7 +71,7 @@ class BlockAdapterCursorBindingTest {
 
         val text = MockDataFactory.randomString()
 
-        val block = BlockView.HeaderOne(
+        val block = BlockView.Header.One(
             text = text,
             id = MockDataFactory.randomUuid(),
             isFocused = true,
@@ -106,7 +106,7 @@ class BlockAdapterCursorBindingTest {
 
         val text = MockDataFactory.randomString()
 
-        val block = BlockView.HeaderTwo(
+        val block = BlockView.Header.Two(
             text = text,
             id = MockDataFactory.randomUuid(),
             isFocused = true,
@@ -141,7 +141,7 @@ class BlockAdapterCursorBindingTest {
 
         val text = MockDataFactory.randomString()
 
-        val block = BlockView.HeaderThree(
+        val block = BlockView.Header.Three(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = true,

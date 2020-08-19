@@ -75,7 +75,7 @@ class BlockViewDiffUtilTest {
             indent = indent
         )
 
-        val newBlock = BlockView.HeaderOne(
+        val newBlock = BlockView.Header.One(
             id = id,
             text = text,
             indent = indent
@@ -223,13 +223,13 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock: BlockView = BlockView.HeaderOne(
+        val oldBlock: BlockView = BlockView.Header.One(
             id = id,
             text = text,
             indent = indent
         )
 
-        val newBlock: BlockView = BlockView.HeaderOne(
+        val newBlock: BlockView = BlockView.Header.One(
             id = id,
             text = text,
             indent = indent

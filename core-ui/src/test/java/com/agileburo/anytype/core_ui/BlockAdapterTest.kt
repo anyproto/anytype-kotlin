@@ -15,6 +15,7 @@ import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.features.editor.holders.HeaderOne
 import com.agileburo.anytype.core_ui.features.editor.holders.HeaderThree
 import com.agileburo.anytype.core_ui.features.editor.holders.HeaderTwo
+import com.agileburo.anytype.core_ui.features.editor.holders.Title
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
@@ -415,7 +416,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         // Testing
 
@@ -670,7 +671,7 @@ class BlockAdapterTest {
         val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
 
         assertEquals(
-            expected = BlockViewHolder.Title::class,
+            expected = Title::class,
             actual = holder::class
         )
     }
@@ -700,7 +701,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         val text = holder.content.text.toString()
 
@@ -737,7 +738,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         // Testing
 
@@ -791,7 +792,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         // Testing
 
@@ -842,7 +843,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         Robolectric.getForegroundThreadScheduler().apply {
             advanceBy(FOCUS_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
@@ -1519,7 +1520,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         // Testing
 
@@ -1573,7 +1574,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         // Testing
 
@@ -1630,7 +1631,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         // Testing
 
@@ -1673,7 +1674,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         // Testing
 
@@ -1900,7 +1901,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         assertEquals(
             expected = InputType.TYPE_NULL,
@@ -1941,7 +1942,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         assertEquals(
             expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
@@ -1982,7 +1983,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Title)
+        check(holder is Title)
 
         // Testing
 

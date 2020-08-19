@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.features.editor.holders.HeaderOne
-import com.agileburo.anytype.core_ui.features.editor.holders.HeaderThree
-import com.agileburo.anytype.core_ui.features.editor.holders.HeaderTwo
+import com.agileburo.anytype.core_ui.features.editor.holders.*
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
@@ -96,7 +94,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_TITLE -> {
-                BlockViewHolder.Title(
+                Title(
                     view = inflater.inflate(
                         R.layout.item_block_title,
                         parent,
@@ -105,7 +103,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_PROFILE_TITLE -> {
-                BlockViewHolder.ProfileTitle(
+                ProfileTitle(
                     view = inflater.inflate(
                         R.layout.item_block_title_profile,
                         parent,
@@ -427,13 +425,13 @@ class BlockAdapter(
                             clicked = onClickListener
                         )
                     }
-                    is BlockViewHolder.Title -> {
+                    is Title -> {
                         holder.processPayloads(
                             payloads = payloads.typeOf(),
                             item = blocks[position] as BlockView.Title
                         )
                     }
-                    is BlockViewHolder.ProfileTitle -> {
+                    is ProfileTitle -> {
                         holder.processPayloads(
                             payloads = payloads.typeOf(),
                             item = blocks[position] as BlockView.ProfileTitle
@@ -616,7 +614,7 @@ class BlockAdapter(
                     onMentionEvent = onMentionEvent
                 )
             }
-            is BlockViewHolder.Title -> {
+            is Title -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Title,
                     onTitleTextChanged = onTitleTextChanged,
@@ -624,7 +622,7 @@ class BlockAdapter(
                     onPageIconClicked = onPageIconClicked
                 )
             }
-            is BlockViewHolder.ProfileTitle -> {
+            is ProfileTitle -> {
                 holder.bind(
                     item = blocks[position] as BlockView.ProfileTitle,
                     onTitleTextChanged = onTitleTextChanged,
@@ -844,7 +842,7 @@ class BlockAdapter(
                 }
             }
 
-            if (holder is BlockViewHolder.Title || holder is BlockViewHolder.ProfileTitle) {
+            if (holder is Title || holder is ProfileTitle) {
                 holder.enableEnterKeyDetector(
                     onEndLineEnterClicked = { editable ->
                         onEndLineEnterTitleClicked(editable)
@@ -900,7 +898,7 @@ class BlockAdapter(
                 }
             )
 
-            if (holder is BlockViewHolder.Title || holder is BlockViewHolder.ProfileTitle)
+            if (holder is Title || holder is ProfileTitle)
                 holder.setOnClickListener { onTitleTextInputClicked() }
             else
                 holder.setOnClickListener { onTextInputClicked(blocks[holder.adapterPosition].id) }

@@ -209,7 +209,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_FILE_PLACEHOLDER -> {
-                BlockViewHolder.File.Placeholder(
+                FilePlaceholder(
                     view = inflater.inflate(
                         R.layout.item_block_file_placeholder,
                         parent,
@@ -245,7 +245,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_VIDEO_PLACEHOLDER -> {
-                BlockViewHolder.Video.Placeholder(
+                VideoPlaceholder(
                     view = inflater.inflate(
                         R.layout.item_block_video_placeholder,
                         parent,
@@ -290,7 +290,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_BOOKMARK_PLACEHOLDER -> {
-                BlockViewHolder.Bookmark.Placeholder(
+                BookmarkPlaceholder(
                     view = inflater.inflate(
                         R.layout.item_block_bookmark_placeholder,
                         parent,
@@ -317,7 +317,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_PICTURE_PLACEHOLDER -> {
-                BlockViewHolder.Picture.Placeholder(
+                ImagePlaceholder(
                     view = inflater.inflate(
                         R.layout.item_block_picture_placeholder,
                         parent,
@@ -497,7 +497,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.File.Placeholder -> {
+                    is FilePlaceholder -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -521,7 +521,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Picture.Placeholder -> {
+                    is ImagePlaceholder -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -545,7 +545,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Video.Placeholder -> {
+                    is VideoPlaceholder -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -575,7 +575,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Bookmark.Placeholder -> {
+                    is BookmarkPlaceholder -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -728,7 +728,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.File.Placeholder -> {
+            is FilePlaceholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.File.Placeholder,
                     clicked = onClickListener
@@ -746,7 +746,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Video.Placeholder -> {
+            is VideoPlaceholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Video.Placeholder,
                     clicked = onClickListener
@@ -770,7 +770,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Bookmark.Placeholder -> {
+            is BookmarkPlaceholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Bookmark.Placeholder,
                     clicked = onClickListener
@@ -788,7 +788,7 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Picture.Placeholder -> {
+            is ImagePlaceholder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Picture.Placeholder,
                     clicked = onClickListener

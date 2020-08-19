@@ -12,10 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.agileburo.anytype.core_ui.common.ThemeColor
-import com.agileburo.anytype.core_ui.features.editor.holders.HeaderOne
-import com.agileburo.anytype.core_ui.features.editor.holders.HeaderThree
-import com.agileburo.anytype.core_ui.features.editor.holders.HeaderTwo
-import com.agileburo.anytype.core_ui.features.editor.holders.Title
+import com.agileburo.anytype.core_ui.features.editor.holders.*
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
@@ -1073,7 +1070,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.File.Placeholder)
+        check(holder is FilePlaceholder)
 
         val actual = holder.itemView.marginLeft
 
@@ -1198,7 +1195,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Video.Placeholder)
+        check(holder is VideoPlaceholder)
 
         val actual = holder.itemView.marginLeft
 
@@ -1358,7 +1355,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Bookmark.Placeholder)
+        check(holder is BookmarkPlaceholder)
 
         val actual = holder.itemView.bookmarkPlaceholderRoot.marginLeft
 
@@ -1423,7 +1420,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Picture.Placeholder)
+        check(holder is ImagePlaceholder)
 
         val actual = holder.itemView.marginLeft
 

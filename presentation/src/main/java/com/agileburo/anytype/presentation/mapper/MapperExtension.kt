@@ -20,7 +20,7 @@ fun Block.Content.File.toPictureView(
     indent: Int,
     mode: BlockView.Mode
 ): BlockView = when (state) {
-    Block.Content.File.State.EMPTY -> BlockView.Picture.Placeholder(
+    Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Picture(
         id = id,
         indent = indent,
         mode = mode
@@ -54,7 +54,7 @@ fun Block.Content.File.toVideoView(
     indent: Int,
     mode: BlockView.Mode
 ): BlockView = when (state) {
-    Block.Content.File.State.EMPTY -> BlockView.Video.Placeholder(
+    Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.File(
         id = id,
         indent = indent,
         mode = mode
@@ -88,7 +88,7 @@ fun Block.Content.File.toFileView(
     indent: Int,
     mode: BlockView.Mode
 ): BlockView = when (state) {
-    Block.Content.File.State.EMPTY -> BlockView.File.Placeholder(
+    Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.File(
         id = id,
         indent = indent,
         mode = mode

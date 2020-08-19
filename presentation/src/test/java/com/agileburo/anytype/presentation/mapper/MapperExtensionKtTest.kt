@@ -81,7 +81,7 @@ class MapperExtensionKtTest {
 
         )
 
-        val expected = BlockView.File.Placeholder(id = id, indent = indent)
+        val expected = BlockView.MediaPlaceholder.File(id = id, indent = indent)
         val actual = block.toFileView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
@@ -220,7 +220,7 @@ class MapperExtensionKtTest {
 
         )
 
-        val expected = BlockView.Picture.Placeholder(id = id, indent = indent)
+        val expected = BlockView.MediaPlaceholder.Picture(id = id, indent = indent)
         val actual = block.toPictureView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
@@ -409,7 +409,7 @@ class MapperExtensionKtTest {
             type = type
         )
 
-        val expected = BlockView.Video.Placeholder(
+        val expected = BlockView.MediaPlaceholder.File(
             id = id,
             indent = indent
         )

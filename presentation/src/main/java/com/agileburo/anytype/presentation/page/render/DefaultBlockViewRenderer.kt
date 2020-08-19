@@ -480,7 +480,7 @@ class DefaultBlockViewRenderer(
                 mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
             )
         }
-    } ?: BlockView.Bookmark.Placeholder(
+    } ?: BlockView.MediaPlaceholder.Bookmark(
         id = block.id,
         indent = indent,
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ

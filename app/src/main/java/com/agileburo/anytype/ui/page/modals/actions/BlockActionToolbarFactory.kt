@@ -22,19 +22,19 @@ object BlockActionToolbarFactory {
         is BlockView.Contact -> TODO()
         is BlockView.File.View -> newInstance(block, dimensions)
         is BlockView.File.Upload -> newInstance(block, dimensions)
-        is BlockView.File.Placeholder -> newInstance(block, dimensions)
+        is BlockView.MediaPlaceholder.File -> newInstance(block, dimensions)
         is BlockView.File.Error -> newInstance(block, dimensions)
         is BlockView.Video.View -> newInstance(block, dimensions)
         is BlockView.Video.Upload -> newInstance(block, dimensions)
-        is BlockView.Video.Placeholder -> newInstance(block, dimensions)
+        is BlockView.MediaPlaceholder.Video -> newInstance(block, dimensions)
         is BlockView.Video.Error -> newInstance(block, dimensions)
         is BlockView.Page -> newInstance(block, dimensions)
         is BlockView.Divider -> newInstance(block, dimensions)
-        is BlockView.Bookmark.Placeholder -> newInstance(block, dimensions)
+        is BlockView.MediaPlaceholder.Bookmark -> newInstance(block, dimensions)
         is BlockView.Bookmark.View -> newInstance(block, dimensions)
         is BlockView.Bookmark.Error -> newInstance(block, dimensions)
         is BlockView.Picture.View -> newInstance(block, dimensions)
-        is BlockView.Picture.Placeholder -> newInstance(block, dimensions)
+        is BlockView.MediaPlaceholder.Picture -> newInstance(block, dimensions)
         is BlockView.Picture.Error -> newInstance(block, dimensions)
         is BlockView.Picture.Upload -> newInstance(block, dimensions)
         BlockView.Footer -> TODO()
@@ -139,6 +139,17 @@ object BlockActionToolbarFactory {
 
     fun newInstance(block: BlockView.File, dimensions: BlockDimensions): FileBlockActionToolbar =
         FileBlockActionToolbar().apply {
+            arguments = bundleOf(
+                BlockActionToolbar.ARG_BLOCK to block,
+                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
+            )
+        }
+
+    fun newInstance(
+        block: BlockView.MediaPlaceholder,
+        dimensions: BlockDimensions
+    ): PlaceholderActionToolbar =
+        PlaceholderActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
                 BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions

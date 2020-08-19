@@ -14,6 +14,10 @@ import androidx.test.core.app.ApplicationProvider
 import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.features.editor.holders.*
 import com.agileburo.anytype.core_ui.features.editor.holders.Title.Document
+import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
+import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
+import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
+import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
@@ -1053,7 +1057,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to file placeholder view`() {
 
-        val view = BlockView.File.Placeholder(
+        val view = BlockView.MediaPlaceholder.File(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
@@ -1178,7 +1182,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to video placeholder view`() {
 
-        val view = BlockView.Video.Placeholder(
+        val view = BlockView.MediaPlaceholder.File(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
@@ -1337,7 +1341,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to bookmark placeholder view`() {
 
-        val view = BlockView.Bookmark.Placeholder(
+        val view = BlockView.MediaPlaceholder.Bookmark(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
@@ -1402,7 +1406,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to picture placeholder view`() {
 
-        val view = BlockView.Picture.Placeholder(
+        val view = BlockView.MediaPlaceholder.Picture(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
@@ -1420,7 +1424,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is ImagePlaceholder)
+        check(holder is PicturePlaceholder)
 
         val actual = holder.itemView.marginLeft
 

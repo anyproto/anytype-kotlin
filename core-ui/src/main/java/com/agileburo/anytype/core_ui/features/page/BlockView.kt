@@ -428,6 +428,68 @@ sealed class BlockView : ViewType, Parcelable {
         override fun getViewType() = HOLDER_CONTACT
     }
 
+    sealed class MediaPlaceholder : BlockView(), Indentable, Parcelable, Selectable, Permission {
+        abstract override val id: String
+        abstract override val indent: Int
+        abstract override val mode: Mode
+        abstract override val isSelected: Boolean
+
+        /**
+         * UI-model for block containing file, with state EMPTY.
+         * @property id block's id
+         */
+        @Parcelize
+        data class File(
+            override val id: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
+        ) : MediaPlaceholder() {
+            override fun getViewType() = HOLDER_FILE_PLACEHOLDER
+        }
+
+        /**
+         * UI-model for block containing video, with state EMPTY.
+         * @property id block's id
+         */
+        @Parcelize
+        data class Video(
+            override val id: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
+        ) : MediaPlaceholder() {
+            override fun getViewType() = HOLDER_VIDEO_PLACEHOLDER
+        }
+
+        /**
+         * UI-model for a bookmark placeholder (used when bookmark url is not set)
+         */
+        @Parcelize
+        data class Bookmark(
+            override val id: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
+        ) : MediaPlaceholder() {
+            override fun getViewType() = HOLDER_BOOKMARK_PLACEHOLDER
+        }
+
+        /**
+         * UI-model for block containing image, with state EMPTY.
+         */
+        @Parcelize
+        data class Picture(
+            override val id: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false
+        ) : MediaPlaceholder() {
+            override fun getViewType() = HOLDER_PICTURE_PLACEHOLDER
+        }
+
+    }
+
     /**
      * UI-models for blocks containing files.
      * @property id block's id
@@ -467,20 +529,6 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false
         ) : BlockView.File(id) {
             override fun getViewType() = HOLDER_FILE_UPLOAD
-        }
-
-        /**
-         * UI-model for block containing file, with state EMPTY.
-         * @property id block's id
-         */
-        @Parcelize
-        data class Placeholder(
-            override val id: String,
-            override val indent: Int,
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
-        ) : BlockView.File(id) {
-            override fun getViewType() = HOLDER_FILE_PLACEHOLDER
         }
 
         /**
@@ -539,20 +587,6 @@ sealed class BlockView : ViewType, Parcelable {
         }
 
         /**
-         * UI-model for block containing video, with state EMPTY.
-         * @property id block's id
-         */
-        @Parcelize
-        data class Placeholder(
-            override val id: String,
-            override val indent: Int,
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
-        ) : BlockView.Video(id) {
-            override fun getViewType() = HOLDER_VIDEO_PLACEHOLDER
-        }
-
-        /**
          * UI-model for block containing video, with state ERROR.
          * @property id block's id
          */
@@ -607,19 +641,6 @@ sealed class BlockView : ViewType, Parcelable {
     sealed class Bookmark(
         override val id: String
     ) : BlockView(), Indentable, Parcelable, Selectable, Permission {
-
-        /**
-         * UI-model for a bookmark placeholder (used when bookmark url is not set)
-         */
-        @Parcelize
-        data class Placeholder(
-            override val id: String,
-            override val indent: Int,
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
-        ) : Bookmark(id = id) {
-            override fun getViewType() = HOLDER_BOOKMARK_PLACEHOLDER
-        }
 
         /**
          * UI-model for a bookmark view.
@@ -684,19 +705,6 @@ sealed class BlockView : ViewType, Parcelable {
             val url: String
         ) : BlockView.Picture(id) {
             override fun getViewType() = HOLDER_PICTURE
-        }
-
-        /**
-         * UI-model for block containing image, with state EMPTY.
-         */
-        @Parcelize
-        data class Placeholder(
-            override val id: String,
-            override val indent: Int,
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
-        ) : BlockView.Picture(id) {
-            override fun getViewType() = HOLDER_PICTURE_PLACEHOLDER
         }
 
         /**

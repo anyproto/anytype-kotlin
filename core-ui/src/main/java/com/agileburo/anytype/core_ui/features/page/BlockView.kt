@@ -181,8 +181,7 @@ sealed class BlockView : ViewType, Parcelable {
      * @property emoji emoji as a page's logo (if present)
      */
 
-    sealed class Header() : BlockView(), Text, Markup, Cursor, Focusable, Indentable, Permission,
-        Selectable, Alignable {
+    sealed class Header() : BlockView(), TXT, Alignable {
 
         abstract override val id: String
         abstract override var text: String

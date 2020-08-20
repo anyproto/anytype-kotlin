@@ -12,7 +12,7 @@ import com.agileburo.anytype.core_utils.const.MimeTypes
 
 class FileBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.File
+    lateinit var block: BlockView.Media.File
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,8 +21,6 @@ class FileBlockActionToolbar : BlockActionToolbar() {
 
     override fun blockLayout() = when (block.getViewType()) {
         BlockViewHolder.HOLDER_FILE -> R.layout.item_block_file_preview
-        BlockViewHolder.HOLDER_FILE_PLACEHOLDER -> R.layout.item_block_file_placeholder_preview
-        BlockViewHolder.HOLDER_FILE_ERROR -> R.layout.item_block_file_error_preview
         else -> R.layout.item_block_file_uploading_preview
     }
 
@@ -35,7 +33,7 @@ class FileBlockActionToolbar : BlockActionToolbar() {
         }
 
     private fun initFile(view: View) {
-        val item = block as BlockView.File.View
+        val item = block
 
         view.findViewById<TextView>(R.id.filename).apply {
             text = item.name

@@ -19,20 +19,20 @@ object BlockActionToolbarFactory {
         is BlockView.Bulleted -> newInstance(block, dimensions)
         is BlockView.Numbered -> newInstance(block, dimensions)
         is BlockView.Toggle -> newInstance(block, dimensions)
-        is BlockView.File.View -> newInstance(block, dimensions)
+        is BlockView.Media.File -> newInstance(block, dimensions)
         is BlockView.Upload.File -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.File -> newInstance(block, dimensions)
         is BlockView.Error.File -> newInstance(block, dimensions)
-        is BlockView.Video.View -> newInstance(block, dimensions)
+        is BlockView.Media.Video -> newInstance(block, dimensions)
         is BlockView.Upload.Video -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.Video -> newInstance(block, dimensions)
         is BlockView.Error.Video -> newInstance(block, dimensions)
         is BlockView.Page -> newInstance(block, dimensions)
         is BlockView.Divider -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.Bookmark -> newInstance(block, dimensions)
-        is BlockView.Bookmark.View -> newInstance(block, dimensions)
+        is BlockView.Media.Bookmark -> newInstance(block, dimensions)
         is BlockView.Error.Bookmark -> newInstance(block, dimensions)
-        is BlockView.Picture.View -> newInstance(block, dimensions)
+        is BlockView.Media.Picture -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.Picture -> newInstance(block, dimensions)
         is BlockView.Error.Picture -> newInstance(block, dimensions)
         is BlockView.Upload.Picture -> newInstance(block, dimensions)
@@ -146,7 +146,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.File, dimensions: BlockDimensions): FileBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Media.File,
+        dimensions: BlockDimensions
+    ): FileBlockActionToolbar =
         FileBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
@@ -176,7 +179,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.Picture, dimensions: BlockDimensions): PictureBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Media.Picture,
+        dimensions: BlockDimensions
+    ): PictureBlockActionToolbar =
         PictureBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
@@ -184,7 +190,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.Video, dimensions: BlockDimensions): VideoBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Media.Video,
+        dimensions: BlockDimensions
+    ): VideoBlockActionToolbar =
         VideoBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
@@ -200,7 +209,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.Bookmark, dimensions: BlockDimensions): BookmarkBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Media.Bookmark,
+        dimensions: BlockDimensions
+    ): BookmarkBlockActionToolbar =
         BookmarkBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,

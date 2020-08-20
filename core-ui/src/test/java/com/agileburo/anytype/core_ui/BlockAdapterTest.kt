@@ -17,6 +17,9 @@ import com.agileburo.anytype.core_ui.features.editor.holders.Title.Document
 import com.agileburo.anytype.core_ui.features.editor.holders.error.FileError
 import com.agileburo.anytype.core_ui.features.editor.holders.error.PictureError
 import com.agileburo.anytype.core_ui.features.editor.holders.error.VideoError
+import com.agileburo.anytype.core_ui.features.editor.holders.media.File
+import com.agileburo.anytype.core_ui.features.editor.holders.media.Picture
+import com.agileburo.anytype.core_ui.features.editor.holders.media.Video
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
@@ -1153,7 +1156,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to video view`() {
 
-        val view = BlockView.Video.View(
+        val view = BlockView.Media.Video(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt(),
             hash = MockDataFactory.randomString(),
@@ -1175,7 +1178,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Video)
+        check(holder is Video)
 
         val actual = holder.itemView.marginLeft
 
@@ -1377,7 +1380,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to picture view`() {
 
-        val view = BlockView.Picture.View(
+        val view = BlockView.Media.Picture(
             id = MockDataFactory.randomUuid(),
             hash = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
@@ -1399,7 +1402,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Picture)
+        check(holder is Picture)
 
         val actual = holder.itemView.marginLeft
 
@@ -3271,7 +3274,7 @@ class BlockAdapterTest {
         // Setup
 
         val views = listOf(
-            BlockView.File.View(
+            BlockView.Media.File(
                 id = MockDataFactory.randomString(),
                 hash = MockDataFactory.randomString(),
                 indent = MockDataFactory.randomInt(),
@@ -3281,7 +3284,7 @@ class BlockAdapterTest {
                 url = MockDataFactory.randomString(),
                 isSelected = false
             ),
-            BlockView.File.View(
+            BlockView.Media.File(
                 id = MockDataFactory.randomString(),
                 hash = MockDataFactory.randomString(),
                 indent = MockDataFactory.randomInt(),
@@ -3304,8 +3307,8 @@ class BlockAdapterTest {
         adapter.onBindViewHolder(firstHolder, 0)
         adapter.onBindViewHolder(secondHolder, 1)
 
-        check(firstHolder is BlockViewHolder.File)
-        check(secondHolder is BlockViewHolder.File)
+        check(firstHolder is File)
+        check(secondHolder is File)
 
         // Testing
 
@@ -3318,7 +3321,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val file = BlockView.File.View(
+        val file = BlockView.Media.File(
             id = MockDataFactory.randomString(),
             hash = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
@@ -3342,7 +3345,7 @@ class BlockAdapterTest {
         val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE)
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.File)
+        check(holder is File)
 
         // Testing
 

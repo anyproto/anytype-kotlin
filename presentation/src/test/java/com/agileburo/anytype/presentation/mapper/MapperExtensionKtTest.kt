@@ -42,7 +42,7 @@ class MapperExtensionKtTest {
 
         )
 
-        val expected = BlockView.File.View(
+        val expected = BlockView.Media.File(
             id = id,
             name = name,
             size = size,
@@ -181,7 +181,7 @@ class MapperExtensionKtTest {
 
         )
 
-        val expected = BlockView.Picture.View(
+        val expected = BlockView.Media.Picture(
             id = id,
             name = name,
             size = size,
@@ -322,7 +322,7 @@ class MapperExtensionKtTest {
             type = type
         )
 
-        val expected = BlockView.Video.View(
+        val expected = BlockView.Media.Video(
             id = id,
             name = name,
             size = size,
@@ -366,7 +366,7 @@ class MapperExtensionKtTest {
 
         )
 
-        val expected = BlockView.Video.View(
+        val expected = BlockView.Media.Video(
             id = id,
             name = null,
             size = null,

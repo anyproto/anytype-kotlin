@@ -1521,7 +1521,7 @@ class PageViewModel(
             )
         )
 
-    private fun onBookmarkClicked(view: BlockView.Bookmark.View) =
+    private fun onBookmarkClicked(view: BlockView.Media.Bookmark) =
         dispatch(command = Command.Browse(view.url))
 
     private fun onFailedBookmarkClicked(view: BlockView.Error.Bookmark) =

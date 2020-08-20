@@ -586,20 +586,18 @@ sealed class BlockView : ViewType, Parcelable {
 
     }
 
-    /**
-     * UI-models for blocks containing files.
-     * @property id block's id
-     */
-    sealed class File(
-        override val id: String
-    ) : BlockView(), Indentable, Parcelable, Selectable, Permission {
+    sealed class Media : BlockView(), Indentable, Parcelable, Selectable, Permission {
+        abstract override val id: String
+        abstract override val indent: Int
+        abstract override val mode: Mode
+        abstract override val isSelected: Boolean
 
         /**
          * UI-model for block containing file, with state DONE.
          * @property id block's id
          */
         @Parcelize
-        data class View(
+        data class File(
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
@@ -609,24 +607,15 @@ sealed class BlockView : ViewType, Parcelable {
             val mime: String?,
             val hash: String?,
             val url: String
-        ) : BlockView.File(id) {
+        ) : Media() {
             override fun getViewType() = HOLDER_FILE
         }
-    }
-
-    /**
-     * UI-models for blocks containing videos.
-     * @property id block's id
-     */
-    sealed class Video(
-        override val id: String
-    ) : BlockView(), Indentable, Parcelable, Selectable, Permission {
 
         /**
          * UI-model for block containing video, with state DONE.
          */
         @Parcelize
-        data class View(
+        data class Video(
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
@@ -636,8 +625,49 @@ sealed class BlockView : ViewType, Parcelable {
             val mime: String?,
             val hash: String?,
             val url: String
-        ) : BlockView.Video(id) {
+        ) : Media() {
             override fun getViewType() = HOLDER_VIDEO
+        }
+
+        /**
+         * UI-model for a bookmark view.
+         * @property title website's title
+         * @property description website's content description
+         * @property url website's url
+         * @property faviconUrl website's favicon url
+         * @property imageUrl content's main image url
+         */
+        @Parcelize
+        data class Bookmark(
+            override val id: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
+            val url: String,
+            val title: String?,
+            val description: String?,
+            val faviconUrl: String?,
+            val imageUrl: String?
+        ) : Media() {
+            override fun getViewType() = HOLDER_BOOKMARK
+        }
+
+        /**
+         * UI-model for block containing image, with state DONE.
+         */
+        @Parcelize
+        data class Picture(
+            override val id: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
+            val size: Long?,
+            val name: String?,
+            val mime: String?,
+            val hash: String?,
+            val url: String
+        ) : Media() {
+            override fun getViewType() = HOLDER_PICTURE
         }
     }
 
@@ -672,65 +702,6 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String
     ) : BlockView() {
         override fun getViewType() = HOLDER_DIVIDER
-    }
-
-    /**
-     * UI-model for a bookmark block
-     * @property id block's id
-     */
-    sealed class Bookmark(
-        override val id: String
-    ) : BlockView(), Indentable, Parcelable, Selectable, Permission {
-
-        /**
-         * UI-model for a bookmark view.
-         * @property title website's title
-         * @property description website's content description
-         * @property url website's url
-         * @property faviconUrl website's favicon url
-         * @property imageUrl content's main image url
-         */
-        @Parcelize
-        data class View(
-            override val id: String,
-            override val indent: Int,
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false,
-            val url: String,
-            val title: String?,
-            val description: String?,
-            val faviconUrl: String?,
-            val imageUrl: String?
-        ) : Bookmark(id = id) {
-            override fun getViewType() = HOLDER_BOOKMARK
-        }
-    }
-
-    /**
-     * UI-models for blocks containing images
-     * @property id block's id
-     */
-    sealed class Picture(
-        override val id: String
-    ) : BlockView(), Indentable, Parcelable, Selectable, Permission {
-
-        /**
-         * UI-model for block containing image, with state DONE.
-         */
-        @Parcelize
-        data class View(
-            override val id: String,
-            override val indent: Int,
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false,
-            val size: Long?,
-            val name: String?,
-            val mime: String?,
-            val hash: String?,
-            val url: String
-        ) : BlockView.Picture(id) {
-            override fun getViewType() = HOLDER_PICTURE
-        }
     }
 
     enum class Mode { READ, EDIT }

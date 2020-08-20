@@ -12,6 +12,10 @@ import com.agileburo.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.agileburo.anytype.core_ui.features.editor.holders.error.FileError
 import com.agileburo.anytype.core_ui.features.editor.holders.error.PictureError
 import com.agileburo.anytype.core_ui.features.editor.holders.error.VideoError
+import com.agileburo.anytype.core_ui.features.editor.holders.media.Bookmark
+import com.agileburo.anytype.core_ui.features.editor.holders.media.File
+import com.agileburo.anytype.core_ui.features.editor.holders.media.Picture
+import com.agileburo.anytype.core_ui.features.editor.holders.media.Video
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
@@ -200,7 +204,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_FILE -> {
-                BlockViewHolder.File(
+                File(
                     view = inflater.inflate(
                         R.layout.item_block_file,
                         parent,
@@ -236,7 +240,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_VIDEO -> {
-                BlockViewHolder.Video(
+                Video(
                     view = inflater.inflate(
                         R.layout.item_block_video,
                         parent,
@@ -281,7 +285,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_BOOKMARK -> {
-                BlockViewHolder.Bookmark(
+                Bookmark(
                     view = inflater.inflate(
                         R.layout.item_block_bookmark,
                         parent,
@@ -308,7 +312,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_PICTURE -> {
-                BlockViewHolder.Picture(
+                Picture(
                     view = inflater.inflate(
                         R.layout.item_block_picture,
                         parent,
@@ -482,7 +486,7 @@ class BlockAdapter(
                             clicked = onClickListener
                         )
                     }
-                    is BlockViewHolder.File -> {
+                    is File -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -506,7 +510,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Picture -> {
+                    is Picture -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -530,7 +534,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Video -> {
+                    is Video -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -560,7 +564,7 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is BlockViewHolder.Bookmark -> {
+                    is Bookmark -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -770,9 +774,9 @@ class BlockAdapter(
                     onTextInputClicked = onTextInputClicked
                 )
             }
-            is BlockViewHolder.File -> {
+            is File -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.File.View,
+                    item = blocks[position] as BlockView.Media.File,
                     clicked = onClickListener
                 )
             }
@@ -794,11 +798,10 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Video -> {
+            is Video -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Video.View,
-                    clicked = onClickListener
-                )
+                    item = blocks[position] as BlockView.Media.Video,
+                    clicked = onClickListener)
             }
             is VideoUpload -> {
                 holder.bind(
@@ -824,9 +827,9 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is BlockViewHolder.Bookmark -> {
+            is Bookmark -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Bookmark.View,
+                    item = blocks[position] as BlockView.Media.Bookmark,
                     clicked = onClickListener
                 )
             }
@@ -844,9 +847,9 @@ class BlockAdapter(
                 )
                 holder.setUrl(item.url)
             }
-            is BlockViewHolder.Picture -> {
+            is Picture -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Picture.View,
+                    item = blocks[position] as BlockView.Media.Picture,
                     clicked = onClickListener
                 )
             }

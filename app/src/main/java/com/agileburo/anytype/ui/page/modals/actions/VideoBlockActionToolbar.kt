@@ -20,7 +20,7 @@ class VideoBlockActionToolbar : BlockActionToolbar() {
         const val SEEK_PREVIEW_POSITION = 1000L
     }
 
-    lateinit var block: BlockView.Video
+    lateinit var block: BlockView.Media.Video
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,8 +30,6 @@ class VideoBlockActionToolbar : BlockActionToolbar() {
     override fun blockLayout() =
         when (block.getViewType()) {
             BlockViewHolder.HOLDER_VIDEO -> R.layout.item_block_video_playback_off
-            BlockViewHolder.HOLDER_VIDEO_PLACEHOLDER -> R.layout.item_block_video_empty_preview
-            BlockViewHolder.HOLDER_VIDEO_ERROR -> R.layout.item_block_video_error_preview
             else -> R.layout.item_block_video_uploading_preview
         }
 
@@ -45,7 +43,7 @@ class VideoBlockActionToolbar : BlockActionToolbar() {
     }
 
     private fun initVideo(view: View) {
-        val item = block as BlockView.Video.View
+        val item = block
         view.findViewById<PlayerView>(R.id.playerView).apply {
             val player = SimpleExoPlayer.Builder(context).build()
             val source = DefaultDataSourceFactory(

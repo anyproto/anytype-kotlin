@@ -564,7 +564,7 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock = BlockView.File.View(
+        val oldBlock = BlockView.Media.File(
             id = id,
             hash = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
@@ -641,7 +641,7 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock = BlockView.Bookmark.View(
+        val oldBlock = BlockView.Media.Bookmark(
             id = id,
             description = MockDataFactory.randomString(),
             faviconUrl = MockDataFactory.randomString(),

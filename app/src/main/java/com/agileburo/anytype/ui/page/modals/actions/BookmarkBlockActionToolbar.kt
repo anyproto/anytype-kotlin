@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 
 class BookmarkBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.Bookmark
+    lateinit var block: BlockView.Media.Bookmark
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +34,7 @@ class BookmarkBlockActionToolbar : BlockActionToolbar() {
         }
 
     private fun initBookmark(view: View) {
-        val item = block as BlockView.Bookmark.View
+        val item = block
         view.findViewById<TextView>(R.id.bookmarkTitle).apply {
             text = item.title
         }

@@ -3,7 +3,7 @@ package com.agileburo.anytype.core_ui.features.page
 sealed class ListenerType {
 
     sealed class Bookmark : ListenerType() {
-        data class View(val item: BlockView.Bookmark.View) : Bookmark()
+        data class View(val item: BlockView.Media.Bookmark) : Bookmark()
         data class Placeholder(val target: String) : Bookmark()
         data class Error(val item: BlockView.Error.Bookmark) : Bookmark()
     }

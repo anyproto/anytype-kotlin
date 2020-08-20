@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 
 class PictureBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.Picture
+    lateinit var block: BlockView.Media.Picture
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +35,7 @@ class PictureBlockActionToolbar : BlockActionToolbar() {
     }
 
     private fun initPicture(view: View) {
-        val item = block as BlockView.Picture.View
+        val item = block
         view.findViewById<ImageView>(R.id.image).apply {
             Glide.with(this).load(item.url).into(this)
         }

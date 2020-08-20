@@ -462,7 +462,7 @@ class DefaultBlockViewRenderer(
         indent: Int
     ): BlockView = content.url?.let { url ->
         if (content.title != null && content.description != null) {
-            BlockView.Bookmark.View(
+            BlockView.Media.Bookmark(
                 id = block.id,
                 url = url,
                 title = content.title,

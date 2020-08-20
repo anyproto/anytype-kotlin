@@ -34,13 +34,23 @@ class Highlight(
         onTextChanged: (String, Editable) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
-        clicked: (ListenerType) -> Unit
+        clicked: (ListenerType) -> Unit,
+        onEndLineEnterClicked: (String, Editable) -> Unit,
+        onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
+        onEmptyBlockBackspaceClicked: (String) -> Unit,
+        onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
+        onTextInputClicked: (String) -> Unit
     ) = super.bind(
         item = item,
         onTextChanged = onTextChanged,
         onFocusChanged = onFocusChanged,
         onSelectionChanged = onSelectionChanged,
-        clicked = clicked
+        clicked = clicked,
+        onEndLineEnterClicked = onEndLineEnterClicked,
+        onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+        onSplitLineEnterClicked = onSplitLineEnterClicked,
+        onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+        onTextInputClicked = onTextInputClicked
     )
 
     override fun select(item: BlockView.Selectable) {

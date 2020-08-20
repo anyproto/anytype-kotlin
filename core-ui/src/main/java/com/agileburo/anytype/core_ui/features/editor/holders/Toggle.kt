@@ -39,13 +39,23 @@ class Toggle(
         onFocusChanged: (String, Boolean) -> Unit,
         onToggleClicked: (String) -> Unit,
         onTogglePlaceholderClicked: (String) -> Unit,
-        clicked: (ListenerType) -> Unit
+        clicked: (ListenerType) -> Unit,
+        onEndLineEnterClicked: (String, Editable) -> Unit,
+        onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
+        onEmptyBlockBackspaceClicked: (String) -> Unit,
+        onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
+        onTextInputClicked: (String) -> Unit
     ) = super.bind(
         item = item,
         onTextChanged = onTextChanged,
         onSelectionChanged = onSelectionChanged,
         onFocusChanged = onFocusChanged,
-        clicked = clicked
+        clicked = clicked,
+        onEndLineEnterClicked = onEndLineEnterClicked,
+        onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+        onSplitLineEnterClicked = onSplitLineEnterClicked,
+        onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+        onTextInputClicked = onTextInputClicked
     ).also {
         toggle.rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
         if (item.mode == BlockView.Mode.READ) {

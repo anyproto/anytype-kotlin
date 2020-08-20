@@ -602,24 +602,63 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
-                    onMentionEvent = onMentionEvent
+                    onMentionEvent = onMentionEvent,
+                    onEndLineEnterClicked = onEndLineEnterClicked,
+                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+                    onSplitLineEnterClicked = onSplitLineEnterClicked,
+                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+                    onTextInputClicked = onTextInputClicked
                 )
             }
             is Title.Document -> {
-                holder.bind(
-                    item = blocks[position] as BlockView.Title.Document,
-                    onTitleTextChanged = onTitleTextChanged,
-                    onFocusChanged = onFocusChanged,
-                    onPageIconClicked = onPageIconClicked
-                )
+                holder.apply {
+                    bind(
+                        item = blocks[position] as BlockView.Title.Document,
+                        onTitleTextChanged = onTitleTextChanged,
+                        onFocusChanged = onFocusChanged,
+                        onPageIconClicked = onPageIconClicked
+                    )
+                    enableEnterKeyDetector(
+                        onEndLineEnterClicked = { editable ->
+                            onEndLineEnterTitleClicked(editable)
+                        },
+                        onSplitLineEnterClicked = { index ->
+                            holder.content.text?.let { editable ->
+                                onSplitLineEnterClicked(
+                                    blocks[holder.adapterPosition].id,
+                                    index,
+                                    editable
+                                )
+                            }
+                        }
+                    )
+                    setOnClickListener { onTitleTextInputClicked() }
+                }
             }
             is Title.Profile -> {
-                holder.bind(
-                    item = blocks[position] as BlockView.Title.Profile,
-                    onTitleTextChanged = onTitleTextChanged,
-                    onFocusChanged = onFocusChanged,
-                    onProfileIconClicked = onProfileIconClicked
-                )
+                holder.apply {
+                    bind(
+                        item = blocks[position] as BlockView.Title.Profile,
+                        onTitleTextChanged = onTitleTextChanged,
+                        onFocusChanged = onFocusChanged,
+                        onProfileIconClicked = onProfileIconClicked
+                    )
+                    enableEnterKeyDetector(
+                        onEndLineEnterClicked = { editable ->
+                            onEndLineEnterTitleClicked(editable)
+                        },
+                        onSplitLineEnterClicked = { index ->
+                            holder.content.text?.let { editable ->
+                                onSplitLineEnterClicked(
+                                    blocks[holder.adapterPosition].id,
+                                    index,
+                                    editable
+                                )
+                            }
+                        }
+                    )
+                    setOnClickListener { onTitleTextInputClicked() }
+                }
             }
             is HeaderOne -> {
                 holder.bind(
@@ -627,7 +666,12 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
-                    clicked = onClickListener
+                    clicked = onClickListener,
+                    onEndLineEnterClicked = onEndLineEnterClicked,
+                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+                    onSplitLineEnterClicked = onSplitLineEnterClicked,
+                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+                    onTextInputClicked = onTextInputClicked
                 )
             }
             is HeaderTwo -> {
@@ -636,7 +680,12 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
-                    clicked = onClickListener
+                    clicked = onClickListener,
+                    onEndLineEnterClicked = onEndLineEnterClicked,
+                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+                    onSplitLineEnterClicked = onSplitLineEnterClicked,
+                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+                    onTextInputClicked = onTextInputClicked
                 )
             }
             is HeaderThree -> {
@@ -645,7 +694,12 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
-                    clicked = onClickListener
+                    clicked = onClickListener,
+                    onEndLineEnterClicked = onEndLineEnterClicked,
+                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+                    onSplitLineEnterClicked = onSplitLineEnterClicked,
+                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+                    onTextInputClicked = onTextInputClicked
                 )
             }
             is Code -> {
@@ -654,7 +708,7 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
-                    clicked = onClickListener
+                    clicked = onClickListener,
                 )
             }
             is Checkbox -> {
@@ -664,7 +718,12 @@ class BlockAdapter(
                     onCheckboxClicked = onCheckboxClicked,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
-                    clicked = onClickListener
+                    clicked = onClickListener,
+                    onEndLineEnterClicked = onEndLineEnterClicked,
+                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+                    onSplitLineEnterClicked = onSplitLineEnterClicked,
+                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+                    onTextInputClicked = onTextInputClicked
                 )
             }
             is Bulleted -> {
@@ -673,7 +732,12 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
-                    clicked = onClickListener
+                    clicked = onClickListener,
+                    onEndLineEnterClicked = onEndLineEnterClicked,
+                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+                    onSplitLineEnterClicked = onSplitLineEnterClicked,
+                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+                    onTextInputClicked = onTextInputClicked
                 )
             }
             is Numbered -> {
@@ -682,7 +746,12 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
-                    clicked = onClickListener
+                    clicked = onClickListener,
+                    onEndLineEnterClicked = onEndLineEnterClicked,
+                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+                    onSplitLineEnterClicked = onSplitLineEnterClicked,
+                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+                    onTextInputClicked = onTextInputClicked
                 )
             }
             is Toggle -> {
@@ -693,7 +762,12 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     onTogglePlaceholderClicked = onTogglePlaceholderClicked,
                     onToggleClicked = onToggleClicked,
-                    clicked = onClickListener
+                    clicked = onClickListener,
+                    onEndLineEnterClicked = onEndLineEnterClicked,
+                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+                    onSplitLineEnterClicked = onSplitLineEnterClicked,
+                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+                    onTextInputClicked = onTextInputClicked
                 )
             }
             is BlockViewHolder.File -> {
@@ -800,7 +874,12 @@ class BlockAdapter(
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
-                    onSelectionChanged = onSelectionChanged
+                    onSelectionChanged = onSelectionChanged,
+                    onEndLineEnterClicked = onEndLineEnterClicked,
+                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+                    onSplitLineEnterClicked = onSplitLineEnterClicked,
+                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+                    onTextInputClicked = onTextInputClicked
                 )
             }
             is Divider -> {
@@ -811,82 +890,15 @@ class BlockAdapter(
             }
         }
 
-        if (holder is TextHolder) {
+        if (holder is Text) {
 
             val block = blocks[position]
-
-            if (block is BlockView.Text) {
-                holder.setBackgroundColor(
-                    color = block.backgroundColor
-                )
-            }
 
             if (block is BlockView.Alignable) {
                 block.alignment?.let {
                     holder.setAlignment(alignment = it)
                 }
             }
-
-            if (holder is Title.Document || holder is Title.Profile) {
-                holder.enableEnterKeyDetector(
-                    onEndLineEnterClicked = { editable ->
-                        onEndLineEnterTitleClicked(editable)
-                    },
-                    onSplitLineEnterClicked = { index ->
-                        holder.content.text?.let { editable ->
-                            onSplitLineEnterClicked(
-                                blocks[holder.adapterPosition].id,
-                                index,
-                                editable
-                            )
-                        }
-                    }
-                )
-            } else {
-                holder.enableEnterKeyDetector(
-                    onEndLineEnterClicked = { editable ->
-                        onEndLineEnterClicked(blocks[holder.adapterPosition].id, editable)
-                    },
-                    onSplitLineEnterClicked = { index ->
-                        holder.content.text?.let { editable ->
-                            onSplitLineEnterClicked(
-                                blocks[holder.adapterPosition].id,
-                                index,
-                                editable
-                            )
-                        }
-                    }
-                )
-            }
-
-            holder.enableBackspaceDetector(
-                onEmptyBlockBackspaceClicked = {
-                    if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                        onEmptyBlockBackspaceClicked(blocks[holder.adapterPosition].id)
-                        Timber.d("Proceed onEmptyBlockBackspaceClicked for adapter position:${holder.adapterPosition}")
-                    } else {
-                        Timber.e("Can't proceed with onEmptyBlockBackspaceClicked, because holder.adapter position is NO_POSITION")
-                    }
-                },
-                onNonEmptyBlockBackspaceClicked = {
-                    if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                        holder.content.text?.let { editable ->
-                            onNonEmptyBlockBackspaceClicked(
-                                blocks[holder.adapterPosition].id,
-                                editable
-                            )
-                        }
-                        Timber.d("Proceed onNonEmptyBlockBackspaceClicked for adapter position:${holder.adapterPosition}")
-                    } else {
-                        Timber.e("Can't proceed with onNonEmptyBlockBackspaceClicked, because holder.adapter position is NO_POSITION")
-                    }
-                }
-            )
-
-            if (holder is Title.Document || holder is Title.Profile)
-                holder.setOnClickListener { onTitleTextInputClicked() }
-            else
-                holder.setOnClickListener { onTextInputClicked(blocks[holder.adapterPosition].id) }
 
             holder.content.clipboardInterceptor = clipboardInterceptor
         }

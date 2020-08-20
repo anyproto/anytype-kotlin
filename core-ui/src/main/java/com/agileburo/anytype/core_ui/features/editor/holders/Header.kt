@@ -22,13 +22,23 @@ abstract class Header(
         onTextChanged: (String, Editable) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
-        clicked: (ListenerType) -> Unit
+        clicked: (ListenerType) -> Unit,
+        onEndLineEnterClicked: (String, Editable) -> Unit,
+        onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
+        onEmptyBlockBackspaceClicked: (String) -> Unit,
+        onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
+        onTextInputClicked: (String) -> Unit
     ) = super.bind(
         item = block,
         onSelectionChanged = onSelectionChanged,
         onTextChanged = onTextChanged,
         onFocusChanged = onFocusChanged,
-        clicked = clicked
+        clicked = clicked,
+        onEndLineEnterClicked = onEndLineEnterClicked,
+        onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+        onSplitLineEnterClicked = onSplitLineEnterClicked,
+        onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+        onTextInputClicked = onTextInputClicked
     )
 
     override fun indentize(item: BlockView.Indentable) {

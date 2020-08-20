@@ -1,10 +1,10 @@
 package com.agileburo.anytype.core_ui.features.editor.holders
 
+import android.text.Editable
 import android.view.View
 import androidx.core.view.updatePadding
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.features.page.*
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
@@ -29,7 +29,12 @@ class Paragraph(
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit
+        onMentionEvent: (MentionEvent) -> Unit,
+        onEndLineEnterClicked: (String, Editable) -> Unit,
+        onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
+        onEmptyBlockBackspaceClicked: (String) -> Unit,
+        onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
+        onTextInputClicked: (String) -> Unit
     ) = super.bind(
         item = item,
         onTextChanged = { _, editable ->
@@ -41,7 +46,12 @@ class Paragraph(
         },
         onSelectionChanged = onSelectionChanged,
         onFocusChanged = onFocusChanged,
-        clicked = clicked
+        clicked = clicked,
+        onEndLineEnterClicked = onEndLineEnterClicked,
+        onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+        onSplitLineEnterClicked = onSplitLineEnterClicked,
+        onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+        onTextInputClicked = onTextInputClicked
     ).also {
         setupMentionWatcher(onMentionEvent)
     }
@@ -51,16 +61,6 @@ class Paragraph(
             first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default),
             second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
         )
-    }
-
-    private fun setTextColor(
-        item: BlockView.Paragraph
-    ) {
-        if (item.color != null) {
-            setTextColor(item.color)
-        } else {
-            setTextColor(content.context.color(R.color.black))
-        }
     }
 
     override fun indentize(item: BlockView.Indentable) {

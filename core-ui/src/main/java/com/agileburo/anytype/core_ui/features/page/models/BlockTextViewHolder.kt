@@ -35,7 +35,6 @@ abstract class BlockTextViewHolder(
     private val backspaceWatcher: BlockTextBackspaceWatcher,
     private val enterWatcher: BlockTextEnterWatcher,
     private val actionMenu: BlockTextMenu
-
 ) : RecyclerView.ViewHolder(view) {
 
     private val root = itemView

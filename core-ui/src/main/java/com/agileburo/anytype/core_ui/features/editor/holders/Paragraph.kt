@@ -1,0 +1,112 @@
+package com.agileburo.anytype.core_ui.features.editor.holders
+
+import android.view.View
+import androidx.core.view.updatePadding
+import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.common.isLinksPresent
+import com.agileburo.anytype.core_ui.extensions.color
+import com.agileburo.anytype.core_ui.features.page.*
+import com.agileburo.anytype.core_ui.menu.ContextMenuType
+import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
+import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+import com.agileburo.anytype.core_utils.ext.dimen
+import kotlinx.android.synthetic.main.item_block_text.view.*
+
+class Paragraph(
+    view: View,
+    onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
+) : BlockViewHolder(view), TextHolder, BlockViewHolder.IndentableHolder, SupportNesting {
+
+    override val root: View = itemView
+    override val content: TextInputWidget = itemView.textContent
+
+    init {
+        setup(onMarkupActionClicked, ContextMenuType.TEXT)
+    }
+
+    fun bind(
+        item: BlockView.Paragraph,
+        onTextChanged: (BlockView.Paragraph) -> Unit,
+        onSelectionChanged: (String, IntRange) -> Unit,
+        onFocusChanged: (String, Boolean) -> Unit,
+        clicked: (ListenerType) -> Unit,
+        onMentionEvent: (MentionEvent) -> Unit
+    ) {
+
+        indentize(item)
+
+        if (item.mode == BlockView.Mode.READ) {
+            enableReadOnlyMode()
+            setBlockText(text = item.text, markup = item, clicked = clicked)
+            setTextColor(item)
+            select(item)
+        } else {
+            enableEditMode()
+
+            select(item)
+
+            content.setOnLongClickListener(
+                EditorLongClickListener(
+                    t = item.id,
+                    click = { onBlockLongClick(root, it, clicked) }
+                )
+            )
+
+            content.clearTextWatchers()
+
+            if (item.marks.isLinksPresent()) {
+                content.setLinksClickable()
+            }
+
+            setBlockText(text = item.text, markup = item, clicked = clicked)
+            setTextColor(item)
+
+            setFocus(item)
+            if (item.isFocused) setCursor(item)
+
+            setupTextWatcher(
+                onTextChanged = { _, editable ->
+                    item.apply {
+                        text = editable.toString()
+                        marks = editable.marks()
+                    }
+                    onTextChanged(item)
+                },
+                onMentionEvent = onMentionEvent,
+                item = item
+            )
+
+            content.setOnFocusChangeListener { _, focused ->
+                item.isFocused = focused
+                onFocusChanged(item.id, focused)
+            }
+            content.selectionWatcher = {
+                onSelectionChanged(item.id, it)
+            }
+        }
+    }
+
+    override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
+        Pair(
+            first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default),
+            second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
+        )
+    }
+
+    private fun setTextColor(
+        item: BlockView.Paragraph
+    ) {
+        if (item.color != null) {
+            setTextColor(item.color)
+        } else {
+            setTextColor(content.context.color(R.color.black))
+        }
+    }
+
+    override fun indentize(item: BlockView.Indentable) {
+        content.updatePadding(
+            left = dimen(R.dimen.default_document_content_padding_start) + item.indent * dimen(R.dimen.indent)
+        )
+    }
+}

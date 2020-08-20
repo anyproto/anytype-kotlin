@@ -91,7 +91,7 @@ class BlockAdapterTest {
         val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
 
         assertEquals(
-            expected = BlockViewHolder.Paragraph::class,
+            expected = Paragraph::class,
             actual = holder::class
         )
     }
@@ -120,7 +120,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         val text = holder.content.text.toString()
 
@@ -155,7 +155,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         val color = holder.content.currentTextColor
 
@@ -191,7 +191,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         // Testing
 
@@ -244,7 +244,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         // Testing
 
@@ -298,7 +298,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         // Testing
 
@@ -352,7 +352,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         // Testing
 
@@ -482,7 +482,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         // Testing
 
@@ -530,7 +530,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         // Testing
 
@@ -595,7 +595,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         assertEquals(
             expected = emptyList<Pair<String, String>>(),
@@ -638,7 +638,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         holder.processChangePayload(
             payloads = listOf(
@@ -883,7 +883,7 @@ class BlockAdapterTest {
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         val actual = holder.content.paddingLeft
 
@@ -1093,7 +1093,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to file error view`() {
 
-        val view = BlockView.File.Error(
+        val view = BlockView.Error.File(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
@@ -1248,7 +1248,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to video error view`() {
 
-        val view = BlockView.Video.Error(
+        val view = BlockView.Error.Video(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
@@ -1443,7 +1443,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to picture error view`() {
 
-        val view = BlockView.Picture.Error(
+        val view = BlockView.Error.Picture(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
@@ -1717,7 +1717,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         assertEquals(
             expected = InputType.TYPE_NULL,
@@ -1767,8 +1767,8 @@ class BlockAdapterTest {
         adapter.onBindViewHolder(firstHolder, 0)
         adapter.onBindViewHolder(secondHolder, 1)
 
-        check(firstHolder is BlockViewHolder.Paragraph)
-        check(secondHolder is BlockViewHolder.Paragraph)
+        check(firstHolder is Paragraph)
+        check(secondHolder is Paragraph)
 
         assertTrue { firstHolder.content.isSelected }
         assertFalse { secondHolder.content.isSelected }
@@ -1799,7 +1799,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         assertEquals(
             expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
@@ -1841,7 +1841,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         // Testing
 

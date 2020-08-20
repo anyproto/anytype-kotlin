@@ -17,7 +17,7 @@ class BlockViewTest {
 
     @Test
     fun `should return video block with view type Error`() {
-        val block = BlockView.Video.Error(
+        val block = BlockView.Error.Video(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )

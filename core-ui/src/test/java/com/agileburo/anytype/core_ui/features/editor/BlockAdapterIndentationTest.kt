@@ -49,7 +49,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is BlockViewHolder.Paragraph)
+        check(holder is Paragraph)
 
         // Testing
 

@@ -112,7 +112,7 @@ class MapperExtensionKtTest {
 
         )
 
-        val expected = BlockView.File.Error(id = id, indent = indent)
+        val expected = BlockView.Error.File(id = id, indent = indent)
         val actual = block.toFileView(id, urlBuilder, indent, mode)
 
         assertEquals(expected, actual)
@@ -251,7 +251,7 @@ class MapperExtensionKtTest {
 
         )
 
-        val expected = BlockView.Picture.Error(
+        val expected = BlockView.Error.Picture(
             id = id,
             indent = indent
         )
@@ -485,7 +485,7 @@ class MapperExtensionKtTest {
             type = type
         )
 
-        val expected = BlockView.Video.Error(
+        val expected = BlockView.Error.Video(
             id = id,
             indent = indent
         )

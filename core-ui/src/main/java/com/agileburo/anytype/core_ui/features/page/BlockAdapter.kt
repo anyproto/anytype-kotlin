@@ -93,7 +93,7 @@ class BlockAdapter(
 
         return when (viewType) {
             HOLDER_PARAGRAPH -> {
-                BlockViewHolder.Paragraph(
+                Paragraph(
                     view = inflater.inflate(
                         R.layout.item_block_text,
                         parent,
@@ -382,7 +382,7 @@ class BlockAdapter(
                     holder.processIndentChange(blocks[position], payloads.typeOf())
                 }
                 when (holder) {
-                    is BlockViewHolder.Paragraph -> {
+                    is Paragraph -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
@@ -595,7 +595,7 @@ class BlockAdapter(
 
     override fun onBindViewHolder(holder: BlockViewHolder, position: Int) {
         when (holder) {
-            is BlockViewHolder.Paragraph -> {
+            is Paragraph -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Paragraph,
                     onTextChanged = onParagraphTextChanged,

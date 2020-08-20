@@ -5,18 +5,12 @@ import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.BuildConfig
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.common.isLinksPresent
-import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.SELECTION_CHANGED
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
-import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
-import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.const.MimeTypes
 import com.agileburo.anytype.core_utils.ext.*
 import com.bumptech.glide.Glide
@@ -29,10 +23,8 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.item_block_bookmark.view.*
-import kotlinx.android.synthetic.main.item_block_bookmark_error.view.*
 import kotlinx.android.synthetic.main.item_block_file.view.*
 import kotlinx.android.synthetic.main.item_block_picture.view.*
-import kotlinx.android.synthetic.main.item_block_text.view.*
 import kotlinx.android.synthetic.main.item_block_video.view.*
 import timber.log.Timber
 import android.text.format.Formatter as FileSizeFormatter
@@ -54,104 +46,6 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 if (payload.isIndentChanged && item is BlockView.Indentable)
                     indentize(item)
             }
-        }
-    }
-
-    class Paragraph(
-        view: View,
-        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
-    ) : BlockViewHolder(view), TextHolder, IndentableHolder, SupportNesting {
-
-        override val root: View = itemView
-        override val content: TextInputWidget = itemView.textContent
-
-        init {
-            setup(onMarkupActionClicked, ContextMenuType.TEXT)
-        }
-
-        fun bind(
-            item: BlockView.Paragraph,
-            onTextChanged: (BlockView.Paragraph) -> Unit,
-            onSelectionChanged: (String, IntRange) -> Unit,
-            onFocusChanged: (String, Boolean) -> Unit,
-            clicked: (ListenerType) -> Unit,
-            onMentionEvent: (MentionEvent) -> Unit
-        ) {
-
-            indentize(item)
-
-            if (item.mode == BlockView.Mode.READ) {
-                enableReadOnlyMode()
-                setBlockText(text = item.text, markup = item, clicked = clicked)
-                setTextColor(item)
-                select(item)
-            } else {
-                enableEditMode()
-
-                select(item)
-
-                content.setOnLongClickListener(
-                    EditorLongClickListener(
-                        t = item.id,
-                        click = { onBlockLongClick(root, it, clicked) }
-                    )
-                )
-
-                content.clearTextWatchers()
-
-                if (item.marks.isLinksPresent()) {
-                    content.setLinksClickable()
-                }
-
-                setBlockText(text = item.text, markup = item, clicked = clicked)
-                setTextColor(item)
-
-                setFocus(item)
-                if (item.isFocused) setCursor(item)
-
-                setupTextWatcher(
-                    onTextChanged = { _, editable ->
-                        item.apply {
-                            text = editable.toString()
-                            marks = editable.marks()
-                        }
-                        onTextChanged(item)
-                    },
-                    onMentionEvent = onMentionEvent,
-                    item = item
-                )
-
-                content.setOnFocusChangeListener { _, focused ->
-                    item.isFocused = focused
-                    onFocusChanged(item.id, focused)
-                }
-                content.selectionWatcher = {
-                    onSelectionChanged(item.id, it)
-                }
-            }
-        }
-
-        override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
-            Pair(
-                first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default),
-                second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
-            )
-        }
-
-        private fun setTextColor(
-            item: BlockView.Paragraph
-        ) {
-            if (item.color != null) {
-                setTextColor(item.color)
-            } else {
-                setTextColor(content.context.color(R.color.black))
-            }
-        }
-
-        override fun indentize(item: BlockView.Indentable) {
-            content.updatePadding(
-                left = dimen(R.dimen.default_document_content_padding_start) + item.indent * dimen(R.dimen.indent)
-            )
         }
     }
 

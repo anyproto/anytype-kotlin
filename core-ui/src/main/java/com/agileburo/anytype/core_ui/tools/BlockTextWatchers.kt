@@ -24,7 +24,7 @@ class BlockTextWatcher : TextWatcher {
     }
 
     override fun afterTextChanged(s: Editable) {
-        Timber.d("OnTextChanged: $s")
+        Timber.d("OnTextChanged: $s, locked:$locked, listener:$listener")
         if (!locked)
             listener?.invoke(s)
         else

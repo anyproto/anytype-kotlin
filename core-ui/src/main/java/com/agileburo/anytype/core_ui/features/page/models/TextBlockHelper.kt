@@ -5,10 +5,10 @@ import android.text.Editable
 import android.text.Spannable
 import android.text.style.ClickableSpan
 import android.view.View
-import androidx.core.text.toSpannable
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.Span
+import com.agileburo.anytype.core_ui.common.setMarkup
 import com.agileburo.anytype.core_ui.widgets.text.MentionSpan
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.VALUE_ROUNDED
@@ -16,7 +16,7 @@ import com.agileburo.anytype.core_utils.ext.removeSpans
 import timber.log.Timber
 
 fun Editable.setMarkup(
-    markup: Markup?,
+    markup: Markup,
     context: Context? = null,
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
@@ -24,7 +24,7 @@ fun Editable.setMarkup(
 ) {
     apply {
         removeSpans<Span>()
-        toSpannable().setMarkup(markup, context, click, mentionImageSize, mentionImagePadding)
+        setMarkup(markup, context, click, mentionImageSize, mentionImagePadding)
     }
 }
 

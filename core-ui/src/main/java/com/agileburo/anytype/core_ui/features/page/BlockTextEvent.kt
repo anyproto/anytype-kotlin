@@ -2,12 +2,13 @@ package com.agileburo.anytype.core_ui.features.page
 
 import android.text.Editable
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.features.page.models.Item
 
 sealed class BlockTextEvent {
 
     sealed class TextEvent : BlockTextEvent() {
-        data class Default(val target: String, val text: Editable) : BlockTextEvent()
-        data class Pattern(val target: String, val text: Editable) : BlockTextEvent()
+        data class Default(val id: String, val item: Item) : BlockTextEvent()
+        data class Pattern(val id: String, val item: Item) : BlockTextEvent()
     }
 
     data class FocusEvent(val target: String, val focused: Boolean) : BlockTextEvent()
@@ -36,4 +37,8 @@ sealed class BlockTextEvent {
     }
 
     data class MarkupEvent(val type: Markup.Type, val range: IntRange) : BlockTextEvent()
+
+    sealed class CheckboxEvent: BlockTextEvent() {
+        data class Click(val target: String) : CheckboxEvent()
+    }
 }

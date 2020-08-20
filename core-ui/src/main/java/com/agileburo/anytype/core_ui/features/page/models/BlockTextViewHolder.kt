@@ -2,13 +2,11 @@ package com.agileburo.anytype.core_ui.features.page.models
 
 import android.text.Editable
 import android.text.SpannableString
-import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Focusable
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.ThemeColor
@@ -19,6 +17,7 @@ import com.agileburo.anytype.core_ui.extensions.range
 import com.agileburo.anytype.core_ui.features.page.*
 import com.agileburo.anytype.core_ui.features.page.BlockTextEvent.KeyboardEvent
 import com.agileburo.anytype.core_ui.features.page.BlockTextEvent.MarkupEvent
+import com.agileburo.anytype.core_ui.features.page.holders.Holder
 import com.agileburo.anytype.core_ui.tools.*
 import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
@@ -28,6 +27,12 @@ import com.agileburo.anytype.core_utils.ext.imm
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
 
+
+interface Item : Focusable, BlockView.Text, BlockView.Permission, BlockView.Cursor, Markup {
+    val id: String
+    override val body: String get() = text
+}
+
 abstract class BlockTextViewHolder(
     view: View,
     private val textWatcher: BlockTextWatcher,
@@ -35,11 +40,13 @@ abstract class BlockTextViewHolder(
     private val backspaceWatcher: BlockTextBackspaceWatcher,
     private val enterWatcher: BlockTextEnterWatcher,
     private val actionMenu: BlockTextMenu
-) : RecyclerView.ViewHolder(view) {
+) : RecyclerView.ViewHolder(view), Holder.Selectable, Holder.Indentable {
 
-    private val root = itemView
+    val root = itemView
+
     abstract val content: TextInputWidget
-    abstract val spannableFactory: DefaultSpannableFactory
+
+    open val spannableFactory: DefaultSpannableFactory = DefaultSpannableFactory()
 
     init {
         with(content) {
@@ -53,99 +60,73 @@ abstract class BlockTextViewHolder(
     }
 
     fun bind(
-        id: String,
-        mode: BlockView.Mode,
-        indent: Int,
-        text: String? = null,
-        textColor: String? = null,
-        backgroundColor: String? = null,
-        alignment: Alignment? = null,
-        selected: Boolean,
-        focused: Boolean,
-        markup: Markup,
-        cursor: BlockView.Cursor,
         click: (ListenerType) -> Unit,
-        event: (BlockTextEvent) -> Unit
-    ) = when (mode) {
+        event: (BlockTextEvent) -> Unit,
+        item: Item
+    ) = when (item.mode) {
         BlockView.Mode.READ ->
             bindReadMode(
-                id = id,
-                indent = indent,
-                text = text,
-                markup = markup,
-                textColor = textColor,
-                alignment = alignment,
-                selected = selected,
-                backgroundColor = backgroundColor,
+                id = item.id,
+                text = item.text,
+                markup = item,
+                textColor = item.color,
+                backgroundColor = item.backgroundColor,
                 clicked = click,
                 event = event
             )
         BlockView.Mode.EDIT ->
             bindEditMode(
-                id = id,
-                indent = indent,
-                text = text,
-                markup = markup,
-                textColor = textColor,
-                alignment = alignment,
-                selected = selected,
-                backgroundColor = backgroundColor,
+                id = item.id,
+                text = item.text,
+                markup = item,
+                textColor = item.color,
+                backgroundColor = item.backgroundColor,
                 clicked = click,
                 event = event,
-                focused = focused,
-                cursor = cursor
+                focused = item.isFocused,
+                cursor = item,
+                item = item
             )
     }
 
     private fun bindReadMode(
         id: String,
-        indent: Int,
         text: String? = null,
         textColor: String? = null,
         backgroundColor: String? = null,
-        alignment: Alignment? = null,
-        selected: Boolean,
         markup: Markup,
         clicked: (ListenerType) -> Unit,
         event: (BlockTextEvent) -> Unit
     ) {
         removeListeners()
         enableReadMode()
-        indentize(indent)
         setText(text, markup, clicked)
         setTextColor(textColor)
         setBackgroundColor(backgroundColor)
-        setAlignment(alignment)
-        setSelection(selected)
         setClicks(id, clicked)
         setSelectionListener(id, event)
     }
 
     private fun bindEditMode(
         id: String,
-        indent: Int,
         text: String? = null,
         markup: Markup,
         textColor: String? = null,
         backgroundColor: String? = null,
-        alignment: Alignment? = null,
-        selected: Boolean,
         focused: Boolean,
         cursor: BlockView.Cursor,
         clicked: (ListenerType) -> Unit,
-        event: (BlockTextEvent) -> Unit
+        event: (BlockTextEvent) -> Unit,
+        item: Item
     ) {
         enableEditMode()
-        indentize(indent)
         setText(text, markup, clicked)
         setTextColor(textColor)
         setBackgroundColor(backgroundColor)
-        setAlignment(alignment)
-        setSelection(selected)
         setFocus(focused)
         setCursor(cursor)
         setClicks(id, clicked)
-        setListeners(id, event)
+        setListeners(id, event, item)
     }
 
     // -------------------- MODE ------------------------------
@@ -159,7 +140,7 @@ abstract class BlockTextViewHolder(
     }
 
     // ------------ INDENT ----------------
-    abstract fun indentize(indent: Int)
+    abstract override fun indentize(indent: Int)
 
     // ------------ SET TEXT ----------------
     private fun setText(text: String?, markup: Markup?, clicked: (ListenerType) -> Unit) {
@@ -250,9 +231,14 @@ abstract class BlockTextViewHolder(
     }
 
     // ------------ TEXT COLOR, BACKGROUND COLOR ----------------
-    private fun setTextColor(textColor: String?) {
+
+    open fun setTextColor(textColor: String?) {
         if (textColor != null)
-            setTextColor(textColor)
+            content.setTextColor(
+                ThemeColor.values().first { value ->
+                    value.title == textColor
+                }.text
+            )
         else
             content.setTextColor(content.context.color(R.color.black))
     }
@@ -267,11 +253,6 @@ abstract class BlockTextViewHolder(
         } else {
             root.background = null
         }
-    }
-
-    // ------------ SELECTION ----------------
-    private fun setSelection(selected: Boolean) {
-        content.isSelected = selected
     }
 
     // ------------ FOCUS ----------------
@@ -300,17 +281,6 @@ abstract class BlockTextViewHolder(
             val length = content.text?.length ?: 0
             if (it in 0..length) {
                 content.setSelection(it)
-            }
-        }
-    }
-
-    // ------------ ALIGNMENT ----------------
-    private fun setAlignment(alignment: Alignment? = null) {
-        if (alignment != null) {
-            content.gravity = when (alignment) {
-                Alignment.START -> Gravity.START
-                Alignment.CENTER -> Gravity.CENTER
-                Alignment.END -> Gravity.END
             }
         }
     }
@@ -344,9 +314,10 @@ abstract class BlockTextViewHolder(
     // ------------ LISTENERS ----------------
     private fun setListeners(
         id: String,
-        event: (BlockTextEvent) -> Unit
+        event: (BlockTextEvent) -> Unit,
+        item: Item
     ) {
-        setTextListener(id, event)
+        setTextListener(id, event, item)
         setMentionListener(event)
         setBackspaceListener(id, event)
         setEnterListener(id, event)
@@ -370,16 +341,19 @@ abstract class BlockTextViewHolder(
     // ------------ TEXT LISTENER ----------------
     private fun setTextListener(
         id: String,
-        event: (BlockTextEvent) -> Unit
+        event: (BlockTextEvent) -> Unit,
+        item: Item
     ) {
-        textWatcher.setListener { editable -> onTextEvent(event, id, editable) }
+        textWatcher.setListener { editable ->
+            onTextEvent(event, id, item, editable)
+        }
     }
 
     private fun removeTextListener() {
         textWatcher.removeListener()
     }
 
-    abstract fun onTextEvent(event: (BlockTextEvent) -> Unit, id: String, editable: Editable)
+    abstract fun onTextEvent(event: (BlockTextEvent) -> Unit, id: String, item: Item, editable: Editable)
 
     // ------------ MENTION LISTENER ----------------
     private fun setMentionListener(event: (BlockTextEvent) -> Unit) {
@@ -532,7 +506,7 @@ abstract class BlockTextViewHolder(
     // ------------ PAYLOADS ----------------
     private fun payloadText(
         payload: BlockViewDiffUtil.Payload,
-        item: BlockView.Text,
+        item: Item,
         clicked: (ListenerType) -> Unit
     ) {
         if (payload.isTextChanged) {
@@ -553,10 +527,6 @@ abstract class BlockTextViewHolder(
         if (payload.isBackgroundColorChanged) {
             setBackgroundColor(item.backgroundColor)
         }
-        if (payload.isAlignmentChanged) {
-            val alignment = item as? Alignment
-            setAlignment(alignment)
-        }
         if (payload.isCursorChanged) {
             (item as? BlockView.Cursor)?.let {
                 setCursor(it)
@@ -576,34 +546,22 @@ abstract class BlockTextViewHolder(
         }
     }
 
-    private fun payloadSelectable(
-        payload: BlockViewDiffUtil.Payload,
-        item: BlockView.Selectable
-    ) {
-        if (payload.isSelectionChanged) {
-            setSelection(item.isSelected)
-        }
-    }
-
     private fun payloadFocusable(
         payload: BlockViewDiffUtil.Payload,
         item: Focusable
     ) {
         if (payload.isFocusChanged) {
-            setSelection(item.isFocused)
+            setFocus(item.isFocused)
         }
     }
 
-    fun payload(
+    open fun payload(
         payloads: List<BlockViewDiffUtil.Payload>,
-        item: BlockView,
+        item: Item,
         clicked: (ListenerType) -> Unit
     ) = payloads.forEach { payload ->
-        when (item) {
-            is BlockView.Text -> payloadText(payload, item, clicked)
-            is BlockView.Permission -> payloadPermission(payload, item)
-            is BlockView.Selectable -> payloadSelectable(payload, item)
-            is Focusable -> payloadFocusable(payload, item)
-        }
+        payloadText(payload, item, clicked)
+        payloadPermission(payload, item)
+        payloadFocusable(payload, item)
     }
 }

@@ -40,14 +40,13 @@ class Checkbox(
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit
-    ) {
-        super.bind(
-            item = item,
-            onTextChanged = onTextChanged,
-            onFocusChanged = onFocusChanged,
-            onSelectionChanged = onSelectionChanged,
-            clicked = clicked
-        )
+    ) = super.bind(
+        item = item,
+        onTextChanged = onTextChanged,
+        onFocusChanged = onFocusChanged,
+        onSelectionChanged = onSelectionChanged,
+        clicked = clicked
+    ).also {
         checkbox.isActivated = item.isChecked
         updateTextColor(
             context = itemView.context,

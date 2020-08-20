@@ -200,14 +200,22 @@ interface TextHolder {
                 onTextChanged(item.id, text)
             }
         )
+        setupMentionWatcher(onMentionEvent)
+    }
+
+    fun setupMentionWatcher(
+        onMentionEvent: ((MentionEvent) -> Unit)?
+    ) {
         content.addTextChangedListener(
-            MentionTextWatcher{state ->
+            MentionTextWatcher { state ->
                 when (state) {
                     is MentionTextWatcher.MentionTextWatcherState.Start -> {
-                        onMentionEvent?.invoke(MentionEvent.MentionSuggestStart(
-                            cursorCoordinate = content.cursorYBottomCoordinate(),
-                            mentionStart = state.start
-                        ))
+                        onMentionEvent?.invoke(
+                            MentionEvent.MentionSuggestStart(
+                                cursorCoordinate = content.cursorYBottomCoordinate(),
+                                mentionStart = state.start
+                            )
+                        )
                     }
                     MentionTextWatcher.MentionTextWatcherState.Stop -> {
                         onMentionEvent?.invoke(MentionEvent.MentionSuggestStop)

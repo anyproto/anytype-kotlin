@@ -110,6 +110,10 @@ sealed class BlockView : ViewType, Parcelable {
         val scrollTo: Int?
     }
 
+    interface TXT : Markup, Focusable, Text, Cursor, Indentable, Permission, Selectable {
+        val id: String
+    }
+
     /**
      * UI-model for a basic paragraph block.
      * @property id block's id
@@ -131,7 +135,7 @@ sealed class BlockView : ViewType, Parcelable {
         override val isSelected: Boolean = false,
         override val alignment: Alignment? = null,
         override val cursor: Int? = null
-    ) : BlockView(), Markup, Focusable, Text, Cursor, Indentable, Permission, Selectable, Alignable {
+    ) : BlockView(), TXT, Alignable {
         override fun getViewType() = HOLDER_PARAGRAPH
         override val body: String get() = text
     }
@@ -308,10 +312,6 @@ sealed class BlockView : ViewType, Parcelable {
         override val isSelected: Boolean = false
     ) : BlockView(), Permission, Selectable, Focusable {
         override fun getViewType() = HOLDER_CODE_SNIPPET
-    }
-
-    interface TXT : Markup, Focusable, Text, Cursor, Indentable, Permission, Selectable {
-        val id: String
     }
 
     /**

@@ -40,35 +40,24 @@ class Toggle(
         onToggleClicked: (String) -> Unit,
         onTogglePlaceholderClicked: (String) -> Unit,
         clicked: (ListenerType) -> Unit
-    ) {
-
-        super.bind(
-            item = item,
-            onTextChanged = onTextChanged,
-            onSelectionChanged = onSelectionChanged,
-            onFocusChanged = onFocusChanged,
-            clicked = clicked
-        )
-
-        indentize(item)
-
+    ) = super.bind(
+        item = item,
+        onTextChanged = onTextChanged,
+        onSelectionChanged = onSelectionChanged,
+        onFocusChanged = onFocusChanged,
+        clicked = clicked
+    ).also {
+        toggle.rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
         if (item.mode == BlockView.Mode.READ) {
             placeholder.isVisible = false
-            toggle.apply {
-                rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
-            }
         } else {
             placeholder.apply {
                 isVisible = item.isEmpty && item.toggled
                 setOnClickListener { onTogglePlaceholderClicked(item.id) }
             }
         }
-
-        toggle.apply {
-            rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
-            setOnClickListener {
-                if (mode == BlockView.Mode.EDIT) onToggleClicked(item.id)
-            }
+        toggle.setOnClickListener {
+            if (mode == BlockView.Mode.EDIT) onToggleClicked(item.id)
         }
     }
 

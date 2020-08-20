@@ -1,30 +1,30 @@
-package com.agileburo.anytype.core_ui.features.editor.holders
+package com.agileburo.anytype.core_ui.features.editor.holders.text
 
 import android.text.Editable
+import android.view.Gravity
 import android.view.View
+import android.widget.LinearLayout
 import androidx.core.view.updateLayoutParams
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.common.ThemeColor
-import com.agileburo.anytype.core_ui.extensions.color
-import com.agileburo.anytype.core_ui.extensions.tint
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_ui.features.page.SupportNesting
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+import com.agileburo.anytype.core_utils.ext.addDot
 import com.agileburo.anytype.core_utils.ext.dimen
-import kotlinx.android.synthetic.main.item_block_bulleted.view.*
+import kotlinx.android.synthetic.main.item_block_numbered.view.*
 
-class Bulleted(
+class Numbered(
     view: View,
     onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
 ) : Text(view), SupportNesting {
 
-    val indent: View = itemView.bulletIndent
-    private val bullet = itemView.bullet
-    private val container = itemView.bulletBlockContainer
-    override val content: TextInputWidget = itemView.bulletedListContent
+    private val container = itemView.numberedBlockContentContainer
+    val number = itemView.number
+    override val content: TextInputWidget = itemView.numberedListContent
     override val root: View = itemView
 
     init {
@@ -32,7 +32,7 @@ class Bulleted(
     }
 
     fun bind(
-        item: BlockView.Bulleted,
+        item: BlockView.Numbered,
         onTextChanged: (String, Editable) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
@@ -45,15 +45,25 @@ class Bulleted(
     ) = super.bind(
         item = item,
         onTextChanged = onTextChanged,
-        onFocusChanged = onFocusChanged,
         onSelectionChanged = onSelectionChanged,
+        onFocusChanged = onFocusChanged,
         clicked = clicked,
         onEndLineEnterClicked = onEndLineEnterClicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
         onTextInputClicked = onTextInputClicked
-    )
+    ).also {
+        setNumber(item)
+    }
+
+    private fun setNumber(item: BlockView.Numbered) {
+        number.gravity = when (item.number) {
+            in 1..19 -> Gravity.CENTER_HORIZONTAL
+            else -> Gravity.START
+        }
+        number.text = item.number.addDot()
+    }
 
     override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
         Pair(
@@ -62,22 +72,29 @@ class Bulleted(
         )
     }
 
-    override fun setTextColor(color: String) {
-        super.setTextColor(color)
-        bullet.setColorFilter(
-            ThemeColor.values().first { value ->
-                value.title == color
-            }.text
-        )
-    }
-
-    override fun setTextColor(color: Int) {
-        super.setTextColor(color)
-        bullet.tint(content.context.color(R.color.black))
+    override fun processChangePayload(
+        payloads: List<BlockViewDiffUtil.Payload>,
+        item: BlockView,
+        onTextChanged: (String, Editable) -> Unit,
+        onSelectionChanged: (String, IntRange) -> Unit,
+        clicked: (ListenerType) -> Unit
+    ) {
+        super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked)
+        payloads.forEach { payload ->
+            if (payload.changes.contains(BlockViewDiffUtil.NUMBER_CHANGED))
+                number.text = "${(item as BlockView.Numbered).number}"
+        }
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        indent.updateLayoutParams { width = item.indent * dimen(R.dimen.indent) }
+        number.updateLayoutParams<LinearLayout.LayoutParams> {
+            setMargins(
+                item.indent * dimen(R.dimen.indent),
+                0,
+                0,
+                0
+            )
+        }
     }
 
     override fun select(item: BlockView.Selectable) {

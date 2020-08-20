@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.MockDataFactory
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.features.editor.holders.*
+import com.agileburo.anytype.core_ui.features.editor.holders.text.*
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder

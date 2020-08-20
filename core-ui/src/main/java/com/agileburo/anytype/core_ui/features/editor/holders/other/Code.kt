@@ -1,4 +1,4 @@
-package com.agileburo.anytype.core_ui.features.editor.holders
+package com.agileburo.anytype.core_ui.features.editor.holders.other
 
 import android.text.Editable
 import android.view.View

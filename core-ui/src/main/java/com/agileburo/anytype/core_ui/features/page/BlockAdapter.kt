@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.features.editor.holders.*
 import com.agileburo.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.agileburo.anytype.core_ui.features.editor.holders.error.FileError
 import com.agileburo.anytype.core_ui.features.editor.holders.error.PictureError
@@ -16,10 +15,15 @@ import com.agileburo.anytype.core_ui.features.editor.holders.media.Bookmark
 import com.agileburo.anytype.core_ui.features.editor.holders.media.File
 import com.agileburo.anytype.core_ui.features.editor.holders.media.Picture
 import com.agileburo.anytype.core_ui.features.editor.holders.media.Video
+import com.agileburo.anytype.core_ui.features.editor.holders.other.Code
+import com.agileburo.anytype.core_ui.features.editor.holders.other.Divider
+import com.agileburo.anytype.core_ui.features.editor.holders.other.Page
+import com.agileburo.anytype.core_ui.features.editor.holders.other.Title
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
+import com.agileburo.anytype.core_ui.features.editor.holders.text.*
 import com.agileburo.anytype.core_ui.features.editor.holders.upload.FileUpload
 import com.agileburo.anytype.core_ui.features.editor.holders.upload.PictureUpload
 import com.agileburo.anytype.core_ui.features.editor.holders.upload.VideoUpload

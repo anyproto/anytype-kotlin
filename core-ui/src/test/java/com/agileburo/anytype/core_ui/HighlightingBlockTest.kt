@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.Span
-import com.agileburo.anytype.core_ui.features.editor.holders.Highlight
+import com.agileburo.anytype.core_ui.features.editor.holders.text.Highlight
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder

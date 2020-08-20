@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.common.toSpannable
-import com.agileburo.anytype.core_ui.features.editor.holders.Toggle
+import com.agileburo.anytype.core_ui.features.editor.holders.text.Toggle
 import com.agileburo.anytype.core_ui.features.page.BlockView
 
 class ToggleBlockActionToolbar : BlockActionToolbar() {

@@ -9,11 +9,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.postDelayed
 import com.agileburo.anytype.core_ui.extensions.avatarColor
+import com.agileburo.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
-import com.agileburo.anytype.core_ui.features.page.TextHolder
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
+import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.firstDigitByHash
 import com.agileburo.anytype.core_utils.ext.imm
@@ -41,7 +42,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
     ) {
         setImage(item)
         if (item.mode == BlockView.Mode.READ) {
-            enableReadOnlyMode()
+            enableReadMode()
             content.setText(item.text, TextView.BufferType.EDITABLE)
         } else {
             enableEditMode()
@@ -49,7 +50,11 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             focus(item.isFocused)
             content.setText(item.text, TextView.BufferType.EDITABLE)
             setCursor(item)
-            setupTextWatcher({ _, editable -> onTitleTextChanged(editable) }, item)
+            content.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTitleTextChanged(text)
+                }
+            )
             content.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
                 if (hasFocus) showKeyboard()
@@ -99,7 +104,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 if (item.mode == BlockView.Mode.EDIT)
                     enableEditMode()
                 else
-                    enableTitleReadOnlyMode()
+                    enableReadMode()
             }
         }
     }
@@ -112,12 +117,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             content.clearFocus()
     }
 
-    override fun enableBackspaceDetector(
-        onEmptyBlockBackspaceClicked: () -> Unit,
-        onNonEmptyBlockBackspaceClicked: () -> Unit
-    ) = Unit
-
-    override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0, 0)
+    override fun select(item: BlockView.Selectable) = Unit
 
     class Document(view: View) : Title(view) {
 

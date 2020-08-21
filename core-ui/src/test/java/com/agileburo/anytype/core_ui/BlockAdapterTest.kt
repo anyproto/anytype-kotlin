@@ -211,8 +211,8 @@ class BlockAdapterTest {
                     changes = listOf(TEXT_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -264,8 +264,8 @@ class BlockAdapterTest {
                     changes = listOf(BACKGROUND_COLOR_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -318,8 +318,8 @@ class BlockAdapterTest {
                     changes = listOf(TEXT_COLOR_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -382,8 +382,8 @@ class BlockAdapterTest {
                     changes = listOf(CURSOR_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -550,8 +550,8 @@ class BlockAdapterTest {
                 )
             ),
             item = focused,
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -651,8 +651,8 @@ class BlockAdapterTest {
                 )
             ),
             item = updated,
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -1540,16 +1540,13 @@ class BlockAdapterTest {
             actual = holder.content.hasFocus()
         )
 
-        holder.processChangePayload(
+        holder.processPayloads(
             item = updated,
             payloads = listOf(
                 BlockViewDiffUtil.Payload(
                     changes = listOf(FOCUS_CHANGED)
                 )
-            ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
-            clicked = {}
+            )
         )
 
         assertEquals(
@@ -1594,16 +1591,13 @@ class BlockAdapterTest {
             actual = holder.content.hasFocus()
         )
 
-        holder.processChangePayload(
+        holder.processPayloads(
             item = updated,
             payloads = listOf(
                 BlockViewDiffUtil.Payload(
                     changes = listOf(FOCUS_CHANGED)
                 )
-            ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
-            clicked = {}
+            )
         )
 
         assertEquals(
@@ -1868,8 +1862,8 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -2008,16 +2002,13 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        holder.processChangePayload(
+        holder.processPayloads(
             item = updated,
             payloads = listOf(
                 BlockViewDiffUtil.Payload(
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
-            ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
-            clicked = {}
+            )
         )
 
         assertEquals(
@@ -2379,8 +2370,8 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -2413,8 +2404,8 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -2447,8 +2438,8 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -2551,8 +2542,8 @@ class BlockAdapterTest {
                     changes = listOf(TEXT_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -2652,8 +2643,8 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -2799,8 +2790,8 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -2946,8 +2937,8 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -3096,8 +3087,8 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -3251,8 +3242,8 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -3480,7 +3471,6 @@ class BlockAdapterTest {
             onCheckboxClicked = {},
             onFocusChanged = onFocusChanged,
             onSelectionChanged = { _, _ -> },
-            onFooterClicked = {},
             onTextInputClicked = {},
             onPageIconClicked = {},
             onProfileIconClicked = {},

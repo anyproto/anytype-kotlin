@@ -188,7 +188,6 @@ open class PageFragment :
                     marks = editable.extractMarks()
                 )
             },
-            onFooterClicked = vm::onOutsideClicked,
             onTextInputClicked = vm::onTextInputClicked,
             onPageIconClicked = vm::onPageIconClicked,
             onProfileIconClicked = vm::onProfileIconClicked,

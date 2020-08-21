@@ -10,7 +10,7 @@ import com.agileburo.anytype.core_utils.ext.dimen
 
 abstract class Header(
     view: View
-) : Text(view), TextHolder, BlockViewHolder.IndentableHolder {
+) : Text(view), TextBlockHolder, BlockViewHolder.IndentableHolder {
 
     abstract val header: TextInputWidget
 

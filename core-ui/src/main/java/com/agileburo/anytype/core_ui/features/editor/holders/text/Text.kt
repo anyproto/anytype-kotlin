@@ -9,14 +9,14 @@ import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.core_ui.features.page.ListenerType
-import com.agileburo.anytype.core_ui.features.page.TextHolder
+import com.agileburo.anytype.core_ui.features.page.TextBlockHolder
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import timber.log.Timber
 
 abstract class Text(
     view: View
-) : BlockViewHolder(view), TextHolder, BlockViewHolder.IndentableHolder {
+) : BlockViewHolder(view), TextBlockHolder, BlockViewHolder.IndentableHolder {
 
     fun bind(
         item: BlockView.TextBlockProps,
@@ -35,7 +35,7 @@ abstract class Text(
         select(item)
 
         if (item.mode == BlockView.Mode.READ) {
-            enableReadOnlyMode()
+            enableReadMode()
             setContent(
                 item = item,
                 clicked = clicked

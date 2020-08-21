@@ -99,8 +99,8 @@ class Checkbox(
         mode = BlockView.Mode.EDIT
     }
 
-    override fun enableReadOnlyMode() {
-        super.enableReadOnlyMode()
+    override fun enableReadMode() {
+        super.enableReadMode()
         mode = BlockView.Mode.READ
     }
 

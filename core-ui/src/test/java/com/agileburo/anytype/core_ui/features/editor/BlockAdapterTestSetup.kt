@@ -32,7 +32,6 @@ open class BlockAdapterTestSetup {
             onCheckboxClicked = {},
             onFocusChanged = onFocusChanged,
             onSelectionChanged = { _, _ -> },
-            onFooterClicked = {},
             onTextInputClicked = {},
             onPageIconClicked = {},
             onProfileIconClicked = {},

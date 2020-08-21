@@ -1,42 +1,26 @@
 package com.agileburo.anytype.core_ui.features.page
 
 import android.text.Editable
-import android.view.Gravity
-import android.view.View
-import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
 import android.widget.TextView
 import com.agileburo.anytype.core_ui.common.*
 import com.agileburo.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.agileburo.anytype.core_ui.extensions.preserveSelection
 import com.agileburo.anytype.core_ui.extensions.range
+import com.agileburo.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.menu.TextBlockContextMenu
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.tools.MentionTextWatcher
-import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
-import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget.Companion.TEXT_INPUT_WIDGET_ACTION_GO
 import com.agileburo.anytype.core_utils.ext.hideKeyboard
-import com.agileburo.anytype.core_utils.ext.imm
-import com.agileburo.anytype.core_utils.text.BackspaceKeyDetector
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
 
 /**
- * Provides default implementation for common behavior for text blocks.
+ * Provides contract and default implementation for text blocks' common behavior.
+ * @see [BlockView.Text]
  */
-interface TextHolder {
-
-    /**
-     * Block's parent view.
-     */
-    val root: View
-
-    /**
-     * Block's content widget.
-     * Common behavior is applied to this widget.
-     */
-    val content: TextInputWidget
+interface TextBlockHolder : TextHolder {
 
     fun setup(
         onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
@@ -83,60 +67,6 @@ interface TextHolder {
         }
     }
 
-    fun enableEnterKeyDetector(
-        onEndLineEnterClicked: (Editable) -> Unit,
-        onSplitLineEnterClicked: (Int) -> Unit
-    ) {
-        content.setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == TEXT_INPUT_WIDGET_ACTION_GO) {
-                if (v.selectionEnd < v.text.length) {
-                    onSplitLineEnterClicked(v.selectionEnd)
-                } else {
-                    onEndLineEnterClicked(content.editableText)
-                }
-                return@setOnEditorActionListener true
-            }
-            false
-        }
-    }
-
-    fun setOnClickListener(onTextInputClicked: () -> Unit) {
-        content.setOnClickListener { onTextInputClicked() }
-    }
-
-    fun enableBackspaceDetector(
-        onEmptyBlockBackspaceClicked: () -> Unit,
-        onNonEmptyBlockBackspaceClicked: () -> Unit
-    ) {
-        content.setOnKeyListener(
-            BackspaceKeyDetector {
-                if (content.text.toString().isEmpty()) {
-                    // Refactoring needed, there are cases when we shouldn't clear text watchers
-                    //content.clearTextWatchers()
-                    //content.setOnKeyListener(null)
-                    onEmptyBlockBackspaceClicked()
-                } else {
-                    // Refactoring needed, there are cases when we shouldn't clear text watchers
-                    //content.clearTextWatchers()
-                    //content.setOnKeyListener(null)
-                    onNonEmptyBlockBackspaceClicked()
-                }
-            }
-        )
-    }
-
-    fun setTextColor(color: String) {
-        content.setTextColor(
-            ThemeColor.values().first { value ->
-                value.title == color
-            }.text
-        )
-    }
-
-    fun setTextColor(color: Int) {
-        content.setTextColor(color)
-    }
-
     fun setBackgroundColor(color: String? = null) {
         Timber.d("Setting background color: $color")
         if (color != null) {
@@ -147,30 +77,6 @@ interface TextHolder {
             )
         } else {
             root.background = null
-        }
-    }
-
-    fun setFocus(item: Focusable) {
-        if (item.isFocused)
-            focus()
-        else
-            content.clearFocus()
-    }
-
-    fun setCursor(item: BlockView.Cursor) {
-        item.cursor?.let {
-            val length = content.text?.length ?: 0
-            if (it in 0..length) {
-                content.setSelection(it)
-            }
-        }
-    }
-
-    fun setAlignment(alignment: Alignment) {
-        content.gravity = when (alignment) {
-            Alignment.START -> Gravity.START
-            Alignment.CENTER -> Gravity.CENTER
-            Alignment.END -> Gravity.END
         }
     }
 
@@ -191,9 +97,9 @@ interface TextHolder {
     }
 
     fun setupTextWatcher(
-        onTextChanged: (String, Editable) -> Unit,
         item: BlockView,
-        onMentionEvent: ((MentionEvent) -> Unit)? = null
+        onMentionEvent: ((MentionEvent) -> Unit)? = null,
+        onTextChanged: (String, Editable) -> Unit,
     ) {
         content.addTextChangedListener(
             DefaultTextWatcher { text ->
@@ -229,115 +135,79 @@ interface TextHolder {
         )
     }
 
-    private fun focus() {
-        Timber.d("Requesting focus")
-        content.apply {
-            post {
-                if (!hasFocus()) {
-                    if (requestFocus()) {
-                        context.imm().showSoftInput(this, SHOW_IMPLICIT)
-                    } else {
-                        Timber.d("Couldn't gain focus")
-                    }
-                } else
-                    Timber.d("Already had focus")
-            }
-        }
-    }
-
     fun processChangePayload(
         payloads: List<BlockViewDiffUtil.Payload>,
         item: BlockView,
-        onTextChanged: (String, Editable) -> Unit,
+        onTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit
     ) = payloads.forEach { payload ->
 
+        check(item is BlockView.Text)
+
         Timber.d("Processing $payload for new view:\n$item")
 
-        if (item is BlockView.TextSupport) {
-
-            if (payload.textChanged()) {
-                content.pauseTextWatchers {
-
-                    when (item) {
-                        is BlockView.Text.Paragraph -> {
-                            setBlockText(text = item.text, markup = item, clicked = clicked)
-                        }
-                        else -> {
-                            if (item is Markup)
-                                content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
-                            else
-                                content.setText(item.text)
-                        }
+        if (payload.textChanged()) {
+            content.pauseTextWatchers {
+                when (item) {
+                    is BlockView.Text.Paragraph -> {
+                        setBlockText(text = item.text, markup = item, clicked = clicked)
                     }
-
-                }
-            } else if (payload.markupChanged()) {
-                if (item is Markup) setMarkup(item, clicked)
-            }
-
-            try {
-                if (item is BlockView.Cursor && payload.isCursorChanged) {
-                    item.cursor?.let {
-                        content.setSelection(it)
+                    else -> {
+                        content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
                     }
                 }
-            } catch (e: Throwable) {
-                Timber.e(e, "Error while setting cursor from $item")
             }
-
-            if (payload.textColorChanged()) {
-                item.color?.let { setTextColor(it) }
-            }
-
-            if (payload.backgroundColorChanged()) {
-                setBackgroundColor(item.backgroundColor)
-            }
-
-            if (payload.alignmentChanged()) {
-                if (item is BlockView.Alignable) {
-                    item.alignment?.let { setAlignment(it) }
-                }
-            }
+        } else if (payload.markupChanged()) {
+            setMarkup(item, clicked)
         }
 
-        if (item is BlockView.Permission && payload.readWriteModeChanged()) {
+        try {
+            if (payload.isCursorChanged) {
+                item.cursor?.let {
+                    content.setSelection(it)
+                }
+            }
+        } catch (e: Throwable) {
+            Timber.e(e, "Error while setting cursor from $item")
+        }
+
+        if (payload.textColorChanged()) {
+            item.color?.let { setTextColor(it) }
+        }
+
+        if (payload.backgroundColorChanged()) {
+            setBackgroundColor(item.backgroundColor)
+        }
+
+        if (payload.alignmentChanged()) {
+            item.alignment?.let { setAlignment(it) }
+        }
+
+        if (payload.readWriteModeChanged()) {
             if (item.mode == BlockView.Mode.EDIT) {
                 content.clearTextWatchers()
-                setupTextWatcher(onTextChanged, item)
+                setupTextWatcher(item) { id, editable ->
+                    item.apply {
+                        text = editable.toString()
+                        marks = editable.marks()
+                    }
+                    onTextChanged(item)
+                }
                 content.selectionWatcher = { onSelectionChanged(item.id, it) }
                 enableEditMode()
             } else {
-                enableReadOnlyMode()
+                enableReadMode()
             }
         }
 
-        if (item is BlockView.Selectable && payload.selectionChanged()) {
+        if (payload.selectionChanged()) {
             select(item)
         }
 
-        if (item is Focusable && payload.focusChanged()) {
+        if (payload.focusChanged()) {
             setFocus(item)
         }
-    }
-
-    fun select(item: BlockView.Selectable) {
-        content.isSelected = item.isSelected
-    }
-
-    fun enableReadOnlyMode() {
-        content.enableReadMode()
-        content.selectionWatcher = null
-        content.clearTextWatchers()
-    }
-
-    fun enableEditMode() {
-        content.enableEditMode()
-    }
-
-    fun enableTitleReadOnlyMode() {
-        content.enableReadMode()
     }
 
     private fun setupSelectionActionMode(

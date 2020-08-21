@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.agileburo.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.agileburo.anytype.core_ui.features.editor.holders.error.FileError
 import com.agileburo.anytype.core_ui.features.editor.holders.error.PictureError
@@ -81,7 +82,6 @@ class BlockAdapter(
     private val onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
     private val onEndLineEnterClicked: (String, Editable) -> Unit,
     private val onEndLineEnterTitleClicked: (Editable) -> Unit,
-    private val onFooterClicked: () -> Unit,
     private val onTextInputClicked: (String) -> Unit,
     private val onClickListener: (ListenerType) -> Unit,
     private val onPageIconClicked: () -> Unit,
@@ -394,14 +394,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = { _, editable ->
-                                val p = (blocks[position] as BlockView.Text.Paragraph)
-                                p.apply {
-                                    text = editable.toString()
-                                    marks = editable.marks()
-                                }
-                                onTextBlockTextChanged(p)
-                            },
+                            onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -410,7 +403,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextChanged,
+                            onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -419,7 +412,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextChanged,
+                            onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -440,7 +433,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextChanged,
+                            onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -449,7 +442,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextChanged,
+                            onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -458,7 +451,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextChanged,
+                            onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -467,7 +460,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextChanged,
+                            onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -476,7 +469,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextChanged,
+                            onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -485,7 +478,7 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextChanged,
+                            onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener
                         )
@@ -589,10 +582,9 @@ class BlockAdapter(
                     is Code -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
-                            item = blocks[position],
+                            item = blocks[position] as BlockView.Code,
                             onTextChanged = onTextChanged,
-                            onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener
+                            onSelectionChanged = onSelectionChanged
                         )
                     }
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
@@ -755,7 +747,7 @@ class BlockAdapter(
                             }
                         }
                     )
-                    setOnClickListener { onTitleTextInputClicked() }
+                    setTextInputClickListener { onTitleTextInputClicked() }
                 }
             }
             is Title.Profile -> {
@@ -780,7 +772,7 @@ class BlockAdapter(
                             }
                         }
                     )
-                    setOnClickListener { onTitleTextInputClicked() }
+                    setTextInputClickListener { onTitleTextInputClicked() }
                 }
             }
             is Code -> {

@@ -2,13 +2,16 @@ package com.agileburo.anytype.core_ui.features.editor.holders.other
 
 import android.text.Editable
 import android.view.View
+import com.agileburo.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.core_ui.features.page.ListenerType
-import com.agileburo.anytype.core_ui.features.page.TextHolder
+import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
+import timber.log.Timber
 
 class Code(view: View) : BlockViewHolder(view), TextHolder {
 
@@ -26,7 +29,7 @@ class Code(view: View) : BlockViewHolder(view), TextHolder {
     ) {
         if (item.mode == BlockView.Mode.READ) {
             content.setText(item.text)
-            enableReadOnlyMode()
+            enableReadMode()
             select(item)
         } else {
             enableEditMode()
@@ -43,9 +46,14 @@ class Code(view: View) : BlockViewHolder(view), TextHolder {
             content.clearTextWatchers()
 
             content.setText(item.text)
+
             setFocus(item)
 
-            setupTextWatcher(onTextChanged, item)
+            content.addTextChangedListener(
+                DefaultTextWatcher { text ->
+                    onTextChanged(item.id, text)
+                }
+            )
 
             content.setOnFocusChangeListener { _, focused ->
                 item.isFocused = focused
@@ -55,10 +63,42 @@ class Code(view: View) : BlockViewHolder(view), TextHolder {
         }
     }
 
-    /**
-     * Mention is not used in Code
-     */
-    override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(0, 0)
+    fun processChangePayload(
+        payloads: List<BlockViewDiffUtil.Payload>,
+        item: BlockView.Code,
+        onTextChanged: (String, Editable) -> Unit,
+        onSelectionChanged: (String, IntRange) -> Unit,
+    ) = payloads.forEach { payload ->
+
+        Timber.d("Processing $payload for new view:\n$item")
+
+        if (payload.textChanged()) {
+            content.pauseTextWatchers { content.setText(item.text) }
+        }
+
+        if (payload.readWriteModeChanged()) {
+            if (item.mode == BlockView.Mode.EDIT) {
+                content.apply {
+                    clearTextWatchers()
+                    addTextChangedListener(
+                        DefaultTextWatcher { text -> onTextChanged(item.id, text) }
+                    )
+                    selectionWatcher = { onSelectionChanged(item.id, it) }
+                }
+                enableEditMode()
+            } else {
+                enableReadMode()
+            }
+        }
+
+        if (payload.selectionChanged()) {
+            select(item)
+        }
+
+        if (payload.focusChanged()) {
+            setFocus(item)
+        }
+    }
 
     override fun select(item: BlockView.Selectable) {
         root.isSelected = item.isSelected

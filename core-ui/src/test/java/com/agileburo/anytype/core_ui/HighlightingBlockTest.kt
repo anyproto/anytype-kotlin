@@ -103,7 +103,6 @@ class HighlightingBlockTest {
             onCheckboxClicked = {},
             onFocusChanged = onFocusChanged,
             onSelectionChanged = { _, _ -> },
-            onFooterClicked = {},
             onTextInputClicked = {},
             onPageIconClicked = {},
             onProfileIconClicked = {},

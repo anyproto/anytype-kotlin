@@ -180,7 +180,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val cursor: Int? = null
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_ONE
-                override val body: String = text
+                override val body: String get() = text
             }
 
             /**
@@ -205,7 +205,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val cursor: Int? = null
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_TWO
-                override val body: String = text
+                override val body: String get() = text
             }
 
             /**
@@ -230,7 +230,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val cursor: Int? = null
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_THREE
-                override val body: String = text
+                override val body: String get() = text
             }
         }
 
@@ -255,7 +255,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val alignment: Alignment? = null
         ) : Text() {
             override fun getViewType() = HOLDER_HIGHLIGHT
-            override val body: String = text
+            override val body: String get() = text
         }
 
         /**
@@ -280,7 +280,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val alignment: Alignment? = null
         ) : Text(), Checkable {
             override fun getViewType() = HOLDER_CHECKBOX
-            override val body: String = text
+            override val body: String get() = text
         }
 
         /**
@@ -305,7 +305,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val alignment: Alignment? = null
         ) : Text() {
             override fun getViewType() = HOLDER_BULLET
-            override val body: String = text
+            override val body: String get() = text
         }
 
         /**
@@ -331,7 +331,7 @@ sealed class BlockView : ViewType, Parcelable {
             val number: Int
         ) : Text() {
             override fun getViewType() = HOLDER_NUMBERED
-            override val body: String = text
+            override val body: String get() = text
         }
 
         /**
@@ -358,7 +358,7 @@ sealed class BlockView : ViewType, Parcelable {
             val isEmpty: Boolean = false
         ) : Text() {
             override fun getViewType() = HOLDER_TOGGLE
-            override val body: String = text
+            override val body: String get() = text
         }
     }
 

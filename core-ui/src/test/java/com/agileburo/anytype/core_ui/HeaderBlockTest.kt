@@ -226,8 +226,8 @@ class HeaderBlockTest {
                 )
             ),
             item = updated,
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -282,8 +282,8 @@ class HeaderBlockTest {
                 )
             ),
             item = updated,
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -338,8 +338,8 @@ class HeaderBlockTest {
                 )
             ),
             item = updated,
-            onSelectionChanged = { _, _ ->  },
-            onTextChanged = { _, _ -> },
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
             clicked = {}
         )
 
@@ -366,7 +366,6 @@ class HeaderBlockTest {
             onCheckboxClicked = {},
             onFocusChanged = onFocusChanged,
             onSelectionChanged = { _, _ -> },
-            onFooterClicked = {},
             onTextInputClicked = {},
             onPageIconClicked = {},
             onProfileIconClicked = {},

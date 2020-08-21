@@ -89,8 +89,8 @@ class Toggle(
         container.isSelected = item.isSelected
     }
 
-    override fun enableReadOnlyMode() {
-        super.enableReadOnlyMode()
+    override fun enableReadMode() {
+        super.enableReadMode()
         mode = BlockView.Mode.READ
     }
 
@@ -102,7 +102,7 @@ class Toggle(
     override fun processChangePayload(
         payloads: List<BlockViewDiffUtil.Payload>,
         item: BlockView,
-        onTextChanged: (String, Editable) -> Unit,
+        onTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit
     ) {

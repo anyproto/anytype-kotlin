@@ -543,6 +543,8 @@ class PageViewModel(
         view: BlockView.Text
     ) {
 
+        Timber.d("Text block's text changed: $view")
+
         val update = if (view is BlockView.Text.Paragraph) TextUpdate.Pattern(
             target = view.id,
             text = view.text,

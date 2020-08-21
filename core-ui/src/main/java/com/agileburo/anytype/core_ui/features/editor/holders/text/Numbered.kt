@@ -78,7 +78,7 @@ class Numbered(
     override fun processChangePayload(
         payloads: List<BlockViewDiffUtil.Payload>,
         item: BlockView,
-        onTextChanged: (String, Editable) -> Unit,
+        onTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit
     ) {

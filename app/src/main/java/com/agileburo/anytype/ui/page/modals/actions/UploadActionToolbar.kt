@@ -27,5 +27,6 @@ class UploadActionToolbar : BlockActionToolbar() {
     override fun getBlock(): BlockView = block
 
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
+        setConstraints()
     }
 }

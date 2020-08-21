@@ -20,13 +20,13 @@ class ErrorActionToolbar : BlockActionToolbar() {
     }
 
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
-        when (block.getViewType()) {
-            BlockViewHolder.HOLDER_BOOKMARK_ERROR -> initError(view)
-            else -> Unit
+        if (block.getViewType() == BlockViewHolder.HOLDER_BOOKMARK_ERROR) {
+            initBookmarkError(view)
         }
+        setConstraints()
     }
 
-    private fun initError(view: View) {
+    private fun initBookmarkError(view: View) {
         val item = block as BlockView.Error.Bookmark
         view.findViewById<TextView>(R.id.errorBookmarkUrl).apply {
             text = item.url

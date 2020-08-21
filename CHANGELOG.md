@@ -22,6 +22,9 @@
 * Image size issues (#648)
 * Toggle's button stops working when switching from multi-select to edit mode (#643)
 * Removed task-block-related legacy (#679)
+* Remove "Color", "Background" actions for media blocks (#611)
+* Remove "Add Caption", "Replace", "Rename" actions (#611)
+* Fix action toolbar constraints (#611)
 
 ## Version 0.0.43
 

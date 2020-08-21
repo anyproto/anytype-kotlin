@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.ImageView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockView
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.bumptech.glide.Glide
 
 class PictureBlockActionToolbar : BlockActionToolbar() {
@@ -17,24 +16,10 @@ class PictureBlockActionToolbar : BlockActionToolbar() {
         block = arguments?.getParcelable(ARG_BLOCK)!!
     }
 
-    override fun blockLayout() =
-        when (block.getViewType()) {
-            BlockViewHolder.HOLDER_PICTURE -> R.layout.item_block_picture_preview
-            BlockViewHolder.HOLDER_PICTURE_PLACEHOLDER -> R.layout.item_block_picture_placeholder_preview
-            BlockViewHolder.HOLDER_PICTURE_ERROR -> R.layout.item_block_picture_error_preview
-            else -> R.layout.item_block_picture_uploading_preview
-        }
-
+    override fun blockLayout() = R.layout.item_block_picture_preview
     override fun getBlock(): BlockView = block
 
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
-        when (block.getViewType()) {
-            BlockViewHolder.HOLDER_PICTURE -> initPicture(view)
-            else -> Unit
-        }
-    }
-
-    private fun initPicture(view: View) {
         val item = block
         view.findViewById<ImageView>(R.id.image).apply {
             Glide.with(this).load(item.url).into(this)

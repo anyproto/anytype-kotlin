@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockView
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
 import com.bumptech.glide.Glide
 
 class BookmarkBlockActionToolbar : BlockActionToolbar() {
@@ -20,18 +19,13 @@ class BookmarkBlockActionToolbar : BlockActionToolbar() {
         block = arguments?.getParcelable(ARG_BLOCK)!!
     }
 
-    override fun blockLayout(): Int = when (block.getViewType()) {
-        HOLDER_BOOKMARK -> R.layout.item_block_bookmark
-        else -> throw RuntimeException("No layout for bookmark block with type ${block.getViewType()}")
-    }
-
+    override fun blockLayout(): Int = R.layout.item_block_bookmark
     override fun getBlock(): BlockView = block
 
-    override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) =
-        when (block.getViewType()) {
-            HOLDER_BOOKMARK -> initBookmark(view)
-            else -> throw RuntimeException("No layout for bookmark block with type ${block.getViewType()}")
-        }
+    override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
+        initBookmark(view)
+        setConstraints()
+    }
 
     private fun initBookmark(view: View) {
         val item = block

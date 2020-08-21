@@ -7,7 +7,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockView
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.core_utils.const.MimeTypes
 
 class FileBlockActionToolbar : BlockActionToolbar() {
@@ -19,18 +18,12 @@ class FileBlockActionToolbar : BlockActionToolbar() {
         block = arguments?.getParcelable(ARG_BLOCK)!!
     }
 
-    override fun blockLayout() = when (block.getViewType()) {
-        BlockViewHolder.HOLDER_FILE -> R.layout.item_block_file_preview
-        else -> R.layout.item_block_file_uploading_preview
-    }
-
+    override fun blockLayout() = R.layout.item_block_file_preview
     override fun getBlock(): BlockView = block
 
-    override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) =
-        when (block.getViewType()) {
-            BlockViewHolder.HOLDER_FILE -> initFile(view)
-            else -> Unit
-        }
+    override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
+        initFile(view)
+    }
 
     private fun initFile(view: View) {
         val item = block

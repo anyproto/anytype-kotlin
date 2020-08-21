@@ -384,8 +384,6 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.Duplicate,
             ActionItemType.Divider,
-            ActionItemType.Rename,
-            ActionItemType.Divider,
             ActionItemType.MoveTo,
             ActionItemType.DividerExtended,
             ActionItemType.Color,
@@ -430,11 +428,7 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.Download,
             ActionItemType.Divider,
-            ActionItemType.Replace,
-            ActionItemType.Divider,
-            ActionItemType.MoveTo,
-            ActionItemType.Divider,
-            ActionItemType.AddCaption
+            ActionItemType.MoveTo
         )
 
         val FILE = listOf(
@@ -444,15 +438,7 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.Download,
             ActionItemType.Divider,
-            ActionItemType.Replace,
-            ActionItemType.Divider,
-            ActionItemType.Rename,
-            ActionItemType.Divider,
-            ActionItemType.MoveTo,
-            ActionItemType.DividerExtended,
-            ActionItemType.Color,
-            ActionItemType.Divider,
-            ActionItemType.Background
+            ActionItemType.MoveTo
         )
 
         val BOOKMARK = listOf(

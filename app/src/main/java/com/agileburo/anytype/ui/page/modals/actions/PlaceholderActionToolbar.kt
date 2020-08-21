@@ -28,19 +28,19 @@ class PlaceholderActionToolbar : BlockActionToolbar() {
             HOLDER_VIDEO_PLACEHOLDER -> R.layout.item_block_video_empty_preview
             HOLDER_FILE_PLACEHOLDER -> R.layout.item_block_file_placeholder_preview
             HOLDER_BOOKMARK_PLACEHOLDER -> R.layout.item_block_bookmark_placeholder
-            else -> R.layout.item_block_picture_uploading_preview
+            else -> R.layout.item_block_picture_placeholder_preview
         }
 
     override fun getBlock(): BlockView = block
 
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
-        when (block.getViewType()) {
-            HOLDER_BOOKMARK_PLACEHOLDER -> initPlaceholder(view)
-            else -> Unit
+        if (block.getViewType() == HOLDER_BOOKMARK_PLACEHOLDER) {
+            initBookmarkPlaceholder(view)
         }
+        setConstraints()
     }
 
-    private fun initPlaceholder(view: View) {
+    private fun initBookmarkPlaceholder(view: View) {
         view.findViewById<ConstraintLayout>(R.id.bookmarkPlaceholderRoot)
             .updateLayoutParams<LayoutParams> {
                 this.apply {

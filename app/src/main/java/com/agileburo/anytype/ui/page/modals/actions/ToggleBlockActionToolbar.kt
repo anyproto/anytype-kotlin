@@ -12,7 +12,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 
 class ToggleBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.Toggle
+    lateinit var block: BlockView.Text.Toggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -27,7 +27,7 @@ class BlockAdapterToggleTest : BlockAdapterTestSetup() {
 
         val text = MockDataFactory.randomString()
 
-        val block = BlockView.Toggle(
+        val block = BlockView.Text.Toggle(
             mode = BlockView.Mode.READ,
             text = text,
             id = MockDataFactory.randomUuid(),

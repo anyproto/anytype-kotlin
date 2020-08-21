@@ -11,7 +11,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 
 class ParagraphBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.Paragraph
+    lateinit var block: BlockView.Text.Paragraph
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -7,18 +7,16 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 object BlockActionToolbarFactory {
 
     fun newInstance(block: BlockView, dimensions: BlockDimensions) = when (block) {
-        is BlockView.Paragraph -> newInstance(block, dimensions)
-        is BlockView.Title.Document -> TODO()
-        is BlockView.Title.Profile -> TODO()
-        is BlockView.Header.One -> newInstance(block, dimensions)
-        is BlockView.Header.Two -> newInstance(block, dimensions)
-        is BlockView.Header.Three -> newInstance(block, dimensions)
-        is BlockView.Highlight -> newInstance(block, dimensions)
+        is BlockView.Text.Paragraph -> newInstance(block, dimensions)
+        is BlockView.Text.Header.One -> newInstance(block, dimensions)
+        is BlockView.Text.Header.Two -> newInstance(block, dimensions)
+        is BlockView.Text.Header.Three -> newInstance(block, dimensions)
+        is BlockView.Text.Highlight -> newInstance(block, dimensions)
+        is BlockView.Text.Checkbox -> newInstance(block, dimensions)
+        is BlockView.Text.Bulleted -> newInstance(block, dimensions)
+        is BlockView.Text.Numbered -> newInstance(block, dimensions)
+        is BlockView.Text.Toggle -> newInstance(block, dimensions)
         is BlockView.Code -> newInstance(block, dimensions)
-        is BlockView.Checkbox -> newInstance(block, dimensions)
-        is BlockView.Bulleted -> newInstance(block, dimensions)
-        is BlockView.Numbered -> newInstance(block, dimensions)
-        is BlockView.Toggle -> newInstance(block, dimensions)
         is BlockView.Media.File -> newInstance(block, dimensions)
         is BlockView.Upload.File -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.File -> newInstance(block, dimensions)
@@ -36,6 +34,8 @@ object BlockActionToolbarFactory {
         is BlockView.MediaPlaceholder.Picture -> newInstance(block, dimensions)
         is BlockView.Error.Picture -> newInstance(block, dimensions)
         is BlockView.Upload.Picture -> newInstance(block, dimensions)
+        is BlockView.Title.Document -> TODO()
+        is BlockView.Title.Profile -> TODO()
     }
 
     fun newInstance(block: BlockView.Page, dimensions: BlockDimensions): PageBlockActionToolbar =
@@ -46,7 +46,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.Paragraph, dimensions: BlockDimensions): ParagraphBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Text.Paragraph,
+        dimensions: BlockDimensions
+    ): ParagraphBlockActionToolbar =
         ParagraphBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
@@ -55,7 +58,7 @@ object BlockActionToolbarFactory {
         }
 
     fun newInstance(
-        block: BlockView.Header.One,
+        block: BlockView.Text.Header.One,
         dimensions: BlockDimensions
     ): HeaderOneBlockActionToolbar =
         HeaderOneBlockActionToolbar().apply {
@@ -66,7 +69,7 @@ object BlockActionToolbarFactory {
         }
 
     fun newInstance(
-        block: BlockView.Header.Two,
+        block: BlockView.Text.Header.Two,
         dimensions: BlockDimensions
     ): HeaderTwoBlockActionToolbar =
         HeaderTwoBlockActionToolbar().apply {
@@ -77,7 +80,7 @@ object BlockActionToolbarFactory {
         }
 
     fun newInstance(
-        block: BlockView.Header.Three,
+        block: BlockView.Text.Header.Three,
         dimensions: BlockDimensions
     ): HeaderThreeBlockActionToolbar =
         HeaderThreeBlockActionToolbar().apply {
@@ -98,7 +101,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.Checkbox, dimensions: BlockDimensions): CheckBoxBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Text.Checkbox,
+        dimensions: BlockDimensions
+    ): CheckBoxBlockActionToolbar =
         CheckBoxBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
@@ -114,7 +120,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.Highlight, dimensions: BlockDimensions): HighlightBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Text.Highlight,
+        dimensions: BlockDimensions
+    ): HighlightBlockActionToolbar =
         HighlightBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
@@ -122,7 +131,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.Numbered, dimensions: BlockDimensions): NumberedBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Text.Numbered,
+        dimensions: BlockDimensions
+    ): NumberedBlockActionToolbar =
         NumberedBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
@@ -130,7 +142,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.Toggle, dimensions: BlockDimensions): ToggleBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Text.Toggle,
+        dimensions: BlockDimensions
+    ): ToggleBlockActionToolbar =
         ToggleBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
@@ -138,7 +153,10 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.Bulleted, dimensions: BlockDimensions): BulletedBlockActionToolbar =
+    fun newInstance(
+        block: BlockView.Text.Bulleted,
+        dimensions: BlockDimensions
+    ): BulletedBlockActionToolbar =
         BulletedBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,

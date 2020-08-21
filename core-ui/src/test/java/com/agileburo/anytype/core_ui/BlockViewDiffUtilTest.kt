@@ -17,7 +17,7 @@ class BlockViewDiffUtilTest {
 
         val index = 0
 
-        val oldBlock = BlockView.Paragraph(
+        val oldBlock = BlockView.Text.Paragraph(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString()
         )
@@ -40,12 +40,12 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock: BlockView = BlockView.Paragraph(
+        val oldBlock: BlockView = BlockView.Text.Paragraph(
             id = id,
             text = MockDataFactory.randomString()
         )
 
-        val newBlock: BlockView = BlockView.Paragraph(
+        val newBlock: BlockView = BlockView.Text.Paragraph(
             id = id,
             text = MockDataFactory.randomString()
         )
@@ -69,13 +69,13 @@ class BlockViewDiffUtilTest {
         val id = MockDataFactory.randomUuid()
         val text = MockDataFactory.randomString()
 
-        val oldBlock = BlockView.Paragraph(
+        val oldBlock = BlockView.Text.Paragraph(
             id = id,
             text = text,
             indent = indent
         )
 
-        val newBlock = BlockView.Header.One(
+        val newBlock = BlockView.Text.Header.One(
             id = id,
             text = text,
             indent = indent
@@ -100,13 +100,13 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock: BlockView = BlockView.Paragraph(
+        val oldBlock: BlockView = BlockView.Text.Paragraph(
             id = id,
             text = text,
             marks = emptyList()
         )
 
-        val newBlock: BlockView = BlockView.Paragraph(
+        val newBlock: BlockView = BlockView.Text.Paragraph(
             id = id,
             text = text,
             marks = listOf(
@@ -147,13 +147,13 @@ class BlockViewDiffUtilTest {
             )
         )
 
-        val oldBlock: BlockView = BlockView.Paragraph(
+        val oldBlock: BlockView = BlockView.Text.Paragraph(
             id = id,
             text = MockDataFactory.randomString(),
             marks = marks
         )
 
-        val newBlock: BlockView = BlockView.Paragraph(
+        val newBlock: BlockView = BlockView.Text.Paragraph(
             id = id,
             text = MockDataFactory.randomString(),
             marks = marks
@@ -180,13 +180,13 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock: BlockView = BlockView.Paragraph(
+        val oldBlock: BlockView = BlockView.Text.Paragraph(
             id = id,
             text = MockDataFactory.randomString(),
             marks = emptyList()
         )
 
-        val newBlock: BlockView = BlockView.Paragraph(
+        val newBlock: BlockView = BlockView.Text.Paragraph(
             id = id,
             text = MockDataFactory.randomString(),
             marks = listOf(
@@ -223,13 +223,13 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock: BlockView = BlockView.Header.One(
+        val oldBlock: BlockView = BlockView.Text.Header.One(
             id = id,
             text = text,
             indent = indent
         )
 
-        val newBlock: BlockView = BlockView.Header.One(
+        val newBlock: BlockView = BlockView.Text.Header.One(
             id = id,
             text = text,
             indent = indent
@@ -255,7 +255,7 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock = BlockView.Numbered(
+        val oldBlock = BlockView.Text.Numbered(
             id = id,
             text = text,
             marks = emptyList(),
@@ -295,7 +295,7 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock = BlockView.Paragraph(
+        val oldBlock = BlockView.Text.Paragraph(
             id = id,
             text = text,
             marks = emptyList(),
@@ -334,7 +334,7 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock = BlockView.Paragraph(
+        val oldBlock = BlockView.Text.Paragraph(
             id = id,
             text = text,
             marks = emptyList(),
@@ -375,7 +375,7 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock = BlockView.Toggle(
+        val oldBlock = BlockView.Text.Toggle(
             id = id,
             text = text,
             marks = emptyList(),
@@ -454,7 +454,7 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock = BlockView.Paragraph(
+        val oldBlock = BlockView.Text.Paragraph(
             id = id,
             text = text,
             mode = BlockView.Mode.EDIT
@@ -529,7 +529,7 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock = BlockView.Paragraph(
+        val oldBlock = BlockView.Text.Paragraph(
             id = id,
             text = text,
             isSelected = true
@@ -681,7 +681,7 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock = BlockView.Paragraph(
+        val oldBlock = BlockView.Text.Paragraph(
             id = id,
             text = MockDataFactory.randomString(),
             cursor = null

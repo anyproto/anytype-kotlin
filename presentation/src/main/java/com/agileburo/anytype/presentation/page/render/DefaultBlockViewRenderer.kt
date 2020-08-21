@@ -277,7 +277,7 @@ class DefaultBlockViewRenderer(
         content: Content.Text,
         focus: Focus,
         indent: Int
-    ): BlockView.Paragraph = BlockView.Paragraph(
+    ): BlockView.Text.Paragraph = BlockView.Text.Paragraph(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
@@ -296,7 +296,7 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         content: Content.Text,
         indent: Int
-    ): BlockView.Header.Three = BlockView.Header.Three(
+    ): BlockView.Text.Header.Three = BlockView.Text.Header.Three(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
@@ -315,7 +315,7 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         content: Content.Text,
         indent: Int
-    ): BlockView.Header.Two = BlockView.Header.Two(
+    ): BlockView.Text.Header.Two = BlockView.Text.Header.Two(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
@@ -334,7 +334,7 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         content: Content.Text,
         indent: Int
-    ): BlockView.Header.One = BlockView.Header.One(
+    ): BlockView.Text.Header.One = BlockView.Text.Header.One(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
@@ -353,7 +353,7 @@ class DefaultBlockViewRenderer(
         content: Content.Text,
         focus: Focus,
         indent: Int
-    ): BlockView.Checkbox = BlockView.Checkbox(
+    ): BlockView.Text.Checkbox = BlockView.Text.Checkbox(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
@@ -372,7 +372,7 @@ class DefaultBlockViewRenderer(
         content: Content.Text,
         focus: Focus,
         indent: Int
-    ): BlockView.Bulleted = BlockView.Bulleted(
+    ): BlockView.Text.Bulleted = BlockView.Text.Bulleted(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
@@ -402,7 +402,7 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         content: Content.Text,
         indent: Int
-    ): BlockView.Highlight = BlockView.Highlight(
+    ): BlockView.Text.Highlight = BlockView.Text.Highlight(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         isFocused = block.id == focus.id,
@@ -421,7 +421,7 @@ class DefaultBlockViewRenderer(
         indent: Int,
         focus: Focus,
         isEmpty: Boolean
-    ): BlockView.Toggle = BlockView.Toggle(
+    ): BlockView.Text.Toggle = BlockView.Text.Toggle(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
@@ -442,7 +442,7 @@ class DefaultBlockViewRenderer(
         number: Int,
         focus: Focus,
         indent: Int
-    ): BlockView.Numbered = BlockView.Numbered(
+    ): BlockView.Text.Numbered = BlockView.Text.Numbered(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,

@@ -44,7 +44,7 @@ class BlockViewDiffUtil(
                 changes.add(TEXT_CHANGED)
         }
 
-        if (newBlock is BlockView.Text && oldBlock is BlockView.Text) {
+        if (newBlock is BlockView.TextSupport && oldBlock is BlockView.TextSupport) {
             if (newBlock.text != oldBlock.text)
                 changes.add(TEXT_CHANGED)
             if (newBlock.color != oldBlock.color)
@@ -73,12 +73,12 @@ class BlockViewDiffUtil(
                 changes.add(INDENT_CHANGED)
         }
 
-        if (newBlock is BlockView.Numbered && oldBlock is BlockView.Numbered) {
+        if (newBlock is BlockView.Text.Numbered && oldBlock is BlockView.Text.Numbered) {
             if (newBlock.number != oldBlock.number)
                 changes.add(NUMBER_CHANGED)
         }
 
-        if (newBlock is BlockView.Toggle && oldBlock is BlockView.Toggle) {
+        if (newBlock is BlockView.Text.Toggle && oldBlock is BlockView.Text.Toggle) {
             if (newBlock.isEmpty != oldBlock.isEmpty)
                 changes.add(TOGGLE_EMPTY_STATE_CHANGED)
         }

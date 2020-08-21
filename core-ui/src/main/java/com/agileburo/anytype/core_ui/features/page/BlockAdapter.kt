@@ -69,7 +69,7 @@ import timber.log.Timber
  */
 class BlockAdapter(
     private var blocks: List<BlockView>,
-    private val onParagraphTextChanged: (BlockView.Paragraph) -> Unit,
+    private val onParagraphTextChanged: (BlockView.Text.Paragraph) -> Unit,
     private val onTextChanged: (String, Editable) -> Unit,
     private val onTitleTextChanged: (Editable) -> Unit,
     private val onTitleTextInputClicked: () -> Unit,
@@ -395,7 +395,7 @@ class BlockAdapter(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
                             onTextChanged = { _, editable ->
-                                val p = (blocks[position] as BlockView.Paragraph)
+                                val p = (blocks[position] as BlockView.Text.Paragraph)
                                 p.apply {
                                     text = editable.toString()
                                     marks = editable.marks()
@@ -605,7 +605,7 @@ class BlockAdapter(
         when (holder) {
             is Paragraph -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Paragraph,
+                    item = blocks[position] as BlockView.Text.Paragraph,
                     onTextChanged = onParagraphTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
@@ -670,7 +670,7 @@ class BlockAdapter(
             }
             is HeaderOne -> {
                 holder.bind(
-                    block = blocks[position] as BlockView.Header.One,
+                    block = blocks[position] as BlockView.Text.Header.One,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
@@ -684,7 +684,7 @@ class BlockAdapter(
             }
             is HeaderTwo -> {
                 holder.bind(
-                    block = blocks[position] as BlockView.Header.Two,
+                    block = blocks[position] as BlockView.Text.Header.Two,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
@@ -698,7 +698,7 @@ class BlockAdapter(
             }
             is HeaderThree -> {
                 holder.bind(
-                    block = blocks[position] as BlockView.Header.Three,
+                    block = blocks[position] as BlockView.Text.Header.Three,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
@@ -721,7 +721,7 @@ class BlockAdapter(
             }
             is Checkbox -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Checkbox,
+                    item = blocks[position] as BlockView.Text.Checkbox,
                     onTextChanged = onTextChanged,
                     onCheckboxClicked = onCheckboxClicked,
                     onSelectionChanged = onSelectionChanged,
@@ -736,7 +736,7 @@ class BlockAdapter(
             }
             is Bulleted -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Bulleted,
+                    item = blocks[position] as BlockView.Text.Bulleted,
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
@@ -750,7 +750,7 @@ class BlockAdapter(
             }
             is Numbered -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Numbered,
+                    item = blocks[position] as BlockView.Text.Numbered,
                     onTextChanged = onTextChanged,
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
@@ -764,7 +764,7 @@ class BlockAdapter(
             }
             is Toggle -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Toggle,
+                    item = blocks[position] as BlockView.Text.Toggle,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
@@ -877,7 +877,7 @@ class BlockAdapter(
             }
             is Highlight -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Highlight,
+                    item = blocks[position] as BlockView.Text.Highlight,
                     onTextChanged = onTextChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,

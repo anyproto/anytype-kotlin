@@ -34,7 +34,7 @@ class Checkbox(
     }
 
     fun bind(
-        item: BlockView.Checkbox,
+        item: BlockView.Text.Checkbox,
         onTextChanged: (String, Editable) -> Unit,
         onCheckboxClicked: (String) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,

@@ -29,7 +29,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
         val padding = context.dimen(R.dimen.default_document_content_padding_start).toInt()
         val indent = context.dimen(R.dimen.indent)
 
-        val block = BlockView.Paragraph(
+        val block = BlockView.Text.Paragraph(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             indent = 0
@@ -82,7 +82,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
         val padding = context.dimen(R.dimen.default_document_content_padding_start).toInt()
         val indent = context.dimen(R.dimen.indent)
 
-        val block = BlockView.Header.One(
+        val block = BlockView.Text.Header.One(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             indent = 0
@@ -135,7 +135,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
         val padding = context.dimen(R.dimen.default_document_content_padding_start).toInt()
         val indent = context.dimen(R.dimen.indent)
 
-        val block = BlockView.Header.Two(
+        val block = BlockView.Text.Header.Two(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             indent = 0
@@ -188,7 +188,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
         val padding = context.dimen(R.dimen.default_document_content_padding_start).toInt()
         val indent = context.dimen(R.dimen.indent)
 
-        val block = BlockView.Header.Three(
+        val block = BlockView.Text.Header.Three(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             indent = 0
@@ -240,7 +240,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         val indent = context.dimen(R.dimen.indent)
 
-        val block = BlockView.Checkbox(
+        val block = BlockView.Text.Checkbox(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             indent = 0
@@ -292,7 +292,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         val indent = context.dimen(R.dimen.indent)
 
-        val block = BlockView.Numbered(
+        val block = BlockView.Text.Numbered(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             indent = 0,

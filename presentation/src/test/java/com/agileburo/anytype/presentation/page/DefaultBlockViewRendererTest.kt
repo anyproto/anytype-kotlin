@@ -143,7 +143,7 @@ class DefaultBlockViewRendererTest {
                 text = null,
                 emoji = null
             ),
-            BlockView.Paragraph(
+            BlockView.Text.Paragraph(
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
@@ -152,7 +152,7 @@ class DefaultBlockViewRendererTest {
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.START
             ),
-            BlockView.Toggle(
+            BlockView.Text.Toggle(
                 isEmpty = false,
                 isFocused = false,
                 toggled = false,
@@ -244,7 +244,7 @@ class DefaultBlockViewRendererTest {
                 text = null,
                 emoji = null
             ),
-            BlockView.Paragraph(
+            BlockView.Text.Paragraph(
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
@@ -253,7 +253,7 @@ class DefaultBlockViewRendererTest {
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.END
             ),
-            BlockView.Toggle(
+            BlockView.Text.Toggle(
                 isEmpty = false,
                 isFocused = false,
                 toggled = true,
@@ -264,7 +264,7 @@ class DefaultBlockViewRendererTest {
                 text = toggle.content<Block.Content.Text>().text,
                 indent = 0
             ),
-            BlockView.Checkbox(
+            BlockView.Text.Checkbox(
                 isFocused = false,
                 id = checkbox.id,
                 marks = emptyList(),
@@ -327,7 +327,7 @@ class DefaultBlockViewRendererTest {
                 text = null,
                 emoji = null
             ),
-            BlockView.Paragraph(
+            BlockView.Text.Paragraph(
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
@@ -390,7 +390,7 @@ class DefaultBlockViewRendererTest {
                 text = null,
                 emoji = null
             ),
-            BlockView.Paragraph(
+            BlockView.Text.Paragraph(
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
@@ -463,7 +463,7 @@ class DefaultBlockViewRendererTest {
                 text = name,
                 image = UrlBuilder(config).thumbnail(imageName)
             ),
-            BlockView.Paragraph(
+            BlockView.Text.Paragraph(
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
@@ -536,7 +536,7 @@ class DefaultBlockViewRendererTest {
                 text = name,
                 image = UrlBuilder(config).thumbnail(imageName)
             ),
-            BlockView.Paragraph(
+            BlockView.Text.Paragraph(
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
@@ -608,7 +608,7 @@ class DefaultBlockViewRendererTest {
                 text = name,
                 image = UrlBuilder(config).thumbnail(imageName)
             ),
-            BlockView.Paragraph(
+            BlockView.Text.Paragraph(
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
@@ -698,7 +698,7 @@ class DefaultBlockViewRendererTest {
                 text = null,
                 image = null
             ),
-            BlockView.Paragraph(
+            BlockView.Text.Paragraph(
                 indent = 0,
                 isFocused = true,
                 id = a.id,
@@ -708,7 +708,7 @@ class DefaultBlockViewRendererTest {
                 text = a.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER
             ),
-            BlockView.Paragraph(
+            BlockView.Text.Paragraph(
                 indent = 1,
                 isFocused = false,
                 id = b.id,
@@ -718,7 +718,7 @@ class DefaultBlockViewRendererTest {
                 text = b.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER
             ),
-            BlockView.Paragraph(
+            BlockView.Text.Paragraph(
                 indent = 2,
                 isFocused = false,
                 id = c.id,
@@ -809,7 +809,7 @@ class DefaultBlockViewRendererTest {
                 text = null,
                 image = null
             ),
-            BlockView.Checkbox(
+            BlockView.Text.Checkbox(
                 indent = 0,
                 isFocused = true,
                 id = a.id,
@@ -818,7 +818,7 @@ class DefaultBlockViewRendererTest {
                 color = a.content<Block.Content.Text>().color,
                 text = a.content<Block.Content.Text>().text
             ),
-            BlockView.Checkbox(
+            BlockView.Text.Checkbox(
                 indent = 1,
                 isFocused = false,
                 id = b.id,
@@ -827,7 +827,7 @@ class DefaultBlockViewRendererTest {
                 color = b.content<Block.Content.Text>().color,
                 text = b.content<Block.Content.Text>().text
             ),
-            BlockView.Checkbox(
+            BlockView.Text.Checkbox(
                 indent = 2,
                 isFocused = false,
                 id = c.id,
@@ -917,7 +917,7 @@ class DefaultBlockViewRendererTest {
                 text = null,
                 image = null
             ),
-            BlockView.Bulleted(
+            BlockView.Text.Bulleted(
                 indent = 0,
                 isFocused = true,
                 id = a.id,
@@ -926,7 +926,7 @@ class DefaultBlockViewRendererTest {
                 color = a.content<Block.Content.Text>().color,
                 text = a.content<Block.Content.Text>().text
             ),
-            BlockView.Bulleted(
+            BlockView.Text.Bulleted(
                 indent = 1,
                 isFocused = false,
                 id = b.id,
@@ -935,7 +935,7 @@ class DefaultBlockViewRendererTest {
                 color = b.content<Block.Content.Text>().color,
                 text = b.content<Block.Content.Text>().text
             ),
-            BlockView.Bulleted(
+            BlockView.Text.Bulleted(
                 indent = 2,
                 isFocused = false,
                 id = c.id,
@@ -1037,7 +1037,7 @@ class DefaultBlockViewRendererTest {
                 text = null,
                 image = null
             ),
-            BlockView.Numbered(
+            BlockView.Text.Numbered(
                 indent = 0,
                 isFocused = true,
                 id = a.id,
@@ -1047,7 +1047,7 @@ class DefaultBlockViewRendererTest {
                 text = a.content<Block.Content.Text>().text,
                 number = 1
             ),
-            BlockView.Numbered(
+            BlockView.Text.Numbered(
                 indent = 1,
                 isFocused = false,
                 id = b.id,
@@ -1057,7 +1057,7 @@ class DefaultBlockViewRendererTest {
                 text = b.content<Block.Content.Text>().text,
                 number = 1
             ),
-            BlockView.Numbered(
+            BlockView.Text.Numbered(
                 indent = 2,
                 isFocused = false,
                 id = c.id,
@@ -1067,7 +1067,7 @@ class DefaultBlockViewRendererTest {
                 text = c.content<Block.Content.Text>().text,
                 number = 1
             ),
-            BlockView.Numbered(
+            BlockView.Text.Numbered(
                 indent = 2,
                 isFocused = false,
                 id = d.id,

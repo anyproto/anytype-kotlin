@@ -240,7 +240,7 @@ class PageViewModelTest {
                     id = root,
                     text = null
                 ),
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content<Block.Content.Text>().text,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
@@ -457,12 +457,12 @@ class PageViewModelTest {
                         id = root,
                         text = null
                     ),
-                    BlockView.Paragraph(
+                    BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content.asText().text,
                         backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
                     ),
-                    BlockView.Paragraph(
+                    BlockView.Text.Paragraph(
                         id = added.id,
                         text = added.content.asText().text,
                         backgroundColor = added.content<Block.Content.Text>().backgroundColor
@@ -603,7 +603,7 @@ class PageViewModelTest {
                     id = root,
                     text = null
                 ),
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
@@ -722,7 +722,7 @@ class PageViewModelTest {
                     id = root,
                     text = null
                 ),
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
@@ -761,7 +761,7 @@ class PageViewModelTest {
                     id = root,
                     text = null
                 ),
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
@@ -872,7 +872,7 @@ class PageViewModelTest {
                     id = page.id,
                     text = null
                 ),
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
@@ -921,7 +921,7 @@ class PageViewModelTest {
                     id = page.id,
                     text = null
                 ),
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
@@ -1101,7 +1101,7 @@ class PageViewModelTest {
                     id = root,
                     text = null
                 ),
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
@@ -1485,7 +1485,7 @@ class PageViewModelTest {
                         id = root,
                         text = null
                     ),
-                    BlockView.Paragraph(
+                    BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
                         backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
@@ -1504,12 +1504,12 @@ class PageViewModelTest {
                         id = root,
                         text = null
                     ),
-                    BlockView.Paragraph(
+                    BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
                         backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
                     ),
-                    BlockView.Header.One(
+                    BlockView.Text.Header.One(
                         id = new.id,
                         text = new.content<Block.Content.Text>().text,
                         backgroundColor = new.content<Block.Content.Text>().backgroundColor,
@@ -1730,12 +1730,12 @@ class PageViewModelTest {
                         id = root,
                         text = null
                     ),
-                    BlockView.Paragraph(
+                    BlockView.Text.Paragraph(
                         id = page[1].id,
                         text = page[1].content<Block.Content.Text>().text,
                         backgroundColor = page[1].content<Block.Content.Text>().backgroundColor
                     ),
-                    BlockView.Paragraph(
+                    BlockView.Text.Paragraph(
                         id = page.last().id,
                         text = page.last().content<Block.Content.Text>().text,
                         backgroundColor = page.last().content<Block.Content.Text>().backgroundColor
@@ -1762,7 +1762,7 @@ class PageViewModelTest {
                         id = root,
                         text = null
                     ),
-                    BlockView.Paragraph(
+                    BlockView.Text.Paragraph(
                         id = page.last().id,
                         text = page.last().content<Block.Content.Text>().text,
                         backgroundColor = page.last().content<Block.Content.Text>().backgroundColor
@@ -2337,7 +2337,7 @@ class PageViewModelTest {
                     text = null,
                     isFocused = false
                 ),
-                BlockView.Checkbox(
+                BlockView.Text.Checkbox(
                     id = child,
                     text = "",
                     isFocused = false,
@@ -2378,7 +2378,7 @@ class PageViewModelTest {
                     text = null,
                     isFocused = false
                 ),
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = child,
                     text = "",
                     isFocused = true
@@ -3537,8 +3537,8 @@ class PageViewModelTest {
 
         val update = "1. "
 
-        vm.onParagraphTextChanged(
-            BlockView.Paragraph(
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(
                 id = paragraph.id,
                 marks = emptyList(),
                 text = update
@@ -3701,8 +3701,8 @@ class PageViewModelTest {
 
         val update = "1. "
 
-        vm.onParagraphTextChanged(
-            BlockView.Paragraph(
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(
                 id = paragraph.id,
                 marks = emptyList(),
                 text = update
@@ -3954,21 +3954,21 @@ class PageViewModelTest {
 
         val initial = listOf(
             paragraphs[0].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[1].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[2].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
@@ -4130,7 +4130,7 @@ class PageViewModelTest {
 
         val initial = listOf(
             paragraphs[0].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
@@ -4448,21 +4448,21 @@ class PageViewModelTest {
 
         val initial = listOf(
             paragraphs[0].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[1].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[2].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
@@ -4565,21 +4565,21 @@ class PageViewModelTest {
 
         val initial = listOf(
             paragraphs[0].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[1].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[2].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
@@ -4690,21 +4690,21 @@ class PageViewModelTest {
 
         val initial = listOf(
             paragraphs[0].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[1].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[2].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
@@ -4834,28 +4834,28 @@ class PageViewModelTest {
 
         val initial = listOf(
             paragraphs[0].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[1].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[2].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[3].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
@@ -4977,28 +4977,28 @@ class PageViewModelTest {
 
         val initial = listOf(
             paragraphs[0].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[1].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[2].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text
                 )
             },
             paragraphs[3].let { p ->
-                BlockView.Paragraph(
+                BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text

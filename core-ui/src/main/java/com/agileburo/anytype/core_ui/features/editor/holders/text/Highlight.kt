@@ -30,7 +30,7 @@ class Highlight(
     }
 
     fun bind(
-        item: BlockView.Highlight,
+        item: BlockView.Text.Highlight,
         onTextChanged: (String, Editable) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,

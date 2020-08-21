@@ -255,13 +255,13 @@ interface TextHolder {
 
         Timber.d("Processing $payload for new view:\n$item")
 
-        if (item is BlockView.Text) {
+        if (item is BlockView.TextSupport) {
 
             if (payload.textChanged()) {
                 content.pauseTextWatchers {
 
                     when (item) {
-                        is BlockView.Paragraph -> {
+                        is BlockView.Text.Paragraph -> {
                             setBlockText(text = item.text, markup = item, clicked = clicked)
                         }
                         else -> {

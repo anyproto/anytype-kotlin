@@ -12,7 +12,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 
 class CheckBoxBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.Checkbox
+    lateinit var block: BlockView.Text.Checkbox
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

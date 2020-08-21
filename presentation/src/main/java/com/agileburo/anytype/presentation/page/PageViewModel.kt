@@ -525,6 +525,7 @@ class PageViewModel(
         }
     }
 
+    @Deprecated("replace by onTextBlockTextChanged")
     fun onTextChanged(
         id: String,
         text: String,
@@ -538,8 +539,8 @@ class PageViewModel(
         viewModelScope.launch { titleChannel.send(text) }
     }
 
-    fun onParagraphTextChanged(
-        view: BlockView.Paragraph
+    fun onTextBlockTextChanged(
+        view: BlockView.Text
     ) {
 
         val update = TextUpdate.Pattern(

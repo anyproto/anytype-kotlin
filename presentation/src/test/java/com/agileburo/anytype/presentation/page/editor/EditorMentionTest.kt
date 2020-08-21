@@ -123,7 +123,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             text = null,
                             mode = BlockView.Mode.EDIT
                         ),
-                        BlockView.Paragraph(
+                        BlockView.Text.Paragraph(
                             id = a.id,
                             cursor = 28,
                             isSelected = false,

@@ -19,7 +19,7 @@ abstract class Text(
 ) : BlockViewHolder(view), TextHolder, BlockViewHolder.IndentableHolder {
 
     fun bind(
-        item: BlockView.TXT,
+        item: BlockView.TextBlockProps,
         clicked: (ListenerType) -> Unit,
         onTextChanged: (String, Editable) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
@@ -72,12 +72,12 @@ abstract class Text(
         }
     }
 
-    fun setContent(item: BlockView.TXT, clicked: (ListenerType) -> Unit) {
+    fun setContent(item: BlockView.TextBlockProps, clicked: (ListenerType) -> Unit) {
         setBlockText(text = item.text, markup = item, clicked = clicked)
 
     }
 
-    fun setStyle(item: BlockView.TXT) {
+    fun setStyle(item: BlockView.TextBlockProps) {
         val color = item.color
         if (color != null) {
             setTextColor(color)
@@ -88,7 +88,7 @@ abstract class Text(
     }
 
     fun observe(
-        item: BlockView.TXT,
+        item: BlockView.TextBlockProps,
         clicked: (ListenerType) -> Unit,
         onTextChanged: (String, Editable) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
@@ -172,7 +172,7 @@ abstract class Text(
         select(item)
     }
 
-    fun makeLinkClickable(item: BlockView.TXT) {
+    fun makeLinkClickable(item: BlockView.TextBlockProps) {
         if (item.marks.isLinksPresent()) {
             content.setLinksClickable()
         }

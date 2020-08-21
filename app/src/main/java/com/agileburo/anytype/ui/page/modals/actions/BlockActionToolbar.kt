@@ -78,24 +78,24 @@ abstract class BlockActionToolbar : Fragment() {
         }
 
         when (val block = getBlock()) {
-            is BlockView.Paragraph -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Title.Document -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Title.Profile -> addButtons(view, ACTIONS.TEXT)
-            is BlockView.Header.One -> addButtons(view, ACTIONS.TEXT)
-            is BlockView.Header.Two -> addButtons(view, ACTIONS.TEXT)
-            is BlockView.Header.Three -> addButtons(view, ACTIONS.TEXT)
-            is BlockView.Highlight -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.Text.Paragraph -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.Text.Header.One -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.Text.Header.Two -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.Text.Header.Three -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.Text.Highlight -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Code -> addButtons(view, ACTIONS.CODE)
-            is BlockView.Checkbox -> {
+            is BlockView.Text.Checkbox -> {
                 if (block.isChecked) {
                     addButtons(view, ACTIONS.CHECKBOX_CHECKED)
                 } else {
                     addButtons(view, ACTIONS.TEXT)
                 }
             }
-            is BlockView.Bulleted -> addButtons(view, ACTIONS.TEXT)
-            is BlockView.Numbered -> addButtons(view, ACTIONS.TEXT)
-            is BlockView.Toggle -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.Text.Bulleted -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.Text.Numbered -> addButtons(view, ACTIONS.TEXT)
+            is BlockView.Text.Toggle -> addButtons(view, ACTIONS.TEXT)
             is BlockView.Media.File -> addButtons(view, ACTIONS.FILE)
             is BlockView.Upload.File -> addButtons(view, ACTIONS.FILE)
             is BlockView.MediaPlaceholder.File -> addButtons(view, ACTIONS.FILE)

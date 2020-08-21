@@ -10,7 +10,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 
 class HighlightBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.Highlight
+    lateinit var block: BlockView.Text.Highlight
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

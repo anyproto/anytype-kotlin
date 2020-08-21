@@ -46,7 +46,7 @@ sealed class BlockView : ViewType, Parcelable {
     /**
      * Basic interface for textual blocks' common properties.
      */
-    interface Text {
+    interface TextSupport {
 
         /**
          * Base text color for the text.
@@ -102,42 +102,264 @@ sealed class BlockView : ViewType, Parcelable {
         val cursor: Int?
     }
 
-    /**
-     * Views implementing this interface can scroll by Y coordinate on screen.
-     */
-    interface Scrollable {
-        val target: String?
-        val scrollTo: Int?
-    }
-
-    interface TXT : Markup, Focusable, Text, Cursor, Indentable, Permission, Selectable {
+    interface TextBlockProps :
+        Markup,
+        Focusable,
+        TextSupport,
+        Cursor,
+        Indentable,
+        Permission,
+        Alignable,
+        Selectable {
         val id: String
     }
 
-    /**
-     * UI-model for a basic paragraph block.
-     * @property id block's id
-     * @property text block's content text
-     * @property marks markup
-     * @property isFocused whether this block is currently focused or not
-     * @property color text color
-     */
-    @Parcelize
-    data class Paragraph(
-        override val id: String,
-        override var text: String,
-        override var marks: List<Markup.Mark> = emptyList(),
-        override var isFocused: Boolean = false,
-        override val color: String? = null,
-        override val backgroundColor: String? = null,
-        override val indent: Int = 0,
-        override val mode: Mode = Mode.EDIT,
-        override val isSelected: Boolean = false,
-        override val alignment: Alignment? = null,
-        override val cursor: Int? = null
-    ) : BlockView(), TXT, Alignable {
-        override fun getViewType() = HOLDER_PARAGRAPH
-        override val body: String get() = text
+    sealed class Text : BlockView(), TextBlockProps {
+
+        // Dynamic properties (expected to be synchronised with framework widget)
+
+        abstract override var text: String
+        abstract override var marks: List<Markup.Mark>
+        abstract override var isFocused: Boolean
+
+        // Stable properties
+
+        abstract override val color: String?
+        abstract override val backgroundColor: String?
+        abstract override val mode: Mode
+        abstract override val cursor: Int?
+        abstract override val alignment: Alignment?
+
+        /**
+         * UI-model for a basic paragraph block.
+         * @property id block's id
+         * @property text block's content text
+         * @property marks markup
+         * @property isFocused whether this block is currently focused or not
+         * @property color text color
+         */
+        @Parcelize
+        data class Paragraph(
+            override val id: String,
+            override var text: String,
+            override var marks: List<Markup.Mark> = emptyList(),
+            override var isFocused: Boolean = false,
+            override val color: String? = null,
+            override val backgroundColor: String? = null,
+            override val indent: Int = 0,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
+            override val alignment: Alignment? = null,
+            override val cursor: Int? = null
+        ) : Text() {
+            override fun getViewType() = HOLDER_PARAGRAPH
+            override val body: String get() = text
+        }
+
+        sealed class Header : Text() {
+
+            /**
+             * UI-model for a header block.
+             * @property id block's id
+             * @property text header's content (i.e. a header's text)
+             * @property color text color
+             * @property marks markup
+             */
+            @Parcelize
+            data class One(
+                override val id: String,
+                override var text: String,
+                override var isFocused: Boolean = false,
+                override val color: String? = null,
+                override val backgroundColor: String? = null,
+                override val indent: Int = 0,
+                override var marks: List<Markup.Mark> = emptyList(),
+                override val mode: Mode = Mode.EDIT,
+                override val isSelected: Boolean = false,
+                override val alignment: Alignment? = null,
+                override val cursor: Int? = null
+            ) : Header() {
+                override fun getViewType() = HOLDER_HEADER_ONE
+                override val body: String = text
+            }
+
+            /**
+             * UI-model for a header block.
+             * @property id block's id
+             * @property text header's content (i.e. a header's text)
+             * @property color text color
+             * @property marks markup
+             */
+            @Parcelize
+            data class Two(
+                override val id: String,
+                override val color: String? = null,
+                override var text: String,
+                override var isFocused: Boolean = false,
+                override val backgroundColor: String? = null,
+                override val indent: Int = 0,
+                override var marks: List<Markup.Mark> = emptyList(),
+                override val mode: Mode = Mode.EDIT,
+                override val isSelected: Boolean = false,
+                override val alignment: Alignment? = null,
+                override val cursor: Int? = null
+            ) : Header() {
+                override fun getViewType() = HOLDER_HEADER_TWO
+                override val body: String = text
+            }
+
+            /**
+             * UI-model for a header block.
+             * @property id block's id
+             * @property text header's content (i.e. a header's text)
+             * @property color text color
+             * @property marks markup
+             */
+            @Parcelize
+            data class Three(
+                override val id: String,
+                override val color: String? = null,
+                override var text: String,
+                override var isFocused: Boolean = false,
+                override val backgroundColor: String? = null,
+                override val indent: Int = 0,
+                override var marks: List<Markup.Mark> = emptyList(),
+                override val mode: Mode = Mode.EDIT,
+                override val isSelected: Boolean = false,
+                override val alignment: Alignment? = null,
+                override val cursor: Int? = null
+            ) : Header() {
+                override fun getViewType() = HOLDER_HEADER_THREE
+                override val body: String = text
+            }
+        }
+
+        /**
+         * UI-model for a highlight block (analogue of quote block)
+         * @property id block's id
+         * @property text block's content
+         * @property marks markup
+         */
+        @Parcelize
+        data class Highlight(
+            override val id: String,
+            override var isFocused: Boolean = false,
+            override var text: String,
+            override val color: String? = null,
+            override val backgroundColor: String? = null,
+            override val indent: Int = 0,
+            override var marks: List<Markup.Mark> = emptyList(),
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
+            override val cursor: Int? = null,
+            override val alignment: Alignment? = null
+        ) : Text() {
+            override fun getViewType() = HOLDER_HIGHLIGHT
+            override val body: String = text
+        }
+
+        /**
+         * UI-model for checkbox blocks.
+         * @property id block's id
+         * @property text checkbox's content text
+         * @property isChecked immutable checkbox state (whether this checkbox is checked or not)
+         */
+        @Parcelize
+        data class Checkbox(
+            override val id: String,
+            override var marks: List<Markup.Mark> = emptyList(),
+            override var isFocused: Boolean = false,
+            override var text: String,
+            override val color: String? = null,
+            override val backgroundColor: String? = null,
+            override val isChecked: Boolean = false,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
+            override val cursor: Int? = null,
+            override val alignment: Alignment? = null
+        ) : Text(), Checkable {
+            override fun getViewType() = HOLDER_CHECKBOX
+            override val body: String = text
+        }
+
+        /**
+         * UI-model for items of a bulleted list.
+         * @property id block's id
+         * @property text bullet list item content
+         * @property indent indentation value
+         * @property color text color
+         */
+        @Parcelize
+        data class Bulleted(
+            override val id: String,
+            override var marks: List<Markup.Mark> = emptyList(),
+            override var isFocused: Boolean = false,
+            override val color: String? = null,
+            override val backgroundColor: String? = null,
+            override var text: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
+            override val cursor: Int? = null,
+            override val alignment: Alignment? = null
+        ) : Text() {
+            override fun getViewType() = HOLDER_BULLET
+            override val body: String = text
+        }
+
+        /**
+         * UI-model for items of a numbered list.
+         * @property id block's id
+         * @property text numbered list item content
+         * @property number number value
+         * @property indent indentation value
+         */
+        @Parcelize
+        data class Numbered(
+            override val id: String,
+            override var text: String,
+            override var marks: List<Markup.Mark> = emptyList(),
+            override var isFocused: Boolean = false,
+            override val color: String? = null,
+            override val backgroundColor: String? = null,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
+            override val cursor: Int? = null,
+            override val alignment: Alignment? = null,
+            val number: Int
+        ) : Text() {
+            override fun getViewType() = HOLDER_NUMBERED
+            override val body: String = text
+        }
+
+        /**
+         * UI-model for a toggle block.
+         * @property id block's id
+         * @property text toggle block's content
+         * @property indent indentation value
+         * @property toggled toggle state (whether this toggle is expanded or not)
+         */
+        @Parcelize
+        data class Toggle(
+            override val id: String,
+            override var text: String,
+            override var marks: List<Markup.Mark> = emptyList(),
+            override var isFocused: Boolean,
+            override val color: String? = null,
+            override val backgroundColor: String? = null,
+            override val indent: Int = 0,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
+            override val cursor: Int? = null,
+            override val alignment: Alignment? = null,
+            val toggled: Boolean = false,
+            val isEmpty: Boolean = false
+        ) : Text() {
+            override fun getViewType() = HOLDER_TOGGLE
+            override val body: String = text
+        }
     }
 
     sealed class Title : BlockView(), Focusable, Cursor, Permission {
@@ -145,6 +367,11 @@ sealed class BlockView : ViewType, Parcelable {
         abstract val image: String?
         abstract var text: String?
 
+        /**
+         * UI-model for a title block.
+         * @property id block's id
+         * @property text text content (i.e. title text)
+         */
         @Parcelize
         data class Document(
             override val id: String,
@@ -179,126 +406,6 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     /**
-     * UI-model for a title block.
-     * @property id block's id
-     * @property text text content (i.e. title text)
-     * @property emoji emoji as a page's logo (if present)
-     */
-
-    sealed class Header() : BlockView(), TXT, Alignable {
-
-        abstract override val id: String
-        abstract override var text: String
-        abstract override val isFocused: Boolean
-        abstract override val color: String?
-        abstract override val backgroundColor: String?
-        abstract override val indent: Int
-        abstract override var marks: List<Markup.Mark>
-        abstract override val mode: Mode
-        abstract override val isSelected: Boolean
-        abstract override val alignment: Alignment?
-        abstract override val cursor: Int?
-
-        /**
-         * UI-model for a header block.
-         * @property id block's id
-         * @property text header's content (i.e. a header's text)
-         * @property color text color
-         * @property marks markup
-         */
-        @Parcelize
-        data class One(
-            override val id: String,
-            override var text: String,
-            override val isFocused: Boolean = false,
-            override val color: String? = null,
-            override val backgroundColor: String? = null,
-            override val indent: Int = 0,
-            override var marks: List<Markup.Mark> = emptyList(),
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false,
-            override val alignment: Alignment? = null,
-            override val cursor: Int? = null
-        ) : Header() {
-            override fun getViewType() = HOLDER_HEADER_ONE
-            override val body: String = text
-        }
-
-        /**
-         * UI-model for a header block.
-         * @property id block's id
-         * @property text header's content (i.e. a header's text)
-         * @property color text color
-         * @property marks markup
-         */
-        @Parcelize
-        data class Two(
-            override val id: String,
-            override val color: String? = null,
-            override var text: String,
-            override val isFocused: Boolean = false,
-            override val backgroundColor: String? = null,
-            override val indent: Int = 0,
-            override var marks: List<Markup.Mark> = emptyList(),
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false,
-            override val alignment: Alignment? = null,
-            override val cursor: Int? = null
-        ) : Header() {
-            override fun getViewType() = HOLDER_HEADER_TWO
-            override val body: String = text
-        }
-
-        /**
-         * UI-model for a header block.
-         * @property id block's id
-         * @property text header's content (i.e. a header's text)
-         * @property color text color
-         * @property marks markup
-         */
-        @Parcelize
-        data class Three(
-            override val id: String,
-            override val color: String? = null,
-            override var text: String,
-            override val isFocused: Boolean = false,
-            override val backgroundColor: String? = null,
-            override val indent: Int = 0,
-            override var marks: List<Markup.Mark> = emptyList(),
-            override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false,
-            override val alignment: Alignment? = null,
-            override val cursor: Int? = null
-        ) : Header() {
-            override fun getViewType() = HOLDER_HEADER_THREE
-            override val body: String = text
-        }
-    }
-
-    /**
-     * UI-model for a highlight block (analogue of quote block)
-     * @property id block's id
-     * @property text block's content
-     * @property marks markup
-     */
-    @Parcelize
-    data class Highlight(
-        override val id: String,
-        override val isFocused: Boolean = false,
-        override var text: String,
-        override val color: String? = null,
-        override val backgroundColor: String? = null,
-        override val indent: Int = 0,
-        override var marks: List<Markup.Mark> = emptyList(),
-        override val mode: Mode = Mode.EDIT,
-        override val isSelected: Boolean = false,
-        override val cursor: Int? = null
-    ) : BlockView(), TXT {
-        override fun getViewType() = HOLDER_HIGHLIGHT
-        override val body: String = text
-    }
-
-    /**
      * UI-model for a code-snippet block.
      * @property id block's id
      * @property text blocks's content (i.e. code snippet)
@@ -314,106 +421,8 @@ sealed class BlockView : ViewType, Parcelable {
         override fun getViewType() = HOLDER_CODE_SNIPPET
     }
 
-    /**
-     * UI-model for checkbox blocks.
-     * @property id block's id
-     * @property text checkbox's content text
-     * @property isChecked immutable checkbox state (whether this checkbox is checked or not)
-     */
-    @Parcelize
-    data class Checkbox(
-        override val id: String,
-        override var marks: List<Markup.Mark> = emptyList(),
-        override val isFocused: Boolean = false,
-        override var text: String,
-        override val color: String? = null,
-        override val backgroundColor: String? = null,
-        override val isChecked: Boolean = false,
-        override val indent: Int,
-        override val mode: Mode = Mode.EDIT,
-        override val isSelected: Boolean = false,
-        override val cursor: Int? = null
-    ) : BlockView(), TXT, Checkable {
-        override fun getViewType() = HOLDER_CHECKBOX
-        override val body: String = text
-    }
+    sealed class Error : BlockView(), Indentable, Parcelable, Selectable, Permission {
 
-    /**
-     * UI-model for items of a bulleted list.
-     * @property id block's id
-     * @property text bullet list item content
-     * @property indent indentation value
-     * @property color text color
-     */
-    @Parcelize
-    data class Bulleted(
-        override val id: String,
-        override var marks: List<Markup.Mark> = emptyList(),
-        override val isFocused: Boolean = false,
-        override val color: String? = null,
-        override val backgroundColor: String? = null,
-        override var text: String,
-        override val indent: Int,
-        override val mode: Mode = Mode.EDIT,
-        override val isSelected: Boolean = false,
-        override val cursor: Int? = null
-    ) : BlockView(), TXT {
-        override fun getViewType() = HOLDER_BULLET
-        override val body: String = text
-    }
-
-    /**
-     * UI-model for items of a numbered list.
-     * @property id block's id
-     * @property text numbered list item content
-     * @property number number value
-     * @property indent indentation value
-     */
-    @Parcelize
-    data class Numbered(
-        override val id: String,
-        override var text: String,
-        override var marks: List<Markup.Mark> = emptyList(),
-        override val isFocused: Boolean = false,
-        override val color: String? = null,
-        override val backgroundColor: String? = null,
-        override val indent: Int,
-        override val mode: Mode = Mode.EDIT,
-        override val isSelected: Boolean = false,
-        override val cursor: Int? = null,
-        val number: Int
-    ) : BlockView(), TXT {
-        override fun getViewType() = HOLDER_NUMBERED
-        override val body: String = text
-    }
-
-    /**
-     * UI-model for a toggle block.
-     * @property id block's id
-     * @property text toggle block's content
-     * @property indent indentation value
-     * @property toggled toggle state (whether this toggle is expanded or not)
-     */
-    @Parcelize
-    data class Toggle(
-        override val id: String,
-        override var text: String,
-        override var marks: List<Markup.Mark> = emptyList(),
-        override var isFocused: Boolean,
-        override val color: String? = null,
-        override val backgroundColor: String? = null,
-        override val indent: Int = 0,
-        override val mode: Mode = Mode.EDIT,
-        override val isSelected: Boolean = false,
-        override val cursor: Int? = null,
-        val toggled: Boolean = false,
-        val isEmpty: Boolean = false
-    ) : BlockView(), TXT {
-        override fun getViewType() = HOLDER_TOGGLE
-        override val body: String = text
-    }
-
-    sealed class Error: BlockView(), Indentable, Parcelable, Selectable, Permission {
         abstract override val id: String
         abstract override val indent: Int
         abstract override val mode: Mode
@@ -477,6 +486,7 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     sealed class Upload : BlockView(), Indentable, Parcelable, Selectable, Permission {
+
         abstract override val id: String
         abstract override val indent: Int
         abstract override val mode: Mode
@@ -525,6 +535,7 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     sealed class MediaPlaceholder : BlockView(), Indentable, Parcelable, Selectable, Permission {
+
         abstract override val id: String
         abstract override val indent: Int
         abstract override val mode: Mode
@@ -587,6 +598,7 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     sealed class Media : BlockView(), Indentable, Parcelable, Selectable, Permission {
+
         abstract override val id: String
         abstract override val indent: Int
         abstract override val mode: Mode

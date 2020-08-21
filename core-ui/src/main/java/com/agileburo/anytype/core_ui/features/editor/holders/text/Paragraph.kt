@@ -24,8 +24,8 @@ class Paragraph(
     }
 
     fun bind(
-        item: BlockView.Paragraph,
-        onTextChanged: (BlockView.Paragraph) -> Unit,
+        item: BlockView.Text.Paragraph,
+        onTextChanged: (BlockView.Text.Paragraph) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,

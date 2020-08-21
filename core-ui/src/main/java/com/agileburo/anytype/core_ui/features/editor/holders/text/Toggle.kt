@@ -33,7 +33,7 @@ class Toggle(
     }
 
     fun bind(
-        item: BlockView.Toggle,
+        item: BlockView.Text.Toggle,
         onTextChanged: (String, Editable) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
@@ -103,7 +103,7 @@ class Toggle(
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit
     ) {
-        check(item is BlockView.Toggle) { "Expected a toggle block, but was: $item" }
+        check(item is BlockView.Text.Toggle) { "Expected a toggle block, but was: $item" }
         super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked)
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.TOGGLE_EMPTY_STATE_CHANGED))

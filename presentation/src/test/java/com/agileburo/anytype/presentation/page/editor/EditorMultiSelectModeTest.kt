@@ -134,7 +134,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                             text = null,
                             mode = BlockView.Mode.READ
                         ),
-                        BlockView.Numbered(
+                        BlockView.Text.Numbered(
                             id = a.id,
                             isSelected = false,
                             isFocused = true,
@@ -168,7 +168,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                             text = null,
                             mode = BlockView.Mode.READ
                         ),
-                        BlockView.Numbered(
+                        BlockView.Text.Numbered(
                             id = a.id,
                             isSelected = true,
                             isFocused = true,
@@ -234,7 +234,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                             text = null,
                             mode = BlockView.Mode.READ
                         ),
-                        BlockView.Highlight(
+                        BlockView.Text.Highlight(
                             id = a.id,
                             isSelected = false,
                             isFocused = true,

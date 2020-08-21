@@ -32,7 +32,7 @@ class Bulleted(
     }
 
     fun bind(
-        item: BlockView.Bulleted,
+        item: BlockView.Text.Bulleted,
         onTextChanged: (String, Editable) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,

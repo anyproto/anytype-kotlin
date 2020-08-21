@@ -32,7 +32,7 @@ class Numbered(
     }
 
     fun bind(
-        item: BlockView.Numbered,
+        item: BlockView.Text.Numbered,
         onTextChanged: (String, Editable) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
@@ -57,7 +57,7 @@ class Numbered(
         setNumber(item)
     }
 
-    private fun setNumber(item: BlockView.Numbered) {
+    private fun setNumber(item: BlockView.Text.Numbered) {
         number.gravity = when (item.number) {
             in 1..19 -> Gravity.CENTER_HORIZONTAL
             else -> Gravity.START
@@ -82,7 +82,7 @@ class Numbered(
         super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked)
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.NUMBER_CHANGED))
-                number.text = "${(item as BlockView.Numbered).number}"
+                number.text = "${(item as BlockView.Text.Numbered).number}"
         }
     }
 

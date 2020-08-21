@@ -28,7 +28,7 @@ import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
 
 
-interface Item : Focusable, BlockView.Text, BlockView.Permission, BlockView.Cursor, Markup {
+interface Item : Focusable, BlockView.TextSupport, BlockView.Permission, BlockView.Cursor, Markup {
     val id: String
     override val body: String get() = text
 }

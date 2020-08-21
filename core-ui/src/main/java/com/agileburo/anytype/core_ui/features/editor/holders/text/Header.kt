@@ -18,7 +18,7 @@ abstract class Header(
     abstract val header: TextInputWidget
 
     fun bind(
-        block: BlockView.Header,
+        block: BlockView.Text.Header,
         onTextChanged: (String, Editable) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,

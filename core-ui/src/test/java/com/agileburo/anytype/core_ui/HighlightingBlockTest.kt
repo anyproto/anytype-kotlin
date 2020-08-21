@@ -32,7 +32,7 @@ class HighlightingBlockTest {
 
     @Test
     fun `should be bold markup in highlighting block`() {
-        val headerOne = BlockView.Highlight(
+        val headerOne = BlockView.Text.Highlight(
             text = "Test highlighting string with spans",
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,

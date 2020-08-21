@@ -11,7 +11,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 
 class BulletedBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.Bulleted
+    lateinit var block: BlockView.Text.Bulleted
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

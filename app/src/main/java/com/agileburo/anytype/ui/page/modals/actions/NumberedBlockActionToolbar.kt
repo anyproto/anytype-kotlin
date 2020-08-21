@@ -13,7 +13,7 @@ import com.agileburo.anytype.core_utils.ext.addDot
 
 class NumberedBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.Numbered
+    lateinit var block: BlockView.Text.Numbered
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

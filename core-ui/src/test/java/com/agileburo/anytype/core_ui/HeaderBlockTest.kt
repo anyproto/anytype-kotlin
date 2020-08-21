@@ -34,7 +34,7 @@ class HeaderBlockTest {
 
     @Test
     fun `should be italic markup in header one`() {
-        val headerOne = BlockView.Header.One(
+        val headerOne = BlockView.Text.Header.One(
             text = "Test header one string with spans",
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
@@ -84,7 +84,7 @@ class HeaderBlockTest {
 
     @Test
     fun `should be italic markup in header two`() {
-        val headerTwo = BlockView.Header.Two(
+        val headerTwo = BlockView.Text.Header.Two(
             text = "Test header two string with spans",
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
@@ -134,7 +134,7 @@ class HeaderBlockTest {
 
     @Test
     fun `should be italic markup in header three`() {
-        val headerThree = BlockView.Header.Three(
+        val headerThree = BlockView.Text.Header.Three(
             text = "Test header three string with spans",
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
@@ -189,7 +189,7 @@ class HeaderBlockTest {
 
         val events = mutableListOf<Pair<String, String>>()
 
-        val headerOne = BlockView.Header.One(
+        val headerOne = BlockView.Text.Header.One(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid()
         )
@@ -244,7 +244,7 @@ class HeaderBlockTest {
 
         val events = mutableListOf<Pair<String, String>>()
 
-        val headerTwo = BlockView.Header.Two(
+        val headerTwo = BlockView.Text.Header.Two(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             indent = 0
@@ -300,7 +300,7 @@ class HeaderBlockTest {
 
         val events = mutableListOf<Pair<String, String>>()
 
-        val headerThree = BlockView.Header.Three(
+        val headerThree = BlockView.Text.Header.Three(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             indent = 0

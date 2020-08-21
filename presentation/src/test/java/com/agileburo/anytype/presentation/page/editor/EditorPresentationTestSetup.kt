@@ -250,4 +250,18 @@ open class EditorPresentationTestSetup {
             )
         }
     }
+
+    fun stubUnlinkBlocks(
+        params: UnlinkBlocks.Params = any(),
+        events: List<Event> = emptyList()
+    ) {
+        unlinkBlocks.stub {
+            onBlocking { invoke(params) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = events
+                )
+            )
+        }
+    }
 }

@@ -12,6 +12,7 @@
 
 ### Fixes & tech 🚒
 
+* Nested block on-backspace-pressed deletion issues (#697)
 * Library/framework updates (#687)
     * AAC `Navigation`,
     * AndroidX `Core`, `ConstraintLayout`, `RecyclerView`, `Fragment`, `Lifecycle`

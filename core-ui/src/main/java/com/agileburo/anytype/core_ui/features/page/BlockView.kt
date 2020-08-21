@@ -298,7 +298,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val color: String? = null,
             override val backgroundColor: String? = null,
             override var text: String,
-            override val indent: Int,
+            override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,

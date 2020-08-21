@@ -77,6 +77,8 @@ class PageViewModel(
     TurnIntoActionReceiver,
     StateReducer<List<Block>, Event> by reducer {
 
+    private val views: List<BlockView> get() = orchestrator.stores.views.current()
+
     private var eventSubscription: Job? = null
 
     private var mode = EditorMode.EDITING
@@ -1040,21 +1042,30 @@ class PageViewModel(
 
     private fun proceedWithUnlinking(target: String) {
 
-        // TODO support nested blocks
+        val position = views.indexOfFirst { it.id == target }
 
-        val parent = blocks.first { it.children.contains(target) }
+        var previous: Id? = null
+        var cursor: Int? = null
 
-        val index = parent.children.indexOf(target)
+        if (position <= 0) return
 
-        val previous = index.dec().let { prev ->
-            if (prev != -1) parent.children[prev] else context
-        }
-
-        val cursor = blocks.find { it.id == previous }?.let { block ->
-            if (block.content is Content.Text) {
-                block.content.asText().text.length
-            } else {
-                null
+        for (i in position.dec() downTo 0) {
+            when (val view = views[i]) {
+                is BlockView.Text -> {
+                    previous = view.id
+                    cursor = view.text.length
+                    break
+                }
+                is BlockView.Code -> {
+                    previous = view.id
+                    cursor = view.text.length
+                    break
+                }
+                is BlockView.Title -> {
+                    previous = view.id
+                    cursor = view.text?.length ?: 0
+                    break
+                }
             }
         }
 

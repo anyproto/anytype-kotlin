@@ -160,7 +160,7 @@ open class PageFragment :
                     marks = editable.extractMarks()
                 )
             },
-            onParagraphTextChanged = vm::onTextBlockTextChanged,
+            onTextBlockTextChanged = vm::onTextBlockTextChanged,
             onSelectionChanged = vm::onSelectionChanged,
             onCheckboxClicked = vm::onCheckboxClicked,
             onFocusChanged = vm::onBlockFocusChanged,

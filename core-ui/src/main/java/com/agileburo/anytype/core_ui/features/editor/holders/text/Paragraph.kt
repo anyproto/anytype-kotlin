@@ -25,7 +25,7 @@ class Paragraph(
 
     fun bind(
         item: BlockView.Text.Paragraph,
-        onTextChanged: (BlockView.Text.Paragraph) -> Unit,
+        onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
@@ -42,7 +42,7 @@ class Paragraph(
                 text = editable.toString()
                 marks = editable.marks()
             }
-            onTextChanged(item)
+            onTextBlockTextChanged(item)
         },
         onSelectionChanged = onSelectionChanged,
         onFocusChanged = onFocusChanged,

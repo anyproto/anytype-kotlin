@@ -8,6 +8,7 @@ import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.core_ui.features.page.ListenerType
+import com.agileburo.anytype.core_ui.features.page.marks
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
@@ -31,7 +32,7 @@ class Highlight(
 
     fun bind(
         item: BlockView.Text.Highlight,
-        onTextChanged: (String, Editable) -> Unit,
+        onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
@@ -42,7 +43,13 @@ class Highlight(
         onTextInputClicked: (String) -> Unit
     ) = super.bind(
         item = item,
-        onTextChanged = onTextChanged,
+        onTextChanged = { _, editable ->
+            item.apply {
+                text = editable.toString()
+                marks = editable.marks()
+            }
+            onTextBlockTextChanged(item)
+        },
         onFocusChanged = onFocusChanged,
         onSelectionChanged = onSelectionChanged,
         clicked = clicked,

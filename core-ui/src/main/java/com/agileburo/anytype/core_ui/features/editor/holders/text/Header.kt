@@ -4,10 +4,7 @@ import android.text.Editable
 import android.view.View
 import androidx.core.view.updatePadding
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.features.page.BlockView
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
-import com.agileburo.anytype.core_ui.features.page.ListenerType
-import com.agileburo.anytype.core_ui.features.page.TextHolder
+import com.agileburo.anytype.core_ui.features.page.*
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.dimen
 
@@ -19,7 +16,7 @@ abstract class Header(
 
     fun bind(
         block: BlockView.Text.Header,
-        onTextChanged: (String, Editable) -> Unit,
+        onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
@@ -31,7 +28,13 @@ abstract class Header(
     ) = super.bind(
         item = block,
         onSelectionChanged = onSelectionChanged,
-        onTextChanged = onTextChanged,
+        onTextChanged = { _, editable ->
+            block.apply {
+                text = editable.toString()
+                marks = editable.marks()
+            }
+            onTextBlockTextChanged(block)
+        },
         onFocusChanged = onFocusChanged,
         clicked = clicked,
         onEndLineEnterClicked = onEndLineEnterClicked,

@@ -543,7 +543,11 @@ class PageViewModel(
         view: BlockView.Text
     ) {
 
-        val update = TextUpdate.Pattern(
+        val update = if (view is BlockView.Text.Paragraph) TextUpdate.Pattern(
+            target = view.id,
+            text = view.text,
+            markup = view.marks.map { it.mark() }
+        ) else TextUpdate.Default(
             target = view.id,
             text = view.text,
             markup = view.marks.map { it.mark() }

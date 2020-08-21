@@ -372,7 +372,7 @@ class HeaderBlockTest {
             onProfileIconClicked = {},
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
-            onParagraphTextChanged = {},
+            onTextBlockTextChanged = {},
             onTitleTextChanged = onTitleTextChanged,
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
             onMarkupActionClicked = { _, _ -> },

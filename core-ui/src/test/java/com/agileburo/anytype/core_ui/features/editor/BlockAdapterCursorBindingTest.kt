@@ -373,7 +373,7 @@ class BlockAdapterCursorBindingTest {
             onProfileIconClicked = {},
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
-            onParagraphTextChanged = {},
+            onTextBlockTextChanged = {},
             onTitleTextChanged = onTitleTextChanged,
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
             onMarkupActionClicked = { _, _ -> },

@@ -7,10 +7,7 @@ import android.widget.LinearLayout
 import androidx.core.view.updateLayoutParams
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
-import com.agileburo.anytype.core_ui.features.page.BlockView
-import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
-import com.agileburo.anytype.core_ui.features.page.ListenerType
-import com.agileburo.anytype.core_ui.features.page.SupportNesting
+import com.agileburo.anytype.core_ui.features.page.*
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.addDot
@@ -33,7 +30,7 @@ class Numbered(
 
     fun bind(
         item: BlockView.Text.Numbered,
-        onTextChanged: (String, Editable) -> Unit,
+        onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
@@ -44,7 +41,13 @@ class Numbered(
         onTextInputClicked: (String) -> Unit
     ) = super.bind(
         item = item,
-        onTextChanged = onTextChanged,
+        onTextChanged = { _, editable ->
+            item.apply {
+                text = editable.toString()
+                marks = editable.marks()
+            }
+            onTextBlockTextChanged(item)
+        },
         onSelectionChanged = onSelectionChanged,
         onFocusChanged = onFocusChanged,
         clicked = clicked,

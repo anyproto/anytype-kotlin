@@ -12,6 +12,7 @@ import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_ui.features.page.SupportNesting
+import com.agileburo.anytype.core_ui.features.page.marks
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.dimen
@@ -35,7 +36,7 @@ class Checkbox(
 
     fun bind(
         item: BlockView.Text.Checkbox,
-        onTextChanged: (String, Editable) -> Unit,
+        onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onCheckboxClicked: (String) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
@@ -47,7 +48,13 @@ class Checkbox(
         onTextInputClicked: (String) -> Unit
     ) = super.bind(
         item = item,
-        onTextChanged = onTextChanged,
+        onTextChanged = { _, editable ->
+            item.apply {
+                text = editable.toString()
+                marks = editable.marks()
+            }
+            onTextBlockTextChanged(item)
+        },
         onFocusChanged = onFocusChanged,
         onSelectionChanged = onSelectionChanged,
         clicked = clicked,

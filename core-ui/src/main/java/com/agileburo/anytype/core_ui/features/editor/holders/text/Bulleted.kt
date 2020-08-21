@@ -11,6 +11,7 @@ import com.agileburo.anytype.core_ui.extensions.tint
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_ui.features.page.SupportNesting
+import com.agileburo.anytype.core_ui.features.page.marks
 import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.dimen
@@ -33,7 +34,7 @@ class Bulleted(
 
     fun bind(
         item: BlockView.Text.Bulleted,
-        onTextChanged: (String, Editable) -> Unit,
+        onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
@@ -44,7 +45,13 @@ class Bulleted(
         onTextInputClicked: (String) -> Unit
     ) = super.bind(
         item = item,
-        onTextChanged = onTextChanged,
+        onTextChanged = { _, editable ->
+            item.apply {
+                text = editable.toString()
+                marks = editable.marks()
+            }
+            onTextBlockTextChanged(item)
+        },
         onFocusChanged = onFocusChanged,
         onSelectionChanged = onSelectionChanged,
         clicked = clicked,

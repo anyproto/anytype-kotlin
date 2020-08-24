@@ -1358,8 +1358,21 @@ class PageViewModel(
                 style = block.style(),
                 targets = listOf(target)
             )
+        } else if (block == UiBlock.PAGE) {
+            proceedWithTurningIntoDocument(listOf(target))
         }
         dispatch(Command.PopBackStack)
+    }
+
+    private fun proceedWithTurningIntoDocument(targets: List<String>) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Document.TurnIntoDocument(
+                    context = context,
+                    targets = targets
+                )
+            )
+        }
     }
 
     override fun onTurnIntoMultiSelectBlockClicked(block: UiBlock) {
@@ -1371,6 +1384,11 @@ class PageViewModel(
                 style = block.style(),
                 targets = targets
             )
+        } else if (block == UiBlock.PAGE) {
+            val targets = currentSelection().toList()
+            clearSelections()
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
+            proceedWithTurningIntoDocument(targets)
         } else {
             _error.value = "Cannot convert selected blocks to $block"
         }

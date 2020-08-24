@@ -21,6 +21,16 @@ sealed class Command {
     )
 
     /**
+     * Command for turning simple blocks into documents
+     * @property context id of the context
+     * @property targets id of the targets
+     */
+    class TurnIntoDocument(
+        val context: Id,
+        val targets: List<Id>
+    )
+
+    /**
      * @property contextId context id
      * @property blockId target block id
      * @property text updated text

@@ -4,9 +4,9 @@ import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
+import anytype.Commands.Rpc.Navigation;
 import anytype.Commands.Rpc.UploadFile;
 import anytype.Commands.Rpc.Wallet;
-import anytype.Commands.Rpc.Navigation;
 import lib.Lib;
 
 public class DefaultMiddlewareService implements MiddlewareService {
@@ -247,6 +247,17 @@ public class DefaultMiddlewareService implements MiddlewareService {
         byte[] encoded = Lib.blockListDuplicate(request.toByteArray());
         BlockList.Duplicate.Response response = BlockList.Duplicate.Response.parseFrom(encoded);
         if (response.getError() != null && response.getError().getCode() != BlockList.Duplicate.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
+    public BlockList.ConvertChildrenToPages.Response convertChildrenToPages(BlockList.ConvertChildrenToPages.Request request) throws Exception {
+        byte[] encoded = Lib.blockListConvertChildrenToPages(request.toByteArray());
+        BlockList.ConvertChildrenToPages.Response response = BlockList.ConvertChildrenToPages.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != BlockList.ConvertChildrenToPages.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return response;

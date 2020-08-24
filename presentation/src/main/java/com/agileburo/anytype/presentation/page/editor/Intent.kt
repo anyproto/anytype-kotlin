@@ -28,6 +28,11 @@ sealed class Intent {
             val blocks: List<Id>,
             val position: Position
         ) : Document()
+
+        class TurnIntoDocument(
+            val context: Id,
+            val targets: List<Id>
+        ) : Document()
     }
 
     sealed class CRUD : Intent() {

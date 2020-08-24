@@ -33,6 +33,7 @@ class Orchestrator(
     private val updateAlignment: UpdateAlignment,
     private val uploadBlock: UploadBlock,
     private val setupBookmark: SetupBookmark,
+    private val turnIntoDocument: TurnIntoDocument,
     private val move: Move,
     private val copy: Copy,
     private val paste: Paste,
@@ -282,6 +283,17 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = { proxies.payloads.send(it) }
+                    )
+                }
+                is Intent.Document.TurnIntoDocument -> {
+                    turnIntoDocument(
+                        params = TurnIntoDocument.Params(
+                            context = intent.context,
+                            targets = intent.targets
+                        )
+                    ).proceed(
+                        failure = defaultOnError,
+                        success = {}
                     )
                 }
                 is Intent.Media.DownloadFile -> {

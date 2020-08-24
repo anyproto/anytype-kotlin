@@ -158,6 +158,7 @@ object EditorSessionModule {
         uploadBlock: UploadBlock,
         updateAlignment: UpdateAlignment,
         setupBookmark: SetupBookmark,
+        turnIntoDocument: TurnIntoDocument,
         matcher: DefaultPatternMatcher,
         move: Move,
         copy: Copy,
@@ -183,6 +184,7 @@ object EditorSessionModule {
         memory = memory,
         downloadFile = downloadFile,
         updateTitle = updateTitle,
+        turnIntoDocument = turnIntoDocument,
         textInteractor = Interactor.TextInteractor(
             proxies = proxer,
             stores = storage,
@@ -473,6 +475,15 @@ object EditorUseCaseModule {
     fun provideMoveUseCase(
         repo: BlockRepository
     ): Move = Move(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideTurnIntoDocumentUseCase(
+        repo: BlockRepository
+    ): TurnIntoDocument = TurnIntoDocument(
         repo = repo
     )
 }

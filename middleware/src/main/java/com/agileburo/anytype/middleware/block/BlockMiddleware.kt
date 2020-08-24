@@ -128,6 +128,10 @@ class BlockMiddleware(
         command: CommandEntity.ArchiveDocument
     ) = middleware.archiveDocument(command)
 
+    override suspend fun turnIntoDocument(
+        command: CommandEntity.TurnIntoDocument
+    ): List<String> = middleware.turnIntoDocument(command)
+
     override suspend fun replace(
         command: CommandEntity.Replace
     ): Pair<String, PayloadEntity> = middleware.replace(command)

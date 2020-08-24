@@ -5,6 +5,11 @@ package com.agileburo.anytype.data.auth.model
  */
 class CommandEntity {
 
+    class TurnIntoDocument(
+        val context: String,
+        val targets: List<String>
+    )
+
     class UploadFile(
         val path: String,
         val type: BlockEntity.Content.File.Type

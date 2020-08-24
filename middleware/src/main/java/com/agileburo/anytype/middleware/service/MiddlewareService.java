@@ -4,9 +4,9 @@ import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
 import anytype.Commands.Rpc.Config;
+import anytype.Commands.Rpc.Navigation;
 import anytype.Commands.Rpc.UploadFile;
 import anytype.Commands.Rpc.Wallet;
-import anytype.Commands.Rpc.Navigation;
 
 /**
  * Service for interacting with the backend.
@@ -55,6 +55,8 @@ public interface MiddlewareService {
     Block.Split.Response blockSplit(Block.Split.Request request) throws Exception;
 
     BlockList.Duplicate.Response blockListDuplicate(BlockList.Duplicate.Request request) throws Exception;
+
+    BlockList.ConvertChildrenToPages.Response convertChildrenToPages(BlockList.ConvertChildrenToPages.Request request) throws Exception;
 
     Block.Bookmark.Fetch.Response blockBookmarkFetch(Block.Bookmark.Fetch.Request request) throws Exception;
 

@@ -15,7 +15,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 
-class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
+class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
 
     @get:Rule
     val rule = InstantTaskExecutorRule()

@@ -376,6 +376,11 @@ fun Command.ArchiveDocument.toEntity() = CommandEntity.ArchiveDocument(
     target = target
 )
 
+fun Command.TurnIntoDocument.toEntity() = CommandEntity.TurnIntoDocument(
+    context = context,
+    targets = targets
+)
+
 fun Command.Paste.toEntity() = CommandEntity.Paste(
     context = context,
     focus = focus,

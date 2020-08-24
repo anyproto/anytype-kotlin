@@ -125,6 +125,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var move: Move
 
+    @Mock
+    lateinit var turnIntoDocument: TurnIntoDocument
+
     open fun buildViewModel(
         urlBuilder: UrlBuilder = UrlBuilder(
             config = Config(
@@ -187,7 +190,8 @@ open class EditorPresentationTestSetup {
                 setupBookmark = setupBookmark,
                 paste = paste,
                 copy = copy,
-                move = move
+                move = move,
+                turnIntoDocument = turnIntoDocument
             )
         )
     }
@@ -262,6 +266,14 @@ open class EditorPresentationTestSetup {
                     events = events
                 )
             )
+        }
+    }
+
+    fun stubTurnIntoDocument(
+        params: TurnIntoDocument.Params = any()
+    ) {
+        turnIntoDocument.stub {
+            onBlocking { invoke(params) } doReturn Either.Right(emptyList())
         }
     }
 }

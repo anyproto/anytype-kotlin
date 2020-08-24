@@ -138,6 +138,10 @@ class BlockDataRepository(
         command: Command.ArchiveDocument
     ) = factory.remote.archiveDocument(command.toEntity())
 
+    override suspend fun turnIntoDocument(
+        command: Command.TurnIntoDocument
+    ): List<Id> = factory.remote.turnIntoDocument(command.toEntity())
+
     override suspend fun paste(
         command: Command.Paste
     ): Paste.Response = factory.remote.paste(command.toEntity()).toDomain()

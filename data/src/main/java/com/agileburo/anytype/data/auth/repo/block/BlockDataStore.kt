@@ -37,6 +37,7 @@ interface BlockDataStore {
     suspend fun undo(command: CommandEntity.Undo) : PayloadEntity
     suspend fun redo(command: CommandEntity.Redo) : PayloadEntity
     suspend fun archiveDocument(command: CommandEntity.ArchiveDocument)
+    suspend fun turnIntoDocument(command: CommandEntity.TurnIntoDocument): List<Id>
     suspend fun paste(command: CommandEntity.Paste) : Response.Clipboard.Paste
     suspend fun copy(command: CommandEntity.Copy) : Response.Clipboard.Copy
 

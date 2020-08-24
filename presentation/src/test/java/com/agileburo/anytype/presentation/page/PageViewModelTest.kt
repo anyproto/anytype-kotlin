@@ -149,6 +149,9 @@ class PageViewModelTest {
     @Mock
     lateinit var move: Move
 
+    @Mock
+    lateinit var turnIntoDocument: TurnIntoDocument
+
     private lateinit var vm: PageViewModel
 
     @Before
@@ -4360,7 +4363,8 @@ class PageViewModelTest {
                 setupBookmark = setupBookmark,
                 paste = paste,
                 copy = copy,
-                move = move
+                move = move,
+                turnIntoDocument = turnIntoDocument
             )
         )
     }

@@ -865,6 +865,27 @@ public class Middleware {
         }
     }
 
+    public List<String> turnIntoDocument(CommandEntity.TurnIntoDocument command) throws Exception {
+
+        BlockList.ConvertChildrenToPages.Request request = BlockList.ConvertChildrenToPages.Request
+                .newBuilder()
+                .setContextId(command.getContext())
+                .addAllBlockIds(command.getTargets())
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        BlockList.ConvertChildrenToPages.Response response = service.convertChildrenToPages(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return response.getLinkIdsList();
+    }
+
     public Response.Clipboard.Paste paste(CommandEntity.Paste command) throws Exception {
 
         Range range = Range

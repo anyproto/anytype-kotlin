@@ -105,6 +105,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: CommandEntity.ArchiveDocument
     ) = remote.archiveDocument(command)
 
+    override suspend fun turnIntoDocument(
+        command: CommandEntity.TurnIntoDocument
+    ): List<Id> = remote.turnIntoDocument(command)
+
     override suspend fun replace(
         command: CommandEntity.Replace
     ): Pair<Id, PayloadEntity> = remote.replace(command)

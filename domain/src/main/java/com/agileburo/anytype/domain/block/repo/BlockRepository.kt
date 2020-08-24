@@ -19,6 +19,8 @@ interface BlockRepository {
 
     suspend fun archiveDocument(command: Command.ArchiveDocument)
 
+    suspend fun turnIntoDocument(command: Command.TurnIntoDocument): List<Id>
+
     /**
      * Duplicates target block
      * @return id of the new block and payload events.

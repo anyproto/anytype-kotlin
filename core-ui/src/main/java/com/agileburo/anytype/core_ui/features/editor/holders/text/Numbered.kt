@@ -85,7 +85,7 @@ class Numbered(
         super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked)
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.NUMBER_CHANGED))
-                number.text = "${(item as BlockView.Text.Numbered).number}"
+                number.text = (item as BlockView.Text.Numbered).number.addDot()
         }
     }
 

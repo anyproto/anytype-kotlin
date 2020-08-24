@@ -12,6 +12,7 @@
 
 ### Fixes & tech 🚒
 
+* Dot is missing after number in numbered block when its number and indent gets updated by payload change (#704)
 * Nested block on-backspace-pressed deletion issues (#697)
 * Library/framework updates (#687)
     * AAC `Navigation`,

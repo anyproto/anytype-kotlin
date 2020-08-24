@@ -39,8 +39,6 @@ abstract class BlockActionToolbar : Fragment() {
 
         const val ANIM_DURATION = 300L
         const val DEFAULT_MARGIN = 0
-        const val DIVIDER_HEIGHT = 1
-        const val DIVIDER_BIG_HEIGHT = 8
         const val INTERPOLATOR_OVERSHOOT_TENSION = 1.6f
     }
 
@@ -126,17 +124,19 @@ abstract class BlockActionToolbar : Fragment() {
             actions.forEach { type ->
                 when (type) {
                     ActionItemType.Divider -> {
-                        actionToolbarSize += DIVIDER_HEIGHT
+                        val height = resources.getDimensionPixelSize(R.dimen.default_toolbar_action_item_divider_height)
+                        actionToolbarSize += height
                         addVerticalDivider(
-                            height = DIVIDER_HEIGHT,
+                            height = height,
                             alpha = 1.0f,
                             color = context.color(R.color.light_grayish)
                         )
                     }
                     ActionItemType.DividerExtended -> {
-                        actionToolbarSize += DIVIDER_BIG_HEIGHT
+                        val height = resources.getDimensionPixelSize(R.dimen.default_toolbar_action_item_divider_extended_height)
+                        actionToolbarSize += height
                         addVerticalDivider(
-                            height = DIVIDER_BIG_HEIGHT,
+                            height = height,
                             alpha = 1.0f,
                             color = context.color(R.color.light_grayish)
                         )

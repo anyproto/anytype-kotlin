@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
         android:padding="@dimen/dp_16"
-        android:text="Cancel"
+        android:text="@string/cancel"
         android:textColor="#2C2B27"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,20 +44,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+        app:layout_constraintTop_toBottomOf="@+id/searchWidget" />
 
-    <SearchView
-        android:id="@+id/searchView"
+    <include
+        android:id="@+id/searchWidget"
         android:layout_width="0dp"
         android:layout_height="36dp"
-        android:layout_marginStart="16dp"
+        layout="@layout/widget_search_view"
+        android:layout_marginStart="@dimen/dp_16"
         android:layout_marginEnd="4dp"
-        android:background="@drawable/bg_page_nav_filter"
-        android:closeIcon="@drawable/ic_search_delete"
-        android:searchIcon="@drawable/ic_search"
         app:layout_constraintBottom_toBottomOf="@+id/icSorting"
         app:layout_constraintEnd_toStartOf="@+id/icSorting"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/icSorting" />
+        app:layout_constraintTop_toTopOf="@+id/icSorting"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

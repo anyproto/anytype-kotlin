@@ -178,6 +178,7 @@
     <string name="menu_item_cut">Cut</string>
     <string name="menu_item_paste">Paste</string>
     <string name="style">Style</string>
+    <string name="text">Text</string>
     <string name="color">Color</string>
     <string name="background">Background</string>
     <string name="content_description_close_button">Close button</string>

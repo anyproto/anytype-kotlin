@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:focusable="true"
     android:clickable="true"
-    android:background="#B3000000"
+    android:background="@color/anytype_shadow_main"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">

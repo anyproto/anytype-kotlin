@@ -55,6 +55,7 @@
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="3dp"
         android:src="@drawable/ic_block_more"
+        android:visibility="invisible"
         android:contentDescription="@string/content_description_more_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

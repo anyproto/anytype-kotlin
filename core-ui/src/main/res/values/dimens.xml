@@ -43,6 +43,8 @@
     <dimen name="default_toolbar_action_item_spacing">8dp</dimen>
     <dimen name="default_toolbar_action_item_spacing_first">16dp</dimen>
     <dimen name="default_toolbar_action_item_spacing_last">16dp</dimen>
+    <dimen name="default_toolbar_action_item_divider_height">1dp</dimen>
+    <dimen name="default_toolbar_action_item_divider_extended_height">8dp</dimen>
 
     <dimen name="default_toolbar_text_color_item_height">48dp</dimen>
     <dimen name="default_toolbar_text_color_item_width">64dp</dimen>

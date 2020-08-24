@@ -287,10 +287,9 @@
         <item name="android:textColor">@color/selector_style_toolbar_tab_text_color</item>
         <item name="android:fontFamily">@font/graphik_medium</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">28dp</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingTop">3dp</item>
-        <item name="android:paddingBottom">4dp</item>
         <item name="android:paddingEnd">16dp</item>
     </style>
 
@@ -355,6 +354,10 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textColor">@color/anytype_text_grey</item>
         <item name="android:textSize">9sp</item>
+    </style>
+
+    <style name="GreyProgressBar" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorAccent">#ACA996</item>
     </style>
 
 </resources>

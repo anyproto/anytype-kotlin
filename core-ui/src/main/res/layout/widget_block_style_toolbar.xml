@@ -17,7 +17,7 @@
     <TextView
         android:id="@+id/blockStyle"
         style="@style/StyleToolbarTabStyle"
-        android:text="@string/style"
+        android:text="@string/text"
         app:layout_constraintBottom_toBottomOf="@+id/close"
         app:layout_constraintEnd_toStartOf="@+id/blockColor"
         app:layout_constraintHorizontal_bias="0.5"

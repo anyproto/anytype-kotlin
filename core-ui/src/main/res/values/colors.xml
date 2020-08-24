@@ -24,6 +24,7 @@
     <color name="anytype_background_ice">#D6EFFD</color>
     <color name="anytype_background_teal">#D6F5F3</color>
     <color name="anytype_background_green">#E3F7D0</color>
+    <color name="anytype_shadow_main">#8C000000</color>
 
     <color name="debug">#F44336</color>
     <color name="orange">#FFBB2C</color>

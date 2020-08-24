@@ -37,6 +37,7 @@
         android:layout_marginEnd="16dp"
         android:ellipsize="end"
         android:fontFamily="@font/inter_regular"
+        android:lineSpacingMultiplier="1.21"
         android:maxLines="3"
         android:textColor="#6C6A5F"
         android:textSize="15sp"
@@ -44,7 +45,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPageTitle"
-        tools:text="The Iraqi-British Zaha Hadid became famous for her intensely futuristic architecture characterized by curving faсt" />
+        tools:text="The Iraqi-British Zaha Hadid became famous for her intensely futuristic architecture characterized by curving faсt"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/tvPageTitle"

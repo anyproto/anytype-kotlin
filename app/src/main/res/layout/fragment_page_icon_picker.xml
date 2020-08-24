@@ -94,6 +94,7 @@
         android:id="@+id/pickerRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dp_8"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:clipToPadding="false"

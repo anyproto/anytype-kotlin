@@ -2,7 +2,8 @@ package com.agileburo.anytype.ui.search
 
 import android.os.Bundle
 import android.view.View
-import android.widget.SearchView
+import android.widget.EditText
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.R
@@ -22,6 +23,9 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
     @Inject
     lateinit var factory: PageSearchViewModelFactory
 
+    lateinit var clearSearchText: View
+    lateinit var filterInputField: EditText
+
     private val vm by lazy {
         ViewModelProviders
             .of(this, factory)
@@ -32,6 +36,8 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
         super.onViewCreated(view, savedInstanceState)
         vm.state.observe(viewLifecycleOwner, this)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
+        clearSearchText = searchView.findViewById(R.id.clearSearchText)
+        filterInputField = searchView.findViewById(R.id.filterInputField)
         vm.onViewCreated()
     }
 
@@ -41,20 +47,22 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
                 recyclerView.invisible()
                 tvScreenStateMessage.invisible()
                 progressBar.invisible()
-                with(searchView) {
-                    setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                        override fun onQueryTextSubmit(query: String?): Boolean {
-                            clearFocus()
-                            return false
-                        }
+                searchView.findViewById<View>(R.id.clearSearchText).setOnClickListener {
 
-                        override fun onQueryTextChange(newText: String?): Boolean {
-                            if (newText != null) {
-                                vm.onSearchTextChanged(newText)
-                            }
-                            return false
-                        }
-                    })
+                }
+                clearSearchText.setOnClickListener {
+                    filterInputField.setText(EMPTY_FILTER_TEXT)
+                    clearSearchText.invisible()
+                }
+                filterInputField.doAfterTextChanged { newText ->
+                    if (newText != null) {
+                        vm.onSearchTextChanged(newText.toString())
+                    }
+                    if (newText.isNullOrEmpty()) {
+                        clearSearchText.invisible()
+                    } else {
+                        clearSearchText.visible()
+                    }
                 }
                 recyclerView.layoutManager = LinearLayoutManager(requireContext())
                 recyclerView.adapter =
@@ -102,5 +110,9 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
 
     override fun releaseDependencies() {
         componentManager().pageSearchComponent.release()
+    }
+
+    companion object {
+        const val EMPTY_FILTER_TEXT = ""
     }
 }

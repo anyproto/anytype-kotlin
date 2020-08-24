@@ -53,22 +53,20 @@
                     android:contentDescription="@string/description_profile_picture"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:text_size="@dimen/default_avatar_text_size" />
+                    app:text_size="34sp" />
 
                 <TextView
                     android:id="@+id/name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="@dimen/dp_12"
-                    android:layout_marginEnd="12dp"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/graphik_semibold"
+                    android:maxLines="3"
                     android:textColor="@color/black"
                     android:textSize="28sp"
-                    android:maxLines="3"
-                    android:ellipsize="end"
-                    android:drawableEnd="@drawable/ic_profile_forward"
-                    android:fontFamily="@font/graphik_semibold"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/ivArrowForward"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/avatar"
                     tools:text="Anton Pronkin" />
@@ -79,11 +77,11 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="3dp"
                     android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="14dp"
+                    android:layout_marginBottom="15dp"
+                    android:fontFamily="@font/inter_regular"
                     android:text="@string/your_page"
                     android:textColor="#ACA996"
                     android:textSize="15sp"
-                    android:fontFamily="@font/inter_regular"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -100,6 +98,16 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_debug_settings" />
+
+                <ImageView
+                    android:id="@+id/ivArrowForward"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/name"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/name"
+                    app:srcCompat="@drawable/ic_profile_forward" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -145,10 +153,10 @@
 
                 <View
                     android:id="@+id/firstDivider"
+                    style="@style/ProfileItemDivider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginTop="10dp"
-                    style="@style/ProfileItemDivider"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/icWallpaper" />
@@ -181,10 +189,10 @@
 
                 <View
                     android:id="@+id/secondDivider"
+                    style="@style/ProfileItemDivider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginTop="10dp"
-                    style="@style/ProfileItemDivider"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/keyIcon" />

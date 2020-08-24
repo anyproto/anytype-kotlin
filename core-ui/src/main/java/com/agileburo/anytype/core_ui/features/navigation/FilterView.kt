@@ -7,12 +7,17 @@ import android.view.View
 import android.widget.SearchView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_utils.ext.imm
+import com.agileburo.anytype.core_utils.ext.invisible
 import com.agileburo.anytype.core_utils.ext.toast
+import com.agileburo.anytype.core_utils.ext.visible
 import kotlinx.android.synthetic.main.view_page_links_filter.view.*
+import kotlinx.android.synthetic.main.widget_search_view.view.*
+import timber.log.Timber
 
 class FilterView @JvmOverloads constructor(
     context: Context,
@@ -21,7 +26,6 @@ class FilterView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val recycler: RecyclerView
-    private val search: SearchView
     private val cancel: TextView
     private val sorting: View
     private var links: MutableList<PageLinkView> = mutableListOf()
@@ -32,39 +36,27 @@ class FilterView @JvmOverloads constructor(
     init {
         LayoutInflater.from(context).inflate(R.layout.view_page_links_filter, this, true)
         recycler = recyclerView
-        search = searchView
         cancel = btnCancel
         sorting = icSorting
         recycler.layoutManager = LinearLayoutManager(context)
         cancel.setOnClickListener { cancelClicked?.invoke() }
         sorting.setOnClickListener { context.toast("Not implemented yet") }
-
-        with(search) {
-            post {
-                if (!hasFocus()) {
-                    if (requestFocus()) {
-                        context.imm().showSoftInput(this, 0)
-                    }
-                }
-            }
-            isIconifiedByDefault = false
-            queryHint = context.resources.getString(R.string.filter_view_search_hint)
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    search.clearFocus()
-                    return false
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    if (newText != null && recycler.adapter != null) {
+        clearSearchText.setOnClickListener {
+            filterInputField.setText(EMPTY_FILTER_TEXT)
+            clearSearchText.invisible()
+        }
+        filterInputField.doAfterTextChanged { newText ->
+            if (newText != null && recycler.adapter != null) {
                         (recycler.adapter as PageLinksAdapter).let {
-                            val filtered = links.filterBy(newText)
+                            val filtered = links.filterBy(newText.toString())
                             it.updateLinks(filtered)
                         }
                     }
-                    return false
-                }
-            })
+            if (newText.isNullOrEmpty()) {
+                clearSearchText.invisible()
+            } else {
+                clearSearchText.visible()
+            }
         }
     }
 
@@ -73,11 +65,15 @@ class FilterView @JvmOverloads constructor(
         this.links.addAll(links)
         if (recycler.adapter == null) {
             recycler.adapter = PageLinksAdapter(
-                data = this.links,
+                data = links,
                 onClick = { pageId -> pageClicked?.invoke(pageId) }
             )
         } else {
-            (recycler.adapter as PageLinksAdapter).updateLinks(this.links)
+            (recycler.adapter as PageLinksAdapter).updateLinks(links)
         }
+    }
+
+    companion object {
+        private const val EMPTY_FILTER_TEXT = ""
     }
 }

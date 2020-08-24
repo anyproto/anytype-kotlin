@@ -37,15 +37,14 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="34sp"
-        android:layout_marginBottom="20dp"
-        android:hint="@string/hint_profile_title"
-        android:textColorHint="#ACA996"
+        android:layout_marginTop="11dp"
+        android:layout_marginBottom="13dp"
         android:background="@null"
-        android:textColor="@color/black"
         android:fontFamily="@font/graphik_semibold"
-        android:lineSpacingExtra="2sp"
-        android:layout_marginTop="15dp"
+        android:hint="@string/hint_profile_title"
+        android:textColor="@color/black"
+        android:textColorHint="#ACA996"
+        android:textSize="34sp"
         tools:text="Title" />
 
 </LinearLayout>

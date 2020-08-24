@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_utils.ext.hideKeyboard
 import com.agileburo.anytype.core_utils.ext.toast
@@ -18,6 +20,7 @@ import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.page.bookmark.CreateBookmarkViewModel
 import com.agileburo.anytype.presentation.page.bookmark.CreateBookmarkViewModel.ViewState
 import com.agileburo.anytype.ui.page.OnFragmentInteractionListener
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.dialog_create_bookmark.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -65,6 +68,16 @@ class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        dialog?.setOnShowListener { dg ->
+            val bottomSheet = (dg as? BottomSheetDialog)?.findViewById<FrameLayout>(
+                com.google.android.material.R.id.design_bottom_sheet
+            )
+            bottomSheet?.setBackgroundColor(requireContext().color(android.R.color.transparent))
+        }
+        cancelBookmarkButton.setOnClickListener {
+            it.hideKeyboard()
+            this.dismiss()
+        }
         createBookmarkButton
             .clicks()
             .onEach {

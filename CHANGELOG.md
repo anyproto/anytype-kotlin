@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.44 (WIP)
+## Version 0.0.44
 
 ### New features 🚀
 
@@ -9,10 +9,13 @@
 
 ### Design & UX 🔳
 
-*
+* Design fixes pack (profile, search, style toolbar, bookmark block, block icons on add-block/turn-into toolbar, etc.) (#724)
+* Fix action toolbar constraints (#611)
 
 ### Fixes & tech 🚒
 
+* Refactoring | Decomposed monolithic `BlockViewHolder`: DRY, better inheritance and composition (#645)
+* Scroll-and-move restriction: prevent from moving parent into child (#696)
 * Dot is missing after number in numbered block when its number and indent gets updated by payload change (#704)
 * Nested block on-backspace-pressed deletion issues (#697)
 * Library/framework updates (#687)
@@ -27,7 +30,7 @@
 * Removed task-block-related legacy (#679)
 * Removed "Color", "Background" actions for media blocks (#611)
 * Removed "Add Caption", "Replace", "Rename" actions (#611)
-* Fix action toolbar constraints (#611)
+* Render-state syncing for all text blocks (#719) 
 
 ## Version 0.0.43
 

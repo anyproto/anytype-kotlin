@@ -1593,6 +1593,8 @@ class PageViewModel(
 
         val block = blocks.first { it.id == target }
 
+        val parent = blocks.find { it.children.contains(target) }?.id
+
         if (block.supportNesting()) {
 
             val selected = currentSelection().toList()
@@ -1601,6 +1603,12 @@ class PageViewModel(
                 _error.value = CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR
                 return
             }
+
+            if (parent != null && selected.contains(parent)) {
+                _error.value = CANNOT_MOVE_PARENT_INTO_CHILD
+                return
+            }
+
 
             val position = when (ratio) {
                 in START_RANGE -> Position.TOP
@@ -1999,8 +2007,10 @@ class PageViewModel(
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
         const val DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE = 150L
         const val INITIAL_INDENT = 0
-        const val CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR = "A block cannot be dropped inside itself."
+        const val CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR = "A block cannot be moved inside itself."
         const val CANNOT_BE_PARENT_ERROR = "This block does not support nesting."
+        const val CANNOT_MOVE_PARENT_INTO_CHILD =
+            "Cannot move parent into child. Please, check selected blocks."
     }
 
     data class MarkupAction(

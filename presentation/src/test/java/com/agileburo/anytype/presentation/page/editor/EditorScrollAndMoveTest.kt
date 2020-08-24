@@ -12,6 +12,7 @@ import com.agileburo.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verifyBlocking
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -79,7 +80,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val document = listOf(page, a, b, c)
 
         stubOpenDocument(document)
-        stubObserveEvents()
+        stubInterceptEvents()
 
         val vm = buildViewModel()
 
@@ -176,7 +177,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val document = listOf(page, a, b, c)
 
         stubOpenDocument(document)
-        stubObserveEvents()
+        stubInterceptEvents()
 
         val vm = buildViewModel()
 
@@ -274,7 +275,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val document = listOf(page, a, b, c)
 
         stubOpenDocument(document)
-        stubObserveEvents()
+        stubInterceptEvents()
         stubMove()
 
         val vm = buildViewModel()
@@ -365,7 +366,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val document = listOf(page, a, b)
 
         stubOpenDocument(document)
-        stubObserveEvents()
+        stubInterceptEvents()
         stubMove()
 
         val vm = buildViewModel()
@@ -438,7 +439,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val document = listOf(page, a, b)
 
         stubOpenDocument(document)
-        stubObserveEvents()
+        stubInterceptEvents()
         stubMove()
 
         val vm = buildViewModel()
@@ -511,7 +512,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val document = listOf(page, a, b)
 
         stubOpenDocument(document)
-        stubObserveEvents()
+        stubInterceptEvents()
         stubMove()
 
         val vm = buildViewModel()
@@ -547,8 +548,157 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         clearPendingCoroutines()
     }
 
+    @Test
+    fun `should not move parent paragraph into child paragraph`() {
+
+        // SETUP
+
+        val child = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val parent = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = listOf(child.id),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(parent.id)
+        )
+
+        val document = listOf(page, parent, child)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+        stubMove()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        vm.apply {
+            onBlockFocusChanged(
+                id = parent.id,
+                hasFocus = true
+            )
+            onEnterMultiSelectModeClicked()
+            onTextInputClicked(parent.id)
+            onEnterScrollAndMoveClicked()
+            onApplyScrollAndMove(
+                target = child.id,
+                ratio = 0.5f
+            )
+        }
+
+        verifyZeroInteractions(move)
+
+        vm.error.test().assertValue(PageViewModel.CANNOT_MOVE_PARENT_INTO_CHILD)
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should not move because one of selected blocks is parent for target`() {
+
+        // SETUP
+
+        val child = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val parent = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = listOf(child.id),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(parent.id, block.id)
+        )
+
+        val document = listOf(page, parent, child, block)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+        stubMove()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        vm.apply {
+            onBlockFocusChanged(
+                id = parent.id,
+                hasFocus = true
+            )
+            onEnterMultiSelectModeClicked()
+            onTextInputClicked(parent.id)
+            onTextInputClicked(block.id)
+            onEnterScrollAndMoveClicked()
+            onApplyScrollAndMove(
+                target = child.id,
+                ratio = 0.5f
+            )
+        }
+
+        verifyZeroInteractions(move)
+
+        vm.error.test().assertValue(PageViewModel.CANNOT_MOVE_PARENT_INTO_CHILD)
+
+        clearPendingCoroutines()
+    }
+
     private fun clearPendingCoroutines() {
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
-
 }

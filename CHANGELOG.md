@@ -9,7 +9,7 @@
 
 ### Design & UX 🔳
 
-* Design fixes pack (profile, search, style toolbar, bookmark block, block icons on add-block/turn-into toolbar, etc.) (#724)
+* Design fixes pack (profile, search, style toolbar, bookmark block, block icons on add-block/turn-into toolbar, etc.) (#602)
 * Fix action toolbar constraints (#611)
 
 ### Fixes & tech 🚒

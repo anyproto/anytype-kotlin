@@ -15,7 +15,7 @@ import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.clipboard.Copy
 import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Id
-import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.config.Gateway
 import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
@@ -152,11 +152,17 @@ class PageViewModelTest {
     @Mock
     lateinit var turnIntoDocument: TurnIntoDocument
 
+    @Mock
+    lateinit var gateway : Gateway
+
     private lateinit var vm: PageViewModel
+
+    private lateinit var builder: UrlBuilder
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
+        builder = UrlBuilder(gateway)
     }
 
     @Test
@@ -187,14 +193,6 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-
-        val builder = UrlBuilder(
-            config = Config(
-                home = root,
-                gateway = MockDataFactory.randomUuid(),
-                profile = MockDataFactory.randomUuid()
-            )
-        )
 
         val paragraph = Block(
             id = child,
@@ -371,14 +369,6 @@ class PageViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
-        val builder = UrlBuilder(
-            config = Config(
-                home = root,
-                gateway = MockDataFactory.randomUuid(),
-                profile = MockDataFactory.randomUuid()
-            )
-        )
-
         val paragraph = Block(
             id = child,
             fields = Block.Fields(emptyMap()),
@@ -534,14 +524,6 @@ class PageViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
-        val builder = UrlBuilder(
-            config = Config(
-                home = root,
-                gateway = MockDataFactory.randomUuid(),
-                profile = MockDataFactory.randomUuid()
-            )
-        )
-
         val paragraph = Block(
             id = child,
             fields = Block.Fields(emptyMap()),
@@ -644,14 +626,6 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-
-        val builder = UrlBuilder(
-            config = Config(
-                home = root,
-                gateway = MockDataFactory.randomUuid(),
-                profile = MockDataFactory.randomUuid()
-            )
-        )
 
         val paragraph = Block(
             id = child,
@@ -798,14 +772,6 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-
-        val builder = UrlBuilder(
-            config = Config(
-                home = root,
-                gateway = MockDataFactory.randomUuid(),
-                profile = MockDataFactory.randomUuid()
-            )
-        )
 
         val paragraph = Block(
             id = child,
@@ -1037,14 +1003,6 @@ class PageViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-
-        val builder = UrlBuilder(
-            config = Config(
-                home = root,
-                gateway = MockDataFactory.randomUuid(),
-                profile = MockDataFactory.randomUuid()
-            )
-        )
 
         val paragraph = Block(
             id = child,
@@ -1417,14 +1375,6 @@ class PageViewModelTest {
             children = listOf(child)
         )
 
-        val builder = UrlBuilder(
-            config = Config(
-                home = root,
-                gateway = MockDataFactory.randomUuid(),
-                profile = MockDataFactory.randomUuid()
-            )
-        )
-
         val style = Block.Content.Text.Style.H1
 
         val new = Block(
@@ -1683,14 +1633,6 @@ class PageViewModelTest {
             root = root,
             firstChild = firstChild,
             secondChild = secondChild
-        )
-
-        val builder = UrlBuilder(
-            config = Config(
-                home = root,
-                gateway = MockDataFactory.randomUuid(),
-                profile = MockDataFactory.randomUuid()
-            )
         )
 
         val events: Flow<List<Event.Command>> = flow {
@@ -2923,14 +2865,6 @@ class PageViewModelTest {
                 )
             )
         }
-
-        val builder = UrlBuilder(
-            config = Config(
-                home = MockDataFactory.randomUuid(),
-                gateway = MockDataFactory.randomString(),
-                profile = MockDataFactory.randomUuid()
-            )
-        )
 
         stubObserveEvents(flow)
         stubOpenPage()
@@ -4301,15 +4235,7 @@ class PageViewModelTest {
         }
     }
 
-    private fun buildViewModel(
-        urlBuilder: UrlBuilder = UrlBuilder(
-            config = Config(
-                home = MockDataFactory.randomUuid(),
-                gateway = MockDataFactory.randomUuid(),
-                profile = MockDataFactory.randomUuid()
-            )
-        )
-    ) {
+    private fun buildViewModel(urlBuilder: UrlBuilder = builder) {
 
         val storage = Editor.Storage()
         val proxies = Editor.Proxer()

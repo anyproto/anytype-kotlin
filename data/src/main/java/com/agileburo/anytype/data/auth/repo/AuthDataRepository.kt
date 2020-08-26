@@ -2,13 +2,15 @@ package com.agileburo.anytype.data.auth.repo
 
 import com.agileburo.anytype.data.auth.mapper.toDomain
 import com.agileburo.anytype.data.auth.mapper.toEntity
+import com.agileburo.anytype.data.auth.repo.config.Configurator
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.model.Wallet
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import kotlinx.coroutines.flow.map
 
 class AuthDataRepository(
-    private val factory: AuthDataStoreFactory
+    private val factory: AuthDataStoreFactory,
+    private val configurator: Configurator
 ) : AuthRepository {
 
     override suspend fun startAccount(
@@ -53,6 +55,7 @@ class AuthDataRepository(
     override suspend fun getMnemonic() = factory.cache.getMnemonic()
 
     override suspend fun logout() {
+        configurator.release()
         factory.remote.logout()
         factory.cache.logout()
     }

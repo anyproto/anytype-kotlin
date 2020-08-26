@@ -2,24 +2,22 @@ package com.agileburo.anytype.presentation.mapper
 
 import MockDataFactory
 import com.agileburo.anytype.domain.block.model.Block
-import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.config.Gateway
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertTrue
 
 class HomeDashboardViewMapperTest {
 
-    val config = Config(
-        home = MockDataFactory.randomUuid(),
-        gateway = MockDataFactory.randomUuid(),
-        profile = MockDataFactory.randomUuid()
-    )
+    @Mock
+    lateinit var gateway: Gateway
 
-    val builder = UrlBuilder(config)
+    private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     @Before
     fun setup() {

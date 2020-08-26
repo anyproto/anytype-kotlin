@@ -1,5 +1,12 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.45 (WIP)
+
+### Fixes & tech 🚒
+
+* Fix app configuration lifetime (#735)
+* Avatar image is not displayed after registration started after logout (#692)
+
 ## Version 0.0.44
 
 ### New features 🚀

@@ -28,7 +28,7 @@ class DefaultConfigurator : Configurator {
 
     fun new() = builder().also { instance = it }
 
-    fun release() {
+    override fun release() {
         instance = null
     }
 

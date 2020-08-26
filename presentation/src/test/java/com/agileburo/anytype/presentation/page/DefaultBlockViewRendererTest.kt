@@ -6,7 +6,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.common.Id
-import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.config.Gateway
 import com.agileburo.anytype.domain.editor.Editor
 import com.agileburo.anytype.domain.ext.asMap
 import com.agileburo.anytype.domain.ext.content
@@ -47,13 +47,10 @@ class DefaultBlockViewRendererTest {
     @Mock
     lateinit var toggleStateHolder: ToggleStateHolder
 
-    private lateinit var renderer: DefaultBlockViewRenderer
+    @Mock
+    lateinit var gateway: Gateway
 
-    private val config = Config(
-        home = MockDataFactory.randomUuid(),
-        gateway = MockDataFactory.randomString(),
-        profile = MockDataFactory.randomUuid()
-    )
+    private lateinit var renderer: DefaultBlockViewRenderer
 
     private lateinit var wrapper: BlockViewRenderWrapper
 
@@ -61,7 +58,7 @@ class DefaultBlockViewRendererTest {
     fun setup() {
         MockitoAnnotations.initMocks(this)
         renderer = DefaultBlockViewRenderer(
-            urlBuilder = UrlBuilder(config),
+            urlBuilder = UrlBuilder(gateway),
             toggleStateHolder = toggleStateHolder,
             counter = Counter.Default()
         )
@@ -461,7 +458,7 @@ class DefaultBlockViewRendererTest {
                 id = page.id,
                 isFocused = false,
                 text = name,
-                image = UrlBuilder(config).thumbnail(imageName)
+                image = UrlBuilder(gateway).thumbnail(imageName)
             ),
             BlockView.Text.Paragraph(
                 isFocused = true,
@@ -534,7 +531,7 @@ class DefaultBlockViewRendererTest {
                 id = page.id,
                 isFocused = false,
                 text = name,
-                image = UrlBuilder(config).thumbnail(imageName)
+                image = UrlBuilder(gateway).thumbnail(imageName)
             ),
             BlockView.Text.Paragraph(
                 isFocused = true,
@@ -606,7 +603,7 @@ class DefaultBlockViewRendererTest {
                 id = page.id,
                 isFocused = false,
                 text = name,
-                image = UrlBuilder(config).thumbnail(imageName)
+                image = UrlBuilder(gateway).thumbnail(imageName)
             ),
             BlockView.Text.Paragraph(
                 isFocused = true,

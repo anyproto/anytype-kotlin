@@ -7,6 +7,7 @@ import com.agileburo.anytype.data.auth.repo.block.BlockDataRepository
 import com.agileburo.anytype.data.auth.repo.block.BlockDataStoreFactory
 import com.agileburo.anytype.data.auth.repo.block.BlockRemote
 import com.agileburo.anytype.data.auth.repo.block.BlockRemoteDataStore
+import com.agileburo.anytype.data.auth.repo.config.Configurator
 import com.agileburo.anytype.device.DefaultPathProvider
 import com.agileburo.anytype.domain.auth.repo.AuthRepository
 import com.agileburo.anytype.domain.block.repo.BlockRepository
@@ -41,10 +42,12 @@ object DataModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        factory: AuthDataStoreFactory
+        factory: AuthDataStoreFactory,
+        configurator: Configurator
     ): AuthRepository {
         return AuthDataRepository(
-            factory = factory
+            factory = factory,
+            configurator = configurator
         )
     }
 

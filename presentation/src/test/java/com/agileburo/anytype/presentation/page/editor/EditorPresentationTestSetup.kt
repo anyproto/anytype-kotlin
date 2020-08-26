@@ -9,7 +9,7 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.clipboard.Copy
 import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Id
-import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.config.Gateway
 import com.agileburo.anytype.domain.download.DownloadFile
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
@@ -128,15 +128,12 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var turnIntoDocument: TurnIntoDocument
 
-    open fun buildViewModel(
-        urlBuilder: UrlBuilder = UrlBuilder(
-            config = Config(
-                home = MockDataFactory.randomUuid(),
-                gateway = MockDataFactory.randomUuid(),
-                profile = MockDataFactory.randomUuid()
-            )
-        )
-    ): PageViewModel {
+    @Mock
+    lateinit var gateway : Gateway
+
+    private val builder: UrlBuilder get() = UrlBuilder(gateway)
+
+    open fun buildViewModel(urlBuilder: UrlBuilder = builder): PageViewModel {
 
         val storage = Editor.Storage()
         val proxies = Editor.Proxer()

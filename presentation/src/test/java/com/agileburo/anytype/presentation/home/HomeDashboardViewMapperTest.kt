@@ -2,15 +2,10 @@ package com.agileburo.anytype.presentation.home
 
 import MockDataFactory
 import com.agileburo.anytype.domain.block.model.Block
-import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.config.Gateway
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
 import com.agileburo.anytype.domain.misc.UrlBuilder
-import com.agileburo.anytype.emojifier.Emojifier
-import com.agileburo.anytype.presentation.desktop.DashboardView
 import com.agileburo.anytype.presentation.mapper.toView
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -21,15 +16,9 @@ import kotlin.test.assertEquals
 class HomeDashboardViewMapperTest {
 
     @Mock
-    lateinit var emojifier: Emojifier
+    lateinit var gateway: Gateway
 
-    val builder = UrlBuilder(
-        config = Config(
-            home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid(),
-            profile = MockDataFactory.randomUuid()
-        )
-    )
+    private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     @Before
     fun setup() {

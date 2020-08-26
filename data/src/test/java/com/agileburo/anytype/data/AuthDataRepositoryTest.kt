@@ -3,6 +3,7 @@ package com.agileburo.anytype.data
 import com.agileburo.anytype.data.auth.model.AccountEntity
 import com.agileburo.anytype.data.auth.model.WalletEntity
 import com.agileburo.anytype.data.auth.repo.*
+import com.agileburo.anytype.data.auth.repo.config.Configurator
 import com.agileburo.anytype.domain.auth.model.Account
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
@@ -19,6 +20,9 @@ class AuthDataRepositoryTest {
     @Mock
     lateinit var authCache: AuthCache
 
+    @Mock
+    lateinit var configurator: Configurator
+
     lateinit var repo: AuthDataRepository
 
     @Before
@@ -32,7 +36,8 @@ class AuthDataRepositoryTest {
                 remote = AuthRemoteDataStore(
                     authRemote = authRemote
                 )
-            )
+            ),
+            configurator = configurator
         )
     }
 
@@ -220,6 +225,8 @@ class AuthDataRepositoryTest {
         verifyNoMoreInteractions(authCache)
         verify(authRemote, times(1)).logout()
         verifyNoMoreInteractions(authRemote)
+        verify(configurator, times(1)).release()
+        verifyZeroInteractions(configurator)
     }
 
     @Test

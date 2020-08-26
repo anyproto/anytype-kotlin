@@ -1,6 +1,6 @@
 package com.agileburo.anytype.di.main
 
-import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.config.Gateway
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import dagger.Module
 import dagger.Provides
@@ -12,7 +12,5 @@ object UtilModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideUrlBuilder(config: Config): UrlBuilder {
-        return UrlBuilder(config)
-    }
+    fun provideUrlBuilder(gateway: Gateway): UrlBuilder = UrlBuilder(gateway)
 }

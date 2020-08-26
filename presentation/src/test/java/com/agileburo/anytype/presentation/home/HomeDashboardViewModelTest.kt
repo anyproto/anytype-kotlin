@@ -7,10 +7,7 @@ import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.Move
 import com.agileburo.anytype.domain.block.model.Block
-import com.agileburo.anytype.domain.config.Config
-import com.agileburo.anytype.domain.config.DebugSettings
-import com.agileburo.anytype.domain.config.GetConfig
-import com.agileburo.anytype.domain.config.GetDebugSettings
+import com.agileburo.anytype.domain.config.*
 import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.toHomeDashboard
@@ -72,15 +69,18 @@ class HomeDashboardViewModelTest {
     @Mock
     lateinit var move: Move
 
+    @Mock
+    lateinit var gateway: Gateway
+
     private lateinit var vm: HomeDashboardViewModel
 
-    val config = Config(
+    private val config = Config(
         home = MockDataFactory.randomUuid(),
         gateway = MockDataFactory.randomUuid(),
         profile = MockDataFactory.randomUuid()
     )
 
-    val builder = UrlBuilder(config)
+    private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     @Before
     fun setup() {

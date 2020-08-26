@@ -8,6 +8,7 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.MockDataFactory
 import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.config.Gateway
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.domain.misc.UrlBuilder
@@ -25,6 +26,9 @@ class GetCurrentAccountTest {
 
     @Mock lateinit var repo: BlockRepository
 
+    @Mock
+    lateinit var gateway: Gateway
+
     lateinit var getCurrentAccount: GetCurrentAccount
 
     private val config = Config(
@@ -33,9 +37,7 @@ class GetCurrentAccountTest {
         gateway = MockDataFactory.randomString()
     )
 
-    private val builder = UrlBuilder(
-        config = config
-    )
+    private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     @Before
     fun before() {

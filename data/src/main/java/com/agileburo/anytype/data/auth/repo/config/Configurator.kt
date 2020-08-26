@@ -4,4 +4,5 @@ import com.agileburo.anytype.data.auth.model.ConfigEntity
 
 interface Configurator {
     fun configure(): ConfigEntity
+    fun release()
 }

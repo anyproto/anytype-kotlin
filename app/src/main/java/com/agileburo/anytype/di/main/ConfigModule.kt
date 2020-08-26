@@ -2,7 +2,9 @@ package com.agileburo.anytype.di.main
 
 import com.agileburo.anytype.data.auth.repo.config.Configuration
 import com.agileburo.anytype.data.auth.repo.config.Configurator
+import com.agileburo.anytype.data.auth.repo.config.GatewayProvider
 import com.agileburo.anytype.domain.config.Config
+import com.agileburo.anytype.domain.config.Gateway
 import com.agileburo.anytype.middleware.config.DefaultConfigurator
 import dagger.Module
 import dagger.Provides
@@ -17,6 +19,11 @@ object ConfigModule {
     fun provideApplicationConfig(configurator: Configurator): Config {
         return Configuration(configurator).init()
     }
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideGateway(configurator: Configurator): Gateway = GatewayProvider(configurator)
 
     @JvmStatic
     @Provides

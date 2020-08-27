@@ -203,6 +203,16 @@ abstract class BlockActionToolbar : Fragment() {
     private fun setActionBarItemColor(item: ImageView, color: String) {
         val colorRes = ThemeColor.values().first { value ->
             value.title == color
+        }.text
+        if (colorRes != ThemeColor.DEFAULT.text) {
+            item.setImageDrawable(requireContext().drawable(R.drawable.ic_action_background))
+            item.setColorFilter(colorRes)
+        }
+    }
+
+    private fun setActionBarItemBackgroundColor(item: ImageView, color: String) {
+        val colorRes = ThemeColor.values().first { value ->
+            value.title == color
         }.background
         if (colorRes != ThemeColor.DEFAULT.background) {
             item.setImageDrawable(requireContext().drawable(R.drawable.ic_action_background))
@@ -233,7 +243,7 @@ abstract class BlockActionToolbar : Fragment() {
         setBlockBackgroundColor(root = root, color = color)
         if (color != null) {
             bgImage?.let {
-                setActionBarItemColor(
+                setActionBarItemBackgroundColor(
                     item = it,
                     color = color
                 )

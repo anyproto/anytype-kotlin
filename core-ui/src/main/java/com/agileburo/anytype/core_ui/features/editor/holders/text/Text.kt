@@ -47,6 +47,8 @@ abstract class Text(
 
             makeLinkClickable(item)
 
+            clearTextWatchers()
+
             setContent(
                 item = item,
                 clicked = clicked
@@ -101,8 +103,6 @@ abstract class Text(
     ) {
 
         content.apply {
-
-            clearTextWatchers()
 
             setOnLongClickListener(
                 EditorLongClickListener(

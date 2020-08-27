@@ -237,4 +237,8 @@ interface TextBlockHolder : TextHolder {
             )
         }
     }
+
+    fun clearTextWatchers() {
+        content.clearTextWatchers()
+    }
 }

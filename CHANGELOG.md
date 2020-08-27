@@ -4,6 +4,7 @@
 
 ### Fixes & tech 🚒
 
+* Regression. Text is not always set when creating a lot of text blocks (#741)
 * Respective theme colors should differ for text color and background colors in action menu (#738)
 * Fix app configuration lifetime (#735)
 * Avatar image is not displayed after registration started after logout (#692)

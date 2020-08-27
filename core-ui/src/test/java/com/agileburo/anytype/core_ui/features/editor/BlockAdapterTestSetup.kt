@@ -18,6 +18,7 @@ open class BlockAdapterTestSetup {
         views: List<BlockView>,
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
         onTitleTextChanged: (Editable) -> Unit = {},
+        onTextBlockTextChanged: (BlockView.Text) -> Unit = {},
         onEndLineEnterTitleClicked: (Editable) -> Unit = {},
         onTextChanged: (String, Editable) -> Unit = { _, _ -> },
         onToggleClicked: (String) -> Unit = {}
@@ -37,7 +38,7 @@ open class BlockAdapterTestSetup {
             onProfileIconClicked = {},
             onTogglePlaceholderClicked = {},
             onToggleClicked = onToggleClicked,
-            onTextBlockTextChanged = {},
+            onTextBlockTextChanged = onTextBlockTextChanged,
             onTitleTextChanged = onTitleTextChanged,
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
             onMarkupActionClicked = { _, _ -> },

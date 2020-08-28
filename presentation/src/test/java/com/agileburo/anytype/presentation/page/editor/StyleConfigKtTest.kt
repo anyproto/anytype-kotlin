@@ -2,7 +2,9 @@ package com.agileburo.anytype.presentation.page.editor
 
 import MockDataFactory
 import com.agileburo.anytype.core_ui.common.Alignment
+import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
+import com.agileburo.anytype.core_ui.model.StyleConfig
 import com.agileburo.anytype.domain.block.model.Block
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -426,11 +428,11 @@ class StyleConfigKtTest {
         val expected = StyleConfig(
             visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf(Alignment.START, Alignment.CENTER, Alignment.END)
         )
@@ -463,11 +465,85 @@ class StyleConfigKtTest {
         val expected = StyleConfig(
             visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
+            ),
+            enabledAlignment = listOf(Alignment.START, Alignment.CENTER, Alignment.END)
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `should return style config when block type paragraph and range is IntRange EMPTY`() {
+
+        val child = MockDataFactory.randomUuid()
+
+        val given = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                style = Block.Content.Text.Style.P,
+                marks = listOf(),
+                text = "test",
+                isChecked = null,
+                backgroundColor = null,
+                color = null,
+                align = null
+            ),
+            children = emptyList()
+        )
+
+        val result = given.getStyleConfig(focus = true, selection = IntRange.EMPTY)
+
+        val expected = StyleConfig(
+            visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
+            enabledMarkup = listOf(
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
+            ),
+            enabledAlignment = listOf(Alignment.START, Alignment.CENTER, Alignment.END)
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `should return style config when block type paragraph and range first bigger then last`() {
+
+        val child = MockDataFactory.randomUuid()
+
+        val given = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                style = Block.Content.Text.Style.P,
+                marks = listOf(),
+                text = "test",
+                isChecked = null,
+                backgroundColor = null,
+                color = null,
+                align = null
+            ),
+            children = emptyList()
+        )
+
+        val result = given.getStyleConfig(focus = true, selection = IntRange(10, 1))
+
+        val expected = StyleConfig(
+            visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
+            enabledMarkup = listOf(
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf(Alignment.START, Alignment.CENTER, Alignment.END)
         )
@@ -500,11 +576,11 @@ class StyleConfigKtTest {
         val expected = StyleConfig(
             visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = emptyList()
         )
@@ -537,10 +613,10 @@ class StyleConfigKtTest {
         val expected = StyleConfig(
             visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf(Alignment.START, Alignment.CENTER, Alignment.END)
         )
@@ -573,10 +649,10 @@ class StyleConfigKtTest {
         val expected = StyleConfig(
             visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf(Alignment.START, Alignment.CENTER, Alignment.END)
         )
@@ -609,10 +685,10 @@ class StyleConfigKtTest {
         val expected = StyleConfig(
             visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = emptyList()
         )
@@ -645,11 +721,11 @@ class StyleConfigKtTest {
         val expected = StyleConfig(
             visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf()
         )
@@ -682,11 +758,11 @@ class StyleConfigKtTest {
         val expected = StyleConfig(
             visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf()
         )
@@ -719,11 +795,11 @@ class StyleConfigKtTest {
         val expected = StyleConfig(
             visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = emptyList()
         )
@@ -852,11 +928,11 @@ class StyleConfigKtTest {
                 StylingType.BACKGROUND
             ),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf(Alignment.START, Alignment.END)
         )
@@ -893,11 +969,11 @@ class StyleConfigKtTest {
                 StylingType.BACKGROUND
             ),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf(Alignment.START, Alignment.END)
         )
@@ -933,11 +1009,11 @@ class StyleConfigKtTest {
                 StylingType.BACKGROUND
             ),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf()
         )

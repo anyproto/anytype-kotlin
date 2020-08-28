@@ -1,23 +1,10 @@
 package com.agileburo.anytype.presentation.page.editor
 
 import com.agileburo.anytype.core_ui.common.Alignment
+import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
+import com.agileburo.anytype.core_ui.model.StyleConfig
 import com.agileburo.anytype.domain.block.model.Block
-
-data class StyleConfig(
-    val visibleTypes: List<StylingType>,
-    val enabledMarkup: List<Block.Content.Text.Mark.Type>,
-    val enabledAlignment: List<Alignment>
-) {
-
-    companion object {
-        fun emptyState() = StyleConfig(
-            visibleTypes = emptyList(),
-            enabledMarkup = emptyList(),
-            enabledAlignment = emptyList()
-        )
-    }
-}
 
 fun Block.getStyleConfig(focus: Boolean?, selection: IntRange?): StyleConfig =
     when (val cnt = content) {
@@ -81,7 +68,7 @@ fun Block.Content.Text.getTextStyleConfig(focus: Boolean?, selection: IntRange?)
 }
 
 fun Block.Content.Text.getStyleConfig(selection: IntRange? = null): StyleConfig {
-    return if (selection == null || selection.first == selection.last) {
+    return if (selection == null || selection.first >= selection.last) {
         getBlockStyle(style)
     } else {
         getMarkupStyle(style)
@@ -97,11 +84,11 @@ fun Block.Content.Text.getBlockStyle(style: Block.Content.Text.Style) = when (st
                 StylingType.BACKGROUND
             ),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf(Alignment.START, Alignment.CENTER, Alignment.END)
         )
@@ -115,10 +102,10 @@ fun Block.Content.Text.getBlockStyle(style: Block.Content.Text.Style) = when (st
                 StylingType.BACKGROUND
             ),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf(Alignment.START, Alignment.CENTER, Alignment.END)
         )
@@ -138,11 +125,11 @@ fun Block.Content.Text.getBlockStyle(style: Block.Content.Text.Style) = when (st
                 StylingType.BACKGROUND
             ),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = listOf(Alignment.START, Alignment.END)
         )
@@ -163,11 +150,11 @@ fun Block.Content.Text.getBlockStyle(style: Block.Content.Text.Style) = when (st
                 StylingType.BACKGROUND
             ),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = emptyList()
         )
@@ -183,11 +170,11 @@ fun Block.Content.Text.getMarkupStyle(style: Block.Content.Text.Style) = when (s
                 StylingType.BACKGROUND
             ),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = emptyList()
         )
@@ -201,10 +188,10 @@ fun Block.Content.Text.getMarkupStyle(style: Block.Content.Text.Style) = when (s
                 StylingType.BACKGROUND
             ),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = emptyList()
         )
@@ -224,11 +211,11 @@ fun Block.Content.Text.getMarkupStyle(style: Block.Content.Text.Style) = when (s
                 StylingType.BACKGROUND
             ),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = emptyList()
         )
@@ -249,11 +236,11 @@ fun Block.Content.Text.getMarkupStyle(style: Block.Content.Text.Style) = when (s
                 StylingType.BACKGROUND
             ),
             enabledMarkup = listOf(
-                Block.Content.Text.Mark.Type.BOLD,
-                Block.Content.Text.Mark.Type.ITALIC,
-                Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                Block.Content.Text.Mark.Type.KEYBOARD,
-                Block.Content.Text.Mark.Type.LINK
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
             ),
             enabledAlignment = emptyList()
         )

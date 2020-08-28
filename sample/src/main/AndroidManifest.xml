@@ -20,7 +20,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".ScrollAndMove" />
-        <activity android:name=".SpanActivity">
+        <activity android:name=".StyleActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/bg_toolbar_style_set_link" android:state_selected="false" />
-    <item android:drawable="@drawable/bg_toolbar_style_set_link_active" android:state_selected="true" />
+    <item android:drawable="@drawable/bg_toolbar_style_set_link" android:state_enabled="false" />
+    <item android:drawable="@drawable/bg_toolbar_style_set_link" android:state_enabled="true" android:state_selected="false" />
+    <item android:drawable="@drawable/bg_toolbar_style_set_link_active" android:state_enabled="true" android:state_selected="true" />
 </selector>

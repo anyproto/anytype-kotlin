@@ -137,7 +137,7 @@
         app:layout_constraintTop_toBottomOf="@+id/bold">
 
         <ImageView
-            android:id="@+id/alignmentRightIcon"
+            android:id="@+id/alignmentLeftIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -192,7 +192,7 @@
         app:layout_constraintTop_toBottomOf="@+id/strikethrough">
 
         <ImageView
-            android:id="@+id/alignmentLeftIcon"
+            android:id="@+id/alignmentRightIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -211,6 +211,7 @@
         app:layout_constraintTop_toBottomOf="@+id/code">
 
         <ImageView
+            android:id="@+id/setUrlIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

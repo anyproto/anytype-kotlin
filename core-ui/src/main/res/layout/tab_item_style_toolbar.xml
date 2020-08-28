@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tabText"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/tab_style_toolbar_selector"
+    android:fontFamily="@font/inter_medium"
+    android:gravity="center"
+    android:layout_marginTop="6dp"
+    android:paddingStart="@dimen/dp_16"
+    android:paddingTop="3dp"
+    android:paddingEnd="@dimen/dp_16"
+    android:paddingBottom="3dp"
+    android:singleLine="true"
+    android:textColor="@color/selector_style_toolbar_tab_text_color"
+    android:textSize="15sp"
+    tools:text="Text" />

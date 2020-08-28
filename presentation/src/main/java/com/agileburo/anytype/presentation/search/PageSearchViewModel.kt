@@ -53,15 +53,15 @@ class PageSearchViewModel(
     }
 
     private fun proceedWithResults(original: List<PageLinkView>, filter: String) {
-        val filtered = original.filterBy(filter)
-        when (filtered.isNotEmpty()) {
-            true -> stateData.postValue(PageSearchView.Success(pages = filtered))
-            false -> {
-                when (filter.isEmpty()) {
-                    true -> stateData.postValue(PageSearchView.EmptyPages)
-                    false -> stateData.postValue(PageSearchView.NoResults(filter))
-                }
-            }
+        val query = filter.trim()
+        val filtered = original.filterBy(query)
+        if (filtered.isNotEmpty()) {
+            stateData.postValue(PageSearchView.Success(pages = filtered))
+        } else {
+            if (query.isEmpty())
+                stateData.postValue(PageSearchView.EmptyPages)
+            else
+                stateData.postValue(PageSearchView.NoResults(query))
         }
     }
 

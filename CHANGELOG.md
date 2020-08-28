@@ -4,6 +4,7 @@
 
 ### Fixes & tech 🚒
 
+* When searching for pages, if filter text is empty space, query returns only pages where title contains empty spaces (#746)
 * Regression. Text is not always set when creating a lot of text blocks (#741)
 * Respective theme colors should differ for text color and background colors in action menu (#738)
 * Fix app configuration lifetime (#735)

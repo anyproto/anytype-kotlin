@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.item_block_header_two.view.*
 
 class HeaderTwo(
     view: View,
-    onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
+    onContextMenuStyleClick: (IntRange) -> Unit
 ) : Header(view) {
 
     override val header: TextInputWidget = itemView.headerTwo
@@ -17,7 +17,7 @@ class HeaderTwo(
     override val root: View = itemView
 
     init {
-        setup(onMarkupActionClicked, ContextMenuType.HEADER)
+        setup(onContextMenuStyleClick)
     }
 
     override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {

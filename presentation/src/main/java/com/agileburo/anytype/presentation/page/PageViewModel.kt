@@ -804,6 +804,19 @@ class PageViewModel(
         )
     }
 
+    fun onEditorContextMenuStyleClicked(selection: IntRange) {
+        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val config = target.getStyleConfig(focus = true, selection = selection)
+        _error.value = "Style menu clicked"
+//        controlPanelInteractor.onEvent(
+//            ControlPanelMachine.Event.OnMarkupContextMenuStyleClicked(
+//                target = target,
+//                selection = selection,
+//                config = config
+//            )
+//        )
+    }
+
     fun onMarkupActionClicked(markup: Markup.Type, selection: IntRange) {
         when (markup) {
             Markup.Type.BACKGROUND_COLOR -> {

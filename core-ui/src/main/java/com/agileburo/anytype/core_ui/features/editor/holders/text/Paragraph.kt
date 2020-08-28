@@ -13,14 +13,14 @@ import kotlinx.android.synthetic.main.item_block_text.view.*
 
 class Paragraph(
     view: View,
-    onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
+    onContextMenuStyleClick: (IntRange) -> Unit
 ) : Text(view), SupportNesting {
 
     override val root: View = itemView
     override val content: TextInputWidget = itemView.textContent
 
     init {
-        setup(onMarkupActionClicked, ContextMenuType.TEXT)
+        setup(onContextMenuStyleClick)
     }
 
     fun bind(

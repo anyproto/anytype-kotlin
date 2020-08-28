@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.item_block_toggle.view.*
 
 class Toggle(
     view: View,
-    onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
+    onContextMenuStyleClick: (IntRange) -> Unit
 ) : Text(view), SupportNesting {
 
     private var mode = BlockView.Mode.EDIT
@@ -26,7 +26,7 @@ class Toggle(
     override val root: View = itemView
 
     init {
-        setup(onMarkupActionClicked, ContextMenuType.TEXT)
+        setup(onContextMenuStyleClick)
     }
 
     fun bind(

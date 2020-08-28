@@ -189,7 +189,7 @@ open class PageFragment :
             onProfileIconClicked = vm::onProfileIconClicked,
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
-            onMarkupActionClicked = vm::onMarkupActionClicked,
+            onContextMenuStyleClick = vm::onEditorContextMenuStyleClicked,
             onTitleTextInputClicked = vm::onTitleTextInputClicked,
             onClickListener = vm::onClickListener,
             clipboardInterceptor = this,

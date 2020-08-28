@@ -88,7 +88,7 @@ class BlockAdapter(
     private val onProfileIconClicked: () -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
-    private val onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
+    private val onContextMenuStyleClick: (IntRange) -> Unit,
     private val clipboardInterceptor: ClipboardInterceptor,
     private val onMentionEvent: (MentionEvent) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
@@ -107,7 +107,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_TITLE -> {
@@ -135,7 +135,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_HEADER_TWO -> {
@@ -145,7 +145,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_HEADER_THREE -> {
@@ -155,7 +155,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_CODE_SNIPPET -> {
@@ -174,7 +174,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_BULLET -> {
@@ -184,7 +184,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_NUMBERED -> {
@@ -194,7 +194,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_TOGGLE -> {
@@ -204,7 +204,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_FILE -> {
@@ -367,7 +367,7 @@ class BlockAdapter(
                         parent,
                         false
                     ),
-                    onMarkupActionClicked = onMarkupActionClicked
+                    onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             else -> throw IllegalStateException("Unexpected view type: $viewType")

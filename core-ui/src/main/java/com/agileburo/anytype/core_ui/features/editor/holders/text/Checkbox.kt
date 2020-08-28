@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 
 class Checkbox(
     view: View,
-    onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
+    onContextMenuStyleClick: (IntRange) -> Unit
 ) : Text(view), SupportNesting {
 
     var mode = BlockView.Mode.EDIT
@@ -31,7 +31,7 @@ class Checkbox(
     override val root: View = itemView
 
     init {
-        setup(onMarkupActionClicked, ContextMenuType.TEXT)
+        setup(onContextMenuStyleClick)
     }
 
     fun bind(

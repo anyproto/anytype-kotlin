@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item_block_highlight.view.*
 
 class Highlight(
     view: View,
-    onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
+    onContextMenuStyleClick: (IntRange) -> Unit
 ) : Text(view), BlockViewHolder.IndentableHolder {
 
     override val content: TextInputWidget = itemView.highlightContent
@@ -27,7 +27,7 @@ class Highlight(
 
     init {
         content.setSpannableFactory(DefaultSpannableFactory())
-        setup(onMarkupActionClicked, ContextMenuType.HIGHLIGHT)
+        setup(onContextMenuStyleClick)
     }
 
     fun bind(

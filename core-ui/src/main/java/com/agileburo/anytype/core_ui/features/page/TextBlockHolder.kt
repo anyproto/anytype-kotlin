@@ -7,8 +7,7 @@ import com.agileburo.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.agileburo.anytype.core_ui.extensions.preserveSelection
 import com.agileburo.anytype.core_ui.extensions.range
 import com.agileburo.anytype.core_ui.features.editor.holders.`interface`.TextHolder
-import com.agileburo.anytype.core_ui.menu.ContextMenuType
-import com.agileburo.anytype.core_ui.menu.TextBlockContextMenu
+import com.agileburo.anytype.core_ui.menu.EditorContextMenu
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.tools.MentionTextWatcher
@@ -23,12 +22,11 @@ import timber.log.Timber
 interface TextBlockHolder : TextHolder {
 
     fun setup(
-        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
-        menuType: ContextMenuType
+        onContextMenuStyleClick: (IntRange) -> Unit
     ) {
         with(content) {
             setSpannableFactory(DefaultSpannableFactory())
-            setupSelectionActionMode(onMarkupActionClicked, menuType)
+            setupSelectionActionMode(onContextMenuStyleClick)
         }
     }
 
@@ -211,29 +209,17 @@ interface TextBlockHolder : TextHolder {
     }
 
     private fun setupSelectionActionMode(
-        onMarkupActionClicked: (Markup.Type, IntRange) -> Unit,
-        menuType: ContextMenuType
+        onContextMenuStyleClick: (IntRange) -> Unit
     ) {
         with(content) {
-            customSelectionActionModeCallback = TextBlockContextMenu(
-                menuType = menuType,
-                onTextColorClicked = { mode ->
+            customSelectionActionModeCallback = EditorContextMenu(
+                onStyleClick = {
                     preserveSelection {
                         content.hideKeyboard()
-                        onMarkupActionClicked(Markup.Type.TEXT_COLOR, content.range())
-                        mode.finish()
+                        onContextMenuStyleClick.invoke(content.range())
+                        //todo maybe add mode.finish
                     }
-                    false
-                },
-                onBackgroundColorClicked = { mode ->
-                    preserveSelection {
-                        content.hideKeyboard()
-                        onMarkupActionClicked(Markup.Type.BACKGROUND_COLOR, content.range())
-                        mode.finish()
-                    }
-                    false
-                },
-                onMenuItemClicked = { onMarkupActionClicked(it, content.range()) }
+                }
             )
         }
     }

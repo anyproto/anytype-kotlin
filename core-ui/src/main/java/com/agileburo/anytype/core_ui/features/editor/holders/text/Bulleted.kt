@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 
 class Bulleted(
     view: View,
-    onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
+    onContextMenuStyleClick: (IntRange) -> Unit
 ) : Text(view), SupportNesting {
 
     val indent: View = itemView.bulletIndent
@@ -29,7 +29,7 @@ class Bulleted(
     override val root: View = itemView
 
     init {
-        setup(onMarkupActionClicked, ContextMenuType.TEXT)
+        setup(onContextMenuStyleClick)
     }
 
     fun bind(

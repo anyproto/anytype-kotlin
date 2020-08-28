@@ -111,7 +111,7 @@ class HighlightingBlockTest {
             onTextBlockTextChanged = {},
             onTitleTextChanged = onTitleTextChanged,
             onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
-            onMarkupActionClicked = { _, _ -> },
+            onContextMenuStyleClick = {},
             onTitleTextInputClicked = {},
             onClickListener = {},
             clipboardInterceptor = clipboardInterceptor,

@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.item_block_numbered.view.*
 
 class Numbered(
     view: View,
-    onMarkupActionClicked: (Markup.Type, IntRange) -> Unit
+    onContextMenuStyleClick: (IntRange) -> Unit
 ) : Text(view), SupportNesting {
 
     private val container = itemView.numberedBlockContentContainer
@@ -25,7 +25,7 @@ class Numbered(
     override val root: View = itemView
 
     init {
-        setup(onMarkupActionClicked, ContextMenuType.TEXT)
+        setup(onContextMenuStyleClick)
     }
 
     fun bind(

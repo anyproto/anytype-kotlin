@@ -57,7 +57,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
                     .onItemMove(from, to)
                     .also {
                         vm.onItemMoved(
-                            alteredViews = dashboardAdapter.provideAdapterData(),
+                            views = dashboardAdapter.provideAdapterData(),
                             from = from,
                             to = to
                         )

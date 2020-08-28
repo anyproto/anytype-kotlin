@@ -73,7 +73,7 @@ class HomeDashboardViewModel(
     private fun startInterceptingEvents(context: String) {
         interceptEvents
             .build(InterceptEvents.Params(context = context))
-            .onEach { Timber.d("New events: $it") }
+            .onEach { Timber.d("New events on home dashboard: $it") }
             .onEach { events -> processEvents(events) }
             .launchIn(viewModelScope)
     }
@@ -170,30 +170,31 @@ class HomeDashboardViewModel(
     }
 
     /**
-     * @param alteredViews set of views in order altered by a block dragging action
+     * @param views set of views in order altered by a block dragging action
      * @param from position of the block being dragged
      * @param to target position
      */
     fun onItemMoved(
-        alteredViews: List<DashboardView>,
+        views: List<DashboardView>,
         from: Int,
         to: Int
     ) {
         viewModelScope.launch {
+            val direction = if (from < to) Position.BOTTOM else Position.TOP
+            val subject = views[to].id
+            val target = if (direction == Position.TOP) views[to.inc()].id else views[to.dec()].id
             movementChannel.send(
                 Movement(
-                    direction = if (from < to) Position.BOTTOM else Position.TOP,
-                    subject = (alteredViews[to] as DashboardView.Document).id,
-                    target = (alteredViews[from] as DashboardView.Document).id
+                    direction = direction,
+                    subject = subject,
+                    target = target
                 )
             )
         }
     }
 
     fun onItemDropped(view: DashboardView) {
-        viewModelScope.launch {
-            dropChannel.send((view as DashboardView.Document).id)
-        }
+        viewModelScope.launch { dropChannel.send(view.id) }
     }
 
     private fun proceedWithOpeningDocument(id: String) {

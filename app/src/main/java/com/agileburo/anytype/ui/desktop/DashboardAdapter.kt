@@ -124,5 +124,5 @@ class DashboardAdapter(
         return true
     }
 
-    fun provideAdapterData() = data.toList()
+    fun provideAdapterData(): List<DashboardView> = data.toList()
 }

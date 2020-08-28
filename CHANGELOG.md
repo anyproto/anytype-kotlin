@@ -7,6 +7,7 @@
 * When searching for pages, if filter text is empty space, query returns only pages where title contains empty spaces (#746)
 * Regression. Text is not always set when creating a lot of text blocks (#741)
 * Respective theme colors should differ for text color and background colors in action menu (#738)
+* Inconsistent DND-behavior on dashboard due to incorrect drop-target position calculation (#657)
 * Fix app configuration lifetime (#735)
 * Avatar image is not displayed after registration started after logout (#692)
 * Editor business logic (event detection for backspace and enter press, checkbox button click detection, etc.) is broken for text blocks, whose style was changed via `turn-into-toolbar` in `multi-select` mode after returning to `edit` mode (#514)

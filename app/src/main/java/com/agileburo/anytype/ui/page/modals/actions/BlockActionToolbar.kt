@@ -394,11 +394,7 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.Duplicate,
             ActionItemType.Divider,
-            ActionItemType.MoveTo,
-            ActionItemType.DividerExtended,
-            ActionItemType.Color,
-            ActionItemType.Divider,
-            ActionItemType.Background
+            ActionItemType.MoveTo
         )
 
         val TEXT = listOf(
@@ -410,11 +406,7 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.MoveTo,
             ActionItemType.DividerExtended,
-            ActionItemType.Style,
-            ActionItemType.Divider,
-            ActionItemType.Color,
-            ActionItemType.Divider,
-            ActionItemType.Background
+            ActionItemType.Style
         )
 
         val CHECKBOX_CHECKED = listOf(
@@ -426,9 +418,7 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.MoveTo,
             ActionItemType.DividerExtended,
-            ActionItemType.Style,
-            ActionItemType.Divider,
-            ActionItemType.Background
+            ActionItemType.Style
         )
 
         val VIDEO_PICTURE = listOf(

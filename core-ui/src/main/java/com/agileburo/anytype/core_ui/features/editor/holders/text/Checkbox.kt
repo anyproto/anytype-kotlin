@@ -70,8 +70,15 @@ class Checkbox(
             view = content,
             isSelected = checkbox.isActivated
         )
-        if (item.mode == BlockView.Mode.EDIT) {
-            checkbox.setOnClickListener {
+        setCheckboxClickListener(item, onCheckboxClicked)
+    }
+
+    private fun setCheckboxClickListener(
+        item: BlockView.Text.Checkbox,
+        onCheckboxClicked: (String) -> Unit
+    ) {
+        checkbox.setOnClickListener {
+            if (mode == BlockView.Mode.EDIT) {
                 checkbox.isActivated = !checkbox.isActivated
                 updateTextColor(
                     context = itemView.context,

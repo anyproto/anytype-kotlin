@@ -162,16 +162,6 @@ interface TextBlockHolder : TextHolder {
             setMarkup(item, clicked)
         }
 
-        try {
-            if (payload.isCursorChanged) {
-                item.cursor?.let {
-                    content.setSelection(it)
-                }
-            }
-        } catch (e: Throwable) {
-            Timber.e(e, "Error while setting cursor from $item")
-        }
-
         if (payload.textColorChanged()) {
             item.color?.let { setTextColor(it) }
         }
@@ -207,6 +197,16 @@ interface TextBlockHolder : TextHolder {
 
         if (payload.focusChanged()) {
             setFocus(item)
+        }
+
+        try {
+            if (payload.isCursorChanged) {
+                item.cursor?.let {
+                    content.setSelection(it)
+                }
+            }
+        } catch (e: Throwable) {
+            Timber.e(e, "Error while setting cursor from $item")
         }
     }
 

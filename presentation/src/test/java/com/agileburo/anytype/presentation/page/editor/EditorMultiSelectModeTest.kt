@@ -59,7 +59,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val document = listOf(page, a)
 
         stubOpenDocument(document)
-        stubObserveEvents()
+        stubInterceptEvents()
         stubUpdateTextStyle(
             params = UpdateTextStyle.Params(
                 style = Block.Content.Text.Style.QUOTE,
@@ -245,6 +245,149 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                             text = a.content<Block.Content.Text>().text,
                             mode = BlockView.Mode.READ
                         )
+                    )
+                )
+            )
+        }
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should show main toolbar when block view holder returning to edit mode gains focus after turn-into in multi-select-mode`() {
+
+        // SETUP
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(a.id)
+        )
+
+        val document = listOf(page, a)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+        stubUpdateTextStyle(
+            params = UpdateTextStyle.Params(
+                style = Block.Content.Text.Style.QUOTE,
+                context = root,
+                targets = listOf(a.id)
+            ),
+            events = listOf(
+                Event.Command.GranularChange(
+                    context = root,
+                    id = a.id,
+                    style = Block.Content.Text.Style.QUOTE
+                )
+            )
+        )
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+
+        // Try entering multi-select mode
+
+        vm.apply {
+            onBlockFocusChanged(id = a.id, hasFocus = true)
+            onEnterMultiSelectModeClicked()
+        }
+
+        // Checking control panel entered multi-select mode
+
+        vm.controlPanelViewState.test().apply {
+            assertValue(
+                ControlPanelState(
+                    focus = ControlPanelState.Focus(
+                        id = a.id,
+                        type = ControlPanelState.Focus.Type.P
+                    ),
+                    mainToolbar = ControlPanelState.Toolbar.Main(
+                        isVisible = false
+                    ),
+                    stylingToolbar = ControlPanelState.Toolbar.Styling(
+                        isVisible = false,
+                        mode = null,
+                        type = null
+                    ),
+                    multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                        isVisible = true,
+                        isScrollAndMoveEnabled = false,
+                        count = 0
+                    ),
+                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                        isVisible = false,
+                        cursorCoordinate = null,
+                        mentionFilter = null,
+                        mentionFrom = null
+                    )
+                )
+            )
+        }
+
+        coroutineTestRule.advanceTime(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
+
+        // Perform click, to select block A
+
+        vm.onTextInputClicked(
+            target = a.id
+        )
+
+        // Turning block A into a highlight block.
+
+        vm.onTurnIntoMultiSelectBlockClicked(
+            UiBlock.HIGHLIGHTED
+        )
+
+        vm.onExitMultiSelectModeClicked()
+
+        vm.onTextInputClicked(
+            target = a.id
+        )
+
+        vm.onBlockFocusChanged(
+            id = a.id,
+            hasFocus = true
+        )
+
+        vm.controlPanelViewState.test().apply {
+            assertValue(
+                ControlPanelState(
+                    focus = ControlPanelState.Focus(
+                        id = a.id,
+                        type = ControlPanelState.Focus.Type.QUOTE
+                    ),
+                    mainToolbar = ControlPanelState.Toolbar.Main(
+                        isVisible = true
+                    ),
+                    stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                    multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                        isVisible = false,
+                        isScrollAndMoveEnabled = false,
+                        count = 0
+                    ),
+                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                        isVisible = false,
+                        cursorCoordinate = null,
+                        mentionFilter = null,
+                        mentionFrom = null
                     )
                 )
             )

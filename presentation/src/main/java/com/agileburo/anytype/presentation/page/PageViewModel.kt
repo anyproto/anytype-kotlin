@@ -1568,6 +1568,7 @@ class PageViewModel(
     }
 
     fun onTextInputClicked(target: Id) {
+        Timber.d("onTextInputClicked: $target")
         if (mode == EditorMode.MULTI_SELECT) {
             onBlockMultiSelectClicked(target)
         } else {

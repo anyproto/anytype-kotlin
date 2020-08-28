@@ -10,6 +10,8 @@ import com.agileburo.anytype.core_ui.features.page.*
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.END_RANGE
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
+import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
+import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
@@ -158,6 +160,7 @@ class PageViewModel(
     }
 
     private fun proceedWithUpdatingDocumentTitle(update: String) {
+
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.UpdateTitle(
@@ -827,7 +830,71 @@ class PageViewModel(
         }
     }
 
+    fun onStylingToolbarEvent(event: StylingEvent) {
+        val state = controlPanelViewState.value!!
+        when (event) {
+            is StylingEvent.Coloring.Text -> {
+                if (state.stylingToolbar.mode == StylingMode.MARKUP)
+                    onMarkupTextColorAction(event.color.title)
+                else
+                    onToolbarTextColorAction(event.color.title)
+            }
+            is StylingEvent.Coloring.Background -> {
+                if (state.stylingToolbar.mode == StylingMode.MARKUP)
+                    onMarkupBackgroundColorAction(event.color.title)
+                else
+                    onBlockBackgroundColorAction(event.color.title)
+            }
+            is StylingEvent.Markup.Bold -> {
+                onBlockStyleMarkupActionClicked(
+                    action = Markup.Type.BOLD
+                )
+            }
+            is StylingEvent.Markup.Italic -> {
+                onBlockStyleMarkupActionClicked(
+                    action = Markup.Type.ITALIC
+                )
+            }
+            is StylingEvent.Markup.StrikeThrough -> {
+                onBlockStyleMarkupActionClicked(
+                    action = Markup.Type.STRIKETHROUGH
+                )
+            }
+            is StylingEvent.Markup.Code -> {
+                onBlockStyleMarkupActionClicked(
+                    action = Markup.Type.KEYBOARD
+                )
+            }
+            is StylingEvent.Markup.Link -> {
+                onBlockStyleLinkClicked()
+            }
+            is StylingEvent.Alignment.Left -> {
+                onBlockAlignmentActionClicked(
+                    alignment = Alignment.START
+                )
+            }
+            is StylingEvent.Alignment.Center -> {
+                onBlockAlignmentActionClicked(
+                    alignment = Alignment.CENTER
+                )
+            }
+            is StylingEvent.Alignment.Right -> {
+                onBlockAlignmentActionClicked(
+                    alignment = Alignment.END
+                )
+            }
+            is StylingEvent.Sliding.Color -> {
+                onStyleColorSlideClicked()
+            }
+            is StylingEvent.Sliding.Background -> {
+                onStyleBackgroundSlideClicked()
+            }
+        }
+    }
+
     fun onMarkupTextColorAction(color: String) {
+        Timber.d("STATE : ${controlPanelViewState.value}")
+
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.OnMarkupTextColorSelected
         )

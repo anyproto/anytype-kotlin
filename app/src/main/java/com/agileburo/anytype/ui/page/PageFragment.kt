@@ -37,15 +37,11 @@ import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
-import com.agileburo.anytype.core_ui.common.Alignment
-import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockDimensions
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.agileburo.anytype.core_ui.features.page.scrollandmove.*
-import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
-import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.menu.DocumentPopUpMenu
 import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.reactive.clicks
@@ -463,64 +459,7 @@ open class PageFragment :
 
         lifecycleScope.launch {
             styleToolbar.events.collect { event ->
-                when (event) {
-                    is StylingEvent.Coloring.Text -> {
-                        if (styleToolbar.mode == StylingMode.MARKUP)
-                            vm.onMarkupTextColorAction(event.color.title)
-                        else
-                            vm.onToolbarTextColorAction(event.color.title)
-                    }
-                    is StylingEvent.Coloring.Background -> {
-                        if (styleToolbar.mode == StylingMode.MARKUP)
-                            vm.onMarkupBackgroundColorAction(event.color.title)
-                        else
-                            vm.onBlockBackgroundColorAction(event.color.title)
-                    }
-                    is StylingEvent.Markup.Bold -> {
-                        vm.onBlockStyleMarkupActionClicked(
-                            action = Markup.Type.BOLD
-                        )
-                    }
-                    is StylingEvent.Markup.Italic -> {
-                        vm.onBlockStyleMarkupActionClicked(
-                            action = Markup.Type.ITALIC
-                        )
-                    }
-                    is StylingEvent.Markup.StrikeThrough -> {
-                        vm.onBlockStyleMarkupActionClicked(
-                            action = Markup.Type.STRIKETHROUGH
-                        )
-                    }
-                    is StylingEvent.Markup.Code -> {
-                        vm.onBlockStyleMarkupActionClicked(
-                            action = Markup.Type.KEYBOARD
-                        )
-                    }
-                    is StylingEvent.Markup.Link -> {
-                        vm.onBlockStyleLinkClicked()
-                    }
-                    is StylingEvent.Alignment.Left -> {
-                        vm.onBlockAlignmentActionClicked(
-                            alignment = Alignment.START
-                        )
-                    }
-                    is StylingEvent.Alignment.Center -> {
-                        vm.onBlockAlignmentActionClicked(
-                            alignment = Alignment.CENTER
-                        )
-                    }
-                    is StylingEvent.Alignment.Right -> {
-                        vm.onBlockAlignmentActionClicked(
-                            alignment = Alignment.END
-                        )
-                    }
-                    is StylingEvent.Sliding.Color -> {
-                        vm.onStyleColorSlideClicked()
-                    }
-                    is StylingEvent.Sliding.Background -> {
-                        vm.onStyleBackgroundSlideClicked()
-                    }
-                }
+                vm.onStylingToolbarEvent(event)
             }
         }
 

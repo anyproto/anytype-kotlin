@@ -33,11 +33,11 @@ class SetupNewAccountFragment : NavigationFragment(R.layout.fragment_setup_new_a
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupNavigation()
-        vm.state.observe(this, this)
+        vm.state.observe(viewLifecycleOwner, this)
     }
 
     private fun setupNavigation() {
-        vm.observeNavigation().observe(this, navObserver)
+        vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
     }
 
     override fun onChanged(state: ViewState<Any>) {

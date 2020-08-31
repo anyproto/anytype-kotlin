@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.agileburo.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.agileburo.anytype.core_ui.features.editor.holders.error.FileError
@@ -75,7 +74,7 @@ class BlockAdapter(
     private val onTitleTextChanged: (Editable) -> Unit,
     private val onTitleTextInputClicked: () -> Unit,
     private val onSelectionChanged: (String, IntRange) -> Unit,
-    private val onCheckboxClicked: (String) -> Unit,
+    private val onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit,
     private val onFocusChanged: (String, Boolean) -> Unit,
     private val onEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,

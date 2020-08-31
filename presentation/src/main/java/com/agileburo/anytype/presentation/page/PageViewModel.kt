@@ -1299,14 +1299,39 @@ class PageViewModel(
         }
     }
 
-    fun onCheckboxClicked(id: String) {
-        val target = blocks.first { it.id == id }
+    fun onCheckboxClicked(view: BlockView.Text.Checkbox) {
+
+        blocks = blocks.map { block ->
+            if (block.id == view.id) {
+                block.copy(
+                    content = block.content<Content.Text>().copy(
+                        isChecked = view.isChecked
+                    )
+                )
+            } else {
+                block
+            }
+        }
+
+        val store = orchestrator.stores.views
+
+        viewModelScope.launch {
+            store.update(
+                views.map { v ->
+                    if (v.id == view.id)
+                        view.copy()
+                    else
+                        v
+                }
+            )
+        }
+
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.UpdateCheckbox(
                     context = context,
-                    target = target.id,
-                    isChecked = target.content<Content.Text>().toggleCheck()
+                    target = view.id,
+                    isChecked = view.isChecked
                 )
             )
         }
@@ -1338,9 +1363,10 @@ class PageViewModel(
 
     fun onMeasure(target: Id, dimensions: BlockDimensions) {
         val views = orchestrator.stores.views.current()
+        val block = views.first { it.id == target }
         dispatch(
             Command.OpenActionBar(
-                block = views.first { it.id == target },
+                block = block,
                 dimensions = dimensions
             )
         )

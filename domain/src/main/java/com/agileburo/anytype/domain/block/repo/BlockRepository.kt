@@ -61,7 +61,7 @@ interface BlockRepository {
     suspend fun updateTextColor(command: Command.UpdateTextColor): Payload
     suspend fun updateBackgroundColor(command: Command.UpdateBackgroundColor): Payload
 
-    suspend fun updateCheckbox(command: Command.UpdateCheckbox)
+    suspend fun updateCheckbox(command: Command.UpdateCheckbox): Payload
     suspend fun updateAlignment(command: Command.UpdateAlignment) : Payload
 
     suspend fun getConfig(): Config

@@ -61,9 +61,9 @@ class BlockDataRepository(
         command: Command.UpdateBackgroundColor
     ): Payload = factory.remote.updateBackroundColor(command.toEntity()).toDomain()
 
-    override suspend fun updateCheckbox(command: Command.UpdateCheckbox) {
-        factory.remote.updateCheckbox(command.toEntity())
-    }
+    override suspend fun updateCheckbox(
+        command: Command.UpdateCheckbox
+    ): Payload = factory.remote.updateCheckbox(command.toEntity()).toDomain()
 
     override suspend fun create(command: Command.Create): Pair<Id, Payload> {
         return factory.remote.create(command.toEntity()).let { (id, payload) ->

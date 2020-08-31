@@ -361,11 +361,12 @@ public class Middleware {
         }
     }
 
-    public void updateCheckbox(
+    public PayloadEntity updateCheckbox(
             String context,
             String target,
             boolean isChecked
     ) throws Exception {
+
         Block.Set.Text.Checked.Request request = Block.Set.Text.Checked.Request
                 .newBuilder()
                 .setContextId(context)
@@ -382,6 +383,8 @@ public class Middleware {
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
+
+        return mapper.toPayload(response.getEvent());
     }
 
     public PayloadEntity updateTextStyle(CommandEntity.UpdateStyle command) throws Exception {

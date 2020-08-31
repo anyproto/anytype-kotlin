@@ -27,7 +27,7 @@ open class BlockAdapterTestSetup {
         onToggleClicked: (String) -> Unit = {},
         onEmptyBlockBackspaceClicked: (String) -> Unit = {},
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit = { _, _ -> },
-        onCheckboxClicked: (String) -> Unit = {}
+        onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit = {}
     ): BlockAdapter {
         return BlockAdapter(
             blocks = views,

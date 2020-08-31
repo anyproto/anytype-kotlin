@@ -212,7 +212,7 @@ class Orchestrator(
                         )
                     ).proceed(
                         failure = defaultOnError,
-                        success = {}
+                        success = defaultPayload
                     )
                 }
                 is Intent.Text.UpdateText -> {

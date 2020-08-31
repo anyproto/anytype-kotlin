@@ -272,7 +272,7 @@ sealed class BlockView : ViewType, Parcelable {
             override var text: String,
             override val color: String? = null,
             override val backgroundColor: String? = null,
-            override val isChecked: Boolean = false,
+            override var isChecked: Boolean = false,
             override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,

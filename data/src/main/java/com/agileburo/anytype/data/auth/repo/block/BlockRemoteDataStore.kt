@@ -45,9 +45,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: CommandEntity.UpdateBackgroundColor
     ): PayloadEntity = remote.updateBackgroundColor(command)
 
-    override suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox) {
-        remote.updateCheckbox(command)
-    }
+    override suspend fun updateCheckbox(
+        command: CommandEntity.UpdateCheckbox
+    ): PayloadEntity = remote.updateCheckbox(command)
 
     override suspend fun updateAlignment(
         command: CommandEntity.UpdateAlignment

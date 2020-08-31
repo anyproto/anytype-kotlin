@@ -1,6 +1,5 @@
 package com.agileburo.anytype.ui.page.modals.actions
 
-import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.ImageView
@@ -12,12 +11,8 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 
 class CheckBoxBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.Text.Checkbox
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        block = arguments?.getParcelable(ARG_BLOCK)!!
-    }
+    val block: BlockView.Text.Checkbox
+        get() = arguments?.getParcelable(ARG_BLOCK) ?: throw IllegalStateException()
 
     override fun blockLayout() = R.layout.item_block_checkbox_preview
     override fun getBlock(): BlockView = block
@@ -37,7 +32,7 @@ class CheckBoxBlockActionToolbar : BlockActionToolbar() {
             }
         }
         view.findViewById<ImageView>(R.id.checkboxIcon).apply {
-            isSelected = block.isChecked
+            isActivated = block.isChecked
         }
         processBackgroundColor(
             root = view.findViewById(R.id.root),

@@ -63,13 +63,13 @@ class BlockMiddleware(
         command: CommandEntity.UpdateAlignment
     ) : PayloadEntity = middleware.updateAlignment(command)
 
-    override suspend fun updateCheckbox(command: CommandEntity.UpdateCheckbox) {
-        middleware.updateCheckbox(
-            command.context,
-            command.target,
-            command.isChecked
-        )
-    }
+    override suspend fun updateCheckbox(
+        command: CommandEntity.UpdateCheckbox
+    ): PayloadEntity = middleware.updateCheckbox(
+        command.context,
+        command.target,
+        command.isChecked
+    )
 
     override suspend fun create(
         command: CommandEntity.Create

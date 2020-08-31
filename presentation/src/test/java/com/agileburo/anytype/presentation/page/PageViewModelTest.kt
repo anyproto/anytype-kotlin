@@ -159,6 +159,8 @@ class PageViewModelTest {
 
     private lateinit var builder: UrlBuilder
 
+    val root = MockDataFactory.randomUuid()
+
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
@@ -167,23 +169,19 @@ class PageViewModelTest {
 
     @Test
     fun `should not start observing events when view model is initialized`() {
-        stubObserveEvents()
         buildViewModel()
         verifyZeroInteractions(interceptEvents)
     }
 
     @Test
     fun `should start opening page when requested`() {
+        val param = OpenPage.Params(id = root)
 
-        val id = MockDataFactory.randomUuid()
-
-        val param = OpenPage.Params(id = id)
-
-        stubObserveEvents()
+        stubInterceptEvents()
         buildViewModel()
-        stubOpenPage(context = id)
+        stubOpenPage(context = root)
 
-        vm.onStart(id)
+        vm.onStart(root)
 
         runBlockingTest { verify(openPage, times(1)).invoke(param) }
     }
@@ -191,7 +189,6 @@ class PageViewModelTest {
     @Test
     fun `should dispatch a page to UI when this view model receives an appropriate command`() {
 
-        val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
         val paragraph = Block(
@@ -228,7 +225,7 @@ class PageViewModelTest {
             )
         )
 
-        stubObserveEvents()
+        stubInterceptEvents()
 
         buildViewModel(builder)
 
@@ -255,7 +252,7 @@ class PageViewModelTest {
     @Test
     fun `should close page when the system back button is pressed`() {
 
-        stubObserveEvents()
+        stubInterceptEvents()
 
         buildViewModel()
 
@@ -273,7 +270,7 @@ class PageViewModelTest {
 
         val response = Either.Right(Unit)
 
-        stubObserveEvents()
+        stubInterceptEvents()
         stubClosePage(response)
         buildViewModel()
 
@@ -296,7 +293,7 @@ class PageViewModelTest {
         val response = Either.Left(error)
 
         stubClosePage(response)
-        stubObserveEvents()
+        stubInterceptEvents()
         buildViewModel()
 
         val testObserver = vm.navigation.test()
@@ -312,10 +309,10 @@ class PageViewModelTest {
     fun `should update block when its text changes`() {
 
         val blockId = MockDataFactory.randomUuid()
-        val pageId = MockDataFactory.randomUuid()
+        val pageId = root
         val text = MockDataFactory.randomString()
 
-        stubObserveEvents()
+        stubInterceptEvents()
         buildViewModel()
         stubOpenPage(context = pageId)
         stubUpdateText()
@@ -1471,56 +1468,6 @@ class PageViewModelTest {
                 )
             )
         )
-    }
-
-    @Test
-    fun `should start updating checkbox when it is clicked`() {
-
-        val root = MockDataFactory.randomUuid()
-        val child = MockDataFactory.randomUuid()
-
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child,
-            style = Block.Content.Text.Style.CHECKBOX
-        )
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(1000)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        stubUpdateCheckbox()
-
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(1000)
-
-        vm.onCheckboxClicked(page.last().id)
-
-        runBlockingTest {
-            verify(updateCheckbox, times(1)).invoke(
-                eq(
-                    UpdateCheckbox.Params(
-                        context = root,
-                        target = child,
-                        isChecked = true
-                    )
-                )
-            )
-        }
     }
 
     @Test
@@ -3290,7 +3237,6 @@ class PageViewModelTest {
 
         // SETUP
 
-        val root = MockDataFactory.randomUuid()
         val title = MockBlockFactory.makeTitleBlock()
 
         val page = listOf(
@@ -3307,34 +3253,27 @@ class PageViewModelTest {
             title
         )
 
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
+        stubInterceptEvents()
+
+        stubOpenPage(
+            events = listOf(
+                Event.Command.ShowBlock(
+                    root = root,
+                    blocks = page,
+                    context = root
                 )
             )
-        }
+        )
 
-        stubObserveEvents(flow)
-        stubOpenPage()
+        stubArchiveDocument()
+
         buildViewModel()
 
         vm.onStart(root)
 
-        coroutineTestRule.advanceTime(100)
-
         // TESTING
 
         vm.onArchiveThisPageClicked()
-
-        archiveDocument.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
-        }
 
         runBlockingTest {
             verify(archiveDocument, times(1)).invoke(
@@ -3353,7 +3292,6 @@ class PageViewModelTest {
 
         // SETUP
 
-        val root = MockDataFactory.randomUuid()
         val title = MockBlockFactory.makeTitleBlock()
 
         val page = listOf(
@@ -3419,9 +3357,11 @@ class PageViewModelTest {
         }
     }
 
-    private fun stubArchiveDocument() {
+    private fun stubArchiveDocument(
+        params: ArchiveDocument.Params = ArchiveDocument.Params(context = root, target = root)
+    ) {
         archiveDocument.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+            onBlocking { invoke(params = params) } doReturn Either.Right(Unit)
         }
     }
 
@@ -4151,6 +4091,15 @@ class PageViewModelTest {
         }
     }
 
+    fun stubInterceptEvents(
+        params: InterceptEvents.Params = InterceptEvents.Params(context = root),
+        flow: Flow<List<Event>> = flowOf()
+    ) {
+        interceptEvents.stub {
+            onBlocking { build(params) } doReturn flow
+        }
+    }
+
     private fun stubUpdateText() {
         updateText.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
@@ -4215,12 +4164,6 @@ class PageViewModelTest {
     ) {
         updateTextStyle.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(payload)
-        }
-    }
-
-    private fun stubUpdateCheckbox() {
-        updateCheckbox.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
         }
     }
 

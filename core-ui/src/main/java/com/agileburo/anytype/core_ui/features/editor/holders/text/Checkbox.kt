@@ -7,13 +7,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.updatePadding
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_ui.features.page.SupportNesting
 import com.agileburo.anytype.core_ui.features.page.marks
-import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.dimen
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -37,7 +35,7 @@ class Checkbox(
     fun bind(
         item: BlockView.Text.Checkbox,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onCheckboxClicked: (String) -> Unit,
+        onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
@@ -75,17 +73,18 @@ class Checkbox(
 
     private fun setCheckboxClickListener(
         item: BlockView.Text.Checkbox,
-        onCheckboxClicked: (String) -> Unit
+        onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit
     ) {
         checkbox.setOnClickListener {
             if (mode == BlockView.Mode.EDIT) {
+                item.isChecked = !item.isChecked
                 checkbox.isActivated = !checkbox.isActivated
                 updateTextColor(
                     context = itemView.context,
                     view = content,
                     isSelected = checkbox.isActivated
                 )
-                onCheckboxClicked(item.id)
+                onCheckboxClicked(item)
             }
         }
     }

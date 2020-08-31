@@ -1605,7 +1605,7 @@ class PageViewModelTest {
         coroutineTestRule.advanceTime(1001)
 
         vm.onBlockFocusChanged(id = child, hasFocus = true)
-        vm.onActionBarItemClicked(id = child, action = ActionItemType.Delete)
+        vm.onActionMenuItemClicked(id = child, action = ActionItemType.Delete)
 
         runBlockingTest {
             verify(unlinkBlocks, times(1)).invoke(
@@ -1691,7 +1691,7 @@ class PageViewModelTest {
 
         vm.onBlockFocusChanged(id = firstChild, hasFocus = true)
         //vm.onActionDeleteClicked()
-        vm.onActionBarItemClicked(id = firstChild, action = ActionItemType.Delete)
+        vm.onActionMenuItemClicked(id = firstChild, action = ActionItemType.Delete)
 
         assertEquals(expected = 3, actual = vm.blocks.size)
 

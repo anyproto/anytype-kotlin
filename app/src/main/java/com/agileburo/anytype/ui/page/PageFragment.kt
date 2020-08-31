@@ -552,7 +552,7 @@ open class PageFragment :
     }
 
     override fun onBlockActionClicked(id: String, action: ActionItemType) {
-        vm.onActionBarItemClicked(id, action)
+        vm.onActionMenuItemClicked(id, action)
     }
 
     private fun handleFocus(focus: Id) {
@@ -786,12 +786,14 @@ open class PageFragment :
 
         state.stylingToolbar.apply {
             if (isVisible) {
-                styleToolbar.props = props
+                styleToolbar.update(
+                    config = config!!,
+                    props = props
+                )
                 hideSoftInput()
                 lifecycleScope.launch {
                     delay(300)
                     mode?.let { styleToolbar.mode = it }
-                    type?.let { styleToolbar.applyStylingType(it) }
                     styleToolbar.showWithAnimation()
                     recycler.updatePadding(bottom = dimen(R.dimen.dp_203) + dimen(R.dimen.dp_16))
                 }

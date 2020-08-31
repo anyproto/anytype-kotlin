@@ -14,8 +14,10 @@ import com.agileburo.anytype.domain.ext.content
 import com.agileburo.anytype.domain.ext.overlap
 import com.agileburo.anytype.domain.misc.Overlap
 import com.agileburo.anytype.presentation.common.StateReducer
+import com.agileburo.anytype.presentation.extension.isInRange
 import com.agileburo.anytype.presentation.mapper.marks
 import com.agileburo.anytype.presentation.page.ControlPanelMachine.*
+import com.agileburo.anytype.presentation.page.editor.getStyleConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -95,6 +97,12 @@ sealed class ControlPanelMachine {
          * Represents an event when user selected a block text color on [Toolbar.Styling] toolbar.
          */
         object OnBlockTextColorSelected : Event()
+
+
+        data class OnEditorContextMenuStyleClicked(
+            val selection: IntRange,
+            val target: Block
+        ) : Event()
 
 
         object OnBlockStyleSelected : Event()
@@ -285,6 +293,27 @@ sealed class ControlPanelMachine {
                     )
                 )
             }
+            is Event.OnEditorContextMenuStyleClicked -> {
+                selection = event.selection
+                val config = event.target.getStyleConfig(
+                    focus = true,
+                    selection = selection
+                )
+                val target = target(event.target)
+                val props = getMarkupLevelStylingProps(target, event.selection)
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    stylingToolbar = state.stylingToolbar.copy(
+                        isVisible = true,
+                        config = config,
+                        mode = StylingMode.MARKUP,
+                        target = target,
+                        props = props
+                    )
+                )
+            }
             is Event.OnClearFocusClicked -> init()
             is Event.OnTextInputClicked -> {
                 if (state.stylingToolbar.isVisible) {
@@ -346,6 +375,10 @@ sealed class ControlPanelMachine {
             }
             is Event.OnBlockActionToolbarStyleClicked -> {
                 val target = target(event.target)
+                val config = event.target.getStyleConfig(
+                    focus = null,
+                    selection = null
+                )
                 val props = Toolbar.Styling.Props(
                     isBold = target.isBold,
                     isItalic = target.isItalic,
@@ -365,6 +398,7 @@ sealed class ControlPanelMachine {
                         mode = StylingMode.BLOCK,
                         type = StylingType.STYLE,
                         target = target(event.target),
+                        config = config,
                         props = props
                     )
                 )
@@ -506,11 +540,11 @@ sealed class ControlPanelMachine {
             }
 
             return Toolbar.Styling.Props(
-                isBold = target.isBold,
-                isItalic = target.isItalic,
-                isStrikethrough = target.isStrikethrough,
-                isCode = target.isCode,
-                isLinked = target.isLinked,
+                isBold = Markup.Type.BOLD.isInRange(target.marks, selection),
+                isItalic = Markup.Type.ITALIC.isInRange(target.marks, selection),
+                isStrikethrough = Markup.Type.STRIKETHROUGH.isInRange(target.marks, selection),
+                isCode = Markup.Type.KEYBOARD.isInRange(target.marks, selection),
+                isLinked = Markup.Type.LINK.isInRange(target.marks, selection),
                 color = color,
                 background = background,
                 alignment = target.alignment

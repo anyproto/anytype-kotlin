@@ -4,6 +4,7 @@ import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
+import com.agileburo.anytype.core_ui.model.StyleConfig
 import com.agileburo.anytype.core_ui.widgets.toolbar.adapter.Mention
 
 /**
@@ -42,6 +43,7 @@ data class ControlPanelState(
          */
         data class Styling(
             val target: Target? = null,
+            val config: StyleConfig? = null,
             val props: Props? = null,
             override val isVisible: Boolean,
             val mode: StylingMode? = null,
@@ -50,7 +52,12 @@ data class ControlPanelState(
 
             companion object {
                 fun reset() = Styling(
-                    isVisible = false
+                    isVisible = false,
+                    target = null,
+                    config = null,
+                    props = null,
+                    mode = null,
+                    type = null
                 )
             }
 

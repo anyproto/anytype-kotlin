@@ -13,11 +13,14 @@ import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
 import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
 import com.agileburo.anytype.core_ui.features.page.styling.StylingType
 import com.agileburo.anytype.core_ui.model.StyleConfig
+import com.agileburo.anytype.core_ui.reactive.clicks
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.widgets.toolbar.BlockStyleToolbarWidget
 import com.agileburo.anytype.core_utils.ext.dimen
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.widget_block_style_toolbar_new.view.*
+import kotlinx.android.synthetic.main.widget_block_style_toolbar_new.view.close
+import kotlinx.android.synthetic.main.widget_block_style_toolbar_new.view.pager
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
 import timber.log.Timber
@@ -92,4 +95,6 @@ class StyleToolbarWidget @JvmOverloads constructor(
             StylingType.BACKGROUND.ordinal -> context.getString(R.string.background)
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
+
+    fun closeButtonClicks() = close.clicks()
 }

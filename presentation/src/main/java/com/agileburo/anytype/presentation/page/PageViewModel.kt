@@ -806,15 +806,12 @@ class PageViewModel(
 
     fun onEditorContextMenuStyleClicked(selection: IntRange) {
         val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
-        val config = target.getStyleConfig(focus = true, selection = selection)
-        _error.value = "Style menu clicked"
-//        controlPanelInteractor.onEvent(
-//            ControlPanelMachine.Event.OnMarkupContextMenuStyleClicked(
-//                target = target,
-//                selection = selection,
-//                config = config
-//            )
-//        )
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.OnEditorContextMenuStyleClicked(
+                target = target,
+                selection = selection
+            )
+        )
     }
 
     fun onMarkupActionClicked(markup: Markup.Type, selection: IntRange) {
@@ -848,38 +845,50 @@ class PageViewModel(
         when (event) {
             is StylingEvent.Coloring.Text -> {
                 if (state.stylingToolbar.mode == StylingMode.MARKUP)
-                    onMarkupTextColorAction(event.color.title)
+                    onStyleToolbarMarkupAction(Markup.Type.TEXT_COLOR, event.color.title)
                 else
                     onToolbarTextColorAction(event.color.title)
             }
             is StylingEvent.Coloring.Background -> {
                 if (state.stylingToolbar.mode == StylingMode.MARKUP)
-                    onMarkupBackgroundColorAction(event.color.title)
+                    onStyleToolbarMarkupAction(Markup.Type.BACKGROUND_COLOR, event.color.title)
                 else
                     onBlockBackgroundColorAction(event.color.title)
             }
             is StylingEvent.Markup.Bold -> {
-                onBlockStyleMarkupActionClicked(
-                    action = Markup.Type.BOLD
-                )
+                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
+                    onStyleToolbarMarkupAction(type = Markup.Type.BOLD)
+                } else {
+                    onBlockStyleMarkupActionClicked(action = Markup.Type.BOLD)
+                }
             }
             is StylingEvent.Markup.Italic -> {
-                onBlockStyleMarkupActionClicked(
-                    action = Markup.Type.ITALIC
-                )
+                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
+                    onStyleToolbarMarkupAction(type = Markup.Type.ITALIC)
+                } else {
+                    onBlockStyleMarkupActionClicked(action = Markup.Type.ITALIC)
+                }
             }
             is StylingEvent.Markup.StrikeThrough -> {
-                onBlockStyleMarkupActionClicked(
-                    action = Markup.Type.STRIKETHROUGH
-                )
+                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
+                    onStyleToolbarMarkupAction(type = Markup.Type.STRIKETHROUGH)
+                } else {
+                    onBlockStyleMarkupActionClicked(action = Markup.Type.STRIKETHROUGH)
+                }
             }
             is StylingEvent.Markup.Code -> {
-                onBlockStyleMarkupActionClicked(
-                    action = Markup.Type.KEYBOARD
-                )
+                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
+                    onStyleToolbarMarkupAction(type = Markup.Type.KEYBOARD)
+                } else {
+                    onBlockStyleMarkupActionClicked(action = Markup.Type.KEYBOARD)
+                }
             }
             is StylingEvent.Markup.Link -> {
-                onBlockStyleLinkClicked()
+                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
+                    onStyleToolbarMarkupAction(type = Markup.Type.LINK)
+                } else {
+                    onBlockStyleLinkClicked()
+                }
             }
             is StylingEvent.Alignment.Left -> {
                 onBlockAlignmentActionClicked(
@@ -945,7 +954,18 @@ class PageViewModel(
         }
     }
 
-    fun onBlockAlignmentActionClicked(alignment: Alignment) {
+    private fun onStyleToolbarMarkupAction(type: Markup.Type, param: String? = null) {
+        viewModelScope.launch {
+            markupActionPipeline.send(
+                MarkupAction(
+                    type = type,
+                    param = param
+                )
+            )
+        }
+    }
+
+    private fun onBlockAlignmentActionClicked(alignment: Alignment) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnAlignmentSelected)
 
         val state = stateData.value
@@ -997,7 +1017,7 @@ class PageViewModel(
         }
     }
 
-    fun onBlockBackgroundColorAction(color: String) {
+    private fun onBlockBackgroundColorAction(color: String) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockBackgroundColorSelected)
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
@@ -1010,7 +1030,7 @@ class PageViewModel(
         }
     }
 
-    fun onBlockStyleLinkClicked() {
+    private fun onBlockStyleLinkClicked() {
         val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
         val range = IntRange(
             start = 0,
@@ -1019,7 +1039,7 @@ class PageViewModel(
         stateData.value = ViewState.OpenLinkScreen(context, target, range)
     }
 
-    fun onBlockStyleMarkupActionClicked(action: Markup.Type) {
+    private fun onBlockStyleMarkupActionClicked(action: Markup.Type) {
 
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.OnBlockStyleSelected
@@ -1058,7 +1078,7 @@ class PageViewModel(
         }
     }
 
-    fun onActionBarItemClicked(id: String, action: ActionItemType) {
+    fun onActionMenuItemClicked(id: String, action: ActionItemType) {
         when (action) {
             ActionItemType.TurnInto -> {
                 dispatch(Command.OpenTurnIntoPanel(target = id))
@@ -1077,10 +1097,26 @@ class PageViewModel(
             ActionItemType.MoveTo -> {
                 _error.value = "Move To not implemented"
             }
+            ActionItemType.Color -> {
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnBlockActionToolbarTextColorClicked(
+                        target = blocks.first { it.id == id }
+                    )
+                )
+                dispatch(Command.PopBackStack)
+            }
+            ActionItemType.Background -> {
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnBlockActionToolbarBackgroundColorClicked(
+                        target = blocks.first { it.id == id }
+                    )
+                )
+                dispatch(Command.PopBackStack)
+            }
             ActionItemType.Style -> {
                 controlPanelInteractor.onEvent(
                     ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                        target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+                        target = blocks.first { it.id == id }
                     )
                 )
                 dispatch(Command.PopBackStack)

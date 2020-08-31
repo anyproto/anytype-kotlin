@@ -1,6 +1,11 @@
 package com.agileburo.anytype.presentation.page
 
 import MockDataFactory
+import com.agileburo.anytype.core_ui.common.Alignment
+import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
+import com.agileburo.anytype.core_ui.features.page.styling.StylingType
+import com.agileburo.anytype.core_ui.model.StyleConfig
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
@@ -544,6 +549,280 @@ class ControlPanelStateReducerTest {
             )
         }
 
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should update style toolbar state with italic true after selection changed`() {
+
+        val id = MockDataFactory.randomUuid()
+        val selectionFirst = IntRange(0, 2)
+        val selectionSecond = IntRange(4, 6)
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = true,
+                target = ControlPanelState.Toolbar.Styling.Target(
+                    text = "Foo Bar",
+                    color = "yellow",
+                    background = "red",
+                    alignment = Alignment.START,
+                    marks = listOf(
+                        Markup.Mark(0, 3, Markup.Type.BOLD),
+                        Markup.Mark(4, 7, Markup.Type.ITALIC)
+                    )
+                ),
+                config = StyleConfig(
+                    visibleTypes = listOf(
+                        StylingType.STYLE,
+                        StylingType.TEXT_COLOR,
+                        StylingType.BACKGROUND
+                    ),
+                    enabledAlignment = listOf(),
+                    enabledMarkup = listOf(
+                        Markup.Type.BOLD,
+                        Markup.Type.ITALIC,
+                        Markup.Type.STRIKETHROUGH,
+                        Markup.Type.KEYBOARD,
+                        Markup.Type.LINK
+                    )
+                ),
+                props = ControlPanelState.Toolbar.Styling.Props(
+                    isBold = true,
+                    isItalic = false,
+                    isStrikethrough = false,
+                    isCode = false,
+                    isLinked = false,
+                    alignment = Alignment.START,
+                    color = "yellow",
+                    background = "red"
+                ),
+                mode = StylingMode.MARKUP,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
+            )
+        )
+
+        val result = runBlocking {
+            reducer.selection = selectionFirst
+            reducer.reduce(
+                state = given,
+                event = ControlPanelMachine.Event.OnSelectionChanged(selection = selectionSecond)
+            )
+        }
+
+        val expected = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = true,
+                target = ControlPanelState.Toolbar.Styling.Target(
+                    text = "Foo Bar",
+                    color = "yellow",
+                    background = "red",
+                    alignment = Alignment.START,
+                    marks = listOf(
+                        Markup.Mark(0, 3, Markup.Type.BOLD),
+                        Markup.Mark(4, 7, Markup.Type.ITALIC)
+                    )
+                ),
+                config = StyleConfig(
+                    visibleTypes = listOf(
+                        StylingType.STYLE,
+                        StylingType.TEXT_COLOR,
+                        StylingType.BACKGROUND
+                    ),
+                    enabledAlignment = listOf(),
+                    enabledMarkup = listOf(
+                        Markup.Type.BOLD,
+                        Markup.Type.ITALIC,
+                        Markup.Type.STRIKETHROUGH,
+                        Markup.Type.KEYBOARD,
+                        Markup.Type.LINK
+                    )
+                ),
+                props = ControlPanelState.Toolbar.Styling.Props(
+                    isBold = false,
+                    isItalic = true,
+                    isStrikethrough = false,
+                    isCode = false,
+                    isLinked = false,
+                    alignment = Alignment.START,
+                    color = "yellow",
+                    background = "red"
+                ),
+                mode = StylingMode.MARKUP,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
+            )
+        )
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should update style toolbar state without markup after selection changed`() {
+
+        val id = MockDataFactory.randomUuid()
+        val selectionFirst = IntRange(0, 2)
+        val selectionSecond = IntRange(4, 6)
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = true,
+                target = ControlPanelState.Toolbar.Styling.Target(
+                    text = "Foo Bar",
+                    color = "yellow",
+                    background = "red",
+                    alignment = Alignment.START,
+                    marks = listOf(
+                        Markup.Mark(0, 3, Markup.Type.BOLD)
+                    )
+                ),
+                config = StyleConfig(
+                    visibleTypes = listOf(
+                        StylingType.STYLE,
+                        StylingType.TEXT_COLOR,
+                        StylingType.BACKGROUND
+                    ),
+                    enabledAlignment = listOf(),
+                    enabledMarkup = listOf(
+                        Markup.Type.BOLD,
+                        Markup.Type.ITALIC,
+                        Markup.Type.STRIKETHROUGH,
+                        Markup.Type.KEYBOARD,
+                        Markup.Type.LINK
+                    )
+                ),
+                props = ControlPanelState.Toolbar.Styling.Props(
+                    isBold = true,
+                    isItalic = false,
+                    isStrikethrough = false,
+                    isCode = false,
+                    isLinked = false,
+                    alignment = Alignment.START,
+                    color = "yellow",
+                    background = "red"
+                ),
+                mode = StylingMode.MARKUP,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
+            )
+        )
+
+        val result = runBlocking {
+            reducer.selection = selectionFirst
+            reducer.reduce(
+                state = given,
+                event = ControlPanelMachine.Event.OnSelectionChanged(selection = selectionSecond)
+            )
+        }
+
+        val expected = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = true,
+                target = ControlPanelState.Toolbar.Styling.Target(
+                    text = "Foo Bar",
+                    color = "yellow",
+                    background = "red",
+                    alignment = Alignment.START,
+                    marks = listOf(
+                        Markup.Mark(0, 3, Markup.Type.BOLD)
+                    )
+                ),
+                config = StyleConfig(
+                    visibleTypes = listOf(
+                        StylingType.STYLE,
+                        StylingType.TEXT_COLOR,
+                        StylingType.BACKGROUND
+                    ),
+                    enabledAlignment = listOf(),
+                    enabledMarkup = listOf(
+                        Markup.Type.BOLD,
+                        Markup.Type.ITALIC,
+                        Markup.Type.STRIKETHROUGH,
+                        Markup.Type.KEYBOARD,
+                        Markup.Type.LINK
+                    )
+                ),
+                props = ControlPanelState.Toolbar.Styling.Props(
+                    isBold = false,
+                    isItalic = false,
+                    isStrikethrough = false,
+                    isCode = false,
+                    isLinked = false,
+                    alignment = Alignment.START,
+                    color = "yellow",
+                    background = "red"
+                ),
+                mode = StylingMode.MARKUP,
+                type = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                isVisible = false,
+                cursorCoordinate = null,
+                mentionFilter = null,
+                mentionFrom = null
+            )
+        )
         assertEquals(
             expected = expected,
             actual = result

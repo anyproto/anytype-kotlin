@@ -914,44 +914,12 @@ class PageViewModel(
         }
     }
 
-    fun onMarkupTextColorAction(color: String) {
-        Timber.d("STATE : ${controlPanelViewState.value}")
-
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.OnMarkupTextColorSelected
-        )
-
-        viewModelScope.launch {
-            markupActionPipeline.send(
-                MarkupAction(
-                    type = Markup.Type.TEXT_COLOR,
-                    param = color
-                )
-            )
-        }
-    }
-
-    fun onStyleBackgroundSlideClicked() {
+    private fun onStyleBackgroundSlideClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnBackgroundSlideSelected)
     }
 
-    fun onStyleColorSlideClicked() {
+    private fun onStyleColorSlideClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnColorSlideSelected)
-    }
-
-    fun onMarkupBackgroundColorAction(color: String) {
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.OnMarkupBackgroundColorSelected
-        )
-
-        viewModelScope.launch {
-            markupActionPipeline.send(
-                MarkupAction(
-                    type = Markup.Type.BACKGROUND_COLOR,
-                    param = color
-                )
-            )
-        }
     }
 
     private fun onStyleToolbarMarkupAction(type: Markup.Type, param: String? = null) {

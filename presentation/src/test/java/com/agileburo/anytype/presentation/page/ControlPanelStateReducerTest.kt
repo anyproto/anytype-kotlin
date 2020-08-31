@@ -68,8 +68,7 @@ class ControlPanelStateReducerTest {
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
-                mode = null,
-                type = null
+                mode = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -121,8 +120,7 @@ class ControlPanelStateReducerTest {
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
-                mode = null,
-                type = null
+                mode = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -174,8 +172,7 @@ class ControlPanelStateReducerTest {
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
-                mode = null,
-                type = null
+                mode = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -232,8 +229,7 @@ class ControlPanelStateReducerTest {
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
-                mode = null,
-                type = null
+                mode = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -285,8 +281,7 @@ class ControlPanelStateReducerTest {
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
-                mode = null,
-                type = null
+                mode = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -337,8 +332,7 @@ class ControlPanelStateReducerTest {
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
-                mode = null,
-                type = null
+                mode = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -381,8 +375,7 @@ class ControlPanelStateReducerTest {
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
-                mode = null,
-                type = null
+                mode = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -434,8 +427,7 @@ class ControlPanelStateReducerTest {
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
-                mode = null,
-                type = null
+                mode = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false,
@@ -459,8 +451,7 @@ class ControlPanelStateReducerTest {
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
-                mode = null,
-                type = null
+                mode = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
@@ -502,8 +493,7 @@ class ControlPanelStateReducerTest {
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
-                mode = null,
-                type = null
+                mode = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
@@ -527,8 +517,7 @@ class ControlPanelStateReducerTest {
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
-                mode = null,
-                type = null
+                mode = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
@@ -607,8 +596,7 @@ class ControlPanelStateReducerTest {
                     color = "yellow",
                     background = "red"
                 ),
-                mode = StylingMode.MARKUP,
-                type = null
+                mode = StylingMode.MARKUP
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -674,8 +662,7 @@ class ControlPanelStateReducerTest {
                     color = "yellow",
                     background = "red"
                 ),
-                mode = StylingMode.MARKUP,
-                type = null
+                mode = StylingMode.MARKUP
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -744,8 +731,7 @@ class ControlPanelStateReducerTest {
                     color = "yellow",
                     background = "red"
                 ),
-                mode = StylingMode.MARKUP,
-                type = null
+                mode = StylingMode.MARKUP
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -810,8 +796,7 @@ class ControlPanelStateReducerTest {
                     color = "yellow",
                     background = "red"
                 ),
-                mode = StylingMode.MARKUP,
-                type = null
+                mode = StylingMode.MARKUP
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -822,6 +807,254 @@ class ControlPanelStateReducerTest {
                 mentionFilter = null,
                 mentionFrom = null
             )
+        )
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should show style toolbar in markup mode after main toolbar style clicked`() {
+
+        val id = MockDataFactory.randomUuid()
+
+        val block = Block(
+            id = id,
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Foo Bar",
+                style = Block.Content.Text.Style.P,
+                marks = listOf(
+                    Block.Content.Text.Mark(
+                        range = 0..3,
+                        type = Block.Content.Text.Mark.Type.BOLD
+                    )
+                ),
+                color = "yellow",
+                backgroundColor = "red",
+                align = Block.Align.AlignLeft
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        runBlocking {
+            reducer.reduce(
+                state = ControlPanelState.init(),
+                event = ControlPanelMachine.Event.OnFocusChanged(
+                    id = id,
+                    style = Block.Content.Text.Style.P
+                )
+            )
+        }
+
+        runBlocking {
+            reducer.reduce(
+                state = ControlPanelState.init(),
+                event = ControlPanelMachine.Event.OnSelectionChanged(selection = IntRange(0, 3))
+            )
+        }
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+        )
+
+        val result = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
+                    target = block
+                )
+            )
+        }
+
+        val expected = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = true,
+                target = ControlPanelState.Toolbar.Styling.Target(
+                    text = "Foo Bar",
+                    color = "yellow",
+                    background = "red",
+                    alignment = Alignment.START,
+                    marks = listOf(
+                        Markup.Mark(0, 3, Markup.Type.BOLD)
+                    )
+                ),
+                config = StyleConfig(
+                    visibleTypes = listOf(
+                        StylingType.STYLE,
+                        StylingType.TEXT_COLOR,
+                        StylingType.BACKGROUND
+                    ),
+                    enabledAlignment = listOf(),
+                    enabledMarkup = listOf(
+                        Markup.Type.BOLD,
+                        Markup.Type.ITALIC,
+                        Markup.Type.STRIKETHROUGH,
+                        Markup.Type.KEYBOARD,
+                        Markup.Type.LINK
+                    )
+                ),
+                props = ControlPanelState.Toolbar.Styling.Props(
+                    isBold = true,
+                    isItalic = false,
+                    isStrikethrough = false,
+                    isCode = false,
+                    isLinked = false,
+                    alignment = Alignment.START,
+                    color = "yellow",
+                    background = "red"
+                ),
+                mode = StylingMode.MARKUP
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+        )
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should show style toolbar in block mode after main toolbar style clicked`() {
+
+        val id = MockDataFactory.randomUuid()
+
+        val block = Block(
+            id = id,
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Foo Bar",
+                style = Block.Content.Text.Style.P,
+                marks = listOf(
+                    Block.Content.Text.Mark(
+                        range = 0..3,
+                        type = Block.Content.Text.Mark.Type.BOLD
+                    )
+                ),
+                color = "yellow",
+                backgroundColor = "red",
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        runBlocking {
+            reducer.reduce(
+                state = ControlPanelState.init(),
+                event = ControlPanelMachine.Event.OnFocusChanged(
+                    id = id,
+                    style = Block.Content.Text.Style.P
+                )
+            )
+        }
+
+        runBlocking {
+            reducer.reduce(
+                state = ControlPanelState.init(),
+                event = ControlPanelMachine.Event.OnSelectionChanged(selection = IntRange(1, 1))
+            )
+        }
+
+        val given = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+        )
+
+        val result = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
+                    target = block
+                )
+            )
+        }
+
+        val expected = ControlPanelState(
+            focus = ControlPanelState.Focus(
+                id = id,
+                type = ControlPanelState.Focus.Type.P
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = true,
+                target = ControlPanelState.Toolbar.Styling.Target(
+                    text = "Foo Bar",
+                    color = "yellow",
+                    background = "red",
+                    alignment = Alignment.CENTER,
+                    marks = listOf(
+                        Markup.Mark(0, 3, Markup.Type.BOLD)
+                    )
+                ),
+                config = StyleConfig(
+                    visibleTypes = listOf(
+                        StylingType.STYLE,
+                        StylingType.TEXT_COLOR,
+                        StylingType.BACKGROUND
+                    ),
+                    enabledAlignment = listOf(
+                        Alignment.START,
+                        Alignment.CENTER,
+                        Alignment.END
+                    ),
+                    enabledMarkup = listOf(
+                        Markup.Type.BOLD,
+                        Markup.Type.ITALIC,
+                        Markup.Type.STRIKETHROUGH,
+                        Markup.Type.KEYBOARD,
+                        Markup.Type.LINK
+                    )
+                ),
+                props = ControlPanelState.Toolbar.Styling.Props(
+                    isBold = false,
+                    isItalic = false,
+                    isStrikethrough = false,
+                    isCode = false,
+                    isLinked = false,
+                    alignment = Alignment.CENTER,
+                    color = "yellow",
+                    background = "red"
+                ),
+                mode = StylingMode.BLOCK
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = false
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
         )
         assertEquals(
             expected = expected,

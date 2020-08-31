@@ -46,8 +46,7 @@ data class ControlPanelState(
             val config: StyleConfig? = null,
             val props: Props? = null,
             override val isVisible: Boolean,
-            val mode: StylingMode? = null,
-            val type: StylingType? = null
+            val mode: StylingMode? = null
         ) : Toolbar() {
 
             companion object {
@@ -56,8 +55,7 @@ data class ControlPanelState(
                     target = null,
                     config = null,
                     props = null,
-                    mode = null,
-                    type = null
+                    mode = null
                 )
             }
 
@@ -176,7 +174,6 @@ data class ControlPanelState(
             ),
             stylingToolbar = Toolbar.Styling(
                 isVisible = false,
-                type = null,
                 mode = null
             ),
             mentionToolbar = Toolbar.MentionToolbar(

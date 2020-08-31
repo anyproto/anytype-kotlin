@@ -108,8 +108,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                     ),
                     stylingToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = false,
-                        mode = null,
-                        type = null
+                        mode = null
                     ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = true,
@@ -206,8 +205,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                     ),
                     stylingToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = false,
-                        mode = null,
-                        type = null
+                        mode = null
                     ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = true,
@@ -308,8 +306,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                     ),
                     stylingToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = false,
-                        mode = null,
-                        type = null
+                        mode = null
                     ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = true,

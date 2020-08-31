@@ -141,26 +141,6 @@ abstract class BlockActionToolbar : Fragment() {
                             color = context.color(R.color.light_grayish)
                         )
                     }
-                    ActionItemType.Background -> {
-                        actionToolbarSize += resources.getDimensionPixelSize(R.dimen.default_toolbar_action_item_height)
-                        val item = createActionBarItem(
-                            type = type,
-                            context = requireContext(),
-                            actionClick = actionClick
-                        )
-                        addView(item)
-                        backgroundView = item.findViewById(R.id.ivAction)
-                    }
-                    ActionItemType.Color -> {
-                        actionToolbarSize += resources.getDimensionPixelSize(R.dimen.default_toolbar_action_item_height)
-                        val item = createActionBarItem(
-                            type = type,
-                            context = requireContext(),
-                            actionClick = actionClick
-                        )
-                        addView(item)
-                        colorView = item.findViewById(R.id.ivAction)
-                    }
                     else -> {
                         actionToolbarSize += resources.getDimensionPixelSize(R.dimen.default_toolbar_action_item_height)
                         addView(

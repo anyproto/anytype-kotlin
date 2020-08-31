@@ -14,8 +14,6 @@ sealed class ActionItemType {
     object Duplicate : ActionItemType()
     object Rename : ActionItemType()
     object MoveTo : ActionItemType()
-    object Color : ActionItemType()
-    object Background : ActionItemType()
     object Style : ActionItemType()
     object Download : ActionItemType()
     object Replace : ActionItemType()
@@ -56,14 +54,6 @@ class BlockActionBarItem @JvmOverloads constructor(
             ActionItemType.MoveTo -> updateContent(
                 R.string.action_bar_move_to,
                 R.drawable.ic_action_move_to
-            )
-            ActionItemType.Color -> updateContent(
-                R.string.action_bar_color,
-                R.drawable.ic_action_color
-            )
-            ActionItemType.Background -> updateContent(
-                R.string.action_bar_background,
-                R.drawable.ic_ellipse
             )
             ActionItemType.Style -> updateContent(
                 R.string.action_bar_style,

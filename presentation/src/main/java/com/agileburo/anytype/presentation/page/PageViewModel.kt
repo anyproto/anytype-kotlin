@@ -1065,22 +1065,6 @@ class PageViewModel(
             ActionItemType.MoveTo -> {
                 _error.value = "Move To not implemented"
             }
-            ActionItemType.Color -> {
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnBlockActionToolbarTextColorClicked(
-                        target = blocks.first { it.id == id }
-                    )
-                )
-                dispatch(Command.PopBackStack)
-            }
-            ActionItemType.Background -> {
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnBlockActionToolbarBackgroundColorClicked(
-                        target = blocks.first { it.id == id }
-                    )
-                )
-                dispatch(Command.PopBackStack)
-            }
             ActionItemType.Style -> {
                 controlPanelInteractor.onEvent(
                     ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(

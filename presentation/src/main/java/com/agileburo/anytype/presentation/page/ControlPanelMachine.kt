@@ -132,8 +132,6 @@ sealed class ControlPanelMachine {
             val style: Block.Content.Text.Style
         ) : Event()
 
-        data class OnBlockActionToolbarTextColorClicked(val target: Block) : Event()
-        data class OnBlockActionToolbarBackgroundColorClicked(val target: Block) : Event()
         data class OnBlockActionToolbarStyleClicked(val target: Block) : Event()
 
         /**
@@ -202,21 +200,21 @@ sealed class ControlPanelMachine {
             Overlap.INNER_LEFT
         )
 
-        var selection: IntRange? = null
+        var mSelection: IntRange? = null
 
         override val function: suspend (ControlPanelState, Event) -> ControlPanelState
             get() = { state, event -> reduce(state, event) }
 
         override suspend fun reduce(state: ControlPanelState, event: Event) = when (event) {
             is Event.OnSelectionChanged -> {
-                selection = event.selection
+                mSelection = event.selection
                 when {
                     state.focus == null -> state.copy()
                     state.stylingToolbar.isVisible -> {
-                        handleSelectionChangeForStylingToolbar(event, state)
+                        handleOnSelectionChangedForStylingToolbar(mSelection, event, state)
                     }
                     state.mentionToolbar.isVisible -> state.copy(
-                        mentionToolbar = handleSelectionChangeEventForMentionState(
+                        mentionToolbar = handleOnSelectionChangedForMentionState(
                             state = state.mentionToolbar,
                             start = event.selection.first
                         )
@@ -240,7 +238,7 @@ sealed class ControlPanelMachine {
             is Event.OnAddBlockToolbarOptionSelected -> state.copy()
             is Event.OnMarkupBackgroundColorSelected -> state.copy()
             is Event.OnMarkupContextMenuTextColorClicked -> {
-                selection = event.selection
+                mSelection = event.selection
                 val target = target(event.target)
                 val props = getMarkupLevelStylingProps(target, event.selection)
                 state.copy(
@@ -256,7 +254,7 @@ sealed class ControlPanelMachine {
                 )
             }
             is Event.OnMarkupContextMenuBackgroundColorClicked -> {
-                selection = event.selection
+                mSelection = event.selection
                 val target = target(event.target)
                 val props = getMarkupLevelStylingProps(target, event.selection)
                 state.copy(
@@ -272,10 +270,10 @@ sealed class ControlPanelMachine {
                 )
             }
             is Event.OnEditorContextMenuStyleClicked -> {
-                selection = event.selection
+                mSelection = event.selection
                 val config = event.target.getStyleConfig(
                     focus = true,
-                    selection = selection
+                    selection = mSelection
                 )
                 val target = target(event.target)
                 val props = getMarkupLevelStylingProps(target, event.selection)
@@ -303,52 +301,6 @@ sealed class ControlPanelMachine {
                     state.copy()
                 }
             }
-            is Event.OnBlockActionToolbarTextColorClicked -> {
-                val target = target(event.target)
-                state.copy(
-                    mainToolbar = state.mainToolbar.copy(
-                        isVisible = false
-                    ),
-                    stylingToolbar = state.stylingToolbar.copy(
-                        isVisible = true,
-                        mode = StylingMode.BLOCK,
-                        target = target,
-                        props = Toolbar.Styling.Props(
-                            isBold = target.isBold,
-                            isItalic = target.isItalic,
-                            isStrikethrough = target.isStrikethrough,
-                            isCode = target.isCode,
-                            isLinked = target.isLinked,
-                            color = target.color ?: ThemeColor.DEFAULT.title,
-                            background = target.background ?: ThemeColor.DEFAULT.title,
-                            alignment = target.alignment
-                        )
-                    )
-                )
-            }
-            is Event.OnBlockActionToolbarBackgroundColorClicked -> {
-                val target = target(event.target)
-                state.copy(
-                    mainToolbar = state.mainToolbar.copy(
-                        isVisible = false
-                    ),
-                    stylingToolbar = state.stylingToolbar.copy(
-                        isVisible = true,
-                        mode = StylingMode.BLOCK,
-                        target = target,
-                        props = Toolbar.Styling.Props(
-                            isBold = target.isBold,
-                            isItalic = target.isItalic,
-                            isStrikethrough = target.isStrikethrough,
-                            isCode = target.isCode,
-                            isLinked = target.isLinked,
-                            color = target.color ?: ThemeColor.DEFAULT.title,
-                            background = target.background ?: ThemeColor.DEFAULT.title,
-                            alignment = target.alignment
-                        )
-                    )
-                )
-            }
             is Event.OnBlockActionToolbarStyleClicked -> {
                 val target = target(event.target)
                 state.copy(
@@ -357,10 +309,10 @@ sealed class ControlPanelMachine {
                     ),
                     stylingToolbar = state.stylingToolbar.copy(
                         isVisible = true,
-                        mode = getModeForSelection(selection),
+                        mode = getModeForSelection(mSelection),
                         target = target(event.target),
-                        config = event.target.getStyleConfig(true, selection),
-                        props = getPropsForSelection(target, selection)
+                        config = event.target.getStyleConfig(true, mSelection),
+                        props = getPropsForSelection(target, mSelection)
                     )
                 )
             }
@@ -423,7 +375,7 @@ sealed class ControlPanelMachine {
             return if (state.stylingToolbar.mode == StylingMode.MARKUP) {
                 if (event.target != null) {
                     val target = target(event.target)
-                    selection?.let {
+                    mSelection?.let {
                         val props = getMarkupLevelStylingProps(target, it)
                         state.copy(
                             stylingToolbar = state.stylingToolbar.copy(
@@ -535,32 +487,24 @@ sealed class ControlPanelMachine {
             )
         }
 
-        private fun handleSelectionChangeForStylingToolbar(
+        private fun handleOnSelectionChangedForStylingToolbar(
+            selection: IntRange?,
             event: Event.OnSelectionChanged,
             state: ControlPanelState
         ): ControlPanelState {
-            Timber.d("handleSelectionChangeForStylingToolbar")
-            return if (event.selection.first != event.selection.last) {
-                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
-                    val target = state.stylingToolbar.target
-                    selection = event.selection
-                    if (target != null) {
-                        state.copy(
-                            stylingToolbar = state.stylingToolbar.copy(
-                                props = getMarkupLevelStylingProps(
-                                    target = target,
-                                    selection = event.selection
-                                )
-                            )
+            return if (selection == null || selection.first >= selection.last) {
+                state.copy(stylingToolbar = Toolbar.Styling.reset())
+            } else {
+                val target = state.stylingToolbar.target
+                if (target != null && state.stylingToolbar.mode == StylingMode.MARKUP) {
+                    state.copy(
+                        stylingToolbar = state.stylingToolbar.copy(
+                            props = getMarkupLevelStylingProps(target, event.selection)
                         )
-                    } else {
-                        state.copy()
-                    }
+                    )
                 } else {
                     state.copy()
                 }
-            } else {
-                state.copy()
             }
         }
 
@@ -689,7 +633,7 @@ sealed class ControlPanelMachine {
             )
         }
 
-        private fun handleSelectionChangeEventForMentionState(
+        private fun handleOnSelectionChangedForMentionState(
             state: Toolbar.MentionToolbar,
             start: Int
         ): Toolbar.MentionToolbar {

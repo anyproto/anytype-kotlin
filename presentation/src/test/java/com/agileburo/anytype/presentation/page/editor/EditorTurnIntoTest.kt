@@ -162,8 +162,8 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val child = Block(
-            id = "CHILD",
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
@@ -173,10 +173,10 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
             )
         )
 
-        val parent = Block(
-            id = "PARENT",
+        val b = Block(
+            id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
-            children = listOf(child.id),
+            children = emptyList(),
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
@@ -190,10 +190,10 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(parent.id)
+            children = listOf(a.id, b.id)
         )
 
-        val document = listOf(page, parent, child)
+        val document = listOf(page, a, b)
 
         stubOpenDocument(document = document)
         stubInterceptEvents(InterceptEvents.Params(context = root))
@@ -204,10 +204,10 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
 
         vm.apply {
             onStart(root)
-            onBlockFocusChanged(id = parent.id, hasFocus = true)
+            onBlockFocusChanged(id = a.id, hasFocus = true)
             onClickListener(
                 ListenerType.LongClick(
-                    target = child.id,
+                    target = b.id,
                     dimensions = BlockDimensions(
                         MockDataFactory.randomInt(),
                         MockDataFactory.randomInt(),
@@ -219,7 +219,7 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
                 )
             )
             onActionMenuItemClicked(
-                id = child.id,
+                id = b.id,
                 action = ActionItemType.TurnInto
             )
         }
@@ -244,7 +244,7 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
         )
 
         assertEquals(
-            expected = child.id,
+            expected = b.id,
             actual = result.target
         )
 

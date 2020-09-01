@@ -2,9 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
-    android:paddingStart="@dimen/default_document_item_padding_start"
-    android:paddingEnd="@dimen/default_document_item_padding_end"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="1dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="1dp"
+    android:background="@drawable/item_block_multi_select_mode_selector"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -30,12 +34,16 @@
             android:layout_gravity="center"
             android:contentDescription="@string/content_description_page_icon" />
 
-        <TextView
-            android:id="@+id/emoji"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@color/emoji_color" />
+        <ImageView
+            android:id="@+id/linkImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/linkEmoji"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center" />
 
     </FrameLayout>
 
@@ -46,8 +54,8 @@
         android:layout_marginTop="3dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="3dp"
-        android:visibility="invisible"
         android:src="@drawable/ic_block_more"
+        android:visibility="invisible"
         android:contentDescription="@string/content_description_more_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

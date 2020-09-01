@@ -3,15 +3,18 @@
 ## Version 0.0.45 (WIP)
 
 * Test flight for turn-into restrictions in edit-mode and multi-select mode (#376)
+* Styling panel | Switching between block-mode and markup-mode based on selection changes (#594)
 
 ### Design & UX 🔳
 
 * Apple emojis or uploaded image in block-action-toolbar link's preview (#630)
 * Uploading state for upload-image-for-document flow (#765)
+* Update Graphik font file with the official one (#768)
+* Navigate from context menu to styling panel (#594)
 
 ### Fixes & tech 🚒
 
-* Should not show toast when clicking on markup url (#698)
+* Removed archived pages from mention suggester and search results (#766)
 * Checkbox state in action-menu preview is not synced with editor state (#748)
 * User interactions with checkbox button are not synced correctly with the middleware (#749, #668)
 * When searching for pages, if filter text is empty space, query returns only pages where title contains empty spaces (#746)
@@ -21,6 +24,7 @@
 * Fix app configuration lifetime (#735)
 * Avatar image is not displayed after registration started after logout (#692)
 * Editor business logic (event detection for backspace and enter press, checkbox button click detection, etc.) is broken for text blocks, whose style was changed via `turn-into-toolbar` in `multi-select` mode after returning to `edit` mode (#514)
+* Should not show toast when clicking on markup url (#698)
 
 ## Version 0.0.44
 

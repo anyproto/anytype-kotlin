@@ -4,6 +4,7 @@
 
 ### Fixes & tech 🚒
 
+* Should not show toast when clicking on markup url (#698)
 * Checkbox state in action-menu preview is not synced with editor state (#748)
 * User interactions with checkbox button are not synced correctly with the middleware (#749, #668)
 * When searching for pages, if filter text is empty space, query returns only pages where title contains empty spaces (#746)

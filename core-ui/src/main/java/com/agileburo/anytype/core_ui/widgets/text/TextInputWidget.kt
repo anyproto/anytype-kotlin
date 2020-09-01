@@ -12,6 +12,7 @@ import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
+import com.agileburo.anytype.core_ui.BuildConfig
 import com.agileburo.anytype.core_ui.tools.ClipboardInterceptor
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.tools.MentionTextWatcher
@@ -184,8 +185,10 @@ class TextInputWidget : AppCompatEditText {
      */
     private fun makeLinksActive() {
         BetterLinkMovementMethod.linkify(Linkify.ALL, this)
-            .setOnLinkClickListener { textView, url ->
-                textView.context.toast("On link click $url")
+            .setOnLinkClickListener { _, url ->
+                if (BuildConfig.DEBUG) {
+                    context.toast("On link click $url")
+                }
                 false
             }
     }

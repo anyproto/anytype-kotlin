@@ -8,9 +8,9 @@ open class GetListPages(private val repo: BlockRepository) :
     BaseUseCase<GetListPages.Response, Unit>() {
 
     override suspend fun run(params: Unit): Either<Throwable, Response> = safe {
-        repo.getListPages().let {
+        repo.getListPages().filterNot { it.fields.isArchived == true }.let { result ->
             Response(
-                listPages = it
+                listPages = result
             )
         }
     }

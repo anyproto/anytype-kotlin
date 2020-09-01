@@ -12,7 +12,14 @@ class GetPageInfoWithLinks(private val repo: BlockRepository) :
             pageId = params.pageId
         )
             .let {
-                Response(pageInfoWithLinks = it)
+                Response(
+                    pageInfoWithLinks = it.copy(
+                        links = it.links.copy(
+                            outbound = it.links.outbound.filterNot { page -> page.fields.isArchived == true },
+                            inbound = it.links.inbound.filterNot { page -> page.fields.isArchived == true }
+                        )
+                    )
+                )
             }
     }
 

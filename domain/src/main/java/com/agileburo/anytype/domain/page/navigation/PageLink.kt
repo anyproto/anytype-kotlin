@@ -22,4 +22,3 @@ data class PageInfoWithLinks(
     val pageInfo: PageInfo,
     val links: PageLinks
 )
-

@@ -1,0 +1,89 @@
+package com.agileburo.anytype.domain.page.navigation
+
+import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.common.CoroutineTestRule
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.stub
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
+import kotlin.test.assertEquals
+
+class GetListPagesTest {
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var rule = CoroutineTestRule()
+
+    @Mock
+    lateinit var repository: BlockRepository
+    lateinit var getListPages: GetListPages
+
+    @Before
+    fun setup() {
+        MockitoAnnotations.initMocks(this)
+        getListPages = GetListPages(repository)
+    }
+
+    @Test
+    fun `should filter results by archived pages`() {
+
+        repository.stub {
+            onBlocking { getListPages() } doReturn listOf(
+                PageInfo(
+                    id = "123678",
+                    fields = Block.Fields(mapOf("name" to "Alex")),
+                    snippet = "Snippet1",
+                    hasInboundLinks = false
+                ),
+                PageInfo(
+                    id = "9876",
+                    fields = Block.Fields(mapOf("name" to "Mike", "isArchived" to false)),
+                    snippet = "Snippet2",
+                    hasInboundLinks = false
+                ),
+                PageInfo(
+                    id = "934",
+                    fields = Block.Fields(mapOf("name" to "Leo", "isArchived" to true)),
+                    snippet = "Snippet3",
+                    hasInboundLinks = false
+                )
+            )
+        }
+
+        runBlocking {
+
+            getListPages.invoke(Unit).proceed(
+                failure = {},
+                success = { response: GetListPages.Response ->
+                    assertEquals(
+                        expected = listOf(
+                            PageInfo(
+                                id = "123678",
+                                fields = Block.Fields(mapOf("name" to "Alex")),
+                                snippet = "Snippet1",
+                                hasInboundLinks = false
+                            ),
+                            PageInfo(
+                                id = "9876",
+                                fields = Block.Fields(
+                                    mapOf(
+                                        "name" to "Mike",
+                                        "isArchived" to false
+                                    )
+                                ),
+                                snippet = "Snippet2",
+                                hasInboundLinks = false
+                            )
+                        ),
+                        actual = response.listPages
+                    )
+                })
+        }
+    }
+}

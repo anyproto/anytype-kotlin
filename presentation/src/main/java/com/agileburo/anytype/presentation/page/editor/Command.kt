@@ -37,10 +37,15 @@ sealed class Command {
     data class Measure(val target: Id) : Command()
 
     data class OpenTurnIntoPanel(
-        val target: Id
+        val target: Id,
+        val excludedCategories: List<String> = emptyList(),
+        val excludedTypes: List<String> = emptyList()
     ) : Command()
 
-    object OpenMultiSelectTurnIntoPanel : Command()
+    data class OpenMultiSelectTurnIntoPanel(
+        val excludedCategories: List<String> = emptyList(),
+        val excludedTypes: List<String> = emptyList()
+    ) : Command()
 
     data class RequestDownloadPermission(
         val id: String

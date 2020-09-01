@@ -1049,7 +1049,26 @@ class PageViewModel(
     fun onActionMenuItemClicked(id: String, action: ActionItemType) {
         when (action) {
             ActionItemType.TurnInto -> {
-                dispatch(Command.OpenTurnIntoPanel(target = id))
+                val excludedTypes = mutableListOf<String>()
+                val target = blocks.first { it.id == id }
+                if (target.content is Content.Text) {
+                    excludedTypes.apply {
+                        add(UiBlock.FILE.name)
+                        add(UiBlock.IMAGE.name)
+                        add(UiBlock.VIDEO.name)
+                        add(UiBlock.BOOKMARK.name)
+                        add(UiBlock.LINE_DIVIDER.name)
+                        add(UiBlock.THREE_DOTS.name)
+                        add(UiBlock.LINK_TO_OBJECT.name)
+                    }
+                }
+                dispatch(
+                    Command.OpenTurnIntoPanel(
+                        target = id,
+                        excludedCategories = emptyList(),
+                        excludedTypes = excludedTypes
+                    )
+                )
             }
             ActionItemType.Delete -> {
                 proceedWithUnlinking(target = id)
@@ -1417,7 +1436,43 @@ class PageViewModel(
         }
 
     fun onMultiSelectTurnIntoButtonClicked() {
-        dispatch(Command.OpenMultiSelectTurnIntoPanel)
+
+        val excludedCategories = mutableListOf<String>()
+        val excludedTypes = mutableListOf<String>()
+
+        val targets = currentSelection()
+
+        val blocks = blocks.filter { targets.contains(it.id) }
+
+        val hasTextBlocks = blocks.any { it.content is Content.Text }
+        val hasDividerBlocks = blocks.any { it.content is Content.Divider }
+
+        when {
+            hasTextBlocks -> {
+                excludedTypes.apply {
+                    add(UiBlock.FILE.name)
+                    add(UiBlock.IMAGE.name)
+                    add(UiBlock.VIDEO.name)
+                    add(UiBlock.BOOKMARK.name)
+                    add(UiBlock.LINE_DIVIDER.name)
+                    add(UiBlock.THREE_DOTS.name)
+                    add(UiBlock.LINK_TO_OBJECT.name)
+                }
+                dispatch(Command.OpenMultiSelectTurnIntoPanel(excludedCategories, excludedTypes))
+            }
+            hasDividerBlocks -> {
+                excludedCategories.apply {
+                    add(UiBlock.Category.TEXT.name)
+                    add(UiBlock.Category.LIST.name)
+                    add(UiBlock.Category.OBJECT.name)
+                }
+                excludedTypes.add(UiBlock.CODE.name)
+                dispatch(Command.OpenMultiSelectTurnIntoPanel(excludedCategories, excludedTypes))
+            }
+            else -> {
+                _error.value = "Cannot turn selected blocks into other blocks"
+            }
+        }
     }
 
     fun onOpenPageNavigationButtonClicked() {

@@ -21,6 +21,18 @@ import kotlinx.android.synthetic.main.fragment_add_block.*
 
 class TurnIntoFragment : BaseBottomSheetFragment() {
 
+    private val excludedCategories: List<UiBlock.Category>
+        get() {
+            val names = arguments?.getStringArrayList(ARG_EXCLUDED_CATEGORIES) ?: emptyList()
+            return names.map { UiBlock.Category.valueOf(it) }
+        }
+
+    private val excludedTypes: List<UiBlock>
+        get() {
+            val names = arguments?.getStringArrayList(ARG_EXCLUDED_TYPES) ?: emptyList()
+            return names.map { UiBlock.valueOf(it) }
+        }
+
     private val target: String
         get() = requireArguments()
             .getString(ARG_TARGET_KEY)
@@ -30,25 +42,16 @@ class TurnIntoFragment : BaseBottomSheetFragment() {
         get() = requireArguments()
             .getBoolean(ARG_MULTI_SELECT_MODE_KEY, false)
 
-    companion object {
 
-        fun single(target: Id): TurnIntoFragment = TurnIntoFragment().apply {
-            arguments = bundleOf(ARG_TARGET_KEY to target)
-        }
-
-        fun multiple(): TurnIntoFragment = TurnIntoFragment().apply {
-            arguments = bundleOf(ARG_MULTI_SELECT_MODE_KEY to true)
-        }
-
-        private const val ARG_TARGET_KEY = "arg.turn-into.target"
-        private const val ARG_MULTI_SELECT_MODE_KEY = "arg.turn-into.is-multi-select"
-        private const val MISSING_TARGET_ERROR = "Target missing in args"
+    private val addBlockOrTurnIntoAdapter by lazy {
+        AddBlockOrTurnIntoAdapter(
+            views = AddBlockOrTurnIntoAdapter.turnIntoAdapterData(
+                excludedCategories = excludedCategories,
+                excludedTypes = excludedTypes
+            ),
+            onUiBlockClicked = { type -> dispatchAndExit(type) }
+        )
     }
-
-    private val addBlockOrTurnIntoAdapter = AddBlockOrTurnIntoAdapter(
-        views = AddBlockOrTurnIntoAdapter.turnIntoAdapterData(),
-        onUiBlockClicked = { type -> dispatchAndExit(type) }
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -100,4 +103,36 @@ class TurnIntoFragment : BaseBottomSheetFragment() {
 
     override fun injectDependencies() {}
     override fun releaseDependencies() {}
+
+    companion object {
+
+        fun single(
+            target: Id,
+            excludedCategories: List<String> = emptyList(),
+            excludedTypes: List<String> = emptyList()
+        ): TurnIntoFragment = TurnIntoFragment().apply {
+            arguments = bundleOf(
+                ARG_TARGET_KEY to target,
+                ARG_EXCLUDED_TYPES to ArrayList(excludedTypes),
+                ARG_EXCLUDED_CATEGORIES to ArrayList(excludedCategories)
+            )
+        }
+
+        fun multiple(
+            excludedCategories: List<String> = emptyList(),
+            excludedTypes: List<String> = emptyList()
+        ): TurnIntoFragment = TurnIntoFragment().apply {
+            arguments = bundleOf(
+                ARG_MULTI_SELECT_MODE_KEY to true,
+                ARG_EXCLUDED_TYPES to ArrayList(excludedTypes),
+                ARG_EXCLUDED_CATEGORIES to ArrayList(excludedCategories)
+            )
+        }
+
+        private const val ARG_TARGET_KEY = "arg.turn-into.target"
+        private const val ARG_EXCLUDED_CATEGORIES = "arg.turn-into.excluded_categories"
+        private const val ARG_EXCLUDED_TYPES = "arg.turn-into.excluded_types"
+        private const val ARG_MULTI_SELECT_MODE_KEY = "arg.turn-into.is-multi-select"
+        private const val MISSING_TARGET_ERROR = "Target missing in args"
+    }
 }

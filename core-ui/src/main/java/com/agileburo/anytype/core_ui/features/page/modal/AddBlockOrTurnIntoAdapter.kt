@@ -230,9 +230,27 @@ class AddBlockOrTurnIntoAdapter(
             AddBlockOrTurnIntoView.AddBlockHeader
         ) + items()
 
-        fun turnIntoAdapterData(): List<AddBlockOrTurnIntoView> = listOf(
-            AddBlockOrTurnIntoView.TurnIntoHeader
-        ) + items()
+        fun turnIntoAdapterData(
+            excludedTypes: List<UiBlock> = emptyList(),
+            excludedCategories: List<UiBlock.Category> = emptyList()
+        ): List<AddBlockOrTurnIntoView> {
+
+            val aggregated = UiBlock.values().groupBy { it.category() }
+
+            return mutableListOf<AddBlockOrTurnIntoView>().apply {
+                add(AddBlockOrTurnIntoView.TurnIntoHeader)
+                aggregated.forEach { (category, types) ->
+                    if (!excludedCategories.contains(category)) {
+                        add(AddBlockOrTurnIntoView.Section(category = category))
+                        types.forEach { type ->
+                            if (!excludedTypes.contains(type)) {
+                                add(AddBlockOrTurnIntoView.Item(type = type))
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         fun items(): List<AddBlockOrTurnIntoView> = listOf(
             AddBlockOrTurnIntoView.Section(category = UiBlock.Category.TEXT),

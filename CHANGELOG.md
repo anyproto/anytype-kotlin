@@ -2,6 +2,8 @@
 
 ## Version 0.0.45 (WIP)
 
+* Test flight for turn-into restrictions in edit-mode and multi-select mode (#376)
+
 ### Fixes & tech 🚒
 
 * Should not show toast when clicking on markup url (#698)

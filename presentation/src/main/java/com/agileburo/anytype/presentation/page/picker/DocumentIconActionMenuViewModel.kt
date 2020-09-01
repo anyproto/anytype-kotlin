@@ -31,6 +31,7 @@ class DocumentIconActionMenuViewModel(
                 when {
                     state.error != null -> ViewState.Error(state.error)
                     state.isCompleted -> ViewState.Exit
+                    state.isUploading -> ViewState.Uploading
                     else -> ViewState.Idle
                 }
             }
@@ -91,6 +92,7 @@ class DocumentIconActionMenuViewModel(
 
     sealed class ViewState {
         object Loading : ViewState()
+        object Uploading : ViewState()
         object Exit : ViewState()
         object Idle : ViewState()
         data class Error(val message: String) : ViewState()
@@ -124,6 +126,7 @@ class DocumentIconActionMenuViewModel(
 
         data class State(
             val isLoading: Boolean,
+            val isUploading: Boolean = false,
             val isCompleted: Boolean = false,
             val error: String? = null
         ) : Contract() {
@@ -200,7 +203,8 @@ class DocumentIconActionMenuViewModel(
             }
             is Event.OnImagePickedFromGallery -> {
                 state.copy(
-                    isLoading = true
+                    isUploading = true,
+                    isLoading = false,
                 ).also {
                     actions.send(
                         Action.SetImageIcon(

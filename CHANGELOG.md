@@ -7,6 +7,7 @@
 ### Design & UX 🔳
 
 * Apple emojis or uploaded image in block-action-toolbar link's preview (#630)
+* Uploading state for upload-image-for-document flow (#765)
 
 ### Fixes & tech 🚒
 

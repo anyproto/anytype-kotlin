@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_utils.ext.parsePath
 import com.agileburo.anytype.core_utils.ext.toast
+import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.core_utils.ui.BaseFragment
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.emojifier.Emojifier
@@ -164,6 +165,7 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
             is ViewState.Exit -> exit()
             is ViewState.Error -> toast(state.message)
             is ViewState.Loading -> toast(getString(R.string.loading))
+            is ViewState.Uploading -> progress.visible()
         }
     }
 

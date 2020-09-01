@@ -66,6 +66,7 @@ sealed class ControlPanelMachine {
          * @property selection text selection (end index and start index are inclusive)
          */
         data class OnSelectionChanged(
+            val target: String,
             val selection: IntRange
         ) : Event()
 
@@ -207,25 +208,29 @@ sealed class ControlPanelMachine {
 
         override suspend fun reduce(state: ControlPanelState, event: Event) = when (event) {
             is Event.OnSelectionChanged -> {
-                mSelection = event.selection
-                when {
-                    state.focus == null -> state.copy()
-                    state.stylingToolbar.isVisible -> {
-                        handleOnSelectionChangedForStylingToolbar(mSelection, event, state)
-                    }
-                    state.mentionToolbar.isVisible -> state.copy(
-                        mentionToolbar = handleOnSelectionChangedForMentionState(
-                            state = state.mentionToolbar,
-                            start = event.selection.first
-                        )
-                    )
-                    else -> {
-                        state.copy(
-                            mainToolbar = state.mainToolbar.copy(
-                                isVisible = true
+                if (state.focus?.id == event.target) {
+                    mSelection = event.selection
+                    when {
+                        state.focus == null -> state.copy()
+                        state.stylingToolbar.isVisible -> {
+                            handleOnSelectionChangedForStylingToolbar(mSelection, event, state)
+                        }
+                        state.mentionToolbar.isVisible -> state.copy(
+                            mentionToolbar = handleOnSelectionChangedForMentionState(
+                                state = state.mentionToolbar,
+                                start = event.selection.first
                             )
                         )
+                        else -> {
+                            state.copy(
+                                mainToolbar = state.mainToolbar.copy(
+                                    isVisible = true
+                                )
+                            )
+                        }
                     }
+                } else {
+                    state.copy()
                 }
             }
             is Event.StylingToolbar -> {

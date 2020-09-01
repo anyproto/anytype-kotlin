@@ -570,7 +570,7 @@ class PageViewModel(
 
     fun onSelectionChanged(id: String, selection: IntRange) {
         viewModelScope.launch { selections.send(Pair(id, selection)) }
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnSelectionChanged(selection))
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnSelectionChanged(id, selection))
     }
 
     fun onBlockFocusChanged(id: String, hasFocus: Boolean) {

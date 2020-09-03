@@ -54,6 +54,7 @@ import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.agileburo.anytype.di.common.componentManager
+import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content.Text
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.ext.getFirstLinkMarkupParam
@@ -505,9 +506,9 @@ open class PageFragment :
             UiBlock.TOGGLE -> vm.onAddTextBlockClicked(Text.Style.TOGGLE)
             UiBlock.CODE -> vm.onAddTextBlockClicked(Text.Style.CODE_SNIPPET)
             UiBlock.PAGE -> vm.onAddNewPageClicked()
-            UiBlock.FILE -> vm.onAddFileBlockClicked()
-            UiBlock.IMAGE -> vm.onAddImageBlockClicked()
-            UiBlock.VIDEO -> vm.onAddVideoBlockClicked()
+            UiBlock.FILE -> vm.onAddFileBlockClicked(Block.Content.File.Type.FILE)
+            UiBlock.IMAGE -> vm.onAddFileBlockClicked(Block.Content.File.Type.IMAGE)
+            UiBlock.VIDEO -> vm.onAddFileBlockClicked(Block.Content.File.Type.VIDEO)
             UiBlock.BOOKMARK -> vm.onAddBookmarkBlockClicked()
             UiBlock.LINE_DIVIDER -> vm.onAddDividerBlockClicked()
             else -> toast(NOT_IMPLEMENTED_MESSAGE)

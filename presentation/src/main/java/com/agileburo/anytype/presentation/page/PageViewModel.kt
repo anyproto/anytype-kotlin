@@ -1168,18 +1168,29 @@ class PageViewModel(
     }
 
     fun onAddTextBlockClicked(style: Content.Text.Style) {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
-        proceedWithCreatingNewTextBlock(
-            id = orchestrator.stores.focus.current().id,
-            style = style
-        )
-    }
 
-    fun onAddVideoBlockClicked() {
-        proceedWithCreatingEmptyFileBlock(
-            id = orchestrator.stores.focus.current().id,
-            type = Content.File.Type.VIDEO
-        )
+        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+
+        val content = target.content
+
+        if (content is Content.Text && content.text.isEmpty()) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Replace(
+                        context = context,
+                        target = target.id,
+                        prototype = Prototype.Text(style = style)
+                    )
+                )
+            }
+        } else {
+            proceedWithCreatingNewTextBlock(
+                id = orchestrator.stores.focus.current().id,
+                style = style
+            )
+        }
+
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
     }
 
     private fun onAddLocalVideoClicked(blockId: String) {
@@ -1217,18 +1228,21 @@ class PageViewModel(
         dispatch(Command.OpenGallery(mediaType = MIME_FILE_ALL))
     }
 
-    fun onAddImageBlockClicked() {
-        proceedWithCreatingEmptyFileBlock(
-            id = orchestrator.stores.focus.current().id,
-            type = Content.File.Type.IMAGE
-        )
-    }
+    fun onAddFileBlockClicked(type: Content.File.Type) {
+        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val content = target.content
 
-    fun onAddFileBlockClicked() {
-        proceedWithCreatingEmptyFileBlock(
-            id = orchestrator.stores.focus.current().id,
-            type = Content.File.Type.FILE
-        )
+        if (content is Content.Text && content.text.isEmpty()) {
+            proceedWithReplacingByEmptyFileBlock(
+                id = target.id,
+                type = type
+            )
+        } else {
+            proceedWithCreatingEmptyFileBlock(
+                id = target.id,
+                type = type
+            )
+        }
     }
 
     private fun proceedWithCreatingEmptyFileBlock(
@@ -1243,6 +1257,22 @@ class PageViewModel(
                     context = context,
                     target = id,
                     position = position,
+                    prototype = Prototype.File(type = type, state = state)
+                )
+            )
+        }
+    }
+
+    private fun proceedWithReplacingByEmptyFileBlock(
+        id: String,
+        type: Content.File.Type,
+        state: Content.File.State = Content.File.State.EMPTY
+    ) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.CRUD.Replace(
+                    context = context,
+                    target = id,
                     prototype = Prototype.File(type = type, state = state)
                 )
             )
@@ -1511,17 +1541,33 @@ class PageViewModel(
     }
 
     fun onAddDividerBlockClicked() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.CRUD.Create(
-                    context = context,
-                    target = orchestrator.stores.focus.current().id,
-                    position = Position.BOTTOM,
-                    prototype = Prototype.Divider
+        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val content = target.content
+
+        if (content is Content.Text && content.text.isEmpty()) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Replace(
+                        context = context,
+                        target = target.id,
+                        prototype = Prototype.Divider
+                    )
                 )
-            )
+            }
+        } else {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Create(
+                        context = context,
+                        target = target.id,
+                        position = Position.BOTTOM,
+                        prototype = Prototype.Divider
+                    )
+                )
+            }
         }
+
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
     }
 
     private fun proceedWithUpdatingTextStyle(
@@ -1639,17 +1685,32 @@ class PageViewModel(
     }
 
     fun onAddBookmarkBlockClicked() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.CRUD.Create(
-                    context = context,
-                    position = Position.BOTTOM,
-                    target = orchestrator.stores.focus.current().id,
-                    prototype = Prototype.Bookmark
+        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val content = target.content
+
+        if (content is Content.Text && content.text.isEmpty()) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Replace(
+                        context = context,
+                        target = target.id,
+                        prototype = Prototype.Bookmark
+                    )
                 )
-            )
+            }
+        } else {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Create(
+                        context = context,
+                        position = Position.BOTTOM,
+                        target = target.id,
+                        prototype = Prototype.Bookmark
+                    )
+                )
+            }
         }
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
     }
 
     fun onAddBookmarkUrl(target: String, url: String) {

@@ -711,8 +711,10 @@ sealed class BlockView : ViewType, Parcelable {
      */
     @Parcelize
     data class Divider(
-        override val id: String
-    ) : BlockView() {
+        override val id: String,
+        override val isSelected: Boolean = false,
+        override val indent: Int = 0
+    ) : BlockView(), Selectable, Indentable {
         override fun getViewType() = HOLDER_DIVIDER
     }
 

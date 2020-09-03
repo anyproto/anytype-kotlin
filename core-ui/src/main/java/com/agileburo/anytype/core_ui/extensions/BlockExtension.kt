@@ -8,7 +8,6 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.Text.Header.Two -> copy(isSelected = newSelection)
     is BlockView.Text.Header.Three -> copy(isSelected = newSelection)
     is BlockView.Text.Highlight -> copy(isSelected = newSelection)
-    is BlockView.Code -> copy(isSelected = newSelection)
     is BlockView.Text.Checkbox -> copy(isSelected = newSelection)
     is BlockView.Text.Bulleted -> copy(isSelected = newSelection)
     is BlockView.Text.Numbered -> copy(isSelected = newSelection)
@@ -29,5 +28,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.MediaPlaceholder.Picture -> copy(isSelected = newSelection)
     is BlockView.Error.Picture -> copy(isSelected = newSelection)
     is BlockView.Upload.Picture -> copy(isSelected = newSelection)
+    is BlockView.Divider -> copy(isSelected = newSelection)
+    is BlockView.Code -> copy(isSelected = newSelection)
     else -> this
 }

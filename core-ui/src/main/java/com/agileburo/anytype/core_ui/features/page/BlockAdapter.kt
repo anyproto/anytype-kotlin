@@ -586,6 +586,7 @@ class BlockAdapter(
                             onSelectionChanged = onSelectionChanged
                         )
                     }
+                    is Divider -> onBindViewHolder(holder, position)
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
                 }
             }

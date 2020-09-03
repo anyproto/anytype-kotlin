@@ -37,4 +37,6 @@ sealed class ListenerType {
     data class Page(val target: String): ListenerType()
 
     data class Mention(val target: String): ListenerType()
+
+    data class DividerClick(val target: String) : ListenerType()
 }

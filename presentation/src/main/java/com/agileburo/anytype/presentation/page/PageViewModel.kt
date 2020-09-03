@@ -1586,6 +1586,9 @@ class PageViewModel(
                     is Content.File -> {
                         addNewBlockAtTheEnd()
                     }
+                    is Content.Divider -> {
+                        addNewBlockAtTheEnd()
+                    }
                     else -> {
                         Timber.d("Outside-click has been ignored.")
                     }
@@ -1954,6 +1957,12 @@ class PageViewModel(
         }
         ListenerType.TitleBlock -> {
             //Todo block view refactoring
+        }
+        is ListenerType.DividerClick -> {
+            when (mode) {
+                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                else -> Unit
+            }
         }
     }
 

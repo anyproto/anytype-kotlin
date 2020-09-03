@@ -1,6 +1,18 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.45 (WIP)
+## Version 0.0.46 (WIP)
+
+### New features 🚀
+
+*
+
+### Fixes & tech 🚒
+
+* Divider block should be selectable in multi-select and scroll-and-move mode (#778)
+
+## Version 0.0.45
+
+### New features 🚀
 
 * Test flight for turn-into restrictions in edit-mode and multi-select mode (#376)
 * Styling panel | Switching between block-mode and markup-mode based on selection changes (#594)

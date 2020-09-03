@@ -27,7 +27,6 @@ import androidx.core.animation.doOnStart
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -533,12 +532,11 @@ open class PageFragment :
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        vm.state.observe(viewLifecycleOwner, Observer { render(it) })
+        vm.state.observe(viewLifecycleOwner, { render(it) })
         vm.navigation.observe(viewLifecycleOwner, navObserver)
-        vm.controlPanelViewState.observe(viewLifecycleOwner, Observer { render(it) })
-        vm.focus.observe(viewLifecycleOwner, Observer { handleFocus(it) })
-        vm.commands.observe(viewLifecycleOwner, Observer { execute(it) })
-        vm.error.observe(viewLifecycleOwner, Observer { renderError(it) })
+        vm.controlPanelViewState.observe(viewLifecycleOwner, { render(it) })
+        vm.commands.observe(viewLifecycleOwner, { execute(it) })
+        vm.error.observe(viewLifecycleOwner, { renderError(it) })
     }
 
     override fun onDestroyView() {
@@ -553,17 +551,6 @@ open class PageFragment :
 
     override fun onBlockActionClicked(id: String, action: ActionItemType) {
         vm.onActionMenuItemClicked(id, action)
-    }
-
-    private fun handleFocus(focus: Id) {
-        Timber.d("Handling focus: $focus")
-        if (focus.isEmpty()) {
-            placeholder.requestFocus()
-            hideKeyboard()
-            bottomToolbar.visible()
-        } else {
-            bottomToolbar.gone()
-        }
     }
 
     private fun execute(event: EventWrapper<Command>) {
@@ -753,6 +740,14 @@ open class PageFragment :
 
     private fun render(state: ControlPanelState) {
         Timber.d("Rendering new control panel state:\n$state")
+
+        if (state.navigationToolbar.isVisible) {
+            placeholder.requestFocus()
+            hideKeyboard()
+            bottomToolbar.visible()
+        } else {
+            bottomToolbar.gone()
+        }
 
         if (state.mainToolbar.isVisible)
             toolbar.visible()

@@ -93,9 +93,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         vm.controlPanelViewState.test().apply {
             assertValue(
                 ControlPanelState(
-                    focus = ControlPanelState.Focus(
-                        id = a.id,
-                        type = ControlPanelState.Focus.Type.NUMBERED
+                    navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                        isVisible = false
                     ),
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
@@ -194,9 +193,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         vm.controlPanelViewState.test().apply {
             assertValue(
                 ControlPanelState(
-                    focus = ControlPanelState.Focus(
-                        id = a.id,
-                        type = ControlPanelState.Focus.Type.NUMBERED
+                    navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                        isVisible = false
                     ),
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
@@ -313,9 +311,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         vm.controlPanelViewState.test().apply {
             assertValue(
                 ControlPanelState(
-                    focus = ControlPanelState.Focus(
-                        id = a.id,
-                        type = ControlPanelState.Focus.Type.P
+                    navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                        isVisible = false
                     ),
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
@@ -367,9 +364,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         vm.controlPanelViewState.test().apply {
             assertValue(
                 ControlPanelState(
-                    focus = ControlPanelState.Focus(
-                        id = a.id,
-                        type = ControlPanelState.Focus.Type.QUOTE
+                    navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                        isVisible = false
                     ),
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = true

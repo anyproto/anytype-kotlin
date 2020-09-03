@@ -10,12 +10,11 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.adapter.Mention
 /**
  * Control panels are UI-elements that allow user to interact with blocks on a page.
  * Each panel is currently represented as a toolbar.
- * @property focus block currently associated with the control panel (if not present, control panel is not active)
  * @property mainToolbar block-toolbar state (main toolbar state)
  * @property stylingToolbar styling toolbar state
  */
 data class ControlPanelState(
-    val focus: Focus? = null,
+    val navigationToolbar: Toolbar.Navigation,
     val mainToolbar: Toolbar.Main,
     val stylingToolbar: Toolbar.Styling,
     val multiSelect: Toolbar.MultiSelect,
@@ -28,6 +27,16 @@ data class ControlPanelState(
          * General property that defines whether this toolbar is visible or not.
          */
         abstract val isVisible: Boolean
+
+        /**
+         * Navigation bottom toolbar allowing user open Search, Naviagation Screens
+         * or add new Document on Dashboard
+         *
+         * @property isVisible
+         */
+        data class Navigation(
+            override val isVisible: Boolean
+        ) : Toolbar()
 
         /**
          * Main toolbar allowing user-interface for CRUD-operations on block/page content.
@@ -165,6 +174,9 @@ data class ControlPanelState(
          * Factory function for creating initial state.
          */
         fun init(): ControlPanelState = ControlPanelState(
+            navigationToolbar = Toolbar.Navigation(
+                isVisible = true
+            ),
             mainToolbar = Toolbar.Main(
                 isVisible = false
             ),
@@ -183,8 +195,7 @@ data class ControlPanelState(
                 updateList = false,
                 mentionFrom = null,
                 mentions = emptyList()
-            ),
-            focus = null
+            )
         )
     }
 }

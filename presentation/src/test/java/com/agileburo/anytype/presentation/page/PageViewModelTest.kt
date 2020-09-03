@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
+import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.core_utils.tools.Counter
@@ -630,7 +631,9 @@ class PageViewModelTest {
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
-                style = Block.Content.Text.Style.P
+                style = Block.Content.Text.Style.P,
+                color = "red",
+                backgroundColor = "yellow"
             ),
             children = emptyList()
         )
@@ -675,7 +678,7 @@ class PageViewModelTest {
         coroutineTestRule.advanceTime(100)
 
         val firstTimeRange = 0..3
-        val firstTimeMarkup = Markup.Type.BOLD
+        val firstTimeMarkup = StylingEvent.Markup.Bold
 
         vm.onBlockFocusChanged(
             hasFocus = true,
@@ -687,7 +690,11 @@ class PageViewModelTest {
             selection = firstTimeRange
         )
 
-        vm.onMarkupActionClicked(firstTimeMarkup, firstTimeRange)
+        vm.onEditorContextMenuStyleClicked(
+            selection = firstTimeRange
+        )
+
+        vm.onStylingToolbarEvent(event = firstTimeMarkup)
 
         val firstTimeExpected = ViewState.Success(
             listOf(
@@ -700,6 +707,7 @@ class PageViewModelTest {
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
+                    color = paragraph.content<Block.Content.Text>().color,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                     marks = listOf(
                         Markup.Mark(
@@ -719,14 +727,14 @@ class PageViewModelTest {
         }
 
         val secondTimeRange = 0..5
-        val secondTimeMarkup = Markup.Type.ITALIC
+        val secondTimeMarkup = StylingEvent.Markup.Italic
 
         vm.onSelectionChanged(
             id = paragraph.id,
             selection = secondTimeRange
         )
 
-        vm.onMarkupActionClicked(secondTimeMarkup, secondTimeRange)
+        vm.onStylingToolbarEvent(event = secondTimeMarkup)
 
         val secondTimeExpected = ViewState.Success(
             listOf(
@@ -739,6 +747,7 @@ class PageViewModelTest {
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
+                    color = paragraph.content<Block.Content.Text>().color,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                     marks = listOf(
                         Markup.Mark(
@@ -776,7 +785,9 @@ class PageViewModelTest {
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
-                style = Block.Content.Text.Style.P
+                style = Block.Content.Text.Style.P,
+                color = "red",
+                backgroundColor = "yellow"
             ),
             children = emptyList()
         )
@@ -817,7 +828,7 @@ class PageViewModelTest {
         coroutineTestRule.advanceTime(100)
 
         val firstTimeRange = 0..3
-        val firstTimeMarkup = Markup.Type.BOLD
+        val firstTimeMarkup = StylingEvent.Markup.Bold
 
         vm.onBlockFocusChanged(
             hasFocus = true,
@@ -829,7 +840,11 @@ class PageViewModelTest {
             selection = firstTimeRange
         )
 
-        vm.onMarkupActionClicked(firstTimeMarkup, firstTimeRange)
+        vm.onEditorContextMenuStyleClicked(
+            selection = firstTimeRange
+        )
+
+        vm.onStylingToolbarEvent(event = firstTimeMarkup)
 
         val firstTimeExpected = ViewState.Success(
             listOf(
@@ -842,6 +857,7 @@ class PageViewModelTest {
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
+                    color = paragraph.content<Block.Content.Text>().color,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                     marks = listOf(
                         Markup.Mark(
@@ -871,14 +887,18 @@ class PageViewModelTest {
         )
 
         val secondTimeRange = 0..5
-        val secondTimeMarkup = Markup.Type.BOLD
+        val secondTimeMarkup = StylingEvent.Markup.Bold
 
         vm.onSelectionChanged(
             id = paragraph.id,
             selection = secondTimeRange
         )
 
-        vm.onMarkupActionClicked(secondTimeMarkup, secondTimeRange)
+        vm.onEditorContextMenuStyleClicked(
+            selection = secondTimeRange
+        )
+
+        vm.onStylingToolbarEvent(event = secondTimeMarkup)
 
         val secondTimeExpected = ViewState.Success(
             listOf(
@@ -891,6 +911,7 @@ class PageViewModelTest {
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
+                    color = paragraph.content<Block.Content.Text>().color,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                     marks = listOf(
                         Markup.Mark(
@@ -922,7 +943,9 @@ class PageViewModelTest {
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
-                style = Block.Content.Text.Style.P
+                style = Block.Content.Text.Style.P,
+                color = "red",
+                backgroundColor = "yellow"
             ),
             children = emptyList()
         )
@@ -964,14 +987,23 @@ class PageViewModelTest {
         coroutineTestRule.advanceTime(100)
 
         val range = 0..3
-        val markup = Markup.Type.BOLD
+        val markup = StylingEvent.Markup.Bold
+
+        vm.onBlockFocusChanged(
+            hasFocus = true,
+            id = paragraph.id
+        )
 
         vm.onSelectionChanged(
             id = paragraph.id,
             selection = range
         )
 
-        vm.onMarkupActionClicked(markup, range)
+        vm.onEditorContextMenuStyleClicked(
+            selection = range
+        )
+
+        vm.onStylingToolbarEvent(markup)
 
         val marks = listOf(
             Block.Content.Text.Mark(

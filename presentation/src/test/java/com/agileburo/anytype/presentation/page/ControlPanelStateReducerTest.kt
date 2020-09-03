@@ -40,12 +40,11 @@ class ControlPanelStateReducerTest {
         }
 
         val expected = given.copy(
-            focus = ControlPanelState.Focus(
-                id = event.id,
-                type = ControlPanelState.Focus.Type.P
-            ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
+            ),
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             )
         )
 
@@ -61,9 +60,8 @@ class ControlPanelStateReducerTest {
         val id = MockDataFactory.randomUuid()
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -116,9 +114,8 @@ class ControlPanelStateReducerTest {
         val id = MockDataFactory.randomUuid()
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -171,9 +168,8 @@ class ControlPanelStateReducerTest {
         val id = MockDataFactory.randomUuid()
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -206,10 +202,6 @@ class ControlPanelStateReducerTest {
         }
 
         val expected = given.copy(
-            focus = ControlPanelState.Focus(
-                id = event.id,
-                type = ControlPanelState.Focus.Type.P
-            ),
             mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
                 isVisible = false,
                 cursorCoordinate = null,
@@ -230,9 +222,8 @@ class ControlPanelStateReducerTest {
         val id = MockDataFactory.randomUuid()
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -283,9 +274,8 @@ class ControlPanelStateReducerTest {
     fun `state should have only focus changed`() {
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = MockDataFactory.randomUuid(),
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -317,12 +307,7 @@ class ControlPanelStateReducerTest {
             )
         }
 
-        val expected = given.copy(
-            focus = ControlPanelState.Focus(
-                id = event.id,
-                type = ControlPanelState.Focus.Type.P
-            )
-        )
+        val expected = given.copy()
 
         assertEquals(
             expected = expected,
@@ -334,9 +319,8 @@ class ControlPanelStateReducerTest {
     fun `should return to initial state when focus is cleared`() {
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = MockDataFactory.randomUuid(),
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -374,67 +358,13 @@ class ControlPanelStateReducerTest {
     }
 
     @Test
-    fun `should not show toolbar after focus is cleared and selections continue to change`() {
-
-        val id = MockDataFactory.randomUuid()
-
-        val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = true
-            ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = false,
-                mode = null
-            ),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                isVisible = false,
-                cursorCoordinate = null,
-                mentionFilter = null,
-                mentionFrom = null
-            )
-        )
-
-        val cleared = runBlocking {
-            reducer.reduce(
-                state = given,
-                event = ControlPanelMachine.Event.OnClearFocusClicked
-            )
-        }
-
-        val result = runBlocking {
-            reducer.reduce(
-                state = cleared,
-                event = ControlPanelMachine.Event.OnSelectionChanged(
-                    selection = 0..0,
-                    target = id
-                )
-            )
-        }
-
-        val expected = ControlPanelState.init()
-
-        assertEquals(
-            expected = expected,
-            actual = result
-        )
-    }
-
-    @Test
     fun `should be zero selected blocks when enter selected state`() {
 
         val id = MockDataFactory.randomUuid()
 
         val nonSelected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -456,9 +386,8 @@ class ControlPanelStateReducerTest {
         )
 
         val selected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -498,9 +427,8 @@ class ControlPanelStateReducerTest {
         val id = MockDataFactory.randomUuid()
 
         val selectedZero = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -522,9 +450,8 @@ class ControlPanelStateReducerTest {
         )
 
         val expected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -566,9 +493,8 @@ class ControlPanelStateReducerTest {
         val selectionSecond = IntRange(4, 6)
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -635,9 +561,8 @@ class ControlPanelStateReducerTest {
         }
 
         val expected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -705,9 +630,8 @@ class ControlPanelStateReducerTest {
         val selectionSecond = IntRange(4, 6)
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -773,9 +697,8 @@ class ControlPanelStateReducerTest {
         }
 
         val expected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -869,9 +792,8 @@ class ControlPanelStateReducerTest {
         }
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -903,9 +825,8 @@ class ControlPanelStateReducerTest {
         }
 
         val expected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -1004,9 +925,8 @@ class ControlPanelStateReducerTest {
         }
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -1028,9 +948,8 @@ class ControlPanelStateReducerTest {
         }
 
         val expected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -1133,9 +1052,8 @@ class ControlPanelStateReducerTest {
         }
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -1168,9 +1086,8 @@ class ControlPanelStateReducerTest {
         }
 
         val expected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -1234,9 +1151,8 @@ class ControlPanelStateReducerTest {
         }
 
         val given = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -1272,9 +1188,8 @@ class ControlPanelStateReducerTest {
         val result = runBlocking {
             reducer.reduce(
                 state = ControlPanelState(
-                    focus = ControlPanelState.Focus(
-                        id = id,
-                        type = ControlPanelState.Focus.Type.P
+                    navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                        isVisible = false
                     ),
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
@@ -1334,9 +1249,8 @@ class ControlPanelStateReducerTest {
         }
 
         val expected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -1425,9 +1339,8 @@ class ControlPanelStateReducerTest {
         }
 
         val afterFocusStateExpected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -1456,9 +1369,8 @@ class ControlPanelStateReducerTest {
         }
 
         val afterSelectionStateExpected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
@@ -1486,9 +1398,8 @@ class ControlPanelStateReducerTest {
         }
 
         val afterShowStyleToolbarStateExpected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
@@ -1544,65 +1455,25 @@ class ControlPanelStateReducerTest {
             actual = afterShowStyleToolbarStateResult
         )
 
-        //Selection on other block
+        //New selection block
         val result = runBlocking {
             reducer.reduce(
                 state = afterShowStyleToolbarStateResult,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
-                    target = MockDataFactory.randomUuid(),
-                    selection = IntRange(0, 0)
+                    target = id,
+                    selection = IntRange(1, 1)
                 )
             )
         }
 
         val expected = ControlPanelState(
-            focus = ControlPanelState.Focus(
-                id = id,
-                type = ControlPanelState.Focus.Type.P
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = true,
-                target = ControlPanelState.Toolbar.Styling.Target(
-                    text = "Foo Bar",
-                    color = "yellow",
-                    background = "red",
-                    alignment = Alignment.START,
-                    marks = listOf()
-                ),
-                config = StyleConfig(
-                    visibleTypes = listOf(
-                        StylingType.STYLE,
-                        StylingType.TEXT_COLOR,
-                        StylingType.BACKGROUND
-                    ),
-                    enabledAlignment = listOf(
-                        Alignment.START,
-                        Alignment.CENTER,
-                        Alignment.END
-                    ),
-                    enabledMarkup = listOf(
-                        Markup.Type.BOLD,
-                        Markup.Type.ITALIC,
-                        Markup.Type.STRIKETHROUGH,
-                        Markup.Type.KEYBOARD,
-                        Markup.Type.LINK
-                    )
-                ),
-                props = ControlPanelState.Toolbar.Styling.Props(
-                    isBold = false,
-                    isItalic = false,
-                    isStrikethrough = false,
-                    isCode = false,
-                    isLinked = false,
-                    alignment = Alignment.START,
-                    color = "yellow",
-                    background = "red"
-                ),
-                mode = StylingMode.BLOCK
-            ),
+            stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
@@ -1612,6 +1483,107 @@ class ControlPanelStateReducerTest {
         assertEquals(
             expected = expected,
             actual = result
+        )
+    }
+
+    @Test
+    fun `state should have visible navigation toolbar on init`() {
+
+        val given = ControlPanelState.init()
+
+        val expected = given.copy(
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = true
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = given
+        )
+    }
+
+    @Test
+    fun `state should have visible navigation toolbar on clear focus`() {
+
+        val stateOnInit = ControlPanelState.init()
+
+        val eventFocus = ControlPanelMachine.Event.OnFocusChanged(
+            id = MockDataFactory.randomUuid(),
+            style = Block.Content.Text.Style.P
+        )
+
+        val stateAfterFocus = runBlocking {
+            reducer.reduce(
+                state = stateOnInit,
+                event = eventFocus
+            )
+        }
+
+        val eventClearFocus = ControlPanelMachine.Event.OnClearFocusClicked
+
+        val stateAfterClearFocus = runBlocking {
+            reducer.reduce(
+                state = stateAfterFocus,
+                event = eventClearFocus
+            )
+        }
+
+        val stateAfterClearFocusExpected = ControlPanelState.init().copy(
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = true
+            )
+        )
+
+        assertEquals(
+            expected = stateAfterClearFocusExpected,
+            actual = stateAfterClearFocus
+        )
+    }
+
+    @Test
+    fun `state should have visible navigation toolbar on exit multi select `() {
+
+        val stateOnInit = ControlPanelState.init()
+
+        val eventFocus = ControlPanelMachine.Event.OnFocusChanged(
+            id = MockDataFactory.randomUuid(),
+            style = Block.Content.Text.Style.P
+        )
+
+        val stateAfterFocus = runBlocking {
+            reducer.reduce(
+                state = stateOnInit,
+                event = eventFocus
+            )
+        }
+
+        val stateAfterEnterMultiSelect = runBlocking {
+            reducer.reduce(
+                state = stateAfterFocus,
+                event = ControlPanelMachine.Event.MultiSelect.OnEnter
+            )
+        }
+
+        val stateAfterExitMultiSelect = runBlocking {
+            reducer.reduce(
+                state = stateAfterEnterMultiSelect,
+                event = ControlPanelMachine.Event.MultiSelect.OnExit
+            )
+        }
+
+        val stateAfterExitMultiSelectExpected = ControlPanelState.init().copy(
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = true
+            )
+        )
+
+        assertEquals(
+            expected = stateAfterExitMultiSelectExpected,
+            actual = stateAfterExitMultiSelect
         )
     }
 }

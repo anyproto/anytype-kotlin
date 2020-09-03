@@ -819,32 +819,6 @@ class PageViewModel(
         )
     }
 
-    fun onMarkupActionClicked(markup: Markup.Type, selection: IntRange) {
-        when (markup) {
-            Markup.Type.BACKGROUND_COLOR -> {
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnMarkupContextMenuBackgroundColorClicked(
-                        target = blocks.first { it.id == orchestrator.stores.focus.current().id },
-                        selection = selection
-                    )
-                )
-            }
-            Markup.Type.TEXT_COLOR -> {
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnMarkupContextMenuTextColorClicked(
-                        target = blocks.first { it.id == orchestrator.stores.focus.current().id },
-                        selection = selection
-                    )
-                )
-            }
-            else -> {
-                viewModelScope.launch {
-                    markupActionPipeline.send(MarkupAction(type = markup))
-                }
-            }
-        }
-    }
-
     fun onStylingToolbarEvent(event: StylingEvent) {
         val state = controlPanelViewState.value!!
         when (event) {

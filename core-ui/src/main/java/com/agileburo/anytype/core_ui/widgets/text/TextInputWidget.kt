@@ -123,9 +123,14 @@ class TextInputWidget : AppCompatEditText {
         }
     }
 
+    /**
+     * Send selection event only for blocks in focus state
+     */
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
-        Timber.d("New selection: $selStart - $selEnd")
-        selectionWatcher?.invoke(selStart..selEnd)
+        if (isFocused) {
+            Timber.d("New selection: $selStart - $selEnd")
+            selectionWatcher?.invoke(selStart..selEnd)
+        }
         super.onSelectionChanged(selStart, selEnd)
     }
 

@@ -148,7 +148,12 @@ class PageViewModel(
 
     private fun startProcessingFocusChanges() {
         viewModelScope.launch {
-            orchestrator.stores.focus.stream().collect { _focus.postValue(it.id) }
+            orchestrator.stores.focus.stream().collect {
+                if (it.isEmpty) {
+                    clearSelections()
+                }
+                _focus.postValue(it.id)
+            }
         }
     }
 

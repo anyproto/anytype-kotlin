@@ -11,7 +11,6 @@ import com.agileburo.anytype.presentation.auth.account.SetupSelectedAccountViewM
 import com.agileburo.anytype.presentation.auth.account.SetupSelectedAccountViewModelFactory
 import com.agileburo.anytype.ui.auth.Keys
 import com.agileburo.anytype.ui.base.NavigationFragment
-import kotlinx.android.synthetic.main.fragment_setup_new_account.icon
 import kotlinx.android.synthetic.main.fragment_setup_selected_account.*
 import javax.inject.Inject
 
@@ -43,7 +42,7 @@ open class SetupSelectedAccountFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        icon.startAnimation(animation)
+        loadingIcon.startAnimation(animation)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

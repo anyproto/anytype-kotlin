@@ -258,10 +258,10 @@ fun Block.Fields.toEmojiView(): String? = this.iconEmoji.let { emoji ->
     if (emoji.isNullOrBlank()) null else emoji
 }
 
-fun PageInfo.toMentionView() = Mention(
+fun PageInfo.toMentionView(urlBuilder: UrlBuilder) = Mention(
     id = id,
     title = fields.getName(),
-    image = fields.iconImage,
+    image = fields.iconImage?.let { if (it.isNotEmpty()) urlBuilder.thumbnail(it) else null },
     emoji = fields.iconEmoji
 )
 

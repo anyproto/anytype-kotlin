@@ -2118,7 +2118,7 @@ class PageViewModel(
                         success = { response ->
                             controlPanelInteractor.onEvent(
                                 ControlPanelMachine.Event.Mentions.OnResult(
-                                    mentions = response.listPages.map { it.toMentionView() }
+                                    mentions = response.listPages.map { it.toMentionView(urlBuilder) }
                                 )
                             )
                         }

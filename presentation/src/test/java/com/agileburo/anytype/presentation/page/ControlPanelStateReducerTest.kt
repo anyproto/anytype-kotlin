@@ -550,7 +550,6 @@ class ControlPanelStateReducerTest {
         )
 
         val result = runBlocking {
-            reducer.mSelection = selectionFirst
             reducer.reduce(
                 state = given,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
@@ -686,7 +685,6 @@ class ControlPanelStateReducerTest {
         )
 
         val result = runBlocking {
-            reducer.mSelection = selectionFirst
             reducer.reduce(
                 state = given,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
@@ -819,7 +817,8 @@ class ControlPanelStateReducerTest {
             reducer.reduce(
                 state = given,
                 event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                    target = block
+                    target = block,
+                    selection = IntRange(0, 3)
                 )
             )
         }
@@ -942,7 +941,8 @@ class ControlPanelStateReducerTest {
             reducer.reduce(
                 state = given,
                 event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                    target = block
+                    target = block,
+                    selection = IntRange(1,1)
                 )
             )
         }
@@ -1392,7 +1392,8 @@ class ControlPanelStateReducerTest {
             reducer.reduce(
                 state = afterSelectionStateExpected,
                 event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                    target = block
+                    target = block,
+                    selection = IntRange(6,6)
                 )
             )
         }

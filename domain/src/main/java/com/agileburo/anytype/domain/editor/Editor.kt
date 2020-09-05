@@ -24,6 +24,22 @@ interface Editor {
         }
     }
 
+    /**
+     * @property id id of the focused block, empty if no block in focus
+     * @property selection start and end of selection, could be null
+     */
+    data class TextSelection(
+        val id: String,
+        val selection: IntRange?
+    ): Editor {
+        val isNotEmpty: Boolean get() = id != EMPTY_FOCUS
+
+        companion object {
+            fun empty() = TextSelection(EMPTY_FOCUS, null)
+            private const val EMPTY_FOCUS = ""
+        }
+    }
+
     sealed class Cursor {
         /**
          * Indicates that the cursor should be placed at the beginning of a text.

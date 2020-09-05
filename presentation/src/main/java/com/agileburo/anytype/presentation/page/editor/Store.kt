@@ -68,4 +68,6 @@ interface Store<T> {
             update(current().copy(details = current().details + mapOf(target to fields)))
         }
     }
+
+    class TextSelection : Conflated<Editor.TextSelection>(Editor.TextSelection.empty())
 }

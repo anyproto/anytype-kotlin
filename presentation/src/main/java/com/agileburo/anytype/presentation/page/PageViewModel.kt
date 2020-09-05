@@ -98,8 +98,6 @@ class PageViewModel(
      */
     private val renderizePipeline = Proxy.Subject<Document>()
 
-    private val selections = Proxy.Subject<Pair<Id, IntRange>>()
-
     private val markupActionPipeline = Proxy.Subject<MarkupAction>()
 
     private val titleChannel = Channel<String>()
@@ -150,7 +148,7 @@ class PageViewModel(
         viewModelScope.launch {
             orchestrator.stores.focus.stream().collect {
                 if (it.isEmpty) {
-                    clearSelections()
+                    orchestrator.stores.textSelection.update(Editor.TextSelection.empty())
                 }
                 _focus.postValue(it.id)
             }
@@ -225,21 +223,30 @@ class PageViewModel(
         markupActionPipeline
             .stream()
             .withLatestFrom(
-                selections
+                orchestrator.stores.textSelection
                     .stream()
                     .distinctUntilChanged()
-                    .filter { (_, selection) -> selection.first != selection.last }
-            ) { a, b -> Pair(a, b) }
-            .onEach { (action, selection) ->
-                if (action.type == Markup.Type.LINK) {
-                    val block = blocks.first { it.id == selection.first }
-                    val range = IntRange(
-                        start = selection.second.first,
-                        endInclusive = selection.second.last.dec()
-                    )
-                    stateData.value = ViewState.OpenLinkScreen(context, block, range)
-                } else {
-                    applyMarkup(selection, action)
+            )
+            { a, b -> Pair(a, b) }
+            .onEach { (action, textSelection) ->
+                val range = textSelection.selection
+                if (textSelection.isNotEmpty && range != null && range.first != range.last) {
+                    if (action.type == Markup.Type.LINK) {
+                        val block = blocks.first { it.id == textSelection.id }
+                        stateData.value = ViewState.OpenLinkScreen(
+                            pageId = context,
+                            block = block,
+                            range = IntRange(
+                                start = range.first,
+                                endInclusive = range.last.dec()
+                            )
+                        )
+                    } else {
+                        applyMarkup(
+                            selection = Pair(textSelection.id, range),
+                            action = action
+                        )
+                    }
                 }
             }
             .launchIn(viewModelScope)
@@ -345,9 +352,11 @@ class PageViewModel(
             .filter { it.isNotEmpty() }
             .onEach {
                 if (focus.value != null && focus.value != context) {
+                    val textSelection = orchestrator.stores.textSelection.current()
                     controlPanelInteractor.onEvent(
                         event = ControlPanelMachine.Event.OnRefresh(
-                            target = blocks.find { it.id == focus.value }
+                            target = blocks.find { it.id == focus.value },
+                            selection = textSelection.selection
                         )
                     )
                 }
@@ -574,7 +583,9 @@ class PageViewModel(
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {
-        viewModelScope.launch { selections.send(Pair(id, selection)) }
+        viewModelScope.launch {
+            orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
+        }
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnSelectionChanged(id, selection))
     }
 
@@ -1064,9 +1075,11 @@ class PageViewModel(
                 _error.value = "Move To not implemented"
             }
             ActionItemType.Style -> {
+                val textSelection = orchestrator.stores.textSelection.current()
                 controlPanelInteractor.onEvent(
                     ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                        target = blocks.first { it.id == id }
+                        target = blocks.first { it.id == id },
+                        selection = textSelection.selection
                     )
                 )
                 dispatch(Command.PopBackStack)
@@ -1321,9 +1334,11 @@ class PageViewModel(
         if (orchestrator.stores.focus.current().id == context) {
             _error.value = "Changing style for title currently not supported"
         } else {
+            val textSelection = orchestrator.stores.textSelection.current()
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                    target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+                    target = blocks.first { it.id == orchestrator.stores.focus.current().id },
+                    selection = textSelection.selection
                 )
             )
         }
@@ -2224,10 +2239,10 @@ class PageViewModel(
 
         orchestrator.stores.focus.cancel()
         orchestrator.stores.details.cancel()
+        orchestrator.stores.textSelection.cancel()
         orchestrator.proxies.changes.cancel()
         orchestrator.proxies.saves.cancel()
 
-        selections.cancel()
         markupActionPipeline.cancel()
         renderizePipeline.cancel()
 

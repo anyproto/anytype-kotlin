@@ -8,6 +8,7 @@
 
 ### Fixes & tech 🚒
 
+* Should change number color when changing numbered block's text color (#797)
 * Document's image icon (uploaded from device's gallery) isn't visible in the mention suggester (#789)
 * App crashes on setup-selected-account screen due to incorrect icon id (#739)
 * When adding new block via add-block screen, should replace current text block instead of adding a new block after this text block if this text block is empty (#325)

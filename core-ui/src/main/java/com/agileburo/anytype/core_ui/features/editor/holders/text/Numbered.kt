@@ -6,9 +6,8 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.core.view.updateLayoutParams
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.features.page.*
-import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.addDot
 import com.agileburo.anytype.core_utils.ext.dimen
@@ -87,6 +86,11 @@ class Numbered(
             if (payload.changes.contains(BlockViewDiffUtil.NUMBER_CHANGED))
                 number.text = (item as BlockView.Text.Numbered).number.addDot()
         }
+    }
+
+    override fun setTextColor(color: String) {
+        super.setTextColor(color)
+        number.setTextColor(ThemeColor.values().first { value -> value.title == color }.text)
     }
 
     override fun indentize(item: BlockView.Indentable) {

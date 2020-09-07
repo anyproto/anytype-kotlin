@@ -52,7 +52,16 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.P -> {
                             counter.reset()
-                            result.add(paragraph(mode, block, content, focus, indent))
+                            result.add(
+                                paragraph(
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    focus = focus,
+                                    indent = indent,
+                                    details = details
+                                )
+                            )
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
@@ -276,12 +285,13 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Text,
         focus: Focus,
-        indent: Int
+        indent: Int,
+        details: Block.Details
     ): BlockView.Text.Paragraph = BlockView.Text.Paragraph(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
-        marks = content.marks(),
+        marks = content.marks(details = details, urlBuilder = urlBuilder),
         isFocused = block.id == focus.id,
         color = content.color,
         backgroundColor = content.backgroundColor,

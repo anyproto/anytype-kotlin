@@ -122,7 +122,10 @@ fun Block.Align.toView(): Alignment = when (this) {
     Block.Align.AlignRight -> Alignment.END
 }
 
-fun Block.Content.Text.marks(): List<Markup.Mark> = marks.mapNotNull { mark ->
+fun Block.Content.Text.marks(
+    urlBuilder: UrlBuilder? = null,
+    details: Block.Details? = null
+): List<Markup.Mark> = marks.mapNotNull { mark ->
     when (mark.type) {
         Block.Content.Text.Mark.Type.ITALIC -> {
             Markup.Mark(
@@ -177,11 +180,31 @@ fun Block.Content.Text.marks(): List<Markup.Mark> = marks.mapNotNull { mark ->
             )
         }
         Block.Content.Text.Mark.Type.MENTION -> {
+
+            val emoji: String?
+            val image: String?
+
+            if (details != null) {
+                emoji = details.details[mark.param]?.iconEmoji?.let { icon ->
+                    if (icon.isEmpty()) null else icon
+                }
+                image = details.details[mark.param]?.iconImage?.let { icon ->
+                    if (icon.isEmpty()) null else icon
+                }
+            } else {
+                emoji = null
+                image = null
+            }
+
             Markup.Mark(
                 from = mark.range.first,
                 to = mark.range.last,
                 type = Markup.Type.MENTION,
-                param = mark.param
+                param = mark.param,
+                extras = mapOf(
+                    "image" to image?.let { urlBuilder?.thumbnail(it) },
+                    "emoji" to emoji
+                )
             )
         }
         else -> null

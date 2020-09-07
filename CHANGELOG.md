@@ -4,7 +4,7 @@
 
 ### New features 🚀
 
-*
+* Mentions are rendered with images and emojis (#658)
 
 ### Fixes & tech 🚒
 

@@ -5,10 +5,15 @@ import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.MentionEvent
 import com.agileburo.anytype.core_ui.widgets.toolbar.adapter.Mention
+import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.page.navigation.GetListPages
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.stub
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -81,7 +86,15 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         val document = listOf(page, a)
 
         stubOpenDocument(document)
-        stubObserveEvents()
+        stubInterceptEvents()
+
+        updateText.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+
+        getListPages.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(GetListPages.Response(emptyList()))
+        }
 
         val vm = buildViewModel()
 
@@ -148,7 +161,11 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     from = from,
                                     to = from + mentionText.length,
                                     type = Markup.Type.MENTION,
-                                    param = mentionHash
+                                    param = mentionHash,
+                                    extras = mapOf(
+                                        "image" to null,
+                                        "emoji" to null
+                                    )
                                 )
                             ),
                             backgroundColor = null,

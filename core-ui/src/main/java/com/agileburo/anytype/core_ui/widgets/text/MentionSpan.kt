@@ -7,22 +7,55 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.text.style.DynamicDrawableSpan
 import com.agileburo.anytype.core_ui.common.Span
+import com.agileburo.anytype.emojifier.Emojifier
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import timber.log.Timber
 import java.lang.ref.WeakReference
 
 class MentionSpan constructor(
-    private var context: Context,
-    private var mResourceId: Int = 0,
-    private var drawable: Drawable? = null,
+    private val emoji: String? = null,
+    private val image: String? = null,
+    private val onImageResourceReady: (String) -> Unit = {},
+    private val context: Context,
+    private val placeholder: Drawable,
     private var imageSize: Int,
     private var imagePadding: Int,
     val param: String
 ) : DynamicDrawableSpan(), Span {
 
-    private val endPaddingPx = 4
-    private var mDrawable: Drawable? = null
-    private var mDrawableRef: WeakReference<Drawable>? = null
+    val target: CustomTarget<Drawable> = object : CustomTarget<Drawable>() {
+        override fun onResourceReady(
+            resource: Drawable,
+            transition: Transition<in Drawable>?
+        ) {
+            icon = resource
+            icon?.setBounds(imageSize)
+            iconRef = WeakReference(icon)
+            onImageResourceReady(param)
+        }
 
-    override fun getDrawable(): Drawable = mDrawable ?: initDrawable()
+        override fun onLoadCleared(placeholder: Drawable?) = Unit
+    }
+
+    private val endPaddingPx = 4
+    private var icon: Drawable? = null
+    private var iconRef: WeakReference<Drawable>? = null
+
+    init {
+        placeholder.setBounds(imageSize)
+
+        if (!emoji.isNullOrBlank()) try {
+            Glide.with(context).load(Emojifier.uri(emoji)).into(target)
+        } catch (e: Throwable) {
+            Timber.e(e, "Error while loading emoji: $emoji for mention span")
+        }
+
+        if (!image.isNullOrBlank()) Glide.with(context).load(image).circleCrop().into(target)
+    }
+
+    override fun getDrawable(): Drawable = icon ?: placeholder
 
     override fun getSize(
         paint: Paint,
@@ -74,22 +107,13 @@ class MentionSpan constructor(
     }
 
     private fun getCachedDrawable(): Drawable {
-        val wr = mDrawableRef
+        val wr = iconRef
         val d = wr?.get()
         if (d != null)
             return d
-        val newDrawable = getDrawable()
-        mDrawableRef = WeakReference(newDrawable)
+        val newDrawable = drawable
+        iconRef = WeakReference(newDrawable)
         return newDrawable
-    }
-
-    private fun initDrawable(): Drawable {
-        val d = drawable?.setBounds(imageSize) ?: run {
-            context.resources.getDrawable(mResourceId, null)
-                .setBounds(imageSize)
-        }
-        mDrawable = d
-        return d
     }
 }
 

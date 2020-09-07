@@ -8,6 +8,7 @@ import android.text.SpannableStringBuilder
 import android.text.style.ClickableSpan
 import android.view.View
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.extensions.drawable
 import com.agileburo.anytype.core_ui.widgets.text.MentionSpan
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.VALUE_ROUNDED
@@ -40,8 +41,12 @@ interface Markup {
         val from: Int,
         val to: Int,
         val type: Type,
-        val param: String? = null
+        val param: String? = null,
+        val extras: Map<String, String?> = emptyMap()
     ) : Parcelable {
+
+        val image: String? by extras
+        val emoji: String? by extras
 
         fun color(): Int = ThemeColor.values().first { color -> color.title == param }.text
         fun background(): Int = ThemeColor.values().first { color -> color.title == param }.background
@@ -64,6 +69,7 @@ interface Markup {
 
     companion object {
         const val DEFAULT_SPANNABLE_FLAG = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+        const val MENTION_SPANNABLE_FLAG = Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         const val SPAN_MONOSPACE = "monospace"
     }
 }
@@ -72,7 +78,8 @@ fun Markup.toSpannable(
     context: Context? = null,
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
-    mentionImagePadding: Int = 0
+    mentionImagePadding: Int = 0,
+    onImageReady: (String) -> Unit = {}
 ) = SpannableStringBuilder(body).apply {
     marks.forEach { mark ->
         when (mark.type) {
@@ -133,7 +140,8 @@ fun Markup.toSpannable(
                         context = it,
                         click = click,
                         mentionImageSize = mentionImageSize,
-                        mentionImagePadding = mentionImagePadding
+                        mentionImagePadding = mentionImagePadding,
+                        onImageReady = onImageReady
                     )
                 } ?: run { Timber.d("Mention Span context is null") }
             }
@@ -141,11 +149,14 @@ fun Markup.toSpannable(
     }
 }
 
-fun Editable.setMarkup(markup: Markup,
-                       context: Context? = null,
-                       click: ((String) -> Unit)? = null,
-                       mentionImageSize: Int = 0,
-                       mentionImagePadding: Int = 0) {
+fun Editable.setMarkup(
+    markup: Markup,
+    context: Context? = null,
+    click: ((String) -> Unit)? = null,
+    mentionImageSize: Int = 0,
+    mentionImagePadding: Int = 0,
+    onImageReady: (String) -> Unit = {}
+) {
     removeSpans<Span>()
     markup.marks.forEach { mark ->
         when (mark.type) {
@@ -202,6 +213,7 @@ fun Editable.setMarkup(markup: Markup,
             Markup.Type.MENTION -> {
                 context?.let {
                     setMentionSpan(
+                        onImageReady = onImageReady,
                         mark = mark,
                         context = it,
                         click = click,
@@ -215,7 +227,8 @@ fun Editable.setMarkup(markup: Markup,
 }
 
 fun Editable.setMentionSpan(
-    mark : Markup.Mark,
+    onImageReady: (String) -> Unit = {},
+    mark: Markup.Mark,
     context: Context,
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
@@ -224,15 +237,18 @@ fun Editable.setMentionSpan(
     if (!mark.param.isNullOrBlank()) {
         setSpan(
             MentionSpan(
+                onImageResourceReady = onImageReady,
                 context = context,
+                placeholder = context.drawable(R.drawable.ic_block_page_without_emoji),
                 imageSize = mentionImageSize,
                 imagePadding = mentionImagePadding,
-                mResourceId = R.drawable.ic_block_page_without_emoji,
-                param = mark.param
+                param = mark.param,
+                emoji = mark.emoji,
+                image = mark.image
             ),
             mark.from,
             mark.to,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            Markup.MENTION_SPANNABLE_FLAG
         )
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
@@ -244,7 +260,7 @@ fun Editable.setMentionSpan(
             clickableSpan,
             mark.from,
             mark.to,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            Markup.MENTION_SPANNABLE_FLAG
         )
     } else {
         Timber.e("Get MentionSpan without param!")

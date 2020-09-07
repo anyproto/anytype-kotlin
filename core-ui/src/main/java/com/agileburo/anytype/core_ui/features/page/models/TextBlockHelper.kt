@@ -9,6 +9,7 @@ import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.Span
 import com.agileburo.anytype.core_ui.common.setMarkup
+import com.agileburo.anytype.core_ui.extensions.drawable
 import com.agileburo.anytype.core_ui.widgets.text.MentionSpan
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.VALUE_ROUNDED
@@ -111,14 +112,16 @@ fun Spannable.setMentionSpan(
         setSpan(
             MentionSpan(
                 context = context,
+                image = mark.image,
+                emoji = mark.emoji,
                 imageSize = mentionImageSize,
                 imagePadding = mentionImagePadding,
-                mResourceId = R.drawable.ic_block_page_without_emoji,
-                param = mark.param
+                param = mark.param,
+                placeholder = context.drawable(R.drawable.ic_block_page_without_emoji),
             ),
             mark.from,
             mark.to,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            Markup.MENTION_SPANNABLE_FLAG
         )
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {

@@ -11,6 +11,7 @@ import com.agileburo.anytype.core_ui.menu.EditorContextMenu
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.tools.DefaultTextWatcher
 import com.agileburo.anytype.core_ui.tools.MentionTextWatcher
+import com.agileburo.anytype.core_ui.widgets.text.MentionSpan
 import com.agileburo.anytype.core_utils.ext.hideKeyboard
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
@@ -58,7 +59,8 @@ interface TextBlockHolder : TextHolder {
                     context = context,
                     mentionImageSize = sizes.first,
                     mentionImagePadding = sizes.second,
-                    click = { clicked(ListenerType.Mention(it)) }
+                    click = { clicked(ListenerType.Mention(it)) },
+                    onImageReady = { param -> refreshMentionSpan(param) }
                 ),
                 TextView.BufferType.SPANNABLE
             )
@@ -89,9 +91,31 @@ interface TextBlockHolder : TextHolder {
                 context = context,
                 mentionImageSize = sizes.first,
                 mentionImagePadding = sizes.second,
-                click = { clicked(ListenerType.Mention(it)) })
+                click = { clicked(ListenerType.Mention(it)) },
+                onImageReady = { param -> refreshMentionSpan(param) }
+            )
         }
 
+    }
+
+    fun refreshMentionSpan(param: String) {
+        content.text?.let { editable ->
+            val spans = editable.getSpans(
+                0,
+                editable.length,
+                MentionSpan::class.java
+            )
+            spans.forEach { span ->
+                if (span.param == param) {
+                    editable.setSpan(
+                        span,
+                        editable.getSpanStart(span),
+                        editable.getSpanEnd(span),
+                        Markup.MENTION_SPANNABLE_FLAG
+                    )
+                }
+            }
+        }
     }
 
     fun setupTextWatcher(

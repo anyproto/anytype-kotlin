@@ -1,6 +1,6 @@
 on:
   push:
-    branches: feature/599-turn-on-read-mode
+    branches: develop
 name: CI
 jobs:
   setup-android:

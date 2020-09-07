@@ -1,19 +1,22 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.46 (WIP)
+## Version 0.0.46
 
 ### New features 🚀
 
 * Mentions are rendered with images and emojis (#658)
+* When adding new block via add-block screen, should replace current text block instead of adding a new block after this text block if this text block is empty (#325)
 
 ### Fixes & tech 🚒
 
+* Prevent text block from gaining focus when opening its action-menu on long click (#776)
+* Refactor navigation toolbar state handling inside `ControlPanelMachine` (#792)
 * Remove turn-into action from page block's action menu (#787)
 * Should change number color when changing numbered block's text color (#797)
 * Document's image icon (uploaded from device's gallery) isn't visible in the mention suggester (#789)
 * App crashes on setup-selected-account screen due to incorrect icon id (#739)
-* When adding new block via add-block screen, should replace current text block instead of adding a new block after this text block if this text block is empty (#325)
 * Divider block should be selectable in multi-select and scroll-and-move mode (#778)
+* Remove legacy selection param from `ControlPanelMachine` (#795)
 
 ## Version 0.0.45
 

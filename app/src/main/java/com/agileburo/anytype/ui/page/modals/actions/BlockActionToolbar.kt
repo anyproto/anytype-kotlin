@@ -368,7 +368,6 @@ abstract class BlockActionToolbar : Fragment() {
     object ACTIONS {
 
         val PAGE = listOf(
-            ActionItemType.TurnInto,
             ActionItemType.Divider,
             ActionItemType.Delete,
             ActionItemType.Divider,

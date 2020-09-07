@@ -502,6 +502,7 @@ class ControlPanelStateReducerTest {
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
+                    id = id,
                     text = "Foo Bar",
                     color = "yellow",
                     background = "red",
@@ -569,6 +570,7 @@ class ControlPanelStateReducerTest {
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
+                    id = id,
                     text = "Foo Bar",
                     color = "yellow",
                     background = "red",
@@ -638,6 +640,7 @@ class ControlPanelStateReducerTest {
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
+                    id = id,
                     text = "Foo Bar",
                     color = "yellow",
                     background = "red",
@@ -704,6 +707,7 @@ class ControlPanelStateReducerTest {
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
+                    id = id,
                     text = "Foo Bar",
                     color = "yellow",
                     background = "red",
@@ -818,7 +822,8 @@ class ControlPanelStateReducerTest {
                 state = given,
                 event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
                     target = block,
-                    selection = IntRange(0, 3)
+                    selection = IntRange(0, 3),
+                    focused = true
                 )
             )
         }
@@ -833,6 +838,7 @@ class ControlPanelStateReducerTest {
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
+                    id = id,
                     text = "Foo Bar",
                     color = "yellow",
                     background = "red",
@@ -942,7 +948,8 @@ class ControlPanelStateReducerTest {
                 state = given,
                 event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
                     target = block,
-                    selection = IntRange(1,1)
+                    selection = IntRange(1,1),
+                    focused = true
                 )
             )
         }
@@ -957,6 +964,7 @@ class ControlPanelStateReducerTest {
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
+                    id = id,
                     text = "Foo Bar",
                     color = "yellow",
                     background = "red",
@@ -1197,6 +1205,7 @@ class ControlPanelStateReducerTest {
                     stylingToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = true,
                         target = ControlPanelState.Toolbar.Styling.Target(
+                            id = id,
                             text = "Foo Bar",
                             color = "yellow",
                             background = "red",
@@ -1258,6 +1267,7 @@ class ControlPanelStateReducerTest {
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
+                    id = id,
                     text = "Foo Bar",
                     color = "yellow",
                     background = "red",
@@ -1393,7 +1403,8 @@ class ControlPanelStateReducerTest {
                 state = afterSelectionStateExpected,
                 event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
                     target = block,
-                    selection = IntRange(6,6)
+                    selection = IntRange(6,6),
+                    focused = true
                 )
             )
         }
@@ -1408,6 +1419,7 @@ class ControlPanelStateReducerTest {
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
+                    id = id,
                     text = "Foo Bar",
                     color = "yellow",
                     background = "red",

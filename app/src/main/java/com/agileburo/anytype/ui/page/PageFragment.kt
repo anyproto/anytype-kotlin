@@ -637,19 +637,24 @@ open class PageFragment :
                     childFragmentManager.popBackStack()
                 }
                 is Command.OpenActionBar -> {
-                    hideKeyboard()
-                    childFragmentManager.beginTransaction()
-                        .setCustomAnimations(R.anim.action_bar_enter, R.anim.action_bar_exit)
-                        .add(
-                            R.id.root,
-                            BlockActionToolbarFactory.newInstance(
-                                block = command.block,
-                                dimensions = command.dimensions
-                            ),
-                            null
-                        )
-                        .addToBackStack(null)
-                        .commit()
+                    lifecycleScope.launch {
+                        hideKeyboard()
+                        //Todo This delay was added because of keyboard visibility in some cases,
+                        // need to wait for WindowInsetsCompat Core-ktx Version 1.5.0, and remove this delay
+                        delay(300)
+                        childFragmentManager.beginTransaction()
+                            .setCustomAnimations(R.anim.action_bar_enter, R.anim.action_bar_exit)
+                            .add(
+                                R.id.root,
+                                BlockActionToolbarFactory.newInstance(
+                                    block = command.block,
+                                    dimensions = command.dimensions
+                                ),
+                                null
+                            )
+                            .addToBackStack(null)
+                            .commit()
+                    }
                 }
                 is Command.CloseKeyboard -> {
                     hideSoftInput()
@@ -1113,7 +1118,7 @@ open class PageFragment :
     }
 
     override fun onDismissBlockActionToolbar() {
-        vm.onSystemBackPressed(childFragmentManager.backStackEntryCount > 0)
+        vm.onDismissBlockActionMenu(childFragmentManager.backStackEntryCount > 0)
     }
 }
 

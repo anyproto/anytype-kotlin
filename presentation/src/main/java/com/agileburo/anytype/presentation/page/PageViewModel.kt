@@ -350,17 +350,7 @@ class PageViewModel(
         renderizePipeline
             .stream()
             .filter { it.isNotEmpty() }
-            .onEach {
-                if (focus.value != null && focus.value != context) {
-                    val textSelection = orchestrator.stores.textSelection.current()
-                    controlPanelInteractor.onEvent(
-                        event = ControlPanelMachine.Event.OnRefresh(
-                            target = blocks.find { it.id == focus.value },
-                            selection = textSelection.selection
-                        )
-                    )
-                }
-            }
+            .onEach (this::refreshStyleToolbar)
             .withLatestFrom(
                 orchestrator.stores.focus.stream(),
                 orchestrator.stores.details.stream()
@@ -379,6 +369,21 @@ class PageViewModel(
                 renderCommand.send(Unit)
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun refreshStyleToolbar(document: Document) {
+        controlPanelViewState.value?.let { state ->
+            if (state.stylingToolbar.isVisible) {
+                state.stylingToolbar.target?.id?.let { targetId ->
+                    controlPanelInteractor.onEvent(
+                        event = ControlPanelMachine.Event.OnRefresh.StyleToolbar(
+                            target = document.find { it.id == targetId },
+                            selection = orchestrator.stores.textSelection.current().selection
+                        )
+                    )
+                }
+            }
+        }
     }
 
     private fun dispatchToUI(views: List<BlockView>) {
@@ -514,6 +519,11 @@ class PageViewModel(
         } else {
             proceedWithExiting()
         }
+    }
+
+    fun onDismissBlockActionMenu(editorHasChildrenScreens: Boolean) {
+        onExitActionMode()
+        onSystemBackPressed(editorHasChildrenScreens)
     }
 
     fun onBackButtonPressed() {
@@ -812,6 +822,7 @@ class PageViewModel(
 
     private fun onBlockLongPressedClicked(target: String, dimensions: BlockDimensions) {
         val views = orchestrator.stores.views.current()
+        onEnterActionMode()
         dispatch(
             Command.OpenActionBar(
                 block = views.first { it.id == target },
@@ -834,82 +845,59 @@ class PageViewModel(
         val state = controlPanelViewState.value!!
         when (event) {
             is StylingEvent.Coloring.Text -> {
-                if (state.stylingToolbar.mode == StylingMode.MARKUP)
-                    onStyleToolbarMarkupAction(Markup.Type.TEXT_COLOR, event.color.title)
-                else
-                    onToolbarTextColorAction(event.color.title)
+                proceedWithStylingEvent(state, Markup.Type.TEXT_COLOR, event.color.title)
             }
             is StylingEvent.Coloring.Background -> {
-                if (state.stylingToolbar.mode == StylingMode.MARKUP)
-                    onStyleToolbarMarkupAction(Markup.Type.BACKGROUND_COLOR, event.color.title)
-                else
-                    onBlockBackgroundColorAction(event.color.title)
+                proceedWithStylingEvent(state, Markup.Type.BACKGROUND_COLOR, event.color.title)
             }
             is StylingEvent.Markup.Bold -> {
-                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
-                    onStyleToolbarMarkupAction(type = Markup.Type.BOLD)
-                } else {
-                    onBlockStyleMarkupActionClicked(action = Markup.Type.BOLD)
-                }
+                proceedWithStylingEvent(state, Markup.Type.BOLD, null)
             }
             is StylingEvent.Markup.Italic -> {
-                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
-                    onStyleToolbarMarkupAction(type = Markup.Type.ITALIC)
-                } else {
-                    onBlockStyleMarkupActionClicked(action = Markup.Type.ITALIC)
-                }
+                proceedWithStylingEvent(state, Markup.Type.ITALIC, null)
             }
             is StylingEvent.Markup.StrikeThrough -> {
-                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
-                    onStyleToolbarMarkupAction(type = Markup.Type.STRIKETHROUGH)
-                } else {
-                    onBlockStyleMarkupActionClicked(action = Markup.Type.STRIKETHROUGH)
-                }
+                proceedWithStylingEvent(state, Markup.Type.STRIKETHROUGH, null)
             }
             is StylingEvent.Markup.Code -> {
-                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
-                    onStyleToolbarMarkupAction(type = Markup.Type.KEYBOARD)
-                } else {
-                    onBlockStyleMarkupActionClicked(action = Markup.Type.KEYBOARD)
-                }
+                proceedWithStylingEvent(state, Markup.Type.KEYBOARD, null)
             }
             is StylingEvent.Markup.Link -> {
-                if (state.stylingToolbar.mode == StylingMode.MARKUP) {
-                    onStyleToolbarMarkupAction(type = Markup.Type.LINK)
-                } else {
-                    onBlockStyleLinkClicked()
-                }
+                proceedWithStylingEvent(state, Markup.Type.LINK, null)
             }
             is StylingEvent.Alignment.Left -> {
-                onBlockAlignmentActionClicked(
-                    alignment = Alignment.START
-                )
+                onBlockAlignmentActionClicked(Alignment.START)
             }
             is StylingEvent.Alignment.Center -> {
-                onBlockAlignmentActionClicked(
-                    alignment = Alignment.CENTER
-                )
+                onBlockAlignmentActionClicked(Alignment.CENTER)
             }
             is StylingEvent.Alignment.Right -> {
-                onBlockAlignmentActionClicked(
-                    alignment = Alignment.END
-                )
-            }
-            is StylingEvent.Sliding.Color -> {
-                onStyleColorSlideClicked()
-            }
-            is StylingEvent.Sliding.Background -> {
-                onStyleBackgroundSlideClicked()
+                onBlockAlignmentActionClicked(Alignment.END)
             }
         }
     }
 
-    private fun onStyleBackgroundSlideClicked() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnBackgroundSlideSelected)
-    }
-
-    private fun onStyleColorSlideClicked() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnColorSlideSelected)
+    private fun proceedWithStylingEvent(
+        state: ControlPanelState,
+        type: Markup.Type,
+        param: String?
+    ) {
+        if (state.stylingToolbar.mode == StylingMode.MARKUP) {
+            onStyleToolbarMarkupAction(type, param)
+        } else {
+            state.stylingToolbar.target?.id?.let { id ->
+                when (type) {
+                    Markup.Type.ITALIC -> onBlockStyleMarkupActionClicked(id, type)
+                    Markup.Type.BOLD -> onBlockStyleMarkupActionClicked(id, type)
+                    Markup.Type.STRIKETHROUGH -> onBlockStyleMarkupActionClicked(id, type)
+                    Markup.Type.TEXT_COLOR -> onToolbarTextColorAction(id, param)
+                    Markup.Type.BACKGROUND_COLOR -> onBlockBackgroundColorAction(id, param)
+                    Markup.Type.LINK -> onBlockStyleLinkClicked(id)
+                    Markup.Type.KEYBOARD -> onBlockStyleMarkupActionClicked(id, type)
+                    Markup.Type.MENTION -> Unit
+                }
+            } ?: run { throw IllegalStateException("Target id should be non null") }
+        }
     }
 
     private fun onStyleToolbarMarkupAction(type: Markup.Type, param: String? = null) {
@@ -924,72 +912,58 @@ class PageViewModel(
     }
 
     private fun onBlockAlignmentActionClicked(alignment: Alignment) {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnAlignmentSelected)
-
-        val state = stateData.value
-        if (state is ViewState.Success) {
-            val blockView = state.blocks.first { it.id == focus.value }
-            if (blockView is BlockView.Alignable) {
-                updateBlockAlignment(blockView, alignment)
-            } else {
-                Timber.e("Block $blockView is not alignable type")
-            }
-        } else {
-            Timber.e("Error on block align update, ViewState:$state is not ViewState.Success")
-        }
-    }
-
-    private fun updateBlockAlignment(
-        blockView: BlockView,
-        alignment: Alignment
-    ) {
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Text.Align(
-                    context = context,
-                    target = blockView.id,
-                    alignment = when (alignment) {
-                        Alignment.START -> Block.Align.AlignLeft
-                        Alignment.CENTER -> Block.Align.AlignCenter
-                        Alignment.END -> Block.Align.AlignRight
-                    }
+        controlPanelViewState.value?.stylingToolbar?.target?.id?.let { id ->
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Text.Align(
+                        context = context,
+                        target = id,
+                        alignment = when (alignment) {
+                            Alignment.START -> Block.Align.AlignLeft
+                            Alignment.CENTER -> Block.Align.AlignCenter
+                            Alignment.END -> Block.Align.AlignRight
+                        }
+                    )
                 )
-            )
+            }
         }
     }
 
     fun onCloseBlockStyleToolbarClicked() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnClose)
+        val focused = !orchestrator.stores.focus.current().isEmpty
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnClose(focused))
     }
 
-    fun onToolbarTextColorAction(color: String) {
+    fun onToolbarTextColorAction(id: String, color: String?) {
+        check(color != null)
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockTextColorSelected)
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.UpdateColor(
                     context = context,
-                    target = orchestrator.stores.focus.current().id,
+                    target = id,
                     color = color
                 )
             )
         }
     }
 
-    private fun onBlockBackgroundColorAction(color: String) {
+    private fun onBlockBackgroundColorAction(id: String, color: String?) {
+        check(color != null)
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockBackgroundColorSelected)
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.UpdateBackgroundColor(
                     context = context,
-                    targets = listOf(orchestrator.stores.focus.current().id),
+                    targets = listOf(id),
                     color = color
                 )
             )
         }
     }
 
-    private fun onBlockStyleLinkClicked() {
-        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+    private fun onBlockStyleLinkClicked(id: String) {
+        val target = blocks.first { it.id == id }
         val range = IntRange(
             start = 0,
             endInclusive = target.content<Content.Text>().text.length.dec()
@@ -997,13 +971,13 @@ class PageViewModel(
         stateData.value = ViewState.OpenLinkScreen(context, target, range)
     }
 
-    private fun onBlockStyleMarkupActionClicked(action: Markup.Type) {
+    private fun onBlockStyleMarkupActionClicked(id: String, action: Markup.Type) {
 
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.OnBlockStyleSelected
         )
 
-        val target = blocks.first { it.id == focus.value }
+        val target = blocks.first { it.id == id }
         val content = target.content as Content.Text
 
         if (content.text.isNotEmpty()) {
@@ -1052,6 +1026,7 @@ class PageViewModel(
                         add(UiBlock.LINK_TO_OBJECT.name)
                     }
                 }
+                onExitActionMode()
                 dispatch(
                     Command.OpenTurnIntoPanel(
                         target = id,
@@ -1062,10 +1037,12 @@ class PageViewModel(
             }
             ActionItemType.Delete -> {
                 proceedWithUnlinking(target = id)
+                onExitActionMode()
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Duplicate -> {
                 duplicateBlock(target = id)
+                onExitActionMode()
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Rename -> {
@@ -1079,13 +1056,16 @@ class PageViewModel(
                 controlPanelInteractor.onEvent(
                     ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
                         target = blocks.first { it.id == id },
+                        focused = textSelection.isNotEmpty,
                         selection = textSelection.selection
                     )
                 )
+                onExitActionMode()
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Download -> {
                 viewModelScope.launch {
+                    onExitActionMode()
                     dispatch(Command.PopBackStack)
                     delay(300)
                     dispatch(Command.RequestDownloadPermission(id))
@@ -1143,10 +1123,6 @@ class PageViewModel(
                 )
             )
         }
-    }
-
-    fun onActionDuplicateClicked() {
-        duplicateBlock(target = orchestrator.stores.focus.current().id)
     }
 
     private fun duplicateBlock(target: String) {
@@ -1338,6 +1314,7 @@ class PageViewModel(
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
                     target = blocks.first { it.id == orchestrator.stores.focus.current().id },
+                    focused = textSelection.isNotEmpty,
                     selection = textSelection.selection
                 )
             )
@@ -1357,14 +1334,8 @@ class PageViewModel(
     }
 
     fun onMeasure(target: Id, dimensions: BlockDimensions) {
-        val views = orchestrator.stores.views.current()
-        val block = views.first { it.id == target }
-        dispatch(
-            Command.OpenActionBar(
-                block = block,
-                dimensions = dimensions
-            )
-        )
+        proceedWithClearingFocus()
+        onBlockLongPressedClicked(target, dimensions)
     }
 
     fun onAddBlockToolbarClicked() {
@@ -1399,6 +1370,22 @@ class PageViewModel(
     fun onExitScrollAndMoveClicked() {
         mode = EditorMode.MULTI_SELECT
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnExit)
+    }
+
+    private fun onEnterActionMode() {
+        mode = EditorMode.ACTION_MODE
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.ReadMode.OnEnter)
+        viewModelScope.launch {
+            refresh()
+        }
+    }
+
+    private fun onExitActionMode() {
+        mode = EditorMode.EDITING
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.ReadMode.OnExit)
+        viewModelScope.launch {
+            refresh()
+        }
     }
 
     fun onMultiSelectModeDeleteClicked() {
@@ -1877,129 +1864,125 @@ class PageViewModel(
             when (mode) {
                 EditorMode.EDITING -> onBookmarkClicked(clicked.item)
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.item.id)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Bookmark.Placeholder -> {
             when (mode) {
                 EditorMode.EDITING -> onBookmarkPlaceholderClicked(clicked.target)
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Bookmark.Error -> {
             when (mode) {
                 EditorMode.EDITING -> onFailedBookmarkClicked(clicked.item)
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.item.id)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.File.View -> {
             when (mode) {
                 EditorMode.EDITING -> onFileClicked(clicked.target)
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> {
-                }
+                else -> Unit
             }
         }
         is ListenerType.File.Placeholder -> {
             when (mode) {
                 EditorMode.EDITING -> onAddLocalFileClicked(clicked.target)
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> {
-                }
+                else -> Unit
             }
         }
         is ListenerType.File.Error -> {
             when (mode) {
                 EditorMode.EDITING -> onAddLocalFileClicked(clicked.target)
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> {
-                }
+                else -> Unit
             }
         }
         is ListenerType.File.Upload -> {
             when (mode) {
                 EditorMode.EDITING -> Unit
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Picture.View -> {
             when (mode) {
                 EditorMode.EDITING -> Unit
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Picture.Placeholder -> {
             when (mode) {
                 EditorMode.EDITING -> onAddLocalPictureClicked(clicked.target)
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Picture.Error -> {
             when (mode) {
                 EditorMode.EDITING -> Unit
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Picture.Upload -> {
             when (mode) {
                 EditorMode.EDITING -> Unit
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Video.View -> {
             when (mode) {
                 EditorMode.EDITING -> Unit
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Video.Placeholder -> {
             when (mode) {
                 EditorMode.EDITING -> onAddLocalVideoClicked(clicked.target)
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Video.Error -> {
             when (mode) {
                 EditorMode.EDITING -> Unit
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Video.Upload -> {
             when (mode) {
                 EditorMode.EDITING -> Unit
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.LongClick -> {
             when (mode) {
                 EditorMode.EDITING -> onBlockLongPressedClicked(clicked.target, clicked.dimensions)
                 EditorMode.MULTI_SELECT -> Unit
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Page -> {
             when (mode) {
                 EditorMode.EDITING -> onPageClicked(clicked.target)
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.Mention -> {
             when (mode) {
                 EditorMode.EDITING -> onMentionClicked(clicked.target)
-                EditorMode.MULTI_SELECT -> Unit
-                EditorMode.SCROLL_AND_MOVE -> Unit
+                else -> Unit
             }
         }
         is ListenerType.EditableBlock -> {

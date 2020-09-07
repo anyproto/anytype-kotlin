@@ -59,8 +59,7 @@ fun Block.Content.File.getStyleConfig(): StyleConfig = when (type) {
 }
 
 fun Block.Content.Text.getTextStyleConfig(focus: Boolean?, selection: IntRange?): StyleConfig {
-    check(focus != null) { "Text block should have focus" }
-    return if (focus) {
+    return if (focus != null && focus) {
         getStyleConfig(selection = selection)
     } else {
         getStyleConfig(selection = null)

@@ -349,8 +349,8 @@ class StyleConfigKtTest {
         assertEquals(expected, result)
     }
 
-    @Test(expected = IllegalStateException::class)
-    fun `should return exception when block type text and focus null`() {
+    @Test
+    fun `should return style config when block type text and focus null`() {
 
         val child = MockDataFactory.randomUuid()
 
@@ -369,7 +369,21 @@ class StyleConfigKtTest {
             children = emptyList()
         )
 
-        given.getStyleConfig(focus = null, selection = null)
+        val result = given.getStyleConfig(focus = null, selection = null)
+
+        val expected = StyleConfig(
+            visibleTypes = listOf(StylingType.STYLE, StylingType.TEXT_COLOR, StylingType.BACKGROUND),
+            enabledMarkup = listOf(
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
+            ),
+            enabledAlignment = listOf(Alignment.START, Alignment.CENTER, Alignment.END)
+        )
+
+        assertEquals(expected, result)
     }
 
     @Test

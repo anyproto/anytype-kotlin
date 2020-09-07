@@ -123,7 +123,9 @@ sealed class ControlPanelMachine {
             val style: Block.Content.Text.Style
         ) : Event()
 
-        data class OnBlockActionToolbarStyleClicked(val target: Block, val selection: IntRange?) : Event()
+        data class OnBlockActionToolbarStyleClicked(val target: Block,
+                                                    val focused: Boolean,
+                                                    val selection: IntRange?) : Event()
 
         /**
          * Styling-toolbar-related events
@@ -131,15 +133,7 @@ sealed class ControlPanelMachine {
 
         sealed class StylingToolbar : Event() {
 
-            object OnBackgroundSlideSelected : StylingToolbar()
-            object OnColorSlideSelected : StylingToolbar()
-
-            /**
-             * Represents an event when user selected alignment on [Toolbar.Styling] toolbar.
-             */
-            object OnAlignmentSelected : StylingToolbar()
-
-            object OnClose : StylingToolbar()
+            data class OnClose(val focused: Boolean) : StylingToolbar()
         }
 
         /**
@@ -151,6 +145,14 @@ sealed class ControlPanelMachine {
             object OnDelete : MultiSelect()
             object OnTurnInto : MultiSelect()
             data class OnBlockClick(val count: Int) : MultiSelect()
+        }
+
+        /**
+         * Read mode events
+         */
+        sealed class ReadMode: Event() {
+            object OnEnter : ReadMode()
+            object OnExit : ReadMode()
         }
 
         /**
@@ -173,7 +175,9 @@ sealed class ControlPanelMachine {
             object OnStop : Mentions()
         }
 
-        data class OnRefresh(val target: Block?, val selection: IntRange?) : Event()
+        sealed class OnRefresh : Event() {
+            data class StyleToolbar(val target: Block?, val selection: IntRange?) : OnRefresh()
+        }
     }
 
     /**
@@ -190,9 +194,12 @@ sealed class ControlPanelMachine {
             Overlap.INNER_RIGHT,
             Overlap.INNER_LEFT
         )
-        
+
         override val function: suspend (ControlPanelState, Event) -> ControlPanelState
-            get() = { state, event -> reduce(state, event) }
+            get() = { state, event ->
+                logEvent(event)
+                reduce(state, event)
+            }
 
         override suspend fun reduce(state: ControlPanelState, event: Event) = when (event) {
             is Event.OnSelectionChanged -> {
@@ -273,24 +280,26 @@ sealed class ControlPanelMachine {
                     stylingToolbar = state.stylingToolbar.copy(
                         isVisible = true,
                         mode = getModeForSelection(event.selection),
-                        target = target(event.target),
-                        config = event.target.getStyleConfig(true, event.selection),
+                        target = target,
+                        config = event.target.getStyleConfig(event.focused, event.selection),
                         props = getPropsForSelection(target, event.selection)
+                    ),
+                    navigationToolbar = state.navigationToolbar.copy(
+                        isVisible = false
                     )
                 )
             }
-            is Event.OnRefresh -> {
-                if (state.stylingToolbar.isVisible) {
-                    handleRefreshForMarkupLevelStyling(state, event)
-                } else {
-                    state.copy()
-                }
+            is Event.OnRefresh.StyleToolbar -> {
+                handleRefreshForMarkupLevelStyling(state, event)
             }
             is Event.MultiSelect -> {
                 handleMultiSelectEvent(event, state)
             }
             is Event.SAM -> {
                 handleScrollAndMoveEvent(event, state)
+            }
+            is Event.ReadMode -> {
+                handleReadModeEvent(event, state)
             }
             is Event.Mentions -> {
                 handleMentionEvent(event, state)
@@ -324,7 +333,7 @@ sealed class ControlPanelMachine {
 
         private fun handleRefreshForMarkupLevelStyling(
             state: ControlPanelState,
-            event: Event.OnRefresh
+            event: Event.OnRefresh.StyleToolbar
         ): ControlPanelState {
             return if (state.stylingToolbar.mode == StylingMode.MARKUP) {
                 if (event.target != null) {
@@ -466,15 +475,21 @@ sealed class ControlPanelMachine {
             event: Event.StylingToolbar,
             state: ControlPanelState
         ): ControlPanelState = when (event) {
-            is Event.StylingToolbar.OnBackgroundSlideSelected -> state.copy()
-            is Event.StylingToolbar.OnColorSlideSelected -> state.copy()
-            is Event.StylingToolbar.OnAlignmentSelected -> state.copy()
-            is Event.StylingToolbar.OnClose -> state.copy(
-                stylingToolbar = Toolbar.Styling.reset(),
-                mainToolbar = state.mainToolbar.copy(
-                    isVisible = true
-                )
-            )
+            is Event.StylingToolbar.OnClose -> {
+                if (event.focused) {
+                    state.copy(
+                        mainToolbar = state.mainToolbar.copy(
+                            isVisible = true
+                        ),
+                        navigationToolbar = state.navigationToolbar.copy(
+                            isVisible = false
+                        ),
+                        stylingToolbar = Toolbar.Styling.reset()
+                    )
+                } else {
+                    init()
+                }
+            }
         }
 
         private fun handleMentionEvent(
@@ -570,6 +585,25 @@ sealed class ControlPanelMachine {
             )
         }
 
+        private fun handleReadModeEvent(
+            event: Event.ReadMode,
+            state: ControlPanelState
+        ): ControlPanelState = when (event) {
+            Event.ReadMode.OnEnter -> {
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    multiSelect = state.multiSelect.copy(
+                        isVisible = false
+                    ),
+                    stylingToolbar = Toolbar.Styling.reset(),
+                    mentionToolbar = Toolbar.MentionToolbar.reset()
+                )
+            }
+            Event.ReadMode.OnExit -> state.copy()
+        }
+
         private fun handleScrollAndMoveEvent(
             event: Event.SAM,
             state: ControlPanelState
@@ -614,6 +648,7 @@ sealed class ControlPanelMachine {
         private fun target(block: Block): Toolbar.Styling.Target {
             val content = block.content<Block.Content.Text>()
             return Toolbar.Styling.Target(
+                id = block.id,
                 text = content.text,
                 color = content.color,
                 background = content.backgroundColor,
@@ -625,6 +660,14 @@ sealed class ControlPanelMachine {
                     }
                 },
                 marks = content.marks()
+            )
+        }
+
+        private fun logEvent(event: Event) {
+            Timber.i(
+                "REDUCER, EVENT:${
+                    event::class.qualifiedName?.substringAfter("Event.")
+                }"
             )
         }
     }

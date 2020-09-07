@@ -86,6 +86,7 @@ data class ControlPanelState(
              * Target block associated with this toolbar.
              */
             data class Target(
+                val id: String,
                 val text: String,
                 val color: String?,
                 val background: String?,

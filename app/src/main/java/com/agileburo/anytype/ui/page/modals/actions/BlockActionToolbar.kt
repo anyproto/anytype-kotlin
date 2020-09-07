@@ -9,6 +9,7 @@ import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.constraintlayout.widget.ConstraintSet.BOTTOM
 import androidx.constraintlayout.widget.ConstraintSet.TOP
@@ -58,6 +59,7 @@ abstract class BlockActionToolbar : Fragment() {
         view.findViewById<FrameLayout>(R.id.block_container).apply {
             addView(inflater.inflate(blockLayout(), this, false))
         }
+        setOnBackPressedCallback()
         return view
     }
 
@@ -159,6 +161,15 @@ abstract class BlockActionToolbar : Fragment() {
                 colorView = colorView
             )
         }
+
+    private fun setOnBackPressedCallback() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    (parentFragment as? OnFragmentInteractionListener)?.onDismissBlockActionToolbar()
+                }
+            })
+    }
 
     private fun setBlockTextColor(content: TextView, color: String) {
         content.setTextColor(

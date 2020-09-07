@@ -2,10 +2,15 @@ package com.agileburo.anytype.presentation.page
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.features.page.BlockDimensions
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.agileburo.anytype.core_ui.features.page.styling.StylingEvent
+import com.agileburo.anytype.core_ui.features.page.styling.StylingMode
+import com.agileburo.anytype.core_ui.features.page.styling.StylingType
+import com.agileburo.anytype.core_ui.model.StyleConfig
 import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.core_utils.tools.Counter
@@ -50,9 +55,12 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-class PageViewModelTest {
+open class PageViewModelTest {
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
@@ -156,7 +164,7 @@ class PageViewModelTest {
     @Mock
     lateinit var gateway : Gateway
 
-    private lateinit var vm: PageViewModel
+    lateinit var vm: PageViewModel
 
     private lateinit var builder: UrlBuilder
 
@@ -1536,7 +1544,8 @@ class PageViewModelTest {
         coroutineTestRule.advanceTime(1001)
 
         vm.onBlockFocusChanged(id = child, hasFocus = true)
-        vm.onActionDuplicateClicked()
+
+        vm.onActionMenuItemClicked(id = child, action = ActionItemType.Duplicate)
 
         runBlockingTest {
             verify(duplicateBlock, times(1)).invoke(
@@ -2042,7 +2051,7 @@ class PageViewModelTest {
 
         val color = MockDataFactory.randomString()
 
-        vm.onToolbarTextColorAction(color = color)
+        vm.onToolbarTextColorAction(color = color, id = child)
 
         runBlockingTest {
             verify(updateTextColor, times(1)).invoke(
@@ -3683,7 +3692,7 @@ class PageViewModelTest {
 
         focus.assertValue { id -> id == paragraph.id }
 
-        vm.onActionDuplicateClicked()
+        vm.onActionMenuItemClicked(id = paragraph.id, action = ActionItemType.Duplicate)
 
         runBlockingTest {
             verify(duplicateBlock, times(1)).invoke(
@@ -4103,7 +4112,7 @@ class PageViewModelTest {
         }
     }
 
-    private fun stubOpenPage(
+    fun stubOpenPage(
         context: Id = MockDataFactory.randomString(),
         events: List<Event> = emptyList()
     ) {
@@ -4117,7 +4126,7 @@ class PageViewModelTest {
         }
     }
 
-    private fun stubObserveEvents(flow: Flow<List<Event>> = flowOf()) {
+    fun stubObserveEvents(flow: Flow<List<Event>> = flowOf()) {
         interceptEvents.stub {
             onBlocking { build(any()) } doReturn flow
         }
@@ -4210,7 +4219,7 @@ class PageViewModelTest {
         }
     }
 
-    private fun buildViewModel(urlBuilder: UrlBuilder = builder) {
+    fun buildViewModel(urlBuilder: UrlBuilder = builder) {
 
         val storage = Editor.Storage()
         val proxies = Editor.Proxer()
@@ -4937,6 +4946,460 @@ class PageViewModelTest {
         assertEquals(
             expected = 0,
             actual = vm.currentSelection().size
+        )
+    }
+
+    @Test
+    fun `should update style toolbar when no blocks in focus`() {
+
+        val id1 = MockDataFactory.randomUuid()
+        val id2 = MockDataFactory.randomUuid()
+        val blocks = listOf(
+            Block(
+                id = id1,
+                content = Block.Content.Text(
+                    marks = listOf(
+                        Block.Content.Text.Mark(
+                            range = 0..7, type = Block.Content.Text.Mark.Type.BOLD
+                        )
+                    ),
+                    text = "Foo Bar",
+                    style = Block.Content.Text.Style.P,
+                    align = Block.Align.AlignCenter
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            ),
+            Block(
+                id = id2,
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = blocks.map { it.id }
+            )
+        ) + blocks
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.onStart(root)
+
+        coroutineTestRule.advanceTime(100)
+
+
+        // TESTING
+
+        val stateBefore = vm.controlPanelViewState.value
+
+        assertNotNull(stateBefore)
+
+        assertTrue(stateBefore.navigationToolbar.isVisible)
+        assertFalse(stateBefore.stylingToolbar.isVisible)
+
+        vm.onActionMenuItemClicked(blocks[0].id, ActionItemType.Style)
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState(
+                navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                    isVisible = false
+                ),
+                mainToolbar = ControlPanelState.Toolbar.Main(
+                    isVisible = false
+                ),
+                stylingToolbar = ControlPanelState.Toolbar.Styling(
+                    isVisible = true,
+                    mode = StylingMode.BLOCK,
+                    target = ControlPanelState.Toolbar.Styling.Target(
+                        id = blocks[0].id,
+                        text = blocks[0].content.asText().text,
+                        color = null,
+                        background = null,
+                        alignment = Alignment.CENTER,
+                        marks = listOf(
+                            Markup.Mark(0, 7, Markup.Type.BOLD)
+                        )
+                    ),
+                    config = StyleConfig(
+                        visibleTypes = listOf(
+                            StylingType.STYLE,
+                            StylingType.TEXT_COLOR,
+                            StylingType.BACKGROUND
+                        ),
+                        enabledAlignment = listOf(
+                            Alignment.START,
+                            Alignment.CENTER,
+                            Alignment.END
+                        ),
+                        enabledMarkup = listOf(
+                            Markup.Type.BOLD,
+                            Markup.Type.ITALIC,
+                            Markup.Type.STRIKETHROUGH,
+                            Markup.Type.KEYBOARD,
+                            Markup.Type.LINK
+                        )
+                    ),
+                    props = ControlPanelState.Toolbar.Styling.Props(
+                        isBold = true,
+                        isItalic = false,
+                        isStrikethrough = false,
+                        isCode = false,
+                        isLinked = false,
+                        alignment = Alignment.CENTER,
+                        color = null,
+                        background = null
+                    )
+                ),
+                multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                    isVisible = false
+                ),
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            )
+        )
+
+        vm.onStylingToolbarEvent(event = StylingEvent.Markup.Italic)
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState(
+                navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                    isVisible = false
+                ),
+                mainToolbar = ControlPanelState.Toolbar.Main(
+                    isVisible = false
+                ),
+                stylingToolbar = ControlPanelState.Toolbar.Styling(
+                    isVisible = true,
+                    mode = StylingMode.BLOCK,
+                    target = ControlPanelState.Toolbar.Styling.Target(
+                        id = blocks[0].id,
+                        text = blocks[0].content.asText().text,
+                        color = null,
+                        background = null,
+                        alignment = Alignment.CENTER,
+                        marks = listOf(
+                            Markup.Mark(0, 7, Markup.Type.BOLD),
+                            Markup.Mark(0, 7, Markup.Type.ITALIC)
+                        )
+                    ),
+                    config = StyleConfig(
+                        visibleTypes = listOf(
+                            StylingType.STYLE,
+                            StylingType.TEXT_COLOR,
+                            StylingType.BACKGROUND
+                        ),
+                        enabledAlignment = listOf(
+                            Alignment.START,
+                            Alignment.CENTER,
+                            Alignment.END
+                        ),
+                        enabledMarkup = listOf(
+                            Markup.Type.BOLD,
+                            Markup.Type.ITALIC,
+                            Markup.Type.STRIKETHROUGH,
+                            Markup.Type.KEYBOARD,
+                            Markup.Type.LINK
+                        )
+                    ),
+                    props = ControlPanelState.Toolbar.Styling.Props(
+                        isBold = true,
+                        isItalic = true,
+                        isStrikethrough = false,
+                        isCode = false,
+                        isLinked = false,
+                        alignment = Alignment.CENTER,
+                        color = null,
+                        background = null
+                    )
+                ),
+                multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                    isVisible = false
+                ),
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            )
+        )
+    }
+
+    @Test
+    fun `should clear focus and selection after main toolbar action clicked `() {
+
+        val id1 = MockDataFactory.randomUuid()
+        val blocks = listOf(
+            Block(
+                id = id1,
+                content = Block.Content.Text(
+                    marks = listOf(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P,
+                    align = Block.Align.AlignLeft
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = blocks.map { it.id }
+            )
+        ) + blocks
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.onStart(root)
+
+        coroutineTestRule.advanceTime(100)
+
+
+        // TESTING
+
+        val stateBefore = vm.controlPanelViewState.value
+
+        assertNotNull(stateBefore)
+
+        assertTrue(stateBefore.navigationToolbar.isVisible)
+        assertFalse(stateBefore.stylingToolbar.isVisible)
+
+        vm.onSelectionChanged(blocks[0].id, 0..3)
+
+        vm.onMeasure(blocks[0].id, BlockDimensions(0, 0, 0, 0, 0, 0))
+
+        val focus = vm.focus.test()
+
+        focus.assertValue { id -> id.isEmpty() }
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState.init()
+        )
+    }
+
+    @Test
+    fun `should show navigation toolbar after close style toolbar when opened from action menu`() {
+
+        val id1 = MockDataFactory.randomUuid()
+        val blocks = listOf(
+            Block(
+                id = id1,
+                content = Block.Content.Text(
+                    marks = listOf(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P,
+                    align = Block.Align.AlignLeft
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = blocks.map { it.id }
+            )
+        ) + blocks
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.onStart(root)
+
+        coroutineTestRule.advanceTime(100)
+
+
+        // TESTING
+
+        val stateBefore = vm.controlPanelViewState.value
+
+        assertNotNull(stateBefore)
+
+        assertTrue(stateBefore.navigationToolbar.isVisible)
+        assertFalse(stateBefore.stylingToolbar.isVisible)
+
+        vm.onSelectionChanged(blocks[0].id, 0..3)
+
+        vm.onMeasure(blocks[0].id, BlockDimensions(0, 0, 0, 0, 0, 0))
+
+        vm.focus.test().assertValue { id -> id.isEmpty() }
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState.init()
+        )
+
+        vm.onActionMenuItemClicked(blocks[0].id, ActionItemType.Style)
+
+        vm.focus.test().assertValue { id -> id.isEmpty() }
+
+        vm.onCloseBlockStyleToolbarClicked()
+
+        vm.focus.test().assertValue { id -> id.isEmpty() }
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState(
+                navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                    isVisible = true
+                ),
+                mainToolbar = ControlPanelState.Toolbar.Main(
+                    isVisible = false
+                ),
+                stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                    isVisible = false
+                ),
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            )
+        )
+    }
+
+    @Test
+    fun `should show main toolbar after close style toolbar when focused is true`() {
+
+        val id1 = MockDataFactory.randomUuid()
+        val blocks = listOf(
+            Block(
+                id = id1,
+                content = Block.Content.Text(
+                    marks = listOf(),
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P,
+                    align = Block.Align.AlignLeft
+                ),
+                children = emptyList(),
+                fields = Block.Fields.empty()
+            )
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Page(
+                    style = Block.Content.Page.Style.SET
+                ),
+                children = blocks.map { it.id }
+            )
+        ) + blocks
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+
+        vm.onStart(root)
+
+        coroutineTestRule.advanceTime(100)
+
+
+        // TESTING
+
+        val stateBefore = vm.controlPanelViewState.value
+
+        assertNotNull(stateBefore)
+
+        assertTrue(stateBefore.navigationToolbar.isVisible)
+        assertFalse(stateBefore.stylingToolbar.isVisible)
+
+        vm.onBlockFocusChanged(blocks[0].id, true)
+
+        vm.onSelectionChanged(blocks[0].id, 0..3)
+
+        vm.onEditorContextMenuStyleClicked(0..3)
+
+        vm.focus.test().assertValue { id -> id.isNotEmpty() }
+
+        vm.onCloseBlockStyleToolbarClicked()
+
+        vm.focus.test().assertValue { id -> id.isNotEmpty() }
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState(
+                navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                    isVisible = false
+                ),
+                mainToolbar = ControlPanelState.Toolbar.Main(
+                    isVisible = true
+                ),
+                stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                    isVisible = false
+                ),
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            )
         )
     }
 }

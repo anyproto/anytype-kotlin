@@ -24,6 +24,11 @@ class HighlightBlockActionToolbar : BlockActionToolbar() {
         view.findViewById<TextView>(R.id.highlightContent).apply {
             movementMethod = ScrollingMovementMethod()
             text = block.text
+            processTextColor(
+                textView = this,
+                colorImage = colorView,
+                color = block.color
+            )
         }
         processBackgroundColor(
             root = view.findViewById(R.id.root),

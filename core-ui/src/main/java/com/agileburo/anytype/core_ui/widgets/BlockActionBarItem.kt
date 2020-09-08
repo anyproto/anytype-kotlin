@@ -9,6 +9,7 @@ import com.agileburo.anytype.core_ui.extensions.drawable
 import kotlinx.android.synthetic.main.action_item.view.*
 
 sealed class ActionItemType {
+    object AddBelow : ActionItemType()
     object TurnInto : ActionItemType()
     object Delete : ActionItemType()
     object Duplicate : ActionItemType()
@@ -35,6 +36,10 @@ class BlockActionBarItem @JvmOverloads constructor(
 
     private fun updateView() {
         when (itemType) {
+            ActionItemType.AddBelow -> updateContent(
+                R.string.action_bar_add_below,
+                R.drawable.ic_action_add_block_below
+            )
             ActionItemType.TurnInto -> updateContent(
                 R.string.action_bar_turn_into,
                 R.drawable.ic_action_turn_into

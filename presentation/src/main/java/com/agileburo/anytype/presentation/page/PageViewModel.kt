@@ -1012,6 +1012,14 @@ class PageViewModel(
 
     fun onActionMenuItemClicked(id: String, action: ActionItemType) {
         when (action) {
+            ActionItemType.AddBelow -> {
+                onExitActionMode()
+                dispatch(Command.PopBackStack)
+                proceedWithCreatingNewTextBlock(
+                    id = id,
+                    style = Content.Text.Style.P
+                )
+            }
             ActionItemType.TurnInto -> {
                 val excludedTypes = mutableListOf<String>()
                 val target = blocks.first { it.id == id }

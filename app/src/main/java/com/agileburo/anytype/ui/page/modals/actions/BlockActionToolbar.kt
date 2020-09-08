@@ -385,7 +385,8 @@ abstract class BlockActionToolbar : Fragment() {
     object ACTIONS {
 
         val PAGE = listOf(
-            ActionItemType.Divider,
+            ActionItemType.AddBelow,
+            ActionItemType.DividerExtended,
             ActionItemType.Delete,
             ActionItemType.Divider,
             ActionItemType.Duplicate,
@@ -394,6 +395,8 @@ abstract class BlockActionToolbar : Fragment() {
         )
 
         val TEXT = listOf(
+            ActionItemType.AddBelow,
+            ActionItemType.DividerExtended,
             ActionItemType.TurnInto,
             ActionItemType.Divider,
             ActionItemType.Delete,
@@ -406,6 +409,8 @@ abstract class BlockActionToolbar : Fragment() {
         )
 
         val CHECKBOX_CHECKED = listOf(
+            ActionItemType.AddBelow,
+            ActionItemType.DividerExtended,
             ActionItemType.TurnInto,
             ActionItemType.Divider,
             ActionItemType.Delete,
@@ -418,6 +423,8 @@ abstract class BlockActionToolbar : Fragment() {
         )
 
         val VIDEO_PICTURE = listOf(
+            ActionItemType.AddBelow,
+            ActionItemType.DividerExtended,
             ActionItemType.Delete,
             ActionItemType.Divider,
             ActionItemType.Duplicate,
@@ -428,6 +435,8 @@ abstract class BlockActionToolbar : Fragment() {
         )
 
         val FILE = listOf(
+            ActionItemType.AddBelow,
+            ActionItemType.DividerExtended,
             ActionItemType.Delete,
             ActionItemType.Divider,
             ActionItemType.Duplicate,
@@ -438,6 +447,8 @@ abstract class BlockActionToolbar : Fragment() {
         )
 
         val BOOKMARK = listOf(
+            ActionItemType.AddBelow,
+            ActionItemType.DividerExtended,
             ActionItemType.Delete,
             ActionItemType.Divider,
             ActionItemType.Duplicate,
@@ -446,6 +457,8 @@ abstract class BlockActionToolbar : Fragment() {
         )
 
         val CODE = listOf(
+            ActionItemType.AddBelow,
+            ActionItemType.DividerExtended,
             ActionItemType.TurnInto,
             ActionItemType.Divider,
             ActionItemType.Delete,
@@ -456,6 +469,8 @@ abstract class BlockActionToolbar : Fragment() {
         )
 
         val DIVIDER = listOf(
+            ActionItemType.AddBelow,
+            ActionItemType.DividerExtended,
             ActionItemType.Delete,
             ActionItemType.Divider,
             ActionItemType.Duplicate,

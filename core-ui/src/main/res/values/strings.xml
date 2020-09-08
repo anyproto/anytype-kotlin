@@ -187,6 +187,7 @@
     <string-array name="certs">
         <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
     </string-array>
+    <string name="action_bar_add_below">Add block below</string>
     <string name="action_bar_turn_into">Turn into</string>
     <string name="action_bar_delete">Delete</string>
     <string name="action_bar_duplicate">Duplicate</string>

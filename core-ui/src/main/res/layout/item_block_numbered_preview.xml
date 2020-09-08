@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/default_document_item_padding_start"
-    android:paddingEnd="@dimen/default_document_item_padding_end">
+    android:paddingStart="@dimen/dp_12"
+    android:paddingEnd="@dimen/dp_12">
 
-    <com.agileburo.anytype.core_ui.widgets.text.DefaultTextWidget
+    <TextView
         android:id="@+id/number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,10 +19,11 @@
         android:visibility="visible"
         tools:text="19." />
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/numberedListContent"
         style="@style/BlockNumberedContentStyle"
         android:layout_marginStart="4dp"
+        android:hint="@string/hint_numbered_list"
         tools:text="@string/default_text_placeholder" />
 
 </LinearLayout>

@@ -25,6 +25,11 @@ class HighlightBlockActionToolbar : BlockActionToolbar() {
             movementMethod = ScrollingMovementMethod()
             text = block.text
         }
+        processBackgroundColor(
+            root = view.findViewById(R.id.root),
+            color = block.backgroundColor,
+            bgImage = backgroundView
+        )
         setConstraints()
     }
 }

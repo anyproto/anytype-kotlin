@@ -257,11 +257,17 @@ abstract class BlockActionToolbar : Fragment() {
         Timber.d("ActionBar, open block: $blockView")
     }
 
+    open fun getBlockPaddingTop(): Int {
+        return resources.getDimensionPixelOffset(R.dimen.action_toolbar_block_padding_top)
+    }
+
+    open fun getBlockPaddingBottom(): Int {
+        return resources.getDimensionPixelOffset(R.dimen.action_toolbar_block_padding_bottom)
+    }
+
     private fun getUpdatedBlockDimensions(): BlockDimensions {
-        val blockPaddingTop =
-            resources.getDimensionPixelOffset(R.dimen.action_toolbar_block_padding_top)
-        val blockPaddingBottom =
-            resources.getDimensionPixelOffset(R.dimen.action_toolbar_block_padding_bottom)
+        val blockPaddingTop = getBlockPaddingTop()
+        val blockPaddingBottom = getBlockPaddingBottom()
         val dimensions: BlockDimensions = arguments?.getParcelable(ARG_BLOCK_DIMENSIONS)!!
         return dimensions.copy(
             top = dimensions.top - blockPaddingTop,

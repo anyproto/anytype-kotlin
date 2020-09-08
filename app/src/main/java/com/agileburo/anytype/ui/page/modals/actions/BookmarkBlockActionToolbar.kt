@@ -27,6 +27,9 @@ class BookmarkBlockActionToolbar : BlockActionToolbar() {
         setConstraints()
     }
 
+    override fun getBlockPaddingTop(): Int = 0
+    override fun getBlockPaddingBottom(): Int = 0
+
     private fun initBookmark(view: View) {
         val item = block
         view.findViewById<TextView>(R.id.bookmarkTitle).apply {
@@ -55,17 +58,19 @@ class BookmarkBlockActionToolbar : BlockActionToolbar() {
 
         view.findViewById<FrameLayout>(R.id.root).apply {
             updateLayoutParams<FrameLayout.LayoutParams> {
-                this.apply {
-                    rightMargin = 0
-                    topMargin = 0
-                    bottomMargin = 0
-                    topMargin = 0
-                }
+                leftMargin = 0
+                topMargin = 0
+                bottomMargin = 0
+                rightMargin = 0
             }
             setPadding(0, 0, 0, 0)
         }
 
         view.findViewById<FrameLayout>(R.id.block_container)
-            .setPadding(0, 0, 0, 0)
+            .setPadding(
+                resources.getDimensionPixelOffset(R.dimen.dp_12),
+                resources.getDimensionPixelOffset(R.dimen.dp_6),
+                resources.getDimensionPixelOffset(R.dimen.dp_12),
+                resources.getDimensionPixelOffset(R.dimen.dp_6))
     }
 }

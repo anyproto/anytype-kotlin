@@ -4,10 +4,9 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/default_document_item_padding_start"
     android:paddingEnd="@dimen/default_document_item_padding_end">
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/headerThree"
         style="@style/BlockHeaderThreeContentStyle"
         tools:text="Header 3" />

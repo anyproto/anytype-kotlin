@@ -5,8 +5,8 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/default_document_item_padding_start"
-    android:paddingEnd="@dimen/default_document_item_padding_end">
+    android:paddingStart="@dimen/dp_12"
+    android:paddingEnd="@dimen/dp_12">
 
     <ImageView
         android:id="@+id/toggle"
@@ -18,7 +18,7 @@
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.agileburo.anytype.core_ui.widgets.text.DefaultTextWidget
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
         android:layout_width="0dp"
         android:id="@+id/toggleContent"
         style="@style/ToggleContentStyle"

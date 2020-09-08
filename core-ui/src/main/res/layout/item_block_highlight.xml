@@ -27,7 +27,7 @@
             android:id="@+id/divider"
             android:layout_width="2dp"
             android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="11dp"
             android:background="@color/block_higlight_divider" />
 
         <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget

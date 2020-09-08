@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/default_document_item_padding_start"
-    android:paddingEnd="@dimen/default_document_item_padding_end">
+    android:paddingStart="@dimen/dp_12"
+    android:paddingEnd="@dimen/dp_12">
 
     <View
         android:id="@+id/bulletIndent"

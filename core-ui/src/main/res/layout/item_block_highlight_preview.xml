@@ -5,21 +5,23 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="6dp"
-    android:paddingStart="@dimen/default_document_item_padding_start"
-    android:paddingEnd="@dimen/default_document_item_padding_end"
-    android:paddingBottom="6dp">
+    android:paddingStart="@dimen/dp_12"
+    android:paddingEnd="@dimen/dp_12"
+    android:paddingTop="11dp"
+    android:paddingBottom="12dp">
 
     <com.agileburo.anytype.core_ui.widgets.text.DefaultTextWidget
         android:id="@+id/highlightContent"
-        style="@style/BlockHighlightContentStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="12dp"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/black"
+        android:textSize="17sp"
+        android:lineSpacingExtra="3sp"
         android:background="@drawable/vertical_line"
-        android:paddingStart="@dimen/dp_16"
-        android:paddingEnd="0dp"
+        android:layout_marginStart="11dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="@dimen/dp_12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/default_text_placeholder" />

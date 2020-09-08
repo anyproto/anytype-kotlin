@@ -278,8 +278,8 @@ abstract class BlockActionToolbar : Fragment() {
 
     private fun createStartSet() : ConstraintSet = ConstraintSet().apply {
         clone(requireContext(), R.layout.action_toolbar)
-        setScaleX(R.id.block_container, 0.9f)
-        setScaleY(R.id.block_container, 0.9f)
+        setScaleX(R.id.block_container, 1f)
+        setScaleY(R.id.block_container, 1f)
         setVisibility(R.id.card, View.INVISIBLE)
         setScaleX(R.id.card, 0.3f)
         setScaleY(R.id.card, 0.3f)

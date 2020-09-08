@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.47 (WIP)
+
+### Fixes & tech 🚒
+
+* If you change checkbox's text color and then check off this checkbox, its text color always becomes black whereas it should have the color that you've set before (#785)
+
 ## Version 0.0.46
 
 ### New features 🚀

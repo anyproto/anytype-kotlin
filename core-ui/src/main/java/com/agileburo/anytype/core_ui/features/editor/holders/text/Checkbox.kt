@@ -4,7 +4,6 @@ import android.content.Context
 import android.text.Editable
 import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.view.updatePadding
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.extensions.color
@@ -65,7 +64,7 @@ class Checkbox(
         checkbox.isActivated = item.isChecked
         updateTextColor(
             context = itemView.context,
-            view = content,
+            color = item.color,
             isSelected = checkbox.isActivated
         )
         setCheckboxClickListener(item, onCheckboxClicked)
@@ -81,8 +80,8 @@ class Checkbox(
                 checkbox.isActivated = !checkbox.isActivated
                 updateTextColor(
                     context = itemView.context,
-                    view = content,
-                    isSelected = checkbox.isActivated
+                    isSelected = checkbox.isActivated,
+                    color = item.color
                 )
                 onCheckboxClicked(item)
             }
@@ -114,10 +113,18 @@ class Checkbox(
         container.isSelected = item.isSelected
     }
 
-    private fun updateTextColor(context: Context, view: TextView, isSelected: Boolean) =
-        view.setTextColor(
-            context.color(
-                if (isSelected) R.color.checkbox_state_checked else R.color.black
-            )
-        )
+    private fun updateTextColor(
+        context: Context,
+        isSelected: Boolean,
+        color: String?
+    ) {
+        if (isSelected) {
+            content.setTextColor(context.color(R.color.checkbox_state_checked))
+        } else {
+            if (color != null)
+                super.setTextColor(color)
+            else
+                content.setTextColor(context.color(R.color.black))
+        }
+    }
 }

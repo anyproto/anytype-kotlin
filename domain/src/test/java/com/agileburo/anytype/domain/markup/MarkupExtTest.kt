@@ -1602,6 +1602,238 @@ class MarkupExtTest {
         )
     }
 
+    @Test
+    fun `should remove bold from first word when having inner-left overlap`() {
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 17..40
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 50..60
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.BOLD,
+            range = 17..24
+        )
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 24..40
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 50..60
+            )
+        )
+
+        val result = given.addMark(new)
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should remove bold from second word when having inner-left overlap`() {
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 5..10
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 17..40
+            ),
+        )
+
+        val new = Mark(
+            type = Mark.Type.BOLD,
+            range = 17..24
+        )
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 5..10
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 24..40
+            )
+        )
+
+        val result = given.addMark(new)
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should remove bold from first word when having inner-right overlap`() {
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 17..40
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 50..60
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.BOLD,
+            range = 24..40
+        )
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 17..24
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 50..60
+            )
+        )
+
+        val result = given.addMark(new)
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should remove bold from second word when having inner-right overlap`() {
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 5..10
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 17..40
+            ),
+        )
+
+        val new = Mark(
+            type = Mark.Type.BOLD,
+            range = 24..40
+        )
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 5..10
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 17..24
+            )
+        )
+
+        val result = given.addMark(new)
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should remove bold from first word when having inner overlap`() {
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 0..10
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 50..60
+            )
+        )
+
+        val new = Mark(
+            type = Mark.Type.BOLD,
+            range = 55..57
+        )
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 0..10
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 50..55
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 57..60
+            )
+        )
+
+        val result = given.addMark(new)
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should remove bold from second word when having inner overlap`() {
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 5..10
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 17..40
+            ),
+        )
+
+        val new = Mark(
+            type = Mark.Type.BOLD,
+            range = 24..40
+        )
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 5..10
+            ),
+            Mark(
+                type = Mark.Type.BOLD,
+                range = 17..24
+            )
+        )
+
+        val result = given.addMark(new)
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
     private fun checkOverlap(pair: Pair<IntRange, IntRange>, expected: Overlap) {
         val (a, b) = pair
         val result = a.overlap(b)

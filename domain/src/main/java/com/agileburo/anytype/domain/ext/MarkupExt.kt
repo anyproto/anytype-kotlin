@@ -62,12 +62,14 @@ fun Marks.toggle(target: Mark): Marks {
                                 )
                             )
                         }
-                    } else
+                    } else {
                         result.add(
                             mark.copy(
                                 range = target.range.last..mark.range.last
                             )
                         )
+                        del.add(target)
+                    }
                 }
                 Overlap.INNER_RIGHT -> {
                     if (target.type == Mark.Type.TEXT_COLOR || target.type == Mark.Type.BACKGROUND_COLOR) {
@@ -81,12 +83,14 @@ fun Marks.toggle(target: Mark): Marks {
                             )
                             result.add(target)
                         }
-                    } else
+                    } else {
                         result.add(
                             mark.copy(
                                 range = mark.range.first..target.range.first
                             )
                         )
+                        del.add(target)
+                    }
                 }
                 Overlap.INNER -> {
                     if (target.type == Mark.Type.TEXT_COLOR || target.type == Mark.Type.BACKGROUND_COLOR) {
@@ -116,6 +120,7 @@ fun Marks.toggle(target: Mark): Marks {
                                 range = target.range.last..mark.range.last
                             )
                         )
+                        del.add(target)
                     }
                 }
                 Overlap.LEFT -> {

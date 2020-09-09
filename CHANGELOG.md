@@ -2,6 +2,10 @@
 
 ## Version 0.0.47 (WIP)
 
+### Design & UX 🔳
+
+* Enhanced action-menu animation + background blur (#812)
+
 ### Fixes & tech 🚒
 
 * Inconsistent logic when adding markup in certain corner cases (#509)

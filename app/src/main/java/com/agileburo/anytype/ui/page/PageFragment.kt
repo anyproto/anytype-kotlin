@@ -36,6 +36,7 @@ import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.extensions.isKeyboardVisible
 import com.agileburo.anytype.core_ui.features.page.BlockAdapter
 import com.agileburo.anytype.core_ui.features.page.BlockDimensions
 import com.agileburo.anytype.core_ui.features.page.BlockView
@@ -56,7 +57,6 @@ import com.agileburo.anytype.core_utils.ext.PopupExtensions.calculateRectInWindo
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content.Text
-import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.ext.getFirstLinkMarkupParam
 import com.agileburo.anytype.domain.ext.getSubstring
 import com.agileburo.anytype.ext.extractMarks
@@ -73,6 +73,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
+import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.fragment_page.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -551,6 +552,7 @@ open class PageFragment :
     }
 
     override fun onBlockActionClicked(id: String, action: ActionItemType) {
+        Blurry.delete(root)
         vm.onActionMenuItemClicked(id, action)
     }
 
@@ -638,22 +640,16 @@ open class PageFragment :
                 }
                 is Command.OpenActionBar -> {
                     lifecycleScope.launch {
-                        hideKeyboard()
-                        //Todo This delay was added because of keyboard visibility in some cases,
-                        // need to wait for WindowInsetsCompat Core-ktx Version 1.5.0, and remove this delay
-                        delay(300)
-                        childFragmentManager.beginTransaction()
-                            .setCustomAnimations(R.anim.action_bar_enter, R.anim.action_bar_exit)
-                            .add(
-                                R.id.root,
-                                BlockActionToolbarFactory.newInstance(
-                                    block = command.block,
-                                    dimensions = command.dimensions
-                                ),
-                                null
-                            )
-                            .addToBackStack(null)
-                            .commit()
+                        if (root.isKeyboardVisible()) {
+                            hideKeyboard()
+                            delay(300)
+                            blurContainer()
+                            navigateToBlockActionPreview(command)
+                        } else {
+                            blurContainerWithAnimation(100)
+                            delay(100)
+                            navigateToBlockActionPreview(command)
+                        }
                     }
                 }
                 is Command.CloseKeyboard -> {
@@ -691,6 +687,36 @@ open class PageFragment :
                 }
             }
         }
+    }
+
+    private fun blurContainerWithAnimation(millis: Int) {
+        Blurry.with(context)
+            .radius(12)
+            .sampling(6)
+            .async()
+            .animate(millis)
+            .onto(root)
+    }
+
+    private fun blurContainer() {
+        Blurry.with(context)
+            .radius(12)
+            .sampling(6)
+            .onto(root)
+    }
+
+    private fun navigateToBlockActionPreview(command: Command.OpenActionBar) {
+        childFragmentManager.beginTransaction()
+            .add(
+                R.id.root,
+                BlockActionToolbarFactory.newInstance(
+                    block = command.block,
+                    dimensions = command.dimensions
+                ),
+                null
+            )
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun render(state: ViewState) {
@@ -1118,6 +1144,7 @@ open class PageFragment :
     }
 
     override fun onDismissBlockActionToolbar() {
+        Blurry.delete(root)
         vm.onDismissBlockActionMenu(childFragmentManager.backStackEntryCount > 0)
     }
 }

@@ -34,7 +34,7 @@ class StartLoginViewModel(
                     Timber.e(it, "Error while setting up wallet")
                 },
                 fnR = {
-                    navigation.postValue(EventWrapper(AppNavigation.Command.OpenCreateAccount))
+                    navigation.postValue(EventWrapper(AppNavigation.Command.InvitationCodeScreen))
                 }
             )
         }

@@ -13,8 +13,9 @@ class AuthRemoteDataStore(
 
     override suspend fun createAccount(
         name: String,
-        avatarPath: String?
-    ) = authRemote.createAccount(name, avatarPath)
+        avatarPath: String?,
+        invitationCode: String
+    ) = authRemote.createAccount(name, avatarPath, invitationCode)
 
     override suspend fun recoverAccount() {
         authRemote.recoverAccount()

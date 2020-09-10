@@ -46,7 +46,7 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupNavigation()
-        vm.state.observe(this, Observer { state ->
+        vm.state.observe(viewLifecycleOwner, Observer { state ->
             when (state) {
                 ViewState.Loading -> {
                     progress.visibility = View.VISIBLE
@@ -71,7 +71,7 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
     }
 
     private fun setupNavigation() {
-        vm.observeNavigation().observe(this, navObserver)
+        vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
     }
 
     private fun setupButtons() {
@@ -80,7 +80,6 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
                 chain = keychainInputField.text.toString()
             )
         }
-        qrLoginButton.setOnClickListener { vm.onScanQrCodeClicked() }
         backButton.setOnClickListener { vm.onBackButtonPressed() }
     }
 

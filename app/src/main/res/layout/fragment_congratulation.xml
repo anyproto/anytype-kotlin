@@ -54,8 +54,9 @@
                 android:gravity="center"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
+                android:textSize="17sp"
                 android:text="@string/let_us_start"
-                android:textStyle="bold"
+                android:fontFamily="@font/inter_medium"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -79,7 +80,8 @@
                 android:layout_marginEnd="20dp"
                 android:text="@string/you_ve_created_your_first_profile"
                 android:textColor="@color/black"
-                android:textSize="18sp"
+                android:textSize="15sp"
+                android:fontFamily="@font/inter_regular"
                 app:layout_constraintBottom_toTopOf="@+id/secondSubtitle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -93,7 +95,8 @@
                 android:layout_marginBottom="18dp"
                 android:text="@string/it_s_stored_on_your_device_and_nobody_will_know_about_it_until_you_share_it"
                 android:textColor="@color/black"
-                android:textSize="18sp"
+                android:textSize="15sp"
+                android:fontFamily="@font/inter_regular"
                 app:layout_constraintBottom_toTopOf="@+id/startButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

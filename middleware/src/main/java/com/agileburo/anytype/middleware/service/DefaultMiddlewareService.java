@@ -38,7 +38,7 @@ public class DefaultMiddlewareService implements MiddlewareService {
         byte[] encoded = Lib.accountCreate(request.toByteArray());
         Account.Create.Response response = Account.Create.Response.parseFrom(encoded);
         if (response.getError() != null && response.getError().getCode() != Account.Create.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
+            throw new Exception(response.getError().getCode().name() + "," + response.getError().getDescription());
         } else {
             return response;
         }

@@ -173,6 +173,13 @@
                 app:exitAnim="@anim/slide_out_left"
                 app:popUpTo="@+id/startLoginScreen"
                 app:popUpToInclusive="true" />
+            <action
+                android:id="@+id/action_setupNewAccountScreen_to_invitationFragment"
+                app:destination="@id/invitationFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popUpTo="@+id/invitationFragment"
+                app:popUpToInclusive="true" />
         </fragment>
 
         <fragment
@@ -200,9 +207,7 @@
                 app:enterAnim="@anim/slide_in_right"
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right"
-                app:popUpTo="@+id/startLoginScreen"
-                app:popUpToInclusive="true" />
+                app:popExitAnim="@anim/slide_out_right" />
         </fragment>
         <fragment
             android:id="@+id/congratulationScreen"
@@ -252,6 +257,13 @@
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
                 app:popExitAnim="@anim/slide_out_right" />
+            <action
+                android:id="@+id/action_startLoginScreen_to_invitationFragment"
+                app:destination="@id/invitationFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
         </fragment>
         <action
             android:id="@+id/action_global_desktopScreen"
@@ -272,6 +284,19 @@
             android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.pin.ConfirmPinCodeFragment"
             android:label="StartLoginFragment"
             tools:layout="@layout/fragment_confirm_pin_code" />
+        <fragment
+            android:id="@+id/invitationFragment"
+            android:name="com.agileburo.anytype.ui.auth.InvitationFragment"
+            android:label="InvitationFragment"
+            tools:layout="@layout/fragment_invitation">
+            <action
+                android:id="@+id/action_invitationFragment_to_createAccountScreen"
+                app:destination="@id/createAccountScreen"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
     </navigation>
     <fragment
         android:id="@+id/databaseViewFragment"

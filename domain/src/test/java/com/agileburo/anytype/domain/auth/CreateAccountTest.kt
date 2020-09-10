@@ -38,6 +38,8 @@ class CreateAccountTest {
 
         val path = null
 
+        val code = "code"
+
         val account = Account(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
@@ -47,16 +49,17 @@ class CreateAccountTest {
 
         val param = CreateAccount.Params(
             name = name,
-            avatarPath = path
+            avatarPath = path,
+            invitationCode = code
         )
 
         repo.stub {
-            onBlocking { createAccount(name, path) } doReturn account
+            onBlocking { createAccount(name, path, code) } doReturn account
         }
 
         createAccount.run(param)
 
-        verify(repo, times(1)).createAccount(name, path)
+        verify(repo, times(1)).createAccount(name, path, code)
         verify(repo, times(1)).saveAccount(account)
         verify(repo, times(1)).setCurrentAccount(account.id)
         verifyNoMoreInteractions(repo)

@@ -8,6 +8,7 @@ import com.agileburo.anytype.R
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.settings.EditorSettings
 import com.agileburo.anytype.ui.auth.Keys
+import com.agileburo.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
 import com.agileburo.anytype.ui.navigation.PageNavigationFragment
 import com.agileburo.anytype.ui.page.PageFragment
 
@@ -31,12 +32,21 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.action_splashFragment_to_login_nav)
     }
 
-    override fun createProfile() {
-        navController?.navigate(R.id.action_create_profile)
+    override fun createProfile(invitationCode: String) {
+        val bundle = bundleOf(ARGS_CODE to invitationCode)
+        navController?.navigate(R.id.action_invitationFragment_to_createAccountScreen, bundle)
     }
 
     override fun setupNewAccount() {
         navController?.navigate(R.id.action_setup_new_account)
+    }
+
+    override fun enterInvitationCode() {
+        navController?.navigate(R.id.action_startLoginScreen_to_invitationFragment)
+    }
+
+    override fun exitToInvitationCodeScreen() {
+        navController?.navigate(R.id.action_setupNewAccountScreen_to_invitationFragment)
     }
 
     override fun enterKeychain() {

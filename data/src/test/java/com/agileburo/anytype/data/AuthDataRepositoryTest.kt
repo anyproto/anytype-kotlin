@@ -87,19 +87,21 @@ class AuthDataRepositoryTest {
         )
 
         authRemote.stub {
-            onBlocking { createAccount(name = name, avatarPath = path) } doReturn account
+            onBlocking { createAccount(name = name, avatarPath = path, invitationCode = "code") } doReturn account
         }
 
         repo.createAccount(
             name = name,
-            avatarPath = path
+            avatarPath = path,
+            invitationCode = "code"
         )
 
         verifyZeroInteractions(authCache)
 
         verify(authRemote, times(1)).createAccount(
             name = name,
-            avatarPath = path
+            avatarPath = path,
+            invitationCode = "code"
         )
 
         verifyNoMoreInteractions(authRemote)

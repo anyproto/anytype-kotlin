@@ -89,25 +89,22 @@ public class Middleware {
         return new CreateWalletResponse(response.getMnemonic());
     }
 
-    public CreateAccountResponse createAccount(String name, String path) throws Exception {
+    public CreateAccountResponse createAccount(String name, String path, String invitationCode) throws Exception {
 
         Account.Create.Request request;
-
-        // TODO remove hard-coded alpha invite code when no longer needed
-        String code = "elbrus";
 
         if (path != null) {
             request = Account.Create.Request
                     .newBuilder()
                     .setName(name)
                     .setAvatarLocalPath(path)
-                    .setAlphaInviteCode(code)
+                    .setAlphaInviteCode(invitationCode)
                     .build();
         } else {
             request = Account.Create.Request
                     .newBuilder()
                     .setName(name)
-                    .setAlphaInviteCode(code)
+                    .setAlphaInviteCode(invitationCode)
                     .build();
         }
 

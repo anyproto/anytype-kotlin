@@ -2,20 +2,23 @@ package com.agileburo.anytype.ui.auth.account
 
 import android.os.Bundle
 import android.view.animation.AnimationUtils
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_utils.ext.showSnackbar
-import com.agileburo.anytype.core_utils.ui.ViewState
+import com.agileburo.anytype.core_utils.ext.toast
 import com.agileburo.anytype.di.common.componentManager
 import com.agileburo.anytype.presentation.auth.account.SetupNewAccountViewModel
 import com.agileburo.anytype.presentation.auth.account.SetupNewAccountViewModelFactory
+import com.agileburo.anytype.presentation.auth.account.SetupNewAccountViewState
 import com.agileburo.anytype.ui.base.NavigationFragment
 import kotlinx.android.synthetic.main.fragment_setup_new_account.*
 import javax.inject.Inject
 
 class SetupNewAccountFragment : NavigationFragment(R.layout.fragment_setup_new_account),
-    Observer<ViewState<Any>> {
+    Observer<SetupNewAccountViewState> {
 
     @Inject
     lateinit var factory: SetupNewAccountViewModelFactory
@@ -30,8 +33,11 @@ class SetupNewAccountFragment : NavigationFragment(R.layout.fragment_setup_new_a
         AnimationUtils.loadAnimation(requireContext(), R.anim.rotation)
     }
 
+    lateinit var callBack : OnBackPressedCallback
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        callBack = requireActivity().onBackPressedDispatcher.addCallback(this) {}
         setupNavigation()
         vm.state.observe(viewLifecycleOwner, this)
     }
@@ -40,19 +46,35 @@ class SetupNewAccountFragment : NavigationFragment(R.layout.fragment_setup_new_a
         vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
     }
 
-    override fun onChanged(state: ViewState<Any>) {
+    override fun onChanged(state: SetupNewAccountViewState) {
         when (state) {
-            is ViewState.Loading -> {
+            is SetupNewAccountViewState.Loading -> {
+                disableBackNavigation()
                 icon.startAnimation(animation)
             }
-            is ViewState.Success -> {
+            is SetupNewAccountViewState.Success -> {
+                enableBackNavigation()
                 animation.cancel()
             }
-            is ViewState.Error -> {
+            is SetupNewAccountViewState.Error -> {
+                enableBackNavigation()
                 animation.cancel()
-                root.showSnackbar(state.error)
+                root.showSnackbar(state.message)
+            }
+            is SetupNewAccountViewState.InvalidCodeError -> {
+                enableBackNavigation()
+                animation.cancel()
+                requireActivity().toast(state.message)
             }
         }
+    }
+
+    private fun disableBackNavigation() {
+        callBack.isEnabled = true
+    }
+
+    private fun enableBackNavigation() {
+        callBack.isEnabled = false
     }
 
     override fun injectDependencies() {

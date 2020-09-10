@@ -42,11 +42,16 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         createProfileButton.setOnClickListener {
-            vm.onCreateProfileClicked(nameInputField.text.toString())
+            vm.onCreateProfileClicked(
+                input = nameInputField.text.toString(),
+                invitationCode = getCode()
+            )
         }
         profileIconPlaceholder.setOnClickListener { proceedWithImagePick() }
         backButton.setOnClickListener { vm.onBackButtonClicked() }
     }
+
+    private fun getCode() = requireArguments().getString(ARGS_CODE, EMPTY_CODE)
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -56,7 +61,7 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupNavigation()
-        vm.error.observe(this, Observer(this::showError))
+        vm.error.observe(viewLifecycleOwner, Observer(this::showError))
     }
 
     private fun showError(error: String) {
@@ -100,7 +105,7 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
     }
 
     private fun setupNavigation() {
-        vm.observeNavigation().observe(this, navObserver)
+        vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
     }
 
     private fun openGallery() {
@@ -140,6 +145,8 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
     }
 
     companion object {
+        const val ARGS_CODE = "args.code"
+        const val EMPTY_CODE = ""
         const val SELECT_IMAGE_CODE = 1
         const val REQUEST_PERMISSION_CODE = 2
     }

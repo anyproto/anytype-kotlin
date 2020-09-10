@@ -70,6 +70,7 @@
                 android:textColorHint="#ACA996"
                 android:textSize="17sp"
                 android:textStyle="bold"
+                android:fontFamily="@font/inter_regular"
                 app:layout_constraintBottom_toBottomOf="@+id/profileIcon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/profileIconPlaceholder"

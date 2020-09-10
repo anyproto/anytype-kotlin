@@ -5,10 +5,11 @@ import com.agileburo.anytype.presentation.settings.EditorSettings
 interface AppNavigation {
 
     fun startLogin()
-    fun createProfile()
+    fun createProfile(invitationCode: String)
     fun enterKeychain()
     fun choosePinCode()
     fun confirmPinCode(pin: String)
+    fun enterInvitationCode()
     fun setupNewAccount()
     fun setupSelectedAccount(id: String)
     fun congratulation()
@@ -33,6 +34,7 @@ interface AppNavigation {
     fun openPageNavigation(target: String)
     fun openPageSearch()
     fun exitToDesktopAndOpenPage(pageId: String)
+    fun exitToInvitationCodeScreen()
 
     sealed class Command {
 
@@ -40,8 +42,10 @@ interface AppNavigation {
         object ExitToDesktop : Command()
 
         object OpenStartLoginScreen : Command()
-        object OpenCreateAccount : Command()
+        data class OpenCreateAccount(val invitationCode: String) : Command()
         object ChoosePinCodeScreen : Command()
+        object InvitationCodeScreen : Command()
+        object ExitToInvitationCodeScreen : Command()
         object SetupNewAccountScreen : Command()
         data class SetupSelectedAccountScreen(val id: String) : Command()
         data class ConfirmPinCodeScreen(val code: String) : Command()

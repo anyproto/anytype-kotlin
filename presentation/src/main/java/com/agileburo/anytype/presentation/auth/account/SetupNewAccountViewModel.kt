@@ -5,12 +5,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_utils.common.EventWrapper
-import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.domain.auth.interactor.CreateAccount
 import com.agileburo.anytype.presentation.auth.model.Session
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
+
+sealed class SetupNewAccountViewState{
+    object Loading: SetupNewAccountViewState()
+    object Success: SetupNewAccountViewState()
+    data class Error(val message: String) : SetupNewAccountViewState()
+    data class InvalidCodeError(val message: String) : SetupNewAccountViewState()
+}
 
 class SetupNewAccountViewModel(
     private val session: Session,
@@ -20,12 +28,12 @@ class SetupNewAccountViewModel(
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
         MutableLiveData()
 
-    private val _state = MutableLiveData<ViewState<Any>>()
-    val state: LiveData<ViewState<Any>>
+    private val _state = MutableLiveData<SetupNewAccountViewState>()
+    val state: LiveData<SetupNewAccountViewState>
         get() = _state
 
     init {
-        _state.postValue(ViewState.Loading)
+        _state.postValue(SetupNewAccountViewState.Loading)
         proceedWithCreatingAccount()
     }
 
@@ -37,16 +45,26 @@ class SetupNewAccountViewModel(
             scope = viewModelScope,
             params = CreateAccount.Params(
                 name = session.name ?: throw IllegalStateException("Name not set"),
-                avatarPath = session.avatarPath
+                avatarPath = session.avatarPath,
+                invitationCode = session.invitationCode
             )
         ) { result ->
             result.either(
                 fnL = {
-                    _state.postValue(ViewState.Error("Error while creating account"))
+                    //todo Remove this, after adding proper error handling logic
+                    if (it.message?.contains("BAD_INVITE_CODE") == true) {
+                        _state.postValue(SetupNewAccountViewState.InvalidCodeError("Invalid invite code!"))
+                        viewModelScope.launch {
+                            delay(300)
+                            navigation.postValue(EventWrapper(AppNavigation.Command.ExitToInvitationCodeScreen))
+                        }
+                    } else {
+                        _state.postValue(SetupNewAccountViewState.Error("Error while creating account"))
+                    }
                     Timber.e(it, "Error while creating account")
                 },
                 fnR = {
-                    _state.postValue(ViewState.Success(Any()))
+                    _state.postValue(SetupNewAccountViewState.Success)
                     navigation.postValue(EventWrapper(AppNavigation.Command.CongratulationScreen))
                 }
             )

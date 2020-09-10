@@ -33,7 +33,7 @@ class StartLoginFragment : NavigationFragment(R.layout.fragment_start_login) {
     }
 
     private fun setupNavigation() {
-        vm.observeNavigation().observe(this, navObserver)
+        vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
     }
 
     private fun setupButtonClicks() {

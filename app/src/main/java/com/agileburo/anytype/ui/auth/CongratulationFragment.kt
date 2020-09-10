@@ -27,7 +27,7 @@ class CongratulationFragment : NavigationFragment(R.layout.fragment_congratulati
     }
 
     private fun setupNavigation() {
-        vm.observeNavigation().observe(this, navObserver)
+        vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
     }
 
     override fun injectDependencies() {}

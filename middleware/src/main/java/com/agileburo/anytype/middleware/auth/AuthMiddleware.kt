@@ -33,9 +33,10 @@ class AuthMiddleware(
 
     override suspend fun createAccount(
         name: String,
-        avatarPath: String?
+        avatarPath: String?,
+        invitationCode: String
     ) = withContext(Dispatchers.IO) {
-        middleware.createAccount(name, avatarPath).let { response ->
+        middleware.createAccount(name, avatarPath, invitationCode).let { response ->
             AccountEntity(
                 id = response.id,
                 name = response.name,

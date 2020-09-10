@@ -17,9 +17,10 @@ class CreateAccountViewModel(
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
         MutableLiveData()
 
-    fun onCreateProfileClicked(input: String) {
+    fun onCreateProfileClicked(input: String, invitationCode: String) {
         if (input.isNotEmpty()) {
             session.name = input
+            session.invitationCode = invitationCode
             navigation.postValue(EventWrapper(AppNavigation.Command.SetupNewAccountScreen))
         } else {
             _error.postValue(EMPTY_USERNAME_ERROR_MESSAGE)

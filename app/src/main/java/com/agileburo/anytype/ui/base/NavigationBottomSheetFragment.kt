@@ -21,13 +21,15 @@ abstract class NavigationBottomSheetFragment : BaseBottomSheetFragment() {
             is AppNavigation.Command.StartDesktopFromLogin -> navigation.startDesktopFromLogin()
             is AppNavigation.Command.StartDesktopFromSplash -> navigation.startDesktopFromSplash()
             is AppNavigation.Command.OpenStartLoginScreen -> navigation.startLogin()
-            is AppNavigation.Command.OpenCreateAccount -> navigation.createProfile()
+            is AppNavigation.Command.OpenCreateAccount -> navigation.createProfile(command.invitationCode)
             is AppNavigation.Command.ChoosePinCodeScreen -> navigation.choosePinCode()
             is AppNavigation.Command.CongratulationScreen -> navigation.congratulation()
             is AppNavigation.Command.EnterKeyChainScreen -> navigation.enterKeychain()
             is AppNavigation.Command.SelectAccountScreen -> navigation.chooseAccount()
             is AppNavigation.Command.WorkspaceScreen -> navigation.workspace()
             is AppNavigation.Command.SetupNewAccountScreen -> navigation.setupNewAccount()
+            is AppNavigation.Command.InvitationCodeScreen -> navigation.enterInvitationCode()
+            is AppNavigation.Command.ExitToInvitationCodeScreen -> navigation.exitToInvitationCodeScreen()
             is AppNavigation.Command.SetupSelectedAccountScreen -> navigation.setupSelectedAccount(
                 command.id
             )

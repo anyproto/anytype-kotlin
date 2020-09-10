@@ -36,7 +36,7 @@ class CreateAccountViewModelTest {
 
         val input = MockDataFactory.randomString()
 
-        vm.onCreateProfileClicked(input)
+        vm.onCreateProfileClicked(input, "")
 
         assertNotEquals(name, session.name)
 
@@ -53,7 +53,7 @@ class CreateAccountViewModelTest {
 
         val emptyInput = ""
 
-        vm.onCreateProfileClicked(emptyInput)
+        vm.onCreateProfileClicked(emptyInput, "")
 
         navigationObserver.assertNoValue()
         errorObserver.assertValue(CreateAccountViewModel.EMPTY_USERNAME_ERROR_MESSAGE)

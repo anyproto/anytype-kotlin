@@ -8,6 +8,7 @@
 
 ### Design & UX 🔳
 
+* New cover for home dashboard (#839)
 * Enhanced action-menu animation + background blur (#812)
 
 ### Fixes & tech 🚒

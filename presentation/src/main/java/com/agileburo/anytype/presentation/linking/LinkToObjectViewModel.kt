@@ -8,6 +8,7 @@ import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.block.interactor.CreateLinkToObject
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.navigation.GetPageInfoWithLinks
 import com.agileburo.anytype.presentation.mapper.toEmojiView
@@ -16,17 +17,22 @@ import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.PageNavigationView
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class LinkToObjectViewModel(
     private val urlBuilder: UrlBuilder,
     private val getPageInfoWithLinks: GetPageInfoWithLinks,
-    private val createLinkToObject: CreateLinkToObject
+    private val createLinkToObject: CreateLinkToObject,
+    private val getConfig: GetConfig
 ) : ViewStateViewModel<ViewState<PageNavigationView>>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     private var pageId: String = ""
+    private var home: Id = ""
+
+    val isLinkingDisabled: MutableStateFlow<Boolean> = MutableStateFlow(true)
 
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
         MutableLiveData()
@@ -35,7 +41,19 @@ class LinkToObjectViewModel(
         stateData.postValue(ViewState.Init)
     }
 
-    fun proceedWithGettingDocumentLinks(target: String) {
+    fun onStart(initialTarget: Id) {
+        viewModelScope.launch {
+            getConfig(Unit).proceed(
+                failure = { Timber.e(it, "Error while getting config") },
+                success = { config ->
+                    home = config.home
+                    proceedWithGettingDocumentLinks(initialTarget)
+                }
+            )
+        }
+    }
+
+    private fun proceedWithGettingDocumentLinks(target: String) {
         stateData.postValue(ViewState.Loading)
         viewModelScope.launch {
             getPageInfoWithLinks.invoke(GetPageInfoWithLinks.Params(pageId = target)).proceed(
@@ -64,7 +82,11 @@ class LinkToObjectViewModel(
         }
     }
 
-    fun onLinkClicked(target: String) {
+    fun onLinkClicked(
+        target: Id,
+        context: Id
+    ) {
+        isLinkingDisabled.value = (target == context || target == home)
         proceedWithGettingDocumentLinks(target)
     }
 

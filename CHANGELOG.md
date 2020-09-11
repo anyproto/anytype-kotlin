@@ -2,6 +2,10 @@
 
 ## Version 0.0.47 (WIP)
 
+### New features 🚀
+
+* Link to existing object (#770)
+
 ### Design & UX 🔳
 
 * Enhanced action-menu animation + background blur (#812)

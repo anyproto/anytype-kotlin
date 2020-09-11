@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.minusAssign
 import androidx.core.view.plusAssign
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.navigation.FilterView
 import com.agileburo.anytype.core_ui.features.navigation.PageNavigationAdapter
@@ -22,8 +23,12 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_link_to_object.*
-import kotlinx.android.synthetic.main.view_page_navigation_open_bottom.*
-import kotlinx.android.synthetic.main.view_page_preview.*
+import kotlinx.android.synthetic.main.view_link_to_object_bottom.*
+import kotlinx.android.synthetic.main.view_link_to_object_preview.*
+import kotlinx.android.synthetic.main.view_page_navigation_open_bottom.avatarSmall
+import kotlinx.android.synthetic.main.view_page_navigation_open_bottom.pageTitleSmall
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -49,7 +54,33 @@ class LinkToObjectFragment :
         super.onViewCreated(view, savedInstanceState)
         vm.state.observe(viewLifecycleOwner, this)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
+        observeLinkingButtonState()
         vm.onViewCreated()
+    }
+
+    private fun observeLinkingButtonState() {
+        lifecycleScope.launch {
+            vm.isLinkingDisabled.collect { isDisabled ->
+                if (isDisabled)
+                    disableLinking()
+                else
+                    enableLinking()
+            }
+        }
+    }
+
+    private fun enableLinking() {
+        btnLinkToThisObject.isEnabled = true
+        btnLinkToObjectSmall.isEnabled = true
+        btnLinkToThisObject.alpha = 1f
+        btnLinkToObjectSmall.alpha = 1f
+    }
+
+    private fun disableLinking() {
+        btnLinkToThisObject.isEnabled = false
+        btnLinkToObjectSmall.isEnabled = false
+        btnLinkToThisObject.alpha = 0.2f
+        btnLinkToObjectSmall.alpha = 0.2f
     }
 
     override fun render(state: ViewState<PageNavigationView>) {
@@ -66,13 +97,15 @@ class LinkToObjectFragment :
                         }
                     }
                 )
-                viewPager.adapter = PageNavigationAdapter(vm::onLinkClicked) { links ->
+                viewPager.adapter = PageNavigationAdapter(
+                    onClick = { vm.onLinkClicked(it, targetContext) }
+                ) { links ->
                     filterContainer.plusAssign(
                         FilterView(requireContext()).apply {
                             cancelClicked = { closeFilterView() }
                             pageClicked = {
                                 closeFilterView()
-                                vm.onLinkClicked(it)
+                                vm.onLinkClicked(it, targetContext)
                             }
                             bind(links)
                         }
@@ -84,21 +117,21 @@ class LinkToObjectFragment :
                         POSITION_TO -> tab.text = getString(R.string.page_nav_links_to)
                     }
                 }.attach()
-                btnOpenPage.setOnClickListener {
+                btnLinkToThisObject.setOnClickListener {
                     vm.onLinkToObjectClicked(
                         context = targetContext,
                         target = target,
                         replace = replace
                     )
                 }
-                btnOpenPageSmall.setOnClickListener {
+                btnLinkToObjectSmall.setOnClickListener {
                     vm.onLinkToObjectClicked(
                         context = targetContext,
                         target = target,
                         replace = replace
                     )
                 }
-                vm.proceedWithGettingDocumentLinks(targetContext)
+                vm.onStart(targetContext)
             }
             ViewState.Loading -> {
                 progressBar.visible()
@@ -181,9 +214,7 @@ class LinkToObjectFragment :
     }
 
     companion object {
-        const val LINK_TO_OBJECT_REQUEST = "link_to_object_request"
         const val TARGET_ID_KEY = "arg.link_to.target"
-        const val LINK_ID_KEY = "arg.link_to.result"
         const val REPLACE_KEY = "arg.link_to.replace"
         const val CONTEXT_ID_KEY = "arg.link_to.context"
         const val POSITION_FROM = 0

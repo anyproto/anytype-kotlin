@@ -3,6 +3,7 @@ package com.agileburo.anytype.di.feature
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.block.interactor.CreateLinkToObject
 import com.agileburo.anytype.domain.block.repo.BlockRepository
+import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.navigation.GetPageInfoWithLinks
 import com.agileburo.anytype.presentation.linking.LinkToObjectViewModelFactory
@@ -42,11 +43,13 @@ object LinkToObjectModule {
     fun provideLinkToObjectViewModelFactory(
         urlBuilder: UrlBuilder,
         getPageInfoWithLinks: GetPageInfoWithLinks,
-        createLinkToObject: CreateLinkToObject
+        createLinkToObject: CreateLinkToObject,
+        getConfig: GetConfig
     ): LinkToObjectViewModelFactory = LinkToObjectViewModelFactory(
         urlBuilder = urlBuilder,
         getPageInfoWithLinks = getPageInfoWithLinks,
-        createLinkToObject = createLinkToObject
+        createLinkToObject = createLinkToObject,
+        getConfig = getConfig
     )
 
     @JvmStatic
@@ -55,4 +58,11 @@ object LinkToObjectModule {
     fun provideCreateLinkToObjectUseCase(
         repo: BlockRepository
     ): CreateLinkToObject = CreateLinkToObject(repo)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideGetConfigUseCase(
+        repo: BlockRepository
+    ): GetConfig = GetConfig(repo)
 }

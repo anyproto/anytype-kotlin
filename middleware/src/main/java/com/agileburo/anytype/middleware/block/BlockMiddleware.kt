@@ -153,4 +153,11 @@ class BlockMiddleware(
 
     override suspend fun getListPages(): List<PageInfoEntity> =
         middleware.listPages.map { it.toEntity() }
+
+    override suspend fun linkToObject(
+        context: String,
+        target: String,
+        block: String,
+        replace: Boolean
+    ): PayloadEntity = middleware.linkToObject(context, target, block, replace)
 }

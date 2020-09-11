@@ -150,6 +150,12 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val linkToObjectComponent = Component {
+        main.linkToObjectBuilder()
+            .module(LinkToObjectModule)
+            .build()
+    }
+
     val pageSearchComponent = Component {
         main.pageSearchComponentBuilder()
             .pageSearchModule(PageSearchModule)

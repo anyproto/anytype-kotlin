@@ -219,6 +219,10 @@ data class Block(
             val state: Content.File.State
         ) : Prototype()
 
+        data class Link(
+            val target: Id
+        ) : Prototype()
+
         object Divider : Prototype()
         object Bookmark : Prototype()
     }

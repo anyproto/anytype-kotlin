@@ -554,6 +554,7 @@ fun Block.Prototype.toEntity(): BlockEntity.Prototype = when (this) {
             state = BlockEntity.Content.File.State.valueOf(this.state.name)
         )
     }
+    is Block.Prototype.Link -> BlockEntity.Prototype.Link(target)
 }
 
 fun Block.Prototype.Page.toEntity() = BlockEntity.Prototype.Page(

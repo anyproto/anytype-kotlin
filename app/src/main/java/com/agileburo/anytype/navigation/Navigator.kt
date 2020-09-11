@@ -9,6 +9,7 @@ import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.settings.EditorSettings
 import com.agileburo.anytype.ui.auth.Keys
 import com.agileburo.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
+import com.agileburo.anytype.ui.linking.LinkToObjectFragment
 import com.agileburo.anytype.ui.navigation.PageNavigationFragment
 import com.agileburo.anytype.ui.page.PageFragment
 
@@ -146,6 +147,15 @@ class Navigator : AppNavigation {
     override fun openPageNavigation(target: String) {
         val bundle = bundleOf(PageNavigationFragment.TARGET_ID_KEY to target)
         navController?.navigate(R.id.pageNavigationFragment, bundle)
+    }
+
+    override fun openLinkTo(target: String, context: String, replace: Boolean) {
+        val bundle = bundleOf(
+            LinkToObjectFragment.TARGET_ID_KEY to target,
+            LinkToObjectFragment.CONTEXT_ID_KEY to context,
+            LinkToObjectFragment.REPLACE_KEY to replace
+        )
+        navController?.navigate(R.id.linkToFragment, bundle)
     }
 
     override fun openPageSearch() {

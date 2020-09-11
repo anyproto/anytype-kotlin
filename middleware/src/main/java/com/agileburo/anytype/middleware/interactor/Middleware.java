@@ -1046,4 +1046,48 @@ public class Middleware {
 
         return response.getPagesList();
     }
+
+    public PayloadEntity linkToObject(
+            String contextId,
+            String targetId, String blockId,
+            boolean replace
+    ) throws Exception {
+
+        Models.Block.Position position = null;
+
+        if (replace) {
+            position = Models.Block.Position.Replace;
+        } else {
+            position = Models.Block.Position.Bottom;
+        }
+
+        Models.Block.Content.Link link = Models.Block.Content.Link
+                .newBuilder()
+                .setTargetBlockId(blockId)
+                .build();
+
+        Models.Block model = Models.Block.newBuilder()
+                .setLink(link)
+                .build();
+
+        Block.Create.Request request = Block.Create.Request
+                .newBuilder()
+                .setContextId(contextId)
+                .setTargetId(targetId)
+                .setPosition(position)
+                .setBlock(model)
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Block.Create.Response response = service.blockCreate(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return mapper.toPayload(response.getEvent());
+    }
 }

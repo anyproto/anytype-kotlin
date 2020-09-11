@@ -42,5 +42,6 @@ interface MainComponent {
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
     fun debugSettingsBuilder(): DebugSettingsSubComponent.Builder
     fun navigationComponentBuilder(): PageNavigationSubComponent.Builder
+    fun linkToObjectBuilder(): LinkToObjectSubComponent.Builder
     fun pageSearchComponentBuilder(): PageSearchSubComponent.Builder
 }

@@ -128,6 +128,17 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinksEntity =
         remote.getPageInfoWithLinks(pageId)
 
-    override suspend fun getListPages(): List<PageInfoEntity> =
-        remote.getListPages()
+    override suspend fun getListPages(): List<PageInfoEntity> = remote.getListPages()
+
+    override suspend fun linkToObject(
+        context: String,
+        target: String,
+        block: String,
+        replace: Boolean
+    ): PayloadEntity = remote.linkToObject(
+        context = context,
+        target = target,
+        block = block,
+        replace = replace
+    )
 }

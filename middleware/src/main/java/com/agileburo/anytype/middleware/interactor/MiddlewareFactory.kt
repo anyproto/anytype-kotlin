@@ -36,6 +36,12 @@ class MiddlewareFactory {
                 }
                 builder.setFile(file).build()
             }
+            is BlockEntity.Prototype.Link -> {
+                val link = Block.Content.Link.newBuilder().apply {
+                    targetBlockId = prototype.target
+                }
+                builder.setLink(link).build()
+            }
             else -> throw IllegalStateException("Unexpected prototype: $prototype")
         }
     }

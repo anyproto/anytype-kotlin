@@ -94,4 +94,6 @@ interface BlockRepository {
 
     suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks
     suspend fun getListPages(): List<PageInfo>
+
+    suspend fun linkToObject(context: Id, target: Id, block: Id, replace: Boolean): Payload
 }

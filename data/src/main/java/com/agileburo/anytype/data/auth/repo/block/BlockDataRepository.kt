@@ -159,4 +159,16 @@ class BlockDataRepository(
 
     override suspend fun getListPages(): List<PageInfo> =
         factory.remote.getListPages().map { it.toDomain() }
+
+    override suspend fun linkToObject(
+        context: Id,
+        target: Id,
+        block: Id,
+        replace: Boolean
+    ): Payload = factory.remote.linkToObject(
+        context = context,
+        target = target,
+        block = block,
+        replace = replace
+    ).toDomain()
 }

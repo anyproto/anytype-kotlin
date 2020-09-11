@@ -110,6 +110,10 @@ data class BlockEntity(
             val type: Content.File.Type
         ) : Prototype()
 
+        data class Link(
+            val target: String
+        ) : Prototype()
+
         object Divider : Prototype()
         object Bookmark : Prototype()
     }

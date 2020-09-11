@@ -350,7 +350,7 @@ class PageViewModel(
         renderizePipeline
             .stream()
             .filter { it.isNotEmpty() }
-            .onEach (this::refreshStyleToolbar)
+            .onEach(this::refreshStyleToolbar)
             .withLatestFrom(
                 orchestrator.stores.focus.stream(),
                 orchestrator.stores.details.stream()
@@ -1198,6 +1198,29 @@ class PageViewModel(
     private fun onAddLocalPictureClicked(blockId: String) {
         mediaBlockId = blockId
         dispatch(Command.OpenGallery(mediaType = MIME_IMAGE_ALL))
+    }
+
+    fun onAddLinkToObjectClicked() {
+
+        val target = orchestrator.stores.focus.current().id
+
+        val block = blocks.first { it.id == target }
+
+        val content = block.content
+
+        val replace = content is Content.Text && content.text.isEmpty()
+
+        proceedWithClearingFocus()
+
+        navigate(
+            EventWrapper(
+                AppNavigation.Command.OpenLinkToScreen(
+                    target = target,
+                    context = context,
+                    replace = replace
+                )
+            )
+        )
     }
 
     fun onTogglePlaceholderClicked(target: Id) {

@@ -46,4 +46,11 @@ interface BlockDataStore {
     suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinksEntity
 
     suspend fun getListPages(): List<PageInfoEntity>
+
+    suspend fun linkToObject(
+        context: String,
+        target: String,
+        block: String,
+        replace: Boolean
+    ): PayloadEntity
 }

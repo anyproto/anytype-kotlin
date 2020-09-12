@@ -81,6 +81,17 @@ class Navigator : AppNavigation {
         )
     }
 
+    override fun launchDocument(id: String) {
+        navController?.navigate(
+            R.id.pageScreen,
+            bundleOf(PageFragment.ID_KEY to id),
+            navOptions {
+                popUpTo = R.id.desktopScreen
+                launchSingleTop = true
+            }
+        )
+    }
+
     override fun openKeychainScreen() {
         navController?.navigate(R.id.action_open_keychain)
     }

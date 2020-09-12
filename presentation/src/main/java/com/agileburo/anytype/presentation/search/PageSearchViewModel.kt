@@ -26,6 +26,7 @@ class PageSearchViewModel(
         MutableLiveData()
 
     fun onViewCreated() {
+        links.clear()
         stateData.postValue(PageSearchView.Init)
     }
 
@@ -66,6 +67,6 @@ class PageSearchViewModel(
     }
 
     fun onOpenPageClicked(pageId: String) {
-        navigate(EventWrapper(AppNavigation.Command.ExitToDesktopAndOpenPage(pageId = pageId)))
+        navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = pageId)))
     }
 }

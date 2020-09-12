@@ -16,7 +16,10 @@ interface AppNavigation {
     fun chooseAccount()
     fun workspace()
     fun openProfile()
+
     fun openDocument(id: String, editorSettings: EditorSettings?)
+    fun launchDocument(id: String)
+
     fun startDesktopFromSplash()
     fun startDesktopFromLogin()
     fun startSplashFromDesktop()
@@ -55,7 +58,10 @@ interface AppNavigation {
         object SelectAccountScreen : Command()
         object EnterKeyChainScreen : Command()
         object WorkspaceScreen : Command()
+
         data class OpenPage(val id: String, val editorSettings: EditorSettings? = null) : Command()
+        data class LaunchDocument(val id: String) : Command()
+
         object OpenProfile : Command()
         object OpenKeychainScreen : Command()
         object OpenPinCodeScreen : Command()

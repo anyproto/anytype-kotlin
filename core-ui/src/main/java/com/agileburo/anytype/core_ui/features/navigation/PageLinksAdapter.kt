@@ -14,13 +14,12 @@ import kotlinx.android.synthetic.main.item_page_link.view.*
 import timber.log.Timber
 
 class PageLinksAdapter(
-    private val data: MutableList<PageLinkView>,
+    private var data: List<PageLinkView>,
     private val onClick: (String) -> Unit
 ) : RecyclerView.Adapter<PageLinksAdapter.PageLinkHolder>() {
 
     fun updateLinks(links: List<PageLinkView>) {
-        data.clear()
-        data.addAll(links)
+        data = links
         notifyDataSetChanged()
     }
 

@@ -477,7 +477,7 @@ class BlockReadModeTest : PageViewModelTest() {
     }
 
     @Test
-    fun `should show error after action menu is closed by action item move to`() {
+    fun `should not show error after action menu is closed by action item move to`() {
 
         val paragraphs = blocks
         stubObserveEvents(flow)
@@ -501,6 +501,6 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.error.test()
 
-        testObserver.assertValue("Move To not implemented")
+        testObserver.assertNoValue()
     }
 }

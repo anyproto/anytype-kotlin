@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.navigation.PageLinksAdapter
@@ -23,13 +23,16 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
     @Inject
     lateinit var factory: PageSearchViewModelFactory
 
-    lateinit var clearSearchText: View
-    lateinit var filterInputField: EditText
+    private lateinit var clearSearchText: View
+    private lateinit var filterInputField: EditText
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(PageSearchViewModel::class.java)
+    private val vm by viewModels<PageSearchViewModel> { factory }
+
+    private val searchAdapter by lazy {
+        PageLinksAdapter(
+            data = emptyList(),
+            onClick = vm::onOpenPageClicked
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,11 +68,7 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
                     }
                 }
                 recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                recyclerView.adapter =
-                    PageLinksAdapter(
-                        data = mutableListOf(),
-                        onClick = vm::onOpenPageClicked
-                    )
+                recyclerView.adapter = searchAdapter
                 vm.onGetPageList(searchText = "")
             }
             PageSearchView.Loading -> {
@@ -81,7 +80,7 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
                 progressBar.invisible()
                 tvScreenStateMessage.invisible()
                 recyclerView.visible()
-                (recyclerView.adapter as PageLinksAdapter).updateLinks(state.pages)
+                searchAdapter.updateLinks(state.pages)
             }
             PageSearchView.EmptyPages -> {
                 progressBar.invisible()

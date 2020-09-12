@@ -14,6 +14,7 @@
 
 ### Fixes & tech 🚒
 
+* When navigating to a document via search-screen, open this new document without passing by dashboard-screen (#830)
 * Inconsistent logic when adding markup in certain corner cases (#509)
 * If you change checkbox's text color and then check off this checkbox, its text color always becomes black whereas it should have the color that you've set before (#785)
 

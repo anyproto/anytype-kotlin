@@ -10,6 +10,7 @@ import com.agileburo.anytype.presentation.settings.EditorSettings
 import com.agileburo.anytype.ui.auth.Keys
 import com.agileburo.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
 import com.agileburo.anytype.ui.linking.LinkToObjectFragment
+import com.agileburo.anytype.ui.moving.MoveToFragment
 import com.agileburo.anytype.ui.navigation.PageNavigationFragment
 import com.agileburo.anytype.ui.page.PageFragment
 
@@ -156,6 +157,14 @@ class Navigator : AppNavigation {
             LinkToObjectFragment.REPLACE_KEY to replace
         )
         navController?.navigate(R.id.linkToFragment, bundle)
+    }
+
+    override fun openMoveTo(targets: List<String>, context: String) {
+        val bundle = bundleOf(
+            MoveToFragment.CONTEXT_ID_KEY to context,
+            MoveToFragment.TARGETS_ID_KEY to ArrayList(targets)
+        )
+        navController?.navigate(R.id.moveToFragment, bundle)
     }
 
     override fun openPageSearch() {

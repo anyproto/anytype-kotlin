@@ -33,6 +33,7 @@ interface AppNavigation {
     fun openDebugSettings()
     fun openPageNavigation(target: String)
     fun openLinkTo(target: String, context: String, replace: Boolean)
+    fun openMoveTo(targets: List<String>, context: String)
     fun openPageSearch()
     fun exitToDesktopAndOpenPage(pageId: String)
     fun exitToInvitationCodeScreen()
@@ -71,10 +72,16 @@ interface AppNavigation {
         object OpenDebugSettingsScreen: Command()
 
         data class OpenPageNavigationScreen(val target: String) : Command()
+
         data class OpenLinkToScreen(
             val context: String,
             val target: String,
             val replace: Boolean
+        ) : Command()
+
+        data class OpenMoveToScreen(
+            val context: String,
+            val targets: List<String>
         ) : Command()
 
         data class ExitToDesktopAndOpenPage(val pageId: String) : Command()

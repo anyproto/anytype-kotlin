@@ -5,6 +5,7 @@
 ### New features 🚀
 
 * Link to existing object (#770)
+* Move-to from one document to other document (#770)
 
 ### Design & UX 🔳
 

@@ -371,12 +371,12 @@
         android:id="@+id/linkToFragment"
         android:name="com.agileburo.anytype.ui.linking.LinkToObjectFragment"
         android:label="LinkToFragment"
-        tools:layout="@layout/fragment_link_to_object">
-        <argument
-            android:name="ID_KEY"
-            app:argType="string"
-            android:defaultValue='""' />
-    </fragment>
+        tools:layout="@layout/fragment_link_to_object" />
+    <fragment
+        android:id="@+id/moveToFragment"
+        android:name="com.agileburo.anytype.ui.moving.MoveToFragment"
+        android:label="MoveToFragment"
+        tools:layout="@layout/fragment_move_to" />
     <fragment
         android:id="@+id/pageSearchFragment"
         android:name="com.agileburo.anytype.ui.search.PageSearchFragment"

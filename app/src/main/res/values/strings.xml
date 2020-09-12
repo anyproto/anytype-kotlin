@@ -132,5 +132,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="search_empty_pages">You have no pages to search for.</string>
     <string name="link_to_this_page">Link to this page</string>
     <string name="link">Link</string>
+    <string name="move_into_this_page">Move into this page</string>
+    <string name="move_into">Move into</string>
 
 </resources>

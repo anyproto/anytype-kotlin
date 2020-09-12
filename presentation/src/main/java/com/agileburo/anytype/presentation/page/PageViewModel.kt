@@ -1057,7 +1057,16 @@ class PageViewModel(
                 _error.value = "Rename not implemented"
             }
             ActionItemType.MoveTo -> {
-                _error.value = "Move To not implemented"
+                onExitActionMode()
+                dispatch(Command.PopBackStack)
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenMoveToScreen(
+                            context = context,
+                            targets = listOf(id)
+                        )
+                    )
+                )
             }
             ActionItemType.Style -> {
                 val textSelection = orchestrator.stores.textSelection.current()
@@ -1414,9 +1423,7 @@ class PageViewModel(
     private fun onExitActionMode() {
         mode = EditorMode.EDITING
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.ReadMode.OnExit)
-        viewModelScope.launch {
-            refresh()
-        }
+        viewModelScope.launch { refresh() }
     }
 
     fun onMultiSelectModeDeleteClicked() {

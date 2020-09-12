@@ -156,6 +156,13 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val moveToComponent = Component {
+        main
+            .moveToBuilder()
+            .module(MoveToModule)
+            .build()
+    }
+
     val pageSearchComponent = Component {
         main.pageSearchComponentBuilder()
             .pageSearchModule(PageSearchModule)

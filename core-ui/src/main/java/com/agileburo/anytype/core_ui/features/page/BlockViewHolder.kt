@@ -42,6 +42,7 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_PARAGRAPH = 0
         const val HOLDER_TITLE = 1
         const val HOLDER_PROFILE_TITLE = 35
+        const val HOLDER_ARCHIVE_TITLE = 36
         const val HOLDER_HEADER_ONE = 2
         const val HOLDER_HEADER_TWO = 3
         const val HOLDER_HEADER_THREE = 4

@@ -163,6 +163,7 @@
     <string name="tap_here_to_insert_a_bookmark_url">Tap here to insert a bookmark url</string>
     <string name="add_a_web_bookmark">Add a web bookmark</string>
     <string name="archive">Archive</string>
+    <string name="bin">Bin</string>
     <string name="add_block_option_icon">Add block option icon</string>
     <string name="bookmark_error_menu_button">Bookmark error menu button</string>
     <string name="bookmark_error">Error! Bookmark not defined</string>
@@ -220,5 +221,11 @@
     <string name="content_desc_mention_suggester_icon">Mention suggester icon</string>
     <string name="move">Move</string>
     <string name="mention_suggester_new_page">Create new page</string>
+    <string name="widget_archive_select_pages">Select pages</string>
+    <plurals name="page_selected">
+        <item quantity="zero">Select pages</item>
+        <item quantity="one">%d page selected</item>
+        <item quantity="other">%d pages selected</item>
+    </plurals>
 
 </resources>

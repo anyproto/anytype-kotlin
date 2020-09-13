@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.postDelayed
+import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.extensions.avatarColor
 import com.agileburo.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.agileburo.anytype.core_ui.features.page.BlockView
@@ -161,6 +162,37 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             } catch (e: Throwable) {
                 Timber.e(e, "Could not set emoji icon")
             }
+        }
+    }
+
+    class Archive(view: View) : Title(view) {
+
+        override val icon: FrameLayout = itemView.documentIconContainer
+        override val image: ImageView = itemView.imageIcon
+
+        override val root: View = itemView
+        override val content: TextInputWidget = itemView.title
+
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
+        }
+
+        fun bind(
+            item: BlockView.Title.Document
+        ) {
+            super.bind(
+                item = item,
+                onTitleTextChanged = {},
+                onFocusChanged = { _, _ -> }
+            )
+            setImage(item)
+        }
+
+        override fun setImage(item: BlockView.Title) {
+            image.scaleType = ImageView.ScaleType.CENTER
+            Glide.with(itemView.context)
+                .load(R.drawable.ic_bin_big)
+                .into(image)
         }
     }
 

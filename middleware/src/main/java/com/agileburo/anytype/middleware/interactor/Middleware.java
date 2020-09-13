@@ -847,18 +847,18 @@ public class Middleware {
     }
 
     public void archiveDocument(CommandEntity.ArchiveDocument command) throws Exception {
-        Block.Set.Page.IsArchived.Request request = Block.Set.Page.IsArchived.Request
+        BlockList.Set.Page.IsArchived.Request request = BlockList.Set.Page.IsArchived.Request
                 .newBuilder()
                 .setContextId(command.getContext())
-                .setBlockId(command.getTarget())
-                .setIsArchived(true)
+                .addAllBlockIds(command.getTarget())
+                .setIsArchived(command.isArchived())
                 .build();
 
         if (BuildConfig.DEBUG) {
             Timber.d(request.getClass().getName() + "\n" + request.toString());
         }
 
-        Block.Set.Page.IsArchived.Response response = service.blockSetPageIsArchived(request);
+        BlockList.Set.Page.IsArchived.Response response = service.blockListSetPageIsArchived(request);
 
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());

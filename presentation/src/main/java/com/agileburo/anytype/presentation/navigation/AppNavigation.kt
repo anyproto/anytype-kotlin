@@ -17,6 +17,7 @@ interface AppNavigation {
     fun chooseAccount()
     fun workspace()
     fun openProfile()
+    fun openArchive(target: String)
 
     fun openDocument(id: String, editorSettings: EditorSettings?)
     fun launchDocument(id: String)
@@ -94,6 +95,7 @@ interface AppNavigation {
 
         data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
         object OpenPageSearch: Command()
+        data class OpenArchive(val target: String) : Command()
     }
 
     interface Provider {

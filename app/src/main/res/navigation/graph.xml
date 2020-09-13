@@ -44,6 +44,9 @@
         <action
             android:id="@+id/action_desktopScreen_to_pageNavigationFragment"
             app:destination="@id/pageNavigationFragment" />
+        <action
+            android:id="@+id/action_desktopScreen_to_archiveFragment"
+            app:destination="@id/archiveFragment" />
     </fragment>
 
     <fragment
@@ -382,5 +385,9 @@
         android:name="com.agileburo.anytype.ui.search.PageSearchFragment"
         android:label="PageSearchFragment"
         tools:layout="@layout/fragment_page_search"/>
+    <fragment
+        android:id="@+id/archiveFragment"
+        android:name="com.agileburo.anytype.ui.archive.ArchiveFragment"
+        android:label="ArchiveFragment" />
 
 </navigation>

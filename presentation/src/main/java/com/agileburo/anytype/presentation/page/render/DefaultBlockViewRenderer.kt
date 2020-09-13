@@ -244,37 +244,48 @@ class DefaultBlockViewRenderer(
             val isFocused = anchor == focus.id
             val type = (root.content as? Content.Smart)?.type
             result.add(
-                if (type == Content.Smart.Type.PROFILE) {
-                    BlockView.Title.Profile(
-                        mode = viewMode,
-                        id = anchor,
-                        isFocused = isFocused,
-                        text = text,
-                        image = details.details[root.id]?.iconImage?.let { name ->
-                            if (name.isNotEmpty()) urlBuilder.thumbnail(name) else null
-                        },
-                        cursor = cursor
-                    )
-                } else {
-                    BlockView.Title.Document(
-                        mode = viewMode,
-                        id = anchor,
-                        isFocused = isFocused,
-                        text = text,
-                        emoji = details.details[root.id]?.iconEmoji?.let { name ->
-                            if (name.isNotEmpty())
-                                name
-                            else
-                                null
-                        },
-                        image = details.details[root.id]?.iconImage?.let { name ->
-                            if (name.isNotEmpty())
-                                urlBuilder.thumbnail(name)
-                            else
-                                null
-                        },
-                        cursor = cursor
-                    )
+                when (type) {
+                    Content.Smart.Type.PROFILE -> {
+                        BlockView.Title.Profile(
+                            mode = viewMode,
+                            id = anchor,
+                            isFocused = isFocused,
+                            text = text,
+                            image = details.details[root.id]?.iconImage?.let { name ->
+                                if (name.isNotEmpty()) urlBuilder.thumbnail(name) else null
+                            },
+                            cursor = cursor
+                        )
+                    }
+                    Content.Smart.Type.ARCHIVE -> {
+                        BlockView.Title.Archive(
+                            mode = viewMode,
+                            id = anchor,
+                            text = text
+                        )
+                    }
+                    else -> {
+                        BlockView.Title.Document(
+                            mode = viewMode,
+                            id = anchor,
+                            isFocused = isFocused,
+                            text = text,
+                            emoji = details.details[root.id]?.iconEmoji?.let { name ->
+                                if (name.isNotEmpty())
+                                    name
+                                else
+                                    null
+                            },
+                            image = details.details[root.id]?.iconImage?.let { name ->
+                                if (name.isNotEmpty())
+                                    urlBuilder.thumbnail(name)
+                                else
+                                    null
+                            },
+                            cursor = cursor
+                        )
+                    }
+
                 }
             )
         }

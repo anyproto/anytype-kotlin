@@ -48,6 +48,7 @@
     <color name="toolbar_section_media">#F55522</color>
     <color name="toolbar_section_other">#A646C9</color>
     <color name="block_higlight_divider">#FFB522</color>
+    <color name="toolbar_archive_button_disable">#DFDDD0</color>
 
     <color name="kanban_main">#EEEEEE</color>
     <color name="kanban_second">#BDBDBD</color>

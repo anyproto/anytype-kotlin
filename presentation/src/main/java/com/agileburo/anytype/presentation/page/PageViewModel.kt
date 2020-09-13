@@ -1797,7 +1797,8 @@ class PageViewModel(
             archiveDocument(
                 ArchiveDocument.Params(
                     context = context,
-                    target = context
+                    targets = listOf<String>(context),
+                    isArchived = true
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while archiving page") },

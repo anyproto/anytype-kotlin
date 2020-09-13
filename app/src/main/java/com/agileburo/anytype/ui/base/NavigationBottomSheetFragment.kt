@@ -33,6 +33,7 @@ abstract class NavigationBottomSheetFragment : BaseBottomSheetFragment() {
             is AppNavigation.Command.SetupSelectedAccountScreen -> navigation.setupSelectedAccount(
                 command.id
             )
+            is AppNavigation.Command.OpenArchive -> navigation.openArchive(command.target)
             is AppNavigation.Command.ConfirmPinCodeScreen -> navigation.confirmPinCode(command.code)
             is AppNavigation.Command.OpenProfile -> navigation.openProfile()
             is AppNavigation.Command.OpenDatabaseViewAddView -> navigation.openDatabaseViewAddView()

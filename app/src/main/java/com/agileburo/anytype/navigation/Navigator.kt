@@ -8,6 +8,7 @@ import com.agileburo.anytype.R
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.settings.EditorSettings
+import com.agileburo.anytype.ui.archive.ArchiveFragment
 import com.agileburo.anytype.ui.auth.Keys
 import com.agileburo.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
 import com.agileburo.anytype.ui.linking.LinkToObjectFragment
@@ -192,6 +193,13 @@ class Navigator : AppNavigation {
                 popUpTo = R.id.desktopScreen
                 launchSingleTop = true
             }
+        )
+    }
+
+    override fun openArchive(target: String) {
+        navController?.navigate(
+            R.id.archiveFragment,
+            bundleOf(ArchiveFragment.ID_KEY to target)
         )
     }
 

@@ -36,6 +36,7 @@ object BlockActionToolbarFactory {
         is BlockView.Upload.Picture -> newInstance(block, dimensions)
         is BlockView.Title.Document -> TODO()
         is BlockView.Title.Profile -> TODO()
+        is BlockView.Title.Archive -> TODO()
     }
 
     fun newInstance(block: BlockView.Page, dimensions: BlockDimensions): PageBlockActionToolbar =

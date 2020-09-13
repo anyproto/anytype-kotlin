@@ -13,4 +13,10 @@ sealed class DashboardView {
         val emoji: String? = null,
         val image: String? = null
     ) : DashboardView()
+
+    data class Archive(
+        override val id: Id,
+        val target: Id,
+        val text: String
+    ) : DashboardView()
 }

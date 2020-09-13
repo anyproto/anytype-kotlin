@@ -2,6 +2,7 @@ package com.agileburo.anytype.core_ui.features.page
 
 import android.os.Parcelable
 import com.agileburo.anytype.core_ui.common.*
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_ARCHIVE_TITLE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_ERROR
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
@@ -401,6 +402,24 @@ sealed class BlockView : ViewType, Parcelable {
             override val cursor: Int? = null
         ) : BlockView.Title() {
             override fun getViewType() = HOLDER_PROFILE_TITLE
+        }
+
+        /**
+         * UI-model for a archive title block.
+         * @property id block's id
+         * @property text text content (i.e. title text)
+         * @property image image as a page's logo (if present)
+         */
+        @Parcelize
+        data class Archive(
+            override val id: String,
+            override val isFocused: Boolean = false,
+            override var text: String?,
+            override val image: String? = null,
+            override val mode: Mode = Mode.READ,
+            override val cursor: Int? = null
+        ) : BlockView.Title() {
+            override fun getViewType() = HOLDER_ARCHIVE_TITLE
         }
 
     }

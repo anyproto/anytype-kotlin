@@ -12,16 +12,19 @@ import com.agileburo.anytype.emojifier.Emojifier
 import com.agileburo.anytype.presentation.desktop.DashboardView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import kotlinx.android.synthetic.main.item_desktop_archive.view.*
 import kotlinx.android.synthetic.main.item_desktop_page.view.*
 import timber.log.Timber
 
 class DashboardAdapter(
     private var data: MutableList<DashboardView>,
-    private val onDocumentClicked: (DashboardView.Document) -> Unit
+    private val onDocumentClicked: (DashboardView.Document) -> Unit,
+    private val onArchiveClicked: (DashboardView.Archive) -> Unit
 ) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>(), SupportDragAndDropBehavior {
 
     companion object {
         const val VIEW_TYPE_DOCUMENT = 0
+        const val VIEW_TYPE_ARCHIVE = 1
         const val UNEXPECTED_TYPE_ERROR_MESSAGE = "Unexpected type"
         const val EMPTY_EMOJI = ""
     }
@@ -34,6 +37,11 @@ class DashboardAdapter(
                     ViewHolder.DocumentHolder(it)
                 }
             }
+            VIEW_TYPE_ARCHIVE -> {
+                inflater.inflate(R.layout.item_desktop_archive, parent, false).let {
+                    ViewHolder.ArchiveHolder(it)
+                }
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -41,6 +49,7 @@ class DashboardAdapter(
     override fun getItemViewType(position: Int): Int {
         return when (data[position]) {
             is DashboardView.Document -> VIEW_TYPE_DOCUMENT
+            is DashboardView.Archive -> VIEW_TYPE_ARCHIVE
             else -> throw IllegalStateException(UNEXPECTED_TYPE_ERROR_MESSAGE)
         }
     }
@@ -55,10 +64,29 @@ class DashboardAdapter(
                     onClick = onDocumentClicked
                 )
             }
+            is ViewHolder.ArchiveHolder -> {
+                holder.bind(
+                    archive = data[position] as DashboardView.Archive,
+                    onClick = onArchiveClicked
+                )
+            }
         }
     }
 
     sealed class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        class ArchiveHolder(itemView: View) : ViewHolder(itemView) {
+
+            fun bind(
+                archive: DashboardView.Archive,
+                onClick: (DashboardView.Archive) -> Unit
+            ) {
+                if (archive.text.isNotEmpty()) {
+                    itemView.archiveTitle.text = archive.text
+                }
+                itemView.setOnClickListener { onClick(archive) }
+            }
+        }
 
         class DocumentHolder(itemView: View) : ViewHolder(itemView) {
 

@@ -17,6 +17,7 @@ import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
+import com.agileburo.anytype.domain.page.ArchiveDocument
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.presentation.BuildConfig
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.Interactor
@@ -236,6 +237,16 @@ class HomeDashboardViewModel(
             )
         )
 
+    private fun navigateToArchive(target: Id) {
+        navigation.postValue(
+            EventWrapper(
+                AppNavigation.Command.OpenArchive(
+                    target = target
+                )
+            )
+        )
+    }
+
     private fun getEditorSettingsAndOpenPage(id: String) =
         viewModelScope.launch {
             getDebugSettings(Unit).proceed(
@@ -246,6 +257,10 @@ class HomeDashboardViewModel(
 
     fun onDocumentClicked(target: Id) {
         proceedWithOpeningDocument(target)
+    }
+
+    fun onArchivedClicked(target: Id) {
+        navigateToArchive(target)
     }
 
     fun onProfileClicked() {

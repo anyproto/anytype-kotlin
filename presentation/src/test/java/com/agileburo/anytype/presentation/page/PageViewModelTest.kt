@@ -3321,7 +3321,8 @@ open class PageViewModelTest {
                 params = eq(
                     ArchiveDocument.Params(
                         context = root,
-                        target = root
+                        targets = listOf(root),
+                        isArchived = true
                     )
                 )
             )
@@ -3383,7 +3384,8 @@ open class PageViewModelTest {
                 params = eq(
                     ArchiveDocument.Params(
                         context = root,
-                        target = root
+                        targets = listOf(root),
+                        isArchived = true
                     )
                 )
             )
@@ -3399,7 +3401,12 @@ open class PageViewModelTest {
     }
 
     private fun stubArchiveDocument(
-        params: ArchiveDocument.Params = ArchiveDocument.Params(context = root, target = root)
+        params: ArchiveDocument.Params =
+            ArchiveDocument.Params(
+                context = root,
+                targets = listOf(root),
+                isArchived = true
+            )
     ) {
         archiveDocument.stub {
             onBlocking { invoke(params = params) } doReturn Either.Right(Unit)

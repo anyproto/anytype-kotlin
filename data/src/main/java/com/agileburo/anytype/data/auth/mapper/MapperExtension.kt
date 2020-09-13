@@ -373,7 +373,8 @@ fun Command.Redo.toEntity() = CommandEntity.Redo(
 
 fun Command.ArchiveDocument.toEntity() = CommandEntity.ArchiveDocument(
     context = context,
-    target = target
+    target = target,
+    isArchived = isArchived
 )
 
 fun Command.TurnIntoDocument.toEntity() = CommandEntity.TurnIntoDocument(

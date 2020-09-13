@@ -17,7 +17,8 @@ class CommandEntity {
 
     class ArchiveDocument(
         val context: String,
-        val target: String
+        val target: List<String>,
+        val isArchived: Boolean
     )
 
     class UpdateText(

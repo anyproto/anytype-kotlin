@@ -66,7 +66,7 @@ public interface MiddlewareService {
 
     Block.Redo.Response blockRedo(Block.Redo.Request request) throws Exception;
 
-    Block.Set.Page.IsArchived.Response blockSetPageIsArchived(Block.Set.Page.IsArchived.Request request) throws Exception;
+    BlockList.Set.Page.IsArchived.Response blockListSetPageIsArchived(BlockList.Set.Page.IsArchived.Request request) throws Exception;
 
     Block.Set.Details.Response blockSetDetails(Block.Set.Details.Request request) throws Exception;
 

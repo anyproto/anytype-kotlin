@@ -109,6 +109,12 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val archiveComponent = ComponentMap {
+        main.archiveComponentBuilder()
+            .module(ArchiveModule)
+            .build()
+    }
+
     val contactsComponent = Component {
         main
             .contactsComponentBuilder()

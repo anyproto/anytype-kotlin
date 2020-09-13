@@ -36,6 +36,7 @@ interface MainComponent {
     fun detailEditBuilder(): DetailEditSubComponent.Builder
     fun detailsReorderBuilder(): DetailsReorderSubComponent.Builder
     fun pageComponentBuilder(): PageSubComponent.Builder
+    fun archiveComponentBuilder(): ArchiveSubComponent.Builder
     fun linkAddComponentBuilder(): LinkSubComponent.Builder
     fun documentActionMenuComponentBuilder(): DocumentActionMenuSubComponent.Builder
     fun documentEmojiIconPickerComponentBuilder(): DocumentEmojiIconPickerSubComponent.Builder

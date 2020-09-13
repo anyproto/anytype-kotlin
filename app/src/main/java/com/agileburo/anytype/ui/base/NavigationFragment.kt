@@ -38,6 +38,7 @@ abstract class NavigationFragment(
             is Command.ConfirmPinCodeScreen -> navigation.confirmPinCode(command.code)
             is Command.OpenProfile -> navigation.openProfile()
             is Command.OpenPage -> navigation.openDocument(command.id, command.editorSettings)
+            is Command.OpenArchive -> navigation.openArchive(command.target)
             is Command.LaunchDocument -> navigation.launchDocument(command.id)
             is Command.OpenDatabaseViewAddView -> navigation.openDatabaseViewAddView()
             is Command.OpenEditDatabase -> navigation.openEditDatabase()

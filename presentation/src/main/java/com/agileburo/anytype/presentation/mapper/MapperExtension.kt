@@ -213,38 +213,57 @@ fun Block.Content.Text.marks(
 
 fun HomeDashboard.toView(
     builder: UrlBuilder
-): List<DashboardView.Document> = children.mapNotNull { id ->
+): List<DashboardView> = children.mapNotNull { id ->
     blocks.find { block -> block.id == id }?.let { model ->
         when (val content = model.content) {
             is Block.Content.Link -> {
-                if (content.type == Block.Content.Link.Type.PAGE) {
-                    if (details.details[content.target]?.isArchived != true) {
-                        DashboardView.Document(
-                            id = model.id,
-                            target = content.target,
-                            title = details.details[content.target]?.name,
-                            emoji = details.details[content.target]?.iconEmoji?.let { name ->
-                                if (name.isNotEmpty())
-                                    name
-                                else
-                                    null
-                            },
-                            image = details.details[content.target]?.iconImage?.let { name ->
-                                if (name.isNotEmpty())
-                                    builder.image(name)
-                                else
-                                    null
-                            }
-                        )
-                    } else {
-                        null
-                    }
-                } else {
-                    null
+                when(content.type) {
+                    Block.Content.Link.Type.PAGE -> content.toPageView(model.id, details, builder)
+                    Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(model.id, details)
+                    else -> null
                 }
             }
             else -> null
         }
+    }
+}
+
+fun Block.Content.Link.toArchiveView(
+    id: String,
+    details: Block.Details
+): DashboardView.Archive? {
+    return DashboardView.Archive(
+        id = id,
+        target = target,
+        text = details.details[target]?.name.orEmpty()
+    )
+}
+
+fun Block.Content.Link.toPageView(
+    id: String,
+    details: Block.Details,
+    builder: UrlBuilder
+): DashboardView.Document? {
+    return if (details.details[target]?.isArchived != true) {
+        DashboardView.Document(
+            id = id,
+            target = target,
+            title = details.details[target]?.name,
+            emoji = details.details[target]?.iconEmoji?.let { name ->
+                if (name.isNotEmpty())
+                    name
+                else
+                    null
+            },
+            image = details.details[target]?.iconImage?.let { name ->
+                if (name.isNotEmpty())
+                    builder.image(name)
+                else
+                    null
+            }
+        )
+    } else {
+        null
     }
 }
 

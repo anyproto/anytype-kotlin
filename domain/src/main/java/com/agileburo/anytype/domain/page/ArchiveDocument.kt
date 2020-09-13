@@ -17,7 +17,8 @@ class ArchiveDocument(
         repo.archiveDocument(
             command = Command.ArchiveDocument(
                 context = params.context,
-                target = params.target
+                target = params.targets,
+                isArchived = params.isArchived
             )
         ).let {
             Either.Right(it)
@@ -29,10 +30,12 @@ class ArchiveDocument(
     /**
      * Params for archiving a document
      * @property context id of the context
-     * @property target id of the target (document we want to close)
+     * @property targets list of ids of the targets (document we want to change archive status)
+     * @property isArchived defines whether we archived or unarchive our document
      */
     data class Params(
         val context: Id,
-        val target: Id
+        val targets: List<Id>,
+        val isArchived: Boolean
     )
 }

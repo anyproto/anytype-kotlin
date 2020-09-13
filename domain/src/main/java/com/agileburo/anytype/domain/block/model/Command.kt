@@ -13,11 +13,12 @@ sealed class Command {
     /**
      * Command for archiving a document
      * @property context id of the context
-     * @property target id of the target (document we want to close)
+     * @property target ids of the targets
      */
     class ArchiveDocument(
         val context: Id,
-        val target: Id
+        val target: List<Id>,
+        val isArchived: Boolean
     )
 
     /**

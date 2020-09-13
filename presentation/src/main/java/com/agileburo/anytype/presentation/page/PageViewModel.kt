@@ -1926,37 +1926,43 @@ class PageViewModel(
         ratio: Float
     ) {
 
-        val block = blocks.first { it.id == target }
+        var moveTarget = target
+
+        var position = when (ratio) {
+            in START_RANGE -> Position.TOP
+            in END_RANGE -> Position.BOTTOM
+            in INNER_RANGE -> Position.INNER
+            else -> {
+                if (ratio > 1) Position.BOTTOM
+                else throw IllegalStateException("Unexpected ratio: $ratio")
+            }
+        }
+
+        val targetBlock = blocks.first { it.id == target }
 
         val parent = blocks.find { it.children.contains(target) }?.id
 
-        if (block.supportNesting()) {
+        val selected = currentSelection().toList()
 
-            val selected = currentSelection().toList()
+        if (selected.contains(target)) {
+            _error.value = CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR
+            return
+        }
 
-            if (selected.contains(target)) {
-                _error.value = CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR
+        if (selected.contains(parent)) {
+            _error.value = CANNOT_MOVE_PARENT_INTO_CHILD
+            return
+        }
+
+        if (position == Position.INNER) {
+
+            if (!targetBlock.supportNesting()) {
+                _error.value = CANNOT_BE_PARENT_ERROR
                 return
             }
 
-            if (parent != null && selected.contains(parent)) {
-                _error.value = CANNOT_MOVE_PARENT_INTO_CHILD
-                return
-            }
-
-
-            val position = when (ratio) {
-                in START_RANGE -> Position.TOP
-                in END_RANGE -> Position.BOTTOM
-                in INNER_RANGE -> Position.INNER
-                else -> {
-                    if (ratio > 1) Position.BOTTOM
-                    else throw IllegalStateException("Unexpected ratio: $ratio")
-                }
-            }
-
-            val targetContext = if (block.content is Content.Link && position == Position.INNER) {
-                block.content<Content.Link>().target
+            val targetContext = if (targetBlock.content is Content.Link) {
+                targetBlock.content<Content.Link>().target
             } else {
                 context
             }
@@ -1971,7 +1977,7 @@ class PageViewModel(
                 orchestrator.proxies.intents.send(
                     Intent.Document.Move(
                         context = context,
-                        target = target,
+                        target = moveTarget,
                         targetContext = targetContext,
                         blocks = selected,
                         position = position
@@ -1979,7 +1985,31 @@ class PageViewModel(
                 )
             }
         } else {
-            _error.value = CANNOT_BE_PARENT_ERROR
+
+            val targetContext = context
+
+            if (target == context) {
+                position = Position.TOP
+                moveTarget = targetBlock.children.first()
+            }
+
+            clearSelections()
+
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
+
+            mode = EditorMode.MULTI_SELECT
+
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Document.Move(
+                        context = context,
+                        target = moveTarget,
+                        targetContext = targetContext,
+                        blocks = selected,
+                        position = position
+                    )
+                )
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.agileburo.anytype.presentation.navigation
 
+import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.presentation.settings.EditorSettings
 
 interface AppNavigation {
@@ -35,8 +36,8 @@ interface AppNavigation {
     fun exitToDesktop()
     fun openDebugSettings()
     fun openPageNavigation(target: String)
-    fun openLinkTo(target: String, context: String, replace: Boolean)
     fun openMoveTo(targets: List<String>, context: String)
+    fun openLinkTo(target: String, context: String, replace: Boolean, position: Position)
     fun openPageSearch()
     fun exitToDesktopAndOpenPage(pageId: String)
     fun exitToInvitationCodeScreen()
@@ -82,7 +83,8 @@ interface AppNavigation {
         data class OpenLinkToScreen(
             val context: String,
             val target: String,
-            val replace: Boolean
+            val replace: Boolean,
+            val position: Position
         ) : Command()
 
         data class OpenMoveToScreen(

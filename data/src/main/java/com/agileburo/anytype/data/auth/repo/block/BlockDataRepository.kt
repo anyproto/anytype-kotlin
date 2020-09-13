@@ -2,7 +2,9 @@ package com.agileburo.anytype.data.auth.repo.block
 
 import com.agileburo.anytype.data.auth.mapper.toDomain
 import com.agileburo.anytype.data.auth.mapper.toEntity
+import com.agileburo.anytype.data.auth.model.PositionEntity
 import com.agileburo.anytype.domain.block.model.Command
+import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.clipboard.Copy
 import com.agileburo.anytype.domain.clipboard.Paste
@@ -164,11 +166,13 @@ class BlockDataRepository(
         context: Id,
         target: Id,
         block: Id,
-        replace: Boolean
+        replace: Boolean,
+        position: Position
     ): Payload = factory.remote.linkToObject(
         context = context,
         target = target,
         block = block,
-        replace = replace
+        replace = replace,
+        position = PositionEntity.valueOf(position.name)
     ).toDomain()
 }

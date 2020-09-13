@@ -7,6 +7,7 @@ import com.agileburo.anytype.core_utils.ext.timber
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.block.interactor.CreateLinkToObject
+import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.GetConfig
 import com.agileburo.anytype.domain.misc.UrlBuilder
@@ -93,7 +94,8 @@ class LinkToObjectViewModel(
     fun onLinkToObjectClicked(
         context: Id,
         target: Id,
-        replace: Boolean
+        replace: Boolean,
+        position: Position
     ) {
         viewModelScope.launch {
             createLinkToObject(
@@ -101,7 +103,8 @@ class LinkToObjectViewModel(
                     context = context,
                     target = target,
                     block = pageId,
-                    replace = replace
+                    replace = replace,
+                    position = position
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while creating link to object") },

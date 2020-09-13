@@ -158,6 +158,7 @@ class BlockMiddleware(
         context: String,
         target: String,
         block: String,
-        replace: Boolean
-    ): PayloadEntity = middleware.linkToObject(context, target, block, replace)
+        replace: Boolean,
+        position: PositionEntity
+    ): PayloadEntity = middleware.linkToObject(context, target, block, replace, position)
 }

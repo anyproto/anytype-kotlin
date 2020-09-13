@@ -14,6 +14,7 @@ import com.agileburo.anytype.core_ui.layout.State
 import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.di.common.componentManager
+import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.emojifier.Emojifier
 import com.agileburo.anytype.presentation.linking.LinkToObjectViewModel
 import com.agileburo.anytype.presentation.linking.LinkToObjectViewModelFactory
@@ -34,6 +35,14 @@ import javax.inject.Inject
 
 class LinkToObjectFragment :
     ViewStateFragment<ViewState<PageNavigationView>>(R.layout.fragment_link_to_object) {
+
+    private val position: Position
+        get() {
+            val args = requireArguments()
+            val value = args.getString(POSITION_KEY)
+            checkNotNull(value)
+            return Position.valueOf(value)
+        }
 
     private val replace: Boolean
         get() = arguments?.getBoolean(REPLACE_KEY) ?: false
@@ -121,14 +130,16 @@ class LinkToObjectFragment :
                     vm.onLinkToObjectClicked(
                         context = targetContext,
                         target = target,
-                        replace = replace
+                        replace = replace,
+                        position = position
                     )
                 }
                 btnLinkToObjectSmall.setOnClickListener {
                     vm.onLinkToObjectClicked(
                         context = targetContext,
                         target = target,
-                        replace = replace
+                        replace = replace,
+                        position = position
                     )
                 }
                 vm.onStart(targetContext)
@@ -216,6 +227,7 @@ class LinkToObjectFragment :
     companion object {
         const val TARGET_ID_KEY = "arg.link_to.target"
         const val REPLACE_KEY = "arg.link_to.replace"
+        const val POSITION_KEY = "arg.link_to.position"
         const val CONTEXT_ID_KEY = "arg.link_to.context"
         const val POSITION_FROM = 0
         const val POSITION_TO = 1

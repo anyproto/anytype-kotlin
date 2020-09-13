@@ -1,6 +1,7 @@
 package com.agileburo.anytype.domain.block.repo
 
 import com.agileburo.anytype.domain.block.model.Command
+import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.clipboard.Copy
 import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Hash
@@ -95,5 +96,11 @@ interface BlockRepository {
     suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks
     suspend fun getListPages(): List<PageInfo>
 
-    suspend fun linkToObject(context: Id, target: Id, block: Id, replace: Boolean): Payload
+    suspend fun linkToObject(
+        context: Id,
+        target: Id,
+        block: Id,
+        replace: Boolean,
+        position: Position
+    ): Payload
 }

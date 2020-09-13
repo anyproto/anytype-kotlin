@@ -2,6 +2,7 @@ package com.agileburo.anytype.domain.block.interactor
 
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.block.interactor.CreateLinkToObject.Params
+import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.event.model.Payload
@@ -12,14 +13,15 @@ import com.agileburo.anytype.domain.event.model.Payload
  */
 class CreateLinkToObject(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, CreateLinkToObject.Params>() {
+) : BaseUseCase<Payload, Params>() {
 
     override suspend fun run(params: Params) = safe {
         repo.linkToObject(
             context = params.context,
             target = params.target,
             block = params.block,
-            replace = params.replace
+            replace = params.replace,
+            position = params.position
         )
     }
 
@@ -34,6 +36,7 @@ class CreateLinkToObject(
         val context: Id,
         val block: Id,
         val target: Id,
-        val replace: Boolean
+        val replace: Boolean,
+        val position: Position
     )
 }

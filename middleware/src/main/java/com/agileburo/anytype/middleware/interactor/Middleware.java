@@ -1050,7 +1050,8 @@ public class Middleware {
     public PayloadEntity linkToObject(
             String contextId,
             String targetId, String blockId,
-            boolean replace
+            boolean replace,
+            PositionEntity positionEntity
     ) throws Exception {
 
         Models.Block.Position position = null;
@@ -1058,7 +1059,7 @@ public class Middleware {
         if (replace) {
             position = Models.Block.Position.Replace;
         } else {
-            position = Models.Block.Position.Bottom;
+            position = mapper.toMiddleware(positionEntity);
         }
 
         Models.Block.Content.Link link = Models.Block.Content.Link

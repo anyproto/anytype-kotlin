@@ -51,6 +51,7 @@ interface BlockRemote {
         context: String,
         target: String,
         block: String,
-        replace: Boolean
+        replace: Boolean,
+        position: PositionEntity
     ): PayloadEntity
 }

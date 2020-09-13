@@ -54,7 +54,8 @@ abstract class NavigationFragment(
             is Command.OpenLinkToScreen -> navigation.openLinkTo(
                 command.target,
                 command.context,
-                command.replace
+                command.replace,
+                command.position
             )
             is Command.OpenMoveToScreen -> navigation.openMoveTo(
                 targets = command.targets,

@@ -1190,9 +1190,26 @@ class PageViewModel(
                 )
             }
         } else {
+
+            var id = target.id
+
+            val position: Position
+
+            if (target.id == context) {
+                if (target.children.isEmpty())
+                    position = Position.INNER
+                else {
+                    position = Position.TOP
+                    id = target.children.first()
+                }
+            } else {
+                position = Position.BOTTOM
+            }
+
             proceedWithCreatingNewTextBlock(
-                id = orchestrator.stores.focus.current().id,
-                style = style
+                id = id,
+                style = style,
+                position = position
             )
         }
 
@@ -1211,13 +1228,24 @@ class PageViewModel(
 
     fun onAddLinkToObjectClicked() {
 
-        val target = orchestrator.stores.focus.current().id
+        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
 
-        val block = blocks.first { it.id == target }
-
-        val content = block.content
+        val content = focused.content
 
         val replace = content is Content.Text && content.text.isEmpty()
+
+        var position : Position = Position.BOTTOM
+
+        var target: Id = focused.id
+
+        if (!replace && focused.id == context) {
+            if (focused.children.isEmpty()) {
+                position = Position.INNER
+            } else {
+                position = Position.TOP
+                target = focused.children.first()
+            }
+        }
 
         proceedWithClearingFocus()
 
@@ -1226,7 +1254,8 @@ class PageViewModel(
                 AppNavigation.Command.OpenLinkToScreen(
                     target = target,
                     context = context,
-                    replace = replace
+                    replace = replace,
+                    position = position
                 )
             )
         )
@@ -1258,18 +1287,37 @@ class PageViewModel(
     }
 
     fun onAddFileBlockClicked(type: Content.File.Type) {
-        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
-        val content = target.content
+
+        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
+
+        val content = focused.content
 
         if (content is Content.Text && content.text.isEmpty()) {
             proceedWithReplacingByEmptyFileBlock(
-                id = target.id,
+                id = focused.id,
                 type = type
             )
         } else {
+
+            val position : Position
+
+            var target: Id = focused.id
+
+            if (focused.id == context) {
+                if (focused.children.isEmpty()) {
+                    position = Position.INNER
+                } else {
+                    position = Position.TOP
+                    target = focused.children.first()
+                }
+            } else {
+                position = Position.BOTTOM
+            }
+
             proceedWithCreatingEmptyFileBlock(
-                id = target.id,
-                type = type
+                id = target,
+                type = type,
+                position = position
             )
         }
     }
@@ -1581,26 +1629,43 @@ class PageViewModel(
     }
 
     fun onAddDividerBlockClicked() {
-        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
-        val content = target.content
+
+        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val content = focused.content
 
         if (content is Content.Text && content.text.isEmpty()) {
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Intent.CRUD.Replace(
                         context = context,
-                        target = target.id,
+                        target = focused.id,
                         prototype = Prototype.Divider
                     )
                 )
             }
         } else {
+
+            val position : Position
+
+            var target: Id = focused.id
+
+            if (focused.id == context) {
+                if (focused.children.isEmpty()) {
+                    position = Position.INNER
+                } else {
+                    position = Position.TOP
+                    target = focused.children.first()
+                }
+            } else {
+                position = Position.BOTTOM
+            }
+
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Intent.CRUD.Create(
                         context = context,
-                        target = target.id,
-                        position = Position.BOTTOM,
+                        target = target,
+                        position = position,
                         prototype = Prototype.Divider
                     )
                 )
@@ -1689,10 +1754,27 @@ class PageViewModel(
     fun onAddNewPageClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
+        val position : Position
+
+        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
+
+        var target = focused.id
+
+        if (focused.id == context) {
+            if (focused.children.isEmpty())
+                position = Position.INNER
+            else {
+                position = Position.TOP
+                target = focused.children.first()
+            }
+        } else {
+            position = Position.BOTTOM
+        }
+
         val params = CreateDocument.Params(
             context = context,
-            position = Position.BOTTOM,
-            target = orchestrator.stores.focus.current().id,
+            position = position,
+            target = target,
             prototype = Prototype.Page(style = Content.Page.Style.EMPTY)
         )
 
@@ -1725,26 +1807,44 @@ class PageViewModel(
     }
 
     fun onAddBookmarkBlockClicked() {
-        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
-        val content = target.content
+
+        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
+
+        val content = focused.content
 
         if (content is Content.Text && content.text.isEmpty()) {
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Intent.CRUD.Replace(
                         context = context,
-                        target = target.id,
+                        target = focused.id,
                         prototype = Prototype.Bookmark
                     )
                 )
             }
         } else {
+
+            val position : Position
+
+            var target: Id = focused.id
+
+            if (focused.id == context) {
+                if (focused.children.isEmpty()) {
+                    position = Position.INNER
+                } else {
+                    position = Position.TOP
+                    target = focused.children.first()
+                }
+            } else {
+                position = Position.BOTTOM
+            }
+
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Intent.CRUD.Create(
                         context = context,
-                        position = Position.BOTTOM,
-                        target = target.id,
+                        position = position,
+                        target = target,
                         prototype = Prototype.Bookmark
                     )
                 )

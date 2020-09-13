@@ -5,6 +5,7 @@ import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.agileburo.anytype.R
+import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.settings.EditorSettings
 import com.agileburo.anytype.ui.auth.Keys
@@ -161,11 +162,12 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.pageNavigationFragment, bundle)
     }
 
-    override fun openLinkTo(target: String, context: String, replace: Boolean) {
+    override fun openLinkTo(target: String, context: String, replace: Boolean, position: Position) {
         val bundle = bundleOf(
             LinkToObjectFragment.TARGET_ID_KEY to target,
             LinkToObjectFragment.CONTEXT_ID_KEY to context,
-            LinkToObjectFragment.REPLACE_KEY to replace
+            LinkToObjectFragment.REPLACE_KEY to replace,
+            LinkToObjectFragment.POSITION_KEY to position.name
         )
         navController?.navigate(R.id.linkToFragment, bundle)
     }

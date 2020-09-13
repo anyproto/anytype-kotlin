@@ -134,11 +134,13 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         context: String,
         target: String,
         block: String,
-        replace: Boolean
+        replace: Boolean,
+        position: PositionEntity
     ): PayloadEntity = remote.linkToObject(
         context = context,
         target = target,
         block = block,
-        replace = replace
+        replace = replace,
+        position = position
     )
 }

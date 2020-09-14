@@ -30,6 +30,13 @@ interface HomeDashboardEventConverter {
                     )
                 }
             }
+            is Event.Command.UpdateDetails -> {
+                HomeDashboardStateMachine.Event.OnDetailsUpdated(
+                    context = event.context,
+                    target = event.target,
+                    details = event.details
+                )
+            }
             else -> null
         }
     }

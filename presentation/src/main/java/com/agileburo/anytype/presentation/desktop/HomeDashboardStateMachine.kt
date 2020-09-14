@@ -56,6 +56,12 @@ sealed class HomeDashboardStateMachine {
             val dashboard: HomeDashboard
         ) : Event()
 
+        data class OnDetailsUpdated(
+            val context: String,
+            val target: String,
+            val details: Block.Fields
+        ) : Event()
+
         data class OnBlocksAdded(
             val blocks: List<Block>
         ) : Event()
@@ -134,6 +140,22 @@ sealed class HomeDashboardStateMachine {
                     )
                 }
             )
+            is Event.OnDetailsUpdated -> {
+                val dashboard = state.dashboard
+                if (dashboard != null) {
+                    val current = dashboard.details
+                    val new = current.details + mapOf(event.target to event.details)
+                    state.copy(
+                        dashboard = dashboard.copy(
+                            details = dashboard.details.copy(
+                                details = new
+                            )
+                        )
+                    )
+                } else {
+                    state.copy()
+                }
+            }
         }
     }
 }

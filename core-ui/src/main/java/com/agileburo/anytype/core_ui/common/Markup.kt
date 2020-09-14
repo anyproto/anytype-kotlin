@@ -243,8 +243,8 @@ fun Editable.setMentionSpan(
                 imageSize = mentionImageSize,
                 imagePadding = mentionImagePadding,
                 param = mark.param,
-                emoji = mark.emoji,
-                image = mark.image
+                emoji = if (mark.extras.isNotEmpty()) mark.emoji else null,
+                image = if (mark.extras.isNotEmpty()) mark.image else null
             ),
             mark.from,
             mark.to,

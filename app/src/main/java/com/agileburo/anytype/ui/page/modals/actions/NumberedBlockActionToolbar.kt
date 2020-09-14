@@ -1,14 +1,13 @@
 package com.agileburo.anytype.ui.page.modals.actions
 
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.agileburo.anytype.R
-import com.agileburo.anytype.core_ui.common.toSpannable
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.addDot
 
 class NumberedBlockActionToolbar : BlockActionToolbar() {
@@ -36,9 +35,9 @@ class NumberedBlockActionToolbar : BlockActionToolbar() {
                 color = block.color
             )
         }
-        view.findViewById<TextView>(R.id.numberedListContent).apply {
-            movementMethod = ScrollingMovementMethod()
-            text = block.toSpannable()
+        view.findViewById<TextInputWidget>(R.id.numberedListContent).apply {
+            enableReadMode()
+            setBlockText(this, block.text, block)
             processTextColor(
                 textView = this,
                 colorImage = colorView,

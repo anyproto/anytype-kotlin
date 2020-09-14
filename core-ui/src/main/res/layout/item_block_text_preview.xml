@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    style="@style/DefaultDocumentContainerStyle">
 
-    <com.agileburo.anytype.core_ui.widgets.text.DefaultTextWidget
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/textContent"
         style="@style/BlockTextContentStyle"
+        android:background="@drawable/item_block_multi_select_mode_selector"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="@string/default_text_placeholder" />

@@ -3,9 +3,9 @@ package com.agileburo.anytype.ui.page.modals.actions
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 
 class HeaderOneBlockActionToolbar : BlockActionToolbar() {
 
@@ -20,8 +20,9 @@ class HeaderOneBlockActionToolbar : BlockActionToolbar() {
     override fun getBlock(): BlockView = block
 
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
-        view.findViewById<TextView>(R.id.headerOne).apply {
-            text = block.text
+        view.findViewById<TextInputWidget>(R.id.headerOne).apply {
+            enableReadMode()
+            setBlockText(this, block.text, block)
             processTextColor(
                 textView = this,
                 colorImage = colorView,
@@ -35,4 +36,9 @@ class HeaderOneBlockActionToolbar : BlockActionToolbar() {
         )
         setConstraints()
     }
+
+    override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = Pair(
+        first = resources.getDimensionPixelSize(com.agileburo.anytype.core_ui.R.dimen.mention_span_image_size_header_one),
+        second = resources.getDimensionPixelSize(com.agileburo.anytype.core_ui.R.dimen.mention_span_image_padding_header_one)
+    )
 }

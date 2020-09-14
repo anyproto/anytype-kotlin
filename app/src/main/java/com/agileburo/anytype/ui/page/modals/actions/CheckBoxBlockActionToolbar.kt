@@ -1,13 +1,11 @@
 package com.agileburo.anytype.ui.page.modals.actions
 
-import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
 import com.agileburo.anytype.R
-import com.agileburo.anytype.core_ui.common.toSpannable
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.features.page.BlockView
+import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 
 class CheckBoxBlockActionToolbar : BlockActionToolbar() {
 
@@ -18,9 +16,9 @@ class CheckBoxBlockActionToolbar : BlockActionToolbar() {
     override fun getBlock(): BlockView = block
 
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
-        view.findViewById<TextView>(R.id.checkboxContent).apply {
-            movementMethod = ScrollingMovementMethod()
-            text = block.toSpannable()
+        view.findViewById<TextInputWidget>(R.id.checkboxContent).apply {
+            enableReadMode()
+            setBlockText(this, block.text, block)
             if (block.isChecked) {
                 setTextColor(requireContext().color(R.color.checkbox_state_checked))
             } else {

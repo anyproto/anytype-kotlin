@@ -18,7 +18,9 @@ import androidx.fragment.app.Fragment
 import androidx.transition.*
 import com.agileburo.anytype.BuildConfig
 import com.agileburo.anytype.R
+import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.ThemeColor
+import com.agileburo.anytype.core_ui.common.toSpannable
 import com.agileburo.anytype.core_ui.extensions.addVerticalDivider
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.extensions.drawable
@@ -26,6 +28,8 @@ import com.agileburo.anytype.core_ui.features.page.BlockDimensions
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.core_ui.widgets.BlockActionBarItem
+import com.agileburo.anytype.core_ui.widgets.text.MentionSpan
+import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.PopupExtensions
 import com.agileburo.anytype.ui.page.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.action_toolbar.*
@@ -241,6 +245,64 @@ abstract class BlockActionToolbar : Fragment() {
             }
         }
     }
+
+    fun setBlockText(content: TextInputWidget, text: String, markup: Markup) =
+        when (markup.marks.isEmpty()) {
+            true -> content.setText(text)
+            false -> setBlockSpannableText(content, markup)
+        }
+
+    private fun setBlockSpannableText(content: TextInputWidget, markup: Markup) =
+        when (markup.marks.any { it.type == Markup.Type.MENTION }) {
+            true -> setSpannableWithMention(content, markup)
+            false -> setSpannable(content, markup)
+        }
+
+    private fun setSpannable(content: TextInputWidget, markup: Markup) {
+        content.setText(markup.toSpannable(), TextView.BufferType.SPANNABLE)
+    }
+
+    private fun setSpannableWithMention(content: TextInputWidget, markup: Markup) {
+        with(content) {
+            val sizes = getMentionImageSizeAndPadding()
+            setText(
+                markup.toSpannable(
+                    context = context,
+                    mentionImageSize = sizes.first,
+                    mentionImagePadding = sizes.second,
+                    click = {},
+                    onImageReady = { param -> refreshMentionSpan(content, param) }
+                ),
+                TextView.BufferType.SPANNABLE
+            )
+        }
+    }
+
+    private fun refreshMentionSpan(content: TextInputWidget, param: String) {
+        content.text?.let { editable ->
+            val spans = editable.getSpans(
+                0,
+                editable.length,
+                MentionSpan::class.java
+            )
+            spans.forEach { span ->
+                if (span.param == param) {
+                    editable.setSpan(
+                        span,
+                        editable.getSpanStart(span),
+                        editable.getSpanEnd(span),
+                        Markup.MENTION_SPANNABLE_FLAG
+                    )
+                }
+            }
+        }
+    }
+
+    open fun getMentionImageSizeAndPadding(): Pair<Int, Int> =
+        Pair(
+            first = resources.getDimensionPixelSize(com.agileburo.anytype.core_ui.R.dimen.mention_span_image_size_default),
+            second = resources.getDimensionPixelSize(com.agileburo.anytype.core_ui.R.dimen.mention_span_image_padding_default)
+        )
 
     private fun createActionBarItem(
         type: ActionItemType,

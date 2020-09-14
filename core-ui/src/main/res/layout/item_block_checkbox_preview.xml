@@ -17,7 +17,7 @@
         android:contentDescription="@string/content_description_checkbox_pic"
         android:src="@drawable/selector_block_checkbox" />
 
-    <com.agileburo.anytype.core_ui.widgets.text.DefaultTextWidget
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
         android:layout_marginStart="4dp"
         android:id="@+id/checkboxContent"
         style="@style/BlockCheckboxContentStyle"

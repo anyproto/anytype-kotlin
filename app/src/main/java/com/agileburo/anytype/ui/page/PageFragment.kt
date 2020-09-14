@@ -647,8 +647,7 @@ open class PageFragment :
                             blurContainer()
                             navigateToBlockActionPreview(command)
                         } else {
-                            blurContainerWithAnimation(100)
-                            delay(100)
+                            blurContainer()
                             navigateToBlockActionPreview(command)
                         }
                     }
@@ -688,15 +687,6 @@ open class PageFragment :
                 }
             }
         }
-    }
-
-    private fun blurContainerWithAnimation(millis: Int) {
-        Blurry.with(context)
-            .radius(12)
-            .sampling(6)
-            .async()
-            .animate(millis)
-            .onto(root)
     }
 
     private fun blurContainer() {

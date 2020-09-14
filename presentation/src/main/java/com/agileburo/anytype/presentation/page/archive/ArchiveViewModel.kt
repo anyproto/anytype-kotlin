@@ -103,6 +103,10 @@ class ArchiveViewModel(
         }
     }
 
+    fun onBackButtonPressed() {
+        proceedWithExitingToDesktop()
+    }
+
     private fun startObservingErrors() {
         viewModelScope.launch {
             orchestrator.proxies.errors

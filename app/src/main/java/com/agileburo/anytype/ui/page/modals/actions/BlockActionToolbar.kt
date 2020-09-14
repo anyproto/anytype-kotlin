@@ -109,6 +109,7 @@ abstract class BlockActionToolbar : Fragment() {
             is BlockView.MediaPlaceholder.Video -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             is BlockView.Error.Video -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             is BlockView.Page -> addButtons(view, ACTIONS.PAGE)
+            is BlockView.PageArchive -> addButtons(view, ACTIONS.PAGE_ARCHIVE)
             is BlockView.Divider -> addButtons(view, ACTIONS.DIVIDER)
             is BlockView.MediaPlaceholder.Bookmark -> addButtons(view, ACTIONS.BOOKMARK)
             is BlockView.Media.Bookmark -> addButtons(view, ACTIONS.BOOKMARK)
@@ -454,6 +455,12 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Duplicate,
             ActionItemType.Divider,
             ActionItemType.MoveTo
+        )
+
+        val PAGE_ARCHIVE = listOf(
+            ActionItemType.AddBelow,
+            ActionItemType.DividerExtended,
+            ActionItemType.Delete
         )
 
         val TEXT = listOf(

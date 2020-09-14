@@ -2,11 +2,15 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="1dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="1dp"
     android:background="@drawable/item_block_multi_select_mode_selector"
     android:paddingStart="12dp"
-    android:paddingEnd="12dp"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:paddingEnd="12dp">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/pageGuideline"
@@ -45,7 +49,7 @@
 
     <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/pageTitle"
-        style="@style/BlockPageContentStyle"
+        style="@style/BlockPageArchivedContentStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@null"
@@ -53,6 +57,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/pageIconContainer"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Partnership terms" />
+        tools:text="Partnership terms Partnership terms Partnership terms Partnership terms" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

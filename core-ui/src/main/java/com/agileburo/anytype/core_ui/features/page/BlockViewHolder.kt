@@ -52,6 +52,7 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_NUMBERED = 9
         const val HOLDER_TOGGLE = 10
         const val HOLDER_PAGE = 13
+        const val HOLDER_PAGE_ARCHIVE = 37
         const val HOLDER_DIVIDER = 16
         const val HOLDER_HIGHLIGHT = 17
 

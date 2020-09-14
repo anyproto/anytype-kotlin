@@ -21,6 +21,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.MediaPlaceholder.Video -> copy(isSelected = newSelection)
     is BlockView.Error.Video -> copy(isSelected = newSelection)
     is BlockView.Page -> copy(isSelected = newSelection)
+    is BlockView.PageArchive -> copy(isSelected = newSelection)
     is BlockView.MediaPlaceholder.Bookmark -> copy(isSelected = newSelection)
     is BlockView.Media.Bookmark -> copy(isSelected = newSelection)
     is BlockView.Error.Bookmark -> copy(isSelected = newSelection)

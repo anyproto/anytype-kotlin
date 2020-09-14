@@ -15,10 +15,7 @@ import com.agileburo.anytype.core_ui.features.editor.holders.media.Bookmark
 import com.agileburo.anytype.core_ui.features.editor.holders.media.File
 import com.agileburo.anytype.core_ui.features.editor.holders.media.Picture
 import com.agileburo.anytype.core_ui.features.editor.holders.media.Video
-import com.agileburo.anytype.core_ui.features.editor.holders.other.Code
-import com.agileburo.anytype.core_ui.features.editor.holders.other.Divider
-import com.agileburo.anytype.core_ui.features.editor.holders.other.Page
-import com.agileburo.anytype.core_ui.features.editor.holders.other.Title
+import com.agileburo.anytype.core_ui.features.editor.holders.other.*
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.agileburo.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
@@ -44,6 +41,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HIGHLIGHT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_NUMBERED
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE_ARCHIVE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PARAGRAPH
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_ERROR
@@ -282,6 +280,15 @@ class BlockAdapter(
                 Page(
                     view = inflater.inflate(
                         R.layout.item_block_page,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_PAGE_ARCHIVE -> {
+                PageArchive(
+                    view = inflater.inflate(
+                        R.layout.item_block_page_archived,
                         parent,
                         false
                     )
@@ -555,6 +562,12 @@ class BlockAdapter(
                         )
                     }
                     is Page -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
+                    is PageArchive -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -834,6 +847,12 @@ class BlockAdapter(
             is Page -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Page,
+                    clicked = onClickListener
+                )
+            }
+            is PageArchive -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.PageArchive,
                     clicked = onClickListener
                 )
             }

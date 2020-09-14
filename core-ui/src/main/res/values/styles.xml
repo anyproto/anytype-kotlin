@@ -96,7 +96,16 @@
         <item name="android:paddingBottom">3dp</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+
+    <style name="BlockPageArchivedContentStyle">
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:paddingTop">3dp</item>
+        <item name="android:paddingBottom">3dp</item>
+        <item name="android:textColor">#ACA996</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="BlockBulletContentStyle">

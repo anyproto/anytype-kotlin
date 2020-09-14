@@ -20,6 +20,7 @@ import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_HIGHLIGHT
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_NUMBERED
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE_ARCHIVE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PARAGRAPH
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_ERROR
@@ -708,7 +709,6 @@ sealed class BlockView : ViewType, Parcelable {
      * @property text a page's name
      * @property emoji a page's emoji (if present)
      * @property isEmpty this property determines whether this page is empty or not
-     * @property isArchived this property determines whether this page is archived or not
      */
     @Parcelize
     data class Page(
@@ -718,10 +718,29 @@ sealed class BlockView : ViewType, Parcelable {
         var text: String? = null,
         val emoji: String?,
         val image: String?,
-        val isEmpty: Boolean = false,
-        val isArchived: Boolean = false
+        val isEmpty: Boolean = false
     ) : BlockView(), Indentable, Selectable {
         override fun getViewType() = HOLDER_PAGE
+    }
+
+    /**
+     * UI-model for blocks containing archived page links.
+     * @property id block's id
+     * @property text a page's name
+     * @property emoji a page's emoji (if present)
+     * @property isEmpty this property determines whether this page is empty or not
+     */
+    @Parcelize
+    data class PageArchive(
+        override val id: String,
+        override val indent: Int,
+        override val isSelected: Boolean = false,
+        var text: String? = null,
+        val emoji: String?,
+        val image: String?,
+        val isEmpty: Boolean = false
+    ) : BlockView(), Indentable, Selectable {
+        override fun getViewType() = HOLDER_PAGE_ARCHIVE
     }
 
     /**

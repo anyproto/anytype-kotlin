@@ -249,7 +249,7 @@ class DefaultBlockViewRenderer(
                 }
                 is Content.Link -> {
                     counter.reset()
-                    result.add(page(block, content, indent, details))
+                    result.add(toPages(block, content, indent, details))
                 }
                 is Content.File -> {
                     counter.reset()
@@ -621,12 +621,50 @@ class DefaultBlockViewRenderer(
         isFocused = block.id == focus.id
     )
 
+    private fun toPages(
+        block: Block,
+        content: Content.Link,
+        indent: Int,
+        details: Block.Details
+    ): BlockView {
+        val isArchived = details.details[content.target]?.isArchived
+        return if (isArchived == true) {
+            pageArchive(block, content, indent, details)
+        } else {
+            page(block, content, indent, details)
+        }
+    }
+
     private fun page(
         block: Block,
         content: Content.Link,
         indent: Int,
         details: Block.Details
     ): BlockView.Page = BlockView.Page(
+        id = block.id,
+        isEmpty = true,
+        emoji = details.details[content.target]?.iconEmoji?.let { name ->
+            if (name.isNotEmpty())
+                name
+            else
+                null
+        },
+        image = details.details[content.target]?.iconImage?.let { name ->
+            if (name.isNotEmpty())
+                urlBuilder.image(name)
+            else
+                null
+        },
+        text = details.details[content.target]?.name,
+        indent = indent
+    )
+
+    private fun pageArchive(
+        block: Block,
+        content: Content.Link,
+        indent: Int,
+        details: Block.Details
+    ): BlockView.PageArchive = BlockView.PageArchive(
         id = block.id,
         isEmpty = true,
         emoji = details.details[content.target]?.iconEmoji?.let { name ->

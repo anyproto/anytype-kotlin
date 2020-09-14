@@ -47,27 +47,14 @@
 
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/more"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="3dp"
-        android:src="@drawable/ic_block_more"
-        android:visibility="invisible"
-        android:contentDescription="@string/content_description_more_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/pageTitle"
         style="@style/BlockPageContentStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@null"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/more"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/pageIconContainer"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Partnership terms" />

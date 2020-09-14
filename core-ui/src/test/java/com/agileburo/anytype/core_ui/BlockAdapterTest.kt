@@ -1175,7 +1175,6 @@ class BlockAdapterTest {
             indent = MockDataFactory.randomInt(),
             emoji = null,
             isEmpty = MockDataFactory.randomBoolean(),
-            isArchived = MockDataFactory.randomBoolean(),
             image = null
         )
 

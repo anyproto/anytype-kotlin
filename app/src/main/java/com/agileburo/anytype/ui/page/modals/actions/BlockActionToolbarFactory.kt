@@ -26,6 +26,7 @@ object BlockActionToolbarFactory {
         is BlockView.MediaPlaceholder.Video -> newInstance(block, dimensions)
         is BlockView.Error.Video -> newInstance(block, dimensions)
         is BlockView.Page -> newInstance(block, dimensions)
+        is BlockView.PageArchive -> newInstance(block, dimensions)
         is BlockView.Divider -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.Bookmark -> newInstance(block, dimensions)
         is BlockView.Media.Bookmark -> newInstance(block, dimensions)
@@ -41,6 +42,17 @@ object BlockActionToolbarFactory {
 
     fun newInstance(block: BlockView.Page, dimensions: BlockDimensions): PageBlockActionToolbar =
         PageBlockActionToolbar().apply {
+            arguments = bundleOf(
+                BlockActionToolbar.ARG_BLOCK to block,
+                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
+            )
+        }
+
+    fun newInstance(
+        block: BlockView.PageArchive,
+        dimensions: BlockDimensions
+    ): PageArchiveBlockActionToolbar =
+        PageArchiveBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
                 BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions

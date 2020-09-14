@@ -5,13 +5,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.features.editor.holders.other.Page
+import com.agileburo.anytype.core_ui.features.editor.holders.other.PageArchive
 import com.agileburo.anytype.core_ui.features.editor.holders.other.Title
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_ARCHIVE_TITLE
-import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE
+import com.agileburo.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PAGE_ARCHIVE
 import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_utils.ext.typeOf
 import timber.log.Timber
@@ -42,10 +42,10 @@ class ArchiveAdapter(
                     )
                 )
             }
-            HOLDER_PAGE -> {
-                Page(
+            HOLDER_PAGE_ARCHIVE -> {
+                PageArchive(
                     view = inflater.inflate(
-                        R.layout.item_block_page,
+                        R.layout.item_block_page_archived,
                         parent,
                         false
                     )
@@ -59,9 +59,9 @@ class ArchiveAdapter(
 
     override fun onBindViewHolder(holder: BlockViewHolder, position: Int) {
         when (holder) {
-            is Page -> {
+            is PageArchive -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Page,
+                    item = blocks[position] as BlockView.PageArchive,
                     clicked = onClickListener
                 )
             }
@@ -86,7 +86,7 @@ class ArchiveAdapter(
             onBindViewHolder(holder, position)
         } else {
             when (holder) {
-                is Page -> {
+                is PageArchive -> {
                     holder.processChangePayload(
                         payloads = payloads.typeOf(),
                         item = blocks[position]

@@ -34,6 +34,7 @@ import com.agileburo.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.action_toolbar_page_icon.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page_icon),
@@ -69,11 +70,15 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
 
     private fun setIcon() {
         arguments?.getString(EMOJI_KEY)?.let { unicode ->
-            Glide
-                .with(emojiIconImage)
-                .load(Emojifier.uri(unicode))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(emojiIconImage)
+            try {
+                Glide
+                    .with(emojiIconImage)
+                    .load(Emojifier.uri(unicode))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(emojiIconImage)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error while setting emoji icon for: $unicode")
+            }
         }
         arguments?.getString(IMAGE_KEY)?.let { url ->
             Glide

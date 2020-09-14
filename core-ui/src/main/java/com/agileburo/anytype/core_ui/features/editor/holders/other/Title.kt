@@ -153,11 +153,15 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         private fun setEmoji(item: BlockView.Title.Document) {
             try {
                 if (item.emoji != null) {
-                    Glide
-                        .with(emoji)
-                        .load(Emojifier.uri(item.emoji))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(emoji)
+                    try {
+                        Glide
+                            .with(emoji)
+                            .load(Emojifier.uri(item.emoji))
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(emoji)
+                    } catch (e: Throwable) {
+                        Timber.e(e, "Error while setting emoji icon for: ${item.emoji}")
+                    }
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Could not set emoji icon")

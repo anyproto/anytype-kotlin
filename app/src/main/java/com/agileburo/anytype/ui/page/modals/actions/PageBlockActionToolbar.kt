@@ -10,6 +10,7 @@ import com.agileburo.anytype.core_utils.ext.visible
 import com.agileburo.anytype.emojifier.Emojifier
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import timber.log.Timber
 
 class PageBlockActionToolbar : BlockActionToolbar() {
 
@@ -38,11 +39,15 @@ class PageBlockActionToolbar : BlockActionToolbar() {
         when {
             block.emoji != null -> {
                 image.setImageDrawable(null)
-                Glide
-                    .with(emoji)
-                    .load(Emojifier.uri(block.emoji!!))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(emoji)
+                try {
+                    Glide
+                        .with(emoji)
+                        .load(Emojifier.uri(block.emoji!!))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(emoji)
+                } catch (e: Throwable) {
+                    Timber.e(e, "Error while setting emoji icon for: ${block.emoji}")
+                }
             }
             block.image != null -> {
                 image.visible()

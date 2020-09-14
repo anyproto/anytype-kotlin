@@ -10,6 +10,7 @@ import com.agileburo.anytype.emojifier.Emojifier
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_block_page.view.*
+import timber.log.Timber
 
 class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder, SupportNesting {
 
@@ -35,11 +36,15 @@ class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder
         when {
             item.emoji != null -> {
                 image.setImageDrawable(null)
-                Glide
-                    .with(emoji)
-                    .load(Emojifier.uri(item.emoji))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(emoji)
+                try {
+                    Glide
+                        .with(emoji)
+                        .load(Emojifier.uri(item.emoji))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(emoji)
+                } catch (e: Throwable) {
+                    Timber.e(e, "Error while setting emoji icon for: ${item.emoji}")
+                }
             }
             item.image != null -> {
                 image.visible()

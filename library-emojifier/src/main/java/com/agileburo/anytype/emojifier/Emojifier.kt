@@ -13,6 +13,7 @@ object Emojifier {
      * @param unicode emoji unicode
      * @return uri for loading emoji as image
      */
+    @Throws(IllegalStateException::class)
     fun uri(unicode: String): String {
         val (page, index) = search(unicode)
         return uri(page, index)
@@ -31,6 +32,7 @@ object Emojifier {
      * @param unicode emoji unicode
      * @return a pair constisting of emoji's page and emoji's index for this [unicode]
      */
+    @Throws(IllegalStateException::class)
     private fun search(unicode: String): Pair<Int, Int> {
         val cached = cache[unicode]
 

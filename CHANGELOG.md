@@ -4,6 +4,7 @@
 
 ### New features 🚀
 
+* Archive (#547)
 * Link to existing object (#770)
 * Move-to from one document to other document (#770)
 
@@ -14,6 +15,7 @@
 
 ### Fixes & tech 🚒
 
+* Handle exceptions when emojifier fails to provide uri for emoji icon (#856)
 * Render children for all text blocks (#846)
 * Scroll-and-move restrictions issues (#847)
 * Cannot add block after document's title via add-block-menu (#827)

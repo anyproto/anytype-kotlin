@@ -11,6 +11,7 @@ import com.agileburo.anytype.emojifier.Emojifier
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_mention.view.*
+import timber.log.Timber
 
 class MentionAdapter(
     private var data: ArrayList<Mention>,
@@ -97,11 +98,15 @@ class MentionAdapter(
             tvTitle.text = item.title
             when {
                 !item.emoji.isNullOrBlank() -> {
-                    Glide
-                        .with(image)
-                        .load(Emojifier.uri(item.emoji))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(image)
+                    try {
+                        Glide
+                            .with(image)
+                            .load(Emojifier.uri(item.emoji))
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(image)
+                    } catch (e: Throwable) {
+                        Timber.e(e, "Error while setting emoji icon for: ${item.emoji}")
+                    }
                 }
                 !item.image.isNullOrBlank() -> {
                     Glide

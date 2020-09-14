@@ -128,18 +128,66 @@ class DefaultBlockViewRenderer(
                         Content.Text.Style.H1 -> {
                             counter.reset()
                             result.add(headerOne(mode, block, focus, content, indent))
+                            if (block.children.isNotEmpty()) {
+                                result.addAll(
+                                    render(
+                                        mode = mode,
+                                        focus = focus,
+                                        indent = indent.inc(),
+                                        anchor = block.id,
+                                        root = root,
+                                        details = details
+                                    )
+                                )
+                            }
                         }
                         Content.Text.Style.H2 -> {
                             counter.reset()
                             result.add(headerTwo(mode, block, focus, content, indent))
+                            if (block.children.isNotEmpty()) {
+                                result.addAll(
+                                    render(
+                                        mode = mode,
+                                        focus = focus,
+                                        indent = indent.inc(),
+                                        anchor = block.id,
+                                        root = root,
+                                        details = details
+                                    )
+                                )
+                            }
                         }
                         Content.Text.Style.H3, Content.Text.Style.H4 -> {
                             counter.reset()
                             result.add(headerThree(mode, block, focus, content, indent))
+                            if (block.children.isNotEmpty()) {
+                                result.addAll(
+                                    render(
+                                        mode = mode,
+                                        focus = focus,
+                                        indent = indent.inc(),
+                                        anchor = block.id,
+                                        root = root,
+                                        details = details
+                                    )
+                                )
+                            }
                         }
                         Content.Text.Style.QUOTE -> {
                             counter.reset()
                             result.add(highlight(mode, block, focus, content, indent))
+                            if (block.children.isNotEmpty()) {
+                                result.addAll(
+                                    render(
+                                        mode = mode,
+                                        focus = focus,
+                                        indent = indent.inc(),
+                                        anchor = block.id,
+                                        root = root,
+                                        details = details
+                                    )
+                                )
+                            }
                         }
                         Content.Text.Style.BULLET -> {
                             counter.reset()
@@ -176,6 +224,18 @@ class DefaultBlockViewRenderer(
                         Content.Text.Style.CODE_SNIPPET -> {
                             counter.reset()
                             result.add(code(mode, block, content, focus))
+                            if (block.children.isNotEmpty()) {
+                                result.addAll(
+                                    render(
+                                        mode = mode,
+                                        focus = focus,
+                                        indent = indent.inc(),
+                                        anchor = block.id,
+                                        root = root,
+                                        details = details
+                                    )
+                                )
+                            }
                         }
                     }
                 }

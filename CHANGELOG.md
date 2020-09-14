@@ -14,6 +14,7 @@
 
 ### Fixes & tech 🚒
 
+* Render children for all text blocks (#846)
 * Scroll-and-move restrictions issues (#847)
 * Cannot add block after document's title via add-block-menu (#827)
 * When navigating to a document via search-screen, open this new document without passing by dashboard-screen (#830)

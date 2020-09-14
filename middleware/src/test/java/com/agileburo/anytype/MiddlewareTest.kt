@@ -488,6 +488,7 @@ class MiddlewareTest {
             .setStyle(Models.Block.Content.Text.Style.Checkbox)
             .setContextId(context)
             .setBlockId(command.target)
+            .setMode(Block.Split.Request.Mode.TOP)
             .build()
 
         service.stub {

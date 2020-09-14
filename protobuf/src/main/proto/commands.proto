@@ -448,6 +448,16 @@ message Rpc {
                 string blockId = 2;
                 anytype.model.Range range = 3;
                 anytype.model.Block.Content.Text.Style style = 4;
+                Mode mode = 5;
+
+                enum Mode {
+                    // new block will be created under existing
+                    BOTTOM = 0;
+                    // new block will be created above existing
+                    TOP = 1;
+                    // new block will be created as the first children of existing
+                    INNER = 2;
+                }
             }
 
             message Response {
@@ -532,6 +542,13 @@ message Rpc {
                 string textSlot = 6;
                 string htmlSlot = 7;
                 repeated anytype.model.Block anySlot = 8;
+                repeated File fileSlot = 9;
+
+                message File {
+                    string name = 1;
+                    bytes data = 2;
+                    string localPath = 3;
+                }
             }
 
             message Response {
@@ -1415,6 +1432,31 @@ message Rpc {
                         }
                     }
                 }
+
+                message Record {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2;
+                        google.protobuf.Struct record = 3;
+                    }
+
+                    message Response {
+                        Error error = 1;
+                        google.protobuf.Struct record = 2;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
             }
 
             // common simple block command
@@ -1500,6 +1542,35 @@ message Rpc {
             }
         }
 
+        message Update {
+            message Dataview {
+                message Record {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2;
+                        string recordId = 3;
+                        google.protobuf.Struct record = 4;
+                    }
+
+                    message Response {
+                        Error error = 1;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         message Delete {
             message Dataview {
                 message View {
@@ -1507,6 +1578,31 @@ message Rpc {
                         string contextId = 1; // id of the context block
                         string blockId = 2; // id of the dataview
                         string viewId = 4; // id of the view to remove
+                    }
+
+                    message Response {
+                        Error error = 1;
+                        ResponseEvent event = 2;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+
+                message Record {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2;
+                        string recordId = 3;
                     }
 
                     message Response {
@@ -2081,8 +2177,15 @@ message Rpc {
     }
 
     message Navigation {
+        enum Context {
+            Navigation = 0;
+            MoveTo = 1; // do not show sets/archive
+            LinkTo = 2; // same for mention, do not show sets/archive
+        }
+
         message ListPages {
             message Request {
+                Context context = 1;
             }
 
             message Response {
@@ -2109,6 +2212,7 @@ message Rpc {
         message GetPageInfoWithLinks {
             message Request {
                 string pageId = 1;
+                Context context = 2;
             }
 
             message Response {

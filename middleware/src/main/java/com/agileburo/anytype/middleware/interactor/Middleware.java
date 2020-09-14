@@ -696,12 +696,15 @@ public class Middleware {
                 .setTo(command.getIndex())
                 .build();
 
+        Block.Split.Request.Mode mode = Block.Split.Request.Mode.TOP;
+
         Block.Split.Request request = Block.Split.Request
                 .newBuilder()
                 .setBlockId(command.getTarget())
                 .setContextId(command.getContext())
                 .setStyle(style)
                 .setRange(range)
+                .setMode(mode)
                 .build();
 
         if (BuildConfig.DEBUG) {

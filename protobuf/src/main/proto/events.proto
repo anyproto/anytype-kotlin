@@ -581,6 +581,7 @@ message Model {
 
         enum Type {
             DropFiles = 0;
+            Import = 1;
         }
 
         enum State {
@@ -594,6 +595,7 @@ message Model {
         message Progress {
             int64 total = 1;
             int64 done = 2;
+            string message = 3;
         }
     }
 }

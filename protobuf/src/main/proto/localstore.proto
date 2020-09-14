@@ -4,16 +4,21 @@ option go_package = "github.com/anytypeio/go-anytype-library/pb/model";
 
 import "google/protobuf/struct.proto";
 
-message State {
-    map<string, uint64> state = 1;
-}
-
 message PageInfo {
     string id = 1;
     google.protobuf.Struct details = 2;
     string snippet = 3;
-    State state = 4;
     bool hasInboundLinks = 6;
+    Type pageType = 7;
+
+    enum Type {
+        Page = 0;
+        Home = 1;
+        ProfilePage = 2;
+        Archive = 3;
+
+        Set = 5;
+    }
 }
 
 message PageDetails {
@@ -34,19 +39,16 @@ message PageInfoWithLinks {
     string id = 1;
     PageInfo info = 2;
     PageLinksInfo links = 3;
-    State state = 4;
 }
 
 message PageInfoWithOutboundLinks {
     string id = 1;
     PageInfo info = 2;
     repeated PageInfo outboundLinks = 3;
-    State state = 4;
 }
 
 message PageInfoWithOutboundLinksIDs {
     string id = 1;
     PageInfo info = 2;
     repeated string outboundLinks = 3;
-    State state = 4;
 }

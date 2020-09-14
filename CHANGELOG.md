@@ -20,6 +20,10 @@
 * Inconsistent logic when adding markup in certain corner cases (#509)
 * If you change checkbox's text color and then check off this checkbox, its text color always becomes black whereas it should have the color that you've set before (#785)
 
+### Middleware ⚙
+
+* Updated middleware protocol to `0.13.8` (#851)
+
 ## Version 0.0.46
 
 ### New features 🚀

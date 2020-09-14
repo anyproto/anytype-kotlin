@@ -70,11 +70,11 @@ interface TextBlockHolder : TextHolder {
     fun setBackgroundColor(color: String? = null) {
         Timber.d("Setting background color: $color")
         if (color != null) {
-            root.setBackgroundColor(
-                ThemeColor.values().first { value ->
-                    value.title == color
-                }.background
-            )
+            val value = ThemeColor.values().find { value -> value.title == color }
+            if (value != null)
+                root.setBackgroundColor(value.background)
+            else
+                Timber.e("Could not find value for background color: $color")
         } else {
             root.background = null
         }

@@ -15,6 +15,7 @@
 
 ### Fixes & tech 🚒
 
+* Safely setting text color and background color (#858)
 * Handle exceptions when emojifier fails to provide uri for emoji icon (#856)
 * Render children for all text blocks (#846)
 * Scroll-and-move restrictions issues (#847)

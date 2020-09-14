@@ -41,9 +41,9 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
     override fun render(state: ViewState<ProfileView>) {
         when (state) {
             is ViewState.Init -> {
-                wallpaperText.setOnClickListener { toast("Not implemented yet") }
+                wallpaperText.setOnClickListener { toast("Coming soon...") }
                 logoutButton.setOnClickListener { vm.onLogoutClicked() }
-                pinCodeText.setOnClickListener { toast("Not implemented yet") }
+                pinCodeText.setOnClickListener { toast("Coming soon...") }
                 keychainPhrase.setOnClickListener { vm.onKeyChainPhraseClicked() }
                 backButton.setOnClickListener { vm.onBackButtonClicked() }
                 profileCardContainer.setOnClickListener { vm.onProfileCardClicked() }

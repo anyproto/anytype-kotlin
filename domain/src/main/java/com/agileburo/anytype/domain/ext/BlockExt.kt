@@ -16,6 +16,17 @@ fun List<Block>.asMap(): Map<String, List<Block>> {
 }
 
 /**
+ * Returns all children ids for [parent]
+ */
+fun Map<Id, List<Block>>.children(parent: Id): List<Id> {
+    val children = getValue(parent)
+    val ids = children.map { it.id }
+    val result = mutableListOf<Id>().apply { addAll(ids) }
+    ids.forEach { id -> result.addAll(children(id)) }
+    return result
+}
+
+/**
  * Transform block structure for rendering purposes.
  * @param anchor a root or a parent block for some children blocks.
  */

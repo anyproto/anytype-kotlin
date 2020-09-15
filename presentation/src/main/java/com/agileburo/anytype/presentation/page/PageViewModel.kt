@@ -1476,13 +1476,22 @@ class PageViewModel(
 
     fun onMultiSelectModeDeleteClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnDelete)
+
+        val exclude = mutableSetOf<String>()
+
         val selected = currentSelection().toList()
+
+        blocks.filter { selected.contains(it.id) }.forEach { block ->
+            block.children.forEach { if (selected.contains(it)) exclude.add(it) }
+        }
+
         clearSelections()
+
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Unlink(
                     context = context,
-                    targets = selected,
+                    targets = selected - exclude,
                     next = null,
                     previous = null,
                     effects = listOf(SideEffect.ClearMultiSelectSelection)
@@ -1895,14 +1904,36 @@ class PageViewModel(
 
     private fun onBlockMultiSelectClicked(target: Id) {
         (stateData.value as? ViewState.Success)?.let { state ->
-            toggleSelection(target)
-            onMultiSelectModeBlockClicked()
-            val update = state.blocks.map { block ->
-                if (block.id == target)
-                    block.updateSelection(newSelection = isSelected(target))
-                else
-                    block
+
+            var allow = true
+
+            val block = blocks.first { it.id == target }
+
+            val parent = blocks.find { it.children.contains(target) }
+
+            if (parent != null && parent.id != context) {
+                if (isSelected(parent.id)) allow = false
             }
+
+            if (!allow) return
+
+            toggleSelection(target)
+
+            if (isSelected(target)) {
+                block.children.forEach { child -> select(child) }
+            } else {
+                block.children.forEach { child -> unselect(child) }
+            }
+
+            onMultiSelectModeBlockClicked()
+
+            val update = state.blocks.map { view ->
+                if (view.id == target || block.children.contains(view.id))
+                    view.updateSelection(newSelection = isSelected(target))
+                else
+                    view
+            }
+
             stateData.postValue(ViewState.Success(update))
         }
     }
@@ -1926,6 +1957,8 @@ class PageViewModel(
         target: Id,
         ratio: Float
     ) {
+
+        val exclude = mutableSetOf<String>()
 
         var moveTarget = target
 
@@ -1968,6 +2001,10 @@ class PageViewModel(
                 context
             }
 
+            blocks.filter { selected.contains(it.id) }.forEach { block ->
+                block.children.forEach { if (selected.contains(it)) exclude.add(it) }
+            }
+
             clearSelections()
 
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
@@ -1980,7 +2017,7 @@ class PageViewModel(
                         context = context,
                         target = moveTarget,
                         targetContext = targetContext,
-                        blocks = selected,
+                        blocks = selected - exclude,
                         position = position
                     )
                 )
@@ -1994,6 +2031,10 @@ class PageViewModel(
                 moveTarget = targetBlock.children.first()
             }
 
+            blocks.filter { selected.contains(it.id) }.forEach { block ->
+                block.children.forEach { if (selected.contains(it)) exclude.add(it) }
+            }
+
             clearSelections()
 
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
@@ -2006,7 +2047,7 @@ class PageViewModel(
                         context = context,
                         target = moveTarget,
                         targetContext = targetContext,
-                        blocks = selected,
+                        blocks = selected - exclude,
                         position = position
                     )
                 )

@@ -389,6 +389,340 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         clearPendingCoroutines()
     }
 
+    @Test
+    fun `should select all children when selecting parent and unselect children when unselecting parent`() {
+
+        // SETUP
+
+        val child1 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val child2 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val parent = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = listOf(child1.id, child2.id),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(parent.id)
+        )
+
+        val document = listOf(page, parent, child1, child2)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        // Try entering multi-select mode
+
+        vm.apply {
+            onBlockFocusChanged(id = parent.id, hasFocus = true)
+            onEnterMultiSelectModeClicked()
+        }
+
+        // Checking editor entered multi-select mode
+
+        coroutineTestRule.advanceTime(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
+
+        val title = BlockView.Title.Document(
+            id = root,
+            isFocused = false,
+            text = null,
+            mode = BlockView.Mode.READ
+        )
+
+        val parentView = BlockView.Text.Paragraph(
+            id = parent.id,
+            isSelected = false,
+            isFocused = true,
+            marks = emptyList(),
+            backgroundColor = null,
+            indent = 0,
+            text = parent.content<Block.Content.Text>().text,
+            mode = BlockView.Mode.READ
+        )
+
+        val child1View = BlockView.Text.Paragraph(
+            id = child1.id,
+            isSelected = false,
+            isFocused = false,
+            marks = emptyList(),
+            backgroundColor = null,
+            indent = 1,
+            text = child1.content<Block.Content.Text>().text,
+            mode = BlockView.Mode.READ
+        )
+
+        val child2View = BlockView.Text.Paragraph(
+            id = child2.id,
+            isSelected = false,
+            isFocused = false,
+            marks = emptyList(),
+            backgroundColor = null,
+            indent = 1,
+            text = child2.content<Block.Content.Text>().text,
+            mode = BlockView.Mode.READ
+        )
+
+        vm.state.test().apply {
+            assertValue(
+                ViewState.Success(
+                    blocks = listOf(
+                        title,
+                        parentView,
+                        child1View,
+                        child2View
+                    )
+                )
+            )
+        }
+
+        // Perform click, to select parent
+
+        vm.onTextInputClicked(
+            target = parent.id
+        )
+
+        // Checking whether parent and its children are selected
+
+        vm.state.test().apply {
+            assertValue(
+                ViewState.Success(
+                    blocks = listOf(
+                        title,
+                        parentView.copy(isSelected = true),
+                        child1View.copy(isSelected = true),
+                        child2View.copy(isSelected = true)
+                    )
+                )
+            )
+        }
+
+        // Perform click, to unselect parent
+
+        vm.onTextInputClicked(
+            target = parent.id
+        )
+
+        // Checking whether parent and its children are not selected
+
+        vm.state.test().apply {
+            assertValue(
+                ViewState.Success(
+                    blocks = listOf(
+                        title,
+                        parentView.copy(isSelected = false),
+                        child1View.copy(isSelected = false),
+                        child2View.copy(isSelected = false)
+                    )
+                )
+            )
+        }
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `if parent is selected, it is not possible to unselect its child`() {
+
+        // SETUP
+
+        val child1 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val child2 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val parent = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = listOf(child1.id, child2.id),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(parent.id)
+        )
+
+        val document = listOf(page, parent, child1, child2)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        // Try entering multi-select mode
+
+        vm.apply {
+            onBlockFocusChanged(id = parent.id, hasFocus = true)
+            onEnterMultiSelectModeClicked()
+        }
+
+        // Checking editor entered multi-select mode
+
+        coroutineTestRule.advanceTime(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
+
+        val title = BlockView.Title.Document(
+            id = root,
+            isFocused = false,
+            text = null,
+            mode = BlockView.Mode.READ
+        )
+
+        val parentView = BlockView.Text.Paragraph(
+            id = parent.id,
+            isSelected = false,
+            isFocused = true,
+            marks = emptyList(),
+            backgroundColor = null,
+            indent = 0,
+            text = parent.content<Block.Content.Text>().text,
+            mode = BlockView.Mode.READ
+        )
+
+        val child1View = BlockView.Text.Paragraph(
+            id = child1.id,
+            isSelected = false,
+            isFocused = false,
+            marks = emptyList(),
+            backgroundColor = null,
+            indent = 1,
+            text = child1.content<Block.Content.Text>().text,
+            mode = BlockView.Mode.READ
+        )
+
+        val child2View = BlockView.Text.Paragraph(
+            id = child2.id,
+            isSelected = false,
+            isFocused = false,
+            marks = emptyList(),
+            backgroundColor = null,
+            indent = 1,
+            text = child2.content<Block.Content.Text>().text,
+            mode = BlockView.Mode.READ
+        )
+
+        vm.state.test().apply {
+            assertValue(
+                ViewState.Success(
+                    blocks = listOf(
+                        title,
+                        parentView,
+                        child1View,
+                        child2View
+                    )
+                )
+            )
+        }
+
+        // Perform click, to select parent
+
+        vm.onTextInputClicked(
+            target = parent.id
+        )
+
+        // Checking whether parent and its children are selected
+
+        vm.state.test().apply {
+            assertValue(
+                ViewState.Success(
+                    blocks = listOf(
+                        title,
+                        parentView.copy(isSelected = true),
+                        child1View.copy(isSelected = true),
+                        child2View.copy(isSelected = true)
+                    )
+                )
+            )
+        }
+
+        // Perform click, to unselect parent
+
+        vm.onTextInputClicked(
+            target = child1.id
+        )
+
+        // Checking whether parent and its children are not selected
+
+        vm.state.test().apply {
+            assertValue(
+                ViewState.Success(
+                    blocks = listOf(
+                        title,
+                        parentView.copy(isSelected = true),
+                        child1View.copy(isSelected = true),
+                        child2View.copy(isSelected = true)
+                    )
+                )
+            )
+        }
+
+        clearPendingCoroutines()
+    }
+
     private fun clearPendingCoroutines() {
         coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)
     }

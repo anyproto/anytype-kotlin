@@ -2,9 +2,9 @@ package com.agileburo.anytype.ui.page.modals.actions
 
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.features.page.BlockView
@@ -24,28 +24,23 @@ class PlaceholderActionToolbar : BlockActionToolbar() {
 
     override fun blockLayout() =
         when (block.getViewType()) {
-            HOLDER_PICTURE_PLACEHOLDER -> R.layout.item_block_picture_placeholder_preview
-            HOLDER_VIDEO_PLACEHOLDER -> R.layout.item_block_video_empty_preview
-            HOLDER_FILE_PLACEHOLDER -> R.layout.item_block_file_placeholder_preview
+            HOLDER_PICTURE_PLACEHOLDER -> R.layout.item_block_picture_placeholder
+            HOLDER_VIDEO_PLACEHOLDER -> R.layout.item_block_video_placeholder
+            HOLDER_FILE_PLACEHOLDER -> R.layout.item_block_file_placeholder
             HOLDER_BOOKMARK_PLACEHOLDER -> R.layout.item_block_bookmark_placeholder
-            else -> R.layout.item_block_picture_placeholder_preview
+            else -> R.layout.item_block_picture_placeholder
         }
 
     override fun getBlock(): BlockView = block
 
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
-        if (block.getViewType() == HOLDER_BOOKMARK_PLACEHOLDER) {
-            initBookmarkPlaceholder(view)
-        }
-        setConstraints()
-    }
-
-    private fun initBookmarkPlaceholder(view: View) {
-        view.findViewById<ConstraintLayout>(R.id.bookmarkPlaceholderRoot)
+        view.findViewById<FrameLayout>(R.id.root)
             .updateLayoutParams<LayoutParams> {
-                this.apply {
-                    rightMargin = 0
-                }
+                topMargin = 0
+                bottomMargin = 0
+                leftMargin = 0
+                rightMargin = 0
             }
+        setConstraints()
     }
 }

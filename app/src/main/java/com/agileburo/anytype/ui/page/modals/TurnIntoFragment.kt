@@ -83,7 +83,6 @@ class TurnIntoFragment : BaseBottomSheetFragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = addBlockOrTurnIntoAdapter
             setHasFixedSize(true)
-            addItemDecoration(SpacingItemDecoration(firstItemSpacingTop = dimen(R.dimen.dp_16)))
         }
     }
 

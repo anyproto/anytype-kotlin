@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.item_block_file_placeholder.view.*
 
 class FilePlaceholder(view: View) : MediaPlaceholder(view) {
 
-    override val root: View = itemView.filePlaceholderRoot
+    override val root: View = itemView
 
     override fun placeholderClick(target: String, clicked: (ListenerType) -> Unit) {
         clicked(ListenerType.File.Placeholder(target))

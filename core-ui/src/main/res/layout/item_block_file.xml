@@ -5,12 +5,13 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="1dp"
+    android:layout_marginEnd="8dp"
     android:layout_marginBottom="1dp"
     android:background="@drawable/item_block_multi_select_mode_selector"
-    android:layout_marginTop="1dp"
-    android:paddingTop="6dp"
-    android:layout_marginEnd="8dp"
-    android:paddingBottom="6dp">
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/fileGuideline"
@@ -26,44 +27,22 @@
         android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp"
         android:contentDescription="@string/content_description_file_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/fileGuideline"
         app:layout_constraintTop_toTopOf="parent"
         tools:background="@drawable/ic_mime_image" />
 
-    <TextView
+    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/filename"
         style="@style/BlockFileFilenameContentStyle"
         android:layout_width="0dp"
-        android:layout_marginStart="7dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/fileSize"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
+        android:background="@null"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/fileIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="W. J. T. Mitchell — There Are No Visual Media.pdf" />
-
-    <TextView
-        android:id="@+id/fileSize"
-        style="@style/BlockFileFileSizeContentStyle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnFileMenu"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="2.1 MB" />
-
-    <ImageView
-        android:id="@+id/btnFileMenu"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="3dp"
-        android:visibility="invisible"
-        android:contentDescription="@string/content_description_more_button"
-        android:src="@drawable/ic_block_more"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

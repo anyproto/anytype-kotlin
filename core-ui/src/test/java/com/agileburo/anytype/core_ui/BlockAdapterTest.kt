@@ -1258,7 +1258,7 @@ class BlockAdapterTest {
 
         check(holder is BookmarkPlaceholder)
 
-        val actual = holder.itemView.bookmarkPlaceholderRoot.marginLeft
+        val actual = holder.itemView.root.marginLeft
 
         val expected = view.indent * holder.dimen(R.dimen.indent)+ holder.dimen(R.dimen.bookmark_default_margin_start)
 

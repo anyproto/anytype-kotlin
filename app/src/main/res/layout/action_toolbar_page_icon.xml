@@ -54,7 +54,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/menu"
         android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:scaleX="0.5"

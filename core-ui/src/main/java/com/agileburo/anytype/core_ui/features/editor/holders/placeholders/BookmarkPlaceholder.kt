@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
 
 class BookmarkPlaceholder(view: View) : MediaPlaceholder(view) {
 
-    override val root: View = itemView.bookmarkPlaceholderRoot
+    override val root: View = itemView
 
     override fun placeholderClick(target: String, clicked: (ListenerType) -> Unit) {
         clicked(ListenerType.Bookmark.Placeholder(target))

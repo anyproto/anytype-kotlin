@@ -1,8 +1,14 @@
 package com.agileburo.anytype.core_ui.features.editor.holders.media
 
+import android.text.SpannableString
 import android.text.format.Formatter
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
 import android.view.View
+import android.widget.TextView
 import com.agileburo.anytype.core_ui.R
+import com.agileburo.anytype.core_ui.common.Markup
+import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_utils.const.MimeTypes
@@ -13,17 +19,35 @@ import kotlinx.android.synthetic.main.item_block_file.view.*
 class File(view: View) : Media(view) {
 
     override val root: View = itemView
-    override val clickContainer: View = root
+    override val clickContainer: View = itemView.filename
     private val icon = itemView.fileIcon
-    private val size = itemView.fileSize
     private val name = itemView.filename
 
     fun bind(item: BlockView.Media.File, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
-        name.text = item.name
-        item.size?.let {
-            size.text = Formatter.formatFileSize(itemView.context, it)
+        name.enableReadMode()
+        if (item.size != null && item.name != null) {
+            val size = Formatter.formatFileSize(itemView.context, item.size)
+            val spannable = SpannableString("${item.name}  $size")
+            val start = item.name.length + 2
+            val end = item.name.length + 2 + size.length
+            spannable.setSpan(
+                RelativeSizeSpan(0.87f),
+                start,
+                end,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
+            spannable.setSpan(
+                ForegroundColorSpan(itemView.context.color(R.color.block_file_size_text_color)),
+                start,
+                end,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
+            name.setText(spannable, TextView.BufferType.SPANNABLE)
+        } else {
+            name.setText(item.name)
         }
+
         when (item.mime?.let { MimeTypes.category(it) }) {
             MimeTypes.Category.PDF -> icon.setImageResource(R.drawable.ic_mime_pdf)
             MimeTypes.Category.IMAGE -> icon.setImageResource(R.drawable.ic_mime_image)

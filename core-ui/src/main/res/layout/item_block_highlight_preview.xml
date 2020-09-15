@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:paddingStart="@dimen/dp_12"
     android:paddingEnd="@dimen/dp_12"
-    android:paddingTop="11dp"
+    android:paddingTop="12dp"
     android:paddingBottom="12dp">
 
     <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget

@@ -1750,7 +1750,9 @@ class PageViewModel(
     }
 
     fun onHideKeyboardClicked() {
-        proceedWithClearingFocus()
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
+        viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
+        viewModelScope.launch { renderCommand.send(Unit) }
     }
 
     private fun proceedWithClearingFocus() {

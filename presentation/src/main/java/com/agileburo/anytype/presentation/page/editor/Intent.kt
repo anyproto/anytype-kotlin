@@ -95,9 +95,9 @@ sealed class Intent {
 
         class Split(
             val context: Id,
-            val target: Id,
-            val style: Block.Content.Text.Style,
-            val index: Int
+            val block: Block,
+            val range: IntRange,
+            val isToggled: Boolean?
         ) : Text()
 
         class Merge(

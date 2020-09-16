@@ -94,6 +94,11 @@ data class Block(
             fun isTitle() = style == Style.TITLE
 
             /**
+             * @return true if this is a toggle block.
+             */
+            fun isToggle() = style == Style.TOGGLE
+
+            /**
              * @return true if this text block is a list item.
              */
             fun isList(): Boolean {

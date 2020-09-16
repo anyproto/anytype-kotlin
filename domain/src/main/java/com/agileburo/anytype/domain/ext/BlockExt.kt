@@ -2,6 +2,7 @@ package com.agileburo.anytype.domain.ext
 
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Block.Content
+import com.agileburo.anytype.domain.common.Document
 import com.agileburo.anytype.domain.common.Id
 
 /**
@@ -188,4 +189,21 @@ fun String.replaceRangeWithWord(replace: String, from: Int, to: Int): String {
 
 inline fun <reified T> Block.content(): T {
     return content as T
+}
+
+fun Document.updateTextContent(
+    target: String,
+    text: String,
+    marks: List<Content.Text.Mark>
+): Document = this.map { block ->
+    if (block.id == target) {
+        block.copy(
+            content = block.content<Content.Text>().copy(
+                text = text,
+                marks = marks
+            )
+        )
+    } else {
+        block
+    }
 }

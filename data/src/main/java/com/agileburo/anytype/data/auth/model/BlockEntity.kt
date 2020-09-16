@@ -51,6 +51,10 @@ data class BlockEntity(
             enum class Style {
                 P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE, CHECKBOX
             }
+
+            enum class SplitMode {
+                BOTTOM, TOP, INNER
+            }
         }
 
         data class Layout(val type: Type) : Content() {

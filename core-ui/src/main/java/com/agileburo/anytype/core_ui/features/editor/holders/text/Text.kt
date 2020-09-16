@@ -22,8 +22,7 @@ abstract class Text(
         onTextChanged: (String, Editable) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
-        onEndLineEnterClicked: (String, Editable) -> Unit,
-        onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
+        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
         onTextInputClicked: (String) -> Unit
@@ -69,15 +68,12 @@ abstract class Text(
             setOnFocusChangeListener { _, hasFocus -> onFocusChanged(item.id, hasFocus) }
             setOnClickListener { onTextInputClicked(item.id) }
             enableEnterKeyDetector(
-                onEndLineEnterClicked = { editable ->
-                    onEndLineEnterClicked(item.id, editable)
-                },
-                onSplitLineEnterClicked = { index ->
+                onSplitLineEnterClicked = { range ->
                     content.text?.let { editable ->
                         onSplitLineEnterClicked(
                             item.id,
-                            index,
-                            editable
+                            editable,
+                            range
                         )
                     }
                 }

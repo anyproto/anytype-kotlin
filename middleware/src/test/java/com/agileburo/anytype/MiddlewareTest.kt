@@ -471,9 +471,10 @@ class MiddlewareTest {
 
         val command = CommandEntity.Split(
             context = context,
-            index = MockDataFactory.randomInt(),
+            range = MockDataFactory.randomInt()..MockDataFactory.randomInt(),
             style = BlockEntity.Content.Text.Style.CHECKBOX,
-            target = MockDataFactory.randomUuid()
+            target = MockDataFactory.randomUuid(),
+            mode = BlockEntity.Content.Text.SplitMode.BOTTOM
         )
 
         val request = Block.Split.Request
@@ -481,14 +482,14 @@ class MiddlewareTest {
             .setRange(
                 Range
                     .newBuilder()
-                    .setFrom(command.index)
-                    .setTo(command.index)
+                    .setFrom(command.range.first)
+                    .setTo(command.range.last)
                     .build()
             )
             .setStyle(Models.Block.Content.Text.Style.Checkbox)
             .setContextId(context)
             .setBlockId(command.target)
-            .setMode(Block.Split.Request.Mode.TOP)
+            .setMode(Block.Split.Request.Mode.BOTTOM)
             .build()
 
         service.stub {

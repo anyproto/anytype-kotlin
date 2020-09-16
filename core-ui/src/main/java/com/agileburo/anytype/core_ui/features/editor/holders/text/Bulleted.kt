@@ -4,7 +4,6 @@ import android.text.Editable
 import android.view.View
 import androidx.core.view.updateLayoutParams
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.extensions.color
 import com.agileburo.anytype.core_ui.extensions.tint
@@ -12,7 +11,6 @@ import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_ui.features.page.SupportNesting
 import com.agileburo.anytype.core_ui.features.page.marks
-import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.dimen
 import kotlinx.android.synthetic.main.item_block_bulleted.view.*
@@ -38,8 +36,7 @@ class Bulleted(
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
-        onEndLineEnterClicked: (String, Editable) -> Unit,
-        onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
+        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
         onTextInputClicked: (String) -> Unit
@@ -55,7 +52,6 @@ class Bulleted(
         onFocusChanged = onFocusChanged,
         onSelectionChanged = onSelectionChanged,
         clicked = clicked,
-        onEndLineEnterClicked = onEndLineEnterClicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

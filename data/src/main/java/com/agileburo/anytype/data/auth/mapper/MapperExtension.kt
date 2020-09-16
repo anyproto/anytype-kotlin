@@ -4,6 +4,7 @@ import com.agileburo.anytype.data.auth.model.*
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.auth.model.Wallet
 import com.agileburo.anytype.domain.block.model.Block
+import com.agileburo.anytype.domain.block.model.BlockSplitMode
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.clipboard.Copy
@@ -335,8 +336,13 @@ fun Command.Merge.toEntity(): CommandEntity.Merge = CommandEntity.Merge(
 fun Command.Split.toEntity(): CommandEntity.Split = CommandEntity.Split(
     context = context,
     target = target,
-    index = index,
-    style = BlockEntity.Content.Text.Style.valueOf(style.name)
+    range = range,
+    style = BlockEntity.Content.Text.Style.valueOf(style.name),
+    mode = when (mode) {
+        BlockSplitMode.BOTTOM -> BlockEntity.Content.Text.SplitMode.BOTTOM
+        BlockSplitMode.TOP -> BlockEntity.Content.Text.SplitMode.TOP
+        BlockSplitMode.INNER -> BlockEntity.Content.Text.SplitMode.INNER
+    }
 )
 
 fun Command.SetDocumentEmojiIcon.toEntity() = CommandEntity.SetDocumentEmojiIcon(

@@ -637,30 +637,46 @@ class PageViewModel(
         }
     }
 
-    fun onSplitLineEnterClicked(
+    fun onEnterKeyClicked(
         target: String,
-        index: Int,
+        text: String,
+        marks: List<Content.Text.Mark>,
+        range: IntRange
+    ) {
+        val focus = orchestrator.stores.focus.current()
+        if (!focus.isEmpty && focus.id == target) {
+            proceedWithEnterEvent(focus.id, range, text, marks)
+        } else {
+            Timber.e("No blocks in focus, emit SplitLineEnter event")
+        }
+    }
+
+    private fun proceedWithEnterEvent(target: Id,
+                                      range: IntRange,
+                                      text: String,
+                                      marks: List<Content.Text.Mark>) {
+        if (context == target) {
+            onEndLineEnterTitleClicked()
+        } else {
+            if (text.isEndLineClick(range)) {
+                onEndLineEnterClicked(target, text, marks)
+            } else {
+                proceedWithSplitEvent(target, range, text, marks)
+            }
+        }
+    }
+
+    private fun proceedWithSplitEvent(
+        target: Id,
+        range: IntRange,
         text: String,
         marks: List<Content.Text.Mark>
     ) {
-        if (target == context) return
 
-        var style: Content.Text.Style = Content.Text.Style.P
+        val block = blocks.first { it.id == target }
+        val content = block.content<Content.Text>()
 
-        blocks = blocks.map { block ->
-            if (block.id == target) {
-                val content = block.content<Content.Text>()
-                style = content.style
-                block.copy(
-                    content = content.copy(
-                        text = text,
-                        marks = marks
-                    )
-                )
-            } else {
-                block
-            }
-        }
+        blocks = blocks.updateTextContent(target, text, marks)
 
         viewModelScope.launch {
             orchestrator.proxies.saves.send(null)
@@ -682,15 +698,15 @@ class PageViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Text.Split(
                     context = context,
-                    target = target,
-                    index = index,
-                    style = style
+                    block = block,
+                    range = range,
+                    isToggled = if (content.isToggle()) renderer.isToggled(target) else null
                 )
             )
         }
     }
 
-    fun onEndLineEnterTitleClicked() {
+    private fun onEndLineEnterTitleClicked() {
         val page = blocks.first { it.id == context }
         val next = page.children.getOrElse(0) { "" }
         proceedWithCreatingNewTextBlock(

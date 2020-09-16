@@ -204,7 +204,8 @@ sealed class Command {
         val context: Id,
         val target: Id,
         val style: Block.Content.Text.Style,
-        val index: Int
+        val range: IntRange,
+        val mode: BlockSplitMode
     )
 
     /**

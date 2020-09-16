@@ -4,12 +4,10 @@ import android.text.Editable
 import android.view.View
 import androidx.core.view.updateLayoutParams
 import com.agileburo.anytype.core_ui.R
-import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.BlockViewHolder
 import com.agileburo.anytype.core_ui.features.page.ListenerType
 import com.agileburo.anytype.core_ui.features.page.marks
-import com.agileburo.anytype.core_ui.menu.ContextMenuType
 import com.agileburo.anytype.core_ui.tools.DefaultSpannableFactory
 import com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
 import com.agileburo.anytype.core_utils.ext.dimen
@@ -36,8 +34,7 @@ class Highlight(
         onFocusChanged: (String, Boolean) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
-        onEndLineEnterClicked: (String, Editable) -> Unit,
-        onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
+        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
         onTextInputClicked: (String) -> Unit
@@ -53,7 +50,6 @@ class Highlight(
         onFocusChanged = onFocusChanged,
         onSelectionChanged = onSelectionChanged,
         clicked = clicked,
-        onEndLineEnterClicked = onEndLineEnterClicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

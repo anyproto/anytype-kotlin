@@ -1,5 +1,6 @@
 package com.agileburo.anytype.middleware.interactor
 
+import anytype.Commands
 import anytype.Events
 import anytype.model.Models.Block
 import com.agileburo.anytype.data.auth.model.BlockEntity
@@ -21,6 +22,14 @@ class MiddlewareMapper {
 
     fun toMiddleware(position: PositionEntity): Block.Position {
         return position.toMiddleware()
+    }
+
+    fun toMiddleware(mode: BlockEntity.Content.Text.SplitMode): Commands.Rpc.Block.Split.Request.Mode {
+        return when (mode) {
+            BlockEntity.Content.Text.SplitMode.BOTTOM -> Commands.Rpc.Block.Split.Request.Mode.BOTTOM
+            BlockEntity.Content.Text.SplitMode.TOP -> Commands.Rpc.Block.Split.Request.Mode.TOP
+            BlockEntity.Content.Text.SplitMode.INNER -> Commands.Rpc.Block.Split.Request.Mode.INNER
+        }
     }
 
     fun toPayload(response: Events.ResponseEvent): PayloadEntity {

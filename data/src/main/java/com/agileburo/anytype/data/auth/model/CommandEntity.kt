@@ -112,7 +112,8 @@ class CommandEntity {
         val context: String,
         val target: String,
         val style: BlockEntity.Content.Text.Style,
-        val index: Int
+        val range: IntRange,
+        val mode: BlockEntity.Content.Text.SplitMode
     )
 
     data class SetDocumentEmojiIcon(

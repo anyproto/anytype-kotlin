@@ -90,7 +90,6 @@ class HighlightingBlockTest {
         views: List<BlockView>,
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
         onTitleTextChanged: (Editable) -> Unit = {},
-        onEndLineEnterTitleClicked: (Editable) -> Unit = {},
         onTextChanged: (String, Editable) -> Unit = { _, _ -> }
     ): BlockAdapter {
         return BlockAdapter(
@@ -98,7 +97,6 @@ class HighlightingBlockTest {
             onNonEmptyBlockBackspaceClicked = { _, _ -> },
             onEmptyBlockBackspaceClicked = {},
             onSplitLineEnterClicked = { _, _, _ -> },
-            onEndLineEnterClicked = { _, _ -> },
             onTextChanged = onTextChanged,
             onCheckboxClicked = {},
             onFocusChanged = onFocusChanged,
@@ -110,7 +108,6 @@ class HighlightingBlockTest {
             onToggleClicked = {},
             onTextBlockTextChanged = {},
             onTitleTextChanged = onTitleTextChanged,
-            onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
             onContextMenuStyleClick = {},
             onTitleTextInputClicked = {},
             onClickListener = {},

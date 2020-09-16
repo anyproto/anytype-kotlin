@@ -692,11 +692,11 @@ public class Middleware {
 
         Range range = Range
                 .newBuilder()
-                .setFrom(command.getIndex())
-                .setTo(command.getIndex())
+                .setFrom(command.getRange().getFirst())
+                .setTo(command.getRange().getLast())
                 .build();
 
-        Block.Split.Request.Mode mode = Block.Split.Request.Mode.TOP;
+        Block.Split.Request.Mode mode = mapper.toMiddleware(command.getMode());
 
         Block.Split.Request request = Block.Split.Request
                 .newBuilder()

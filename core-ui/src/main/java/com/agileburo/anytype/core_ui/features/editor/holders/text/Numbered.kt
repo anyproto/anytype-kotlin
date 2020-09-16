@@ -33,8 +33,7 @@ class Numbered(
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
-        onEndLineEnterClicked: (String, Editable) -> Unit,
-        onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
+        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
         onTextInputClicked: (String) -> Unit
@@ -50,7 +49,6 @@ class Numbered(
         onSelectionChanged = onSelectionChanged,
         onFocusChanged = onFocusChanged,
         clicked = clicked,
-        onEndLineEnterClicked = onEndLineEnterClicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

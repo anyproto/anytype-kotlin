@@ -76,9 +76,7 @@ class BlockAdapter(
     private val onFocusChanged: (String, Boolean) -> Unit,
     private val onEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-    private val onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
-    private val onEndLineEnterClicked: (String, Editable) -> Unit,
-    private val onEndLineEnterTitleClicked: (Editable) -> Unit,
+    private val onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
     private val onTextInputClicked: (String) -> Unit,
     private val onClickListener: (ListenerType) -> Unit,
     private val onPageIconClicked: () -> Unit,
@@ -616,7 +614,6 @@ class BlockAdapter(
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
-                    onEndLineEnterClicked = onEndLineEnterClicked,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -630,7 +627,6 @@ class BlockAdapter(
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
-                    onEndLineEnterClicked = onEndLineEnterClicked,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -644,7 +640,6 @@ class BlockAdapter(
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
-                    onEndLineEnterClicked = onEndLineEnterClicked,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -658,7 +653,6 @@ class BlockAdapter(
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
-                    onEndLineEnterClicked = onEndLineEnterClicked,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -673,7 +667,6 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
-                    onEndLineEnterClicked = onEndLineEnterClicked,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -687,7 +680,6 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
-                    onEndLineEnterClicked = onEndLineEnterClicked,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -701,7 +693,6 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
-                    onEndLineEnterClicked = onEndLineEnterClicked,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -717,7 +708,6 @@ class BlockAdapter(
                     onTogglePlaceholderClicked = onTogglePlaceholderClicked,
                     onToggleClicked = onToggleClicked,
                     clicked = onClickListener,
-                    onEndLineEnterClicked = onEndLineEnterClicked,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -731,7 +721,6 @@ class BlockAdapter(
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
                     onSelectionChanged = onSelectionChanged,
-                    onEndLineEnterClicked = onEndLineEnterClicked,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -747,15 +736,12 @@ class BlockAdapter(
                         onPageIconClicked = onPageIconClicked
                     )
                     enableEnterKeyDetector(
-                        onEndLineEnterClicked = { editable ->
-                            onEndLineEnterTitleClicked(editable)
-                        },
-                        onSplitLineEnterClicked = { index ->
+                        onSplitLineEnterClicked = { range ->
                             holder.content.text?.let { editable ->
                                 onSplitLineEnterClicked(
                                     blocks[holder.adapterPosition].id,
-                                    index,
-                                    editable
+                                    editable,
+                                    range
                                 )
                             }
                         }
@@ -772,15 +758,12 @@ class BlockAdapter(
                         onProfileIconClicked = onProfileIconClicked
                     )
                     enableEnterKeyDetector(
-                        onEndLineEnterClicked = { editable ->
-                            onEndLineEnterTitleClicked(editable)
-                        },
-                        onSplitLineEnterClicked = { index ->
+                        onSplitLineEnterClicked = { range ->
                             holder.content.text?.let { editable ->
                                 onSplitLineEnterClicked(
                                     blocks[holder.adapterPosition].id,
-                                    index,
-                                    editable
+                                    editable,
+                                    range
                                 )
                             }
                         }

@@ -351,17 +351,16 @@ class HeaderBlockTest {
 
     private fun buildAdapter(
         views: List<BlockView>,
+        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit = { _, _, _ ->},
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
         onTitleTextChanged: (Editable) -> Unit = {},
-        onEndLineEnterTitleClicked: (Editable) -> Unit = {},
         onTextChanged: (String, Editable) -> Unit = { _, _ -> }
     ): BlockAdapter {
         return BlockAdapter(
             blocks = views,
             onNonEmptyBlockBackspaceClicked = { _, _ -> },
             onEmptyBlockBackspaceClicked = {},
-            onSplitLineEnterClicked = { _, _, _ -> },
-            onEndLineEnterClicked = { _, _ -> },
+            onSplitLineEnterClicked = onSplitLineEnterClicked,
             onTextChanged = onTextChanged,
             onCheckboxClicked = {},
             onFocusChanged = onFocusChanged,
@@ -373,7 +372,6 @@ class HeaderBlockTest {
             onToggleClicked = {},
             onTextBlockTextChanged = {},
             onTitleTextChanged = onTitleTextChanged,
-            onEndLineEnterTitleClicked = onEndLineEnterTitleClicked,
             onContextMenuStyleClick = {},
             onTitleTextInputClicked = {},
             onClickListener = {},

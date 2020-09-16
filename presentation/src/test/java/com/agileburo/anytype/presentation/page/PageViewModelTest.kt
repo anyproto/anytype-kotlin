@@ -2596,8 +2596,7 @@ open class PageViewModelTest {
     }
 
     @Test
-    fun `should update text and proceed with splitting block on split-enter-key event`() {
-
+    fun `should send update text style intent when is list and empty`() {
         // SETUP
 
         val root = MockDataFactory.randomUuid()
@@ -2648,11 +2647,11 @@ open class PageViewModelTest {
             marks = emptyList()
         )
 
-        vm.onSplitLineEnterClicked(
+        vm.onEnterKeyClicked(
             target = child,
-            index = index,
+            text = text,
             marks = emptyList(),
-            text = text
+            range = 0..0
         )
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
@@ -2675,9 +2674,9 @@ open class PageViewModelTest {
                 params = eq(
                     SplitBlock.Params(
                         context = root,
-                        target = child,
-                        index = index,
-                        style = Block.Content.Text.Style.P
+                        block = page[1],
+                        range = 0..0,
+                        isToggled = null
                     )
                 )
             )
@@ -2692,7 +2691,7 @@ open class PageViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
-        val style = MockBlockFactory.randomStyle()
+        val style = Block.Content.Text.Style.BULLET
 
         val page = listOf(
             Block(
@@ -2755,11 +2754,11 @@ open class PageViewModelTest {
             marks = emptyList()
         )
 
-        vm.onSplitLineEnterClicked(
+        vm.onEnterKeyClicked(
             target = child,
-            index = index,
+            text = text,
             marks = emptyList(),
-            text = text
+            range = 1..1
         )
 
         runBlockingTest {
@@ -2767,9 +2766,9 @@ open class PageViewModelTest {
                 params = eq(
                     SplitBlock.Params(
                         context = root,
-                        target = child,
-                        index = index,
-                        style = style
+                        block = page[1],
+                        range = 1..1,
+                        isToggled = null
                     )
                 )
             )

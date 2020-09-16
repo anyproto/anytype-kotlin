@@ -161,7 +161,7 @@ class BlockAdapterReadWriteModeTest : BlockAdapterTestSetup() {
 
         val adapter = buildAdapter(
             views = views,
-            onEndlineEnterClicked = { _, _ -> trigger += 1 }
+            onSplitLineEnterClicked = { _, _, _ -> trigger += 1 }
         )
 
         val recycler = RecyclerView(context).apply {

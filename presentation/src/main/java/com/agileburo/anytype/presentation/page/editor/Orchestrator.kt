@@ -125,16 +125,16 @@ class Orchestrator(
                     splitBlock(
                         params = SplitBlock.Params(
                             context = intent.context,
-                            target = intent.target,
-                            index = intent.index,
-                            style = intent.style
+                            block = intent.block,
+                            range = intent.range,
+                            isToggled = intent.isToggled
                         )
                     ).proceed(
                         failure = defaultOnError,
                         success = { (id, payload) ->
                             stores.focus.update(
                                 Focus(
-                                    id = intent.target,
+                                    id = id,
                                     cursor = Cursor.Start
                                 )
                             )

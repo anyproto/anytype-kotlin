@@ -161,22 +161,14 @@ open class PageFragment :
             onSelectionChanged = vm::onSelectionChanged,
             onCheckboxClicked = vm::onCheckboxClicked,
             onFocusChanged = vm::onBlockFocusChanged,
-            onSplitLineEnterClicked = { id, index, editable ->
-                vm.onSplitLineEnterClicked(
+            onSplitLineEnterClicked = { id, editable, range ->
+                vm.onEnterKeyClicked(
                     target = id,
-                    index = index,
                     text = editable.toString(),
-                    marks = editable.extractMarks()
+                    marks = editable.extractMarks(),
+                    range = range
                 )
             },
-            onEndLineEnterClicked = { id, editable ->
-                vm.onEndLineEnterClicked(
-                    id = id,
-                    text = editable.toString(),
-                    marks = editable.extractMarks()
-                )
-            },
-            onEndLineEnterTitleClicked = { vm.onEndLineEnterTitleClicked() },
             onEmptyBlockBackspaceClicked = vm::onEmptyBlockBackspaceClicked,
             onNonEmptyBlockBackspaceClicked = { id, editable ->
                 vm.onNonEmptyBlockBackspaceClicked(

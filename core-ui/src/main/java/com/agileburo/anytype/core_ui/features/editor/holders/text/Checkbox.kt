@@ -38,8 +38,7 @@ class Checkbox(
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
-        onEndLineEnterClicked: (String, Editable) -> Unit,
-        onSplitLineEnterClicked: (String, Int, Editable) -> Unit,
+        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
         onTextInputClicked: (String) -> Unit
@@ -55,7 +54,6 @@ class Checkbox(
         onFocusChanged = onFocusChanged,
         onSelectionChanged = onSelectionChanged,
         clicked = clicked,
-        onEndLineEnterClicked = onEndLineEnterClicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

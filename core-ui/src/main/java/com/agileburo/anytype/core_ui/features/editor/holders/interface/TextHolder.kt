@@ -112,16 +112,11 @@ interface TextHolder {
     }
 
     fun enableEnterKeyDetector(
-        onEndLineEnterClicked: (Editable) -> Unit,
-        onSplitLineEnterClicked: (Int) -> Unit
+        onSplitLineEnterClicked: (IntRange) -> Unit
     ) {
         content.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == TextInputWidget.TEXT_INPUT_WIDGET_ACTION_GO) {
-                if (v.selectionEnd < v.text.length) {
-                    onSplitLineEnterClicked(v.selectionEnd)
-                } else {
-                    onEndLineEnterClicked(content.editableText)
-                }
+                onSplitLineEnterClicked.invoke(v.selectionStart..v.selectionEnd)
                 return@setOnEditorActionListener true
             }
             false

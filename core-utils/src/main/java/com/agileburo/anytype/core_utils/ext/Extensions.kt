@@ -56,3 +56,5 @@ inline fun <T> List<T>.replace(replacement: (T) -> T, target: (T) -> Boolean): L
 
 fun Context.toast(msg: CharSequence) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
 fun Fragment.toast(msg: CharSequence) = requireActivity().toast(msg)
+
+fun String.isEndLineClick(range: IntRange): Boolean = range.first == length && range.last == length

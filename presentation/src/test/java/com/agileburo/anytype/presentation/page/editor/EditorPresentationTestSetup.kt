@@ -4,6 +4,7 @@ import MockDataFactory
 import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.base.Either
+import com.agileburo.anytype.domain.base.Result
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.clipboard.Copy
@@ -199,14 +200,16 @@ open class EditorPresentationTestSetup {
     ) {
         openPage.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
-                Payload(
-                    context = root,
-                    events = listOf(
-                        Event.Command.ShowBlock(
-                            context = root,
-                            root = root,
-                            details = details,
-                            blocks = document
+                Result.Success(
+                    Payload(
+                        context = root,
+                        events = listOf(
+                            Event.Command.ShowBlock(
+                                context = root,
+                                root = root,
+                                details = details,
+                                blocks = document
+                            )
                         )
                     )
                 )

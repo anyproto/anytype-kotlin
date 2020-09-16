@@ -19,6 +19,7 @@ import com.agileburo.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.*
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
+import com.agileburo.anytype.domain.base.Result
 import com.agileburo.anytype.domain.block.interactor.RemoveLinkMark
 import com.agileburo.anytype.domain.block.interactor.UpdateLinkMarks
 import com.agileburo.anytype.domain.block.model.Block
@@ -28,6 +29,7 @@ import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Document
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.editor.Editor
+import com.agileburo.anytype.domain.error.Error
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
@@ -79,6 +81,8 @@ class PageViewModel(
     TurnIntoActionReceiver,
     StateReducer<List<Block>, Event> by reducer {
 
+    private val session = MutableStateFlow<Session>(Session.IDLE)
+
     private val views: List<BlockView> get() = orchestrator.stores.views.current()
 
     private var eventSubscription: Job? = null
@@ -116,8 +120,8 @@ class PageViewModel(
     private val _focus: MutableLiveData<Id> = MutableLiveData()
     val focus: LiveData<Id> = _focus
 
-    private val _error: MutableLiveData<String> = MutableLiveData()
-    val error: LiveData<String> = _error
+    private val _error: MutableLiveData<ErrorViewState> = MutableLiveData()
+    val error: LiveData<ErrorViewState> = _error
 
     /**
      * Open gallery and search media files for block with that id
@@ -190,7 +194,7 @@ class PageViewModel(
             orchestrator.proxies.errors
                 .stream()
                 .collect {
-                    _error.value = it.message ?: "Unknown error"
+                    _error.value = ErrorViewState.Toast(it.message ?: "Unknown error")
                 }
         }
     }
@@ -453,11 +457,24 @@ class PageViewModel(
 
         viewModelScope.launch {
             openPage(OpenPage.Params(id)).proceed(
-                success = { payload ->
-                    onStartFocusing(payload)
-                    orchestrator.proxies.payloads.send(payload)
+                success = { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            session.value = Session.OPEN
+                            onStartFocusing(result.data)
+                            orchestrator.proxies.payloads.send(result.data)
+                        }
+                        is Result.Failure -> {
+                            session.value = Session.ERROR
+                            if (result.error is Error.BackwardCompatibility)
+                                _error.value = ErrorViewState.AlertDialog
+                        }
+                    }
                 },
-                failure = { Timber.e(it, "Error while opening page with id: $id") }
+                failure = {
+                    session.value = Session.ERROR
+                    Timber.e(it, "Error while opening page with id: $id")
+                }
             )
         }
     }
@@ -535,23 +552,33 @@ class PageViewModel(
     }
 
     private fun proceedWithExiting() {
-        viewModelScope.launch {
-            closePage(
-                ClosePage.Params(context)
-            ).proceed(
-                success = { navigation.postValue(EventWrapper(AppNavigation.Command.Exit)) },
-                failure = { Timber.e(it, "Error while closing the test page") }
-            )
+        when (session.value) {
+            Session.ERROR -> navigate(EventWrapper(AppNavigation.Command.Exit))
+            Session.IDLE -> navigate(EventWrapper(AppNavigation.Command.Exit))
+            Session.OPEN -> {
+                viewModelScope.launch {
+                    closePage(
+                        ClosePage.Params(context)
+                    ).proceed(
+                        success = { navigation.postValue(EventWrapper(AppNavigation.Command.Exit)) },
+                        failure = { Timber.e(it, "Error while closing document: $context") }
+                    )
+                }
+            }
         }
     }
 
     private fun proceedWithExitingToDesktop() {
         closePage(viewModelScope, ClosePage.Params(context)) { result ->
             result.either(
-                fnR = { navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop)) },
+                fnR = { navigateToDesktop() },
                 fnL = { Timber.e(it, "Error while closing the test page") }
             )
         }
+    }
+
+    fun navigateToDesktop() {
+        navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
     }
 
     @Deprecated("replace by onTextBlockTextChanged")
@@ -1070,7 +1097,7 @@ class PageViewModel(
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Rename -> {
-                _error.value = "Rename not implemented"
+                _error.value = ErrorViewState.Toast("Rename not implemented")
             }
             ActionItemType.MoveTo -> {
                 onExitActionMode()
@@ -1105,13 +1132,13 @@ class PageViewModel(
                 }
             }
             ActionItemType.Replace -> {
-                _error.value = "Replace not implemented"
+                _error.value = ErrorViewState.Toast("Replace not implemented")
             }
             ActionItemType.AddCaption -> {
-                _error.value = "Add caption not implemented"
+                _error.value = ErrorViewState.Toast("Add caption not implemented")
             }
             ActionItemType.Divider -> {
-                _error.value = "not implemented"
+                _error.value = ErrorViewState.Toast("not implemented")
             }
         }
     }
@@ -1412,7 +1439,7 @@ class PageViewModel(
 
     fun onBlockToolbarStyleClicked() {
         if (orchestrator.stores.focus.current().id == context) {
-            _error.value = "Changing style for title currently not supported"
+            _error.value = ErrorViewState.Toast("Changing style for title currently not supported")
         } else {
             val textSelection = orchestrator.stores.textSelection.current()
             controlPanelInteractor.onEvent(
@@ -1427,7 +1454,7 @@ class PageViewModel(
 
     fun onBlockToolbarBlockActionsClicked() {
         if (orchestrator.stores.focus.current().id == context) {
-            _error.value = "Not implemented for title"
+            _error.value = ErrorViewState.Toast("Not implemented for title")
         } else {
             dispatch(
                 Command.Measure(
@@ -1592,7 +1619,7 @@ class PageViewModel(
                 dispatch(Command.OpenMultiSelectTurnIntoPanel(excludedCategories, excludedTypes))
             }
             else -> {
-                _error.value = "Cannot turn selected blocks into other blocks"
+                _error.value = ErrorViewState.Toast("Cannot turn selected blocks into other blocks")
             }
         }
     }
@@ -1645,7 +1672,7 @@ class PageViewModel(
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
             proceedWithTurningIntoDocument(targets)
         } else {
-            _error.value = "Cannot convert selected blocks to $block"
+            _error.value = ErrorViewState.Toast("Cannot convert selected blocks to $block")
         }
     }
 
@@ -1997,19 +2024,19 @@ class PageViewModel(
         val selected = currentSelection().toList()
 
         if (selected.contains(target)) {
-            _error.value = CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR
+            _error.value = ErrorViewState.Toast(CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR)
             return
         }
 
         if (selected.contains(parent)) {
-            _error.value = CANNOT_MOVE_PARENT_INTO_CHILD
+            _error.value = ErrorViewState.Toast(CANNOT_MOVE_PARENT_INTO_CHILD)
             return
         }
 
         if (position == Position.INNER) {
 
             if (!targetBlock.supportNesting()) {
-                _error.value = CANNOT_BE_PARENT_ERROR
+                _error.value = ErrorViewState.Toast(CANNOT_BE_PARENT_ERROR)
                 return
             }
 
@@ -2299,7 +2326,7 @@ class PageViewModel(
 
     fun startDownloadingFile(id: String) {
 
-        _error.value = "Downloading file in background..."
+        _error.value = ErrorViewState.Toast("Downloading file in background...")
 
         val block = blocks.first { it.id == id }
         val file = block.content<Content.File>()
@@ -2467,4 +2494,6 @@ class PageViewModel(
         Timber.d("onStop")
         eventSubscription?.cancel()
     }
+
+    enum class Session { IDLE, OPEN, ERROR }
 }

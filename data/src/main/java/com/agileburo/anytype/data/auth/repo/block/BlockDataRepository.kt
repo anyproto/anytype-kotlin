@@ -1,8 +1,10 @@
 package com.agileburo.anytype.data.auth.repo.block
 
+import com.agileburo.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.agileburo.anytype.data.auth.mapper.toDomain
 import com.agileburo.anytype.data.auth.mapper.toEntity
 import com.agileburo.anytype.data.auth.model.PositionEntity
+import com.agileburo.anytype.domain.base.Result
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.block.repo.BlockRepository
@@ -10,6 +12,7 @@ import com.agileburo.anytype.domain.clipboard.Copy
 import com.agileburo.anytype.domain.clipboard.Paste
 import com.agileburo.anytype.domain.common.Hash
 import com.agileburo.anytype.domain.common.Id
+import com.agileburo.anytype.domain.error.Error
 import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.domain.page.navigation.PageInfo
 import com.agileburo.anytype.domain.page.navigation.PageInfoWithLinks
@@ -25,7 +28,12 @@ class BlockDataRepository(
         id: String
     ) = factory.remote.openDashboard(id = id, contextId = contextId).toDomain()
 
-    override suspend fun openPage(id: String): Payload = factory.remote.openPage(id).toDomain()
+    override suspend fun openPage(id: String): Result<Payload> = try {
+        Result.Success(factory.remote.openPage(id).toDomain())
+    } catch (e: BackwardCompatilityNotSupportedException) {
+        Result.Failure(Error.BackwardCompatibility)
+    }
+
     override suspend fun openProfile(id: String): Payload = factory.remote.openProfile(id).toDomain()
 
     override suspend fun closeDashboard(id: String) {

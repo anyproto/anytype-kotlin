@@ -8,6 +8,7 @@ import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.content
+import com.agileburo.anytype.presentation.page.editor.ErrorViewState
 import com.agileburo.anytype.presentation.page.editor.ViewState
 import com.jraska.livedata.test
 import kotlinx.coroutines.delay
@@ -417,7 +418,7 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.error.test()
 
-        testObserver.assertValue("Add caption not implemented")
+        testObserver.assertValue(ErrorViewState.Toast("Add caption not implemented"))
     }
 
     @Test
@@ -445,7 +446,7 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.error.test()
 
-        testObserver.assertValue("Replace not implemented")
+        testObserver.assertValue(ErrorViewState.Toast("Replace not implemented"))
     }
 
     @Test
@@ -473,7 +474,7 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.error.test()
 
-        testObserver.assertValue("Rename not implemented")
+        testObserver.assertValue(ErrorViewState.Toast("Rename not implemented"))
     }
 
     @Test

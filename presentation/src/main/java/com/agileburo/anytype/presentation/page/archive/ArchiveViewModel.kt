@@ -10,15 +10,20 @@ import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.switchToLatestFrom
 import com.agileburo.anytype.core_utils.ext.withLatestFrom
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
+import com.agileburo.anytype.domain.base.Result
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.common.Document
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.editor.Editor
+import com.agileburo.anytype.domain.error.Error
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.ext.asMap
 import com.agileburo.anytype.domain.ext.content
-import com.agileburo.anytype.domain.page.*
+import com.agileburo.anytype.domain.page.ArchiveDocument
+import com.agileburo.anytype.domain.page.ClosePage
+import com.agileburo.anytype.domain.page.EditorMode
+import com.agileburo.anytype.domain.page.OpenPage
 import com.agileburo.anytype.presentation.common.StateReducer
 import com.agileburo.anytype.presentation.common.SupportCommand
 import com.agileburo.anytype.presentation.navigation.AppNavigation
@@ -169,8 +174,16 @@ class ArchiveViewModel(
 
         viewModelScope.launch {
             openPage(OpenPage.Params(id)).proceed(
-                success = { payload ->
-                    orchestrator.proxies.payloads.send(payload)
+                success = { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            orchestrator.proxies.payloads.send(result.data)
+                        }
+                        is Result.Failure -> {
+                            if (result.error is Error.BackwardCompatibility)
+                                _error.value = "You need to update Anytype to open this document"
+                        }
+                    }
                 },
                 failure = { Timber.e(it, "Error while opening page with id: $id") }
             )
@@ -238,7 +251,7 @@ class ArchiveViewModel(
         closePage(viewModelScope, ClosePage.Params(context)) { result ->
             result.either(
                 fnR = { navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop)) },
-                fnL = { Timber.e(it, "Error while closing the test page") }
+                fnL = { Timber.e(it, "Error while closing document: $context") }
             )
         }
     }

@@ -63,7 +63,9 @@ import com.agileburo.anytype.ext.extractMarks
 import com.agileburo.anytype.presentation.page.PageViewModel
 import com.agileburo.anytype.presentation.page.PageViewModelFactory
 import com.agileburo.anytype.presentation.page.editor.Command
+import com.agileburo.anytype.presentation.page.editor.ErrorViewState
 import com.agileburo.anytype.presentation.page.editor.ViewState
+import com.agileburo.anytype.ui.alert.AlertUpdateAppFragment
 import com.agileburo.anytype.ui.base.NavigationFragment
 import com.agileburo.anytype.ui.page.modals.*
 import com.agileburo.anytype.ui.page.modals.actions.BlockActionToolbarFactory
@@ -983,8 +985,15 @@ open class PageFragment :
             ?: throw IllegalStateException("Document id missing")
     }
 
-    private fun renderError(message: String) {
-        toast(message)
+    private fun renderError(state: ErrorViewState) {
+        when (state) {
+            is ErrorViewState.Toast -> toast(state.msg)
+            ErrorViewState.AlertDialog -> {
+                if (childFragmentManager.findFragmentByTag(TAG_ALERT) == null) {
+                    AlertUpdateAppFragment().show(childFragmentManager, TAG_ALERT)
+                }
+            }
+        }
     }
 
     private fun processScrollAndMoveStateChanges() {
@@ -1104,6 +1113,10 @@ open class PageFragment :
         pickitProgressDialog?.dismiss()
     }
 
+    override fun onExitToDesktopClicked() {
+        vm.navigateToDesktop()
+    }
+
     //------------ End of Anytype Custom Context Menu ------------
 
     companion object {
@@ -1124,6 +1137,8 @@ open class PageFragment :
 
         const val SAM_DEBOUNCE = 100L
         const val DELAY_BEFORE_INIT_SAM_SEARCH = 300L
+
+        const val TAG_ALERT = "alert"
     }
 
     override fun onDismissBlockActionToolbar() {
@@ -1138,4 +1153,5 @@ interface OnFragmentInteractionListener {
     fun onBlockActionClicked(id: String, action: ActionItemType)
     fun onDismissBlockActionToolbar()
     fun onAddBookmarkUrlClicked(target: String, url: String)
+    fun onExitToDesktopClicked()
 }

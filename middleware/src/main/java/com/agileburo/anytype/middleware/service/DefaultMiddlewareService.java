@@ -1,5 +1,7 @@
 package com.agileburo.anytype.middleware.service;
 
+import com.agileburo.anytype.data.auth.exception.BackwardCompatilityNotSupportedException;
+
 import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
@@ -93,7 +95,11 @@ public class DefaultMiddlewareService implements MiddlewareService {
         byte[] encoded = Lib.blockOpen(request.toByteArray());
         Block.Open.Response response = Block.Open.Response.parseFrom(encoded);
         if (response.getError() != null && response.getError().getCode() != Block.Open.Response.Error.Code.NULL) {
-            throw new Exception(response.getError().getDescription());
+            if (response.getError().getCode() == Block.Open.Response.Error.Code.ANYTYPE_NEEDS_UPGRADE) {
+                throw new BackwardCompatilityNotSupportedException();
+            } else {
+                throw new Exception(response.getError().getDescription());
+            }
         } else {
             return response;
         }

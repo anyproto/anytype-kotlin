@@ -58,6 +58,10 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="or_scan_qr_code">or Scan QR code</string>
     <string name="choose_pin_code">Choose pin code</string>
     <string name="congratulations">Congratulations!</string>
+    <string name="time_to_update_title">It\'s time to update</string>
+    <string name="time_to_update_text">Some of your data was managed in a newer version of Anytype.\nPlease update the app to work with all your docs and the latest features.</string>
+    <string name="update">Update</string>
+    <string name="later">Later</string>
     <string name="let_us_start">Let\'s start!</string>
     <string name="you_ve_created_your_first_profile">You\'ve created your first profile!</string>
     <string name="it_s_stored_on_your_device_and_nobody_will_know_about_it_until_you_share_it">It\'s stored on your device and nobody will know about it until you share it!</string>
@@ -134,5 +138,8 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="link">Link</string>
     <string name="move_into_this_page">Move into this page</string>
     <string name="move_into">Move into</string>
+
+    <string name="telegram_app">https://t.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
+    <string name="telegram_web">http://www.telegram.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
 
 </resources>

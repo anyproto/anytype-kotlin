@@ -1,5 +1,6 @@
 package com.agileburo.anytype.domain.block.repo
 
+import com.agileburo.anytype.domain.base.Result
 import com.agileburo.anytype.domain.block.model.Command
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.clipboard.Copy
@@ -70,7 +71,7 @@ interface BlockRepository {
     @Deprecated("Should be replaced by createDocument() command")
     suspend fun createPage(parentId: String, emoji: String? = null): Id
 
-    suspend fun openPage(id: String): Payload
+    suspend fun openPage(id: String): Result<Payload>
     suspend fun openProfile(id: String) : Payload
 
     suspend fun closePage(id: String)

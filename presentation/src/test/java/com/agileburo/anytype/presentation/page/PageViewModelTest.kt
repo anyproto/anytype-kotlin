@@ -15,6 +15,7 @@ import com.agileburo.anytype.core_ui.state.ControlPanelState
 import com.agileburo.anytype.core_ui.widgets.ActionItemType
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.base.Either
+import com.agileburo.anytype.domain.base.Result
 import com.agileburo.anytype.domain.block.interactor.*
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
@@ -261,9 +262,14 @@ open class PageViewModelTest {
     @Test
     fun `should close page when the system back button is pressed`() {
 
+        val root = MockDataFactory.randomUuid()
+
+        stubOpenPage(root)
         stubInterceptEvents()
 
         buildViewModel()
+
+        vm.onStart(root)
 
         verifyZeroInteractions(closePage)
 
@@ -297,13 +303,18 @@ open class PageViewModelTest {
     @Test
     fun `should not emit any navigation command if there is an error while closing the page`() {
 
+        val root = MockDataFactory.randomUuid()
+
         val error = Exception("Error while closing this page")
 
         val response = Either.Left(error)
 
+        stubOpenPage(root)
         stubClosePage(response)
         stubInterceptEvents()
         buildViewModel()
+
+        vm.onStart(root)
 
         val testObserver = vm.navigation.test()
 
@@ -4124,9 +4135,11 @@ open class PageViewModelTest {
     ) {
         openPage.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
-                Payload(
-                    context = context,
-                    events = events
+                Result.Success(
+                    Payload(
+                        context = context,
+                        events = events
+                    )
                 )
             )
         }

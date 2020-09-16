@@ -606,7 +606,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         verifyZeroInteractions(move)
 
-        vm.error.test().assertValue(PageViewModel.CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR)
+        vm.error.test().assertValue(ErrorViewState.Toast(PageViewModel.CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR))
 
         clearPendingCoroutines()
     }
@@ -687,7 +687,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         verifyZeroInteractions(move)
 
-        vm.error.test().assertValue(PageViewModel.CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR)
+        vm.error.test().assertValue(ErrorViewState.Toast(PageViewModel.CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR))
 
         clearPendingCoroutines()
     }

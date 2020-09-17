@@ -45,7 +45,7 @@ class SplashFragment : NavigationFragment(R.layout.fragment_splash), Observer<Vi
     }
 
     private fun showVersion() {
-        version.text = BuildConfig.VERSION_NAME
+        version.text = "${BuildConfig.VERSION_NAME}-alpha"
     }
 
     override fun onChanged(state: ViewState<Nothing>) {

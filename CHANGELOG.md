@@ -1,12 +1,14 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.47 (WIP)
+## Version 0.0.47
 
 ### New features 🚀
 
 * Archive (#547)
 * Link to existing object (#770)
 * Move-to from one document to other document (#770)
+* Invite code screen (#772)
+* Allow user to add a block below via action menu (#771)
 
 ### Design & UX 🔳
 
@@ -15,6 +17,10 @@
 
 ### Fixes & tech 🚒
 
+* Show alert dialog when failing to open a document (#823)
+* Enhanced split-block operations (#731)
+* Design fixes (#806)
+* Action menu fixes (#665)
 * Safely setting text color and background color (#858)
 * Handle exceptions when emojifier fails to provide uri for emoji icon (#856)
 * Render children for all text blocks (#846)

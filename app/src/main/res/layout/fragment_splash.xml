@@ -18,8 +18,8 @@
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="16dp"
         android:fontFamily="monospace"
-        android:textSize="12sp"
-        tools:text="0.0.10" />
+        android:textSize="15sp"
+        tools:text="0.0.10-alpha" />
 
     <TextView
         android:id="@+id/error"

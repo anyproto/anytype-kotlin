@@ -104,7 +104,7 @@
         android:id="@+id/controls"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="copy,more,delete,enterScrollAndMove" />
+        app:constraint_referenced_ids="copy,turnInto,delete,enterScrollAndMove" />
 
     <FrameLayout
         android:id="@+id/title"

@@ -151,7 +151,7 @@ class BlockMiddleware(
     override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinksEntity =
         middleware.getPageInfoWithLinks(pageId).toEntity()
 
-    override suspend fun getListPages(): List<PageInfoEntity> =
+    override suspend fun getListPages(): List<DocumentInfoEntity> =
         middleware.listPages.map { it.toEntity() }
 
     override suspend fun linkToObject(

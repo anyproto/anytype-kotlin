@@ -14,7 +14,7 @@ import com.agileburo.anytype.domain.common.Hash
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.error.Error
 import com.agileburo.anytype.domain.event.model.Payload
-import com.agileburo.anytype.domain.page.navigation.PageInfo
+import com.agileburo.anytype.domain.page.navigation.DocumentInfo
 import com.agileburo.anytype.domain.page.navigation.PageInfoWithLinks
 
 class BlockDataRepository(
@@ -167,7 +167,7 @@ class BlockDataRepository(
     override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks =
         factory.remote.getPageInfoWithLinks(pageId).toDomain()
 
-    override suspend fun getListPages(): List<PageInfo> =
+    override suspend fun getListPages(): List<DocumentInfo> =
         factory.remote.getListPages().map { it.toDomain() }
 
     override suspend fun linkToObject(

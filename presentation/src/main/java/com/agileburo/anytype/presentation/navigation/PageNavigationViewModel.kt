@@ -48,10 +48,10 @@ class PageNavigationViewModel(
                         stateData.postValue(
                             ViewState.Success(
                                 PageNavigationView(
-                                    title = pageInfo.fields.name.orEmpty(),
-                                    subtitle = pageInfo.snippet.orEmpty(),
-                                    image = pageInfo.fields.toImageView(urlBuilder),
-                                    emoji = pageInfo.fields.toEmojiView(),
+                                    title = documentInfo.fields.name.orEmpty(),
+                                    subtitle = documentInfo.snippet.orEmpty(),
+                                    image = documentInfo.fields.toImageView(urlBuilder),
+                                    emoji = documentInfo.fields.toEmojiView(),
                                     inbound = links.inbound.map { it.toView(urlBuilder) },
                                     outbound = links.outbound.map { it.toView(urlBuilder) }
                                 )

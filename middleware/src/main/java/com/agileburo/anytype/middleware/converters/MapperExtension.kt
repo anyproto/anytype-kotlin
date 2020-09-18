@@ -308,11 +308,21 @@ fun BlockEntity.Align.toMiddleware(): Block.Align = when (this) {
     BlockEntity.Align.AlignRight -> Block.Align.AlignRight
 }
 
-fun Localstore.PageInfo.toEntity(): PageInfoEntity = PageInfoEntity(
+fun Localstore.PageInfo.toEntity(): DocumentInfoEntity = DocumentInfoEntity(
     id = id,
     fields = details.fields(),
     hasInboundLinks = hasInboundLinks,
-    snippet = snippet
+    snippet = snippet,
+    type = pageType.let { type ->
+        when (type) {
+            Localstore.PageInfo.Type.Page -> DocumentInfoEntity.Type.PAGE
+            Localstore.PageInfo.Type.Archive -> DocumentInfoEntity.Type.ARCHIVE
+            Localstore.PageInfo.Type.ProfilePage -> DocumentInfoEntity.Type.PROFILE_PAGE
+            Localstore.PageInfo.Type.Home -> DocumentInfoEntity.Type.HOME
+            Localstore.PageInfo.Type.Set -> DocumentInfoEntity.Type.SET
+            else -> throw IllegalStateException("Unexpected page info type: $type")
+        }
+    }
 )
 
 fun Localstore.PageLinksInfo.toEntity() = PageLinksEntity(
@@ -322,6 +332,6 @@ fun Localstore.PageLinksInfo.toEntity() = PageLinksEntity(
 
 fun Localstore.PageInfoWithLinks.toEntity() = PageInfoWithLinksEntity(
     id = id,
-    pageInfo = info.toEntity(),
+    docInfo = info.toEntity(),
     links = links.toEntity()
 )

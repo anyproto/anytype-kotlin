@@ -3,22 +3,25 @@ package com.agileburo.anytype.domain.page.navigation
 import com.agileburo.anytype.domain.block.model.Block
 
 /**
- * @property id page id
- * @property fields page fields
- * @property snippet text from first child block of the page
+ * @property id document id
+ * @property fields document fields
+ * @property snippet text from first child block of the document
  * @property hasInboundLinks does this page has inbound pages
  */
-data class PageInfo(
+data class DocumentInfo(
     val id: String,
     val fields: Block.Fields,
     val snippet: String?,
-    val hasInboundLinks: Boolean
-)
+    val hasInboundLinks: Boolean,
+    val type: Type
+) {
+    enum class Type { PAGE, HOME, PROFILE_PAGE, ARCHIVE, SET }
+}
 
-data class PageLinks(val inbound: List<PageInfo>, val outbound: List<PageInfo>)
+data class PageLinks(val inbound: List<DocumentInfo>, val outbound: List<DocumentInfo>)
 
 data class PageInfoWithLinks(
     val id: String,
-    val pageInfo: PageInfo,
+    val documentInfo: DocumentInfo,
     val links: PageLinks
 )

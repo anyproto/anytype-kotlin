@@ -1,20 +1,23 @@
 package com.agileburo.anytype.data.auth.model
 
-data class PageInfoEntity(
+data class DocumentInfoEntity(
     val id: String,
     val fields: BlockEntity.Fields,
     val snippet: String?,
-    val hasInboundLinks: Boolean
-)
+    val hasInboundLinks: Boolean,
+    val type: Type
+) {
+    enum class Type { PAGE, HOME, PROFILE_PAGE, ARCHIVE, SET }
+}
 
 data class PageLinksEntity(
-    val inbound: List<PageInfoEntity>,
-    val outbound: List<PageInfoEntity>
+    val inbound: List<DocumentInfoEntity>,
+    val outbound: List<DocumentInfoEntity>
 )
 
 data class PageInfoWithLinksEntity(
     val id: String,
-    val pageInfo: PageInfoEntity,
+    val docInfo: DocumentInfoEntity,
     val links: PageLinksEntity
 )
 

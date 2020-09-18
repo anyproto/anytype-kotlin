@@ -39,7 +39,7 @@ class GetPageInfoWithLinksTest {
         repository.stub {
             onBlocking { getPageInfoWithLinks(pageId) } doReturn PageInfoWithLinks(
                 id = pageId,
-                pageInfo = PageInfo(
+                documentInfo = DocumentInfo(
                     id = pageId,
                     fields = Block.Fields.empty(),
                     snippet = "Snip",
@@ -47,19 +47,19 @@ class GetPageInfoWithLinksTest {
                 ),
                 links = PageLinks(
                     inbound = listOf(
-                        PageInfo(
+                        DocumentInfo(
                             id = "12",
                             fields = Block.Fields(mapOf("name" to "Alex")),
                             snippet = "Snippet12",
                             hasInboundLinks = false
                         ),
-                        PageInfo(
+                        DocumentInfo(
                             id = "13",
                             fields = Block.Fields(mapOf("name" to "Mike", "isArchived" to false)),
                             snippet = "Snippet13",
                             hasInboundLinks = false
                         ),
-                        PageInfo(
+                        DocumentInfo(
                             id = "14",
                             fields = Block.Fields(mapOf("name" to "Leo", "isArchived" to true)),
                             snippet = "Snippet14",
@@ -67,19 +67,19 @@ class GetPageInfoWithLinksTest {
                         )
                     ),
                     outbound = listOf(
-                        PageInfo(
+                        DocumentInfo(
                             id = "15",
                             fields = Block.Fields(mapOf("name" to "Teo")),
                             snippet = "Snippet15",
                             hasInboundLinks = false
                         ),
-                        PageInfo(
+                        DocumentInfo(
                             id = "16",
                             fields = Block.Fields(mapOf("name" to "Thom", "isArchived" to false)),
                             snippet = "Snippet16",
                             hasInboundLinks = false
                         ),
-                        PageInfo(
+                        DocumentInfo(
                             id = "17",
                             fields = Block.Fields(mapOf("name" to "Andrey", "isArchived" to true)),
                             snippet = "Snippet17",
@@ -99,13 +99,13 @@ class GetPageInfoWithLinksTest {
                     val inbound = response.pageInfoWithLinks.links.inbound
                     assertEquals(
                         expected = listOf(
-                            PageInfo(
+                            DocumentInfo(
                                 id = "15",
                                 fields = Block.Fields(mapOf("name" to "Teo")),
                                 snippet = "Snippet15",
                                 hasInboundLinks = false
                             ),
-                            PageInfo(
+                            DocumentInfo(
                                 id = "16",
                                 fields = Block.Fields(
                                     mapOf(
@@ -121,13 +121,13 @@ class GetPageInfoWithLinksTest {
                     )
                     assertEquals(
                         expected = listOf(
-                            PageInfo(
+                            DocumentInfo(
                                 id = "12",
                                 fields = Block.Fields(mapOf("name" to "Alex")),
                                 snippet = "Snippet12",
                                 hasInboundLinks = false
                             ),
-                            PageInfo(
+                            DocumentInfo(
                                 id = "13",
                                 fields = Block.Fields(
                                     mapOf(

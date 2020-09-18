@@ -45,7 +45,7 @@ interface BlockRemote {
 
     suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinksEntity
 
-    suspend fun getListPages(): List<PageInfoEntity>
+    suspend fun getListPages(): List<DocumentInfoEntity>
 
     suspend fun linkToObject(
         context: String,

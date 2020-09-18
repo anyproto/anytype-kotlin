@@ -9,7 +9,7 @@ import com.agileburo.anytype.domain.common.Hash
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.Config
 import com.agileburo.anytype.domain.event.model.Payload
-import com.agileburo.anytype.domain.page.navigation.PageInfo
+import com.agileburo.anytype.domain.page.navigation.DocumentInfo
 import com.agileburo.anytype.domain.page.navigation.PageInfoWithLinks
 
 interface BlockRepository {
@@ -95,7 +95,7 @@ interface BlockRepository {
     suspend fun paste(command: Command.Paste): Paste.Response
 
     suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks
-    suspend fun getListPages(): List<PageInfo>
+    suspend fun getListPages(): List<DocumentInfo>
 
     suspend fun linkToObject(
         context: Id,

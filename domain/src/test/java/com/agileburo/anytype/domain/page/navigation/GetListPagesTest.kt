@@ -35,19 +35,19 @@ class GetListPagesTest {
 
         repository.stub {
             onBlocking { getListPages() } doReturn listOf(
-                PageInfo(
+                DocumentInfo(
                     id = "123678",
                     fields = Block.Fields(mapOf("name" to "Alex")),
                     snippet = "Snippet1",
                     hasInboundLinks = false
                 ),
-                PageInfo(
+                DocumentInfo(
                     id = "9876",
                     fields = Block.Fields(mapOf("name" to "Mike", "isArchived" to false)),
                     snippet = "Snippet2",
                     hasInboundLinks = false
                 ),
-                PageInfo(
+                DocumentInfo(
                     id = "934",
                     fields = Block.Fields(mapOf("name" to "Leo", "isArchived" to true)),
                     snippet = "Snippet3",
@@ -63,13 +63,13 @@ class GetListPagesTest {
                 success = { response: GetListPages.Response ->
                     assertEquals(
                         expected = listOf(
-                            PageInfo(
+                            DocumentInfo(
                                 id = "123678",
                                 fields = Block.Fields(mapOf("name" to "Alex")),
                                 snippet = "Snippet1",
                                 hasInboundLinks = false
                             ),
-                            PageInfo(
+                            DocumentInfo(
                                 id = "9876",
                                 fields = Block.Fields(
                                     mapOf(

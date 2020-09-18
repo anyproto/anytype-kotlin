@@ -10,7 +10,7 @@ import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.config.DebugSettings
 import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
 import com.agileburo.anytype.domain.misc.UrlBuilder
-import com.agileburo.anytype.domain.page.navigation.PageInfo
+import com.agileburo.anytype.domain.page.navigation.DocumentInfo
 import com.agileburo.anytype.presentation.desktop.DashboardView
 import com.agileburo.anytype.presentation.settings.EditorSettings
 
@@ -284,7 +284,7 @@ fun UiBlock.style(): Block.Content.Text.Style = when (this) {
 fun DebugSettings.toView(): EditorSettings =
     EditorSettings(customContextMenu = this.isAnytypeContextMenuEnabled)
 
-fun PageInfo.toView(urlBuilder: UrlBuilder): PageLinkView = PageLinkView(
+fun DocumentInfo.toView(urlBuilder: UrlBuilder): PageLinkView = PageLinkView(
     id = id,
     title = fields.name.orEmpty(),
     subtitle = snippet.orEmpty(),
@@ -300,7 +300,7 @@ fun Block.Fields.toEmojiView(): String? = this.iconEmoji.let { emoji ->
     if (emoji.isNullOrBlank()) null else emoji
 }
 
-fun PageInfo.toMentionView(urlBuilder: UrlBuilder) = Mention(
+fun DocumentInfo.toMentionView(urlBuilder: UrlBuilder) = Mention(
     id = id,
     title = fields.getName(),
     image = fields.iconImage?.let { if (it.isNotEmpty()) urlBuilder.thumbnail(it) else null },

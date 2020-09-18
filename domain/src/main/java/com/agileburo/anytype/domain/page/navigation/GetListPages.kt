@@ -16,6 +16,6 @@ open class GetListPages(private val repo: BlockRepository) :
     }
 
     data class Response(
-        val listPages: List<PageInfo>
+        val listPages: List<DocumentInfo>
     )
 }

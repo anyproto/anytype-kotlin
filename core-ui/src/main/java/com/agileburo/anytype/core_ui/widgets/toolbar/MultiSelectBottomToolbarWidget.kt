@@ -15,6 +15,7 @@ import com.agileburo.anytype.core_utils.ext.invisible
 import com.agileburo.anytype.core_utils.ext.visible
 import kotlinx.android.synthetic.main.layout_bottom_multi_select_toolbar.view.*
 
+
 class MultiSelectBottomToolbarWidget : ConstraintLayout {
 
     constructor(
@@ -42,10 +43,8 @@ class MultiSelectBottomToolbarWidget : ConstraintLayout {
 
     fun doneClicks() = done.clicks()
     fun deleteClicks() = delete.clicks()
-    fun turnIntoClicks() = convert.clicks()
-
-    // Temporary button usage for copying.
-    fun copyClicks() = more.clicks()
+    fun turnIntoClicks() = turnInto.clicks()
+    fun copyClicks() = copy.clicks()
 
     fun enterScrollAndMove() = enterScrollAndMove.clicks()
     fun applyScrollAndMoveClicks() = move1.clicks()

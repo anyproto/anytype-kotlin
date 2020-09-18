@@ -81,7 +81,7 @@ class PageViewModel(
     TurnIntoActionReceiver,
     StateReducer<List<Block>, Event> by reducer {
 
-    private val session = MutableStateFlow<Session>(Session.IDLE)
+    private val session = MutableStateFlow(Session.IDLE)
 
     private val views: List<BlockView> get() = orchestrator.stores.views.current()
 

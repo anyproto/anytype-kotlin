@@ -43,7 +43,8 @@ class GetPageInfoWithLinksTest {
                     id = pageId,
                     fields = Block.Fields.empty(),
                     snippet = "Snip",
-                    hasInboundLinks = true
+                    hasInboundLinks = true,
+                    type = DocumentInfo.Type.PAGE
                 ),
                 links = PageLinks(
                     inbound = listOf(
@@ -51,19 +52,22 @@ class GetPageInfoWithLinksTest {
                             id = "12",
                             fields = Block.Fields(mapOf("name" to "Alex")),
                             snippet = "Snippet12",
-                            hasInboundLinks = false
+                            hasInboundLinks = false,
+                            type = DocumentInfo.Type.PAGE
                         ),
                         DocumentInfo(
                             id = "13",
                             fields = Block.Fields(mapOf("name" to "Mike", "isArchived" to false)),
                             snippet = "Snippet13",
-                            hasInboundLinks = false
+                            hasInboundLinks = false,
+                            type = DocumentInfo.Type.PAGE
                         ),
                         DocumentInfo(
                             id = "14",
                             fields = Block.Fields(mapOf("name" to "Leo", "isArchived" to true)),
                             snippet = "Snippet14",
-                            hasInboundLinks = false
+                            hasInboundLinks = false,
+                            type = DocumentInfo.Type.PAGE
                         )
                     ),
                     outbound = listOf(
@@ -71,19 +75,22 @@ class GetPageInfoWithLinksTest {
                             id = "15",
                             fields = Block.Fields(mapOf("name" to "Teo")),
                             snippet = "Snippet15",
-                            hasInboundLinks = false
+                            hasInboundLinks = false,
+                            type = DocumentInfo.Type.PAGE
                         ),
                         DocumentInfo(
                             id = "16",
                             fields = Block.Fields(mapOf("name" to "Thom", "isArchived" to false)),
                             snippet = "Snippet16",
-                            hasInboundLinks = false
+                            hasInboundLinks = false,
+                            type = DocumentInfo.Type.PAGE
                         ),
                         DocumentInfo(
                             id = "17",
                             fields = Block.Fields(mapOf("name" to "Andrey", "isArchived" to true)),
                             snippet = "Snippet17",
-                            hasInboundLinks = false
+                            hasInboundLinks = false,
+                            type = DocumentInfo.Type.PAGE
                         )
                     )
                 )
@@ -103,7 +110,8 @@ class GetPageInfoWithLinksTest {
                                 id = "15",
                                 fields = Block.Fields(mapOf("name" to "Teo")),
                                 snippet = "Snippet15",
-                                hasInboundLinks = false
+                                hasInboundLinks = false,
+                                type = DocumentInfo.Type.PAGE
                             ),
                             DocumentInfo(
                                 id = "16",
@@ -114,7 +122,8 @@ class GetPageInfoWithLinksTest {
                                     )
                                 ),
                                 snippet = "Snippet16",
-                                hasInboundLinks = false
+                                hasInboundLinks = false,
+                                type = DocumentInfo.Type.PAGE
                             )
                         ),
                         actual = outbound
@@ -125,7 +134,8 @@ class GetPageInfoWithLinksTest {
                                 id = "12",
                                 fields = Block.Fields(mapOf("name" to "Alex")),
                                 snippet = "Snippet12",
-                                hasInboundLinks = false
+                                hasInboundLinks = false,
+                                type = DocumentInfo.Type.PAGE
                             ),
                             DocumentInfo(
                                 id = "13",
@@ -136,7 +146,8 @@ class GetPageInfoWithLinksTest {
                                     )
                                 ),
                                 snippet = "Snippet13",
-                                hasInboundLinks = false
+                                hasInboundLinks = false,
+                                type = DocumentInfo.Type.PAGE
                             )
                         ),
                         actual = inbound

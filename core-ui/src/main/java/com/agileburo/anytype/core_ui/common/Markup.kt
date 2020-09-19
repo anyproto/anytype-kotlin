@@ -48,8 +48,9 @@ interface Markup {
         val image: String? by extras
         val emoji: String? by extras
 
-        fun color(): Int = ThemeColor.values().first { color -> color.title == param }.text
-        fun background(): Int = ThemeColor.values().first { color -> color.title == param }.background
+        fun color(): Int? = ThemeColor.values().find { color -> color.title == param }?.text
+        fun background(): Int? =
+            ThemeColor.values().find { color -> color.title == param }?.background
 
     }
 
@@ -101,18 +102,24 @@ fun Markup.toSpannable(
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.TEXT_COLOR -> setSpan(
-                Span.TextColor(mark.color()),
-                mark.from,
-                mark.to,
-                Markup.DEFAULT_SPANNABLE_FLAG
-            )
-            Markup.Type.BACKGROUND_COLOR -> setSpan(
-                Span.Highlight(mark.background().toString()),
-                mark.from,
-                mark.to,
-                Markup.DEFAULT_SPANNABLE_FLAG
-            )
+            Markup.Type.TEXT_COLOR -> {
+                val color = mark.color() ?: ThemeColor.DEFAULT.text
+                setSpan(
+                    Span.TextColor(color),
+                    mark.from,
+                    mark.to,
+                    Markup.DEFAULT_SPANNABLE_FLAG
+                )
+            }
+            Markup.Type.BACKGROUND_COLOR -> {
+                val background = mark.background() ?: ThemeColor.DEFAULT.background
+                setSpan(
+                    Span.Highlight(background.toString()),
+                    mark.from,
+                    mark.to,
+                    Markup.DEFAULT_SPANNABLE_FLAG
+                )
+            }
             Markup.Type.LINK -> setSpan(
                 Span.Url(mark.param as String),
                 mark.from,
@@ -178,18 +185,24 @@ fun Editable.setMarkup(
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.TEXT_COLOR -> setSpan(
-                Span.TextColor(mark.color()),
-                mark.from,
-                mark.to,
-                Markup.DEFAULT_SPANNABLE_FLAG
-            )
-            Markup.Type.BACKGROUND_COLOR -> setSpan(
-                Span.Highlight(mark.background().toString()),
-                mark.from,
-                mark.to,
-                Markup.DEFAULT_SPANNABLE_FLAG
-            )
+            Markup.Type.TEXT_COLOR -> {
+                val color = mark.color() ?: ThemeColor.DEFAULT.text
+                setSpan(
+                    Span.TextColor(color),
+                    mark.from,
+                    mark.to,
+                    Markup.DEFAULT_SPANNABLE_FLAG
+                )
+            }
+            Markup.Type.BACKGROUND_COLOR -> {
+                val background = mark.background() ?: ThemeColor.DEFAULT.background
+                setSpan(
+                    Span.Highlight(background.toString()),
+                    mark.from,
+                    mark.to,
+                    Markup.DEFAULT_SPANNABLE_FLAG
+                )
+            }
             Markup.Type.LINK -> setSpan(
                 Span.Url(mark.param as String),
                 mark.from,

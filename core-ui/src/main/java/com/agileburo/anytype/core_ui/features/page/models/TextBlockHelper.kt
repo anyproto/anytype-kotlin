@@ -8,6 +8,7 @@ import android.view.View
 import com.agileburo.anytype.core_ui.R
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.common.Span
+import com.agileburo.anytype.core_ui.common.ThemeColor
 import com.agileburo.anytype.core_ui.common.setMarkup
 import com.agileburo.anytype.core_ui.extensions.drawable
 import com.agileburo.anytype.core_ui.widgets.text.MentionSpan
@@ -55,18 +56,24 @@ fun Spannable.setMarkup(
             mark.to,
             Markup.DEFAULT_SPANNABLE_FLAG
         )
-        Markup.Type.TEXT_COLOR -> setSpan(
-            Span.TextColor(mark.color()),
-            mark.from,
-            mark.to,
-            Markup.DEFAULT_SPANNABLE_FLAG
-        )
-        Markup.Type.BACKGROUND_COLOR -> setSpan(
-            Span.Highlight(mark.background().toString()),
-            mark.from,
-            mark.to,
-            Markup.DEFAULT_SPANNABLE_FLAG
-        )
+        Markup.Type.TEXT_COLOR -> {
+            val color = mark.color() ?: ThemeColor.DEFAULT.text
+            setSpan(
+                Span.TextColor(color),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
+        }
+        Markup.Type.BACKGROUND_COLOR -> {
+            val background = mark.background() ?: ThemeColor.DEFAULT.background
+            setSpan(
+                Span.Highlight(background.toString()),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
+        }
         Markup.Type.LINK -> setSpan(
             Span.Url(mark.param as String),
             mark.from,

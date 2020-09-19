@@ -63,7 +63,7 @@ enum class ThemeColor(
         background = Color.parseColor("#D6F5F3")
     ),
     GREEN(
-        title = "green",
+        title = "lime",
         text = Color.parseColor("#57C600"),
         background = Color.parseColor("#E3F7D0")
     );

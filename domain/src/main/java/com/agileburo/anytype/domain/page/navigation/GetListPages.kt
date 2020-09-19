@@ -8,11 +8,13 @@ open class GetListPages(private val repo: BlockRepository) :
     BaseUseCase<GetListPages.Response, Unit>() {
 
     override suspend fun run(params: Unit): Either<Throwable, Response> = safe {
-        repo.getListPages().filterNot { it.fields.isArchived == true }.let { result ->
-            Response(
-                listPages = result
-            )
+        val documents = repo.getListPages()
+        val pages = documents.filterNot { document ->
+            document.fields.isArchived == true
+                    || document.type == DocumentInfo.Type.SET
+                    || document.type == DocumentInfo.Type.HOME
         }
+        Response(pages)
     }
 
     data class Response(

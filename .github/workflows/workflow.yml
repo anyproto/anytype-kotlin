@@ -1,6 +1,6 @@
 on:
   push:
-    branches: fix/develop
+    branches: develop
 name: CI
 jobs:
   setup-android:

@@ -1952,8 +1952,6 @@ class PageViewModel(
 
             var allow = true
 
-            val block = blocks.first { it.id == target }
-
             val parent = blocks.find { it.children.contains(target) }
 
             if (parent != null && parent.id != context) {
@@ -1964,16 +1962,18 @@ class PageViewModel(
 
             toggleSelection(target)
 
+            val descendants = blocks.asMap().descendants(parent = target)
+
             if (isSelected(target)) {
-                block.children.forEach { child -> select(child) }
+                descendants.forEach { child -> select(child) }
             } else {
-                block.children.forEach { child -> unselect(child) }
+                descendants.forEach { child -> unselect(child) }
             }
 
             onMultiSelectModeBlockClicked()
 
             val update = state.blocks.map { view ->
-                if (view.id == target || block.children.contains(view.id))
+                if (view.id == target || descendants.contains(view.id))
                     view.updateSelection(newSelection = isSelected(target))
                 else
                     view

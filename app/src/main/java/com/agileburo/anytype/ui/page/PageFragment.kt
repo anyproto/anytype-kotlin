@@ -480,7 +480,8 @@ open class PageFragment :
             view = topToolbar.menu,
             onArchiveClicked = vm::onArchiveThisPageClicked,
             onRedoClicked = vm::onActionRedoClicked,
-            onUndoClicked = vm::onActionUndoClicked
+            onUndoClicked = vm::onActionUndoClicked,
+            onEnterMultiSelect = vm::onEnterMultiSelectModeClicked
         ).show()
     }
 

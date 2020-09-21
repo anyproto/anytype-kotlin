@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/archive" android:title="@string/archive" />
     <item android:id="@+id/undo" android:title="@string/undo"/>
     <item android:id="@+id/redo" android:title="@string/redo"/>
+    <item
+        android:id="@+id/archive"
+        android:title="@string/archive" />
+    <item
+        android:id="@+id/select"
+        android:title="@string/select" />
 </menu>

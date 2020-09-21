@@ -212,6 +212,7 @@
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
     <string name="copy">Copy</string>
+    <string name="select">Select</string>
 
     <string name="choose_emoji">Choose emoji</string>
     <string name="logo_transition">logo_transition</string>

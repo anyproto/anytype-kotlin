@@ -43,7 +43,7 @@
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/delete"
+        android:id="@+id/turnInto"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:background="?attr/selectableItemBackgroundBorderless"
@@ -57,26 +57,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_multi_select_delete" />
+            android:src="@drawable/ic_multi_select_turn_into" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/turnInto"
+        android:id="@+id/delete"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/delete"
+        app:layout_constraintStart_toEndOf="@+id/turnInto"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_multi_select_turn_into" />
+            android:src="@drawable/ic_multi_select_delete" />
 
     </FrameLayout>
 
@@ -101,6 +101,7 @@
     </FrameLayout>
 
     <androidx.constraintlayout.widget.Group
+        android:visibility="invisible"
         android:id="@+id/controls"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

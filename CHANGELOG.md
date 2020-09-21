@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.48
+
+### Design & UX 🔳
+
+* Enter multi-select mode via document's main menu (#896)
+
 ## Version 0.0.47
 
 ### New features 🚀

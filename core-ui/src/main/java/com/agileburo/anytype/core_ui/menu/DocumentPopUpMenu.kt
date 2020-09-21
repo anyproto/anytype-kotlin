@@ -10,7 +10,8 @@ class DocumentPopUpMenu(
     view: View,
     onArchiveClicked: () -> Unit,
     onRedoClicked: () -> Unit,
-    onUndoClicked: () -> Unit
+    onUndoClicked: () -> Unit,
+    onEnterMultiSelect: () -> Unit
 ) : PopupMenu(context, view) {
 
     init {
@@ -20,6 +21,7 @@ class DocumentPopUpMenu(
                 R.id.archive -> onArchiveClicked()
                 R.id.undo -> onUndoClicked()
                 R.id.redo -> onRedoClicked()
+                R.id.select -> onEnterMultiSelect()
                 else -> throw IllegalStateException("Unexpected menu item: $item")
             }
             true

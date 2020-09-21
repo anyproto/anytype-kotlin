@@ -6,18 +6,15 @@ import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.Move
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
-import com.agileburo.anytype.domain.dashboard.interactor.toHomeDashboard
-import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
 import com.agileburo.anytype.domain.event.model.Payload
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine
-import com.agileburo.anytype.presentation.mapper.toView
+import com.agileburo.anytype.presentation.mapper.toDashboardViews
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
@@ -33,6 +30,15 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
     fun `block dragging events do not alter overall state`() {
 
         // SETUP
+
+        val profile = Block(
+            id = MockDataFactory.randomUuid(),
+            children = emptyList(),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PROFILE
+            ),
+            fields = Block.Fields.empty()
+        )
 
         val pages = listOf(
             Block(
@@ -84,7 +90,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
                     Event.Command.ShowBlock(
                         root = config.home,
                         context = config.home,
-                        blocks = listOf(dashboard) + pages
+                        blocks = listOf(dashboard) + profile + pages
                     )
                 )
             )
@@ -114,24 +120,17 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         coroutineTestRule.advanceTime(delayInMillis)
 
+        val blocks = listOf(profile) + pages
+
+        val views = blocks.toDashboardViews(builder = builder)
+
         val expected = HomeDashboardStateMachine.State(
             isLoading = false,
             isInitialzed = true,
-            dashboard = listOf(
-                dashboard,
-                pages.first(),
-                pages.last()
-            ).toHomeDashboard(dashboard.id),
+            blocks = views,
+            childrenIdsList = dashboard.children,
             error = null
         )
-
-        val views = runBlocking {
-            listOf(
-                dashboard,
-                pages.first(),
-                pages.last()
-            ).toHomeDashboard(dashboard.id).toView(builder)
-        }
 
         val from = 0
         val to = 1
@@ -182,12 +181,13 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
             )
         )
 
-        val dashboard = HomeDashboard(
+        val dashboard = Block(
             id = config.home,
-            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-            type = Block.Content.Smart.Type.HOME,
-            blocks = pages,
-            children = pages.map { it.id }
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.HOME
+            ),
+            children = pages.map { page -> page.id },
+            fields = Block.Fields.empty()
         )
 
         val delayInMillis = 100L
@@ -202,9 +202,9 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         coroutineTestRule.advanceTime(delayInMillis)
 
-        val views = runBlocking {
-            dashboard.toView(builder)
-        }
+        val blocks = listOf(dashboard) + pages
+
+        val views = blocks.toDashboardViews(builder = builder)
 
         val from = 0
         val to = 1
@@ -280,12 +280,13 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
             )
         )
 
-        val dashboard = HomeDashboard(
+        val dashboard = Block(
             id = config.home,
-            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-            type = Block.Content.Smart.Type.HOME,
-            blocks = links,
-            children = links.map { it.id }
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.HOME
+            ),
+            children = links.map { page -> page.id },
+            fields = Block.Fields.empty()
         )
 
         val delayInMillis = 100L
@@ -300,7 +301,9 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         coroutineTestRule.advanceTime(delayInMillis)
 
-        val views = runBlocking { dashboard.toView(builder) }
+        val blocks = listOf(dashboard) + links
+
+        val views = blocks.toDashboardViews(builder = builder)
 
         val from = 2
         val to = 0
@@ -376,12 +379,13 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
             )
         )
 
-        val dashboard = HomeDashboard(
+        val dashboard = Block(
             id = config.home,
-            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-            type = Block.Content.Smart.Type.HOME,
-            blocks = links,
-            children = links.map { it.id }
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.HOME
+            ),
+            children = links.map { page -> page.id },
+            fields = Block.Fields.empty()
         )
 
         val delayInMillis = 100L
@@ -396,7 +400,9 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         coroutineTestRule.advanceTime(delayInMillis)
 
-        val views = runBlocking { dashboard.toView(builder) }
+        val blocks = listOf(dashboard) + links
+
+        val views = blocks.toDashboardViews(builder = builder)
 
         val from = 0
         val to = 1
@@ -472,12 +478,13 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
             )
         )
 
-        val dashboard = HomeDashboard(
+        val dashboard = Block(
             id = config.home,
-            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-            type = Block.Content.Smart.Type.HOME,
-            blocks = links,
-            children = links.map { it.id }
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.HOME
+            ),
+            children = links.map { page -> page.id },
+            fields = Block.Fields.empty()
         )
 
         val delayInMillis = 100L
@@ -492,7 +499,9 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         coroutineTestRule.advanceTime(delayInMillis)
 
-        val views = runBlocking { dashboard.toView(builder) }
+        val blocks = listOf(dashboard) + links
+
+        val views = blocks.toDashboardViews(builder = builder)
 
         val from = 0
         val to = 2

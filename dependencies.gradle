@@ -15,7 +15,7 @@ ext {
     androidx_test_core_version = '1.2.0'
     androidx_core_testing_version = '2.1.0'
     appcompat_version = '1.1.0'
-    constraintLayout_version = '2.0.0-rc1'
+    constraintLayout_version = '2.0.0'
     recyclerview_version = '1.2.0-alpha05'
     cardview_version = '1.0.0'
     material_version = '1.1.0-beta02'

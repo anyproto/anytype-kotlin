@@ -207,3 +207,8 @@ fun Document.updateTextContent(
         block
     }
 }
+
+fun List<Block>.getChildrenIdsList(parent: Id): List<String> {
+    val root = this.firstOrNull { it.id == parent }
+    return root?.children ?: emptyList()
+}

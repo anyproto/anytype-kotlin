@@ -1,7 +1,7 @@
 package com.agileburo.anytype.di.feature
 
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
-import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
+import com.agileburo.anytype.domain.auth.interactor.GetProfile
 import com.agileburo.anytype.domain.block.interactor.Move
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.config.GetConfig
@@ -45,7 +45,7 @@ object HomeDashboardModule {
     @Provides
     @PerScreen
     fun provideDesktopViewModelFactory(
-        getCurrentAccount: GetCurrentAccount,
+        getProfile: GetProfile,
         openDashboard: OpenDashboard,
         createPage: CreatePage,
         closeDashboard: CloseDashboard,
@@ -55,7 +55,7 @@ object HomeDashboardModule {
         eventConverter: HomeDashboardEventConverter,
         getDebugSettings: GetDebugSettings
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
-        getCurrentAccount = getCurrentAccount,
+        getProfile = getProfile,
         openDashboard = openDashboard,
         createPage = createPage,
         closeDashboard = closeDashboard,
@@ -69,12 +69,10 @@ object HomeDashboardModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideGetAccountUseCase(
-        repository: BlockRepository,
-        builder: UrlBuilder
-    ): GetCurrentAccount = GetCurrentAccount(
-        repo = repository,
-        builder = builder
+    fun provideGetProfileUseCase(
+        repository: BlockRepository
+    ): GetProfile = GetProfile(
+        repo = repository
     )
 
     @JvmStatic
@@ -137,8 +135,8 @@ object HomeDashboardModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideEventConverter(): HomeDashboardEventConverter {
-        return HomeDashboardEventConverter.DefaultConverter()
+    fun provideEventConverter(builder: UrlBuilder): HomeDashboardEventConverter {
+        return HomeDashboardEventConverter.DefaultConverter(builder)
     }
 
     @JvmStatic

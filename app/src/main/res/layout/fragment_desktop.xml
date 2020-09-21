@@ -1,66 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    app:layoutDescription="@xml/collapsing_toolbar_home_dashboard"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
     android:background="@drawable/background_home_dashboard">
-
-    <LinearLayout
-        android:id="@+id/header"
-        android:layout_width="0dp"
-        app:layout_constraintHeight_percent="0.5"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/greeting"
-            style="@style/HomeDashboardGreetingStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:lineSpacingExtra="2sp"
-            android:layout_marginTop="43dp"
-            android:layout_marginEnd="20dp"
-            tools:text="Hi, Konstantin Ivanov" />
-
-        <com.agileburo.anytype.core_ui.widgets.AvatarWidget
-            android:id="@+id/avatar"
-            android:layout_width="@dimen/width_avatar_on_dashboard"
-            android:layout_height="@dimen/height_avatar_on_dashboard"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/circle_solid_default"
-            app:text_size="36sp" />
-
-    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/desktopRecycler"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:clipToPadding="false"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:paddingBottom="64dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header"
-        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         tools:listitem="@layout/item_desktop_page" />
 
     <com.agileburo.anytype.core_ui.widgets.toolbar.DesktopBottomToolbar
         android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_gravity="bottom" />
 
-</androidx.constraintlayout.motion.widget.MotionLayout>
+</FrameLayout>

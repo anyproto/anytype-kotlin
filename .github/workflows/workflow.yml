@@ -1,6 +1,6 @@
 on:
   push:
-    branches: fix/safely-setting-markup-colors
+    branches: fix/develop
 name: CI
 jobs:
   setup-android:

@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agileburo.anytype.R
 import com.agileburo.anytype.core_ui.tools.SupportDragAndDropBehavior
 import com.agileburo.anytype.core_utils.ext.shift
+import com.agileburo.anytype.core_utils.ext.typeOf
+import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.emojifier.Emojifier
 import com.agileburo.anytype.presentation.desktop.DashboardView
 import com.bumptech.glide.Glide
@@ -18,8 +20,8 @@ import timber.log.Timber
 
 class DashboardAdapter(
     private var data: MutableList<DashboardView>,
-    private val onDocumentClicked: (DashboardView.Document) -> Unit,
-    private val onArchiveClicked: (DashboardView.Archive) -> Unit
+    private val onDocumentClicked: (Id) -> Unit,
+    private val onArchiveClicked: (Id) -> Unit
 ) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>(), SupportDragAndDropBehavior {
 
     companion object {
@@ -59,16 +61,75 @@ class DashboardAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.DocumentHolder -> {
-                holder.bind(
-                    doc = data[position] as DashboardView.Document,
-                    onClick = onDocumentClicked
-                )
+                with(holder) {
+                    val item = data[position] as DashboardView.Document
+                    bindClick(item.target, onDocumentClicked)
+                    bindTitle(item.title)
+                    bindEmoji(item.emoji)
+                    bindImage(item.image)
+                }
             }
             is ViewHolder.ArchiveHolder -> {
-                holder.bind(
-                    archive = data[position] as DashboardView.Archive,
-                    onClick = onArchiveClicked
-                )
+                with(holder) {
+                    val item = data[position] as DashboardView.Archive
+                    bindTitle(item.title)
+                    bindClick(item.target, onArchiveClicked)
+                }
+            }
+        }
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position)
+        } else {
+            payloads.typeOf<DesktopDiffUtil.Payload>().forEach { payload ->
+                when (holder) {
+                    is ViewHolder.ArchiveHolder -> {
+                        bindByPayloads(holder, position, payload)
+                    }
+                    is ViewHolder.DocumentHolder -> {
+                        bindByPayloads(holder, position, payload)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun bindByPayloads(
+        holder: ViewHolder.ArchiveHolder,
+        position: Int,
+        payload: DesktopDiffUtil.Payload
+    ) {
+        with(holder) {
+            val item = data[position] as DashboardView.Archive
+            if (payload.targetChanged()) {
+                bindClick(item.target, onArchiveClicked)
+            }
+            if (payload.titleChanged()) {
+                bindTitle(item.title)
+            }
+        }
+    }
+
+    private fun bindByPayloads(
+        holder: ViewHolder.DocumentHolder,
+        position: Int,
+        payload: DesktopDiffUtil.Payload
+    ) {
+        with(holder) {
+            val item = data[position] as DashboardView.Document
+            if (payload.targetChanged()) {
+                bindClick(item.target, onDocumentClicked)
+            }
+            if (payload.titleChanged()) {
+                bindTitle(item.title)
+            }
+            if (payload.emojiChanged()) {
+                bindEmoji(item.emoji)
+            }
+            if (payload.imageChanged()) {
+                bindImage(item.image)
             }
         }
     }
@@ -77,53 +138,62 @@ class DashboardAdapter(
 
         class ArchiveHolder(itemView: View) : ViewHolder(itemView) {
 
-            fun bind(
-                archive: DashboardView.Archive,
-                onClick: (DashboardView.Archive) -> Unit
-            ) {
-                if (archive.text.isNotEmpty()) {
-                    itemView.archiveTitle.text = archive.text
+            fun bindTitle(title: String) {
+                if (title.isNotEmpty()) {
+                    itemView.archiveTitle.text = title
                 }
-                itemView.setOnClickListener { onClick(archive) }
+            }
+
+            fun bindClick(
+                target: Id,
+                onClick: (Id) -> Unit
+            ) {
+                itemView.setOnClickListener { onClick(target) }
             }
         }
 
         class DocumentHolder(itemView: View) : ViewHolder(itemView) {
 
-            private val title = itemView.title
-            private val emoji = itemView.emojiIcon
-            private val image = itemView.image
+            private val tvTitle = itemView.title
+            private val ivEmoji = itemView.emojiIcon
+            private val ivImage = itemView.image
 
-            fun bind(
-                doc: DashboardView.Document,
-                onClick: (DashboardView.Document) -> Unit
+            fun bindClick(
+                target: Id,
+                onClick: (Id) -> Unit
             ) {
-                itemView.setOnClickListener { onClick(doc) }
+                itemView.setOnClickListener { onClick(target) }
+            }
 
-                if (doc.title.isNullOrEmpty())
-                    title.setText(R.string.untitled)
+            fun bindTitle(title: String?) {
+                if (title.isNullOrEmpty())
+                    tvTitle.setText(R.string.untitled)
                 else
-                    title.text = doc.title
+                    tvTitle.text = title
+            }
 
+            fun bindEmoji(emoji: String?) {
                 try {
-                    doc.emoji?.let { unicode ->
+                    emoji?.let { unicode ->
                         Glide
-                            .with(emoji)
+                            .with(ivEmoji)
                             .load(Emojifier.uri(unicode))
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(emoji)
+                            .into(ivEmoji)
                     }
                 } catch (e: Throwable) {
                     Timber.e(e, "Could not set emoji icon")
                 }
+            }
 
-                doc.image?.let { url ->
+            fun bindImage(image: String?) {
+                image?.let { url ->
                     Glide
-                        .with(image)
+                        .with(ivImage)
                         .load(url)
                         .centerInside()
                         .circleCrop()
-                        .into(image)
+                        .into(ivImage)
                 }
             }
         }

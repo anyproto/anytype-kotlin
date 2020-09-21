@@ -1,12 +1,12 @@
 package com.agileburo.anytype.presentation.desktop
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.withLatestFrom
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
+import com.agileburo.anytype.domain.auth.interactor.GetProfile
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.block.interactor.Move
 import com.agileburo.anytype.domain.block.model.Position
@@ -17,7 +17,6 @@ import com.agileburo.anytype.domain.dashboard.interactor.CloseDashboard
 import com.agileburo.anytype.domain.dashboard.interactor.OpenDashboard
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
-import com.agileburo.anytype.domain.page.ArchiveDocument
 import com.agileburo.anytype.domain.page.CreatePage
 import com.agileburo.anytype.presentation.BuildConfig
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.Interactor
@@ -25,7 +24,6 @@ import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine.Stat
 import com.agileburo.anytype.presentation.mapper.toView
 import com.agileburo.anytype.presentation.navigation.AppNavigation
 import com.agileburo.anytype.presentation.navigation.SupportNavigation
-import com.agileburo.anytype.presentation.profile.ProfileView
 import com.agileburo.anytype.presentation.settings.EditorSettings
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -34,7 +32,7 @@ import timber.log.Timber
 import com.agileburo.anytype.presentation.desktop.HomeDashboardStateMachine as Machine
 
 class HomeDashboardViewModel(
-    private val getCurrentAccount: GetCurrentAccount,
+    private val getProfile: GetProfile,
     private val openDashboard: OpenDashboard,
     private val closeDashboard: CloseDashboard,
     private val createPage: CreatePage,
@@ -53,9 +51,6 @@ class HomeDashboardViewModel(
     private val movementChanges = movementChannel.consumeAsFlow()
     private val dropChannel = Channel<String>()
     private val dropChanges = dropChannel.consumeAsFlow()
-
-    private val _profile = MutableLiveData<ProfileView>()
-    val profile: LiveData<ProfileView> = _profile
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
@@ -79,9 +74,8 @@ class HomeDashboardViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun processEvents(events: List<Event>) = events.forEach {
-        convert(it)?.let { result -> machine.onEvent(result) }
-    }
+    private fun processEvents(events: List<Event>) =
+        events.mapNotNull { convert(it) }.let { result -> machine.onEvents(result) }
 
     private fun proceedWithGettingConfig() {
         getConfig(viewModelScope, Unit) { result ->
@@ -97,18 +91,10 @@ class HomeDashboardViewModel(
     }
 
     private fun proceedWithGettingAccount() {
-        getCurrentAccount(viewModelScope, BaseUseCase.None) { result ->
+        getProfile(viewModelScope, BaseUseCase.None) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while getting account") },
-                fnR = { account ->
-                    Timber.d("account: $account")
-                    _profile.postValue(
-                        ProfileView(
-                            name = account.name,
-                            avatar = account.avatar
-                        )
-                    )
-                }
+                fnR = { payload -> processEvents(payload.events) }
             )
         }
     }
@@ -139,7 +125,7 @@ class HomeDashboardViewModel(
 
     private fun proceedWithOpeningHomeDashboard() {
 
-        machine.onEvent(Machine.Event.OnDashboardLoadingStarted)
+        machine.onEvents(listOf(Machine.Event.OnDashboardLoadingStarted))
 
         Timber.d("Opening home dashboard")
 
@@ -161,12 +147,12 @@ class HomeDashboardViewModel(
             result.either(
                 fnL = { e -> Timber.e(e, "Error while creating a new page") },
                 fnR = { id ->
-                    machine.onEvent(Machine.Event.OnFinishedCreatingPage)
+                    machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
                     proceedWithOpeningDocument(id)
                 }
             )
         }.also {
-            machine.onEvent(Machine.Event.OnStartedCreatingPage)
+            machine.onEvents(listOf(Machine.Event.OnStartedCreatingPage))
         }
     }
 

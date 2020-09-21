@@ -799,4 +799,98 @@ class BlockExtensionTest {
             actual = numbers
         )
     }
+
+    @Test
+    fun `should return list of ids of root block childs`() {
+
+        val children = listOf(
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P,
+                    text = MockDataFactory.randomString()
+                ),
+                children = emptyList()
+            ),
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P,
+                    text = MockDataFactory.randomString()
+                ),
+                children = emptyList()
+            )
+        )
+
+        val parent = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.COLUMN
+            ),
+            children = listOf(children[1].id, children[0].id)
+        )
+
+        val blocks = listOf(parent, children[0], children[1])
+
+        val childrenIdsList = blocks.getChildrenIdsList(parent.id)
+
+        val expected = listOf(children[1].id, children[0].id)
+
+        assertEquals(
+            expected = expected,
+            actual = childrenIdsList
+        )
+    }
+
+    @Test
+    fun `should return empty list of ids of root block childs when parent id is wrong`() {
+
+        val children = listOf(
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P,
+                    text = MockDataFactory.randomString()
+                ),
+                children = emptyList()
+            ),
+            Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                content = Block.Content.Text(
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P,
+                    text = MockDataFactory.randomString()
+                ),
+                children = emptyList()
+            )
+        )
+
+        val parent = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.COLUMN
+            ),
+            children = listOf(children[1].id, children[0].id)
+        )
+
+        val blocks = listOf(parent, children[0], children[1])
+
+        val childrenIdsList = blocks.getChildrenIdsList("errorid")
+
+        val expected = emptyList<String>()
+
+        assertEquals(
+            expected = expected,
+            actual = childrenIdsList
+        )
+    }
 }

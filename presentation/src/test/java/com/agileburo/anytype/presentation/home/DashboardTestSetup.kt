@@ -3,6 +3,7 @@ package com.agileburo.anytype.presentation.home
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
+import com.agileburo.anytype.domain.auth.interactor.GetProfile
 import com.agileburo.anytype.domain.auth.model.Account
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.Move
@@ -35,7 +36,7 @@ open class DashboardTestSetup {
     val coroutineTestRule = CoroutinesTestRule()
 
     @Mock
-    lateinit var getCurrentAccount: GetCurrentAccount
+    lateinit var getProfile: GetProfile
 
     @Mock
     lateinit var openDashboard: OpenDashboard
@@ -72,14 +73,14 @@ open class DashboardTestSetup {
     )
 
     fun buildViewModel() = HomeDashboardViewModel(
-        getCurrentAccount = getCurrentAccount,
+        getProfile = getProfile,
         openDashboard = openDashboard,
         closeDashboard = closeDashboard,
         createPage = createPage,
         getConfig = getConfig,
         move = move,
         interceptEvents = interceptEvents,
-        eventConverter = HomeDashboardEventConverter.DefaultConverter(),
+        eventConverter = HomeDashboardEventConverter.DefaultConverter(builder),
         getDebugSettings = getDebugSettings
     )
 
@@ -134,7 +135,7 @@ open class DashboardTestSetup {
     }
 
     fun stubGetCurrentAccount(accountResponse: Either.Right<Account>) {
-        getCurrentAccount.stub {
+        getProfile.stub {
             onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
                 answer.getArgument<(Either<Throwable, Account>) -> Unit>(2)(accountResponse)
             }

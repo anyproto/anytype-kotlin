@@ -8,7 +8,6 @@ import com.agileburo.anytype.core_ui.model.UiBlock
 import com.agileburo.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.config.DebugSettings
-import com.agileburo.anytype.domain.dashboard.model.HomeDashboard
 import com.agileburo.anytype.domain.misc.UrlBuilder
 import com.agileburo.anytype.domain.page.navigation.DocumentInfo
 import com.agileburo.anytype.presentation.desktop.DashboardView
@@ -211,20 +210,34 @@ fun Block.Content.Text.marks(
     }
 }
 
-fun HomeDashboard.toView(
+fun List<Block>.toDashboardViews(
+    details: Block.Details = Block.Details(),
     builder: UrlBuilder
-): List<DashboardView> = children.mapNotNull { id ->
-    blocks.find { block -> block.id == id }?.let { model ->
-        when (val content = model.content) {
-            is Block.Content.Link -> {
-                when(content.type) {
-                    Block.Content.Link.Type.PAGE -> content.toPageView(model.id, details, builder)
-                    Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(model.id, details)
-                    else -> null
+): List<DashboardView> = this.mapNotNull { block ->
+    when (val content = block.content) {
+        is Block.Content.Smart -> {
+            when (content.type) {
+                Block.Content.Smart.Type.PROFILE -> {
+                    DashboardView.Profile(
+                        id = block.id,
+                        name = details.details[block.id]?.name.orEmpty(),
+                        avatar = details.details[block.id]?.iconImage.let {
+                            if (it.isNullOrEmpty()) null
+                            else builder.image(it)
+                        }
+                    )
                 }
+                else -> null
             }
-            else -> null
         }
+        is Block.Content.Link -> {
+            when (content.type) {
+                Block.Content.Link.Type.PAGE -> content.toPageView(block.id, details, builder)
+                Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(block.id, details)
+                else -> null
+            }
+        }
+        else -> null
     }
 }
 
@@ -235,7 +248,7 @@ fun Block.Content.Link.toArchiveView(
     return DashboardView.Archive(
         id = id,
         target = target,
-        text = details.details[target]?.name.orEmpty()
+        title = details.details[target]?.name.orEmpty()
     )
 }
 
@@ -244,27 +257,18 @@ fun Block.Content.Link.toPageView(
     details: Block.Details,
     builder: UrlBuilder
 ): DashboardView.Document? {
-    return if (details.details[target]?.isArchived != true) {
-        DashboardView.Document(
-            id = id,
-            target = target,
-            title = details.details[target]?.name,
-            emoji = details.details[target]?.iconEmoji?.let { name ->
-                if (name.isNotEmpty())
-                    name
-                else
-                    null
-            },
-            image = details.details[target]?.iconImage?.let { name ->
-                if (name.isNotEmpty())
-                    builder.image(name)
-                else
-                    null
-            }
-        )
-    } else {
-        null
-    }
+    return DashboardView.Document(
+        id = id,
+        target = target,
+        title = details.details[target]?.name,
+        emoji = details.details[target]?.iconEmoji?.let { name ->
+            if (name.isNotEmpty()) name else null
+        },
+        image = details.details[target]?.iconImage?.let { name ->
+            if (name.isNotEmpty()) builder.image(name) else null
+        },
+        isArchived = details.details[target]?.isArchived ?: false
+    )
 }
 
 fun UiBlock.style(): Block.Content.Text.Style = when (this) {

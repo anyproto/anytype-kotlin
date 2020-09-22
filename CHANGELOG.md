@@ -2,6 +2,10 @@
 
 ## Version 0.0.48
 
+### New features 🚀
+
+* Automatically select the first loaded account when signing in (#869)
+
 ### Design & UX 🔳
 
 * Indent aware scroll-and-move (#820)

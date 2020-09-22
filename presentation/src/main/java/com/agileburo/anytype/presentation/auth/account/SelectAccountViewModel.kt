@@ -20,8 +20,7 @@ class SelectAccountViewModel(
     private val observeAccounts: ObserveAccounts
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-    override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
-        MutableLiveData()
+    override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
     val state by lazy { MutableLiveData<List<SelectAccountView>>() }
 
@@ -35,7 +34,10 @@ class SelectAccountViewModel(
     init {
         startObservingAccounts()
         startLoadingAccount()
+        startDispatchingAccumulatedAccounts()
+    }
 
+    private fun startDispatchingAccumulatedAccounts() {
         accounts
             .onEach { result ->
                 state.postValue(
@@ -66,10 +68,14 @@ class SelectAccountViewModel(
 
     private fun startObservingAccounts() {
         viewModelScope.launch {
-            observeAccounts.build().collect { account ->
-                accountChannel.send(account)
+            observeAccounts.build().take(1).collect { account ->
+                onFirstAccountLoaded(account.id)
             }
         }
+    }
+
+    private fun onFirstAccountLoaded(id: String) {
+        navigation.postValue(EventWrapper(AppNavigation.Command.SetupSelectedAccountScreen(id)))
     }
 
     fun onProfileClicked(id: String) {

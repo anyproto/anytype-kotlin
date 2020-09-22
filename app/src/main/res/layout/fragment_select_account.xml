@@ -6,7 +6,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/gradient_rectangle">
 
+    <TextView
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="56dp"
+        android:textColor="@color/white"
+        android:id="@+id/header"
+        style="@style/AuthHeaderStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/fetching_your_account" />
+
     <androidx.cardview.widget.CardView
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"

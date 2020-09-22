@@ -1476,6 +1476,7 @@ class PageViewModel(
     fun onEnterMultiSelectModeClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter)
         mode = EditorMode.MULTI_SELECT
+        viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
         viewModelScope.launch {
             delay(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
             refresh()

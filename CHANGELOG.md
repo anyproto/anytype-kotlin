@@ -9,7 +9,7 @@
 
 ### Middleware ⚙
 
-* Updated middleware protocol to `0.13.9` (#851)
+* Updated middleware protocol to `0.13.10` (#851)
 
 ## Version 0.0.47
 

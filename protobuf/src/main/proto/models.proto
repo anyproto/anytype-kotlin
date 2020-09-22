@@ -1,6 +1,6 @@
 syntax = "proto3";
 package anytype.model;
-option go_package = "github.com/anytypeio/go-anytype-library/pb/model";
+option go_package = "pkg/lib/pb/model";
 
 import "google/protobuf/struct.proto";
 

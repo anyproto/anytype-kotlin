@@ -6,6 +6,10 @@
 
 * Enter multi-select mode via document's main menu (#896)
 
+### Middleware ⚙
+
+* Updated middleware protocol to `0.13.9` (#851)
+
 ## Version 0.0.47
 
 ### New features 🚀

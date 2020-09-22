@@ -17,6 +17,7 @@ class ScrollAndMoveTargetHighlighter(
     private val disabled: Drawable,
     private val line: Drawable,
     private val padding: Int,
+    private val indentation: Int,
     private val descriptor: ScrollAndMoveTargetDescriptor
 ) : RecyclerView.ItemDecoration() {
 
@@ -53,16 +54,16 @@ class ScrollAndMoveTargetHighlighter(
             item.ratio.let { ratio ->
                 when (ratio) {
                     in START_RANGE -> {
-                        if (position != TITLE_POSITION) dropAboveTarget(parent, child, c)
+                        if (position != TITLE_POSITION) dropAboveTarget(parent, child, c, item)
                     }
                     in END_RANGE -> {
-                        drawBelowTarget(parent, child, c)
+                        drawBelowTarget(parent, child, c, item)
                     }
                     in INNER_RANGE -> {
-                        if (position != TITLE_POSITION) highlightTarget(parent, child, c)
+                        if (position != TITLE_POSITION) highlightTarget(parent, child, c, item)
                     }
                     else -> {
-                        if (ratio > 1) drawBelowTarget(parent, child, c)
+                        if (ratio > 1) drawBelowTarget(parent, child, c, item)
                     }
                 }
             }
@@ -72,9 +73,10 @@ class ScrollAndMoveTargetHighlighter(
     private fun drawBelowTarget(
         parent: RecyclerView,
         child: View,
-        c: Canvas
+        c: Canvas,
+        target: ScrollAndMoveTarget
     ) {
-        val left = padding
+        val left = padding + (target.indent * indentation)
         val right = parent.width - padding
         val top = child.bottom
         val bottom = child.bottom + targeted.intrinsicHeight
@@ -87,9 +89,10 @@ class ScrollAndMoveTargetHighlighter(
     private fun dropAboveTarget(
         parent: RecyclerView,
         child: View,
-        c: Canvas
+        c: Canvas,
+        target: ScrollAndMoveTarget
     ) {
-        val left = padding
+        val left = padding + (target.indent * indentation)
         val right = parent.width - padding
         val top = child.top
         val bottom = child.top + targeted.intrinsicHeight
@@ -102,9 +105,10 @@ class ScrollAndMoveTargetHighlighter(
     private fun highlightTarget(
         parent: RecyclerView,
         child: View,
-        c: Canvas
+        c: Canvas,
+        target: ScrollAndMoveTarget
     ) {
-        val left = padding
+        val left = padding + (target.indent * indentation)
         val right = parent.width - padding
         val top = child.top
         val bottom = child.bottom

@@ -128,6 +128,7 @@ open class PageFragment :
             line = drawable(R.drawable.scroll_and_move_line),
             screen = screen,
             padding = dimen(R.dimen.scroll_and_move_start_end_padding),
+            indentation = dimen(R.dimen.indent),
             descriptor = scrollAndMoveTargetDescriptor
         )
     }
@@ -214,6 +215,10 @@ open class PageFragment :
             val top = target.top
             val height = target.height
 
+            val view = pageAdapter.views[position]
+
+            val indent = if (view is BlockView.Indentable) view.indent else 0
+
             val ratio = if (centerY < top) {
                 val delta = top - centerY
                 delta / height
@@ -225,7 +230,8 @@ open class PageFragment :
             scrollAndMoveTargetDescriptor.update(
                 target = ScrollAndMoveTarget(
                     position = position,
-                    ratio = ratio
+                    ratio = ratio,
+                    indent = indent
                 )
             )
         }

@@ -4,6 +4,7 @@
 
 ### Design & UX 🔳
 
+* Indent aware scroll-and-move (#820)
 * Enter multi-select mode via document's main menu (#896)
 
 ### Middleware ⚙

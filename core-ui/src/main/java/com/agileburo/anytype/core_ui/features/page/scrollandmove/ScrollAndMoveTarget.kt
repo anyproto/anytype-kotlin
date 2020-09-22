@@ -10,5 +10,6 @@ import androidx.annotation.FloatRange
  */
 data class ScrollAndMoveTarget(
     @FloatRange(from = 0.0, to = 1.0) val ratio: Float,
-    val position: Int
+    val position: Int,
+    val indent: Int = 0
 )

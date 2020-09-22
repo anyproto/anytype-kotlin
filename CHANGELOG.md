@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.48
+## Version 0.0.48 (WIP)
 
 ### New features 🚀
 
@@ -10,6 +10,10 @@
 
 * Indent aware scroll-and-move (#820)
 * Enter multi-select mode via document's main menu (#896)
+
+### Fixes & tech 🚒
+
+* Should not crash Android client when changing media block's background color on Desktop client (#814)
 
 ### Middleware ⚙
 

@@ -32,17 +32,20 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
         is Event.Command.DeleteBlock -> state.filter { !event.targets.contains(it.id) }
         is Event.Command.GranularChange -> state.replace(
             replacement = { block ->
-                val content = block.content<Block.Content.Text>()
-                block.copy(
-                    content = content.copy(
-                        style = event.style ?: content.style,
-                        color = event.color ?: content.color,
-                        backgroundColor = event.backgroundColor ?: content.backgroundColor,
-                        text = event.text ?: content.text,
-                        marks = event.marks ?: content.marks,
-                        align = event.alignment
+                val content = block.content
+                if (content is Block.Content.Text)
+                    block.copy(
+                        content = content.copy(
+                            style = event.style ?: content.style,
+                            color = event.color ?: content.color,
+                            backgroundColor = event.backgroundColor ?: content.backgroundColor,
+                            text = event.text ?: content.text,
+                            marks = event.marks ?: content.marks,
+                            align = event.alignment
+                        )
                     )
-                )
+                else
+                    block.copy()
             },
             target = { block -> block.id == event.id }
         )

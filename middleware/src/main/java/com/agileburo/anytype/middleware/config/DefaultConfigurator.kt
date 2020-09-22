@@ -3,7 +3,7 @@ package com.agileburo.anytype.middleware.config
 import anytype.Commands.Rpc.Config
 import com.agileburo.anytype.data.auth.model.ConfigEntity
 import com.agileburo.anytype.data.auth.repo.config.Configurator
-import lib.Lib
+import service.Service
 
 /**
  * Obtains middleware configuration data.
@@ -34,7 +34,7 @@ class DefaultConfigurator : Configurator {
 
     private fun fetchConfig(): Config.Get.Response {
         val request = Config.Get.Request.newBuilder().build()
-        val encoded = Lib.configGet(request.toByteArray())
+        val encoded = Service.configGet(request.toByteArray())
         val response = Config.Get.Response.parseFrom(encoded)
         return parseResponse(response)
     }

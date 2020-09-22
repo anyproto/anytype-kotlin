@@ -10,7 +10,7 @@ import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.launch
-import lib.Lib.setEventHandlerMobile
+import service.Service.setEventHandlerMobile
 import timber.log.Timber
 
 class EventHandler(

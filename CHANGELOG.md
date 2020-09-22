@@ -14,6 +14,7 @@
 ### Fixes & tech 🚒
 
 * Should not crash Android client when changing media block's background color on Desktop client (#814)
+* Stretched background cover affects app's performance on home dashboard screen (#901)
 
 ### Middleware ⚙
 

@@ -276,4 +276,17 @@ open class EditorPresentationTestSetup {
             onBlocking { invoke(params) } doReturn Either.Right(emptyList())
         }
     }
+
+    fun stubCreateBlock(root: String) {
+        createBlock.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Pair(
+                    MockDataFactory.randomString(), Payload(
+                        context = root,
+                        events = listOf()
+                    )
+                )
+            )
+        }
+    }
 }

@@ -761,7 +761,7 @@ class PageViewModel(
             replacement = { old -> old.copy(content = content) }
         ) { block -> block.id == id }
 
-        if (content.isList()) {
+        if (content.isList() || content.isToggle()) {
             handleEndlineEnterPressedEventForListItem(content, id)
         } else {
             proceedWithCreatingNewTextBlock(

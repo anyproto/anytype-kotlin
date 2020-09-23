@@ -47,10 +47,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             content.setText(item.text, TextView.BufferType.EDITABLE)
         } else {
             enableEditMode()
+            content.setText(item.text, TextView.BufferType.EDITABLE)
             if (item.isFocused) setCursor(item)
             focus(item.isFocused)
-            content.setText(item.text, TextView.BufferType.EDITABLE)
-            setCursor(item)
             content.addTextChangedListener(
                 DefaultTextWatcher { text ->
                     onTitleTextChanged(text)
@@ -112,8 +111,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     fun focus(focused: Boolean) {
         if (focused) {
-            content.requestFocus()
-            showKeyboard()
+            focus()
         } else
             content.clearFocus()
     }

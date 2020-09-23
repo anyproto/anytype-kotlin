@@ -138,7 +138,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         BlockView.Text.Numbered(
                             id = a.id,
                             isSelected = false,
-                            isFocused = true,
+                            isFocused = false,
                             marks = emptyList(),
                             backgroundColor = null,
                             indent = 0,
@@ -172,7 +172,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         BlockView.Text.Numbered(
                             id = a.id,
                             isSelected = true,
-                            isFocused = true,
+                            isFocused = false,
                             marks = emptyList(),
                             backgroundColor = null,
                             indent = 0,
@@ -236,7 +236,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         BlockView.Text.Highlight(
                             id = a.id,
                             isSelected = false,
-                            isFocused = true,
+                            isFocused = false,
                             marks = emptyList(),
                             backgroundColor = null,
                             color = null,
@@ -493,7 +493,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val parentView = BlockView.Text.Paragraph(
             id = parent.id,
             isSelected = false,
-            isFocused = true,
+            isFocused = false,
             marks = emptyList(),
             backgroundColor = null,
             indent = 0,
@@ -688,7 +688,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val parentView = BlockView.Text.Paragraph(
             id = parent.id,
             isSelected = false,
-            isFocused = true,
+            isFocused = false,
             marks = emptyList(),
             backgroundColor = null,
             indent = 0,

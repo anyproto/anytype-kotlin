@@ -480,18 +480,18 @@ class PageViewModel(
     }
 
     private fun onStartFocusing(payload: Payload) {
-        payload.events.find { it is Event.Command.ShowBlock }?.let { event ->
-            (event as Event.Command.ShowBlock).blocks.first { it.id == context }
-                .let { page ->
-                    if (page.children.isEmpty()) {
-                        updateFocus(page.id)
-                        controlPanelInteractor.onEvent(
-                            ControlPanelMachine.Event.OnFocusChanged(
-                                id = page.id, style = Content.Text.Style.TITLE
-                            )
-                        )
-                    }
-                }
+        val event = payload.events.find { it is Event.Command.ShowBlock }
+        if (event is Event.Command.ShowBlock) {
+            val root = event.blocks.first { it.id == context }
+            if (root.children.isEmpty()) {
+                val focus = Editor.Focus(id = root.id, cursor = Editor.Cursor.End)
+                viewModelScope.launch { orchestrator.stores.focus.update(focus) }
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnFocusChanged(
+                        id = root.id, style = Content.Text.Style.TITLE
+                    )
+                )
+            }
         }
     }
 

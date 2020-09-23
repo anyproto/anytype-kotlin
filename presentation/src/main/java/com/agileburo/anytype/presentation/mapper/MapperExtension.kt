@@ -124,89 +124,116 @@ fun Block.Align.toView(): Alignment = when (this) {
 fun Block.Content.Text.marks(
     urlBuilder: UrlBuilder? = null,
     details: Block.Details? = null
-): List<Markup.Mark> = marks.mapNotNull { mark ->
-    when (mark.type) {
-        Block.Content.Text.Mark.Type.ITALIC -> {
-            Markup.Mark(
-                from = mark.range.first,
-                to = mark.range.last,
-                type = Markup.Type.ITALIC
-            )
-        }
-        Block.Content.Text.Mark.Type.BOLD -> {
-            Markup.Mark(
-                from = mark.range.first,
-                to = mark.range.last,
-                type = Markup.Type.BOLD
-            )
-        }
-        Block.Content.Text.Mark.Type.STRIKETHROUGH -> {
-            Markup.Mark(
-                from = mark.range.first,
-                to = mark.range.last,
-                type = Markup.Type.STRIKETHROUGH
-            )
-        }
-        Block.Content.Text.Mark.Type.TEXT_COLOR -> {
-            Markup.Mark(
-                from = mark.range.first,
-                to = mark.range.last,
-                type = Markup.Type.TEXT_COLOR,
-                param = checkNotNull(mark.param)
-            )
-        }
-        Block.Content.Text.Mark.Type.LINK -> {
-            Markup.Mark(
-                from = mark.range.first,
-                to = mark.range.last,
-                type = Markup.Type.LINK,
-                param = checkNotNull(mark.param)
-            )
-        }
-        Block.Content.Text.Mark.Type.BACKGROUND_COLOR -> {
-            Markup.Mark(
-                from = mark.range.first,
-                to = mark.range.last,
-                type = Markup.Type.BACKGROUND_COLOR,
-                param = checkNotNull(mark.param)
-            )
-        }
-        Block.Content.Text.Mark.Type.KEYBOARD -> {
-            Markup.Mark(
-                from = mark.range.first,
-                to = mark.range.last,
-                type = Markup.Type.KEYBOARD
-            )
-        }
-        Block.Content.Text.Mark.Type.MENTION -> {
-
-            val emoji: String?
-            val image: String?
-
-            if (details != null) {
-                emoji = details.details[mark.param]?.iconEmoji?.let { icon ->
-                    if (icon.isEmpty()) null else icon
-                }
-                image = details.details[mark.param]?.iconImage?.let { icon ->
-                    if (icon.isEmpty()) null else icon
-                }
-            } else {
-                emoji = null
-                image = null
-            }
-
-            Markup.Mark(
-                from = mark.range.first,
-                to = mark.range.last,
-                type = Markup.Type.MENTION,
-                param = mark.param,
-                extras = mapOf(
-                    "image" to image?.let { urlBuilder?.thumbnail(it) },
-                    "emoji" to emoji
+): List<Markup.Mark> = marks
+    .filterByRange(text.length)
+    .mapNotNull { mark ->
+        when (mark.type) {
+            Block.Content.Text.Mark.Type.ITALIC -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.ITALIC
                 )
-            )
+            }
+            Block.Content.Text.Mark.Type.BOLD -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.BOLD
+                )
+            }
+            Block.Content.Text.Mark.Type.STRIKETHROUGH -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.STRIKETHROUGH
+                )
+            }
+            Block.Content.Text.Mark.Type.TEXT_COLOR -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.TEXT_COLOR,
+                    param = checkNotNull(mark.param)
+                )
+            }
+            Block.Content.Text.Mark.Type.LINK -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.LINK,
+                    param = checkNotNull(mark.param)
+                )
+            }
+            Block.Content.Text.Mark.Type.BACKGROUND_COLOR -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.BACKGROUND_COLOR,
+                    param = checkNotNull(mark.param)
+                )
+            }
+            Block.Content.Text.Mark.Type.KEYBOARD -> {
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.KEYBOARD
+                )
+            }
+            Block.Content.Text.Mark.Type.MENTION -> {
+
+                val emoji: String?
+                val image: String?
+
+                if (details != null) {
+                    emoji = details.details[mark.param]?.iconEmoji?.let { icon ->
+                        if (icon.isEmpty()) null else icon
+                    }
+                    image = details.details[mark.param]?.iconImage?.let { icon ->
+                        if (icon.isEmpty()) null else icon
+                    }
+                } else {
+                    emoji = null
+                    image = null
+                }
+
+                Markup.Mark(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    type = Markup.Type.MENTION,
+                    param = mark.param,
+                    extras = mapOf(
+                        "image" to image?.let { urlBuilder?.thumbnail(it) },
+                        "emoji" to emoji
+                    )
+                )
+            }
+            else -> null
         }
-        else -> null
+    }
+
+fun List<Block.Content.Text.Mark>.filterByRange(textLength: Int): List<Block.Content.Text.Mark> {
+    return this.mapNotNull { mark ->
+        when {
+            mark.range.first >= textLength -> null
+            mark.range.first == mark.range.last -> null
+            mark.range.last < 0 -> null
+            else -> {
+                var result = mark
+                if (result.range.first < 0) {
+                    result = result.copy(range = 0..result.range.last)
+                }
+                if (mark.range.last > textLength) {
+                    result = result.copy(range = result.range.first..textLength)
+                }
+                if (result.range.first > mark.range.last) {
+                    val from = result.range.first
+                    val to = mark.range.last
+                    result = result.copy(range = to..from)
+                }
+                return@mapNotNull result
+            }
+        }
     }
 }
 

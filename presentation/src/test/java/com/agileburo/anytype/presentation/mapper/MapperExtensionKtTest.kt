@@ -428,4 +428,258 @@ class MapperExtensionKtTest {
 
         block.toVideoView(id, urlBuilder, indent, mode)
     }
+
+    @Test
+    fun `should not return mark when range from is equal text length`() {
+        // SETUP
+
+        val source = "Everything was in confusion in the Oblonskys’ house"
+
+        val marks = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = 51..55,
+                param = "link",
+                type = Block.Content.Text.Mark.Type.LINK
+            )
+        )
+
+        val result = marks.filterByRange(source.length)
+
+        val expected = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            )
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `should not return mark when range from is equal range to`() {
+        // SETUP
+
+        val source = "Everything was in confusion in the Oblonskys’ house"
+
+        val marks = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = 15..15,
+                param = "link",
+                type = Block.Content.Text.Mark.Type.LINK
+            )
+        )
+
+        val result = marks.filterByRange(source.length)
+
+        val expected = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            )
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `should not return mark when range to is less then zero`() {
+        // SETUP
+
+        val source = "Everything was in confusion in the Oblonskys’ house"
+
+        val marks = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = IntRange(15, -1),
+                param = "link",
+                type = Block.Content.Text.Mark.Type.LINK
+            )
+        )
+
+        val result = marks.filterByRange(source.length)
+
+        val expected = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            )
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `should return mark when range from is less then zero`() {
+        // SETUP
+
+        val source = "Everything was in confusion in the Oblonskys’ house"
+
+        val marks = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = IntRange(-1, 10),
+                param = "link",
+                type = Block.Content.Text.Mark.Type.LINK
+            )
+        )
+
+        val result = marks.filterByRange(source.length)
+
+        val expected = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = 0..10,
+                param = "link",
+                type = Block.Content.Text.Mark.Type.LINK
+            )
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `should return mark when range from is less then zero and to is bigger then text length`() {
+        // SETUP
+
+        val source = "Everything was in confusion in the Oblonskys’ house"
+
+        val marks = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = IntRange(-1, 55),
+                param = "link",
+                type = Block.Content.Text.Mark.Type.LINK
+            )
+        )
+
+        val result = marks.filterByRange(source.length)
+
+        val expected = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = 0..source.length,
+                param = "link",
+                type = Block.Content.Text.Mark.Type.LINK
+            )
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `should return mark with swapped from and to ranges`() {
+        // SETUP
+
+        val source = "Everything was in confusion in the Oblonskys’ house"
+
+        val marks = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = IntRange(20, 10),
+                param = "link",
+                type = Block.Content.Text.Mark.Type.LINK
+            )
+        )
+
+        val result = marks.filterByRange(source.length)
+
+        val expected = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = 10..20,
+                param = "link",
+                type = Block.Content.Text.Mark.Type.LINK
+            )
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `should return initial list of marks`() {
+        // SETUP
+
+        val source = "Everything was in confusion in the Oblonskys’ house"
+
+        val marks = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = 10..20,
+                param = "link",
+                type = Block.Content.Text.Mark.Type.LINK
+            ),
+            Block.Content.Text.Mark(
+                range = 30..50,
+                param = null,
+                type = Block.Content.Text.Mark.Type.BOLD
+            )
+        )
+
+        val result = marks.filterByRange(source.length)
+
+        val expected = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                param = null,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = 10..20,
+                param = "link",
+                type = Block.Content.Text.Mark.Type.LINK
+            ),
+            Block.Content.Text.Mark(
+                range = 30..50,
+                param = null,
+                type = Block.Content.Text.Mark.Type.BOLD
+            )
+        )
+
+        assertEquals(expected, result)
+    }
 }

@@ -29,9 +29,9 @@ class GetCurrentAccount(
 
         val details = (event as Event.Command.ShowBlock).details.details[config.profile]
 
-        val name = details?.name ?: throw IllegalStateException(MISSING_NAME_ERROR)
+        val name = details?.name.orEmpty()
 
-        val image = details.iconImage
+        val image = details?.iconImage
 
         return Account(
             id = config.profile,

@@ -13,6 +13,7 @@
 
 ### Fixes & tech 🚒
 
+* App crashes when opening action menu for link block, which was created by turning a text block into a page (#910)
 * Should create a new toogle on enter press at the end of the non-empty toggle block (#907)
 * Should convert toggle block to paragraph on enter press if toggle block's text is empty (#886)
 * When creating a new document and focusing its title, cursor should be visible (#903)

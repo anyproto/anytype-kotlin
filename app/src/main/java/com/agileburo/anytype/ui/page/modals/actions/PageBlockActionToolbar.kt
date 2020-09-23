@@ -15,7 +15,6 @@ import timber.log.Timber
 class PageBlockActionToolbar : BlockActionToolbar() {
 
     lateinit var block: BlockView.Page
-    lateinit var icon: ImageView
     lateinit var emoji: ImageView
     lateinit var image: ImageView
     lateinit var title: TextView
@@ -59,12 +58,10 @@ class PageBlockActionToolbar : BlockActionToolbar() {
                     .into(image)
             }
             block.isEmpty -> {
-                icon.setImageResource(com.agileburo.anytype.core_ui.R.drawable.ic_block_empty_page)
-                image.setImageDrawable(null)
+                image.setImageResource(com.agileburo.anytype.core_ui.R.drawable.ic_block_empty_page)
             }
             else -> {
-                icon.setImageResource(com.agileburo.anytype.core_ui.R.drawable.ic_block_page_without_emoji)
-                image.setImageDrawable(null)
+                image.setImageResource(com.agileburo.anytype.core_ui.R.drawable.ic_block_page_without_emoji)
             }
         }
 

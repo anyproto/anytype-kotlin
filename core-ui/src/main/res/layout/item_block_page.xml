@@ -47,7 +47,7 @@
 
     </FrameLayout>
 
-    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/pageTitle"
         style="@style/BlockPageContentStyle"
         android:layout_width="0dp"

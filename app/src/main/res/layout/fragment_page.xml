@@ -42,7 +42,7 @@
 
         </FrameLayout>
 
-        <com.agileburo.anytype.core_ui.widgets.toolbar.DocumentTopToolbar
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.DocumentTopToolbar
             android:id="@+id/topToolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
@@ -62,7 +62,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.agileburo.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
             android:id="@+id/toolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
@@ -71,7 +71,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <com.agileburo.anytype.core_ui.widgets.toolbar.MarkupToolbarWidget
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MarkupToolbarWidget
             android:id="@+id/markupToolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
@@ -81,7 +81,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <com.agileburo.anytype.core_ui.widgets.toolbar.MultiSelectBottomToolbarWidget
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MultiSelectBottomToolbarWidget
             android:id="@+id/bottomMenu"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
@@ -91,7 +91,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <com.agileburo.anytype.core_ui.widgets.toolbar.style.StyleToolbarWidget
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.style.StyleToolbarWidget
             android:id="@+id/styleToolbar"
             android:layout_width="0dp"
             android:layout_height="203dp"
@@ -101,7 +101,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <com.agileburo.anytype.core_ui.widgets.toolbar.MentionToolbar
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MentionToolbar
             android:id="@+id/mentionSuggesterToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:visibility="visible" />
 
-        <com.agileburo.anytype.core_ui.widgets.ScrollAndMoveHintWidget
+        <com.anytypeio.anytype.core_ui.widgets.ScrollAndMoveHintWidget
             android:id="@+id/scrollAndMoveHint"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
@@ -123,7 +123,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.agileburo.anytype.core_ui.widgets.toolbar.MainBottomToolbar
+    <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
         android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

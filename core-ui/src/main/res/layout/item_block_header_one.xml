@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     style="@style/DefaultDocumentContainerStyle">
 
-    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         tools:background="@drawable/item_block_multi_select_selected"
         android:background="@drawable/item_block_multi_select_mode_selector"
         android:hint="@string/hint_header_one"

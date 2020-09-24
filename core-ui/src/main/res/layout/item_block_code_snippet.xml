@@ -17,7 +17,7 @@
         style="@style/BlockCodeLanguageMenuStyle"
         android:text="@string/block_code_menu_title"/>
 
-    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/snippet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

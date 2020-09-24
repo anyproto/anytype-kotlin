@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="100dp">
 
-    <com.agileburo.anytype.sample.RoundedBgTextView
+    <com.anytypeio.anytype.sample.RoundedBgTextView
         android:id="@+id/item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

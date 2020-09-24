@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="68dp">
 
-    <com.agileburo.anytype.core_ui.widgets.AvatarWidget
+    <com.anytypeio.anytype.core_ui.widgets.AvatarWidget
         android:layout_height="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

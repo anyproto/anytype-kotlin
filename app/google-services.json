@@ -1,35 +1,42 @@
 {
   "project_info": {
-    "project_number": "465690191646",
-    "firebase_url": "https://anytype-fe540.firebaseio.com",
-    "project_id": "anytype-fe540",
-    "storage_bucket": "anytype-fe540.appspot.com"
+    "project_number": "53670910732",
+    "firebase_url": "https://anytypeio.firebaseio.com",
+    "project_id": "anytypeio",
+    "storage_bucket": "anytypeio.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:465690191646:android:0ba1fdd37d169241",
+        "mobilesdk_app_id": "1:53670910732:android:74086ea5c864b4ca8e0729",
         "android_client_info": {
-          "package_name": "com.agileburo.anytype"
+          "package_name": "com.anytypeio.anytype"
         }
       },
       "oauth_client": [
         {
-          "client_id": "465690191646-v2hlv1fa7e00ulqqqvgikrqccfor4pj0.apps.googleusercontent.com",
+          "client_id": "53670910732-np8kvrkuc29040f5gllh9rjqt7dsdp7d.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAv7X2eJ_8rRhP9fmRSl9c44uL6GvWClxU"
+          "current_key": "AIzaSyD2syNIidEwkRa-lTUE3lbeMAid9KYQ0GE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "465690191646-v2hlv1fa7e00ulqqqvgikrqccfor4pj0.apps.googleusercontent.com",
+              "client_id": "53670910732-np8kvrkuc29040f5gllh9rjqt7dsdp7d.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "53670910732-efqg1i2msl062lefjcj83u072n890ift.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.anytypeio.anytype"
+              }
             }
           ]
         }

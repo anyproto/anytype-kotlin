@@ -40,7 +40,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.agileburo.anytype.core_ui.widgets.AvatarWidget
+        <com.anytypeio.anytype.core_ui.widgets.AvatarWidget
             android:id="@+id/avatar"
             android:layout_width="16dp"
             android:layout_height="16dp"

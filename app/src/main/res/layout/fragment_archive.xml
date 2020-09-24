@@ -33,7 +33,7 @@
 
         </FrameLayout>
 
-        <com.agileburo.anytype.core_ui.widgets.toolbar.DocumentTopToolbar
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.DocumentTopToolbar
             android:id="@+id/topToolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
@@ -53,7 +53,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.agileburo.anytype.core_ui.widgets.toolbar.ArchiveToolbarWidget
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.ArchiveToolbarWidget
             android:id="@+id/bottomMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

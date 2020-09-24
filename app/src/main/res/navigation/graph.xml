@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/pageScreen"
-        android:name="com.agileburo.anytype.ui.page.PageFragment"
+        android:name="com.anytypeio.anytype.ui.page.PageFragment"
         android:label="Page screen"
         tools:layout="@layout/fragment_page" />
 
     <fragment
         android:id="@+id/desktopScreen"
-        android:name="com.agileburo.anytype.ui.desktop.HomeDashboardFragment"
+        android:name="com.anytypeio.anytype.ui.desktop.HomeDashboardFragment"
         android:label="DesktopFragment"
         tools:layout="@layout/fragment_desktop">
         <action
@@ -26,9 +26,6 @@
         <action
             android:id="@+id/action_desktopScreen_to_databaseViewFragment"
             app:destination="@id/databaseViewFragment" />
-        <action
-            android:id="@+id/action_desktopScreen_to_contactsFragment"
-            app:destination="@id/contactsFragment" />
         <action
             android:id="@+id/action_desktopScreen_to_addViewModalFragment"
             app:destination="@id/addViewModalFragment" />
@@ -51,7 +48,7 @@
 
     <fragment
         android:id="@+id/profileScreen"
-        android:name="com.agileburo.anytype.ui.profile.ProfileFragment"
+        android:name="com.anytypeio.anytype.ui.profile.ProfileFragment"
         android:label="ProfileScreen"
         tools:layout="@layout/fragment_profile">
         <action
@@ -75,7 +72,7 @@
     </fragment>
     <fragment
         android:id="@+id/createAccountScreen"
-        android:name="com.agileburo.anytype.ui.auth.account.CreateAccountFragment"
+        android:name="com.anytypeio.anytype.ui.auth.account.CreateAccountFragment"
         android:label="StartLoginFragment"
         tools:layout="@layout/fragment_create_account">
         <action
@@ -90,7 +87,7 @@
     </fragment>
     <fragment
         android:id="@+id/setupNewAccountScreen"
-        android:name="com.agileburo.anytype.ui.auth.account.SetupNewAccountFragment"
+        android:name="com.anytypeio.anytype.ui.auth.account.SetupNewAccountFragment"
         android:label="SetupAccount"
         tools:layout="@layout/fragment_setup_new_account">
         <action
@@ -103,7 +100,7 @@
     </fragment>
     <fragment
         android:id="@+id/splashScreen"
-        android:name="com.agileburo.anytype.ui.splash.SplashFragment"
+        android:name="com.anytypeio.anytype.ui.splash.SplashFragment"
         android:label="SplashFragment"
         tools:layout="@layout/fragment_splash">
         <action
@@ -127,7 +124,7 @@
     </fragment>
     <fragment
         android:id="@+id/congratulationScreen"
-        android:name="com.agileburo.anytype.ui.auth.CongratulationFragment"
+        android:name="com.anytypeio.anytype.ui.auth.CongratulationFragment"
         android:label="StartLoginFragment"
         tools:layout="@layout/fragment_congratulation">
         <action
@@ -143,7 +140,7 @@
 
     <dialog
         android:id="@+id/keychainDialog"
-        android:name="com.agileburo.anytype.ui.profile.KeychainPhraseDialog"
+        android:name="com.anytypeio.anytype.ui.profile.KeychainPhraseDialog"
         tools:layout="@layout/dialog_keychain_phrase" />
 
     <navigation
@@ -151,7 +148,7 @@
         app:startDestination="@id/startLoginScreen">
         <fragment
             android:id="@+id/selectAccountScreen"
-            android:name="com.agileburo.anytype.ui.auth.account.SelectAccountFragment"
+            android:name="com.anytypeio.anytype.ui.auth.account.SelectAccountFragment"
             android:label="ChooseProfileScreen"
             tools:layout="@layout/fragment_select_account">
             <action
@@ -166,7 +163,7 @@
         </fragment>
         <fragment
             android:id="@+id/setupNewAccountScreen"
-            android:name="com.agileburo.anytype.ui.auth.account.SetupNewAccountFragment"
+            android:name="com.anytypeio.anytype.ui.auth.account.SetupNewAccountFragment"
             android:label="SetupAccount"
             tools:layout="@layout/fragment_setup_new_account">
             <action
@@ -187,7 +184,7 @@
 
         <fragment
             android:id="@+id/keychainLoginScreen"
-            android:name="com.agileburo.anytype.ui.auth.KeychainLoginFragment"
+            android:name="com.anytypeio.anytype.ui.auth.KeychainLoginFragment"
             android:label="KeychainLogin"
             tools:layout="@layout/fragment_keychain_login">
             <action
@@ -201,7 +198,7 @@
 
         <fragment
             android:id="@+id/createAccountScreen"
-            android:name="com.agileburo.anytype.ui.auth.account.CreateAccountFragment"
+            android:name="com.anytypeio.anytype.ui.auth.account.CreateAccountFragment"
             android:label="StartLoginFragment"
             tools:layout="@layout/fragment_create_account">
             <action
@@ -214,12 +211,12 @@
         </fragment>
         <fragment
             android:id="@+id/congratulationScreen"
-            android:name="com.agileburo.anytype.ui.auth.CongratulationFragment"
+            android:name="com.anytypeio.anytype.ui.auth.CongratulationFragment"
             android:label="StartLoginFragment"
             tools:layout="@layout/fragment_congratulation" />
         <fragment
             android:id="@+id/setupSelectedAccountScreen"
-            android:name="com.agileburo.anytype.ui.auth.account.SetupSelectedAccountFragment"
+            android:name="com.anytypeio.anytype.ui.auth.account.SetupSelectedAccountFragment"
             android:label="SetupAccount"
             tools:layout="@layout/fragment_setup_selected_account">
             <action
@@ -242,7 +239,7 @@
         </fragment>
         <fragment
             android:id="@+id/startLoginScreen"
-            android:name="com.agileburo.anytype.ui.auth.StartLoginFragment"
+            android:name="com.anytypeio.anytype.ui.auth.StartLoginFragment"
             android:label="StartLoginFragment"
             tools:layout="@layout/fragment_start_login">
             <action
@@ -279,17 +276,17 @@
             app:popUpToInclusive="true" />
         <fragment
             android:id="@+id/choosePinCodeScreen"
-            android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.pin.ChoosePinCodeFragment"
+            android:name="com.anytypeio.anytype.feature_login.ui.login.presentation.ui.pin.ChoosePinCodeFragment"
             android:label="StartLoginFragment"
             tools:layout="@layout/fragment_choose_pin_code" />
         <fragment
             android:id="@+id/confirmPinCodeScreen"
-            android:name="com.agileburo.anytype.feature_login.ui.login.presentation.ui.pin.ConfirmPinCodeFragment"
+            android:name="com.anytypeio.anytype.feature_login.ui.login.presentation.ui.pin.ConfirmPinCodeFragment"
             android:label="StartLoginFragment"
             tools:layout="@layout/fragment_confirm_pin_code" />
         <fragment
             android:id="@+id/invitationFragment"
-            android:name="com.agileburo.anytype.ui.auth.InvitationFragment"
+            android:name="com.anytypeio.anytype.ui.auth.InvitationFragment"
             android:label="InvitationFragment"
             tools:layout="@layout/fragment_invitation">
             <action
@@ -303,66 +300,34 @@
     </navigation>
     <fragment
         android:id="@+id/databaseViewFragment"
-        android:name="com.agileburo.anytype.ui.database.table.DatabaseViewFragment"
+        android:name="com.anytypeio.anytype.ui.database.table.DatabaseViewFragment"
         android:label="DatabaseViewFragment" />
-    <fragment
-        android:id="@+id/contactsFragment"
-        android:name="com.agileburo.anytype.ui.database.list.ListBoardFragment"
-        android:label="ContactsFragment">
-        <action
-            android:id="@+id/action_contactsFragment_to_addViewModalFragment"
-            app:destination="@id/addViewModalFragment" />
-        <action
-            android:id="@+id/action_contactsFragment_to_editDatabaseFragment"
-            app:destination="@id/editDatabaseFragment" />
-        <action
-            android:id="@+id/action_contactsFragment_to_customizeDisplayViewFragment"
-            app:destination="@id/customizeDisplayViewFragment" />
-    </fragment>
     <dialog
         android:id="@+id/addViewModalFragment"
-        android:name="com.agileburo.anytype.ui.database.modals.AddDisplayFragment"
+        android:name="com.anytypeio.anytype.ui.database.modals.AddDisplayFragment"
         android:label="AddViewModalFragment" />
     <dialog
         android:id="@+id/editDatabaseFragment"
-        android:name="com.agileburo.anytype.ui.database.modals.EditDatabaseFragment"
+        android:name="com.anytypeio.anytype.ui.database.modals.EditDatabaseFragment"
         android:label="EditDatabaseFragment" />
-    <dialog
-        android:id="@+id/switchDisplayViewFragment"
-        android:name="com.agileburo.anytype.ui.database.modals.SwitchDisplayFragment"
-        android:label="SwitchDisplayViewFragment"
-        tools:layout="@layout/modal_switch_view">
-        <argument
-            android:name="ViewType"
-            app:argType="com.agileburo.anytype.domain.database.model.ViewType" />
-    </dialog>
-    <dialog
-        android:id="@+id/customizeDisplayViewFragment"
-        android:name="com.agileburo.anytype.ui.database.modals.CustomizeDisplayFragment"
-        android:label="CustomizeDisplayViewFragment"
-        tools:layout="@layout/modal_customize">
-        <action
-            android:id="@+id/customize_to_switch"
-            app:destination="@id/switchDisplayViewFragment" />
-    </dialog>
 
     <fragment
         android:id="@+id/kanbanBoardFragment"
-        android:name="com.agileburo.anytype.ui.database.kanban.KanbanBoardFragment"
+        android:name="com.anytypeio.anytype.ui.database.kanban.KanbanBoardFragment"
         android:label="KanbanBoardFragment" />
 
     <fragment
         android:id="@+id/goalsFragment"
-        android:name="com.agileburo.anytype.ui.goals.GoalsFragment"
+        android:name="com.anytypeio.anytype.ui.goals.GoalsFragment"
         android:label="GoalsFragment" />
     <fragment
         android:id="@+id/debugSettingsFragment"
-        android:name="com.agileburo.anytype.ui.settings.DebugSettingsFragment"
+        android:name="com.anytypeio.anytype.ui.settings.DebugSettingsFragment"
         android:label="DebugSettingsFragment"
         tools:layout="@layout/fragment_debug_settings"/>
     <fragment
         android:id="@+id/pageNavigationFragment"
-        android:name="com.agileburo.anytype.ui.navigation.PageNavigationFragment"
+        android:name="com.anytypeio.anytype.ui.navigation.PageNavigationFragment"
         android:label="PageNavigationFragment"
         tools:layout="@layout/fragment_page_navigation">
         <argument
@@ -372,22 +337,22 @@
     </fragment>
     <fragment
         android:id="@+id/linkToFragment"
-        android:name="com.agileburo.anytype.ui.linking.LinkToObjectFragment"
+        android:name="com.anytypeio.anytype.ui.linking.LinkToObjectFragment"
         android:label="LinkToFragment"
         tools:layout="@layout/fragment_link_to_object" />
     <fragment
         android:id="@+id/moveToFragment"
-        android:name="com.agileburo.anytype.ui.moving.MoveToFragment"
+        android:name="com.anytypeio.anytype.ui.moving.MoveToFragment"
         android:label="MoveToFragment"
         tools:layout="@layout/fragment_move_to" />
     <fragment
         android:id="@+id/pageSearchFragment"
-        android:name="com.agileburo.anytype.ui.search.PageSearchFragment"
+        android:name="com.anytypeio.anytype.ui.search.PageSearchFragment"
         android:label="PageSearchFragment"
         tools:layout="@layout/fragment_page_search"/>
     <fragment
         android:id="@+id/archiveFragment"
-        android:name="com.agileburo.anytype.ui.archive.ArchiveFragment"
+        android:name="com.anytypeio.anytype.ui.archive.ArchiveFragment"
         android:label="ArchiveFragment" />
 
 </navigation>

@@ -28,7 +28,7 @@
 
     </FrameLayout>
 
-    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:hint="@string/hint_title"
         android:id="@+id/title"
         style="@style/BlockTitleContentStyle"

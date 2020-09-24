@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.agileburo.anytype.sample">
+    package="com.anytypeio.anytype.sample">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".SampleApp"
+        android:name="com.anytypeio.anytype.sample.SampleApp"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,17 +19,17 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ScrollAndMove" />
-        <activity android:name=".StyleActivity">
+        <activity android:name="com.anytypeio.anytype.sample.ScrollAndMove" />
+        <activity android:name="com.anytypeio.anytype.sample.StyleActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name="com.anytypeio.anytype.sample.MainActivity" />
         <activity
-            android:name=".KeyboardActivity"
+            android:name="com.anytypeio.anytype.sample.KeyboardActivity"
             android:windowSoftInputMode="adjustResize" />
     </application>
 

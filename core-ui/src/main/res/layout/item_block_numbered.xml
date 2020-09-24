@@ -27,7 +27,7 @@
             android:visibility="visible"
             tools:text="19." />
 
-        <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+        <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
             android:id="@+id/numberedListContent"
             style="@style/BlockNumberedContentStyle"
             android:layout_marginStart="4dp"

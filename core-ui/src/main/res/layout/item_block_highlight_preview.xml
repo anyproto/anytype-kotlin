@@ -10,7 +10,7 @@
     android:paddingTop="12dp"
     android:paddingBottom="12dp">
 
-    <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/highlightContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

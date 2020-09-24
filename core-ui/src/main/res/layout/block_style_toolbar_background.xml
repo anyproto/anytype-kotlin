@@ -5,67 +5,67 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorDefault"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="@color/white"
         tools:ignore="MissingConstraints" />
 
-    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorGrey"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="#F3F2EC"
         tools:ignore="MissingConstraints" />
 
-    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorYellow"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="#FEF9CC"
         tools:ignore="MissingConstraints" />
 
-    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorOrange"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="#FEF3C5"
         tools:ignore="MissingConstraints" />
 
-    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorRed"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="#FFEBE5"
         tools:ignore="MissingConstraints" />
 
-    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorPink"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="#FEE3F5"
         tools:ignore="MissingConstraints" />
 
-    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorPurple"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="#F4E3FA"
         tools:ignore="MissingConstraints" />
 
-    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorBlue"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="#E4E7FC"
         tools:ignore="MissingConstraints" />
 
-    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorIce"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="#D6EFFD"
         tools:ignore="MissingConstraints" />
 
-    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorTeal"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="#D6F5F3"
         tools:ignore="MissingConstraints" />
 
-    <com.agileburo.anytype.core_ui.widgets.ColorCircleWidget
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorGreen"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="#E3F7D0"

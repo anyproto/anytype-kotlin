@@ -25,7 +25,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Hi, Konstantin Ivanov" />
 
-    <com.agileburo.anytype.core_ui.widgets.AvatarWidget
+    <com.anytypeio.anytype.core_ui.widgets.AvatarWidget
         android:id="@+id/avatar"
         android:layout_width="@dimen/width_avatar_on_dashboard"
         android:layout_height="@dimen/height_avatar_on_dashboard"

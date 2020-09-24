@@ -30,7 +30,7 @@
             android:layout_marginStart="11dp"
             android:background="@color/block_higlight_divider" />
 
-        <com.agileburo.anytype.core_ui.widgets.text.TextInputWidget
+        <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
             android:id="@+id/highlightContent"
             style="@style/BlockHighlightContentStyle"
             android:hint="@string/hint_quote"

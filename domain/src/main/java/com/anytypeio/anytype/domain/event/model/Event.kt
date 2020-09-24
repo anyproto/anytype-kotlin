@@ -16,8 +16,11 @@ sealed class Event {
             override val context: Id,
             val root: Id,
             val details: Block.Details = Block.Details(emptyMap()),
-            val blocks: List<Block>
-        ) : Command()
+            val blocks: List<Block>,
+            val type: Type = Type.PAGE
+        ) : Command() {
+            enum class Type { PAGE, HOME, PROFILE_PAGE, ACHIVE, BREADCRUMBS, SET }
+        }
 
         data class AddBlock(
             override val context: String,

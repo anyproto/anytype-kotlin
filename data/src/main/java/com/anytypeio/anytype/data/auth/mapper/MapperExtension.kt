@@ -450,7 +450,8 @@ fun EventEntity.toDomain(): Event {
                 root = root,
                 blocks = blocks.map { it.toDomain() },
                 context = context,
-                details = details.toDomain()
+                details = details.toDomain(),
+                type = Event.Command.ShowBlock.Type.valueOf(type.name)
             )
         }
         is EventEntity.Command.AddBlock -> {

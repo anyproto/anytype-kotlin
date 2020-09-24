@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.interactor
 
+import anytype.Events
 import anytype.Events.Event
 import com.anytypeio.anytype.data.auth.model.BlockEntity
 import com.anytypeio.anytype.data.auth.model.EventEntity
@@ -18,6 +19,15 @@ fun Event.Message.toEntity(
         )
     }
     Event.Message.ValueCase.BLOCKSHOW -> {
+        val type = when (blockShow.type) {
+            Events.SmartBlockType.Page -> EventEntity.Command.ShowBlock.Type.PAGE
+            Events.SmartBlockType.ProfilePage -> EventEntity.Command.ShowBlock.Type.PROFILE_PAGE
+            Events.SmartBlockType.Home -> EventEntity.Command.ShowBlock.Type.HOME
+            Events.SmartBlockType.Archive -> EventEntity.Command.ShowBlock.Type.ACHIVE
+            Events.SmartBlockType.Set -> EventEntity.Command.ShowBlock.Type.SET
+            Events.SmartBlockType.Breadcrumbs -> EventEntity.Command.ShowBlock.Type.BREADCRUMBS
+            else -> throw IllegalStateException("Unexpected smart block type: ${blockShow.type}")
+        }
         EventEntity.Command.ShowBlock(
             context = context,
             root = blockShow.rootId,
@@ -28,7 +38,8 @@ fun Event.Message.toEntity(
                 blockShow.detailsList.associate { details ->
                     details.id to details.details.fields()
                 }
-            )
+            ),
+            type = type
         )
     }
     Event.Message.ValueCase.BLOCKSETTEXT -> {

@@ -822,18 +822,18 @@ class PageViewModel(
             )
         }
 
-        // TODO should take into account that previous block could be a Block.Content.Layout!
-
-        val page = blocks.first { it.id == context }
-
-        val index = page.children.indexOf(id)
+        val index = views.indexOfFirst { it.id == id }
 
         if (index > 0) {
-            val previous = page.children[index.dec()]
-            proceedWithMergingBlocks(
-                previous = previous,
-                target = id
-            )
+            val previous = views[index.dec()]
+            if (previous is BlockView.Text) {
+                proceedWithMergingBlocks(
+                    previous = previous.id,
+                    target = id
+                )
+            } else {
+                Timber.d("Skipping merge because previous block is not a text block")
+            }
         } else {
             Timber.d("Skipping merge on non-empty-block-backspace-pressed event")
         }

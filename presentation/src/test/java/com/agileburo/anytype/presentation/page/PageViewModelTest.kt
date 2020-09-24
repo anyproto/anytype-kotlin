@@ -2144,93 +2144,6 @@ open class PageViewModelTest {
     }
 
     @Test
-    fun `should update text and proceed with merging the first paragraph with the second on non-empty-block-backspace-pressed event`() {
-
-        val root = MockDataFactory.randomUuid()
-        val firstChild = MockDataFactory.randomUuid()
-        val secondChild = MockDataFactory.randomUuid()
-        val thirdChild = MockDataFactory.randomUuid()
-
-        val page = MockBlockFactory.makeOnePageWithThreeTextBlocks(
-            root = root,
-            firstChild = firstChild,
-            secondChild = secondChild,
-            thirdChild = thirdChild,
-            firstChildStyle = Block.Content.Text.Style.TITLE,
-            secondChildStyle = Block.Content.Text.Style.P,
-            thirdChildStyle = Block.Content.Text.Style.P
-        )
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        stubMergeBlocks(root)
-        stubUpdateText()
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        vm.onBlockFocusChanged(
-            id = thirdChild,
-            hasFocus = true
-        )
-
-        val text = MockDataFactory.randomString()
-
-        vm.onTextChanged(
-            id = thirdChild,
-            marks = emptyList(),
-            text = text
-        )
-
-        vm.onNonEmptyBlockBackspaceClicked(
-            id = thirdChild,
-            marks = emptyList(),
-            text = text
-        )
-
-        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
-
-        runBlockingTest {
-            verify(updateText, times(1)).invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = text,
-                        marks = emptyList(),
-                        target = thirdChild
-                    )
-                )
-            )
-        }
-
-        runBlockingTest {
-            verify(mergeBlocks, times(1)).invoke(
-                params = eq(
-                    MergeBlocks.Params(
-                        context = root,
-                        pair = Pair(secondChild, thirdChild)
-                    )
-                )
-            )
-        }
-    }
-
-    @Test
     fun `should turn a list item with empty text into a paragraph on endline-enter-pressed event`() {
 
         val root = MockDataFactory.randomUuid()
@@ -3972,17 +3885,6 @@ open class PageViewModelTest {
     ) {
         updateTextStyle.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(payload)
-        }
-    }
-
-    private fun stubMergeBlocks(root: String) {
-        mergeBlocks.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
-                Payload(
-                    context = root,
-                    events = emptyList()
-                )
-            )
         }
     }
 

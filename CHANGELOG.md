@@ -13,6 +13,7 @@
 
 ### Fixes & tech 🚒
 
+* Block-merge operations for documents containing sections (aka divs) (#912)
 * App crashes when opening action menu for link block, which was created by turning a text block into a page (#910)
 * Should create a new toogle on enter press at the end of the non-empty toggle block (#907)
 * Should convert toggle block to paragraph on enter press if toggle block's text is empty (#886)

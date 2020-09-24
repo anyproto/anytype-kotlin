@@ -295,4 +295,21 @@ open class EditorPresentationTestSetup {
             )
         }
     }
+
+    fun stubMergeBlocks(root: String) {
+        mergeBlocks.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = emptyList()
+                )
+            )
+        }
+    }
+
+    fun stubUpdateText() {
+        updateText.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+    }
 }

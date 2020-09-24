@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.tools.DefaultDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.EqualSpacingItemDecoration
@@ -103,17 +102,13 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
     override fun render(state: State) {
         when {
-            state.isLoading -> {
-                bottomToolbar.invisible()
-            }
             state.error != null -> {
                 requireActivity().toast("Error: ${state.error}")
             }
             state.isInitialzed -> {
                 bottomToolbar.visible()
                 state.blocks.let { views ->
-                    val profile =
-                        views.filterIsInstance<DashboardView.Profile>()
+                    val profile = views.filterIsInstance<DashboardView.Profile>()
                     val links = views.filterByNotArchivedPages()
                     if (profile.isNotEmpty()) {
                         profileAdapter.update(profile)

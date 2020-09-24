@@ -60,7 +60,14 @@ sealed class HomeDashboardStateMachine {
 
     sealed class Event : HomeDashboardStateMachine() {
 
-        data class OnShowBlocks(
+        data class OnShowDashboard(
+            val context: String,
+            val blocks: List<Block>,
+            val details: Block.Details,
+            val builder: UrlBuilder
+        ) : Event()
+
+        data class OnShowProfile(
             val context: String,
             val blocks: List<Block>,
             val details: Block.Details,
@@ -124,11 +131,11 @@ sealed class HomeDashboardStateMachine {
                 is Event.OnDashboardLoadingStarted -> state.copy(
                     isInitialzed = true,
                     isLoading = true,
-                    error = null,
-                    blocks = emptyList(),
-                    childrenIdsList = emptyList()
+                    error = null
                 )
-                is Event.OnShowBlocks -> {
+                is Event.OnShowDashboard -> {
+
+                    val current = state.blocks.filterIsInstance<DashboardView.Profile>()
 
                     val new = event.blocks.toDashboardViews(
                         details = event.details,
@@ -143,8 +150,24 @@ sealed class HomeDashboardStateMachine {
                         isInitialzed = true,
                         isLoading = false,
                         error = null,
-                        blocks = state.blocks.addAndSortByIds(childrenIdsList, new),
+                        blocks = current.addAndSortByIds(childrenIdsList, new),
                         childrenIdsList = childrenIdsList
+                    )
+                }
+                is Event.OnShowProfile -> {
+
+                    val current = state.blocks.filter { it !is DashboardView.Profile }
+
+                    val new = event.blocks.toDashboardViews(
+                        details = event.details,
+                        builder = event.builder
+                    ).filterIsInstance<DashboardView.Profile>()
+
+                    state.copy(
+                        isInitialzed = true,
+                        isLoading = false,
+                        error = null,
+                        blocks = current.addAndSortByIds(state.childrenIdsList, new)
                     )
                 }
                 is Event.OnStartedCreatingPage -> state.copy(

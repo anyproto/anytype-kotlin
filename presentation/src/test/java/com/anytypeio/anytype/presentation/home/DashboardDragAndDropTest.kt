@@ -90,7 +90,8 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
                     Event.Command.ShowBlock(
                         root = config.home,
                         context = config.home,
-                        blocks = listOf(dashboard) + profile + pages
+                        blocks = listOf(dashboard) + profile + pages,
+                        type = Event.Command.ShowBlock.Type.HOME
                     )
                 )
             )

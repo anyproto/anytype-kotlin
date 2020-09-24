@@ -229,7 +229,8 @@ class HomeDashboardViewModelTest {
                     Event.Command.ShowBlock(
                         root = config.home,
                         context = config.home,
-                        blocks = listOf(dashboard, page)
+                        blocks = listOf(dashboard, page),
+                        type = Event.Command.ShowBlock.Type.HOME
                     )
                 )
             )

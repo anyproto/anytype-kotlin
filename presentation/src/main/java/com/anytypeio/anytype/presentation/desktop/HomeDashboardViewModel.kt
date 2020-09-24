@@ -165,13 +165,10 @@ class HomeDashboardViewModel(
                         eventName = PAGE_CREATE,
                         props = Props(mapOf(PROP_STYLE to Block.Content.Page.Style.EMPTY))
                     )
-
                     machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
                     proceedWithOpeningDocument(id)
                 }
             )
-        }.also {
-            machine.onEvents(listOf(Machine.Event.OnStartedCreatingPage))
         }
     }
 

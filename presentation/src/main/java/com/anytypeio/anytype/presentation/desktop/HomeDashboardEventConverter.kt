@@ -18,12 +18,27 @@ interface HomeDashboardEventConverter {
                 details = event.details,
                 builder = builder
             )
-            is Event.Command.ShowBlock -> HomeDashboardStateMachine.Event.OnShowBlocks(
-                blocks = event.blocks,
-                context = event.context,
-                details = event.details,
-                builder = builder
-            )
+            is Event.Command.ShowBlock -> when (event.type) {
+                Event.Command.ShowBlock.Type.HOME -> {
+                    HomeDashboardStateMachine.Event.OnShowDashboard(
+                        blocks = event.blocks,
+                        context = event.context,
+                        details = event.details,
+                        builder = builder
+                    )
+                }
+                Event.Command.ShowBlock.Type.PROFILE_PAGE -> {
+                    HomeDashboardStateMachine.Event.OnShowProfile(
+                        blocks = event.blocks,
+                        context = event.context,
+                        details = event.details,
+                        builder = builder
+                    )
+                }
+                else -> {
+                    null
+                }
+            }
             is Event.Command.LinkGranularChange -> {
                 event.fields?.let { fields ->
                     HomeDashboardStateMachine.Event.OnLinkFieldsChanged(

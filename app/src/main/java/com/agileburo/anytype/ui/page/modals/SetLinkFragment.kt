@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.agileburo.anytype.R
@@ -52,11 +51,6 @@ class SetLinkFragment : BaseBottomSheetFragment() {
         ViewModelProviders
             .of(this, factory)
             .get(LinkAddViewModel::class.java)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyle)
     }
 
     override fun onCreateView(

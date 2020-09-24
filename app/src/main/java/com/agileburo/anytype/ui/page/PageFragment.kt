@@ -718,13 +718,15 @@ open class PageFragment :
                 resetDocumentTitle(state)
             }
             is ViewState.OpenLinkScreen -> {
-                SetLinkFragment.newInstance(
-                    blockId = state.block.id,
-                    initUrl = state.block.getFirstLinkMarkupParam(state.range),
-                    text = state.block.getSubstring(state.range),
-                    rangeEnd = state.range.last,
-                    rangeStart = state.range.first
-                ).show(childFragmentManager, null)
+                if (childFragmentManager.findFragmentByTag(TAG_LINK) == null) {
+                    SetLinkFragment.newInstance(
+                        blockId = state.block.id,
+                        initUrl = state.block.getFirstLinkMarkupParam(state.range),
+                        text = state.block.getSubstring(state.range),
+                        rangeEnd = state.range.last,
+                        rangeStart = state.range.first
+                    ).show(childFragmentManager, TAG_LINK)
+                }
             }
         }
     }
@@ -1145,7 +1147,8 @@ open class PageFragment :
         const val SAM_DEBOUNCE = 100L
         const val DELAY_BEFORE_INIT_SAM_SEARCH = 300L
 
-        const val TAG_ALERT = "alert"
+        const val TAG_ALERT = "tag.alert"
+        const val TAG_LINK = "tag.link"
     }
 
     override fun onDismissBlockActionToolbar() {

@@ -2,34 +2,24 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:focusableInTouchMode="true"
-    android:focusable="true"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/modal_rect_margin_top"
-        android:contentDescription="@string/content_description_modal_icon"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/sheet_top" />
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="19dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="20dp"
+        android:fontFamily="@font/inter_regular"
         android:textColor="#ACA996"
-        android:textSize="15sp"
+        android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="receiving notifications because" />
 
     <View
@@ -37,7 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="@dimen/modal_main_margin_start"
-        android:layout_marginTop="13dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="@dimen/modal_main_margin_end"
         android:background="@color/divider"
         app:layout_constraintEnd_toEndOf="parent"
@@ -49,12 +39,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="13dp"
+        android:layout_marginTop="11dp"
         android:layout_marginEnd="20dp"
         android:background="@null"
+        android:fontFamily="@font/inter_regular"
         android:hint="@string/hint_link"
         android:inputType="textUri"
         android:textColor="#ACA996"
+        android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider1" />
@@ -64,7 +56,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="@dimen/modal_main_margin_start"
-        android:layout_marginTop="13dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="@dimen/modal_main_margin_end"
         android:background="@color/divider"
         app:layout_constraintEnd_toEndOf="parent"
@@ -73,33 +65,46 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonUnlink"
-        android:layout_width="@dimen/modal_button_width"
+        android:layout_width="0dp"
         android:layout_height="@dimen/modal_button_height"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/rounded_button_cancel"
+        android:fontFamily="@font/inter_regular"
+        android:stateListAnimator="@animator/scale_shrink"
         android:text="@string/button_unlink"
         android:textAllCaps="false"
-        android:fontFamily="@font/graphik_medium"
-        android:textColor="#ACA996"
-        android:stateListAnimator="@animator/scale_shrink"
+        android:textSize="17sp"
+        android:textColor="#2C2B27"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonLink"
-        android:layout_width="@dimen/modal_button_width"
+        android:layout_width="0dp"
         android:layout_height="@dimen/modal_button_height"
+        android:layout_marginStart="5dp"
         android:layout_marginEnd="@dimen/modal_main_margin_end"
         android:background="@drawable/rounded_button_add"
-        android:fontFamily="@font/graphik_medium"
+        android:fontFamily="@font/inter_regular"
         android:stateListAnimator="@animator/scale_shrink"
+        android:textSize="17sp"
         android:text="@string/button_link"
         android:textAllCaps="false"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="@+id/buttonUnlink" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

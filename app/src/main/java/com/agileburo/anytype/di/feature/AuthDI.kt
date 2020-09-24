@@ -1,5 +1,6 @@
 package com.agileburo.anytype.di.feature
 
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_utils.di.scope.PerFeature
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.*
@@ -137,11 +138,13 @@ object StartLoginModule {
     @Provides
     fun provideStartLoginViewModelFactory(
         setupWallet: SetupWallet,
-        pathProvider: PathProvider
+        pathProvider: PathProvider,
+        analytics: Analytics
     ): StartLoginViewModelFactory {
         return StartLoginViewModelFactory(
             setupWallet = setupWallet,
-            pathProvider = pathProvider
+            pathProvider = pathProvider,
+            analytics = analytics
         )
     }
 
@@ -180,11 +183,13 @@ object SetupNewAccountModule {
     @PerScreen
     fun provideSetupAccountViewModelFactory(
         createAccount: CreateAccount,
-        session: Session
+        session: Session,
+        analytics: Analytics
     ): SetupNewAccountViewModelFactory {
         return SetupNewAccountViewModelFactory(
             createAccount = createAccount,
-            session = session
+            session = session,
+            analytics = analytics
         )
     }
 
@@ -208,11 +213,13 @@ object SetupSelectedAccountModule {
     @PerScreen
     fun provideSetupSelectedAccountViewModelFactory(
         startAccount: StartAccount,
-        pathProvider: PathProvider
+        pathProvider: PathProvider,
+        analytics: Analytics
     ): SetupSelectedAccountViewModelFactory {
         return SetupSelectedAccountViewModelFactory(
             startAccount = startAccount,
-            pathProvider = pathProvider
+            pathProvider = pathProvider,
+            analytics = analytics
         )
     }
 
@@ -274,12 +281,14 @@ object KeychainLoginModule {
     fun provideKeychainLoginViewModelFactory(
         pathProvider: PathProvider,
         recoverWallet: RecoverWallet,
-        saveMnemonic: SaveMnemonic
+        saveMnemonic: SaveMnemonic,
+        analytics: Analytics
     ): KeychainLoginViewModelFactory {
         return KeychainLoginViewModelFactory(
             pathProvider = pathProvider,
             recoverWallet = recoverWallet,
-            saveMnemonic = saveMnemonic
+            saveMnemonic = saveMnemonic,
+            analytics = analytics
         )
     }
 

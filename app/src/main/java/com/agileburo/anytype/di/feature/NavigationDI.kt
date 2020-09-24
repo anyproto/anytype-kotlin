@@ -1,5 +1,6 @@
 package com.agileburo.anytype.di.feature
 
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.config.GetConfig
@@ -41,12 +42,14 @@ object PageNavigationModule {
     fun provideNavigationViewModelFactory(
         urlBuilder: UrlBuilder,
         getPageInfoWithLinks: GetPageInfoWithLinks,
-        getConfig: GetConfig
+        getConfig: GetConfig,
+        analytics: Analytics
     ): PageNavigationViewModelFactory =
         PageNavigationViewModelFactory(
             urlBuilder = urlBuilder,
             getPageInfoWithLinks = getPageInfoWithLinks,
-            getConfig = getConfig
+            getConfig = getConfig,
+            analytics = analytics
         )
 
     @JvmStatic

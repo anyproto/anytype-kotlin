@@ -2,6 +2,7 @@ package com.agileburo.anytype.presentation.page
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.domain.block.interactor.RemoveLinkMark
 import com.agileburo.anytype.domain.block.interactor.UpdateLinkMarks
 import com.agileburo.anytype.domain.block.model.Block
@@ -27,7 +28,8 @@ open class PageViewModelFactory(
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
     private val interactor: Orchestrator,
-    private val getListPages: GetListPages
+    private val getListPages: GetListPages,
+    private val analytics: Analytics
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -45,7 +47,8 @@ open class PageViewModelFactory(
             renderer = renderer,
             createDocument = createDocument,
             orchestrator = interactor,
-            getListPages = getListPages
+            getListPages = getListPages,
+            analytics = analytics
         ) as T
     }
 }

@@ -4,6 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agileburo.anytype.analytics.base.Analytics
+import com.agileburo.anytype.analytics.base.EventsDictionary
+import com.agileburo.anytype.analytics.base.sendEvent
+import com.agileburo.anytype.analytics.props.Props
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ui.ViewState
 import com.agileburo.anytype.domain.auth.interactor.CheckAuthorizationStatus
@@ -12,6 +15,7 @@ import com.agileburo.anytype.domain.auth.interactor.LaunchWallet
 import com.agileburo.anytype.domain.auth.model.AuthStatus
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.presentation.navigation.AppNavigation
+import com.amplitude.api.Amplitude
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -67,11 +71,28 @@ class SplashViewModel(
     }
 
     private fun proceedWithLaunchingAccount() {
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             launchAccount(BaseUseCase.None).either(
-                fnR = { navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromSplash)) },
+                fnR = { accountId ->
+                    Amplitude.getInstance().setUserId(accountId, true)
+                    sendEvent(startTime)
+                    navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromSplash))
+                },
                 fnL = { e -> Timber.e(e, "Error while launching account") }
             )
         }
+    }
+
+    private fun sendEvent(startTime: Long) {
+        val middleTime = System.currentTimeMillis()
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            startTime = startTime,
+            middleTime = middleTime,
+            renderTime = middleTime,
+            eventName = EventsDictionary.ACCOUNT_SELECT,
+            props = Props.empty()
+        )
     }
 }

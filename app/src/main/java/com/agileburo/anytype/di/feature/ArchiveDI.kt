@@ -1,5 +1,6 @@
 package com.agileburo.anytype.di.feature
 
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.page.ArchiveDocument
@@ -47,7 +48,8 @@ object ArchiveModule {
         renderer: DefaultBlockViewRenderer,
         selectionStateHolder: SelectionStateHolder,
         documentExternalEventReducer: DocumentExternalEventReducer,
-        interactor: Orchestrator
+        interactor: Orchestrator,
+        analytics: Analytics
     ): ArchiveViewModelFactory = ArchiveViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -56,6 +58,7 @@ object ArchiveModule {
         renderer = renderer,
         selectionStateHolder = selectionStateHolder,
         reducer = documentExternalEventReducer,
-        orchestrator = interactor
+        orchestrator = interactor,
+        analytics = analytics
     )
 }

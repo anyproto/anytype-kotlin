@@ -2,6 +2,9 @@ package com.agileburo.anytype.presentation.search
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.agileburo.anytype.analytics.base.Analytics
+import com.agileburo.anytype.analytics.base.EventsDictionary
+import com.agileburo.anytype.analytics.base.sendEvent
 import com.agileburo.anytype.core_ui.features.navigation.PageLinkView
 import com.agileburo.anytype.core_ui.features.navigation.filterBy
 import com.agileburo.anytype.core_utils.common.EventWrapper
@@ -16,7 +19,8 @@ import kotlinx.coroutines.launch
 
 class PageSearchViewModel(
     private val urlBuilder: UrlBuilder,
-    private val getListPages: GetListPages
+    private val getListPages: GetListPages,
+    private val analytics: Analytics
 ) : ViewStateViewModel<PageSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -67,6 +71,10 @@ class PageSearchViewModel(
     }
 
     fun onOpenPageClicked(pageId: String) {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_DOCUMENT
+        )
         navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = pageId)))
     }
 
@@ -74,7 +82,11 @@ class PageSearchViewModel(
         navigateToDesktop()
     }
 
-    fun navigateToDesktop() {
+    private fun navigateToDesktop() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_DASHBOARD
+        )
         navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
     }
 }

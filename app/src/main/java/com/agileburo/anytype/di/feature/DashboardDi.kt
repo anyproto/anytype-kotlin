@@ -1,5 +1,6 @@
 package com.agileburo.anytype.di.feature
 
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.GetProfile
 import com.agileburo.anytype.domain.block.interactor.Move
@@ -53,7 +54,8 @@ object HomeDashboardModule {
         move: Move,
         interceptEvents: InterceptEvents,
         eventConverter: HomeDashboardEventConverter,
-        getDebugSettings: GetDebugSettings
+        getDebugSettings: GetDebugSettings,
+        analytics: Analytics
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -63,7 +65,8 @@ object HomeDashboardModule {
         move = move,
         interceptEvents = interceptEvents,
         eventConverter = eventConverter,
-        getDebugSettings = getDebugSettings
+        getDebugSettings = getDebugSettings,
+        analytics = analytics
     )
 
     @JvmStatic

@@ -17,6 +17,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "boolean", "SEND_EVENTS", "true"
+        }
+        debug {
+            buildConfigField "boolean", "SEND_EVENTS", "false"
         }
     }
 }

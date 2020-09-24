@@ -2,6 +2,7 @@ package com.agileburo.anytype.presentation.page.archive
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.event.interactor.InterceptEvents
 import com.agileburo.anytype.domain.event.model.Event
@@ -22,7 +23,8 @@ open class ArchiveViewModelFactory(
     private val renderer: DefaultBlockViewRenderer,
     private val reducer: StateReducer<List<Block>, Event>,
     private val orchestrator: Orchestrator,
-    private val selectionStateHolder: SelectionStateHolder
+    private val selectionStateHolder: SelectionStateHolder,
+    private val analytics: Analytics
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -35,7 +37,8 @@ open class ArchiveViewModelFactory(
             renderer = renderer,
             reducer = reducer,
             orchestrator = orchestrator,
-            selectionStateHolder = selectionStateHolder
+            selectionStateHolder = selectionStateHolder,
+            analytics = analytics
         ) as T
     }
 }

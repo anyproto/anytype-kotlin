@@ -2,21 +2,22 @@ package com.agileburo.anytype.analytics.event
 
 import com.agileburo.anytype.analytics.props.Props
 
-interface Event {
+interface EventAnalytics {
 
     val name: String
-    val prettified: String
+    val prettified: String?
     val props: Props
 
     data class Duration(
-        val total: Long?,
-        val middleware: Long?
+        val start: Long?,
+        val middleware: Long?,
+        val render: Long? = null
     )
 
     data class Anytype(
         override val name: String,
-        override val prettified: String,
+        override val prettified: String? = null,
         override val props: Props,
         val duration: Duration?
-    ) : Event
+    ) : EventAnalytics
 }

@@ -11,7 +11,7 @@ import com.agileburo.anytype.domain.device.PathProvider
 class LaunchAccount(
     private val repository: AuthRepository,
     private val pathProvider: PathProvider
-) : BaseUseCase<Unit, BaseUseCase.None>() {
+) : BaseUseCase<String, BaseUseCase.None>() {
 
     override suspend fun run(params: None) = try {
         repository.startAccount(
@@ -19,8 +19,7 @@ class LaunchAccount(
             path = pathProvider.providePath()
         ).let { account ->
             repository.updateAccount(account)
-        }.let {
-            Either.Right(it)
+            Either.Right(account.id)
         }
     } catch (e: Throwable) {
         Either.Left(e)

@@ -2,13 +2,20 @@ package com.agileburo.anytype.presentation.desktop
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.agileburo.anytype.analytics.base.Analytics
+import com.agileburo.anytype.analytics.base.EventsDictionary
+import com.agileburo.anytype.analytics.base.EventsDictionary.PAGE_CREATE
+import com.agileburo.anytype.analytics.base.EventsDictionary.PROP_STYLE
+import com.agileburo.anytype.analytics.base.EventsDictionary.SCREEN_PROFILE
+import com.agileburo.anytype.analytics.base.sendEvent
+import com.agileburo.anytype.analytics.props.Props
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.withLatestFrom
 import com.agileburo.anytype.core_utils.ui.ViewStateViewModel
-import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.interactor.GetProfile
 import com.agileburo.anytype.domain.base.BaseUseCase
 import com.agileburo.anytype.domain.block.interactor.Move
+import com.agileburo.anytype.domain.block.model.Block
 import com.agileburo.anytype.domain.block.model.Position
 import com.agileburo.anytype.domain.common.Id
 import com.agileburo.anytype.domain.config.GetConfig
@@ -40,7 +47,8 @@ class HomeDashboardViewModel(
     private val move: Move,
     private val interceptEvents: InterceptEvents,
     private val eventConverter: HomeDashboardEventConverter,
-    private val getDebugSettings: GetDebugSettings
+    private val getDebugSettings: GetDebugSettings,
+    private val analytics: Analytics
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -143,10 +151,21 @@ class HomeDashboardViewModel(
     }
 
     fun onAddNewDocumentClicked() {
+        val startTime = System.currentTimeMillis()
         createPage.invoke(viewModelScope, CreatePage.Params.insideDashboard()) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while creating a new page") },
                 fnR = { id ->
+                    val middle = System.currentTimeMillis()
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        startTime = startTime,
+                        middleTime = middle,
+                        renderTime = middle,
+                        eventName = PAGE_CREATE,
+                        props = Props(mapOf(PROP_STYLE to Block.Content.Page.Style.EMPTY))
+                    )
+
                     machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
                     proceedWithOpeningDocument(id)
                 }
@@ -224,6 +243,10 @@ class HomeDashboardViewModel(
         )
 
     private fun navigateToArchive(target: Id) {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_ARCHIVE
+        )
         navigation.postValue(
             EventWrapper(
                 AppNavigation.Command.OpenArchive(
@@ -250,10 +273,18 @@ class HomeDashboardViewModel(
     }
 
     fun onProfileClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = SCREEN_PROFILE
+        )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenProfile))
     }
 
     fun onPageNavigationClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_NAVIGATION
+        )
         navigation.postValue(
             EventWrapper(
                 AppNavigation.Command.OpenPageNavigationScreen(
@@ -264,6 +295,10 @@ class HomeDashboardViewModel(
     }
 
     fun onPageSearchClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_SEARCH
+        )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }
 

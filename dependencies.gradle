@@ -83,7 +83,7 @@ ext {
 
     // Analytics
 
-    amplitude_version = '2.23.2'
+    amplitude_version = '2.28.2'
 
     mainApplication = [
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",

@@ -1,5 +1,6 @@
 package com.agileburo.anytype.di.feature
 
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.block.repo.BlockRepository
 import com.agileburo.anytype.domain.misc.UrlBuilder
@@ -36,6 +37,7 @@ object PageSearchModule {
     @PerScreen
     fun providePageSearchViewModelFactory(
         urlBuilder: UrlBuilder,
-        getListPages: GetListPages
-    ): PageSearchViewModelFactory = PageSearchViewModelFactory(urlBuilder, getListPages)
+        getListPages: GetListPages,
+        analytics: Analytics
+    ): PageSearchViewModelFactory = PageSearchViewModelFactory(urlBuilder, getListPages, analytics)
 }

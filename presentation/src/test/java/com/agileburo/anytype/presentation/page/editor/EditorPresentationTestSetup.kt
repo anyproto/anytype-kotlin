@@ -1,6 +1,7 @@
 package com.agileburo.anytype.presentation.page.editor
 
 import MockDataFactory
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.agileburo.anytype.core_utils.tools.Counter
 import com.agileburo.anytype.domain.base.Either
@@ -68,6 +69,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var updateTextColor: UpdateTextColor
+
+    @Mock
+    lateinit var analytics: Analytics
 
     @Mock
     lateinit var updateLinkMark: UpdateLinkMarks
@@ -159,6 +163,7 @@ open class EditorPresentationTestSetup {
             ),
             archiveDocument = archiveDocument,
             createDocument = createDocument,
+            analytics = analytics,
             orchestrator = Orchestrator(
                 createBlock = createBlock,
                 replaceBlock = replaceBlock,
@@ -189,7 +194,8 @@ open class EditorPresentationTestSetup {
                 paste = paste,
                 copy = copy,
                 move = move,
-                turnIntoDocument = turnIntoDocument
+                turnIntoDocument = turnIntoDocument,
+                analytics = analytics
             )
         )
     }

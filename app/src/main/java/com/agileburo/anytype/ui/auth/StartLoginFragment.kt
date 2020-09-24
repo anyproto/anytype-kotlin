@@ -24,6 +24,7 @@ class StartLoginFragment : NavigationFragment(R.layout.fragment_start_login) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        vm.onViewCreated()
         setupButtonClicks()
     }
 

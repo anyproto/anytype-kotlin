@@ -9,7 +9,7 @@ import com.agileburo.anytype.domain.base.Either
  */
 class StartAccount(
     private val repository: AuthRepository
-) : BaseUseCase<Unit, StartAccount.Params>() {
+) : BaseUseCase<String, StartAccount.Params>() {
 
     override suspend fun run(params: Params) = try {
         repository.startAccount(
@@ -20,8 +20,9 @@ class StartAccount(
                 saveAccount(account)
                 setCurrentAccount(account.id)
             }
-        }.let {
-            Either.Right(it)
+            account.id
+        }.let { accountId ->
+            Either.Right(accountId)
         }
     } catch (e: Throwable) {
         Either.Left(e)

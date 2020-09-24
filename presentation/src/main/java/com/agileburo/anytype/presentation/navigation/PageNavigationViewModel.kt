@@ -2,6 +2,9 @@ package com.agileburo.anytype.presentation.navigation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.agileburo.anytype.analytics.base.Analytics
+import com.agileburo.anytype.analytics.base.EventsDictionary
+import com.agileburo.anytype.analytics.base.sendEvent
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.core_utils.ext.timber
 import com.agileburo.anytype.core_utils.ui.ViewState
@@ -18,7 +21,8 @@ import timber.log.Timber
 class PageNavigationViewModel(
     private val urlBuilder: UrlBuilder,
     private val getPageInfoWithLinks: GetPageInfoWithLinks,
-    private val getConfig: GetConfig
+    private val getConfig: GetConfig,
+    private val analytics: Analytics
 ) :
     ViewStateViewModel<ViewState<PageNavigationView>>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -69,8 +73,16 @@ class PageNavigationViewModel(
 
     fun onOpenPageClicked() {
         if (pageId == homeId) {
+            viewModelScope.sendEvent(
+                analytics = analytics,
+                eventName = EventsDictionary.SCREEN_DASHBOARD
+            )
             navigate(EventWrapper(AppNavigation.Command.ExitToDesktop))
         } else {
+            viewModelScope.sendEvent(
+                analytics = analytics,
+                eventName = EventsDictionary.SCREEN_DOCUMENT
+            )
             navigate(EventWrapper(AppNavigation.Command.ExitToDesktopAndOpenPage(pageId = pageId)))
         }
     }

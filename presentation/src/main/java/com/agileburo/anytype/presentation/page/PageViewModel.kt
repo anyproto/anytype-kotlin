@@ -3,6 +3,13 @@ package com.agileburo.anytype.presentation.page
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.agileburo.anytype.analytics.base.Analytics
+import com.agileburo.anytype.analytics.base.EventsDictionary
+import com.agileburo.anytype.analytics.base.EventsDictionary.PAGE_CREATE
+import com.agileburo.anytype.analytics.base.EventsDictionary.PROP_STYLE
+import com.agileburo.anytype.analytics.base.sendEvent
+import com.agileburo.anytype.analytics.event.EventAnalytics
+import com.agileburo.anytype.analytics.props.Props
 import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.extensions.updateSelection
@@ -71,7 +78,8 @@ class PageViewModel(
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
     private val orchestrator: Orchestrator,
-    private val getListPages: GetListPages
+    private val getListPages: GetListPages,
+    private val analytics: Analytics
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -578,6 +586,10 @@ class PageViewModel(
     }
 
     fun navigateToDesktop() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_DASHBOARD
+        )
         navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
     }
 
@@ -1102,6 +1114,10 @@ class PageViewModel(
             ActionItemType.MoveTo -> {
                 onExitActionMode()
                 dispatch(Command.PopBackStack)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.SCREEN_MOVE_TO
+                )
                 navigate(
                     EventWrapper(
                         AppNavigation.Command.OpenMoveToScreen(
@@ -1291,6 +1307,11 @@ class PageViewModel(
         }
 
         proceedWithClearingFocus()
+
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_LINK_TO
+        )
 
         navigate(
             EventWrapper(
@@ -1626,6 +1647,10 @@ class PageViewModel(
     }
 
     fun onOpenPageNavigationButtonClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_NAVIGATION
+        )
         navigation.postValue(
             EventWrapper(
                 AppNavigation.Command.OpenPageNavigationScreen(
@@ -1833,12 +1858,26 @@ class PageViewModel(
             prototype = Prototype.Page(style = Content.Page.Style.EMPTY)
         )
 
+        val startTime = System.currentTimeMillis()
+
         viewModelScope.launch {
             createDocument(
                 params = params
             ).proceed(
                 failure = { Timber.e(it, "Error while creating new page with params: $params") },
                 success = { result ->
+                    val middleTime = System.currentTimeMillis()
+                    analytics.registerEvent(
+                        EventAnalytics.Anytype(
+                            name = PAGE_CREATE,
+                            props = Props(mapOf(PROP_STYLE to Content.Page.Style.EMPTY)),
+                            duration = EventAnalytics.Duration(
+                                start = startTime,
+                                middleware = middleTime,
+                                render = middleTime
+                            )
+                        )
+                    )
                     orchestrator.proxies.payloads.send(result.payload)
                     proceedWithOpeningPage(result.target)
                 }
@@ -2256,13 +2295,25 @@ class PageViewModel(
     }
 
     fun onPlusButtonPressed() {
+        val startTime = System.currentTimeMillis()
         createPage(
             scope = viewModelScope,
             params = CreatePage.Params.insideDashboard()
         ) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while creating a new page on home dashboard") },
-                fnR = { id -> proceedWithOpeningPage(id) }
+                fnR = { id ->
+                    val middle = System.currentTimeMillis()
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        startTime = startTime,
+                        middleTime = middle,
+                        renderTime = middle,
+                        eventName = PAGE_CREATE,
+                        props = Props(mapOf(PROP_STYLE to Content.Page.Style.EMPTY))
+                    )
+                    proceedWithOpeningPage(id)
+                }
             )
         }
     }
@@ -2346,6 +2397,10 @@ class PageViewModel(
     }
 
     fun onPageSearchClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_SEARCH
+        )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }
 
@@ -2453,6 +2508,10 @@ class PageViewModel(
     }
 
     private fun proceedWithOpeningPage(target: Id) {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_DOCUMENT
+        )
         navigate(EventWrapper(AppNavigation.Command.OpenPage(target)))
     }
 

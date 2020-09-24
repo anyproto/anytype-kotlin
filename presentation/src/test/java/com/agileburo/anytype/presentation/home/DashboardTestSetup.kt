@@ -2,6 +2,7 @@ package com.agileburo.anytype.presentation.home
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.interactor.GetProfile
 import com.agileburo.anytype.domain.auth.model.Account
@@ -62,6 +63,9 @@ open class DashboardTestSetup {
     @Mock
     lateinit var gateway: Gateway
 
+    @Mock
+    lateinit var analytics: Analytics
+
     lateinit var vm: HomeDashboardViewModel
 
     val builder: UrlBuilder get() = UrlBuilder(gateway)
@@ -81,7 +85,8 @@ open class DashboardTestSetup {
         move = move,
         interceptEvents = interceptEvents,
         eventConverter = HomeDashboardEventConverter.DefaultConverter(builder),
-        getDebugSettings = getDebugSettings
+        getDebugSettings = getDebugSettings,
+        analytics = analytics
     )
 
     fun stubGetConfig(response: Either.Right<Config>) {

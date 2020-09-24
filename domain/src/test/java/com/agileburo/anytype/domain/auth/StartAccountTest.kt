@@ -103,6 +103,6 @@ class StartAccountTest {
 
         val result = startAccount.run(params)
 
-        assertTrue { result == Either.Right(Unit) }
+        assertTrue { result == Either.Right(account.id) }
     }
 }

@@ -4,6 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.agileburo.anytype.analytics.base.Analytics
+import com.agileburo.anytype.analytics.base.EventsDictionary
+import com.agileburo.anytype.analytics.base.sendEvent
+import com.agileburo.anytype.analytics.event.EventAnalytics
+import com.agileburo.anytype.analytics.props.Props
 import com.agileburo.anytype.core_utils.common.EventWrapper
 import com.agileburo.anytype.domain.auth.interactor.CreateAccount
 import com.agileburo.anytype.presentation.auth.model.Session
@@ -22,7 +27,8 @@ sealed class SetupNewAccountViewState{
 
 class SetupNewAccountViewModel(
     private val session: Session,
-    private val createAccount: CreateAccount
+    private val createAccount: CreateAccount,
+    private val analytics: Analytics
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
@@ -40,7 +46,7 @@ class SetupNewAccountViewModel(
     private fun proceedWithCreatingAccount() {
 
         Timber.d("Starting setting up new account")
-
+        val startTime = System.currentTimeMillis()
         createAccount.invoke(
             scope = viewModelScope,
             params = CreateAccount.Params(
@@ -64,10 +70,22 @@ class SetupNewAccountViewModel(
                     Timber.e(it, "Error while creating account")
                 },
                 fnR = {
+                    sendAuthEvent(startTime)
                     _state.postValue(SetupNewAccountViewState.Success)
                     navigation.postValue(EventWrapper(AppNavigation.Command.CongratulationScreen))
                 }
             )
         }
+    }
+
+    private fun sendAuthEvent(start: Long) {
+        val middle = System.currentTimeMillis()
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            startTime = start,
+            middleTime = middle,
+            renderTime = middle,
+            eventName = EventsDictionary.ACCOUNT_CREATE
+        )
     }
 }

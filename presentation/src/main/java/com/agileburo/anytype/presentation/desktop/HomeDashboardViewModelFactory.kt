@@ -2,6 +2,7 @@ package com.agileburo.anytype.presentation.desktop
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.domain.auth.interactor.GetProfile
 import com.agileburo.anytype.domain.block.interactor.Move
 import com.agileburo.anytype.domain.config.GetConfig
@@ -20,7 +21,8 @@ class HomeDashboardViewModelFactory(
     private val move: Move,
     private val interceptEvents: InterceptEvents,
     private val eventConverter: HomeDashboardEventConverter,
-    private val getDebugSettings: GetDebugSettings
+    private val getDebugSettings: GetDebugSettings,
+    private val analytics: Analytics
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -34,7 +36,8 @@ class HomeDashboardViewModelFactory(
             move = move,
             interceptEvents = interceptEvents,
             eventConverter = eventConverter,
-            getDebugSettings = getDebugSettings
+            getDebugSettings = getDebugSettings,
+            analytics = analytics
         ) as T
     }
 }

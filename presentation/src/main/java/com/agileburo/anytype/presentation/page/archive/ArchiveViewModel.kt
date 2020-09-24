@@ -3,6 +3,9 @@ package com.agileburo.anytype.presentation.page.archive
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.agileburo.anytype.analytics.base.Analytics
+import com.agileburo.anytype.analytics.base.EventsDictionary
+import com.agileburo.anytype.analytics.base.sendEvent
 import com.agileburo.anytype.core_ui.extensions.updateSelection
 import com.agileburo.anytype.core_ui.features.page.BlockView
 import com.agileburo.anytype.core_ui.features.page.ListenerType
@@ -53,7 +56,8 @@ class ArchiveViewModel(
     private val renderer: DefaultBlockViewRenderer,
     private val reducer: StateReducer<List<Block>, Event>,
     private val orchestrator: Orchestrator,
-    private val selectionStateHolder: SelectionStateHolder
+    private val selectionStateHolder: SelectionStateHolder,
+    private val analytics: Analytics
 ) : ViewStateViewModel<ArchiveViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -250,7 +254,13 @@ class ArchiveViewModel(
     private fun proceedWithExitingToDesktop() {
         closePage(viewModelScope, ClosePage.Params(context)) { result ->
             result.either(
-                fnR = { navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop)) },
+                fnR = {
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = EventsDictionary.SCREEN_DASHBOARD
+                    )
+                    navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
+                },
                 fnL = { Timber.e(it, "Error while closing document: $context") }
             )
         }

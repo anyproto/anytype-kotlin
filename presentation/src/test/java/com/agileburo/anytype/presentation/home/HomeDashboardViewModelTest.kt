@@ -2,6 +2,7 @@ package com.agileburo.anytype.presentation.home
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.domain.auth.interactor.GetProfile
 import com.agileburo.anytype.domain.base.Either
 import com.agileburo.anytype.domain.block.interactor.Move
@@ -67,6 +68,9 @@ class HomeDashboardViewModelTest {
     @Mock
     lateinit var gateway: Gateway
 
+    @Mock
+    lateinit var analytics: Analytics
+
     private lateinit var vm: HomeDashboardViewModel
 
     private val config = Config(
@@ -92,7 +96,8 @@ class HomeDashboardViewModelTest {
             move = move,
             interceptEvents = interceptEvents,
             eventConverter = HomeDashboardEventConverter.DefaultConverter(builder),
-            getDebugSettings = getDebugSettings
+            getDebugSettings = getDebugSettings,
+            analytics = analytics
         )
     }
 

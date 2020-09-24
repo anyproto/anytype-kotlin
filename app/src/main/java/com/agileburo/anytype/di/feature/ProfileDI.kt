@@ -1,5 +1,6 @@
 package com.agileburo.anytype.di.feature
 
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.domain.auth.interactor.GetCurrentAccount
 import com.agileburo.anytype.domain.auth.interactor.Logout
@@ -36,10 +37,12 @@ object ProfileModule {
     @PerScreen
     fun provideProfileViewModelFactory(
         logout: Logout,
-        getCurrentAccount: GetCurrentAccount
+        getCurrentAccount: GetCurrentAccount,
+        analytics: Analytics
     ): ProfileViewModelFactory = ProfileViewModelFactory(
         logout = logout,
-        getCurrentAccount = getCurrentAccount
+        getCurrentAccount = getCurrentAccount,
+        analytics = analytics
     )
 
     @JvmStatic

@@ -1,5 +1,6 @@
 package com.agileburo.anytype.di.feature
 
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.agileburo.anytype.core_utils.di.scope.PerScreen
 import com.agileburo.anytype.core_utils.tools.Counter
@@ -86,7 +87,8 @@ object EditorSessionModule {
         renderer: DefaultBlockViewRenderer,
         archiveDocument: ArchiveDocument,
         interactor: Orchestrator,
-        getListPages: GetListPages
+        getListPages: GetListPages,
+        analytics: Analytics
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -100,7 +102,8 @@ object EditorSessionModule {
         renderer = renderer,
         archiveDocument = archiveDocument,
         interactor = interactor,
-        getListPages = getListPages
+        getListPages = getListPages,
+        analytics = analytics
     )
 
     @JvmStatic
@@ -164,7 +167,8 @@ object EditorSessionModule {
         copy: Copy,
         paste: Paste,
         undo: Undo,
-        redo: Redo
+        redo: Redo,
+        analytics: Analytics
     ): Orchestrator = Orchestrator(
         stores = storage,
         createBlock = createBlock,
@@ -195,7 +199,8 @@ object EditorSessionModule {
         setupBookmark = setupBookmark,
         move = move,
         paste = paste,
-        copy = copy
+        copy = copy,
+        analytics = analytics
     )
 }
 

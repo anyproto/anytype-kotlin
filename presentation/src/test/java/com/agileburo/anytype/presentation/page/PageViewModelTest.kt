@@ -2,6 +2,7 @@ package com.agileburo.anytype.presentation.page
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.agileburo.anytype.analytics.base.Analytics
 import com.agileburo.anytype.core_ui.common.Alignment
 import com.agileburo.anytype.core_ui.common.Markup
 import com.agileburo.anytype.core_ui.features.page.BlockDimensions
@@ -164,6 +165,9 @@ open class PageViewModelTest {
 
     @Mock
     lateinit var gateway : Gateway
+
+    @Mock
+    lateinit var analytics: Analytics
 
     lateinit var vm: PageViewModel
 
@@ -4007,6 +4011,7 @@ open class PageViewModelTest {
             ),
             archiveDocument = archiveDocument,
             createDocument = createDocument,
+            analytics = analytics,
             orchestrator = Orchestrator(
                 createBlock = createBlock,
                 replaceBlock = replaceBlock,
@@ -4037,7 +4042,8 @@ open class PageViewModelTest {
                 paste = paste,
                 copy = copy,
                 move = move,
-                turnIntoDocument = turnIntoDocument
+                turnIntoDocument = turnIntoDocument,
+                analytics = analytics
             )
         )
     }

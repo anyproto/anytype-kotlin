@@ -16,10 +16,10 @@ class GetPageInfoWithLinks(private val repo: BlockRepository) :
                     pageInfoWithLinks = it.copy(
                         links = it.links.copy(
                             outbound = it.links.outbound.filterNot { doc ->
-                                doc.fields.isArchived == true || doc.type == DocumentInfo.Type.SET
+                                doc.fields.isArchived == true || doc.type == DocumentInfo.Type.SET || doc.type == DocumentInfo.Type.ARCHIVE
                             },
                             inbound = it.links.inbound.filterNot { doc ->
-                                doc.fields.isArchived == true || doc.type == DocumentInfo.Type.SET
+                                doc.fields.isArchived == true || doc.type == DocumentInfo.Type.SET || doc.type == DocumentInfo.Type.ARCHIVE
                             }
                         )
                     )

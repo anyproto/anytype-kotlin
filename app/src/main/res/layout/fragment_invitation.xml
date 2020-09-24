@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/gradient_rectangle">
 
     <ImageView
@@ -42,6 +43,7 @@
                 android:layout_marginEnd="20dp"
                 android:fontFamily="@font/graphik_semibold"
                 android:text="@string/enter_your_code"
+                android:letterSpacing="-0.0218"
                 android:textColor="@color/black"
                 android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -56,6 +58,7 @@
                 android:layout_marginTop="14dp"
                 android:layout_marginEnd="20dp"
                 android:fontFamily="@font/inter_regular"
+                android:lineSpacingMultiplier="1.21"
                 android:text="@string/enter_invitation_text"
                 android:textColor="#2C2B27"
                 android:textSize="15sp"

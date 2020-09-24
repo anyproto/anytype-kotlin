@@ -69,4 +69,12 @@ class PageSearchViewModel(
     fun onOpenPageClicked(pageId: String) {
         navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = pageId)))
     }
+
+    fun onBottomSheetHidden() {
+        navigateToDesktop()
+    }
+
+    fun navigateToDesktop() {
+        navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
+    }
 }

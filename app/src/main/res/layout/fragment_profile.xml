@@ -103,6 +103,7 @@
                     android:id="@+id/ivArrowForward"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
                     android:layout_marginEnd="12dp"
                     app:layout_constraintBottom_toBottomOf="@+id/name"
                     app:layout_constraintEnd_toEndOf="parent"

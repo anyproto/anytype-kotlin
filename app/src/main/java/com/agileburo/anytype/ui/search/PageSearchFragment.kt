@@ -15,7 +15,9 @@ import com.agileburo.anytype.presentation.search.PageSearchView
 import com.agileburo.anytype.presentation.search.PageSearchViewModel
 import com.agileburo.anytype.presentation.search.PageSearchViewModelFactory
 import com.agileburo.anytype.ui.base.ViewStateFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_page_search.*
+import kotlinx.android.synthetic.main.fragment_page_search.sheet
 import javax.inject.Inject
 
 class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_page_search) {
@@ -37,6 +39,20 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        BottomSheetBehavior.from(sheet).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+            isHideable = true
+            addBottomSheetCallback(
+                object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                            vm.onBottomSheetHidden()
+                        }
+                    }
+                }
+            )
+        }
         vm.state.observe(viewLifecycleOwner, this)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         clearSearchText = searchView.findViewById(R.id.clearSearchText)

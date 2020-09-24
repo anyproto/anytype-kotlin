@@ -54,6 +54,7 @@
                 android:layout_marginStart="@dimen/auth_default_margin_start"
                 android:layout_marginTop="11dp"
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
+                android:gravity="top"
                 android:background="@null"
                 android:fontFamily="@font/inconsolata"
                 android:hint="@string/type_your_keychain"

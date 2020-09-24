@@ -70,6 +70,7 @@ class PageNavigationFragment
                         }
                     )
                 }
+                viewPager.setCurrentItem(1, false)
                 TabLayoutMediator(tabLayout, viewPager) { tab, position ->
                     when (position) {
                         POSITION_FROM -> tab.text = getString(R.string.page_nav_link_from)

@@ -10,6 +10,8 @@
         android:background="@color/divider_color" />
 
     <TextView
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         style="@style/PageIconPickerActionTitleStyle"
         android:text="@string/page_icon_picker_pick_emoji_randomly" />
 
@@ -17,8 +19,6 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="center_vertical|end"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
         android:contentDescription="@string/content_description_upload_photo"
         android:src="@drawable/ic_page_icon_picker_random_emoji" />
 

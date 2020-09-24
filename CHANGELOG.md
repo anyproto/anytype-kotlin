@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.48 (WIP)
+## Version 0.0.48
 
 ### New features 🚀
 
@@ -10,9 +10,17 @@
 
 * Indent aware scroll-and-move (#820)
 * Enter multi-select mode via document's main menu (#896)
+* Redesigned multi-select bottom panel (#872)
+* Redesigned markup url-link bottom sheet (#774)
+* Other design\layout fixes (#870)
 
 ### Fixes & tech 🚒
 
+* Profile's empty name results in app's crash (#905)
+* Update application package (#917)
+* New config for Crashlytics for release project (#917)
+* Invalidate incorrect ranges for markup (#908)
+* Amplitude analytics for basic events (#592)
 * Block-merge operations for documents containing sections (aka divs) (#912)
 * App crashes when opening action menu for link block, which was created by turning a text block into a page (#910)
 * Should create a new toogle on enter press at the end of the non-empty toggle block (#907)
@@ -21,6 +29,7 @@
 * Should not crash Android client when changing media block's background color on Desktop client (#814)
 * Stretched background cover affects app's performance on home dashboard screen (#901)
 * Remove Archive from Navigation links (inbound, outbound) (#919)
+* Links on home dashboard sometimes dissappear behind the center of the screen (#829)
 
 ### Middleware ⚙
 

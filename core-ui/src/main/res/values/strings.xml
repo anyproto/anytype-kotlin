@@ -53,9 +53,9 @@
     <string name="option_media_video">Video</string>
     <string name="option_media_bookmark">Bookmark</string>
 
-    <string name="option_other_divider">Divider</string>
-    <string name="option_other_dots">Dots</string>
-    <string name="option_other_code">Code</string>
+    <string name="option_other_divider">Line divider</string>
+    <string name="option_other_dots">Dots divider</string>
+    <string name="option_other_code">Code snippet</string>
 
     <string name="add_block_or_turn_into_subtitle_text">Write a plain text</string>
     <string name="add_block_or_turn_into_subtitle_header_one">Big headline of a chapter, paragraph or section</string>

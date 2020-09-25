@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.50 (WIP)
+
+### Design & UX 🔳
+
+* Changed object names in add-block and turn-into panels (#752)
+
 ## Version 0.0.49
 
 ### Fixes & tech 🚒

@@ -4,6 +4,7 @@
 
 ### Fixes & tech 🚒
 
+* Render emoji apple icon in page top toolbar, fallback to system emoji in case of exception (#926)
 * Disable DND for profile header on home dashboard (#923)
 * Exclude text color and background marks where param value is equal to default value (#786)
 * Try/catch instead of crashing for issues from 0.0.48 (#925)

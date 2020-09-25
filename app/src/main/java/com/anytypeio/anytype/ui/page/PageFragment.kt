@@ -59,6 +59,7 @@ import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.block.model.Block.Content.Text
 import com.anytypeio.anytype.domain.ext.getFirstLinkMarkupParam
 import com.anytypeio.anytype.domain.ext.getSubstring
+import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.PageViewModelFactory
@@ -750,17 +751,29 @@ open class PageFragment :
 
     private fun resetTopToolbarTitle(text: String?, emoji: String?, image: String?) {
         topToolbar.title.text = text
-        if (emoji != null) topToolbar.emoji.text = emoji
-        if (image != null) {
-            topToolbar.image.visible()
-            Glide
-                .with(topToolbar.image)
-                .load(image)
-                .centerInside()
-                .circleCrop()
-                .into(topToolbar.image)
-        } else {
-            topToolbar.image.setImageDrawable(null)
+        when {
+            emoji != null && emoji.isNotEmpty() -> {
+                try {
+                    topToolbar.emoji.invisible()
+                    Glide.with(topToolbar.image).load(Emojifier.uri(emoji)).into(topToolbar.image)
+                } catch (e: Exception) {
+                    topToolbar.emoji.visible()
+                    topToolbar.emoji.text = emoji
+                }
+            }
+            image != null -> {
+                topToolbar.emoji.invisible()
+                topToolbar.image.visible()
+                Glide
+                    .with(topToolbar.image)
+                    .load(image)
+                    .centerInside()
+                    .circleCrop()
+                    .into(topToolbar.image)
+            }
+            else -> {
+                topToolbar.image.setImageDrawable(null)
+            }
         }
     }
 

@@ -1,80 +1,12 @@
 package com.anytypeio.anytype.presentation.page.editor
 
 import com.anytypeio.anytype.core_ui.common.Markup
+import com.anytypeio.anytype.core_ui.common.ThemeColor
 import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.domain.block.model.Block.Content.Text.Mark
 import com.anytypeio.anytype.domain.ext.addMark
 import com.anytypeio.anytype.domain.ext.content
-import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
-
-sealed class Transformation {
-
-    data class ApplyMarkup(
-        val target: Id,
-        val type: Markup.Type,
-        val range: IntRange,
-        val param: String?
-    ) : Reducer<List<Block>, ApplyMarkup> {
-
-        override fun reduce(state: List<Block>, event: ApplyMarkup): List<Block> {
-
-            val target = state.first { it.id == target }
-            val content = target.content<Block.Content.Text>()
-
-            val mark = Block.Content.Text.Mark(
-                range = range,
-                type = when (type) {
-                    Markup.Type.BOLD -> Block.Content.Text.Mark.Type.BOLD
-                    Markup.Type.ITALIC -> Block.Content.Text.Mark.Type.ITALIC
-                    Markup.Type.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
-                    Markup.Type.TEXT_COLOR -> Block.Content.Text.Mark.Type.TEXT_COLOR
-                    Markup.Type.LINK -> Block.Content.Text.Mark.Type.LINK
-                    Markup.Type.BACKGROUND_COLOR -> Block.Content.Text.Mark.Type.BACKGROUND_COLOR
-                    Markup.Type.KEYBOARD -> Block.Content.Text.Mark.Type.KEYBOARD
-                    Markup.Type.MENTION -> Block.Content.Text.Mark.Type.MENTION
-                },
-                param = param
-            )
-
-            val marks = content.marks.addMark(mark)
-
-            val new = target.copy(
-                content = content.copy(marks = marks)
-            )
-
-            return state.map { block ->
-                if (block.id != event.target)
-                    block
-                else
-                    new
-            }
-        }
-    }
-
-    data class UpdateText(
-        val update: TextUpdate
-    ) : Reducer<List<Block>, UpdateText> {
-
-        override fun reduce(
-            state: List<Block>,
-            event: UpdateText
-        ): List<Block> = state.map { block ->
-            if (block.id == update.target) {
-                block.copy(
-                    content = block.content<Block.Content.Text>().copy(
-                        text = update.text,
-                        marks = update.markup.filter {
-                            it.range.first != it.range.last
-                        }
-                    )
-                )
-            } else
-                block
-        }
-    }
-
-}
 
 fun Block.updateText(update: TextUpdate): Block {
     return copy(
@@ -95,22 +27,28 @@ fun Block.markup(
 
     val content = content<Block.Content.Text>()
 
-    val mark = Block.Content.Text.Mark(
+    val new = Mark(
         range = range,
         type = when (type) {
-            Markup.Type.BOLD -> Block.Content.Text.Mark.Type.BOLD
-            Markup.Type.ITALIC -> Block.Content.Text.Mark.Type.ITALIC
-            Markup.Type.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
-            Markup.Type.TEXT_COLOR -> Block.Content.Text.Mark.Type.TEXT_COLOR
-            Markup.Type.LINK -> Block.Content.Text.Mark.Type.LINK
-            Markup.Type.BACKGROUND_COLOR -> Block.Content.Text.Mark.Type.BACKGROUND_COLOR
-            Markup.Type.KEYBOARD -> Block.Content.Text.Mark.Type.KEYBOARD
-            Markup.Type.MENTION -> Block.Content.Text.Mark.Type.MENTION
+            Markup.Type.BOLD -> Mark.Type.BOLD
+            Markup.Type.ITALIC -> Mark.Type.ITALIC
+            Markup.Type.STRIKETHROUGH -> Mark.Type.STRIKETHROUGH
+            Markup.Type.TEXT_COLOR -> Mark.Type.TEXT_COLOR
+            Markup.Type.LINK -> Mark.Type.LINK
+            Markup.Type.BACKGROUND_COLOR -> Mark.Type.BACKGROUND_COLOR
+            Markup.Type.KEYBOARD -> Mark.Type.KEYBOARD
+            Markup.Type.MENTION -> Mark.Type.MENTION
         },
         param = param
     )
 
-    val marks = content.marks.addMark(mark)
+    val marks = content.marks.addMark(new).filter { mark ->
+        if (mark.type == Mark.Type.BACKGROUND_COLOR || mark.type == Mark.Type.TEXT_COLOR) {
+            mark.param != ThemeColor.DEFAULT.title
+        } else {
+            true
+        }
+    }
 
     return copy(content = content.copy(marks = marks))
 }

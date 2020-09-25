@@ -5,6 +5,7 @@
 ### Fixes & tech 🚒
 
 * Disable DND for profile header on home dashboard (#923)
+* Exclude text color and background marks where param value is equal to default value (#786)
 
 ## Version 0.0.48
 

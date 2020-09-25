@@ -148,6 +148,7 @@ class ArchiveViewModel(
                     details = details
                 )
             }
+            .map { views -> views.filterNot { it is BlockView.Page } }
             .onEach { views ->
                 orchestrator.stores.views.update(views)
                 renderCommand.send(Unit)

@@ -200,18 +200,22 @@ class DashboardAdapter(
     }
 
     fun update(views: List<DashboardView>) {
-        val callback = DesktopDiffUtil(
-            old = data,
-            new = views
-        )
-        val result = DiffUtil.calculateDiff(callback)
+        try {
+            val callback = DesktopDiffUtil(
+                old = data,
+                new = views
+            )
+            val result = DiffUtil.calculateDiff(callback)
 
-        data.apply {
-            clear()
-            addAll(views)
+            data.apply {
+                clear()
+                addAll(views)
+            }
+
+            result.dispatchUpdatesTo(this)
+        } catch (e: Exception) {
+            Timber.e(e, "Error while updating dashboard adapter")
         }
-
-        result.dispatchUpdatesTo(this)
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {

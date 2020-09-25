@@ -690,10 +690,12 @@ class PageViewModel(
         }
     }
 
-    private fun proceedWithEnterEvent(target: Id,
-                                      range: IntRange,
-                                      text: String,
-                                      marks: List<Content.Text.Mark>) {
+    private fun proceedWithEnterEvent(
+        target: Id,
+        range: IntRange,
+        text: String,
+        marks: List<Content.Text.Mark>
+    ) {
         if (context == target) {
             onEndLineEnterTitleClicked()
         } else {
@@ -877,13 +879,18 @@ class PageViewModel(
 
     private fun onBlockLongPressedClicked(target: String, dimensions: BlockDimensions) {
         val views = orchestrator.stores.views.current()
-        onEnterActionMode()
-        dispatch(
-            Command.OpenActionBar(
-                block = views.first { it.id == target },
-                dimensions = dimensions
+        val view = views.find { it.id == target }
+        if (view != null) {
+            onEnterActionMode()
+            dispatch(
+                Command.OpenActionBar(
+                    block = view,
+                    dimensions = dimensions
+                )
             )
-        )
+        } else {
+            Timber.e("Could not open action menu on long click. Target view was missing.")
+        }
     }
 
     fun onEditorContextMenuStyleClicked(selection: IntRange) {
@@ -951,7 +958,7 @@ class PageViewModel(
                     Markup.Type.KEYBOARD -> onBlockStyleMarkupActionClicked(id, type)
                     Markup.Type.MENTION -> Unit
                 }
-            } ?: run { throw IllegalStateException("Target id should be non null") }
+            } ?: run { Timber.e("Target id was missing for markup styling event: $type") }
         }
     }
 
@@ -1293,7 +1300,7 @@ class PageViewModel(
 
         val replace = content is Content.Text && content.text.isEmpty()
 
-        var position : Position = Position.BOTTOM
+        var position: Position = Position.BOTTOM
 
         var target: Id = focused.id
 
@@ -1363,7 +1370,7 @@ class PageViewModel(
             )
         } else {
 
-            val position : Position
+            val position: Position
 
             var target: Id = focused.id
 
@@ -1723,7 +1730,7 @@ class PageViewModel(
             }
         } else {
 
-            val position : Position
+            val position: Position
 
             var target: Id = focused.id
 
@@ -1834,7 +1841,7 @@ class PageViewModel(
     fun onAddNewPageClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
-        val position : Position
+        val position: Position
 
         val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
 
@@ -1919,7 +1926,7 @@ class PageViewModel(
             }
         } else {
 
-            val position : Position
+            val position: Position
 
             var target: Id = focused.id
 

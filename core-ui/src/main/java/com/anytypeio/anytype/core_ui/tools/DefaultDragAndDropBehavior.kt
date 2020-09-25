@@ -14,7 +14,7 @@ import timber.log.Timber
  * @property onItemMoved callback notifying that the dragged item has been moved from one position to another
  * @property onItemDropped callback notifying that the dragged item has been dropped
  */
-class DefaultDragAndDropBehavior(
+open class DefaultDragAndDropBehavior(
     private val onItemMoved: (Int, Int) -> Boolean,
     private val onItemDropped: (Int) -> Unit
 ) : ItemTouchHelper.Callback() {
@@ -24,21 +24,23 @@ class DefaultDragAndDropBehavior(
     override fun getMovementFlags(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
-    ) = if (recyclerView.layoutManager is GridLayoutManager)
-        makeMovementFlags(UP or DOWN or LEFT or RIGHT, 0)
-    else
-        makeMovementFlags(UP or DOWN, 0)
+    ): Int {
+        return if (recyclerView.layoutManager is GridLayoutManager)
+            makeMovementFlags(UP or DOWN or LEFT or RIGHT, 0)
+        else
+            makeMovementFlags(UP or DOWN, 0)
+    }
 
     override fun onMove(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
-    ) = onItemMoved(viewHolder.adapterPosition, target.adapterPosition)
+    ) = onItemMoved(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
-        Timber.d("Adapter position: ${viewHolder.adapterPosition}")
-        onItemDropped(viewHolder.adapterPosition)
+        Timber.d("Adapter position: ${viewHolder.bindingAdapterPosition}")
+        onItemDropped(viewHolder.bindingAdapterPosition)
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}

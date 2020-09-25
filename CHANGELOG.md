@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.0.49 (WIP)
+
+### Fixes & tech 🚒
+
+* Disable DND for profile header on home dashboard (#923)
+
 ## Version 0.0.48
 
 ### New features 🚀

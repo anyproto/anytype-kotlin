@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.tools.DefaultDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -34,7 +33,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     private val vm by viewModels<HomeDashboardViewModel> { factory }
 
     private val dndBehavior by lazy {
-        DefaultDragAndDropBehavior(
+        DashboardDragAndDropBehavior(
             onItemMoved = { from, to ->
                 dashboardAdapter
                     .onItemMove(from, to)
@@ -74,7 +73,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     }
 
     private val concatAdapter by lazy {
-        ConcatAdapter(LinearConcatAdapter(profileAdapter), dashboardAdapter)
+        ConcatAdapter(ProfileContainerAdapter(profileAdapter), dashboardAdapter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

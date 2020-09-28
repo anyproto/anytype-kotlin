@@ -778,6 +778,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
+                    onTextInputClicked = onTextInputClicked
                 )
             }
             is File -> {

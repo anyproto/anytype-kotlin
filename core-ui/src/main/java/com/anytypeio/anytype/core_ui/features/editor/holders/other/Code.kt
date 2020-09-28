@@ -2,6 +2,9 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.text.Editable
 import android.view.View
+import android.widget.FrameLayout
+import androidx.core.view.updateLayoutParams
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
@@ -10,6 +13,7 @@ import com.anytypeio.anytype.core_ui.features.page.ListenerType
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+import com.anytypeio.anytype.core_utils.ext.dimen
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import timber.log.Timber
 
@@ -25,8 +29,10 @@ class Code(view: View) : BlockViewHolder(view), TextHolder {
         onTextChanged: (String, Editable) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
-        clicked: (ListenerType) -> Unit
+        clicked: (ListenerType) -> Unit,
+        onTextInputClicked: (String) -> Unit
     ) {
+        indentize(item)
         if (item.mode == BlockView.Mode.READ) {
             content.setText(item.text)
             enableReadMode()
@@ -60,6 +66,17 @@ class Code(view: View) : BlockViewHolder(view), TextHolder {
                 onFocusChanged(item.id, focused)
             }
             content.selectionWatcher = { onSelectionChanged(item.id, it) }
+        }
+
+        content.setOnClickListener { onTextInputClicked(item.id) }
+    }
+
+    fun indentize(item: BlockView.Indentable) {
+        itemView.snippetContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+            apply {
+                val extra = item.indent * dimen(R.dimen.indent)
+                leftMargin = 0 + extra
+            }
         }
     }
 
@@ -97,6 +114,10 @@ class Code(view: View) : BlockViewHolder(view), TextHolder {
 
         if (payload.focusChanged()) {
             setFocus(item)
+        }
+
+        if (payload.isIndentChanged) {
+            indentize(item)
         }
     }
 

@@ -436,8 +436,9 @@ sealed class BlockView : ViewType, Parcelable {
         var text: String,
         override val mode: Mode = Mode.EDIT,
         override var isFocused: Boolean = false,
-        override val isSelected: Boolean = false
-    ) : BlockView(), Permission, Selectable, Focusable {
+        override val isSelected: Boolean = false,
+        override val indent: Int = 0
+    ) : BlockView(), Permission, Selectable, Focusable, Indentable {
         override fun getViewType() = HOLDER_CODE_SNIPPET
     }
 

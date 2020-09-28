@@ -378,7 +378,7 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
-                style = Block.Content.Text.Style.CODE_SNIPPET
+                style = Block.Content.Text.Style.BULLET
             )
         )
 
@@ -478,9 +478,11 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
                         isFocused = false,
                         text = parent.content<Block.Content.Text>().text
                     ),
-                    BlockView.Code(
+                    BlockView.Text.Bulleted(
+                        indent = 1,
                         id = child1.id,
                         isFocused = true,
+                        cursor = child1.content<Block.Content.Text>().text.length,
                         text = child1.content<Block.Content.Text>().text
                     ),
                     BlockView.Upload.Picture(

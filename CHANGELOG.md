@@ -2,6 +2,10 @@
 
 ## Version 0.0.50 (WIP)
 
+### New features 🚀
+
+* Code block in multi-select and scroll-and-move modes (#892)
+
 ### Design & UX 🔳
 
 * Changed object names in add-block and turn-into panels (#752)

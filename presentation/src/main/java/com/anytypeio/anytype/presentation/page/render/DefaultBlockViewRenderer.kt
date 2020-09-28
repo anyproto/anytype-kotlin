@@ -223,7 +223,7 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.CODE_SNIPPET -> {
                             counter.reset()
-                            result.add(code(mode, block, content, focus))
+                            result.add(code(mode, block, content, focus, indent))
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
@@ -469,12 +469,14 @@ class DefaultBlockViewRenderer(
         mode: EditorMode,
         block: Block,
         content: Content.Text,
-        focus: Focus
+        focus: Focus,
+        indent: Int
     ): BlockView.Code = BlockView.Code(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
-        isFocused = block.id == focus.id
+        isFocused = block.id == focus.id,
+        indent = indent
     )
 
     private fun highlight(

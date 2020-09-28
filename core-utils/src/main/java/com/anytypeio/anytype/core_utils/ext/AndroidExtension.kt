@@ -180,13 +180,14 @@ fun TextView.getCursorOffsetY(): Int? =
         }
     }
 
-fun View.indentize(indent: Int, defIndent: Int, margin: Int) =
+fun View.indentize(indent: Int, defIndent: Int, margin: Int) {
     updateLayoutParams<RecyclerView.LayoutParams> {
         apply {
             val extra = indent * defIndent
             leftMargin = margin + extra
         }
     }
+}
 
 fun Fragment.clipboard() : ClipboardManager {
     return requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

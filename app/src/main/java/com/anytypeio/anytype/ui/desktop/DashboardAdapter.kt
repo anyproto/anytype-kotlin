@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.item_desktop_page.view.*
 import timber.log.Timber
 
 class DashboardAdapter(
-    private var data: MutableList<DashboardView>,
+    private var data: List<DashboardView>,
     private val onDocumentClicked: (Id) -> Unit,
     private val onArchiveClicked: (Id) -> Unit
 ) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>(), SupportDragAndDropBehavior {
@@ -201,17 +201,10 @@ class DashboardAdapter(
 
     fun update(views: List<DashboardView>) {
         try {
-            val callback = DesktopDiffUtil(
-                old = data,
-                new = views
-            )
+            val old = ArrayList(data)
+            val callback = DesktopDiffUtil(old = old, new = views)
             val result = DiffUtil.calculateDiff(callback)
-
-            data.apply {
-                clear()
-                addAll(views)
-            }
-
+            data = views
             result.dispatchUpdatesTo(this)
         } catch (e: Exception) {
             Timber.e(e, "Error while updating dashboard adapter")
@@ -219,9 +212,8 @@ class DashboardAdapter(
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
-        val update = data.shift(fromPosition, toPosition)
-        data.clear()
-        data.addAll(update)
+        val update = ArrayList(data).shift(fromPosition, toPosition)
+        data = update
         notifyItemMoved(fromPosition, toPosition)
         return true
     }

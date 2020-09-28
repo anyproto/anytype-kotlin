@@ -447,7 +447,11 @@ open class PageFragment :
             .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)
 
-        topToolbar.menu.clicks().onEach { showToolbarMenu() }.launchIn(lifecycleScope)
+        topToolbar.menu
+            .clicks()
+            .onEach {
+            vm.onDocumentMenuClicked() }
+            .launchIn(lifecycleScope)
 
         topToolbar.back.clicks().onEach {
             hideSoftInput()
@@ -686,6 +690,16 @@ open class PageFragment :
                     } catch (e: Throwable) {
                         toast("Couldn't parse url: ${command.url}")
                     }
+                }
+                is Command.OpenDocumentMenu -> {
+                    DocumentPopUpMenu(
+                        context = requireContext(),
+                        view = topToolbar.menu,
+                        onArchiveClicked = vm::onArchiveThisPageClicked,
+                        onRedoClicked = vm::onActionRedoClicked,
+                        onUndoClicked = vm::onActionUndoClicked,
+                        onEnterMultiSelect = vm::onEnterMultiSelectModeClicked
+                    ).show()
                 }
             }
         }

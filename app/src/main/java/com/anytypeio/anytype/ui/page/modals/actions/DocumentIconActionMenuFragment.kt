@@ -11,9 +11,15 @@ import android.view.View.OVER_SCROLL_NEVER
 import android.view.animation.OvershootInterpolator
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_utils.ext.parsePath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -47,12 +53,9 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
 
     @Inject
     lateinit var factory: DocumentIconActionMenuViewModelFactory
-
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(DocumentIconActionMenuViewModel::class.java)
-    }
+    @Inject
+    lateinit var analytics: Analytics
+    private val vm by viewModels<DocumentIconActionMenuViewModel> { factory }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -143,6 +146,10 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
                                 target = target
                             ).show(manager, null)
                         }
+                        lifecycleScope.sendEvent(
+                            analytics = analytics,
+                            eventName = EventsDictionary.POPUP_CHOOSE_EMOJI
+                        )
                     }
                     OPTION_REMOVE -> vm.onEvent(
                         Contract.Event.OnRemoveEmojiSelected(

@@ -9,7 +9,7 @@ import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.anytypeio.anytype.R
@@ -41,14 +41,9 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
             .getString(ARG_CONTEXT_ID_KEY)
             ?: throw IllegalStateException(MISSING_CONTEXT_ERROR)
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(DocumentEmojiIconPickerViewModel::class.java)
-    }
-
     @Inject
     lateinit var factory: DocumentEmojiIconPickerViewModelFactory
+    private val vm by viewModels<DocumentEmojiIconPickerViewModel> { factory }
 
     private val emojiPickerAdapter by lazy {
         DocumentEmojiIconPickerAdapter(

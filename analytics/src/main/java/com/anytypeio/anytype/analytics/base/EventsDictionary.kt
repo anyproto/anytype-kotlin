@@ -13,6 +13,19 @@ object EventsDictionary {
     const val SCREEN_SEARCH = "Page: Search"
     const val SCREEN_ARCHIVE = "Page: Archive"
 
+    const val POPUP_ADD_BLOCK = "PopupNewBlockMenu"
+    const val POPUP_STYLE = "PopupStyleMenu"
+    const val POPUP_TURN_INTO = "PopupTurnIntoMenu"
+    const val POPUP_ACTION_MENU = "PopupActionMenu"
+    const val POPUP_MULTI_SELECT_MENU = "PopupMultiSelectMenu"
+    const val POPUP_CHOOSE_EMOJI = "PopupChooseEmojiMenu"
+    const val POPUP_DOCUMENT_MENU = "PopupDocumentMenu"
+    const val POPUP_DOCUMENT_ICON_MENU = "PopupDocumentIconMenu"
+    const val POPUP_PROFILE_ICON_MENU = "PopupProfileIconMenu"
+    const val POPUP_MENTION_MENU = "PopupMentionMenu"
+    const val POPUP_MARKUP_LINK = "PopupMarkupLinkMenu"
+    const val POPUP_BOOKMARK = "PopupBookmarkMenu"
+
 
     const val PROP_STYLE = "style"
     const val PROP_TYPE = "type"

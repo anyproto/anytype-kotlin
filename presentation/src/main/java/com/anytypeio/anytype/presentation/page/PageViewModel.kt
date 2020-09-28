@@ -6,6 +6,17 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_CREATE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_ACTION_MENU
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_ADD_BLOCK
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_BOOKMARK
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_DOCUMENT_ICON_MENU
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_DOCUMENT_MENU
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MARKUP_LINK
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MENTION_MENU
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MULTI_SELECT_MENU
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_PROFILE_ICON_MENU
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_STYLE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_TURN_INTO
 import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_STYLE
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
@@ -787,6 +798,14 @@ class PageViewModel(
         }
     }
 
+    fun onDocumentMenuClicked() {
+        dispatch(command = Command.OpenDocumentMenu)
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = POPUP_DOCUMENT_MENU
+        )
+    }
+
     fun onEmptyBlockBackspaceClicked(id: String) {
         Timber.d("onEmptyBlockBackspaceClicked: $id")
         proceedWithUnlinking(target = id)
@@ -890,6 +909,10 @@ class PageViewModel(
                     dimensions = dimensions
                 )
             )
+            viewModelScope.sendEvent(
+                analytics = analytics,
+                eventName = POPUP_ACTION_MENU
+            )
         } else {
             Timber.e("Could not open action menu on long click. Target view was missing.")
         }
@@ -902,6 +925,10 @@ class PageViewModel(
                 target = target,
                 selection = selection
             )
+        )
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = POPUP_STYLE
         )
     }
 
@@ -1033,6 +1060,10 @@ class PageViewModel(
             endInclusive = target.content<Content.Text>().text.length.dec()
         )
         stateData.value = ViewState.OpenLinkScreen(context, target, range)
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = POPUP_MARKUP_LINK
+        )
     }
 
     private fun onBlockStyleMarkupActionClicked(id: String, action: Markup.Type) {
@@ -1106,6 +1137,10 @@ class PageViewModel(
                         excludedTypes = excludedTypes
                     )
                 )
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = POPUP_TURN_INTO
+                )
             }
             ActionItemType.Delete -> {
                 proceedWithUnlinking(target = id)
@@ -1147,6 +1182,10 @@ class PageViewModel(
                 )
                 onExitActionMode()
                 dispatch(Command.PopBackStack)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = POPUP_STYLE
+                )
             }
             ActionItemType.Download -> {
                 viewModelScope.launch {
@@ -1479,6 +1518,10 @@ class PageViewModel(
                     selection = textSelection.selection
                 )
             )
+            viewModelScope.sendEvent(
+                analytics = analytics,
+                eventName = POPUP_STYLE
+            )
         }
     }
 
@@ -1501,6 +1544,10 @@ class PageViewModel(
 
     fun onAddBlockToolbarClicked() {
         dispatch(Command.OpenAddBlockPanel)
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = POPUP_ADD_BLOCK
+        )
     }
 
     fun onEnterMultiSelectModeClicked() {
@@ -1511,6 +1558,10 @@ class PageViewModel(
             delay(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
             refresh()
         }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = POPUP_MULTI_SELECT_MENU
+        )
     }
 
     fun onExitMultiSelectModeClicked() {
@@ -1969,13 +2020,18 @@ class PageViewModel(
         }
     }
 
-    private fun onBookmarkPlaceholderClicked(target: String) =
+    private fun onBookmarkPlaceholderClicked(target: String){
         dispatch(
             command = Command.OpenBookmarkSetter(
                 context = context,
                 target = target
             )
         )
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = POPUP_BOOKMARK
+        )
+    }
 
     private fun onBookmarkClicked(view: BlockView.Media.Bookmark) =
         dispatch(command = Command.Browse(view.url))
@@ -2363,6 +2419,10 @@ class PageViewModel(
                 }
             )
         )
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = POPUP_DOCUMENT_ICON_MENU
+        )
     }
 
     fun onProfileIconClicked() {
@@ -2378,6 +2438,10 @@ class PageViewModel(
                 },
                 name = details.details[context]?.name
             )
+        )
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = POPUP_PROFILE_ICON_MENU
         )
     }
 
@@ -2442,6 +2506,10 @@ class PageViewModel(
                         }
                     )
                 }
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = POPUP_MENTION_MENU
+                )
             }
             MentionEvent.MentionSuggestStop -> {
                 mentionFrom = -1

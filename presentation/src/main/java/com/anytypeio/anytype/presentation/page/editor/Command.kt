@@ -63,4 +63,6 @@ sealed class Command {
     data class Browse(
         val url: Url
     ) : Command()
+
+    object OpenDocumentMenu : Command()
 }

@@ -1776,35 +1776,35 @@ class PageViewModel(
     }
 
     fun onOutsideClicked() {
-        blocks.first { it.id == context }.let { page ->
-            if (page.children.isNotEmpty()) {
-                val last = blocks.first { it.id == page.children.last() }
-                when (val content = last.content) {
-                    is Content.Text -> {
-                        when {
-                            content.style == Content.Text.Style.TITLE -> addNewBlockAtTheEnd()
-                            content.text.isNotEmpty() -> addNewBlockAtTheEnd()
-                            else -> Timber.d("Outside-click has been ignored.")
-                        }
-                    }
-                    is Content.Link -> {
-                        addNewBlockAtTheEnd()
-                    }
-                    is Content.Bookmark -> {
-                        addNewBlockAtTheEnd()
-                    }
-                    is Content.File -> {
-                        addNewBlockAtTheEnd()
-                    }
-                    is Content.Divider -> {
-                        addNewBlockAtTheEnd()
-                    }
-                    else -> {
-                        Timber.d("Outside-click has been ignored.")
+        val root = blocks.find { it.id == context } ?: return
+
+        if (root.children.isEmpty()) {
+            addNewBlockAtTheEnd()
+        } else {
+            val last = blocks.first { it.id == root.children.last() }
+            when (val content = last.content) {
+                is Content.Text -> {
+                    when {
+                        content.style == Content.Text.Style.TITLE -> addNewBlockAtTheEnd()
+                        content.text.isNotEmpty() -> addNewBlockAtTheEnd()
+                        else -> Timber.d("Outside-click has been ignored.")
                     }
                 }
-            } else {
-                addNewBlockAtTheEnd()
+                is Content.Link -> {
+                    addNewBlockAtTheEnd()
+                }
+                is Content.Bookmark -> {
+                    addNewBlockAtTheEnd()
+                }
+                is Content.File -> {
+                    addNewBlockAtTheEnd()
+                }
+                is Content.Divider -> {
+                    addNewBlockAtTheEnd()
+                }
+                else -> {
+                    Timber.d("Outside-click has been ignored.")
+                }
             }
         }
     }

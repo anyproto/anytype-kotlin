@@ -6,6 +6,10 @@
 
 * Changed object names in add-block and turn-into panels (#752)
 
+### Fixes & tech 🚒
+
+* Clicking on empty space before document is loaded should not crash application (#930)
+
 ## Version 0.0.49
 
 ### Fixes & tech 🚒

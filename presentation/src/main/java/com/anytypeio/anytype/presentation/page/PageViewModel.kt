@@ -490,8 +490,10 @@ class PageViewModel(
     private fun onStartFocusing(payload: Payload) {
         val event = payload.events.find { it is Event.Command.ShowBlock }
         if (event is Event.Command.ShowBlock) {
-            val root = event.blocks.first { it.id == context }
-            if (root.children.isEmpty()) {
+            val root = event.blocks.find { it.id == context }
+            if (root == null) {
+                Timber.e("Could not find the root block on initial focusing")
+            } else if (root.children.isEmpty()) {
                 val focus = Editor.Focus(id = root.id, cursor = Editor.Cursor.End)
                 viewModelScope.launch { orchestrator.stores.focus.update(focus) }
                 controlPanelInteractor.onEvent(

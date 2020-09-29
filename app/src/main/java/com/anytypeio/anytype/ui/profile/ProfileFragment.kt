@@ -2,7 +2,7 @@ package com.anytypeio.anytype.ui.profile
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.avatarColor
@@ -22,12 +22,7 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
 
     @Inject
     lateinit var factory: ProfileViewModelFactory
-
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(ProfileViewModel::class.java)
-    }
+    private val vm by viewModels<ProfileViewModel> { factory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,9 +36,15 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
     override fun render(state: ViewState<ProfileView>) {
         when (state) {
             is ViewState.Init -> {
-                wallpaperText.setOnClickListener { toast("Coming soon...") }
+                wallpaperText.setOnClickListener {
+                    vm.onWallpaperClicked()
+                    toast("Coming soon...")
+                }
                 logoutButton.setOnClickListener { vm.onLogoutClicked() }
-                pinCodeText.setOnClickListener { toast("Coming soon...") }
+                pinCodeText.setOnClickListener {
+                    vm.onPinCodeClicked()
+                    toast("Coming soon...")
+                }
                 keychainPhrase.setOnClickListener { vm.onKeyChainPhraseClicked() }
                 backButton.setOnClickListener { vm.onBackButtonClicked() }
                 profileCardContainer.setOnClickListener { vm.onProfileCardClicked() }

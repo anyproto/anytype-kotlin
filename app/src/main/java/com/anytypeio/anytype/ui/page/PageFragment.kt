@@ -414,7 +414,10 @@ open class PageFragment :
 
         bottomMenu
             .applyScrollAndMoveClicks()
-            .onEach { onApplyScrollAndMoveClicked() }
+            .onEach {
+                vm.onApplyScrollAndMoveClicked()
+                onApplyScrollAndMoveClicked()
+            }
             .launchIn(lifecycleScope)
 
         bottomMenu

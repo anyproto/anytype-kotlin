@@ -1520,6 +1520,10 @@ class PageViewModel(
             )
             viewModelScope.sendEvent(
                 analytics = analytics,
+                eventName = EventsDictionary.BTN_STYLE_MENU
+            )
+            viewModelScope.sendEvent(
+                analytics = analytics,
                 eventName = POPUP_STYLE
             )
         }
@@ -1534,6 +1538,10 @@ class PageViewModel(
                     target = orchestrator.stores.focus.current().id
                 )
             )
+            viewModelScope.sendEvent(
+                analytics = analytics,
+                eventName = EventsDictionary.BTN_BLOCK_ACTIONS
+            )
         }
     }
 
@@ -1544,6 +1552,10 @@ class PageViewModel(
 
     fun onAddBlockToolbarClicked() {
         dispatch(Command.OpenAddBlockPanel)
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_ADD_BLOCK_MENU
+        )
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = POPUP_ADD_BLOCK
@@ -1562,6 +1574,10 @@ class PageViewModel(
             analytics = analytics,
             eventName = POPUP_MULTI_SELECT_MENU
         )
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_ENTER_MS
+        )
     }
 
     fun onExitMultiSelectModeClicked() {
@@ -1573,16 +1589,35 @@ class PageViewModel(
             orchestrator.stores.focus.update(Editor.Focus.empty())
             refresh()
         }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_MS_DONE
+        )
     }
 
     fun onEnterScrollAndMoveClicked() {
         mode = EditorMode.SCROLL_AND_MOVE
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnEnter)
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_SCROLL_MOVE
+        )
     }
 
     fun onExitScrollAndMoveClicked() {
         mode = EditorMode.MULTI_SELECT
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnExit)
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_SCROLL_MOVE_CANCEL
+        )
+    }
+
+    fun onApplyScrollAndMoveClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_SCROLL_MOVE_MOVE
+        )
     }
 
     private fun onEnterActionMode() {
@@ -1623,6 +1658,11 @@ class PageViewModel(
                 )
             )
         }
+
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_MS_DELETE
+        )
     }
 
     fun onMultiSelectCopyClicked() {
@@ -1637,16 +1677,30 @@ class PageViewModel(
                 )
             )
         }
+
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_MS_COPY
+        )
     }
 
-    fun onMultiSelectModeSelectAllClicked() =
+    fun onMultiSelectModeSelectAllClicked() {
         (stateData.value as ViewState.Success).let { state ->
             if (currentSelection().isEmpty()) {
                 onSelectAllClicked(state)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_MS_SELECT_ALL
+                )
             } else {
                 onUnselectAllClicked(state)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_MS_UNSELECT_ALL
+                )
             }
         }
+    }
 
     private fun onSelectAllClicked(state: ViewState.Success) =
         state.blocks.map { block ->
@@ -1704,6 +1758,11 @@ class PageViewModel(
                 _error.value = ErrorViewState.Toast("Cannot turn selected blocks into other blocks")
             }
         }
+
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_MS_TURN_INTO
+        )
     }
 
     fun onOpenPageNavigationButtonClicked() {
@@ -1876,6 +1935,10 @@ class PageViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
         viewModelScope.launch { refresh() }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_HIDE_KEYBOARD
+        )
     }
 
     private fun proceedWithClearingFocus() {

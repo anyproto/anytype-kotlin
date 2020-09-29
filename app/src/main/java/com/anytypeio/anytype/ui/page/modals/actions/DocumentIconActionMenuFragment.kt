@@ -13,9 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
@@ -151,20 +149,36 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
                             eventName = EventsDictionary.POPUP_CHOOSE_EMOJI
                         )
                     }
-                    OPTION_REMOVE -> vm.onEvent(
-                        Contract.Event.OnRemoveEmojiSelected(
-                            context = target,
-                            target = target
+                    OPTION_REMOVE -> {
+                        vm.onEvent(
+                            Contract.Event.OnRemoveEmojiSelected(
+                                context = target,
+                                target = target
+                            )
                         )
-                    )
-                    OPTION_CHOOSE_RANDOM_EMOJI -> vm.onEvent(
-                        Contract.Event.OnSetRandomEmojiClicked(
-                            context = target,
-                            target = target
+                        lifecycleScope.sendEvent(
+                            analytics = analytics,
+                            eventName = EventsDictionary.BTN_REMOVE_EMOJI
                         )
-                    )
+                    }
+                    OPTION_CHOOSE_RANDOM_EMOJI -> {
+                        vm.onEvent(
+                            Contract.Event.OnSetRandomEmojiClicked(
+                                context = target,
+                                target = target
+                            )
+                        )
+                        lifecycleScope.sendEvent(
+                            analytics = analytics,
+                            eventName = EventsDictionary.BTN_RANDOM_EMOJI
+                        )
+                    }
                     OPTION_CHOOSE_UPLOAD_PHOTO -> {
                         proceedWithImagePick()
+                        lifecycleScope.sendEvent(
+                            analytics = analytics,
+                            eventName = EventsDictionary.BTN_UPLOAD_PHOTO
+                        )
                     }
                     else -> toast("Not implemented")
                 }

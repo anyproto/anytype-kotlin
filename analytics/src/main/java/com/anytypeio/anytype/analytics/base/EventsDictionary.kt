@@ -26,6 +26,30 @@ object EventsDictionary {
     const val POPUP_MARKUP_LINK = "PopupMarkupLinkMenu"
     const val POPUP_BOOKMARK = "PopupBookmarkMenu"
 
+    const val BTN_PROFILE_WALLPAPER = "ButtonProfileWallpaper"
+    const val BTN_PROFILE_PIN = "ButtonProfilePin"
+    const val BTN_PROFILE_LOG_OUT = "ButtonProfileLogOut"
+    const val BTN_PROFILE_BACK = "ButtonProfileBack"
+
+    const val BTN_RANDOM_EMOJI = "ButtonRandomEmoji"
+    const val BTN_REMOVE_EMOJI = "ButtonRemoveEmoji"
+    const val BTN_UPLOAD_PHOTO = "ButtonUploadPhoto"
+
+    const val BTN_MS_SELECT_ALL = "ButtonMSSelectAll"
+    const val BTN_MS_UNSELECT_ALL = "ButtonMSUnselectAll"
+    const val BTN_MS_DONE = "ButtonMSDone"
+    const val BTN_MS_DELETE = "ButtonMSDelete"
+    const val BTN_MS_TURN_INTO = "ButtonMSTurnInto"
+    const val BTN_SCROLL_MOVE = "ButtonScrollMove"
+    const val BTN_SCROLL_MOVE_CANCEL = "ButtonScrollMoveCancel"
+    const val BTN_SCROLL_MOVE_MOVE = "ButtonScrollMoveMove"
+    const val BTN_MS_COPY = "ButtonMSCopy"
+
+    const val BTN_ENTER_MS = "ButtonMultiSelectMenu"
+    const val BTN_ADD_BLOCK_MENU = "ButtonAddBlockMenu"
+    const val BTN_HIDE_KEYBOARD = "ButtonHideKeyboard"
+    const val BTN_STYLE_MENU = "ButtonStyleMenu"
+    const val BTN_BLOCK_ACTIONS = "ButtonBlockActionsMenu"
 
     const val PROP_STYLE = "style"
     const val PROP_TYPE = "type"

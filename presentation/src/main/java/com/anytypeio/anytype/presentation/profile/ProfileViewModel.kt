@@ -2,11 +2,14 @@ package com.anytypeio.anytype.presentation.profile
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.amplitude.api.Amplitude
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.ACCOUNT_STOP
+import com.anytypeio.anytype.analytics.base.EventsDictionary.BTN_PROFILE_BACK
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_DOCUMENT
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_KEYCHAIN
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.event.EventAnalytics
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
@@ -15,8 +18,6 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import com.amplitude.api.Amplitude
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ProfileViewModel(
@@ -38,12 +39,16 @@ class ProfileViewModel(
 
     fun onBackButtonClicked() {
         navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = BTN_PROFILE_BACK
+        )
     }
 
     fun onProfileCardClicked() {
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = EventsDictionary.SCREEN_DOCUMENT
+            eventName = SCREEN_DOCUMENT
         )
         navigate(EventWrapper(AppNavigation.Command.OpenPage(target)))
     }
@@ -72,6 +77,10 @@ class ProfileViewModel(
     }
 
     fun onLogoutClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_PROFILE_LOG_OUT
+        )
         val startTime = System.currentTimeMillis()
         logout.invoke(viewModelScope, BaseUseCase.None) { result ->
             result.either(
@@ -90,13 +99,23 @@ class ProfileViewModel(
     fun onKeyChainPhraseClicked() {
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = EventsDictionary.SCREEN_KEYCHAIN
+            eventName = SCREEN_KEYCHAIN
         )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenKeychainScreen))
     }
 
     fun onPinCodeClicked() {
-        navigation.postValue(EventWrapper(AppNavigation.Command.OpenPinCodeScreen))
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_PROFILE_PIN
+        )
+    }
+
+    fun onWallpaperClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_PROFILE_WALLPAPER
+        )
     }
 
     private fun sendEvent(startTime: Long) {
@@ -105,12 +124,7 @@ class ProfileViewModel(
             analytics = analytics,
             startTime = startTime,
             middleTime = middleTime,
-            eventName = EventsDictionary.ACCOUNT_STOP
+            eventName = ACCOUNT_STOP
         )
-    }
-
-    companion object DEBUG_SETTINGS {
-
-        const val ANYTYPE_ACTION_MODE = "debug.settings.aam"
     }
 }

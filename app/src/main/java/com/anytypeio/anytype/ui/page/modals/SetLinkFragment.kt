@@ -1,19 +1,30 @@
 package com.anytypeio.anytype.ui.page.modals
 
+import android.app.Dialog
 import android.os.Bundle
+import android.text.InputType
+import android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.FrameLayout
 import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.multilineIme
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.page.LinkAddViewModel
 import com.anytypeio.anytype.presentation.page.LinkAddViewModelFactory
 import com.anytypeio.anytype.presentation.page.LinkViewState
 import com.anytypeio.anytype.ui.page.OnFragmentInteractionListener
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_link.*
 import javax.inject.Inject
 
@@ -46,18 +57,31 @@ class SetLinkFragment : BaseBottomSheetFragment() {
 
     @Inject
     lateinit var factory: LinkAddViewModelFactory
-
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(LinkAddViewModel::class.java)
-    }
+    private val vm by viewModels<LinkAddViewModel> { factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_link, container, false)
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        setModalToFullScreenState(dialog)
+        return dialog
+    }
+
+    private fun setModalToFullScreenState(dialog: BottomSheetDialog) =
+        dialog.setOnShowListener { dialogInterface ->
+            (dialogInterface as? BottomSheetDialog)?.let { bottomSheetDialog ->
+                bottomSheetDialog.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
+                    ?.let { bottomSheetView ->
+                        BottomSheetBehavior.from(bottomSheetView).apply {
+                            state = BottomSheetBehavior.STATE_EXPANDED
+                        }
+                    }
+            }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -76,6 +100,18 @@ class SetLinkFragment : BaseBottomSheetFragment() {
             is LinkViewState.Init -> {
                 text.text = state.text
                 link.setText(state.url)
+                if (state.url.isNullOrBlank()) {
+                    enableEditMode()
+                    buttonLink.visible()
+                    buttonUnlink.invisible()
+                } else {
+                    enableReadMode()
+                    buttonLink.invisible()
+                    buttonUnlink.visible()
+                }
+                buttonCancel.setOnClickListener {
+                    vm.onCancelClicked()
+                }
                 buttonLink.setOnClickListener {
                     vm.onLinkButtonClicked(link.text.toString())
                 }
@@ -98,6 +134,31 @@ class SetLinkFragment : BaseBottomSheetFragment() {
                 )
                 dismiss()
             }
+            is LinkViewState.Cancel -> {
+                dismiss()
+            }
+        }
+    }
+
+    private fun enableEditMode() {
+        with(link) {
+            setTextColor(requireContext().color(R.color.black))
+            multilineIme(
+                action = EditorInfo.IME_ACTION_DONE,
+                inputType = TYPE_TEXT_FLAG_MULTI_LINE
+            )
+            setTextIsSelectable(true)
+        }
+    }
+
+    private fun enableReadMode() {
+        with(link) {
+            setTextColor(requireContext().color(R.color.hint_color))
+            inputType = InputType.TYPE_NULL
+            setRawInputType(InputType.TYPE_NULL)
+            maxLines = Integer.MAX_VALUE
+            setHorizontallyScrolling(false)
+            setTextIsSelectable(false)
         }
     }
 

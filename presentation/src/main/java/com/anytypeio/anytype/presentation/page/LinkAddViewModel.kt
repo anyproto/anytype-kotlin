@@ -9,6 +9,7 @@ sealed class LinkViewState {
     data class Init(val text: String, val url: String?) : LinkViewState()
     data class AddLink(val link: String, val range: IntRange) : LinkViewState()
     data class Unlink(val range: IntRange) : LinkViewState()
+    object Cancel : LinkViewState()
 }
 
 class LinkAddViewModel(
@@ -27,6 +28,10 @@ class LinkAddViewModel(
             text = text,
             url = initUrl
         )
+    }
+
+    fun onCancelClicked() {
+        stateData.value = LinkViewState.Cancel
     }
 
     fun onLinkButtonClicked(text: String) {

@@ -64,7 +64,7 @@
         app:layout_constraintTop_toBottomOf="@+id/link" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/buttonUnlink"
+        android:id="@+id/buttonCancel"
         android:layout_width="0dp"
         android:layout_height="@dimen/modal_button_height"
         android:layout_marginStart="20dp"
@@ -74,7 +74,7 @@
         android:background="@drawable/rounded_button_cancel"
         android:fontFamily="@font/inter_regular"
         android:stateListAnimator="@animator/scale_shrink"
-        android:text="@string/button_unlink"
+        android:text="@string/cancel"
         android:textAllCaps="false"
         android:textSize="17sp"
         android:textColor="#2C2B27"
@@ -98,7 +98,25 @@
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toTopOf="@+id/buttonUnlink" />
+        app:layout_constraintTop_toTopOf="@+id/buttonCancel" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonUnlink"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/modal_button_height"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:background="@drawable/rounded_button_add"
+        android:fontFamily="@font/inter_regular"
+        android:stateListAnimator="@animator/scale_shrink"
+        android:textSize="17sp"
+        tools:visibility="invisible"
+        android:text="@string/button_unlink"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/buttonCancel" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"

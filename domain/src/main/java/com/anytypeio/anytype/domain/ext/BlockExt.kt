@@ -72,10 +72,10 @@ fun Content.Text.Mark.rangeIntersection(range: IntRange): Int {
 
 fun Block.getFirstLinkMarkupParam(range: IntRange): String? {
     val marks = this.content.asText().marks
-    return marks.filter { mark -> mark.type == Block.Content.Text.Mark.Type.LINK }
+    return marks.filter { mark -> mark.type == Content.Text.Mark.Type.LINK }
         .firstOrNull { mark: Content.Text.Mark ->
             mark.rangeIntersection(range) > 0
-        }.let { mark: Content.Text.Mark? -> mark?.param as? String }
+        }.let { mark: Content.Text.Mark? -> mark?.param }
 }
 
 fun Block.getSubstring(range: IntRange): String = content.asText().text.substring(range)

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
@@ -35,12 +35,7 @@ class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
 
     @Inject
     lateinit var factory: CreateBookmarkViewModel.Factory
-
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(CreateBookmarkViewModel::class.java)
-    }
+    private val vm by viewModels<CreateBookmarkViewModel> { factory }
 
     companion object {
 
@@ -53,11 +48,6 @@ class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
         ): CreateBookmarkFragment = CreateBookmarkFragment().apply {
             arguments = bundleOf(ARG_TARGET to target)
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyle)
     }
 
     override fun onCreateView(

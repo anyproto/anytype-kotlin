@@ -125,6 +125,10 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         // SETUP
 
+        val style =
+            Block.Content.Text.Style.values().filter { it != Block.Content.Text.Style.TITLE }
+                .random()
+
         val pic = Block(
             id = MockDataFactory.randomUuid(),
             content = Block.Content.File(
@@ -141,7 +145,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
             content = Block.Content.Text(
                 text = "",
                 marks = emptyList(),
-                style = Block.Content.Text.Style.values().random()
+                style = style
             ),
             children = emptyList()
         )
@@ -184,8 +188,12 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         vm.state.test().assertValue { value ->
             check(value is ViewState.Success)
             val last = value.blocks.last()
-            check(last is BlockView.Text)
-            last.text.isEmpty() && last.isFocused
+            check(last is BlockView.Text || last is BlockView.Code)
+            when (last) {
+                is BlockView.Code -> last.text.isEmpty() && last.isFocused
+                is BlockView.Text -> last.text.isEmpty() && last.isFocused
+                else -> throw IllegalStateException()
+            }
         }
     }
 }

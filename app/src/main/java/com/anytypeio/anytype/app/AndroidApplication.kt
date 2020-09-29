@@ -14,6 +14,7 @@ import com.anytypeio.anytype.di.main.ContextModule
 import com.anytypeio.anytype.di.main.DaggerMainComponent
 import com.anytypeio.anytype.di.main.MainComponent
 import com.facebook.stetho.Stetho
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -37,6 +38,7 @@ class AndroidApplication : Application() {
         super.onCreate()
         main.inject(this)
         setupAnalytics()
+        setupCrashlytics()
         setupEmojiCompat()
         setupTimber()
         setupStetho()
@@ -71,5 +73,12 @@ class AndroidApplication : Application() {
         } else {
             Amplitude.getInstance().initialize(this, getString(R.string.amplitude_api_key))
         }
+    }
+
+    private fun setupCrashlytics() {
+        if (BuildConfig.DEBUG)
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
+        else
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
     }
 }

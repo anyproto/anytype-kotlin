@@ -12,6 +12,7 @@
 
 ### Fixes & tech 🚒
 
+* Should focus the last empty text block when clicking under document's blocks (#935)
 * Clicking on empty space before document is loaded should not crash application (#930)
 * Focusing on start may crash application by some users (#931)
 

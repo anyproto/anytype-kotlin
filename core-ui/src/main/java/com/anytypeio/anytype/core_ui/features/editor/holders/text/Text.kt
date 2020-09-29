@@ -65,7 +65,10 @@ abstract class Text(
         }
 
         content.apply {
-            setOnFocusChangeListener { _, hasFocus -> onFocusChanged(item.id, hasFocus) }
+            setOnFocusChangeListener { _, hasFocus ->
+                item.isFocused = hasFocus
+                onFocusChanged(item.id, hasFocus)
+            }
             setOnClickListener { onTextInputClicked(item.id) }
             enableEnterKeyDetector(
                 onSplitLineEnterClicked = { range ->

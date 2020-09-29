@@ -377,7 +377,7 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Document(
             override val id: String,
-            override val isFocused: Boolean,
+            override var isFocused: Boolean,
             override var text: String?,
             val emoji: String? = null,
             override val image: String? = null,
@@ -396,7 +396,7 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Profile(
             override val id: String,
-            override val isFocused: Boolean,
+            override var isFocused: Boolean,
             override var text: String?,
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
@@ -414,7 +414,7 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Archive(
             override val id: String,
-            override val isFocused: Boolean = false,
+            override var isFocused: Boolean = false,
             override var text: String?,
             override val image: String? = null,
             override val mode: Mode = Mode.READ,

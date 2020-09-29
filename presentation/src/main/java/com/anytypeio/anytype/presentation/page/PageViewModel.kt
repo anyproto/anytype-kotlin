@@ -1840,6 +1840,16 @@ class PageViewModel(
                     when {
                         content.style == Content.Text.Style.TITLE -> addNewBlockAtTheEnd()
                         content.text.isNotEmpty() -> addNewBlockAtTheEnd()
+                        content.text.isEmpty() -> {
+                            val stores = orchestrator.stores
+                            if (stores.focus.current().isEmpty) {
+                                val focus = Editor.Focus(id = last.id, cursor = null)
+                                viewModelScope.launch { orchestrator.stores.focus.update(focus) }
+                                viewModelScope.launch { refresh() }
+                            } else {
+                                Timber.d("Outside click is ignored because focus is not empty")
+                            }
+                        }
                         else -> Timber.d("Outside-click has been ignored.")
                     }
                 }
@@ -1865,7 +1875,7 @@ class PageViewModel(
     fun onHideKeyboardClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
-        viewModelScope.launch { renderCommand.send(Unit) }
+        viewModelScope.launch { refresh() }
     }
 
     private fun proceedWithClearingFocus() {

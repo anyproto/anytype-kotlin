@@ -1869,57 +1869,6 @@ open class PageViewModelTest {
     }
 
     @Test
-    fun `should create a new paragraph on outside-clicked event if page contains only title and icon`() {
-
-        val root = MockDataFactory.randomUuid()
-        val child = MockDataFactory.randomUuid()
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child,
-            style = Block.Content.Text.Style.TITLE
-        )
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        stubCreateBlock(root)
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        vm.onOutsideClicked()
-
-        runBlockingTest {
-            verify(createBlock, times(1)).invoke(
-                params = eq(
-                    CreateBlock.Params(
-                        context = root,
-                        target = "",
-                        position = Position.INNER,
-                        prototype = Block.Prototype.Text(
-                            style = Block.Content.Text.Style.P
-                        )
-                    )
-                )
-            )
-        }
-    }
-
-    @Test
     fun `should start updating text style of the focused block on turn-into-option-clicked event`() {
 
         val root = MockDataFactory.randomUuid()
@@ -1976,52 +1925,6 @@ open class PageViewModelTest {
                 )
             )
         }
-    }
-
-    @Test
-    fun `should clear focus internally and re-render on hide-keyboard event`() {
-
-        val root = MockDataFactory.randomUuid()
-        val child = MockDataFactory.randomUuid()
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child,
-            style = Block.Content.Text.Style.TITLE
-        )
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        val testObserver = vm.focus.test()
-
-        vm.onBlockFocusChanged(
-            id = child,
-            hasFocus = true
-        )
-
-        testObserver.assertValue(child)
-
-        vm.onHideKeyboardClicked()
-
-        testObserver.assertValue(PageViewModel.EMPTY_FOCUS_ID)
     }
 
     @Test
@@ -2206,61 +2109,6 @@ open class PageViewModelTest {
                         targets = listOf(secondChild),
                         style = Block.Content.Text.Style.P,
                         context = root
-                    )
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `should create a new paragraph on outside-clicked event if the last block is a link block`() {
-
-        val root = MockDataFactory.randomUuid()
-        val firstChild = MockDataFactory.randomUuid()
-        val secondChild = MockDataFactory.randomUuid()
-
-        val page = MockBlockFactory.makeOnePageWithTitleAndOnePageLinkBlock(
-            rootId = root,
-            titleBlockId = firstChild,
-            pageBlockId = secondChild
-        )
-
-        val startDelay = 100L
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(startDelay)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        stubCreateBlock(root)
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(startDelay)
-
-        vm.onOutsideClicked()
-
-        runBlockingTest {
-            verify(createBlock, times(1)).invoke(
-                params = eq(
-                    CreateBlock.Params(
-                        target = "",
-                        context = root,
-                        position = Position.INNER,
-                        prototype = Block.Prototype.Text(
-                            style = Block.Content.Text.Style.P
-                        )
                     )
                 )
             )

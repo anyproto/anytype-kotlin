@@ -13,6 +13,7 @@
 
 ### Fixes & tech 🚒
 
+* New state handling for errors (observable subject) (#943)
 * Remove flickering effect when opening navigation screen (#941)
 * Disable Crashlytics crash reporting for debug builds (#940)
 * Should focus the last empty text block when clicking under document's blocks (#935)

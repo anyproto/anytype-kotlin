@@ -65,4 +65,6 @@ sealed class Command {
     ) : Command()
 
     object OpenDocumentMenu : Command()
+
+    object AlertDialog : Command()
 }

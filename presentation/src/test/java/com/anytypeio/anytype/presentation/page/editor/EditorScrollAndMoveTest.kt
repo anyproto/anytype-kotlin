@@ -13,10 +13,14 @@ import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verifyBlocking
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import kotlin.test.assertEquals
 
 
 class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
@@ -590,25 +594,42 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.apply {
-            onBlockFocusChanged(
-                id = parent.id,
-                hasFocus = true
+        val toasts = mutableListOf<String>()
+
+        runBlockingTest {
+
+            val subscription = launch { vm.toasts.collect { toasts.add(it) } }
+
+            vm.apply {
+                onBlockFocusChanged(
+                    id = parent.id,
+                    hasFocus = true
+                )
+                onEnterMultiSelectModeClicked()
+                onTextInputClicked(parent.id)
+                onEnterScrollAndMoveClicked()
+                onApplyScrollAndMove(
+                    target = child.id,
+                    ratio = 0.5f
+                )
+            }
+
+            verifyZeroInteractions(move)
+
+            assertEquals(
+                expected = 1,
+                actual = toasts.size
             )
-            onEnterMultiSelectModeClicked()
-            onTextInputClicked(parent.id)
-            onEnterScrollAndMoveClicked()
-            onApplyScrollAndMove(
-                target = child.id,
-                ratio = 0.5f
+
+            assertEquals(
+                expected = PageViewModel.CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR,
+                actual = toasts.first()
             )
+
+            clearPendingCoroutines()
+
+            subscription.cancel()
         }
-
-        verifyZeroInteractions(move)
-
-        vm.error.test().assertValue(ErrorViewState.Toast(PageViewModel.CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR))
-
-        clearPendingCoroutines()
     }
 
     @Test
@@ -668,28 +689,45 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         vm.onStart(root)
 
+        val toasts = mutableListOf<String>()
+
         // TESTING
 
-        vm.apply {
-            onBlockFocusChanged(
-                id = parent.id,
-                hasFocus = true
+        runBlockingTest {
+
+            val subscription = launch { vm.toasts.collect { toasts.add(it) } }
+
+            vm.apply {
+                onBlockFocusChanged(
+                    id = parent.id,
+                    hasFocus = true
+                )
+                onEnterMultiSelectModeClicked()
+                onTextInputClicked(parent.id)
+                onTextInputClicked(block.id)
+                onEnterScrollAndMoveClicked()
+                onApplyScrollAndMove(
+                    target = child.id,
+                    ratio = 0.5f
+                )
+            }
+
+            verifyZeroInteractions(move)
+
+            assertEquals(
+                expected = 1,
+                actual = toasts.size
             )
-            onEnterMultiSelectModeClicked()
-            onTextInputClicked(parent.id)
-            onTextInputClicked(block.id)
-            onEnterScrollAndMoveClicked()
-            onApplyScrollAndMove(
-                target = child.id,
-                ratio = 0.5f
+
+            assertEquals(
+                expected = PageViewModel.CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR,
+                actual = toasts.first()
             )
+
+            clearPendingCoroutines()
+
+            subscription.cancel()
         }
-
-        verifyZeroInteractions(move)
-
-        vm.error.test().assertValue(ErrorViewState.Toast(PageViewModel.CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR))
-
-        clearPendingCoroutines()
     }
 
     private fun clearPendingCoroutines() {

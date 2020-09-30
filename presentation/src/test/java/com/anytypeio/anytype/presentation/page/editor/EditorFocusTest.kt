@@ -91,13 +91,17 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         // SETUP
 
+        val style =
+            Block.Content.Text.Style.values().filter { it != Block.Content.Text.Style.TITLE }
+                .random()
+
         val block = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Text(
                 text = "",
                 marks = emptyList(),
-                style = Block.Content.Text.Style.values().random()
+                style = style
             ),
             children = emptyList()
         )

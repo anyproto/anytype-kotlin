@@ -64,7 +64,6 @@ import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.PageViewModelFactory
 import com.anytypeio.anytype.presentation.page.editor.Command
-import com.anytypeio.anytype.presentation.page.editor.ErrorViewState
 import com.anytypeio.anytype.presentation.page.editor.ViewState
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
@@ -548,7 +547,7 @@ open class PageFragment :
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         vm.controlPanelViewState.observe(viewLifecycleOwner, { render(it) })
         vm.commands.observe(viewLifecycleOwner, { execute(it) })
-        vm.error.observe(viewLifecycleOwner, { renderError(it) })
+        vm.toasts.onEach { toast(it) }.launchIn(lifecycleScope)
     }
 
     override fun onDestroyView() {
@@ -703,6 +702,12 @@ open class PageFragment :
                         onUndoClicked = vm::onActionUndoClicked,
                         onEnterMultiSelect = vm::onEnterMultiSelectModeClicked
                     ).show()
+                }
+                is Command.AlertDialog -> {
+                    if (childFragmentManager.findFragmentByTag(TAG_ALERT) == null) {
+                        AlertUpdateAppFragment().show(childFragmentManager, TAG_ALERT)
+                    } else {
+                    }
                 }
             }
         }
@@ -1022,17 +1027,6 @@ open class PageFragment :
         return requireArguments()
             .getString(ID_KEY)
             ?: throw IllegalStateException("Document id missing")
-    }
-
-    private fun renderError(state: ErrorViewState) {
-        when (state) {
-            is ErrorViewState.Toast -> toast(state.msg)
-            ErrorViewState.AlertDialog -> {
-                if (childFragmentManager.findFragmentByTag(TAG_ALERT) == null) {
-                    AlertUpdateAppFragment().show(childFragmentManager, TAG_ALERT)
-                }
-            }
-        }
     }
 
     private fun processScrollAndMoveStateChanges() {

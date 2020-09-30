@@ -140,8 +140,8 @@ class PageViewModel(
     private val _focus: MutableLiveData<Id> = MutableLiveData()
     val focus: LiveData<Id> = _focus
 
-    private val _error: MutableLiveData<ErrorViewState> = MutableLiveData()
-    val error: LiveData<ErrorViewState> = _error
+    private val _toasts: Channel<String> = Channel()
+    val toasts: Flow<String> get() = _toasts.consumeAsFlow()
 
     /**
      * Open gallery and search media files for block with that id
@@ -213,9 +213,7 @@ class PageViewModel(
         viewModelScope.launch {
             orchestrator.proxies.errors
                 .stream()
-                .collect {
-                    _error.value = ErrorViewState.Toast(it.message ?: "Unknown error")
-                }
+                .collect { _toasts.offer(it.message ?: "Unknown error") }
         }
     }
 
@@ -487,7 +485,7 @@ class PageViewModel(
                         is Result.Failure -> {
                             session.value = Session.ERROR
                             if (result.error is Error.BackwardCompatibility)
-                                _error.value = ErrorViewState.AlertDialog
+                                dispatch(Command.AlertDialog)
                         }
                     }
                 },
@@ -1154,7 +1152,7 @@ class PageViewModel(
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Rename -> {
-                _error.value = ErrorViewState.Toast("Rename not implemented")
+                _toasts.offer("Rename not implemented")
             }
             ActionItemType.MoveTo -> {
                 onExitActionMode()
@@ -1197,13 +1195,13 @@ class PageViewModel(
                 }
             }
             ActionItemType.Replace -> {
-                _error.value = ErrorViewState.Toast("Replace not implemented")
+                _toasts.offer("Replace not implemented")
             }
             ActionItemType.AddCaption -> {
-                _error.value = ErrorViewState.Toast("Add caption not implemented")
+                _toasts.offer("Add caption not implemented")
             }
             ActionItemType.Divider -> {
-                _error.value = ErrorViewState.Toast("not implemented")
+                _toasts.offer("not implemented")
             }
         }
     }
@@ -1509,7 +1507,7 @@ class PageViewModel(
 
     fun onBlockToolbarStyleClicked() {
         if (orchestrator.stores.focus.current().id == context) {
-            _error.value = ErrorViewState.Toast("Changing style for title currently not supported")
+            _toasts.offer("Changing style for title currently not supported")
         } else {
             val textSelection = orchestrator.stores.textSelection.current()
             controlPanelInteractor.onEvent(
@@ -1532,7 +1530,7 @@ class PageViewModel(
 
     fun onBlockToolbarBlockActionsClicked() {
         if (orchestrator.stores.focus.current().id == context) {
-            _error.value = ErrorViewState.Toast("Not implemented for title")
+            _toasts.offer("Not implemented for title")
         } else {
             dispatch(
                 Command.Measure(
@@ -1756,7 +1754,7 @@ class PageViewModel(
                 dispatch(Command.OpenMultiSelectTurnIntoPanel(excludedCategories, excludedTypes))
             }
             else -> {
-                _error.value = ErrorViewState.Toast("Cannot turn selected blocks into other blocks")
+                _toasts.offer("Cannot turn selected blocks into other blocks")
             }
         }
 
@@ -1818,7 +1816,7 @@ class PageViewModel(
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
             proceedWithTurningIntoDocument(targets)
         } else {
-            _error.value = ErrorViewState.Toast("Cannot convert selected blocks to $block")
+            _toasts.offer("Cannot convert selected blocks to $block")
         }
     }
 
@@ -2206,19 +2204,19 @@ class PageViewModel(
         val selected = currentSelection().toList()
 
         if (selected.contains(target)) {
-            _error.value = ErrorViewState.Toast(CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR)
+            _toasts.offer(CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR)
             return
         }
 
         if (selected.contains(parent)) {
-            _error.value = ErrorViewState.Toast(CANNOT_MOVE_PARENT_INTO_CHILD)
+            _toasts.offer(CANNOT_MOVE_PARENT_INTO_CHILD)
             return
         }
 
         if (position == Position.INNER) {
 
             if (!targetBlock.supportNesting()) {
-                _error.value = ErrorViewState.Toast(CANNOT_BE_PARENT_ERROR)
+                _toasts.offer(CANNOT_BE_PARENT_ERROR)
                 return
             }
 
@@ -2528,7 +2526,7 @@ class PageViewModel(
 
     fun startDownloadingFile(id: String) {
 
-        _error.value = ErrorViewState.Toast("Downloading file in background...")
+        _toasts.offer("Downloading file in background...")
 
         val block = blocks.first { it.id == id }
         val file = block.content<Content.File>()

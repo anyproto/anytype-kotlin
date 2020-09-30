@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_ui.widgets.ActionItemType
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.event.model.Event
 import com.anytypeio.anytype.domain.ext.content
-import com.anytypeio.anytype.presentation.page.editor.ErrorViewState
 import com.anytypeio.anytype.presentation.page.editor.ViewState
 import com.jraska.livedata.test
 import kotlinx.coroutines.delay
@@ -391,117 +390,5 @@ class BlockReadModeTest : PageViewModelTest() {
                 )
             )
         }
-    }
-
-    @Test
-    fun `should show error after action menu is closed by action item add caption`() {
-
-        val paragraphs = blocks
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        // TESTING
-
-        vm.onClickListener(
-            clicked = ListenerType.LongClick(
-                target = paragraphs[1].id,
-                dimensions = BlockDimensions(0, 0, 0, 0, 0, 0)
-            )
-        )
-
-        vm.onActionMenuItemClicked(id = paragraphs[1].id, action = ActionItemType.AddCaption)
-
-        val testObserver = vm.error.test()
-
-        testObserver.assertValue(ErrorViewState.Toast("Add caption not implemented"))
-    }
-
-    @Test
-    fun `should show error after action menu is closed by action item replace`() {
-
-        val paragraphs = blocks
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        // TESTING
-
-        vm.onClickListener(
-            clicked = ListenerType.LongClick(
-                target = paragraphs[1].id,
-                dimensions = BlockDimensions(0, 0, 0, 0, 0, 0)
-            )
-        )
-
-        vm.onActionMenuItemClicked(id = paragraphs[1].id, action = ActionItemType.Replace)
-
-        val testObserver = vm.error.test()
-
-        testObserver.assertValue(ErrorViewState.Toast("Replace not implemented"))
-    }
-
-    @Test
-    fun `should show error after action menu is closed by action item rename`() {
-
-        val paragraphs = blocks
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        // TESTING
-
-        vm.onClickListener(
-            clicked = ListenerType.LongClick(
-                target = paragraphs[1].id,
-                dimensions = BlockDimensions(0, 0, 0, 0, 0, 0)
-            )
-        )
-
-        vm.onActionMenuItemClicked(id = paragraphs[1].id, action = ActionItemType.Rename)
-
-        val testObserver = vm.error.test()
-
-        testObserver.assertValue(ErrorViewState.Toast("Rename not implemented"))
-    }
-
-    @Test
-    fun `should not show error after action menu is closed by action item move to`() {
-
-        val paragraphs = blocks
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        // TESTING
-
-        vm.onClickListener(
-            clicked = ListenerType.LongClick(
-                target = paragraphs[1].id,
-                dimensions = BlockDimensions(0, 0, 0, 0, 0, 0)
-            )
-        )
-
-        vm.onActionMenuItemClicked(id = paragraphs[1].id, action = ActionItemType.MoveTo)
-
-        val testObserver = vm.error.test()
-
-        testObserver.assertNoValue()
     }
 }

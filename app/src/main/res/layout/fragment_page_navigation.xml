@@ -56,6 +56,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <include
+        android:visibility="invisible"
         android:id="@+id/pagePreviewSmall"
         layout="@layout/view_page_navigation_open_bottom"
         android:layout_width="match_parent"

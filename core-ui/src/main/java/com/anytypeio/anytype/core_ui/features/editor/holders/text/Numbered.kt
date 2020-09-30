@@ -33,6 +33,7 @@ class Numbered(
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
+        onMentionEvent: (MentionEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
@@ -55,6 +56,7 @@ class Numbered(
         onTextInputClicked = onTextInputClicked
     ).also {
         setNumber(item)
+        setupMentionWatcher(onMentionEvent)
     }
 
     private fun setNumber(item: BlockView.Text.Numbered) {

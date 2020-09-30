@@ -4,10 +4,7 @@ import android.text.Editable
 import android.view.View
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.features.page.BlockView
-import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
-import com.anytypeio.anytype.core_ui.features.page.ListenerType
-import com.anytypeio.anytype.core_ui.features.page.marks
+import com.anytypeio.anytype.core_ui.features.page.*
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -34,6 +31,7 @@ class Highlight(
         onFocusChanged: (String, Boolean) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
+        onMentionEvent: (MentionEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
@@ -54,7 +52,9 @@ class Highlight(
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
         onTextInputClicked = onTextInputClicked
-    )
+    ).also {
+        setupMentionWatcher(onMentionEvent)
+    }
 
     override fun select(item: BlockView.Selectable) {
         container.isSelected = item.isSelected

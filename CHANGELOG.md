@@ -5,6 +5,7 @@
 ### New features 🚀
 
 * Code block in multi-select and scroll-and-move modes (#892)
+* Enable mentions for all text blocks (except code block) (#939)
 
 ### Design & UX 🔳
 

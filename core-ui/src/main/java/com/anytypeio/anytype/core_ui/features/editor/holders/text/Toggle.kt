@@ -35,6 +35,7 @@ class Toggle(
         onToggleClicked: (String) -> Unit,
         onTogglePlaceholderClicked: (String) -> Unit,
         clicked: (ListenerType) -> Unit,
+        onMentionEvent: (MentionEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
@@ -68,6 +69,7 @@ class Toggle(
         toggle.setOnClickListener {
             if (mode == BlockView.Mode.EDIT) onToggleClicked(item.id)
         }
+        setupMentionWatcher(onMentionEvent)
     }
 
     override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {

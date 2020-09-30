@@ -7,10 +7,7 @@ import android.widget.ImageView
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.color
-import com.anytypeio.anytype.core_ui.features.page.BlockView
-import com.anytypeio.anytype.core_ui.features.page.ListenerType
-import com.anytypeio.anytype.core_ui.features.page.SupportNesting
-import com.anytypeio.anytype.core_ui.features.page.marks
+import com.anytypeio.anytype.core_ui.features.page.*
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
@@ -38,6 +35,7 @@ class Checkbox(
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
+        onMentionEvent: (MentionEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
@@ -66,6 +64,7 @@ class Checkbox(
             isSelected = checkbox.isActivated
         )
         setCheckboxClickListener(item, onCheckboxClicked)
+        setupMentionWatcher(onMentionEvent)
     }
 
     private fun setCheckboxClickListener(

@@ -20,6 +20,7 @@ abstract class Header(
         onFocusChanged: (String, Boolean) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
+        onMentionEvent: (MentionEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
@@ -40,7 +41,9 @@ abstract class Header(
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
         onTextInputClicked = onTextInputClicked
-    )
+    ).also {
+        setupMentionWatcher(onMentionEvent)
+    }
 
     override fun indentize(item: BlockView.Indentable) {
         header.updatePadding(

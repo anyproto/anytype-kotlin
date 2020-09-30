@@ -79,12 +79,13 @@ class DefaultBlockViewRenderer(
                             counter.inc()
                             result.add(
                                 numbered(
-                                    mode,
-                                    block,
-                                    content,
-                                    counter.current(),
-                                    focus,
-                                    indent
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    number = counter.current(),
+                                    focus = focus,
+                                    indent = indent,
+                                    details = details
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -109,7 +110,8 @@ class DefaultBlockViewRenderer(
                                     content = content,
                                     indent = indent,
                                     isEmpty = block.children.isEmpty(),
-                                    focus = focus
+                                    focus = focus,
+                                    details = details
                                 )
                             )
                             if (toggleStateHolder.isToggled(block.id)) {
@@ -127,7 +129,16 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.H1 -> {
                             counter.reset()
-                            result.add(headerOne(mode, block, focus, content, indent))
+                            result.add(
+                                headerOne(
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    focus = focus,
+                                    indent = indent,
+                                    details = details
+                                )
+                            )
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
@@ -143,7 +154,16 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.H2 -> {
                             counter.reset()
-                            result.add(headerTwo(mode, block, focus, content, indent))
+                            result.add(
+                                headerTwo(
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    focus = focus,
+                                    indent = indent,
+                                    details = details
+                                )
+                            )
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
@@ -159,7 +179,16 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.H3, Content.Text.Style.H4 -> {
                             counter.reset()
-                            result.add(headerThree(mode, block, focus, content, indent))
+                            result.add(
+                                headerThree(
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    focus = focus,
+                                    indent = indent,
+                                    details = details
+                                )
+                            )
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
@@ -175,7 +204,16 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.QUOTE -> {
                             counter.reset()
-                            result.add(highlight(mode, block, focus, content, indent))
+                            result.add(
+                                highlight(
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    focus = focus,
+                                    indent = indent,
+                                    details = details
+                                )
+                            )
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
@@ -191,7 +229,16 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.BULLET -> {
                             counter.reset()
-                            result.add(bulleted(mode, block, content, focus, indent))
+                            result.add(
+                                bulleted(
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    focus = focus,
+                                    indent = indent,
+                                    details = details
+                                )
+                            )
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
@@ -207,7 +254,16 @@ class DefaultBlockViewRenderer(
                         }
                         Content.Text.Style.CHECKBOX -> {
                             counter.reset()
-                            result.add(checkbox(mode, block, content, focus, indent))
+                            result.add(
+                                checkbox(
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    focus = focus,
+                                    indent = indent,
+                                    details = details
+                                )
+                            )
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
@@ -376,14 +432,15 @@ class DefaultBlockViewRenderer(
         block: Block,
         focus: Focus,
         content: Content.Text,
-        indent: Int
+        indent: Int,
+        details: Block.Details
     ): BlockView.Text.Header.Three = BlockView.Text.Header.Three(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         color = content.color,
         isFocused = block.id == focus.id,
-        marks = content.marks(),
+        marks = content.marks(details = details, urlBuilder = urlBuilder),
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
@@ -395,14 +452,15 @@ class DefaultBlockViewRenderer(
         block: Block,
         focus: Focus,
         content: Content.Text,
-        indent: Int
+        indent: Int,
+        details: Block.Details
     ): BlockView.Text.Header.Two = BlockView.Text.Header.Two(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         color = content.color,
         isFocused = block.id == focus.id,
-        marks = content.marks(),
+        marks = content.marks(details = details, urlBuilder = urlBuilder),
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
@@ -414,14 +472,15 @@ class DefaultBlockViewRenderer(
         block: Block,
         focus: Focus,
         content: Content.Text,
-        indent: Int
+        indent: Int,
+        details: Block.Details
     ): BlockView.Text.Header.One = BlockView.Text.Header.One(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         color = content.color,
         isFocused = block.id == focus.id,
-        marks = content.marks(),
+        marks = content.marks(details = details, urlBuilder = urlBuilder),
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
@@ -433,12 +492,13 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Text,
         focus: Focus,
-        indent: Int
+        indent: Int,
+        details: Block.Details
     ): BlockView.Text.Checkbox = BlockView.Text.Checkbox(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
-        marks = content.marks(),
+        marks = content.marks(details = details, urlBuilder = urlBuilder),
         isChecked = content.isChecked == true,
         color = content.color,
         backgroundColor = content.backgroundColor,
@@ -452,13 +512,14 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Text,
         focus: Focus,
-        indent: Int
+        indent: Int,
+        details: Block.Details
     ): BlockView.Text.Bulleted = BlockView.Text.Bulleted(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         indent = indent,
-        marks = content.marks(),
+        marks = content.marks(details = details, urlBuilder = urlBuilder),
         isFocused = block.id == focus.id,
         color = content.color,
         backgroundColor = content.backgroundColor,
@@ -484,13 +545,14 @@ class DefaultBlockViewRenderer(
         block: Block,
         focus: Focus,
         content: Content.Text,
-        indent: Int
+        indent: Int,
+        details: Block.Details
     ): BlockView.Text.Highlight = BlockView.Text.Highlight(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         isFocused = block.id == focus.id,
         text = content.text,
-        marks = content.marks(),
+        marks = content.marks(details = details, urlBuilder = urlBuilder),
         indent = indent,
         color = content.color,
         backgroundColor = content.backgroundColor,
@@ -503,12 +565,13 @@ class DefaultBlockViewRenderer(
         content: Content.Text,
         indent: Int,
         focus: Focus,
-        isEmpty: Boolean
+        isEmpty: Boolean,
+        details: Block.Details
     ): BlockView.Text.Toggle = BlockView.Text.Toggle(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
-        marks = content.marks(),
+        marks = content.marks(details = details, urlBuilder = urlBuilder),
         color = content.color,
         backgroundColor = content.backgroundColor,
         indent = indent,
@@ -524,7 +587,8 @@ class DefaultBlockViewRenderer(
         content: Content.Text,
         number: Int,
         focus: Focus,
-        indent: Int
+        indent: Int,
+        details: Block.Details
     ): BlockView.Text.Numbered = BlockView.Text.Numbered(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -534,7 +598,7 @@ class DefaultBlockViewRenderer(
         color = content.color,
         backgroundColor = content.backgroundColor,
         indent = indent,
-        marks = content.marks(),
+        marks = content.marks(details = details, urlBuilder = urlBuilder),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null
     )
 

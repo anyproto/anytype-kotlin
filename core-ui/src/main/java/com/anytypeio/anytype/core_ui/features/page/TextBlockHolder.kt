@@ -171,14 +171,7 @@ interface TextBlockHolder : TextHolder {
 
         if (payload.textChanged()) {
             content.pauseTextWatchers {
-                when (item) {
-                    is BlockView.Text.Paragraph -> {
-                        setBlockText(text = item.text, markup = item, clicked = clicked)
-                    }
-                    else -> {
-                        content.setText(item.toSpannable(), TextView.BufferType.SPANNABLE)
-                    }
-                }
+                setBlockText(text = item.text, markup = item, clicked = clicked)
             }
         } else if (payload.markupChanged()) {
             setMarkup(item, clicked)

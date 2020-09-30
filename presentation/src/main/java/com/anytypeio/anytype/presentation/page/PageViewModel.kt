@@ -55,6 +55,7 @@ import com.anytypeio.anytype.domain.ext.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
 import com.anytypeio.anytype.presentation.mapper.mark
@@ -1950,7 +1951,10 @@ class PageViewModel(
     }
 
     private suspend fun refresh() {
-        Timber.d("Refreshing: $blocks")
+        if (BuildConfig.DEBUG) {
+            Timber.d("----------Refreshing Blocks---------------------\n$blocks")
+            Timber.d("----------Finished Refreshing Blocks------------")
+        }
         renderizePipeline.send(blocks)
     }
 

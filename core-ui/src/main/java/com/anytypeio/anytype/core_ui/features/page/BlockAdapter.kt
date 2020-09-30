@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.BookmarkError
@@ -627,6 +628,7 @@ class BlockAdapter(
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
+                    onMentionEvent = onMentionEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -640,6 +642,7 @@ class BlockAdapter(
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
+                    onMentionEvent = onMentionEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -653,6 +656,7 @@ class BlockAdapter(
                     onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
+                    onMentionEvent = onMentionEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -667,6 +671,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
+                    onMentionEvent = onMentionEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -680,6 +685,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
+                    onMentionEvent = onMentionEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -693,6 +699,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
+                    onMentionEvent = onMentionEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -708,6 +715,7 @@ class BlockAdapter(
                     onTogglePlaceholderClicked = onTogglePlaceholderClicked,
                     onToggleClicked = onToggleClicked,
                     clicked = onClickListener,
+                    onMentionEvent = onMentionEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -720,6 +728,7 @@ class BlockAdapter(
                     onTextBlockTextChanged = onTextBlockTextChanged,
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
+                    onMentionEvent = onMentionEvent,
                     onSelectionChanged = onSelectionChanged,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
@@ -921,15 +930,16 @@ class BlockAdapter(
         message = "Consider RecyclerView's AsyncListDiffer instead. Or implement it with Kotlin coroutines."
     )
     fun updateWithDiffUtil(items: List<BlockView>) {
-        logDataSetUpdateEvent(items)
+        if (BuildConfig.DEBUG) {
+            logDataSetUpdateEvent(items)
+        }
         val result = DiffUtil.calculateDiff(BlockViewDiffUtil(old = blocks, new = items))
         blocks = items
         result.dispatchUpdatesTo(this)
     }
 
     private fun logDataSetUpdateEvent(items: List<BlockView>) {
-        Timber.d("----------Updating------------")
-        items.forEach { Timber.d(it.toString()) }
-        Timber.d("----------Finished------------")
+        Timber.d("----------Updating BlockView---------------------\n$items")
+        Timber.d("----------Finished Updating BlockView------------")
     }
 }

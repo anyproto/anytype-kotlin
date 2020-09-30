@@ -15,10 +15,10 @@ import timber.log.Timber
 import java.lang.ref.WeakReference
 
 class MentionSpan constructor(
-    private val emoji: String? = null,
-    private val image: String? = null,
+    emoji: String? = null,
+    image: String? = null,
     private val onImageResourceReady: (String) -> Unit = {},
-    private val context: Context,
+    context: Context,
     private val placeholder: Drawable,
     private var imageSize: Int,
     private var imagePadding: Int,

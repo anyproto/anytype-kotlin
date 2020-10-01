@@ -492,7 +492,8 @@ fun EventEntity.toDomain(): Event {
                 color = color,
                 backgroundColor = backgroundColor,
                 marks = marks?.map { it.toDomain() },
-                alignment = alignment?.toDomain()
+                alignment = alignment?.toDomain(),
+                checked = checked
             )
         }
         is EventEntity.Command.LinkGranularChange -> {

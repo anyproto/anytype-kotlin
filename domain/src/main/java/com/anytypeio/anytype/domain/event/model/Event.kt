@@ -60,7 +60,8 @@ sealed class Event {
             val color: String? = null,
             val backgroundColor: String? = null,
             val marks: List<Text.Mark>? = null,
-            val alignment: Block.Align? = null
+            val alignment: Block.Align? = null,
+            val checked: Boolean? = null
         ) : Command()
 
         /**

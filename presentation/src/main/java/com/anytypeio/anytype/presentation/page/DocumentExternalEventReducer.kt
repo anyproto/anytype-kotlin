@@ -41,6 +41,7 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
                             backgroundColor = event.backgroundColor ?: content.backgroundColor,
                             text = event.text ?: content.text,
                             marks = event.marks ?: content.marks,
+                            isChecked = event.checked ?: content.isChecked,
                             align = event.alignment
                         )
                     )

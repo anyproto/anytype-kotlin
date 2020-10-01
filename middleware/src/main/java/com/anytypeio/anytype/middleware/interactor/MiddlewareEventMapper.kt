@@ -60,6 +60,10 @@ fun Event.Message.toEntity(
             marks = if (blockSetText.hasMarks())
                 blockSetText.marks.value.marksList.marks()
             else
+                null,
+            checked = if (blockSetText.hasChecked())
+                blockSetText.checked.value
+            else
                 null
         )
     }

@@ -178,7 +178,8 @@ interface TextBlockHolder : TextHolder {
         }
 
         if (payload.textColorChanged()) {
-            item.color?.let { setTextColor(it) }
+            val color = item.color ?: ThemeColor.DEFAULT.title
+            setTextColor(color)
         }
 
         if (payload.backgroundColorChanged()) {

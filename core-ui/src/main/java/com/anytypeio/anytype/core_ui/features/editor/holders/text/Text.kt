@@ -101,7 +101,7 @@ abstract class Text(
         setBlockText(text = item.text, markup = item, clicked = clicked)
     }
 
-    fun setStyle(item: BlockView.TextBlockProps) {
+    private fun setStyle(item: BlockView.TextBlockProps) {
         val color = item.color
         if (color != null) {
             setTextColor(color)

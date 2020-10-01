@@ -18,7 +18,7 @@ class Bulleted(
 ) : Text(view), SupportNesting {
 
     val indent: View = itemView.bulletIndent
-    private val bullet = itemView.bullet
+    val bullet = itemView.bullet
     private val container = itemView.bulletBlockContainer
     override val content: TextInputWidget = itemView.bulletedListContent
     override val root: View = itemView
@@ -67,11 +67,8 @@ class Bulleted(
 
     override fun setTextColor(color: String) {
         super.setTextColor(color)
-        bullet.setColorFilter(
-            ThemeColor.values().first { value ->
-                value.title == color
-            }.text
-        )
+        val code = ThemeColor.values().find { value -> value.title == color }
+        if (code != null) bullet.setColorFilter(code.text)
     }
 
     override fun setTextColor(color: Int) {

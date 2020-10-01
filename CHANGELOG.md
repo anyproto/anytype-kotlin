@@ -13,6 +13,7 @@
 
 ### Fixes & tech 🚒
 
+* Set default text color if value is not present when processing text color's granular change (#946)
 * Include checked/unchecked changes in granular-change-update mechanism (#945)
 * New state handling for errors (observable subject) (#943)
 * Remove flickering effect when opening navigation screen (#941)

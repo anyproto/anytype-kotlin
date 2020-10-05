@@ -25,7 +25,8 @@ abstract class Text(
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onTextInputClicked: (String) -> Unit
+        onTextInputClicked: (String) -> Unit,
+        onBackPressedCallback: (() -> Boolean)? = null
     ) {
 
         indentize(item)
@@ -60,7 +61,8 @@ abstract class Text(
                 item = item,
                 clicked = clicked,
                 onTextChanged = onTextChanged,
-                onSelectionChanged = onSelectionChanged
+                onSelectionChanged = onSelectionChanged,
+                onBackPressedCallback = onBackPressedCallback
             )
         }
 
@@ -115,7 +117,8 @@ abstract class Text(
         item: BlockView.TextBlockProps,
         clicked: (ListenerType) -> Unit,
         onTextChanged: (String, Editable) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit
+        onSelectionChanged: (String, IntRange) -> Unit,
+        onBackPressedCallback: (() -> Boolean)? = null
     ) {
 
         content.apply {
@@ -136,6 +139,8 @@ abstract class Text(
             selectionWatcher = {
                 onSelectionChanged(item.id, it)
             }
+
+            backButtonWatcher = onBackPressedCallback
         }
     }
 

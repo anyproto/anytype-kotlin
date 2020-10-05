@@ -37,7 +37,8 @@ class Bulleted(
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onTextInputClicked: (String) -> Unit
+        onTextInputClicked: (String) -> Unit,
+        onBackPressedCallback: () -> Boolean
     ) = super.bind(
         item = item,
         onTextChanged = { _, editable ->
@@ -53,7 +54,8 @@ class Bulleted(
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onTextInputClicked = onTextInputClicked
+        onTextInputClicked = onTextInputClicked,
+        onBackPressedCallback = onBackPressedCallback
     ).also {
         setupMentionWatcher(onMentionEvent)
     }

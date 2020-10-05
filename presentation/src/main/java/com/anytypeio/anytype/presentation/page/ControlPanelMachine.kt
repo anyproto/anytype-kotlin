@@ -509,7 +509,7 @@ sealed class ControlPanelMachine {
                 mentionToolbar = state.mentionToolbar.copy(
                     isVisible = false,
                     cursorCoordinate = null,
-                    updateList = true,
+                    updateList = false,
                     mentionFrom = null,
                     mentionFilter = null,
                     mentions = emptyList()

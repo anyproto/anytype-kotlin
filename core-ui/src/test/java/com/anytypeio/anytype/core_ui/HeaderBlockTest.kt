@@ -376,7 +376,8 @@ class HeaderBlockTest {
             onTitleTextInputClicked = {},
             onClickListener = {},
             clipboardInterceptor = clipboardInterceptor,
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onBackPressedCallback = { false }
         )
     }
 }

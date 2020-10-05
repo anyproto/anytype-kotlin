@@ -86,7 +86,8 @@ class BlockAdapter(
     private val onToggleClicked: (String) -> Unit,
     private val onContextMenuStyleClick: (IntRange) -> Unit,
     private val clipboardInterceptor: ClipboardInterceptor,
-    private val onMentionEvent: (MentionEvent) -> Unit
+    private val onMentionEvent: (MentionEvent) -> Unit,
+    private val onBackPressedCallback: () -> Boolean
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     val views: List<BlockView> get() = blocks
@@ -618,7 +619,8 @@ class BlockAdapter(
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked
+                    onTextInputClicked = onTextInputClicked,
+                    onBackPressedCallback = onBackPressedCallback
                 )
             }
             is HeaderOne -> {
@@ -632,7 +634,8 @@ class BlockAdapter(
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked
+                    onTextInputClicked = onTextInputClicked,
+                    onBackPressedCallback = onBackPressedCallback
                 )
             }
             is HeaderTwo -> {
@@ -646,7 +649,8 @@ class BlockAdapter(
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked
+                    onTextInputClicked = onTextInputClicked,
+                    onBackPressedCallback = onBackPressedCallback
                 )
             }
             is HeaderThree -> {
@@ -660,7 +664,8 @@ class BlockAdapter(
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked
+                    onTextInputClicked = onTextInputClicked,
+                    onBackPressedCallback = onBackPressedCallback
                 )
             }
             is Checkbox -> {
@@ -675,7 +680,8 @@ class BlockAdapter(
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked
+                    onTextInputClicked = onTextInputClicked,
+                    onBackPressedCallback = onBackPressedCallback
                 )
             }
             is Bulleted -> {
@@ -689,7 +695,8 @@ class BlockAdapter(
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked
+                    onTextInputClicked = onTextInputClicked,
+                    onBackPressedCallback = onBackPressedCallback
                 )
             }
             is Numbered -> {
@@ -703,7 +710,8 @@ class BlockAdapter(
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked
+                    onTextInputClicked = onTextInputClicked,
+                    onBackPressedCallback = onBackPressedCallback
                 )
             }
             is Toggle -> {
@@ -719,7 +727,8 @@ class BlockAdapter(
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked
+                    onTextInputClicked = onTextInputClicked,
+                    onBackPressedCallback = onBackPressedCallback
                 )
             }
             is Highlight -> {
@@ -733,7 +742,8 @@ class BlockAdapter(
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked
+                    onTextInputClicked = onTextInputClicked,
+                    onBackPressedCallback = onBackPressedCallback
                 )
             }
             is Title.Document -> {

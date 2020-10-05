@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.MentionEvent
+import com.anytypeio.anytype.core_ui.state.ControlPanelState
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.model.Block
@@ -475,6 +476,114 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         }
 
         clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should close mention menu after back pressed event`() {
+        val mentionTrigger = "@Pag"
+        val from = 11
+        val givenText = "page about $mentionTrigger music"
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = givenText,
+                marks = listOf(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(a.id)
+        )
+
+        val document = listOf(page, a)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        updateText.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+
+        getListPages.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(GetListPages.Response(emptyList()))
+        }
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onBlockFocusChanged(
+                id = a.id,
+                hasFocus = true
+            )
+            onSelectionChanged(
+                id = a.id,
+                selection = IntRange(12, 12)
+            )
+            onMentionEvent(
+                MentionEvent.MentionSuggestStart(
+                    cursorCoordinate = 500,
+                    mentionStart = from
+                )
+            )
+            onMentionEvent(
+                MentionEvent.MentionSuggestText(
+                    text = "Pag"
+                )
+            )
+        }
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState(
+                navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                    isVisible = false
+                ),
+                mainToolbar = ControlPanelState.Toolbar.Main(
+                    isVisible = true
+                ),
+                stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                    isVisible = false
+                ),
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                    isVisible = true,
+                    cursorCoordinate = 500,
+                    mentionFilter = "Pag",
+                    mentionFrom = from,
+                    updateList = false
+                )
+            )
+        )
+
+        vm.apply {
+            onBackPressedCallback()
+        }
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState(
+                navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                    isVisible = false
+                ),
+                mainToolbar = ControlPanelState.Toolbar.Main(
+                    isVisible = true
+                ),
+                stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                    isVisible = false
+                ),
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            )
+        )
     }
 
     private fun clearPendingCoroutines() {

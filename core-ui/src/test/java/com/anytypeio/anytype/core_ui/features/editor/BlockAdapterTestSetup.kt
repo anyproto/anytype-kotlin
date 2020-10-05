@@ -47,7 +47,8 @@ open class BlockAdapterTestSetup {
             onTitleTextInputClicked = {},
             onClickListener = {},
             clipboardInterceptor = clipboardInterceptor,
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onBackPressedCallback = { false }
         )
     }
 }

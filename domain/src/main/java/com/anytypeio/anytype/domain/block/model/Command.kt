@@ -155,8 +155,6 @@ sealed class Command {
 
     /**
      * Command for creating a new document / page
-     * @property name document title from mention suggester, can be empty
-     * @property emoji random emoji for new page
      */
     class CreateNewDocument(
         val name: String,

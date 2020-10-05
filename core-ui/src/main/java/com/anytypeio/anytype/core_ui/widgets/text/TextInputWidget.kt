@@ -9,6 +9,7 @@ import android.text.Spanned
 import android.text.TextWatcher
 import android.text.util.Linkify
 import android.util.AttributeSet
+import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
@@ -30,6 +31,18 @@ class TextInputWidget : AppCompatEditText {
         const val TEXT_INPUT_WIDGET_INPUT_TYPE = TYPE_TEXT_FLAG_MULTI_LINE
     }
 
+    override fun onKeyPreIme(keyCode: Int, event: KeyEvent?): Boolean {
+        return if (event != null
+            && event.keyCode == KeyEvent.KEYCODE_BACK
+            && event.action == KeyEvent.ACTION_UP
+            && backButtonWatcher?.invoke() == true
+        ) {
+            true
+        } else {
+            super.onKeyPreIme(keyCode, event)
+        }
+    }
+
     private val watchers: MutableList<TextWatcher> = mutableListOf()
 
     private var highlightDrawer: HighlightDrawer? = null
@@ -37,6 +50,11 @@ class TextInputWidget : AppCompatEditText {
     var selectionWatcher: ((IntRange) -> Unit)? = null
 
     var clipboardInterceptor: ClipboardInterceptor? = null
+
+    /**
+     * Returns a bool value, indicating whether or not to absorb the click
+     */
+    var backButtonWatcher: (() -> Boolean)? = null
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {

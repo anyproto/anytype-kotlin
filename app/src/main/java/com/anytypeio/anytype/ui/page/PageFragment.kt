@@ -189,7 +189,8 @@ open class PageFragment :
             onTitleTextInputClicked = vm::onTitleTextInputClicked,
             onClickListener = vm::onClickListener,
             clipboardInterceptor = this,
-            onMentionEvent = vm::onMentionEvent
+            onMentionEvent = vm::onMentionEvent,
+            onBackPressedCallback = { vm.onBackPressedCallback() }
         )
     }
 

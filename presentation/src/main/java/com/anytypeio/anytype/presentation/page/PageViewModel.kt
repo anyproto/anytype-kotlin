@@ -37,6 +37,7 @@ import com.anytypeio.anytype.core_ui.widgets.ActionItemType
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.MentionAdapter
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.getMentionName
+import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.getMentionName
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
@@ -2710,6 +2711,21 @@ class PageViewModel(
             eventName = EventsDictionary.SCREEN_DOCUMENT
         )
         navigate(EventWrapper(AppNavigation.Command.OpenPage(target)))
+    }
+
+    /**
+     * Return true, when mention menu is closed, and we need absorb back button click
+     */
+    fun onBackPressedCallback(): Boolean {
+        return controlPanelViewState.value?.let { state ->
+            val isVisible= state.mentionToolbar.isVisible
+            if (isVisible) {
+                onMentionEvent(MentionEvent.MentionSuggestStop)
+                true
+            } else {
+                false
+            }
+        } ?: run { false }
     }
 
     companion object {

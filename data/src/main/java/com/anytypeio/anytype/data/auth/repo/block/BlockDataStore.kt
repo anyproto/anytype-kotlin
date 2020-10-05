@@ -17,6 +17,7 @@ interface BlockDataStore {
     suspend fun openDashboard(contextId: String, id: String): PayloadEntity
 
     suspend fun createDocument(command: CommandEntity.CreateDocument): Triple<Id, Id, PayloadEntity>
+    suspend fun createNewDocument(command: CommandEntity.CreatePage): String
     suspend fun updateDocumentTitle(command: CommandEntity.UpdateTitle)
     suspend fun updateText(command: CommandEntity.UpdateText)
     suspend fun updateTextStyle(command: CommandEntity.UpdateStyle) : PayloadEntity

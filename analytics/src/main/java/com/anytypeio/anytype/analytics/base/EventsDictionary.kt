@@ -62,6 +62,7 @@ object EventsDictionary {
     const val ACCOUNT_STOP = "AccountStop"
 
     const val PAGE_CREATE = "BlockCreatePage"
+    const val PAGE_MENTION_CREATE = "PageCreate"
 
     const val BLOCK_CREATE = "BlockCreate"
     const val BLOCK_REPLACE = "BlockReplace"

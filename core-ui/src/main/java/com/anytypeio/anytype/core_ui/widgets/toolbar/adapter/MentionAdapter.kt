@@ -17,7 +17,7 @@ class MentionAdapter(
     private var data: ArrayList<Mention>,
     private var mentionFilter: String = "",
     private val clicked: (Mention, String) -> Unit,
-    private val newClicked: () -> Unit
+    private val newClicked: (String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setData(mentions: List<Mention>) {
@@ -72,7 +72,9 @@ class MentionAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            TYPE_NEW_PAGE -> (holder as NewPageViewHolder).bind(newClicked)
+            TYPE_NEW_PAGE -> (holder as NewPageViewHolder).bind {
+                newClicked(mentionFilter)
+            }
             TYPE_MENTION -> (holder as MentionViewHolder).bind(
                 getFilteredData()[position - 1],
                 clicked,
@@ -142,3 +144,5 @@ fun List<Mention>.filterBy(text: String): List<Mention> =
     if (text.isNotEmpty()) filter { it.isContainsText(text) } else this
 
 fun Mention.isContainsText(text: String): Boolean = title.contains(text, true)
+
+fun String.getMentionName(untitled: String): String = if (this.isBlank()) untitled else this

@@ -25,6 +25,7 @@ interface BlockRemote {
     suspend fun move(command: CommandEntity.Move): PayloadEntity
     suspend fun getConfig(): ConfigEntity
     suspend fun createPage(parentId: String, emoji: String?): String
+    suspend fun createPage(command: CommandEntity.CreatePage): String
     suspend fun openPage(id: String): PayloadEntity
     suspend fun openProfile(id: String): PayloadEntity
     suspend fun closePage(id: String)

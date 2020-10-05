@@ -16,6 +16,7 @@ import com.google.protobuf.Value;
 
 import java.util.List;
 
+import anytype.Commands;
 import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
@@ -596,6 +597,50 @@ public class Middleware {
                 response.getTargetId(),
                 mapper.toPayload(response.getEvent())
         );
+    }
+
+    public String createPage(CommandEntity.CreatePage command) throws Exception {
+
+        Value emojiValue = null;
+
+        if (command.getEmoji() != null) {
+            emojiValue = Value.newBuilder().setStringValue(command.getEmoji()).build();
+        }
+
+        Value nameValue = null;
+
+        if (command.getName() != null) {
+            nameValue = Value.newBuilder().setStringValue(command.getName()).build();
+        }
+
+        Struct.Builder details = Struct.newBuilder();
+
+        if (nameValue != null) {
+            details.putFields(nameKey, nameValue);
+        }
+
+        if (emojiValue != null) {
+            details.putFields(iconEmojiKey, emojiValue);
+        }
+
+        details.build();
+
+        Commands.Rpc.Page.Create.Request request = Commands.Rpc.Page.Create.Request
+                .newBuilder()
+                .setDetails(details)
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Commands.Rpc.Page.Create.Response response = service.pageCreate(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return response.getPageId();
     }
 
     public PayloadEntity move(CommandEntity.Move command) throws Exception {

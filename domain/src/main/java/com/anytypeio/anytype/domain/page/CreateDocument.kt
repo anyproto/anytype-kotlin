@@ -24,7 +24,6 @@ class CreateDocument(
             command = Command.CreateDocument(
                 context = params.context,
                 target = params.target,
-                prototype = params.prototype,
                 position = params.position,
                 emoji = documentEmojiProvider.random()
             )
@@ -46,13 +45,11 @@ class CreateDocument(
      * @property context id of the context of the block (i.e. page, dashboard or something else)
      * @property target id of the block associated with the block we need to create
      * @property position position of the block that we need to create in relation with the target block
-     * @property prototype a prototype of the block we would like to create
      */
     data class Params(
         val context: Id,
         val target: Id,
-        val position: Position,
-        val prototype: Block.Prototype.Page
+        val position: Position
     )
 
     /**

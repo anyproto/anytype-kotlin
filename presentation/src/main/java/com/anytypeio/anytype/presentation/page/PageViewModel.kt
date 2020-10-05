@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_CREATE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_MENTION_CREATE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_ACTION_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_ADD_BLOCK
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_BOOKMARK
@@ -34,6 +35,8 @@ import com.anytypeio.anytype.core_ui.model.UiBlock
 import com.anytypeio.anytype.core_ui.state.ControlPanelState
 import com.anytypeio.anytype.core_ui.widgets.ActionItemType
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
+import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.MentionAdapter
+import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.getMentionName
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
@@ -82,6 +85,7 @@ class PageViewModel(
     private val closePage: ClosePage,
     private val createPage: CreatePage,
     private val createDocument: CreateDocument,
+    private val createNewDocument: CreateNewDocument,
     private val archiveDocument: ArchiveDocument,
     private val interceptEvents: InterceptEvents,
     private val updateLinkMarks: UpdateLinkMarks,
@@ -1989,8 +1993,7 @@ class PageViewModel(
         val params = CreateDocument.Params(
             context = context,
             position = position,
-            target = target,
-            prototype = Prototype.Page(style = Content.Page.Style.EMPTY)
+            target = target
         )
 
         val startTime = System.currentTimeMillis()
@@ -2595,11 +2598,53 @@ class PageViewModel(
         }
     }
 
-    fun onAddMentionNewPageClicked() {
-        onAddNewPageClicked()
+    fun onAddMentionNewPageClicked(name: String) {
+
+        val params = CreateNewDocument.Params(
+            name = name.removePrefix(MentionAdapter.MENTION_PREFIX)
+        )
+
+        val startTime = System.currentTimeMillis()
+
+        viewModelScope.launch {
+            createNewDocument(
+                params = params
+            ).proceed(
+                failure = {
+                    Timber.e(it, "Error while creating new page with params: $params")
+                },
+                success = { result ->
+                    val middleTime = System.currentTimeMillis()
+                    onCreateMentionInText(
+                        mention = Mention(
+                            id = result.id,
+                            title = result.name.getMentionName(MENTION_TITLE_EMPTY),
+                            emoji = result.emoji,
+                            image = null
+                        ),
+                        mentionTrigger = name
+                    )
+                    analytics.registerEvent(
+                        EventAnalytics.Anytype(
+                            name = PAGE_MENTION_CREATE,
+                            props = Props(mapOf(PROP_STYLE to Content.Page.Style.EMPTY)),
+                            duration = EventAnalytics.Duration(
+                                start = startTime,
+                                middleware = middleTime,
+                                render = middleTime
+                            )
+                        )
+                    )
+                }
+            )
+        }
     }
 
     fun onMentionSuggestClick(mention: Mention, mentionTrigger: String) {
+        onCreateMentionInText(mention, mentionTrigger)
+    }
+
+    fun onCreateMentionInText(mention: Mention, mentionTrigger: String) {
         Timber.d("onAddMentionClicked, suggest:$mention, from:$mentionFrom")
 
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnMentionClicked)
@@ -2677,6 +2722,7 @@ class PageViewModel(
         const val CANNOT_BE_PARENT_ERROR = "This block does not support nesting."
         const val CANNOT_MOVE_PARENT_INTO_CHILD =
             "Cannot move parent into child. Please, check selected blocks."
+        const val MENTION_TITLE_EMPTY = "Untitled"
     }
 
     data class MarkupAction(

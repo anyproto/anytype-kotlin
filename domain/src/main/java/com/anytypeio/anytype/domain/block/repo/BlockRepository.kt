@@ -41,6 +41,12 @@ interface BlockRepository {
      */
     suspend fun createDocument(command: Command.CreateDocument): Triple<Id, Id, Payload>
 
+    /**
+     * Creates a new document / page, without positioning and targets.
+     * @return block id of the new document.
+     */
+    suspend fun createNewDocument(command: Command.CreateNewDocument): Id
+
     suspend fun merge(command: Command.Merge): Payload
 
     /**

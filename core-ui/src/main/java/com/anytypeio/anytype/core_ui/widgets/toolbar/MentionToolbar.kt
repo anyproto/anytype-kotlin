@@ -17,7 +17,7 @@ class MentionToolbar @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private var mentionClick: ((Mention, String) -> Unit)? = null
-    private var newPageClick: (() -> Unit)? = null
+    private var newPageClick: ((String) -> Unit)? = null
 
     init {
         LayoutInflater
@@ -26,7 +26,7 @@ class MentionToolbar @JvmOverloads constructor(
         setup(context)
     }
 
-    fun setupClicks(mentionClick: (Mention, String) -> Unit, newPageClick: () -> Unit) {
+    fun setupClicks(mentionClick: (Mention, String) -> Unit, newPageClick: (String) -> Unit) {
         this.mentionClick = mentionClick
         this.newPageClick = newPageClick
     }
@@ -40,8 +40,8 @@ class MentionToolbar @JvmOverloads constructor(
                 clicked = { mention, filter ->
                     mentionClick?.invoke(mention, filter)
                 },
-                newClicked = {
-                    newPageClick?.invoke()
+                newClicked = { name ->
+                    newPageClick?.invoke(name)
                 }
             )
         }

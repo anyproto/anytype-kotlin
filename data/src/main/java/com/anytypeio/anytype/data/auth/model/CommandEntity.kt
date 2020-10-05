@@ -81,8 +81,12 @@ class CommandEntity {
         val context: String,
         val target: String,
         val position: PositionEntity,
-        val prototype: BlockEntity.Prototype.Page,
         val emoji: String?
+    )
+
+    class CreatePage(
+        val emoji: String?,
+        val name: String?
     )
 
     class Move(

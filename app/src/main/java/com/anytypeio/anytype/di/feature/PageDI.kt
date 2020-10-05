@@ -82,6 +82,7 @@ object EditorSessionModule {
         removeLinkMark: RemoveLinkMark,
         createPage: CreatePage,
         createDocument: CreateDocument,
+        createNewDocument: CreateNewDocument,
         documentExternalEventReducer: DocumentExternalEventReducer,
         urlBuilder: UrlBuilder,
         renderer: DefaultBlockViewRenderer,
@@ -94,6 +95,7 @@ object EditorSessionModule {
         closePage = closePage,
         createPage = createPage,
         createDocument = createDocument,
+        createNewDocument = createNewDocument,
         interceptEvents = interceptEvents,
         updateLinkMarks = updateLinkMarks,
         removeLinkMark = removeLinkMark,
@@ -401,6 +403,17 @@ object EditorUseCaseModule {
         repo: BlockRepository,
         documentEmojiIconProvider: DocumentEmojiIconProvider
     ): CreateDocument = CreateDocument(
+        repo = repo,
+        documentEmojiProvider = documentEmojiIconProvider
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateNewDocumentUseCase(
+        repo: BlockRepository,
+        documentEmojiIconProvider: DocumentEmojiIconProvider
+    ): CreateNewDocument = CreateNewDocument(
         repo = repo,
         documentEmojiProvider = documentEmojiIconProvider
     )

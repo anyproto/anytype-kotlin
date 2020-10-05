@@ -119,6 +119,9 @@ open class EditorPresentationTestSetup {
     lateinit var createDocument: CreateDocument
 
     @Mock
+    lateinit var createNewDocument: CreateNewDocument
+
+    @Mock
     lateinit var archiveDocument: ArchiveDocument
 
     @Mock
@@ -163,6 +166,7 @@ open class EditorPresentationTestSetup {
             ),
             archiveDocument = archiveDocument,
             createDocument = createDocument,
+            createNewDocument = createNewDocument,
             analytics = analytics,
             orchestrator = Orchestrator(
                 createBlock = createBlock,

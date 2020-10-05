@@ -65,6 +65,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: CommandEntity.CreateDocument
     ): Triple<String, String, PayloadEntity> = remote.createDocument(command)
 
+    override suspend fun createNewDocument(
+        command: CommandEntity.CreatePage
+    ): String = remote.createPage(command)
+
     override suspend fun move(command: CommandEntity.Move): PayloadEntity {
         return remote.move(command)
     }

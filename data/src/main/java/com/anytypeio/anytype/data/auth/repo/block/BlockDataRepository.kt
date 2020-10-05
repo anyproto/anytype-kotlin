@@ -103,6 +103,12 @@ class BlockDataRepository(
         }
     }
 
+    override suspend fun createNewDocument(
+        command: Command.CreateNewDocument
+    ): Id {
+        return factory.remote.createNewDocument(command.toEntity())
+    }
+
     override suspend fun move(command: Command.Move): Payload {
         return factory.remote.move(command.toEntity()).toDomain()
     }

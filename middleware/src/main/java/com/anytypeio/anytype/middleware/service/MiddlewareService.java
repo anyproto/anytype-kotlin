@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.service;
 
+import anytype.Commands;
 import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
@@ -79,4 +80,6 @@ public interface MiddlewareService {
     Navigation.GetPageInfoWithLinks.Response pageInfoWithLinks(Navigation.GetPageInfoWithLinks.Request request) throws Exception;
 
     Navigation.ListPages.Response listPages(Navigation.ListPages.Request request) throws Exception;
+
+    Commands.Rpc.Page.Create.Response pageCreate(Commands.Rpc.Page.Create.Request request) throws Exception;
 }

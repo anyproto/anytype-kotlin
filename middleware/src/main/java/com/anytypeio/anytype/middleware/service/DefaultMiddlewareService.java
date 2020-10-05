@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.service;
 
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException;
 
+import anytype.Commands;
 import anytype.Commands.Rpc.Account;
 import anytype.Commands.Rpc.Block;
 import anytype.Commands.Rpc.BlockList;
@@ -385,6 +386,17 @@ public class DefaultMiddlewareService implements MiddlewareService {
         byte[] encoded = Service.navigationListPages(request.toByteArray());
         Navigation.ListPages.Response response = Navigation.ListPages.Response.parseFrom(encoded);
         if (response.getError() != null && response.getError().getCode() != Navigation.ListPages.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
+    public Commands.Rpc.Page.Create.Response pageCreate(Commands.Rpc.Page.Create.Request request) throws Exception {
+        byte[] encoded = Service.pageCreate(request.toByteArray());
+        Commands.Rpc.Page.Create.Response response = Commands.Rpc.Page.Create.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Commands.Rpc.Page.Create.Response.Error.Code.NULL) {
             throw new Exception(response.getError().getDescription());
         } else {
             return response;

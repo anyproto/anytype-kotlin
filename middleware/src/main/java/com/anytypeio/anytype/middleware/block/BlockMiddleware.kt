@@ -24,6 +24,9 @@ class BlockMiddleware(
     override suspend fun createPage(parentId: String, emoji: String?): String =
         middleware.createPage(parentId, emoji)
 
+    override suspend fun createPage(command: CommandEntity.CreatePage): String =
+        middleware.createPage(command)
+
     override suspend fun openPage(id: String): PayloadEntity = middleware.openBlock(id)
     override suspend fun openProfile(id: String): PayloadEntity = middleware.openBlock(id)
 

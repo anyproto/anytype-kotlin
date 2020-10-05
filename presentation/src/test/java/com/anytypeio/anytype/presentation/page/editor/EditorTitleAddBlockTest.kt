@@ -152,10 +152,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         val params = CreateDocument.Params(
             context = root,
             target = root,
-            position = Position.INNER,
-            prototype = Block.Prototype.Page(
-                style = Block.Content.Page.Style.EMPTY
-            )
+            position = Position.INNER
         )
 
         val document = listOf(page)
@@ -208,10 +205,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         val params = CreateDocument.Params(
             context = root,
             target = block.id,
-            position = Position.TOP,
-            prototype = Block.Prototype.Page(
-                style = Block.Content.Page.Style.EMPTY
-            )
+            position = Position.TOP
         )
 
         val document = listOf(page)

@@ -149,6 +149,9 @@ open class PageViewModelTest {
     lateinit var createDocument: CreateDocument
 
     @Mock
+    lateinit var createNewDocument: CreateNewDocument
+
+    @Mock
     lateinit var archiveDocument: ArchiveDocument
 
     @Mock
@@ -2521,10 +2524,7 @@ open class PageViewModelTest {
                     CreateDocument.Params(
                         context = root,
                         target = title.id,
-                        position = Position.BOTTOM,
-                        prototype = Block.Prototype.Page(
-                            style = Block.Content.Page.Style.EMPTY
-                        )
+                        position = Position.BOTTOM
                     )
                 )
             )
@@ -3761,6 +3761,7 @@ open class PageViewModelTest {
             ),
             archiveDocument = archiveDocument,
             createDocument = createDocument,
+            createNewDocument = createNewDocument,
             analytics = analytics,
             orchestrator = Orchestrator(
                 createBlock = createBlock,

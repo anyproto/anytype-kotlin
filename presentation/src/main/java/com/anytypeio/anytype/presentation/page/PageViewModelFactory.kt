@@ -20,6 +20,7 @@ open class PageViewModelFactory(
     private val closePage: ClosePage,
     private val createPage: CreatePage,
     private val createDocument: CreateDocument,
+    private val createNewDocument: CreateNewDocument,
     private val archiveDocument: ArchiveDocument,
     private val interceptEvents: InterceptEvents,
     private val updateLinkMarks: UpdateLinkMarks,
@@ -46,6 +47,7 @@ open class PageViewModelFactory(
             urlBuilder = urlBuilder,
             renderer = renderer,
             createDocument = createDocument,
+            createNewDocument = createNewDocument,
             orchestrator = interactor,
             getListPages = getListPages,
             analytics = analytics

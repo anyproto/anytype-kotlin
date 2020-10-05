@@ -407,8 +407,12 @@ fun Command.Copy.toEntity() = CommandEntity.Copy(
 fun Command.CreateDocument.toEntity() = CommandEntity.CreateDocument(
     context = context,
     target = target,
-    prototype = prototype.toEntity(),
     position = position.toEntity(),
+    emoji = emoji
+)
+
+fun Command.CreateNewDocument.toEntity() = CommandEntity.CreatePage(
+    name = name,
     emoji = emoji
 )
 

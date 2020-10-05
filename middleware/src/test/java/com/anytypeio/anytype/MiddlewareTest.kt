@@ -64,9 +64,6 @@ class MiddlewareTest {
         val command = CommandEntity.CreateDocument(
             context = MockDataFactory.randomUuid(),
             target = MockDataFactory.randomUuid(),
-            prototype = BlockEntity.Prototype.Page(
-                style = BlockEntity.Content.Page.Style.EMPTY
-            ),
             position = PositionEntity.INNER,
             emoji = null
         )
@@ -116,9 +113,6 @@ class MiddlewareTest {
         val command = CommandEntity.CreateDocument(
             context = MockDataFactory.randomUuid(),
             target = MockDataFactory.randomUuid(),
-            prototype = BlockEntity.Prototype.Page(
-                style = BlockEntity.Content.Page.Style.EMPTY
-            ),
             position = PositionEntity.INNER,
             emoji = emoji
         )

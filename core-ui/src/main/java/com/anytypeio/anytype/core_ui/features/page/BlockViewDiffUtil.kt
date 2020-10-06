@@ -37,11 +37,15 @@ class BlockViewDiffUtil(
         if (newBlock is BlockView.Title.Document && oldBlock is BlockView.Title.Document) {
             if (newBlock.text != oldBlock.text)
                 changes.add(TEXT_CHANGED)
+            if (newBlock.emoji != oldBlock.emoji || newBlock.image != oldBlock.image)
+                changes.add(TITLE_ICON_CHANGED)
         }
 
         if (newBlock is BlockView.Title.Profile && oldBlock is BlockView.Title.Profile) {
             if (newBlock.text != oldBlock.text)
                 changes.add(TEXT_CHANGED)
+            if (newBlock.image != oldBlock.image)
+                changes.add(TITLE_ICON_CHANGED)
         }
 
         if (newBlock is BlockView.TextSupport && oldBlock is BlockView.TextSupport) {
@@ -123,6 +127,7 @@ class BlockViewDiffUtil(
         val isBackgroundColorChanged: Boolean get() = changes.contains(BACKGROUND_COLOR_CHANGED)
         val isModeChanged: Boolean get() = changes.contains(READ_WRITE_MODE_CHANGED)
         val isSelectionChanged: Boolean get() = changes.contains(SELECTION_CHANGED)
+        val isTitleIconChanged: Boolean get() = changes.contains(TITLE_ICON_CHANGED)
         val isAlignmentChanged: Boolean get() = changes.contains(ALIGNMENT_CHANGED)
 
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
@@ -149,5 +154,6 @@ class BlockViewDiffUtil(
         const val SELECTION_CHANGED = 10
         const val ALIGNMENT_CHANGED = 11
         const val CURSOR_CHANGED = 12
+        const val TITLE_ICON_CHANGED = 13
     }
 }

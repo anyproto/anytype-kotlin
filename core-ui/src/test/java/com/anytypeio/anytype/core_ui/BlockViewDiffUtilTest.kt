@@ -744,4 +744,76 @@ class BlockViewDiffUtilTest {
             actual = payload
         )
     }
+
+    @Test
+    fun `should detect icon change in page title block`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Title.Document(
+            id = id,
+            text = MockDataFactory.randomString(),
+            image = MockDataFactory.randomUuid()
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            image = null,
+            emoji = MockDataFactory.randomUuid()
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.TITLE_ICON_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect icon change in profile title block`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Title.Profile(
+            id = id,
+            text = MockDataFactory.randomString(),
+            image = MockDataFactory.randomUuid(),
+            isFocused = false
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            image = null,
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.TITLE_ICON_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
 }

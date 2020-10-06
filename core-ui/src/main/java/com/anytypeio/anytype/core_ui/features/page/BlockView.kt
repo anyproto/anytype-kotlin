@@ -377,7 +377,7 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Document(
             override val id: String,
-            override var isFocused: Boolean,
+            override var isFocused: Boolean = false,
             override var text: String?,
             val emoji: String? = null,
             override val image: String? = null,

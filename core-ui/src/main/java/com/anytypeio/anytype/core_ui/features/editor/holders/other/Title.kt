@@ -80,7 +80,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
     }
 
-    fun processPayloads(
+    open fun processPayloads(
         payloads: List<BlockViewDiffUtil.Payload>,
         item: BlockView.Title
     ) {
@@ -148,6 +148,21 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             }
         }
 
+        override fun processPayloads(
+            payloads: List<BlockViewDiffUtil.Payload>,
+            item: BlockView.Title
+        ) {
+            super.processPayloads(payloads, item)
+            if (item is BlockView.Title.Document) {
+                payloads.forEach { payload ->
+                    if (payload.isTitleIconChanged) {
+                        setEmoji(item)
+                        setImage(item)
+                    }
+                }
+            }
+        }
+
         private fun setEmoji(item: BlockView.Title.Document) {
             try {
                 if (item.emoji != null) {
@@ -160,6 +175,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     } catch (e: Throwable) {
                         Timber.e(e, "Error while setting emoji icon for: ${item.emoji}")
                     }
+                } else {
+                    emoji.setImageDrawable(null)
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Could not set emoji icon")
@@ -225,6 +242,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         override fun setImage(item: BlockView.Title) {
             item.image?.let { url ->
+                iconText.text = ""
                 image.visible()
                 Glide
                     .with(image)
@@ -245,6 +263,20 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 iconText.text = ""
             } else {
                 iconText.text = name.first().toUpperCase().toString()
+            }
+        }
+
+        override fun processPayloads(
+            payloads: List<BlockViewDiffUtil.Payload>,
+            item: BlockView.Title
+        ) {
+            super.processPayloads(payloads, item)
+            if (item is BlockView.Title.Profile) {
+                payloads.forEach { payload ->
+                    if (payload.isTitleIconChanged) {
+                        setImage(item)
+                    }
+                }
             }
         }
     }

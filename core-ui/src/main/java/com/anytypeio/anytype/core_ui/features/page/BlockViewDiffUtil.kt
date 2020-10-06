@@ -138,7 +138,6 @@ class BlockViewDiffUtil(
         fun readWriteModeChanged() = changes.contains(READ_WRITE_MODE_CHANGED)
         fun selectionChanged() = changes.contains(SELECTION_CHANGED)
         fun alignmentChanged() = changes.contains(ALIGNMENT_CHANGED)
-
     }
 
     companion object {

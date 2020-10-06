@@ -23,6 +23,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_ui.common.Alignment
+import com.anytypeio.anytype.core_ui.common.Focusable
 import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.core_ui.extensions.updateSelection
 import com.anytypeio.anytype.core_ui.features.page.*
@@ -36,7 +37,6 @@ import com.anytypeio.anytype.core_ui.state.ControlPanelState
 import com.anytypeio.anytype.core_ui.widgets.ActionItemType
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.MentionAdapter
-import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.getMentionName
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.getMentionName
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
@@ -1938,7 +1938,8 @@ class PageViewModel(
     fun onHideKeyboardClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
-        viewModelScope.launch { refresh() }
+        views.onEach { if (it is Focusable) it.isFocused = false }
+        viewModelScope.launch { renderCommand.send(Unit) }
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.BTN_HIDE_KEYBOARD
@@ -2099,7 +2100,7 @@ class PageViewModel(
         }
     }
 
-    private fun onBookmarkPlaceholderClicked(target: String){
+    private fun onBookmarkPlaceholderClicked(target: String) {
         dispatch(
             command = Command.OpenBookmarkSetter(
                 context = context,
@@ -2718,7 +2719,7 @@ class PageViewModel(
      */
     fun onBackPressedCallback(): Boolean {
         return controlPanelViewState.value?.let { state ->
-            val isVisible= state.mentionToolbar.isVisible
+            val isVisible = state.mentionToolbar.isVisible
             if (isVisible) {
                 onMentionEvent(MentionEvent.MentionSuggestStop)
                 true

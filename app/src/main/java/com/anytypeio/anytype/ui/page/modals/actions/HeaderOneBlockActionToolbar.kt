@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 
@@ -22,7 +23,7 @@ class HeaderOneBlockActionToolbar : BlockActionToolbar() {
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
         view.findViewById<TextInputWidget>(R.id.headerOne).apply {
             enableReadMode()
-            setBlockText(this, block.text, block)
+            setBlockText(this, block.text, block, block.getBlockTextColor())
             processTextColor(
                 textView = this,
                 colorImage = colorView,

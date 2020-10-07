@@ -801,8 +801,7 @@ open class PageFragment :
     }
 
     private fun render(state: ControlPanelState) {
-        Timber.d("Rendering new control panel state:\n$state")
-
+        
         if (state.navigationToolbar.isVisible) {
             placeholder.requestFocus()
             hideKeyboard()

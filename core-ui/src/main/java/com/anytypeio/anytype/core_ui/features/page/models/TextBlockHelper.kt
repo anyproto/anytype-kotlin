@@ -35,7 +35,8 @@ fun Spannable.setMarkup(
     context: Context? = null,
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
-    mentionImagePadding: Int = 0
+    mentionImagePadding: Int = 0,
+    textColor: Int
 ) = markup?.marks?.forEach { mark ->
     when (mark.type) {
         Markup.Type.ITALIC -> setSpan(
@@ -75,7 +76,7 @@ fun Spannable.setMarkup(
             )
         }
         Markup.Type.LINK -> setSpan(
-            Span.Url(mark.param as String),
+            Span.Url(mark.param as String, textColor),
             mark.from,
             mark.to,
             Markup.DEFAULT_SPANNABLE_FLAG
@@ -114,7 +115,7 @@ fun Spannable.setMentionSpan(
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
     mentionImagePadding: Int = 0
-): Spannable = this.apply {
+): Spannable = apply {
     if (!mark.param.isNullOrBlank()) {
         setSpan(
             MentionSpan(

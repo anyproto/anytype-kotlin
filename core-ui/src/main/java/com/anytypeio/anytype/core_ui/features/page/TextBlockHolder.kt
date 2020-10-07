@@ -31,31 +31,44 @@ interface TextBlockHolder : TextHolder {
         }
     }
 
-    fun setBlockText(text: String, markup: Markup, clicked: (ListenerType) -> Unit) =
+    fun setBlockText(
+        text: String,
+        markup: Markup,
+        clicked: (ListenerType) -> Unit,
+        textColor: Int
+    ) =
         when (markup.marks.isEmpty()) {
             true -> content.setText(text)
-            false -> setBlockSpannableText(markup, clicked)
+            false -> setBlockSpannableText(markup, clicked, textColor)
         }
 
-    private fun setBlockSpannableText(markup: Markup, clicked: (ListenerType) -> Unit) =
+    private fun setBlockSpannableText(
+        markup: Markup,
+        clicked: (ListenerType) -> Unit,
+        textColor: Int
+    ) =
         when (markup.marks.any { it.type == Markup.Type.MENTION }) {
-            true -> setSpannableWithMention(markup, clicked)
-            false -> setSpannable(markup)
+            true -> setSpannableWithMention(markup, clicked, textColor)
+            false -> setSpannable(markup, textColor)
         }
 
-    private fun setSpannable(markup: Markup) {
-        content.setText(markup.toSpannable(), TextView.BufferType.SPANNABLE)
+    private fun setSpannable(markup: Markup, textColor: Int) {
+        content.setText(markup.toSpannable(textColor = textColor), TextView.BufferType.SPANNABLE)
     }
 
     fun getMentionImageSizeAndPadding(): Pair<Int, Int>
 
-    private fun setSpannableWithMention(markup: Markup, clicked: (ListenerType) -> Unit) {
+    private fun setSpannableWithMention(markup: Markup,
+                                        clicked: (ListenerType) -> Unit,
+                                        textColor: Int
+    ) {
         content.dismissMentionWatchers()
         content.movementMethod = BetterLinkMovementMethod.getInstance()
         with(content) {
             val sizes = getMentionImageSizeAndPadding()
             setText(
                 markup.toSpannable(
+                    textColor = textColor,
                     context = context,
                     mentionImageSize = sizes.first,
                     mentionImagePadding = sizes.second,
@@ -80,7 +93,7 @@ interface TextBlockHolder : TextHolder {
         }
     }
 
-    fun setMarkup(markup: Markup, clicked: (ListenerType) -> Unit) {
+    fun setMarkup(markup: Markup, clicked: (ListenerType) -> Unit, textColor: Int) {
         if (markup.marks.isLinksPresent()) {
             content.setLinksClickable()
         }
@@ -92,7 +105,8 @@ interface TextBlockHolder : TextHolder {
                 mentionImageSize = sizes.first,
                 mentionImagePadding = sizes.second,
                 click = { clicked(ListenerType.Mention(it)) },
-                onImageReady = { param -> refreshMentionSpan(param) }
+                onImageReady = { param -> refreshMentionSpan(param) },
+                textColor = textColor
             )
         }
 
@@ -171,10 +185,15 @@ interface TextBlockHolder : TextHolder {
 
         if (payload.textChanged()) {
             content.pauseTextWatchers {
-                setBlockText(text = item.text, markup = item, clicked = clicked)
+                setBlockText(
+                    text = item.text,
+                    markup = item,
+                    clicked = clicked,
+                    textColor = item.getBlockTextColor()
+                )
             }
         } else if (payload.markupChanged()) {
-            setMarkup(item, clicked)
+            setMarkup(item, clicked, item.getBlockTextColor())
         }
 
         if (payload.textColorChanged()) {

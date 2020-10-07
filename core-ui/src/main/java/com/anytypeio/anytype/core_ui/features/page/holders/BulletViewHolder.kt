@@ -49,17 +49,9 @@ class BulletViewHolder(
             )
         }
 
-    override fun setTextColor(textColor: String?) {
+    override fun setTextColor(textColor: Int) {
         super.setTextColor(textColor)
-        if (textColor != null) {
-            bullet.setColorFilter(
-                ThemeColor.values().first { value ->
-                    value.title == textColor
-                }.text
-            )
-        } else {
-            bullet.tint(content.context.color(R.color.black))
-        }
+        bullet.setColorFilter(textColor)
     }
 
     override fun select(isSelected: Boolean) {}

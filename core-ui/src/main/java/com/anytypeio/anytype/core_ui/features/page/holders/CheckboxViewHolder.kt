@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.ThemeColor
+import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.features.page.BlockTextEvent
 import com.anytypeio.anytype.core_ui.features.page.BlockView
@@ -37,8 +37,16 @@ class CheckboxViewHolder constructor(
         event: (BlockTextEvent.CheckboxEvent) -> Unit
     ) {
         checkbox.isActivated = isChecked
-        setTextColor(item.color, isChecked)
-        checkbox.setOnClickListener { onCheckClick(item.color, event, item.id, item.mode) }
+        val textColor = item.getBlockTextColor()
+        setTextColor(textColor, isChecked)
+        checkbox.setOnClickListener {
+            onCheckClick(
+                textColor = textColor,
+                event = event,
+                id = item.id,
+                mode = item.mode
+            )
+        }
     }
 
     override fun indentize(indent: Int) {
@@ -55,23 +63,18 @@ class CheckboxViewHolder constructor(
     /**
      * Override default behaviour, use [setTextColor(textColor: String?, isSelected: Boolean)]
      */
-    override fun setTextColor(textColor: String?) {}
+    override fun setTextColor(textColor: Int) {}
 
-    private fun setTextColor(textColor: String?, isSelected: Boolean) {
+    private fun setTextColor(textColor: Int, isSelected: Boolean) {
         if (isSelected) {
             content.setTextColor(itemView.context.color(R.color.checkbox_state_checked))
         } else {
-            if (textColor != null)
-                content.setTextColor(
-                    ThemeColor.values().first { value -> value.title == textColor }.text
-                )
-            else
-                content.setTextColor(content.context.color(R.color.black))
+            content.setTextColor(textColor)
         }
     }
 
     private fun onCheckClick(
-        textColor: String?,
+        textColor: Int,
         event: (BlockTextEvent.CheckboxEvent) -> Unit,
         id: String,
         mode: BlockView.Mode

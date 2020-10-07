@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.Focusable
 import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.core_ui.common.ThemeColor
+import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.extensions.preserveSelection
@@ -69,7 +70,7 @@ abstract class BlockTextViewHolder(
                 id = item.id,
                 text = item.text,
                 markup = item,
-                textColor = item.color,
+                textColor = item.getBlockTextColor(),
                 backgroundColor = item.backgroundColor,
                 clicked = click,
                 event = event
@@ -79,7 +80,7 @@ abstract class BlockTextViewHolder(
                 id = item.id,
                 text = item.text,
                 markup = item,
-                textColor = item.color,
+                textColor = item.getBlockTextColor(),
                 backgroundColor = item.backgroundColor,
                 clicked = click,
                 event = event,
@@ -92,7 +93,7 @@ abstract class BlockTextViewHolder(
     private fun bindReadMode(
         id: String,
         text: String? = null,
-        textColor: String? = null,
+        textColor: Int,
         backgroundColor: String? = null,
         markup: Markup,
         clicked: (ListenerType) -> Unit,
@@ -100,7 +101,7 @@ abstract class BlockTextViewHolder(
     ) {
         removeListeners()
         enableReadMode()
-        setText(text, markup, clicked)
+        setText(text, markup, clicked, textColor)
         setTextColor(textColor)
         setBackgroundColor(backgroundColor)
         setClicks(id, clicked)
@@ -111,7 +112,7 @@ abstract class BlockTextViewHolder(
         id: String,
         text: String? = null,
         markup: Markup,
-        textColor: String? = null,
+        textColor: Int,
         backgroundColor: String? = null,
         focused: Boolean,
         cursor: BlockView.Cursor,
@@ -120,7 +121,7 @@ abstract class BlockTextViewHolder(
         item: Item
     ) {
         enableEditMode()
-        setText(text, markup, clicked)
+        setText(text, markup, clicked, textColor)
         setTextColor(textColor)
         setBackgroundColor(backgroundColor)
         setFocus(focused)
@@ -143,44 +144,60 @@ abstract class BlockTextViewHolder(
     abstract override fun indentize(indent: Int)
 
     // ------------ SET TEXT ----------------
-    private fun setText(text: String?, markup: Markup?, clicked: (ListenerType) -> Unit) {
+    private fun setText(
+        text: String?,
+        markup: Markup?,
+        clicked: (ListenerType) -> Unit,
+        textColor: Int
+    ) {
         if (text == null) {
             content.text = null
         } else {
             if (markup == null || markup.marks.isNullOrEmpty()) {
                 content.setText(text)
             } else {
-                setBlockSpannableText(markup, clicked)
+                setBlockSpannableText(markup, clicked, textColor)
             }
         }
     }
 
-    private fun setBlockSpannableText(markup: Markup, clicked: (ListenerType) -> Unit) {
+    private fun setBlockSpannableText(
+        markup: Markup,
+        clicked: (ListenerType) -> Unit,
+        textColor: Int
+    ) {
         if (markup.marks.any { it.type == Markup.Type.MENTION }) {
-            setSpannableWithMention(markup, clicked)
+            setSpannableWithMention(markup, clicked, textColor)
         } else {
-            setSpannable(markup)
+            setSpannable(markup, textColor)
         }
     }
 
-    private fun setSpannable(markup: Markup) {
-        content.setText(getSpannableText(markup), TextView.BufferType.SPANNABLE)
+    private fun setSpannable(markup: Markup, textColor: Int) {
+        content.setText(getSpannableText(markup, textColor), TextView.BufferType.SPANNABLE)
     }
 
-    private fun setSpannableWithMention(markup: Markup, clicked: (ListenerType) -> Unit) =
-        with(content) {
-            movementMethod = BetterLinkMovementMethod.getInstance()
-            setText(buildSpannableTextWithMention(markup, clicked), TextView.BufferType.SPANNABLE)
-        }
+    private fun setSpannableWithMention(
+        markup: Markup,
+        clicked: (ListenerType) -> Unit,
+        textColor: Int
+    ) = with(content) {
+        movementMethod = BetterLinkMovementMethod.getInstance()
+        setText(
+            buildSpannableTextWithMention(markup, clicked, textColor),
+            TextView.BufferType.SPANNABLE
+        )
+    }
 
-    private fun getSpannableText(markup: Markup): SpannableString =
+    private fun getSpannableText(markup: Markup, textColor: Int): SpannableString =
         SpannableString(markup.body).apply {
-            setMarkup(markup = markup)
+            setMarkup(markup = markup, textColor = textColor)
         }
 
     private fun buildSpannableTextWithMention(
         markup: Markup,
-        clicked: ((ListenerType) -> Unit)? = null
+        clicked: ((ListenerType) -> Unit)? = null,
+        textColor: Int
     ): SpannableString {
         val sizes = getMentionSizes()
         return SpannableString(markup.body).apply {
@@ -191,7 +208,8 @@ abstract class BlockTextViewHolder(
                 mentionImagePadding = sizes.second,
                 click = {
                     clicked?.invoke(ListenerType.Mention(it))
-                }
+                },
+                textColor = textColor
             )
         }
     }
@@ -232,15 +250,8 @@ abstract class BlockTextViewHolder(
 
     // ------------ TEXT COLOR, BACKGROUND COLOR ----------------
 
-    open fun setTextColor(textColor: String?) {
-        if (textColor != null)
-            content.setTextColor(
-                ThemeColor.values().first { value ->
-                    value.title == textColor
-                }.text
-            )
-        else
-            content.setTextColor(content.context.color(R.color.black))
+    open fun setTextColor(textColor: Int) {
+        content.setTextColor(textColor)
     }
 
     private fun setBackgroundColor(color: String?) {
@@ -512,7 +523,12 @@ abstract class BlockTextViewHolder(
         if (payload.isTextChanged) {
             val markup = item as? Markup
             content.pauseTextWatchers {
-                setText(text = item.text, clicked = clicked, markup = markup)
+                setText(
+                    text = item.text,
+                    clicked = clicked,
+                    markup = markup,
+                    textColor = item.getBlockTextColor()
+                )
             }
         }
         if (payload.isMarkupChanged) {
@@ -522,7 +538,7 @@ abstract class BlockTextViewHolder(
             }
         }
         if (payload.isTextColorChanged) {
-            setTextColor(item.color)
+            setTextColor(item.getBlockTextColor())
         }
         if (payload.isBackgroundColorChanged) {
             setBackgroundColor(item.backgroundColor)

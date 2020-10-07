@@ -247,23 +247,23 @@ abstract class BlockActionToolbar : Fragment() {
         }
     }
 
-    fun setBlockText(content: TextInputWidget, text: String, markup: Markup) =
+    fun setBlockText(content: TextInputWidget, text: String, markup: Markup, textColor: Int) =
         when (markup.marks.isEmpty()) {
             true -> content.setText(text)
-            false -> setBlockSpannableText(content, markup)
+            false -> setBlockSpannableText(content, markup, textColor)
         }
 
-    private fun setBlockSpannableText(content: TextInputWidget, markup: Markup) =
+    private fun setBlockSpannableText(content: TextInputWidget, markup: Markup, textColor: Int) =
         when (markup.marks.any { it.type == Markup.Type.MENTION }) {
-            true -> setSpannableWithMention(content, markup)
-            false -> setSpannable(content, markup)
+            true -> setSpannableWithMention(content, markup, textColor)
+            false -> setSpannable(content, markup, textColor)
         }
 
-    private fun setSpannable(content: TextInputWidget, markup: Markup) {
-        content.setText(markup.toSpannable(), TextView.BufferType.SPANNABLE)
+    private fun setSpannable(content: TextInputWidget, markup: Markup, textColor: Int) {
+        content.setText(markup.toSpannable(textColor = textColor), TextView.BufferType.SPANNABLE)
     }
 
-    private fun setSpannableWithMention(content: TextInputWidget, markup: Markup) {
+    private fun setSpannableWithMention(content: TextInputWidget, markup: Markup, textColor: Int) {
         with(content) {
             val sizes = getMentionImageSizeAndPadding()
             setText(
@@ -272,7 +272,8 @@ abstract class BlockActionToolbar : Fragment() {
                     mentionImageSize = sizes.first,
                     mentionImagePadding = sizes.second,
                     click = {},
-                    onImageReady = { param -> refreshMentionSpan(content, param) }
+                    onImageReady = { param -> refreshMentionSpan(content, param) },
+                    textColor = textColor
                 ),
                 TextView.BufferType.SPANNABLE
             )

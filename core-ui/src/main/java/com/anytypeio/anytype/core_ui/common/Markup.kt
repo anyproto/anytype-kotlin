@@ -76,6 +76,7 @@ interface Markup {
 }
 
 fun Markup.toSpannable(
+    textColor: Int,
     context: Context? = null,
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
@@ -121,7 +122,7 @@ fun Markup.toSpannable(
                 )
             }
             Markup.Type.LINK -> setSpan(
-                Span.Url(mark.param as String),
+                Span.Url(mark.param as String, textColor),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
@@ -162,7 +163,8 @@ fun Editable.setMarkup(
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
     mentionImagePadding: Int = 0,
-    onImageReady: (String) -> Unit = {}
+    onImageReady: (String) -> Unit = {},
+    textColor: Int
 ) {
     removeSpans<Span>()
     markup.marks.forEach { mark ->
@@ -204,7 +206,7 @@ fun Editable.setMarkup(
                 )
             }
             Markup.Type.LINK -> setSpan(
-                Span.Url(mark.param as String),
+                Span.Url(mark.param as String, textColor),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG

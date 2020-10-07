@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.common
 
 import android.graphics.Color
+import com.anytypeio.anytype.core_ui.features.page.BlockView
 
 /**
  * @property title color code name
@@ -73,3 +74,7 @@ enum class ThemeColor(
         val background = values().associate { color -> color.background to color.title }
     }
 }
+
+fun BlockView.TextSupport.getBlockTextColor(): Int = color?.let { code ->
+    ThemeColor.values().find { it.title == code }?.text ?: ThemeColor.DEFAULT.text
+} ?: ThemeColor.DEFAULT.text

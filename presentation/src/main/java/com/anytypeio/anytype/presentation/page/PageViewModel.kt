@@ -303,8 +303,9 @@ class PageViewModel(
                     fnL = { throwable ->
                         Timber.e("Error update marks:${throwable.message}")
                     },
-                    fnR = {
-                        val newContent = targetContent.copy(marks = it)
+                    fnR = { marks ->
+                        val sortedMarks = marks.sortByType()
+                        val newContent = targetContent.copy(marks = sortedMarks)
                         val newBlock = targetBlock.copy(content = newContent)
                         rerenderingBlocks(newBlock)
                         proceedWithUpdatingText(
@@ -312,7 +313,7 @@ class PageViewModel(
                                 context = context,
                                 text = newBlock.content.asText().text,
                                 target = targetBlock.id,
-                                marks = it
+                                marks = sortedMarks
                             )
                         )
                     }

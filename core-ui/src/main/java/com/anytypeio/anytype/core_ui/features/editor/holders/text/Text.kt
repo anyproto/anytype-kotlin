@@ -3,6 +3,8 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 import android.text.Editable
 import android.view.View
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.ThemeColor
+import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.common.isLinksPresent
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.features.page.BlockView
@@ -99,8 +101,13 @@ abstract class Text(
         }
     }
 
-    fun setContent(item: BlockView.TextBlockProps, clicked: (ListenerType) -> Unit) {
-        setBlockText(text = item.text, markup = item, clicked = clicked)
+    private fun setContent(item: BlockView.TextBlockProps, clicked: (ListenerType) -> Unit) {
+        setBlockText(
+            text = item.text,
+            markup = item,
+            clicked = clicked,
+            textColor = item.getBlockTextColor()
+        )
     }
 
     private fun setStyle(item: BlockView.TextBlockProps) {

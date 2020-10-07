@@ -6,6 +6,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 
@@ -34,7 +35,7 @@ class ParagraphBlockActionToolbar : BlockActionToolbar() {
 
         view.findViewById<TextInputWidget>(R.id.textContent).apply {
             enableReadMode()
-            setBlockText(this, block.text, block)
+            setBlockText(this, block.text, block, block.getBlockTextColor())
             processTextColor(
                 textView = this,
                 colorImage = colorView,

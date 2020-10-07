@@ -18,6 +18,10 @@ fun Marks.addMark(mark: Mark): Marks {
         toggle(mark)
 }
 
+fun Marks.sortByType(): Marks {
+    return this.sortedBy { it.type.ordinal }
+}
+
 /**
  * Ext. function for adding/toggling mark.
  * It handles different cases of [Overlap] between the mark that is being added

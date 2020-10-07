@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.addDot
@@ -37,7 +38,7 @@ class NumberedBlockActionToolbar : BlockActionToolbar() {
         }
         view.findViewById<TextInputWidget>(R.id.numberedListContent).apply {
             enableReadMode()
-            setBlockText(this, block.text, block)
+            setBlockText(this, block.text, block, block.getBlockTextColor())
             processTextColor(
                 textView = this,
                 colorImage = colorView,

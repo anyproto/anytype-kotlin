@@ -1834,6 +1834,39 @@ class MarkupExtTest {
         )
     }
 
+    @Test
+    fun `should sort markups according to their type`() {
+
+        val given = listOf(
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..1
+            ),
+            Mark(
+                type = Mark.Type.LINK,
+                range = 3..5
+            )
+        )
+
+        val expected = listOf(
+            Mark(
+                type = Mark.Type.LINK,
+                range = 3..5
+            ),
+            Mark(
+                type = Mark.Type.TEXT_COLOR,
+                range = 0..1
+            )
+        )
+
+        val result = given.sortByType()
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
     private fun checkOverlap(pair: Pair<IntRange, IntRange>, expected: Overlap) {
         val (a, b) = pair
         val result = a.overlap(b)

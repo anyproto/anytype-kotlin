@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.page.modals.actions
 import android.view.View
 import android.widget.ImageView
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
@@ -18,7 +19,7 @@ class CheckBoxBlockActionToolbar : BlockActionToolbar() {
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
         view.findViewById<TextInputWidget>(R.id.checkboxContent).apply {
             enableReadMode()
-            setBlockText(this, block.text, block)
+            setBlockText(this, block.text, block, block.getBlockTextColor())
             if (block.isChecked) {
                 setTextColor(requireContext().color(R.color.checkbox_state_checked))
             } else {

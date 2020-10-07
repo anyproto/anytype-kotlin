@@ -48,7 +48,8 @@ sealed class ControlPanelMachine {
         private val events: Flow<Event> = channel.consumeAsFlow()
 
         fun onEvent(event: Event) =
-            scope.launch { channel.send(event) }.also { Timber.d("Event: $event") }
+            scope.launch { channel.send(event) }
+                //.also { Timber.d("Event: $event") }
 
         /**
          * @return a stream of immutable states, as processed by [Reducer].
@@ -198,7 +199,10 @@ sealed class ControlPanelMachine {
         override val function: suspend (ControlPanelState, Event) -> ControlPanelState
             get() = { state, event ->
                 logEvent(event)
-                reduce(state, event)
+                logState(text = "BEFORE", state = state)
+                val afterState = reduce(state, event)
+                logState(text = "AFTER", state = afterState)
+                afterState
             }
 
         override suspend fun reduce(state: ControlPanelState, event: Event) = when (event) {
@@ -660,6 +664,14 @@ sealed class ControlPanelMachine {
                     }
                 },
                 marks = content.marks()
+            )
+        }
+
+        private fun logState(text: String, state: ControlPanelState) {
+            Timber.i(
+                "REDUCER, $text STATE:${
+                    state
+                }"
             )
         }
 

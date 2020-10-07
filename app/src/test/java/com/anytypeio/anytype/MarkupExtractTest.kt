@@ -49,9 +49,11 @@ class MarkupExtractTest {
             type = Markup.Type.ITALIC
         )
 
+        val textColor = 11
+
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable()
+        val editable = markup.toSpannable(textColor = textColor)
 
         // TESTING
 
@@ -84,7 +86,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable()
+        val editable = markup.toSpannable(textColor = 11)
 
         // TESTING
 
@@ -117,7 +119,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable()
+        val editable = markup.toSpannable(textColor = 11)
 
         // TESTING
 
@@ -150,7 +152,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable()
+        val editable = markup.toSpannable(textColor = 11)
 
         // TESTING
 
@@ -183,7 +185,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable()
+        val editable = markup.toSpannable(textColor = 11)
 
         // TESTING
 
@@ -216,7 +218,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable()
+        val editable = markup.toSpannable(textColor = 11)
 
         // TESTING
 
@@ -249,7 +251,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable()
+        val editable = markup.toSpannable(textColor = 11)
 
         // TESTING
 

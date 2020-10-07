@@ -1,28 +1,37 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.50
+## Version 0.1.0
 
 ### New features 🚀
 
-* Code block in multi-select and scroll-and-move modes (#892)
+* Allow using code block in multi-select and scroll-and-move modes (#892)
 * Enable mentions for all text blocks (except code block) (#939)
+* Create both a new page and a mention pointing to this new page via mention bottom sheet (#631)
+* Allow closing bottom sheet with mention suggests by pressing back button (#631)
 
 ### Design & UX 🔳
 
+* Orange color as new accent color (#956)
+* New design for add-link-markup bottom sheet (#774)
 * Changed object names in add-block and turn-into panels (#752)
 
 ### Fixes & tech 🚒
 
+* Prevent view without focus from gaining focus on long click (#954)
+* Support and render title as simple text block (#799)
+* Url markup should have the same color as text block's text color (#818)
 * Hiding keyboard via bottom toolbar just after typing results in losing text on screen (#953)
 * Removing image from document results in broken set-icon-flow logic (#951)
 * Set default text color if value is not present when processing text color's granular change (#946)
 * Include checked/unchecked changes in granular-change-update mechanism (#945)
-* New state handling for errors (observable subject) (#943)
+* New state handling for errors (observable subject). Show error only once (#943)
 * Remove flickering effect when opening navigation screen (#941)
 * Disable Crashlytics crash reporting for debug builds (#940)
 * Should focus the last empty text block when clicking under document's blocks (#935)
 * Clicking on empty space before document is loaded should not crash application (#930)
 * Focusing on start may crash application by some users (#931)
+* Send analytics for popup screens and button click events (#592)
+* Prevent data racing issues while calculating the diff between two lists on home dashboard (#933)
 
 ### Middleware ⚙
 

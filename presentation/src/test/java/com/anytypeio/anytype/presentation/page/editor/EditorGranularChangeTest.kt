@@ -35,6 +35,26 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
 
         val delay = 1000L
 
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val checkbox = Block(
             id = MockDataFactory.randomString(),
             fields = Block.Fields.empty(),
@@ -51,11 +71,13 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    type = Block.Content.Smart.Type.PAGE
                 ),
-                children = listOf(checkbox.id)
+                children = listOf(header.id, checkbox.id)
             ),
+            header,
+            title,
             checkbox
         )
 
@@ -82,8 +104,8 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
         val before = ViewState.Success(
             blocks = listOf(
                 BlockView.Title.Document(
-                    id = root,
-                    text = null,
+                    id = title.id,
+                    text = title.content<Block.Content.Text>().text,
                     isFocused = false
                 ),
                 BlockView.Text.Checkbox(
@@ -98,8 +120,8 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
         val after = ViewState.Success(
             blocks = listOf(
                 BlockView.Title.Document(
-                    id = root,
-                    text = null,
+                    id = title.id,
+                    text = title.content<Block.Content.Text>().text,
                     isFocused = false
                 ),
                 BlockView.Text.Checkbox(

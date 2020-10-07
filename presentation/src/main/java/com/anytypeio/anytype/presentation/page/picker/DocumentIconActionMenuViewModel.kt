@@ -2,12 +2,14 @@ package com.anytypeio.anytype.presentation.page.picker
 
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
+import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuViewModel.Contract.*
 import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuViewModel.ViewState
+import com.anytypeio.anytype.presentation.util.Bridge
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
@@ -15,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class DocumentIconActionMenuViewModel(
     private val setEmojiIcon: SetDocumentEmojiIcon,
-    private val setImageIcon: SetDocumentImageIcon
+    private val setImageIcon: SetDocumentImageIcon,
+    private val bridge: Bridge<Payload>
 ) : ViewStateViewModel<ViewState>(), StateReducer<State, Event> {
 
     private val events = ConflatedBroadcastChannel<Event>()
@@ -49,7 +52,10 @@ class DocumentIconActionMenuViewModel(
                             context = action.context
                         )
                     ).proceed(
-                        success = { events.send(Event.OnCompleted) },
+                        success = {
+                            bridge.send(it)
+                            events.send(Event.OnCompleted)
+                        },
                         failure = { events.send(Event.Failure(it)) }
                     )
                     is Action.ClearEmoji -> setEmojiIcon(
@@ -59,7 +65,10 @@ class DocumentIconActionMenuViewModel(
                             context = action.context
                         )
                     ).proceed(
-                        success = { events.send(Event.OnCompleted) },
+                        success = {
+                            bridge.send(it)
+                            events.send(Event.OnCompleted)
+                        },
                         failure = { events.send(Event.Failure(it)) }
                     )
                     is Action.SetImageIcon -> setImageIcon(
@@ -69,7 +78,10 @@ class DocumentIconActionMenuViewModel(
                         )
                     ).proceed(
                         failure = { events.send(Event.Failure(it)) },
-                        success = { events.send(Event.OnCompleted) }
+                        success = {
+                            bridge.send(it)
+                            events.send(Event.OnCompleted)
+                        }
                     )
                     is Action.PickRandomEmoji -> {
                         val random = Emoji.DATA.random().random()

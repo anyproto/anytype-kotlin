@@ -101,6 +101,7 @@ fun Block.layout(): BlockEntity.Content.Layout = BlockEntity.Content.Layout(
         Block.Content.Layout.Style.Column -> BlockEntity.Content.Layout.Type.COLUMN
         Block.Content.Layout.Style.Row -> BlockEntity.Content.Layout.Type.ROW
         Block.Content.Layout.Style.Div -> BlockEntity.Content.Layout.Type.DIV
+        Block.Content.Layout.Style.Header -> BlockEntity.Content.Layout.Type.HEADER
         else -> throw IllegalStateException("Unexpected layout style: ${layout.style}")
     }
 )

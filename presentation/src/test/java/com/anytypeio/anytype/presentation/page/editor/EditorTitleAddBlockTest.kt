@@ -32,6 +32,26 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         MockitoAnnotations.initMocks(this)
     }
 
+    val title = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Text(
+            text = MockDataFactory.randomString(),
+            style = Block.Content.Text.Style.TITLE,
+            marks = emptyList()
+        ),
+        children = emptyList(),
+        fields = Block.Fields.empty()
+    )
+
+    val header = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Layout(
+            type = Block.Content.Layout.Type.HEADER
+        ),
+        fields = Block.Fields.empty(),
+        children = listOf(title.id)
+    )
+
     @Test
     fun `should create a new text block after title with INNER position if document has only title block`() {
 
@@ -43,19 +63,19 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf()
+            children = listOf(header.id)
         )
 
         val style = Block.Content.Text.Style.values().random()
 
         val params = CreateBlock.Params(
             context = root,
-            target = root,
-            position = Position.INNER,
+            target = title.id,
+            position = Position.BOTTOM,
             prototype = Block.Prototype.Text(style)
         )
 
-        val document = listOf(page)
+        val document = listOf(page, header, title)
 
         stubOpenDocument(document = document)
         stubInterceptEvents(InterceptEvents.Params(context = root))
@@ -69,7 +89,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(root)
             onBlockFocusChanged(
-                id = root,
+                id = title.id,
                 hasFocus = true
             )
             onAddTextBlockClicked(style)
@@ -79,7 +99,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new text block at the TOP of the document's first block`() {
+    fun `should create a new text block below title`() {
 
         // SETUP
 
@@ -100,19 +120,19 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(block.id)
+            children = listOf(header.id, block.id)
         )
 
         val style = Block.Content.Text.Style.values().random()
 
         val params = CreateBlock.Params(
             context = root,
-            target = block.id,
-            position = Position.TOP,
+            target = title.id,
+            position = Position.BOTTOM,
             prototype = Block.Prototype.Text(style)
         )
 
-        val document = listOf(page)
+        val document = listOf(page, header, title)
 
         stubOpenDocument(document = document)
         stubInterceptEvents(InterceptEvents.Params(context = root))
@@ -126,7 +146,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(root)
             onBlockFocusChanged(
-                id = root,
+                id = title.id,
                 hasFocus = true
             )
             onAddTextBlockClicked(style)
@@ -136,7 +156,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new document after title with INNER position if document has only title block`() {
+    fun `should create a new document after title if document has only title block`() {
 
         // SETUP
 
@@ -146,16 +166,16 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf()
+            children = listOf(header.id)
         )
 
         val params = CreateDocument.Params(
             context = root,
-            target = root,
-            position = Position.INNER
+            target = title.id,
+            position = Position.BOTTOM
         )
 
-        val document = listOf(page)
+        val document = listOf(page, header, title)
 
         stubOpenDocument(document = document)
         stubInterceptEvents(InterceptEvents.Params(context = root))
@@ -168,7 +188,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(root)
             onBlockFocusChanged(
-                id = root,
+                id = title.id,
                 hasFocus = true
             )
             onAddNewPageClicked()
@@ -178,7 +198,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new document at the TOP of the document's first block`() {
+    fun `should create a new document below document title`() {
 
         // SETUP
 
@@ -199,16 +219,16 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(block.id)
+            children = listOf(header.id, block.id)
         )
 
         val params = CreateDocument.Params(
             context = root,
-            target = block.id,
-            position = Position.TOP
+            target = title.id,
+            position = Position.BOTTOM
         )
 
-        val document = listOf(page)
+        val document = listOf(page, header, title)
 
         stubOpenDocument(document = document)
         stubInterceptEvents(InterceptEvents.Params(context = root))
@@ -221,7 +241,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(root)
             onBlockFocusChanged(
-                id = root,
+                id = title.id,
                 hasFocus = true
             )
             onAddNewPageClicked()
@@ -231,7 +251,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new file block after title with INNER position if document has only title block`() {
+    fun `should create a new file block below title if document has only title block`() {
 
         // SETUP
 
@@ -241,7 +261,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf()
+            children = listOf(header.id)
         )
 
         val types = Block.Content.File.Type.values().filter { it != Block.Content.File.Type.NONE }
@@ -250,15 +270,15 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
 
         val params = CreateBlock.Params(
             context = root,
-            target = root,
-            position = Position.INNER,
+            target = title.id,
+            position = Position.BOTTOM,
             prototype = Block.Prototype.File(
                 type = type,
                 state = Block.Content.File.State.EMPTY
             )
         )
 
-        val document = listOf(page)
+        val document = listOf(page, header, title)
 
         stubOpenDocument(document = document)
         stubInterceptEvents(InterceptEvents.Params(context = root))
@@ -271,7 +291,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(root)
             onBlockFocusChanged(
-                id = root,
+                id = title.id,
                 hasFocus = true
             )
             onAddFileBlockClicked(type = type)
@@ -281,7 +301,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new file block at the TOP of the document's first block`() {
+    fun `should create a new file block below document title`() {
 
         // SETUP
 
@@ -302,7 +322,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(block.id)
+            children = listOf(header.id, block.id)
         )
 
         val types = Block.Content.File.Type.values().filter { it != Block.Content.File.Type.NONE }
@@ -311,15 +331,15 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
 
         val params = CreateBlock.Params(
             context = root,
-            target = block.id,
-            position = Position.TOP,
+            target = title.id,
+            position = Position.BOTTOM,
             prototype = Block.Prototype.File(
                 type = type,
                 state = Block.Content.File.State.EMPTY
             )
         )
 
-        val document = listOf(page)
+        val document = listOf(page, header, title)
 
         stubOpenDocument(document = document)
         stubInterceptEvents(InterceptEvents.Params(context = root))
@@ -332,7 +352,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(root)
             onBlockFocusChanged(
-                id = root,
+                id = title.id,
                 hasFocus = true
             )
             onAddFileBlockClicked(type = type)
@@ -352,17 +372,17 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf()
+            children = listOf(header.id)
         )
 
         val params = CreateBlock.Params(
             context = root,
-            target = root,
-            position = Position.INNER,
+            target = title.id,
+            position = Position.BOTTOM,
             prototype = Block.Prototype.Bookmark
         )
 
-        val document = listOf(page)
+        val document = listOf(page, header, title)
 
         stubOpenDocument(document = document)
         stubInterceptEvents(InterceptEvents.Params(context = root))
@@ -375,7 +395,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(root)
             onBlockFocusChanged(
-                id = root,
+                id = title.id,
                 hasFocus = true
             )
             onAddBookmarkBlockClicked()
@@ -385,7 +405,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new bookmark block at the TOP of the document's first block`() {
+    fun `should create a new bookmark block below title block`() {
 
         // SETUP
 
@@ -406,17 +426,17 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(block.id)
+            children = listOf(header.id, block.id)
         )
 
         val params = CreateBlock.Params(
             context = root,
-            target = block.id,
-            position = Position.TOP,
+            target = title.id,
+            position = Position.BOTTOM,
             prototype = Block.Prototype.Bookmark
         )
 
-        val document = listOf(page)
+        val document = listOf(page, header, title)
 
         stubOpenDocument(document = document)
         stubInterceptEvents(InterceptEvents.Params(context = root))
@@ -429,7 +449,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(root)
             onBlockFocusChanged(
-                id = root,
+                id = title.id,
                 hasFocus = true
             )
             onAddBookmarkBlockClicked()
@@ -439,7 +459,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new divider block after title with INNER position if document has only title block`() {
+    fun `should create a new divider block after title if document has only title block`() {
 
         // SETUP
 
@@ -449,17 +469,17 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf()
+            children = listOf(header.id)
         )
 
         val params = CreateBlock.Params(
             context = root,
-            target = root,
-            position = Position.INNER,
+            target = title.id,
+            position = Position.BOTTOM,
             prototype = Block.Prototype.Divider
         )
 
-        val document = listOf(page)
+        val document = listOf(page, header, title)
 
         stubOpenDocument(document = document)
         stubInterceptEvents(InterceptEvents.Params(context = root))
@@ -472,7 +492,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(root)
             onBlockFocusChanged(
-                id = root,
+                id = title.id,
                 hasFocus = true
             )
             onAddDividerBlockClicked()
@@ -482,7 +502,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new divider block at the TOP of the document's first block`() {
+    fun `should create a new divider block after document title`() {
 
         // SETUP
 
@@ -503,17 +523,17 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(block.id)
+            children = listOf(header.id, block.id)
         )
 
         val params = CreateBlock.Params(
             context = root,
-            target = block.id,
-            position = Position.TOP,
+            target = title.id,
+            position = Position.BOTTOM,
             prototype = Block.Prototype.Divider
         )
 
-        val document = listOf(page)
+        val document = listOf(page, header, title)
 
         stubOpenDocument(document = document)
         stubInterceptEvents(InterceptEvents.Params(context = root))
@@ -526,7 +546,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(root)
             onBlockFocusChanged(
-                id = root,
+                id = title.id,
                 hasFocus = true
             )
             onAddDividerBlockClicked()

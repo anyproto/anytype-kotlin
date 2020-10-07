@@ -109,11 +109,11 @@ class BlockMiddleware(
 
     override suspend fun setDocumentEmojiIcon(
         command: CommandEntity.SetDocumentEmojiIcon
-    ) = middleware.setDocumentEmojiIcon(command)
+    ): PayloadEntity = middleware.setDocumentEmojiIcon(command)
 
     override suspend fun setDocumentImageIcon(
         command: CommandEntity.SetDocumentImageIcon
-    ) = middleware.setDocumentImageIcon(command)
+    ): PayloadEntity = middleware.setDocumentImageIcon(command)
 
     override suspend fun setupBookmark(
         command: CommandEntity.SetupBookmark

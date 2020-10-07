@@ -33,6 +33,26 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
 
         // SETUP
 
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val child = Block(
             id = "CHILD",
             fields = Block.Fields.empty(),
@@ -61,10 +81,10 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(parent.id)
+            children = listOf(header.id, parent.id)
         )
 
-        val document = listOf(page, parent, child)
+        val document = listOf(page, header, title, parent, child)
 
         val params = UnlinkBlocks.Params(
             context = root,
@@ -109,9 +129,9 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             ViewState.Success(
                 listOf(
                     BlockView.Title.Document(
-                        id = root,
+                        id = title.id,
                         isFocused = false,
-                        text = null
+                        text = title.content<Block.Content.Text>().text
                     ),
                     BlockView.Text.Paragraph(
                         id = parent.id,
@@ -128,6 +148,26 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
     fun `should focus previous nested text block when the next one is deleted`() {
 
         // SETUP
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
 
         val child1 = Block(
             id = "CHILD1",
@@ -168,10 +208,10 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(parent.id)
+            children = listOf(header.id, parent.id)
         )
 
-        val document = listOf(page, parent, child1, child2)
+        val document = listOf(page, header, title, parent, child1, child2)
 
         val params = UnlinkBlocks.Params(
             context = root,
@@ -216,9 +256,9 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             ViewState.Success(
                 listOf(
                     BlockView.Title.Document(
-                        id = root,
+                        id = title.id,
                         isFocused = false,
-                        text = null
+                        text = title.content<Block.Content.Text>().text
                     ),
                     BlockView.Text.Paragraph(
                         id = parent.id,
@@ -241,6 +281,26 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
     fun `should focus the first previous nested text block when the first next text block is deleted`() {
 
         // SETUP
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
 
         val child1 = Block(
             id = "CHILD1-TEXT",
@@ -292,10 +352,10 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(parent.id)
+            children = listOf(header.id, parent.id)
         )
 
-        val document = listOf(page, parent, child1, child2, child3)
+        val document = listOf(page, header, title, parent, child1, child2, child3)
 
         val params = UnlinkBlocks.Params(
             context = root,
@@ -340,9 +400,9 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             ViewState.Success(
                 listOf(
                     BlockView.Title.Document(
-                        id = root,
+                        id = title.id,
                         isFocused = false,
-                        text = null
+                        text = title.content<Block.Content.Text>().text
                     ),
                     BlockView.Text.Paragraph(
                         id = parent.id,
@@ -370,6 +430,26 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
     fun `should focus the first previous nested textual block when the first next text block is deleted`() {
 
         // SETUP
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
 
         val child1 = Block(
             id = "CHILD1-TEXT",
@@ -421,10 +501,10 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(parent.id)
+            children = listOf(header.id, parent.id)
         )
 
-        val document = listOf(page, parent, child1, child2, child3)
+        val document = listOf(page, header, title, parent, child1, child2, child3)
 
         val params = UnlinkBlocks.Params(
             context = root,
@@ -469,9 +549,9 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             ViewState.Success(
                 listOf(
                     BlockView.Title.Document(
-                        id = root,
+                        id = title.id,
                         isFocused = false,
-                        text = null
+                        text = title.content<Block.Content.Text>().text
                     ),
                     BlockView.Text.Paragraph(
                         id = parent.id,

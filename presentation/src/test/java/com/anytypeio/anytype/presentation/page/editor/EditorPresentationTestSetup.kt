@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.util.Bridge
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
@@ -200,7 +201,8 @@ open class EditorPresentationTestSetup {
                 move = move,
                 turnIntoDocument = turnIntoDocument,
                 analytics = analytics
-            )
+            ),
+            bridge = Bridge()
         )
     }
 

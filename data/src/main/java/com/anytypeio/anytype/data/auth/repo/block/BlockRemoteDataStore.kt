@@ -91,11 +91,11 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun setDocumentEmojiIcon(
         command: CommandEntity.SetDocumentEmojiIcon
-    ) = remote.setDocumentEmojiIcon(command)
+    ): PayloadEntity = remote.setDocumentEmojiIcon(command)
 
     override suspend fun setDocumentImageIcon(
         command: CommandEntity.SetDocumentImageIcon
-    ) = remote.setDocumentImageIcon(command)
+    ): PayloadEntity = remote.setDocumentImageIcon(command)
 
     override suspend fun setupBookmark(
         command: CommandEntity.SetupBookmark

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE
 import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verifyBlocking
@@ -39,6 +40,26 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         // SETUP
 
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val a = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
@@ -56,10 +77,10 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(a.id)
+            children = listOf(header.id, a.id)
         )
 
-        val document = listOf(page, a)
+        val document = listOf(page, header, title, a)
 
         stubOpenDocument(document)
         stubInterceptEvents()
@@ -130,9 +151,9 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 ViewState.Success(
                     blocks = listOf(
                         BlockView.Title.Document(
-                            id = root,
+                            id = title.id,
                             isFocused = false,
-                            text = null,
+                            text = title.content<TXT>().text,
                             mode = BlockView.Mode.READ
                         ),
                         BlockView.Text.Numbered(
@@ -164,9 +185,9 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 ViewState.Success(
                     blocks = listOf(
                         BlockView.Title.Document(
-                            id = root,
+                            id = title.id,
                             isFocused = false,
-                            text = null,
+                            text = title.content<TXT>().text,
                             mode = BlockView.Mode.READ
                         ),
                         BlockView.Text.Numbered(
@@ -228,9 +249,9 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 ViewState.Success(
                     blocks = listOf(
                         BlockView.Title.Document(
-                            id = root,
+                            id = title.id,
                             isFocused = false,
-                            text = null,
+                            text = title.content<TXT>().text,
                             mode = BlockView.Mode.READ
                         ),
                         BlockView.Text.Highlight(
@@ -397,6 +418,26 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         // SETUP
 
+        val ttl = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(ttl.id)
+        )
+
         val grandchild1 = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
@@ -458,10 +499,10 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(parent.id)
+            children = listOf(header.id, parent.id)
         )
 
-        val document = listOf(page, parent, child1, child2, grandchild1, grandchild2)
+        val document = listOf(page, header, ttl, parent, child1, child2, grandchild1, grandchild2)
 
         stubOpenDocument(document)
         stubInterceptEvents()
@@ -484,9 +525,9 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         coroutineTestRule.advanceTime(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
 
         val title = BlockView.Title.Document(
-            id = root,
+            id = ttl.id,
             isFocused = false,
-            text = null,
+            text = ttl.content<TXT>().text,
             mode = BlockView.Mode.READ
         )
 
@@ -614,6 +655,26 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         // SETUP
 
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val child1 = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
@@ -653,10 +714,10 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(parent.id)
+            children = listOf(header.id, parent.id)
         )
 
-        val document = listOf(page, parent, child1, child2)
+        val document = listOf(page, header, title, parent, child1, child2)
 
         stubOpenDocument(document)
         stubInterceptEvents()
@@ -678,10 +739,10 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
 
-        val title = BlockView.Title.Document(
-            id = root,
+        val titleView = BlockView.Title.Document(
+            id = title.id,
             isFocused = false,
-            text = null,
+            text = title.content<TXT>().text,
             mode = BlockView.Mode.READ
         )
 
@@ -722,7 +783,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             assertValue(
                 ViewState.Success(
                     blocks = listOf(
-                        title,
+                        titleView,
                         parentView,
                         child1View,
                         child2View
@@ -743,7 +804,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             assertValue(
                 ViewState.Success(
                     blocks = listOf(
-                        title,
+                        titleView,
                         parentView.copy(isSelected = true),
                         child1View.copy(isSelected = true),
                         child2View.copy(isSelected = true)
@@ -764,7 +825,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             assertValue(
                 ViewState.Success(
                     blocks = listOf(
-                        title,
+                        titleView,
                         parentView.copy(isSelected = true),
                         child1View.copy(isSelected = true),
                         child2View.copy(isSelected = true)
@@ -780,6 +841,26 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
     fun `should request only parent's deletion, when all its descendants are selected`() {
 
         // SETUP
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
 
         val grandchild1 = Block(
             id = MockDataFactory.randomUuid(),
@@ -842,10 +923,10 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(parent.id)
+            children = listOf(header.id, parent.id)
         )
 
-        val document = listOf(page, parent, child1, child2, grandchild1, grandchild2)
+        val document = listOf(page, header, title, parent, child1, child2, grandchild1, grandchild2)
 
         stubOpenDocument(document)
         stubInterceptEvents()
@@ -883,6 +964,81 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         vm.onMultiSelectModeDeleteClicked()
 
         verifyBlocking(unlinkBlocks, times(1)) { invoke(unlinkParams) }
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should not select title when trying to select all blocks`() {
+
+        // SETUP
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            )
+        )
+
+        val focus = listOf(a.id, title.id).random()
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, a.id)
+        )
+
+        val document = listOf(page, header, title, a)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        vm.apply {
+            onBlockFocusChanged(id = focus, hasFocus = true)
+            onEnterMultiSelectModeClicked()
+            onMultiSelectModeSelectAllClicked()
+        }
+
+        coroutineTestRule.advanceTime(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
+
+        vm.controlPanelViewState.test().assertValue { state ->
+            state.multiSelect.isVisible
+                    && !state.multiSelect.isScrollAndMoveEnabled
+                    && state.multiSelect.count == 1
+        }
 
         clearPendingCoroutines()
     }

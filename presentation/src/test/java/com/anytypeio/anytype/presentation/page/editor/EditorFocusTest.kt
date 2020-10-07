@@ -46,9 +46,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(block.id)
             ),
             block

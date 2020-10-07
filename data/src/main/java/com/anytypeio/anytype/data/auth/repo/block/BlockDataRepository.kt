@@ -129,11 +129,11 @@ class BlockDataRepository(
 
     override suspend fun setDocumentEmojiIcon(
         command: Command.SetDocumentEmojiIcon
-    ) = factory.remote.setDocumentEmojiIcon(command.toEntity())
+    ): Payload = factory.remote.setDocumentEmojiIcon(command.toEntity()).toDomain()
 
     override suspend fun setDocumentImageIcon(
         command: Command.SetDocumentImageIcon
-    ) = factory.remote.setDocumentImageIcon(command.toEntity())
+    ): Payload = factory.remote.setDocumentImageIcon(command.toEntity()).toDomain()
 
     override suspend fun setupBookmark(
         command: Command.SetupBookmark

@@ -58,7 +58,7 @@ data class BlockEntity(
         }
 
         data class Layout(val type: Type) : Content() {
-            enum class Type { ROW, COLUMN, DIV }
+            enum class Type { ROW, COLUMN, DIV, HEADER }
         }
 
         data class Icon(

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.event.model.Event
 import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.times
@@ -61,7 +62,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         vm.onEndLineEnterClicked(
             id = child,
-            text = page.last().content<Block.Content.Text>().text,
+            text = page.last().content<TXT>().text,
             marks = emptyList()
         )
 
@@ -219,6 +220,26 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         // SETUP
 
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val style = Block.Content.Text.Style.CHECKBOX
         val child = MockDataFactory.randomUuid()
 
@@ -237,11 +258,13 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    type = Block.Content.Smart.Type.PAGE
                 ),
-                children = listOf(child)
+                children = listOf(header.id, child)
             ),
+            header,
+            title,
             checkbox
         )
 
@@ -275,8 +298,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val before = ViewState.Success(
             blocks = listOf(
                 BlockView.Title.Document(
-                    id = root,
-                    text = null,
+                    id = title.id,
+                    text = title.content<TXT>().text,
                     isFocused = false
                 ),
                 BlockView.Text.Checkbox(
@@ -316,8 +339,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val after = ViewState.Success(
             blocks = listOf(
                 BlockView.Title.Document(
-                    id = root,
-                    text = null,
+                    id = title.id,
+                    text = title.content<TXT>().text,
                     isFocused = false
                 ),
                 BlockView.Text.Paragraph(
@@ -335,6 +358,26 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
     fun `should convert bullet block with empty text to paragraph on enter-pressed event`() {
 
         // SETUP
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
 
         val style = Block.Content.Text.Style.BULLET
         val child = MockDataFactory.randomUuid()
@@ -354,11 +397,13 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    type = Block.Content.Smart.Type.PAGE
                 ),
-                children = listOf(child)
+                children = listOf(header.id, child)
             ),
+            header,
+            title,
             checkbox
         )
 
@@ -392,8 +437,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val before = ViewState.Success(
             blocks = listOf(
                 BlockView.Title.Document(
-                    id = root,
-                    text = null,
+                    id = title.id,
+                    text = title.content<TXT>().text,
                     isFocused = false
                 ),
                 BlockView.Text.Bulleted(
@@ -432,8 +477,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val after = ViewState.Success(
             blocks = listOf(
                 BlockView.Title.Document(
-                    id = root,
-                    text = null,
+                    id = title.id,
+                    text = title.content<TXT>().text,
                     isFocused = false
                 ),
                 BlockView.Text.Paragraph(
@@ -455,6 +500,26 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val style = Block.Content.Text.Style.TOGGLE
         val child = MockDataFactory.randomUuid()
 
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val checkbox = Block(
             id = child,
             fields = Block.Fields(emptyMap()),
@@ -470,11 +535,13 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    type = Block.Content.Smart.Type.PAGE
                 ),
-                children = listOf(child)
+                children = listOf(header.id, child)
             ),
+            header,
+            title,
             checkbox
         )
 
@@ -508,8 +575,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val before = ViewState.Success(
             blocks = listOf(
                 BlockView.Title.Document(
-                    id = root,
-                    text = null,
+                    id = title.id,
+                    text = title.content<Block.Content.Text>().text,
                     isFocused = false
                 ),
                 BlockView.Text.Toggle(
@@ -549,8 +616,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val after = ViewState.Success(
             blocks = listOf(
                 BlockView.Title.Document(
-                    id = root,
-                    text = null,
+                    id = title.id,
+                    text = title.content<Block.Content.Text>().text,
                     isFocused = false
                 ),
                 BlockView.Text.Paragraph(
@@ -568,6 +635,26 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
     fun `should convert numbered block with empty text to paragraph on enter-pressed event`() {
 
         // SETUP
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
 
         val style = Block.Content.Text.Style.NUMBERED
         val child = MockDataFactory.randomUuid()
@@ -587,11 +674,13 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    type = Block.Content.Smart.Type.PAGE
                 ),
-                children = listOf(child)
+                children = listOf(header.id, child)
             ),
+            header,
+            title,
             checkbox
         )
 
@@ -625,8 +714,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val before = ViewState.Success(
             blocks = listOf(
                 BlockView.Title.Document(
-                    id = root,
-                    text = null,
+                    id = title.id,
+                    text = title.content<Block.Content.Text>().text,
                     isFocused = false
                 ),
                 BlockView.Text.Numbered(
@@ -644,7 +733,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         vm.onEndLineEnterClicked(
             id = child,
             marks = emptyList(),
-            text = page.last().content<Block.Content.Text>().text
+            text = page.last().content<TXT>().text
         )
 
         verifyBlocking(updateTextStyle, times(1)) {
@@ -666,8 +755,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val after = ViewState.Success(
             blocks = listOf(
                 BlockView.Title.Document(
-                    id = root,
-                    text = null,
+                    id = title.id,
+                    text = title.content<Block.Content.Text>().text,
                     isFocused = false
                 ),
                 BlockView.Text.Paragraph(

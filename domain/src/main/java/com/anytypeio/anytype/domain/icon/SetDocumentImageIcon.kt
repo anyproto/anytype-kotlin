@@ -4,10 +4,11 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.block.model.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.event.model.Payload
 
 class SetDocumentImageIcon(
     private val repo: BlockRepository
-) : BaseUseCase<Unit, SetDocumentImageIcon.Params>() {
+) : BaseUseCase<Payload, SetDocumentImageIcon.Params>() {
 
     override suspend fun run(params: Params) = safe {
         val hash = repo.uploadFile(

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
@@ -26,6 +27,7 @@ import com.anytypeio.anytype.presentation.page.editor.Orchestrator
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.util.Bridge
 import com.anytypeio.anytype.ui.page.PageFragment
 import dagger.Module
 import dagger.Provides
@@ -89,7 +91,8 @@ object EditorSessionModule {
         archiveDocument: ArchiveDocument,
         interactor: Orchestrator,
         getListPages: GetListPages,
-        analytics: Analytics
+        analytics: Analytics,
+        bridge: Bridge<Payload>
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -105,7 +108,8 @@ object EditorSessionModule {
         archiveDocument = archiveDocument,
         interactor = interactor,
         getListPages = getListPages,
-        analytics = analytics
+        analytics = analytics,
+        bridge = bridge
     )
 
     @JvmStatic

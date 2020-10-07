@@ -2,10 +2,12 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModelFactory
+import com.anytypeio.anytype.presentation.util.Bridge
 import com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
 import dagger.Module
 import dagger.Provides
@@ -31,11 +33,13 @@ class DocumentEmojiIconPickerModule {
     @PerScreen
     fun provideDocumentEmojiIconPickerViewModel(
         setEmojiIcon: SetDocumentEmojiIcon,
-        emojiSuggester: EmojiSuggester
+        emojiSuggester: EmojiSuggester,
+        bridge: Bridge<Payload>
     ): DocumentEmojiIconPickerViewModelFactory = DocumentEmojiIconPickerViewModelFactory(
         setEmojiIcon = setEmojiIcon,
         emojiSuggester = emojiSuggester,
-        emojiProvider = Emoji
+        emojiProvider = Emoji,
+        bridge = bridge
     )
 
     @Provides

@@ -8,12 +8,14 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.model.Event
+import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.page.editor.Orchestrator
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.util.Bridge
 
 open class PageViewModelFactory(
     private val openPage: OpenPage,
@@ -30,7 +32,8 @@ open class PageViewModelFactory(
     private val renderer: DefaultBlockViewRenderer,
     private val interactor: Orchestrator,
     private val getListPages: GetListPages,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val bridge: Bridge<Payload>
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -50,7 +53,8 @@ open class PageViewModelFactory(
             createNewDocument = createNewDocument,
             orchestrator = interactor,
             getListPages = getListPages,
-            analytics = analytics
+            analytics = analytics,
+            bridge = bridge
         ) as T
     }
 }

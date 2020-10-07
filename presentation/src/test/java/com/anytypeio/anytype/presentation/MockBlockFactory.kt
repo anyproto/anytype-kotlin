@@ -2,15 +2,8 @@ package com.anytypeio.anytype.presentation
 
 import MockDataFactory
 import com.anytypeio.anytype.domain.block.model.Block
-import java.util.concurrent.ThreadLocalRandom
 
 object MockBlockFactory {
-
-    fun randomStyle() : Block.Content.Text.Style {
-        val styles = Block.Content.Text.Style.values()
-        val random = ThreadLocalRandom.current().nextInt(styles.size)
-        return styles[random]
-    }
 
     fun makeOnePageWithOneTextBlock(
         root: String,
@@ -20,8 +13,8 @@ object MockBlockFactory {
         Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
             ),
             children = listOf(child)
         ),

@@ -51,8 +51,10 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
 
     @Inject
     lateinit var factory: DocumentIconActionMenuViewModelFactory
+
     @Inject
     lateinit var analytics: Analytics
+
     private val vm by viewModels<DocumentIconActionMenuViewModel> { factory }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

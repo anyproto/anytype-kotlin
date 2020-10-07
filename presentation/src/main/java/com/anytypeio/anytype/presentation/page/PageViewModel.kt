@@ -74,6 +74,7 @@ import com.anytypeio.anytype.presentation.page.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.util.Bridge
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -96,7 +97,8 @@ class PageViewModel(
     private val renderer: DefaultBlockViewRenderer,
     private val orchestrator: Orchestrator,
     private val getListPages: GetListPages,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val bridge: Bridge<Payload>
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -110,7 +112,7 @@ class PageViewModel(
 
     private val views: List<BlockView> get() = orchestrator.stores.views.current()
 
-    private var eventSubscription: Job? = null
+    private val jobs = mutableListOf<Job>()
 
     private var mode = EditorMode.EDITING
 
@@ -192,7 +194,6 @@ class PageViewModel(
     }
 
     private fun proceedWithUpdatingDocumentTitle(update: String) {
-
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.UpdateTitle(
@@ -471,11 +472,18 @@ class PageViewModel(
 
         stateData.postValue(ViewState.Loading)
 
-        eventSubscription = viewModelScope.launch {
+        jobs += viewModelScope.launch {
             interceptEvents
                 .build(InterceptEvents.Params(context))
                 .map { events -> processEvents(events) }
                 .collect { refresh() }
+        }
+
+        jobs += viewModelScope.launch {
+            bridge
+                .flow()
+                .filter { it.context == context }
+                .collect { orchestrator.proxies.payloads.send(it) }
         }
 
         viewModelScope.launch {
@@ -506,16 +514,23 @@ class PageViewModel(
         val event = payload.events.find { it is Event.Command.ShowBlock }
         if (event is Event.Command.ShowBlock) {
             val root = event.blocks.find { it.id == context }
-            if (root == null) {
-                Timber.e("Could not find the root block on initial focusing")
-            } else if (root.children.isEmpty()) {
-                val focus = Editor.Focus(id = root.id, cursor = Editor.Cursor.End)
-                viewModelScope.launch { orchestrator.stores.focus.update(focus) }
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnFocusChanged(
-                        id = root.id, style = Content.Text.Style.TITLE
-                    )
-                )
+            when {
+                root == null -> Timber.e("Could not find the root block on initial focusing")
+                root.children.size == 1 -> {
+                    val first = event.blocks.first { it.id == root.children.first() }
+                    val content = first.content
+                    if (content is Content.Layout && content.type == Content.Layout.Type.HEADER) {
+                        val title = event.blocks.title()
+                        val focus = Editor.Focus(id = title.id, cursor = Editor.Cursor.End)
+                        viewModelScope.launch { orchestrator.stores.focus.update(focus) }
+                        controlPanelInteractor.onEvent(
+                            ControlPanelMachine.Event.OnFocusChanged(
+                                id = title.id, style = Content.Text.Style.TITLE
+                            )
+                        )
+                    }
+                }
+                else -> Timber.d("Skipping initial focusing, document is not empty.")
             }
         }
     }
@@ -859,6 +874,7 @@ class PageViewModel(
                     target = id
                 )
             } else {
+                if (previous is BlockView.Title) _toasts.offer("Merging with title currently not supported")
                 Timber.d("Skipping merge because previous block is not a text block")
             }
         } else {
@@ -1301,26 +1317,10 @@ class PageViewModel(
                 )
             }
         } else {
-
-            var id = target.id
-
-            val position: Position
-
-            if (target.id == context) {
-                if (target.children.isEmpty())
-                    position = Position.INNER
-                else {
-                    position = Position.TOP
-                    id = target.children.first()
-                }
-            } else {
-                position = Position.BOTTOM
-            }
-
             proceedWithCreatingNewTextBlock(
-                id = id,
+                id = target.id,
                 style = style,
-                position = position
+                position = Position.BOTTOM
             )
         }
 
@@ -1403,37 +1403,18 @@ class PageViewModel(
     }
 
     fun onAddFileBlockClicked(type: Content.File.Type) {
-
         val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
-
         val content = focused.content
-
         if (content is Content.Text && content.text.isEmpty()) {
             proceedWithReplacingByEmptyFileBlock(
                 id = focused.id,
                 type = type
             )
         } else {
-
-            val position: Position
-
-            var target: Id = focused.id
-
-            if (focused.id == context) {
-                if (focused.children.isEmpty()) {
-                    position = Position.INNER
-                } else {
-                    position = Position.TOP
-                    target = focused.children.first()
-                }
-            } else {
-                position = Position.BOTTOM
-            }
-
             proceedWithCreatingEmptyFileBlock(
-                id = target,
+                id = focused.id,
                 type = type,
-                position = position
+                position = Position.BOTTOM
             )
         }
     }
@@ -1511,8 +1492,10 @@ class PageViewModel(
     }
 
     fun onBlockToolbarStyleClicked() {
-        if (orchestrator.stores.focus.current().id == context) {
-            _toasts.offer("Changing style for title currently not supported")
+        val target = orchestrator.stores.focus.current().id
+        val view = views.first { it.id == target }
+        if (view is BlockView.Title) {
+            _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
         } else {
             val textSelection = orchestrator.stores.textSelection.current()
             controlPanelInteractor.onEvent(
@@ -1534,14 +1517,12 @@ class PageViewModel(
     }
 
     fun onBlockToolbarBlockActionsClicked() {
-        if (orchestrator.stores.focus.current().id == context) {
-            _toasts.offer("Not implemented for title")
+        val target = orchestrator.stores.focus.current().id
+        val view = views.first { it.id == target }
+        if (view is BlockView.Title) {
+            _toasts.offer(CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR)
         } else {
-            dispatch(
-                Command.Measure(
-                    target = orchestrator.stores.focus.current().id
-                )
-            )
+            dispatch(Command.Measure(target = target))
             viewModelScope.sendEvent(
                 analytics = analytics,
                 eventName = EventsDictionary.BTN_BLOCK_ACTIONS
@@ -1708,7 +1689,7 @@ class PageViewModel(
 
     private fun onSelectAllClicked(state: ViewState.Success) =
         state.blocks.map { block ->
-            if (block.id != context) select(block.id)
+            if (block.id != blocks.titleId()) select(block.id)
             block.updateSelection(newSelection = true)
         }.let {
             onMultiSelectModeBlockClicked()
@@ -1717,7 +1698,7 @@ class PageViewModel(
 
     private fun onUnselectAllClicked(state: ViewState.Success) =
         state.blocks.map { block ->
-            if (block.id != context) unselect(block.id)
+            unselect(block.id)
             block.updateSelection(newSelection = false)
         }.let {
             onMultiSelectModeBlockClicked()
@@ -1892,6 +1873,7 @@ class PageViewModel(
     }
 
     fun onOutsideClicked() {
+
         val root = blocks.find { it.id == context } ?: return
 
         if (root.children.isEmpty()) {
@@ -1926,6 +1908,9 @@ class PageViewModel(
                     addNewBlockAtTheEnd()
                 }
                 is Content.Divider -> {
+                    addNewBlockAtTheEnd()
+                }
+                is Content.Layout -> {
                     addNewBlockAtTheEnd()
                 }
                 else -> {
@@ -2740,6 +2725,11 @@ class PageViewModel(
         const val CANNOT_MOVE_PARENT_INTO_CHILD =
             "Cannot move parent into child. Please, check selected blocks."
         const val MENTION_TITLE_EMPTY = "Untitled"
+
+        const val CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR =
+            "Opening action menu for title currently not supported"
+        const val CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR =
+            "Opening style panel for title currently not supported"
     }
 
     data class MarkupAction(
@@ -2767,7 +2757,10 @@ class PageViewModel(
 
     fun onStop() {
         Timber.d("onStop")
-        eventSubscription?.cancel()
+        jobs.apply {
+            forEach { it.cancel() }
+            clear()
+        }
     }
 
     enum class Session { IDLE, OPEN, ERROR }

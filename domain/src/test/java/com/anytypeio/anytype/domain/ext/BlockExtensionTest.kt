@@ -893,4 +893,127 @@ class BlockExtensionTest {
             actual = childrenIdsList
         )
     }
+
+    @Test
+    fun `should return title block for document`() {
+
+        val root = MockDataFactory.randomUuid()
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, a.id)
+        )
+
+        val document = listOf(page, header, title, a)
+
+        val result = document.title()
+
+        val expected = title
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test(expected = NoSuchElementException::class)
+    fun `should throw NoSuchElementException when title block is not present in header childs`() {
+
+        val root = MockDataFactory.randomUuid()
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf()
+        )
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, a.id)
+        )
+
+        val document = listOf(page, header, a)
+
+        val result = document.title()
+    }
+
+    @Test(expected = NoSuchElementException::class)
+    fun `should throw NoSuchElementException when header is not present`() {
+
+        val root = MockDataFactory.randomUuid()
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(a.id)
+        )
+
+        val document = listOf(page, a)
+
+        val result = document.title()
+    }
 }

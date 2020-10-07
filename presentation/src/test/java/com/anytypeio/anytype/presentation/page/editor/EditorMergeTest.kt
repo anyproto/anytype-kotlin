@@ -6,7 +6,6 @@ import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.ext.content
-import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.nhaarman.mockitokotlin2.eq
@@ -34,22 +33,61 @@ class EditorMergeTest : EditorPresentationTestSetup() {
     @Test
     fun `should update text and proceed with merging the first paragraph with the second on non-empty-block-backspace-pressed event`() {
 
-        val firstChild = MockDataFactory.randomUuid()
-        val secondChild = MockDataFactory.randomUuid()
-        val thirdChild = MockDataFactory.randomUuid()
-
-        val page = MockBlockFactory.makeOnePageWithThreeTextBlocks(
-            root = root,
-            firstChild = firstChild,
-            secondChild = secondChild,
-            thirdChild = thirdChild,
-            firstChildStyle = Block.Content.Text.Style.TITLE,
-            secondChildStyle = Block.Content.Text.Style.P,
-            thirdChildStyle = Block.Content.Text.Style.P
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
         )
 
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val first = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        val second = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, first.id, second.id)
+        )
+
+        val doc = listOf(page, header, title, first, second)
+
         stubInterceptEvents()
-        stubOpenDocument(page)
+        stubOpenDocument(doc)
         stubMergeBlocks(root)
         stubUpdateText()
 
@@ -58,20 +96,20 @@ class EditorMergeTest : EditorPresentationTestSetup() {
         vm.onStart(root)
 
         vm.onBlockFocusChanged(
-            id = thirdChild,
+            id = second.id,
             hasFocus = true
         )
 
         val text = MockDataFactory.randomString()
 
         vm.onTextChanged(
-            id = thirdChild,
+            id = second.id,
             marks = emptyList(),
             text = text
         )
 
         vm.onNonEmptyBlockBackspaceClicked(
-            id = thirdChild,
+            id = second.id,
             marks = emptyList(),
             text = text
         )
@@ -85,7 +123,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
                         context = root,
                         text = text,
                         marks = emptyList(),
-                        target = thirdChild
+                        target = second.id
                     )
                 )
             )
@@ -96,7 +134,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
                 params = eq(
                     MergeBlocks.Params(
                         context = root,
-                        pair = Pair(secondChild, thirdChild)
+                        pair = Pair(first.id, second.id)
                     )
                 )
             )

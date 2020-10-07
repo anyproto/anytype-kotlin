@@ -16,7 +16,8 @@ import javax.inject.Singleton
         UtilModule::class,
         EmojiModule::class,
         ClipboardModule::class,
-        AnalyticsModule::class
+        AnalyticsModule::class,
+        BridgeModule::class
     ]
 )
 interface MainComponent {

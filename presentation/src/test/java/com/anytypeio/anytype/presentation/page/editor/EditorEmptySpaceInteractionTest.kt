@@ -20,6 +20,26 @@ import org.mockito.MockitoAnnotations
 
 class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
+    val title = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Text(
+            text = MockDataFactory.randomString(),
+            style = Block.Content.Text.Style.TITLE,
+            marks = emptyList()
+        ),
+        children = emptyList(),
+        fields = Block.Fields.empty()
+    )
+
+    val header = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Layout(
+            type = Block.Content.Layout.Type.HEADER
+        ),
+        fields = Block.Fields.empty(),
+        children = listOf(title.id)
+    )
+
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
@@ -39,19 +59,78 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new paragraph on outside-clicked event if page contains only title and icon`() {
+    fun `should create a new paragraph on outside-clicked event if page contains only title with icon`() {
 
         // SETUP
 
-        val child = MockDataFactory.randomUuid()
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child,
-            style = Block.Content.Text.Style.TITLE
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id)
         )
 
+        val doc = listOf(page, header, title)
+
         stubInterceptEvents()
-        stubOpenDocument(page)
+        stubOpenDocument(doc)
+        stubCreateBlock(root)
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        vm.onOutsideClicked()
+
+        verifyBlocking(createBlock, times(1)) {
+            invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        context = root,
+                        target = "",
+                        position = Position.INNER,
+                        prototype = Block.Prototype.Text(
+                            style = Block.Content.Text.Style.P
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should create a new paragraph on outside-clicked event if page contains only title with icon and one non-empty paragraph`() {
+
+        // SETUP
+
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.P,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, block.id)
+        )
+
+        val doc = listOf(page, header, title, block)
+
+        stubInterceptEvents()
+        stubOpenDocument(doc)
         stubCreateBlock(root)
 
         val vm = buildViewModel()

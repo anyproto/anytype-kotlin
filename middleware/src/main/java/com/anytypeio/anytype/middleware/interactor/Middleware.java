@@ -765,7 +765,7 @@ public class Middleware {
         return new Pair<>(response.getBlockId(), mapper.toPayload(response.getEvent()));
     }
 
-    public void setDocumentEmojiIcon(CommandEntity.SetDocumentEmojiIcon command) throws Exception {
+    public PayloadEntity setDocumentEmojiIcon(CommandEntity.SetDocumentEmojiIcon command) throws Exception {
 
         Value emojiValue = Value.newBuilder().setStringValue(command.getEmoji()).build();
         Value imageValue = Value.newBuilder().setStringValue("").build();
@@ -798,9 +798,11 @@ public class Middleware {
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
+
+        return mapper.toPayload(response.getEvent());
     }
 
-    public void setDocumentImageIcon(CommandEntity.SetDocumentImageIcon command) throws Exception {
+    public PayloadEntity setDocumentImageIcon(CommandEntity.SetDocumentImageIcon command) throws Exception {
 
         Value imageValue = Value.newBuilder().setStringValue(command.getHash()).build();
         Value emojiValue = Value.newBuilder().setStringValue("").build();
@@ -833,6 +835,8 @@ public class Middleware {
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());
         }
+
+        return mapper.toPayload(response.getEvent());
     }
 
     public PayloadEntity setupBookmark(CommandEntity.SetupBookmark command) throws Exception {

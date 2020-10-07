@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.page.picker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
@@ -10,6 +11,7 @@ import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.emojifier.suggest.model.EmojiSuggest
 import com.anytypeio.anytype.library_page_icon_picker_widget.model.EmojiPickerView
 import com.anytypeio.anytype.presentation.page.editor.Proxy
+import com.anytypeio.anytype.presentation.util.Bridge
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -19,7 +21,8 @@ import timber.log.Timber
 class DocumentEmojiIconPickerViewModel(
     private val setEmojiIcon: SetDocumentEmojiIcon,
     private val provider: EmojiProvider,
-    private val suggester: EmojiSuggester
+    private val suggester: EmojiSuggester,
+    private val bridge: Bridge<Payload>
 ) : ViewModel() {
 
     /**
@@ -126,7 +129,10 @@ class DocumentEmojiIconPickerViewModel(
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while setting emoji") },
-                success = { state.apply { value = ViewState.Exit } }
+                success = {
+                    bridge.send(it)
+                    state.apply { value = ViewState.Exit }
+                }
             )
         }
     }

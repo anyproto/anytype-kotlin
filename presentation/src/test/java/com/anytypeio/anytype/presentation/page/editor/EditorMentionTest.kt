@@ -9,14 +9,15 @@ import com.anytypeio.anytype.core_ui.state.ControlPanelState
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.page.CreateNewDocument
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.*
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -42,6 +43,26 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
     @Test
     fun `should update text with cursor position`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
 
         val mentionTrigger = "@a"
         val from = 11
@@ -88,10 +109,10 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(a.id)
+            children = listOf(header.id, a.id)
         )
 
-        val document = listOf(page, a)
+        val document = listOf(page, header, title, a)
 
         stubOpenDocument(document)
         stubInterceptEvents()
@@ -139,9 +160,9 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 ViewState.Success(
                     blocks = listOf(
                         BlockView.Title.Document(
-                            id = root,
+                            id = title.id,
                             isFocused = false,
-                            text = null,
+                            text = title.content<TXT>().text,
                             mode = BlockView.Mode.EDIT
                         ),
                         BlockView.Text.Paragraph(
@@ -192,6 +213,27 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
     @Test
     fun `should create new page with proper name and add new mention with page id`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val mentionTrigger = "@Jazz"
         val from = 11
         val givenText = "page about $mentionTrigger music"
@@ -224,10 +266,10 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(a.id)
+            children = listOf(header.id, a.id)
         )
 
-        val document = listOf(page, a)
+        val document = listOf(page, header, title, a)
 
         stubOpenDocument(document)
         stubInterceptEvents()
@@ -282,10 +324,12 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             )
         }
 
-        runBlockingTest {
-            verify(createNewDocument, times(1)).invoke(CreateNewDocument.Params(
-                name = newPageName
-            ))
+        verifyBlocking(createNewDocument, times(1)) {
+            invoke(
+                CreateNewDocument.Params(
+                    name = newPageName
+                )
+            )
         }
 
         vm.state.test().apply {
@@ -293,9 +337,9 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 ViewState.Success(
                     blocks = listOf(
                         BlockView.Title.Document(
-                            id = root,
+                            id = title.id,
                             isFocused = false,
-                            text = null,
+                            text = title.content<TXT>().text,
                             mode = BlockView.Mode.EDIT
                         ),
                         BlockView.Text.Paragraph(
@@ -336,6 +380,27 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
     @Test
     fun `should create new page with untitled name and add new mention with page id`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val mentionTrigger = "@"
         val from = 11
         val givenText = "page about $mentionTrigger music"
@@ -368,10 +433,10 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(a.id)
+            children = listOf(header.id, a.id)
         )
 
-        val document = listOf(page, a)
+        val document = listOf(page, header, title, a)
 
         stubOpenDocument(document)
         stubInterceptEvents()
@@ -426,10 +491,12 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             )
         }
 
-        runBlockingTest {
-            verify(createNewDocument, times(1)).invoke(CreateNewDocument.Params(
-                name = newPageName
-            ))
+        verifyBlocking(createNewDocument, times(1)) {
+            invoke(
+                CreateNewDocument.Params(
+                    name = newPageName
+                )
+            )
         }
 
         vm.state.test().apply {
@@ -437,9 +504,9 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 ViewState.Success(
                     blocks = listOf(
                         BlockView.Title.Document(
-                            id = root,
+                            id = title.id,
                             isFocused = false,
-                            text = null,
+                            text = title.content<TXT>().text,
                             mode = BlockView.Mode.EDIT
                         ),
                         BlockView.Text.Paragraph(

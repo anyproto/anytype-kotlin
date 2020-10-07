@@ -152,7 +152,7 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
         }
     }
 
-    fun stubUpdateCheckbox(
+    private fun stubUpdateCheckbox(
         payload: Payload = Payload(
             context = MockDataFactory.randomUuid(),
             events = emptyList()

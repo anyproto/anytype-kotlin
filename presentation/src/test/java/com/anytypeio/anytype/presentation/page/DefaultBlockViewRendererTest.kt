@@ -67,6 +67,26 @@ class DefaultBlockViewRendererTest {
     @Test
     fun `should return title, paragraph, toggle with its indented inner checkbox`() {
 
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val paragraph = Block(
             id = MockDataFactory.randomUuid(),
             children = emptyList(),
@@ -103,14 +123,14 @@ class DefaultBlockViewRendererTest {
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
-            children = listOf(paragraph.id, toggle.id),
+            children = listOf(header.id, paragraph.id, toggle.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
             )
         )
 
-        val blocks = listOf(page, paragraph, toggle, checkbox)
+        val blocks = listOf(page, header, title, paragraph, toggle, checkbox)
 
         val map = blocks.asMap()
 
@@ -135,9 +155,9 @@ class DefaultBlockViewRendererTest {
 
         val expected = listOf(
             BlockView.Title.Document(
-                id = page.id,
+                id = title.id,
                 isFocused = false,
-                text = null,
+                text = title.content<Block.Content.Text>().text,
                 emoji = null
             ),
             BlockView.Text.Paragraph(
@@ -167,6 +187,26 @@ class DefaultBlockViewRendererTest {
 
     @Test
     fun `should return title, paragraph, toggle without its inner checkbox`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
 
         val paragraph = Block(
             id = MockDataFactory.randomUuid(),
@@ -204,14 +244,14 @@ class DefaultBlockViewRendererTest {
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
-            children = listOf(paragraph.id, toggle.id),
+            children = listOf(header.id, paragraph.id, toggle.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
             )
         )
 
-        val blocks = listOf(page, paragraph, toggle, checkbox)
+        val blocks = listOf(page, header, title, paragraph, toggle, checkbox)
 
         val map = blocks.asMap()
 
@@ -236,9 +276,9 @@ class DefaultBlockViewRendererTest {
 
         val expected = listOf(
             BlockView.Title.Document(
-                id = page.id,
+                id = title.id,
                 isFocused = false,
-                text = null,
+                text = title.content<Block.Content.Text>().text,
                 emoji = null
             ),
             BlockView.Text.Paragraph(
@@ -277,6 +317,27 @@ class DefaultBlockViewRendererTest {
 
     @Test
     fun `should return paragraph with null alignment`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val paragraph = Block(
             id = MockDataFactory.randomUuid(),
             children = emptyList(),
@@ -291,14 +352,14 @@ class DefaultBlockViewRendererTest {
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
-            children = listOf(paragraph.id),
+            children = listOf(header.id, paragraph.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
             )
         )
 
-        val blocks = listOf(page, paragraph)
+        val blocks = listOf(page, header, title, paragraph)
 
         val map = blocks.asMap()
 
@@ -319,9 +380,9 @@ class DefaultBlockViewRendererTest {
 
         val expected = listOf(
             BlockView.Title.Document(
-                id = page.id,
+                id = title.id,
                 isFocused = false,
-                text = null,
+                text = title.content<Block.Content.Text>().text,
                 emoji = null
             ),
             BlockView.Text.Paragraph(
@@ -340,6 +401,27 @@ class DefaultBlockViewRendererTest {
 
     @Test
     fun `should return paragraph with proper alignment`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val paragraph = Block(
             id = MockDataFactory.randomUuid(),
             children = emptyList(),
@@ -354,14 +436,14 @@ class DefaultBlockViewRendererTest {
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
-            children = listOf(paragraph.id),
+            children = listOf(header.id, paragraph.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
             )
         )
 
-        val blocks = listOf(page, paragraph)
+        val blocks = listOf(page, header, title, paragraph)
 
         val map = blocks.asMap()
 
@@ -382,9 +464,9 @@ class DefaultBlockViewRendererTest {
 
         val expected = listOf(
             BlockView.Title.Document(
-                id = page.id,
+                id = title.id,
                 isFocused = false,
-                text = null,
+                text = title.content<Block.Content.Text>().text,
                 emoji = null
             ),
             BlockView.Text.Paragraph(
@@ -403,6 +485,27 @@ class DefaultBlockViewRendererTest {
 
     @Test
     fun `should add profile title when smart block is profile`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val paragraph = Block(
             id = MockDataFactory.randomUuid(),
             children = emptyList(),
@@ -425,16 +528,17 @@ class DefaultBlockViewRendererTest {
             )
         )
         val details = mapOf(pageId to fields)
+
         val page = Block(
             id = pageId,
-            children = listOf(paragraph.id),
+            children = listOf(header.id, paragraph.id),
             fields = fields,
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PROFILE
             )
         )
 
-        val blocks = listOf(page, paragraph)
+        val blocks = listOf(page, header, title, paragraph)
 
         val map = blocks.asMap()
 
@@ -455,9 +559,9 @@ class DefaultBlockViewRendererTest {
 
         val expected = listOf(
             BlockView.Title.Profile(
-                id = page.id,
+                id = title.id,
                 isFocused = false,
-                text = name,
+                text = title.content<Block.Content.Text>().text,
                 image = UrlBuilder(gateway).thumbnail(imageName)
             ),
             BlockView.Text.Paragraph(
@@ -476,6 +580,27 @@ class DefaultBlockViewRendererTest {
 
     @Test
     fun `should add title when smart block is page`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val paragraph = Block(
             id = MockDataFactory.randomUuid(),
             children = emptyList(),
@@ -498,16 +623,17 @@ class DefaultBlockViewRendererTest {
             )
         )
         val details = mapOf(pageId to fields)
+
         val page = Block(
             id = pageId,
-            children = listOf(paragraph.id),
+            children = listOf(header.id, paragraph.id),
             fields = fields,
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             )
         )
 
-        val blocks = listOf(page, paragraph)
+        val blocks = listOf(page, header, title, paragraph)
 
         val map = blocks.asMap()
 
@@ -528,9 +654,9 @@ class DefaultBlockViewRendererTest {
 
         val expected = listOf(
             BlockView.Title.Document(
-                id = page.id,
+                id = title.id,
                 isFocused = false,
-                text = name,
+                text = title.content<Block.Content.Text>().text,
                 image = UrlBuilder(gateway).thumbnail(imageName)
             ),
             BlockView.Text.Paragraph(
@@ -547,8 +673,28 @@ class DefaultBlockViewRendererTest {
         assertEquals(expected = expected, actual = result)
     }
 
-    @Test
-    fun `should add title when page is not smart block`() {
+    @Test(expected = IllegalStateException::class)
+    fun `should throw exception when smart block type is unexpected`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
 
         val paragraph = Block(
             id = MockDataFactory.randomUuid(),
@@ -565,21 +711,24 @@ class DefaultBlockViewRendererTest {
         val name = MockDataFactory.randomString()
         val imageName = MockDataFactory.randomString()
         val pageId = MockDataFactory.randomUuid()
+
         val fields = Block.Fields(
             map = mapOf(
                 "name" to name,
                 "iconImage" to imageName
             )
         )
+
         val details = mapOf(pageId to fields)
+
         val page = Block(
             id = pageId,
-            children = listOf(paragraph.id),
+            children = listOf(header.id, paragraph.id),
             fields = fields,
             content = Block.Content.Page(style = Block.Content.Page.Style.TASK)
         )
 
-        val blocks = listOf(page, paragraph)
+        val blocks = listOf(page, header, title, paragraph)
 
         val map = blocks.asMap()
 
@@ -588,7 +737,7 @@ class DefaultBlockViewRendererTest {
             renderer = renderer
         )
 
-        val result = runBlocking {
+        runBlocking {
             wrapper.render(
                 root = page,
                 anchor = page.id,
@@ -597,30 +746,30 @@ class DefaultBlockViewRendererTest {
                 details = Block.Details(details)
             )
         }
-
-        val expected = listOf(
-            BlockView.Title.Document(
-                id = page.id,
-                isFocused = false,
-                text = name,
-                image = UrlBuilder(gateway).thumbnail(imageName)
-            ),
-            BlockView.Text.Paragraph(
-                isFocused = true,
-                id = paragraph.id,
-                marks = emptyList(),
-                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
-                color = paragraph.content<Block.Content.Text>().color,
-                text = paragraph.content<Block.Content.Text>().text,
-                alignment = Alignment.CENTER
-            )
-        )
-
-        assertEquals(expected = expected, actual = result)
     }
 
     @Test
     fun `should render nested paragraphs`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
 
         val c = Block(
             id = "C",
@@ -662,14 +811,14 @@ class DefaultBlockViewRendererTest {
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
-            children = listOf(a.id),
+            children = listOf(header.id, a.id),
             fields = fields,
             content = Block.Content.Smart(type = Block.Content.Smart.Type.PAGE)
         )
 
         val details = mapOf(page.id to fields)
 
-        val blocks = listOf(page, a, b, c)
+        val blocks = listOf(page, header, title, a, b, c)
 
         val map = blocks.asMap()
 
@@ -690,9 +839,9 @@ class DefaultBlockViewRendererTest {
 
         val expected = listOf(
             BlockView.Title.Document(
-                id = page.id,
+                id = title.id,
                 isFocused = false,
-                text = null,
+                text = title.content<Block.Content.Text>().text,
                 image = null
             ),
             BlockView.Text.Paragraph(
@@ -733,6 +882,26 @@ class DefaultBlockViewRendererTest {
     @Test
     fun `should render nested checkboxes`() {
 
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val c = Block(
             id = "C",
             children = listOf(),
@@ -773,14 +942,14 @@ class DefaultBlockViewRendererTest {
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
-            children = listOf(a.id),
+            children = listOf(header.id, a.id),
             fields = fields,
             content = Block.Content.Smart(type = Block.Content.Smart.Type.PAGE)
         )
 
         val details = mapOf(page.id to fields)
 
-        val blocks = listOf(page, a, b, c)
+        val blocks = listOf(page, header, title, a, b, c)
 
         val map = blocks.asMap()
 
@@ -801,9 +970,9 @@ class DefaultBlockViewRendererTest {
 
         val expected = listOf(
             BlockView.Title.Document(
-                id = page.id,
+                id = title.id,
                 isFocused = false,
-                text = null,
+                text = title.content<Block.Content.Text>().text,
                 image = null
             ),
             BlockView.Text.Checkbox(
@@ -841,6 +1010,26 @@ class DefaultBlockViewRendererTest {
     @Test
     fun `should render nested bulleted items`() {
 
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
         val c = Block(
             id = "C",
             children = listOf(),
@@ -881,14 +1070,14 @@ class DefaultBlockViewRendererTest {
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
-            children = listOf(a.id),
+            children = listOf(header.id, a.id),
             fields = fields,
             content = Block.Content.Smart(type = Block.Content.Smart.Type.PAGE)
         )
 
         val details = mapOf(page.id to fields)
 
-        val blocks = listOf(page, a, b, c)
+        val blocks = listOf(page, header, title, a, b, c)
 
         val map = blocks.asMap()
 
@@ -909,9 +1098,9 @@ class DefaultBlockViewRendererTest {
 
         val expected = listOf(
             BlockView.Title.Document(
-                id = page.id,
+                id = title.id,
                 isFocused = false,
-                text = null,
+                text = title.content<Block.Content.Text>().text,
                 image = null
             ),
             BlockView.Text.Bulleted(
@@ -948,6 +1137,26 @@ class DefaultBlockViewRendererTest {
 
     @Test
     fun `should render nested numbered lists`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
 
         val d = Block(
             id = "D",
@@ -1001,14 +1210,14 @@ class DefaultBlockViewRendererTest {
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
-            children = listOf(a.id),
+            children = listOf(header.id, a.id),
             fields = fields,
             content = Block.Content.Smart(type = Block.Content.Smart.Type.PAGE)
         )
 
         val details = mapOf(page.id to fields)
 
-        val blocks = listOf(page, a, b, c, d)
+        val blocks = listOf(page, header, title, a, b, c, d)
 
         val map = blocks.asMap()
 
@@ -1029,9 +1238,9 @@ class DefaultBlockViewRendererTest {
 
         val expected = listOf(
             BlockView.Title.Document(
-                id = page.id,
+                id = title.id,
                 isFocused = false,
-                text = null,
+                text = title.content<Block.Content.Text>().text,
                 image = null
             ),
             BlockView.Text.Numbered(

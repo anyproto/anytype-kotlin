@@ -2,9 +2,11 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuViewModelFactory
+import com.anytypeio.anytype.presentation.util.Bridge
 import com.anytypeio.anytype.ui.page.modals.actions.DocumentIconActionMenuFragment
 import com.anytypeio.anytype.ui.page.modals.actions.ProfileIconActionMenuFragment
 import dagger.Module
@@ -32,10 +34,12 @@ class DocumentIconActionMenuModule {
     @PerScreen
     fun provideDocumentIconActionMenuViewModelFactory(
         setEmojiIcon: SetDocumentEmojiIcon,
-        setImageIcon: SetDocumentImageIcon
+        setImageIcon: SetDocumentImageIcon,
+        bridge: Bridge<Payload>
     ): DocumentIconActionMenuViewModelFactory = DocumentIconActionMenuViewModelFactory(
         setEmojiIcon = setEmojiIcon,
-        setImageIcon = setImageIcon
+        setImageIcon = setImageIcon,
+        bridge = bridge
     )
 
     @Provides

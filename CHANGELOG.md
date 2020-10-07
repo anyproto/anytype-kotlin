@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.0.50 (WIP)
+## Version 0.0.50
 
 ### New features 🚀
 
@@ -23,6 +23,10 @@
 * Should focus the last empty text block when clicking under document's blocks (#935)
 * Clicking on empty space before document is loaded should not crash application (#930)
 * Focusing on start may crash application by some users (#931)
+
+### Middleware ⚙
+
+* Updated middleware protocol to `0.13.18` (#851)
 
 ## Version 0.0.49
 

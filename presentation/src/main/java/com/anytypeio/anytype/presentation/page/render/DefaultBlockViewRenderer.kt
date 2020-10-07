@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.EditorMode
 import com.anytypeio.anytype.presentation.mapper.*
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
+import timber.log.Timber
 
 class DefaultBlockViewRenderer(
     private val counter: Counter,
@@ -31,14 +32,19 @@ class DefaultBlockViewRenderer(
 
         val result = mutableListOf<BlockView>()
 
-        buildTitle(
-            mode = mode,
-            anchor = anchor,
-            root = root,
-            result = result,
-            details = details,
-            focus = focus
-        )
+        if (anchor == root.id) {
+            root.content.let { cnt ->
+                if (cnt is Content.Smart && cnt.type == Content.Smart.Type.ARCHIVE) {
+                    result.add(
+                        BlockView.Title.Archive(
+                            mode = BlockView.Mode.READ,
+                            id = anchor,
+                            text = details.details[root.id]?.name
+                        )
+                    )
+                }
+            }
+        }
 
         counter.reset()
 
@@ -48,7 +54,16 @@ class DefaultBlockViewRenderer(
                     when (content.style) {
                         Content.Text.Style.TITLE -> {
                             counter.reset()
-                            result.add(title(mode, block, content, root, focus))
+                            result.add(
+                                title(
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    focus = focus,
+                                    root = root,
+                                    details = details
+                                )
+                            )
                         }
                         Content.Text.Style.P -> {
                             counter.reset()
@@ -330,83 +345,6 @@ class DefaultBlockViewRenderer(
         return result
     }
 
-    private fun buildTitle(
-        mode: EditorMode,
-        anchor: Id,
-        root: Block,
-        result: MutableList<BlockView>,
-        details: Block.Details,
-        focus: Focus
-    ) {
-        if (anchor == root.id) {
-
-            val cursor = if (anchor == focus.id) {
-                focus.cursor?.let { cursor ->
-                    when (cursor) {
-                        is Cursor.Start -> 0
-                        is Cursor.End -> details.details[root.id]?.name?.length ?: 0
-                        is Cursor.Range -> cursor.range.first
-                    }
-                }
-            } else {
-                null
-            }
-            val viewMode =
-                if (mode == EditorMode.EDITING)
-                    BlockView.Mode.EDIT
-                else
-                    BlockView.Mode.READ
-            val text = details.details[root.id]?.name
-            val isFocused = anchor == focus.id
-            val type = (root.content as? Content.Smart)?.type
-            result.add(
-                when (type) {
-                    Content.Smart.Type.PROFILE -> {
-                        BlockView.Title.Profile(
-                            mode = viewMode,
-                            id = anchor,
-                            isFocused = isFocused,
-                            text = text,
-                            image = details.details[root.id]?.iconImage?.let { name ->
-                                if (name.isNotEmpty()) urlBuilder.thumbnail(name) else null
-                            },
-                            cursor = cursor
-                        )
-                    }
-                    Content.Smart.Type.ARCHIVE -> {
-                        BlockView.Title.Archive(
-                            mode = viewMode,
-                            id = anchor,
-                            text = text
-                        )
-                    }
-                    else -> {
-                        BlockView.Title.Document(
-                            mode = viewMode,
-                            id = anchor,
-                            isFocused = isFocused,
-                            text = text,
-                            emoji = details.details[root.id]?.iconEmoji?.let { name ->
-                                if (name.isNotEmpty())
-                                    name
-                                else
-                                    null
-                            },
-                            image = details.details[root.id]?.iconImage?.let { name ->
-                                if (name.isNotEmpty())
-                                    urlBuilder.thumbnail(name)
-                                else
-                                    null
-                            },
-                            cursor = cursor
-                        )
-                    }
-
-                }
-            )
-        }
-    }
-
     private fun paragraph(
         mode: EditorMode,
         block: Block,
@@ -673,19 +611,66 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Text,
         root: Block,
-        focus: Focus
-    ): BlockView.Title.Document = BlockView.Title.Document(
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        id = block.id,
-        text = content.text,
-        emoji = root.fields.iconEmoji?.let { name ->
-            if (name.isNotEmpty())
-                name
-            else
-                null
-        },
-        isFocused = block.id == focus.id
-    )
+        focus: Focus,
+        details: Block.Details
+    ): BlockView.Title {
+
+        Timber.d("Focus while building title: $focus")
+
+        val cursor: Int?
+
+        cursor = if (focus.id == block.id) {
+            focus.cursor?.let { crs ->
+                when (crs) {
+                    is Cursor.Start -> 0
+                    is Cursor.End -> content.text.length
+                    is Cursor.Range -> crs.range.first
+                }
+            }
+        } else {
+            null
+        }
+
+        val rootContent = root.content
+
+        check(rootContent is Content.Smart)
+
+        return when (rootContent.type) {
+            Content.Smart.Type.PAGE -> BlockView.Title.Document(
+                mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                id = block.id,
+                text = content.text,
+                emoji = details.details[root.id]?.iconEmoji?.let { name ->
+                    if (name.isNotEmpty())
+                        name
+                    else
+                        null
+                },
+                image = details.details[root.id]?.iconImage?.let { name ->
+                    if (name.isNotEmpty())
+                        urlBuilder.thumbnail(name)
+                    else
+                        null
+                },
+                isFocused = block.id == focus.id,
+                cursor = cursor
+            )
+            Content.Smart.Type.PROFILE -> BlockView.Title.Profile(
+                mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                id = block.id,
+                text = content.text,
+                image = details.details[root.id]?.iconImage?.let { name ->
+                    if (name.isNotEmpty())
+                        urlBuilder.thumbnail(name)
+                    else
+                        null
+                },
+                isFocused = block.id == focus.id,
+                cursor = cursor
+            )
+            else -> throw IllegalStateException("Unexpected root block content: ${root.content}")
+        }
+    }
 
     private fun toPages(
         block: Block,

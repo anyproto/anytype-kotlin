@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.event.model.Event
 import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.presentation.page.editor.ViewState
+import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -45,12 +46,12 @@ class BlockReadModeTest : PageViewModelTest() {
         Block(
             id = root,
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
             ),
-            children = blocks.map { it.id }
+            children = listOf(header.id) + blocks.map { it.id }
         )
-    ) + blocks
+    ) + listOf(header, title) + blocks
 
     private val blockViewsReadMode = listOf<BlockView>(
         blocks[0].let { p ->
@@ -90,6 +91,20 @@ class BlockReadModeTest : PageViewModelTest() {
         }
     )
 
+    private val titleEditModeView = BlockView.Title.Document(
+        id = title.id,
+        text = title.content<TXT>().text,
+        isFocused = false,
+        mode = BlockView.Mode.EDIT
+    )
+
+    private val titleReadModeView = BlockView.Title.Document(
+        id = title.id,
+        text = title.content<TXT>().text,
+        isFocused = false,
+        mode = BlockView.Mode.READ
+    )
+
     private val flow: Flow<List<Event.Command>> = flow {
         delay(100)
         emit(
@@ -126,18 +141,11 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
-            isFocused = false,
-            mode = BlockView.Mode.READ
-        )
-
         val initial = blockViewsReadMode
 
         testObserver.assertValue(
             ViewState.Success(
-                blocks = listOf(title) + initial
+                blocks = listOf(titleReadModeView) + initial
             )
         )
     }
@@ -167,18 +175,11 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
-            isFocused = false,
-            mode = BlockView.Mode.EDIT
-        )
-
         val initial = blockViewsEditMode
 
         testObserver.assertValue(
             ViewState.Success(
-                blocks = listOf(title) + initial
+                blocks = listOf(titleEditModeView) + initial
             )
         )
     }
@@ -208,18 +209,11 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
-            isFocused = false,
-            mode = BlockView.Mode.EDIT
-        )
-
         val initial = blockViewsEditMode
 
         testObserver.assertValue(
             ViewState.Success(
-                blocks = listOf(title) + initial
+                blocks = listOf(titleEditModeView) + initial
             )
         )
     }
@@ -249,18 +243,11 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
-            isFocused = false,
-            mode = BlockView.Mode.EDIT
-        )
-
         val initial = blockViewsEditMode
 
         testObserver.assertValue(
             ViewState.Success(
-                blocks = listOf(title) + initial
+                blocks = listOf(titleEditModeView) + initial
             )
         )
     }
@@ -290,18 +277,11 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
-            isFocused = false,
-            mode = BlockView.Mode.EDIT
-        )
-
         val initial = blockViewsEditMode
 
         testObserver.assertValue(
             ViewState.Success(
-                blocks = listOf(title) + initial
+                blocks = listOf(titleEditModeView) + initial
             )
         )
     }
@@ -331,18 +311,11 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
-            isFocused = false,
-            mode = BlockView.Mode.EDIT
-        )
-
         val initial = blockViewsEditMode
 
         testObserver.assertValue(
             ViewState.Success(
-                blocks = listOf(title) + initial
+                blocks = listOf(titleEditModeView) + initial
             )
         )
     }
@@ -372,13 +345,6 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
-            isFocused = false,
-            mode = BlockView.Mode.EDIT
-        )
-
         val initial = blockViewsEditMode
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
@@ -386,7 +352,7 @@ class BlockReadModeTest : PageViewModelTest() {
         runBlockingTest {
             testObserver.assertValue(
                 ViewState.Success(
-                    blocks = listOf(title) + initial
+                    blocks = listOf(titleEditModeView) + initial
                 )
             )
         }

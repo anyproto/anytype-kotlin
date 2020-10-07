@@ -42,7 +42,9 @@ import com.anytypeio.anytype.presentation.page.editor.ViewState
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.util.Bridge
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -178,6 +180,26 @@ open class PageViewModelTest {
 
     val root = MockDataFactory.randomUuid()
 
+    val title = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Text(
+            text = MockDataFactory.randomString(),
+            style = Block.Content.Text.Style.TITLE,
+            marks = emptyList()
+        ),
+        children = emptyList(),
+        fields = Block.Fields.empty()
+    )
+
+    val header = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Layout(
+            type = Block.Content.Layout.Type.HEADER
+        ),
+        fields = Block.Fields.empty(),
+        children = listOf(title.id)
+    )
+
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
@@ -223,11 +245,13 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    type = Block.Content.Smart.Type.PAGE
                 ),
-                children = listOf(child)
+                children = listOf(header.id, child)
             ),
+            header,
+            title,
             paragraph
         )
 
@@ -252,8 +276,8 @@ open class PageViewModelTest {
             blocks = listOf(
                 BlockView.Title.Document(
                     isFocused = false,
-                    id = root,
-                    text = null
+                    id = title.id,
+                    text = title.content<TXT>().text
                 ),
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
@@ -408,11 +432,13 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    type = Block.Content.Smart.Type.PAGE
                 ),
-                children = listOf(child)
+                children = listOf(header.id, child)
             ),
+            header,
+            title,
             paragraph
         )
 
@@ -445,7 +471,7 @@ open class PageViewModelTest {
                         Event.Command.UpdateStructure(
                             context = root,
                             id = root,
-                            children = listOf(child, added.id)
+                            children = listOf(header.id, child, added.id)
                         )
                     )
                 )
@@ -471,8 +497,8 @@ open class PageViewModelTest {
                 listOf(
                     BlockView.Title.Document(
                         isFocused = false,
-                        id = root,
-                        text = null
+                        id = title.id,
+                        text = title.content<TXT>().text
                     ),
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
@@ -563,11 +589,13 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    type = Block.Content.Smart.Type.PAGE
                 ),
-                children = listOf(child)
+                children = listOf(header.id, child)
             ),
+            header,
+            title,
             paragraph
         )
 
@@ -609,8 +637,8 @@ open class PageViewModelTest {
             listOf(
                 BlockView.Title.Document(
                     isFocused = false,
-                    id = root,
-                    text = null
+                    id = title.id,
+                    text = title.content<TXT>().text
                 ),
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
@@ -667,13 +695,15 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(child)
+            children = listOf(header.id, child)
         )
 
         val blocks = listOf(
+            header,
+            title,
             page,
             paragraph
         )
@@ -726,8 +756,8 @@ open class PageViewModelTest {
             listOf(
                 BlockView.Title.Document(
                     isFocused = false,
-                    id = root,
-                    text = null
+                    id = title.id,
+                    text = title.content<TXT>().text
                 ),
                 BlockView.Text.Paragraph(
                     isFocused = true,
@@ -766,8 +796,8 @@ open class PageViewModelTest {
             listOf(
                 BlockView.Title.Document(
                     isFocused = false,
-                    id = root,
-                    text = null
+                    id = title.id,
+                    text = title.content<TXT>().text
                 ),
                 BlockView.Text.Paragraph(
                     isFocused = true,
@@ -821,13 +851,15 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(child)
+            children = listOf(header.id, child)
         )
 
         val blocks = listOf(
+            header,
+            title,
             page,
             paragraph
         )
@@ -876,8 +908,8 @@ open class PageViewModelTest {
             listOf(
                 BlockView.Title.Document(
                     isFocused = false,
-                    id = page.id,
-                    text = null
+                    id = title.id,
+                    text = title.content<TXT>().text
                 ),
                 BlockView.Text.Paragraph(
                     isFocused = true,
@@ -930,8 +962,8 @@ open class PageViewModelTest {
             listOf(
                 BlockView.Title.Document(
                     isFocused = false,
-                    id = page.id,
-                    text = null
+                    id = title.id,
+                    text = title.content<TXT>().text
                 ),
                 BlockView.Text.Paragraph(
                     isFocused = true,
@@ -979,8 +1011,8 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
+            content = Block.Content.Smart(
+                Block.Content.Smart.Type.PAGE
             ),
             children = listOf(child)
         )
@@ -1073,14 +1105,16 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
+            content = Block.Content.Smart(
+                Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(child)
+            children = listOf(header.id, child)
         )
 
         val blocks = listOf(
             page,
+            header,
+            title,
             paragraph
         )
 
@@ -1114,8 +1148,8 @@ open class PageViewModelTest {
             listOf(
                 BlockView.Title.Document(
                     isFocused = false,
-                    id = root,
-                    text = null
+                    id = title.id,
+                    text = title.content<TXT>().text
                 ),
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
@@ -1125,9 +1159,7 @@ open class PageViewModelTest {
             )
         )
 
-        testObserver
-            .assertValue(state)
-            .assertHistorySize(2)
+        testObserver.assertValue(state).assertHistorySize(2)
 
         val userInput = MockDataFactory.randomString()
 
@@ -1149,9 +1181,7 @@ open class PageViewModelTest {
 
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        testObserver
-            .assertValue(state)
-            .assertHistorySize(2)
+        testObserver.assertValue(state).assertHistorySize(2)
     }
 
     @Test
@@ -1177,9 +1207,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
+            content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
             children = listOf(child)
         )
 
@@ -1260,9 +1288,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
+            content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
             children = listOf(child)
         )
 
@@ -1424,10 +1450,10 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
+            content = Block.Content.Smart(
+                Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(child)
+            children = listOf(header.id, child)
         )
 
         val style = Block.Content.Text.Style.H1
@@ -1449,7 +1475,7 @@ open class PageViewModelTest {
                 listOf(
                     Event.Command.ShowBlock(
                         root = root,
-                        blocks = listOf(page, paragraph),
+                        blocks = listOf(page, header, title, paragraph),
                         context = root
                     )
                 )
@@ -1460,7 +1486,7 @@ open class PageViewModelTest {
                     Event.Command.UpdateStructure(
                         context = root,
                         id = root,
-                        children = listOf(child, new.id)
+                        children = listOf(header.id, child, new.id)
                     )
                 )
             )
@@ -1490,8 +1516,8 @@ open class PageViewModelTest {
                 blocks = listOf(
                     BlockView.Title.Document(
                         isFocused = false,
-                        id = root,
-                        text = null
+                        id = title.id,
+                        text = title.content<TXT>().text
                     ),
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
@@ -1509,8 +1535,8 @@ open class PageViewModelTest {
                 blocks = listOf(
                     BlockView.Title.Document(
                         isFocused = false,
-                        id = root,
-                        text = null
+                        id = title.id,
+                        text = title.content<TXT>().text
                     ),
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
@@ -1582,9 +1608,26 @@ open class PageViewModelTest {
 
         // SETUP
 
-        val root = MockDataFactory.randomUuid()
-        val child = MockDataFactory.randomUuid()
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
+        val child = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, child.id)
+        )
+
+        val doc = listOf(page, header, title, child)
 
         val events: Flow<List<Event.Command>> = flow {
             delay(1000)
@@ -1592,7 +1635,7 @@ open class PageViewModelTest {
                 listOf(
                     Event.Command.ShowBlock(
                         root = root,
-                        blocks = page,
+                        blocks = doc,
                         context = root
                     )
                 )
@@ -1610,15 +1653,15 @@ open class PageViewModelTest {
 
         coroutineTestRule.advanceTime(1001)
 
-        vm.onBlockFocusChanged(id = child, hasFocus = true)
-        vm.onActionMenuItemClicked(id = child, action = ActionItemType.Delete)
+        vm.onBlockFocusChanged(id = child.id, hasFocus = true)
+        vm.onActionMenuItemClicked(id = child.id, action = ActionItemType.Delete)
 
         runBlockingTest {
             verify(unlinkBlocks, times(1)).invoke(
                 params = eq(
                     UnlinkBlocks.Params(
                         context = root,
-                        targets = listOf(child)
+                        targets = listOf(child.id)
                     )
                 )
             )
@@ -1632,14 +1675,39 @@ open class PageViewModelTest {
         val blockDeletedEventDelay = 100L
 
         val root = MockDataFactory.randomUuid()
-        val firstChild = MockDataFactory.randomUuid()
-        val secondChild = MockDataFactory.randomUuid()
 
-        val page = MockBlockFactory.makeOnePageWithTwoTextBlocks(
-            root = root,
-            firstChild = firstChild,
-            secondChild = secondChild
+        val firstChild = Block(
+            id = "FIRST CHILD",
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = "FIRST CHILD TEXT",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
         )
+
+        val secondChild = Block(
+            id = "SECOND CHILD",
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = "SECOND CHILD TEXT",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, firstChild.id, secondChild.id)
+        )
+
+        val doc = listOf(page, header, title, firstChild, secondChild)
 
         val events: Flow<List<Event.Command>> = flow {
             delay(pageOpenedDelay)
@@ -1647,7 +1715,7 @@ open class PageViewModelTest {
                 listOf(
                     Event.Command.ShowBlock(
                         root = root,
-                        blocks = page,
+                        blocks = doc,
                         context = root
                     )
                 )
@@ -1656,7 +1724,7 @@ open class PageViewModelTest {
             emit(
                 listOf(
                     Event.Command.DeleteBlock(
-                        targets = listOf(firstChild),
+                        targets = listOf(firstChild.id),
                         context = root
                     )
                 )
@@ -1666,6 +1734,7 @@ open class PageViewModelTest {
         stubOpenPage()
         stubObserveEvents(events)
         buildViewModel(builder)
+        stubUnlinkBlocks(root)
 
         vm.onStart(root)
 
@@ -1678,45 +1747,45 @@ open class PageViewModelTest {
                 blocks = listOf(
                     BlockView.Title.Document(
                         isFocused = false,
-                        id = root,
-                        text = null
+                        id = title.id,
+                        text = title.content<TXT>().text
                     ),
                     BlockView.Text.Paragraph(
-                        id = page[1].id,
-                        text = page[1].content<Block.Content.Text>().text,
-                        backgroundColor = page[1].content<Block.Content.Text>().backgroundColor
+                        id = firstChild.id,
+                        text = firstChild.content<Block.Content.Text>().text,
+                        backgroundColor = firstChild.content<Block.Content.Text>().backgroundColor
                     ),
                     BlockView.Text.Paragraph(
-                        id = page.last().id,
-                        text = page.last().content<Block.Content.Text>().text,
-                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor
+                        id = secondChild.id,
+                        text = secondChild.content<Block.Content.Text>().text,
+                        backgroundColor = secondChild.content<Block.Content.Text>().backgroundColor
                     )
                 )
             )
         )
 
-        vm.onBlockFocusChanged(id = firstChild, hasFocus = true)
-        //vm.onActionDeleteClicked()
-        vm.onActionMenuItemClicked(id = firstChild, action = ActionItemType.Delete)
+        vm.onBlockFocusChanged(id = firstChild.id, hasFocus = true)
+        vm.onActionMenuItemClicked(id = firstChild.id, action = ActionItemType.Delete)
 
-        assertEquals(expected = 3, actual = vm.blocks.size)
+        assertEquals(expected = 5, actual = vm.blocks.size)
 
         coroutineTestRule.advanceTime(blockDeletedEventDelay)
 
-        assertEquals(expected = 2, actual = vm.blocks.size)
+        assertEquals(expected = 4, actual = vm.blocks.size)
 
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
                     BlockView.Title.Document(
-                        isFocused = false,
-                        id = root,
-                        text = null
+                        isFocused = true,
+                        id = title.id,
+                        text = title.content<TXT>().text,
+                        cursor = title.content<TXT>().text.length
                     ),
                     BlockView.Text.Paragraph(
-                        id = page.last().id,
-                        text = page.last().content<Block.Content.Text>().text,
-                        backgroundColor = page.last().content<Block.Content.Text>().backgroundColor
+                        id = secondChild.id,
+                        text = secondChild.content<Block.Content.Text>().text,
+                        backgroundColor = secondChild.content<Block.Content.Text>().backgroundColor
                     )
                 )
             )
@@ -1726,9 +1795,28 @@ open class PageViewModelTest {
     @Test
     fun `should start deleting the target block on empty-block-backspace-click event`() {
 
-        val root = MockDataFactory.randomUuid()
-        val child = MockDataFactory.randomUuid()
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(root = root, child = child)
+        val child = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            children = emptyList()
+        )
+
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, child.id)
+        )
+
+        val doc = listOf(page, header, title, child)
 
         val events: Flow<List<Event.Command>> = flow {
             delay(100)
@@ -1736,7 +1824,7 @@ open class PageViewModelTest {
                 listOf(
                     Event.Command.ShowBlock(
                         root = root,
-                        blocks = page,
+                        blocks = doc,
                         context = root
                     )
                 )
@@ -1752,14 +1840,15 @@ open class PageViewModelTest {
 
         coroutineTestRule.advanceTime(100)
 
-        vm.onEmptyBlockBackspaceClicked(child)
+        vm.onBlockFocusChanged(child.id, true)
+        vm.onEmptyBlockBackspaceClicked(child.id)
 
-        runBlockingTest {
-            verify(unlinkBlocks, times(1)).invoke(
+        verifyBlocking(unlinkBlocks, times(1)) {
+            invoke(
                 params = eq(
                     UnlinkBlocks.Params(
                         context = root,
-                        targets = listOf(child)
+                        targets = listOf(child.id)
                     )
                 )
             )
@@ -2354,8 +2443,8 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    Block.Content.Smart.Type.PAGE
                 ),
                 children = listOf(title.id, file.id)
             ),
@@ -2417,9 +2506,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2486,9 +2573,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2544,9 +2629,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2613,9 +2696,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2675,9 +2756,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2740,9 +2819,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2805,8 +2882,8 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    Block.Content.Smart.Type.PAGE
                 ),
                 children = listOf(title.id)
             ),
@@ -2861,9 +2938,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(title.id)
             ),
             title
@@ -2945,9 +3020,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -3026,9 +3099,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(title.id, numbered.id)
             ),
             title,
@@ -3109,9 +3180,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -3172,9 +3241,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(paragraph.id)
             ),
             paragraph
@@ -3262,9 +3329,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = listOf(title.id)
             ),
             title
@@ -3319,8 +3384,6 @@ open class PageViewModelTest {
 
         // SETUP
 
-        val root = MockDataFactory.randomUuid()
-
         val paragraphs = listOf(
             Block(
                 id = MockDataFactory.randomString(),
@@ -3358,12 +3421,10 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
-                children = paragraphs.map { it.id }
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                children = listOf(header.id) + paragraphs.map { it.id }
             )
-        ) + paragraphs
+        ) + listOf(header, title) + paragraphs
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
@@ -3390,9 +3451,9 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
+        val titleView = BlockView.Title.Document(
+            id = title.id,
+            text = title.content<TXT>().text,
             isFocused = false
         )
 
@@ -3420,7 +3481,7 @@ open class PageViewModelTest {
             }
         )
 
-        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+        testObserver.assertValue(ViewState.Success(listOf(titleView) + initial))
 
         vm.onEnterMultiSelectModeClicked()
 
@@ -3428,7 +3489,7 @@ open class PageViewModelTest {
 
         testObserver.assertValue(
             ViewState.Success(
-                listOf(title.copy(mode = BlockView.Mode.READ)) + initial.map { view ->
+                listOf(titleView.copy(mode = BlockView.Mode.READ)) + initial.map { view ->
                     view.copy(mode = BlockView.Mode.READ)
                 }
             )
@@ -3438,7 +3499,7 @@ open class PageViewModelTest {
 
         testObserver.assertValue(
             ViewState.Success(
-                listOf(title.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
+                listOf(titleView.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
                     if (i == 0)
                         view.copy(mode = BlockView.Mode.READ, isSelected = true)
                     else
@@ -3451,7 +3512,7 @@ open class PageViewModelTest {
 
         testObserver.assertValue(
             ViewState.Success(
-                listOf(title.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
+                listOf(titleView.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
                     if (i == 0 || i == 1)
                         view.copy(mode = BlockView.Mode.READ, isSelected = true)
                     else
@@ -3464,7 +3525,7 @@ open class PageViewModelTest {
 
         testObserver.assertValue(
             ViewState.Success(
-                listOf(title.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
+                listOf(titleView.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
                     if (i == 0 || i == 1 || i == 2)
                         view.copy(mode = BlockView.Mode.READ, isSelected = true)
                     else
@@ -3477,7 +3538,7 @@ open class PageViewModelTest {
 
         testObserver.assertValue(
             ViewState.Success(
-                listOf(title.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
+                listOf(titleView.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
                     if (i == 1 || i == 2)
                         view.copy(mode = BlockView.Mode.READ, isSelected = true)
                     else
@@ -3490,7 +3551,7 @@ open class PageViewModelTest {
 
         testObserver.assertValue(
             ViewState.Success(
-                listOf(title.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
+                listOf(titleView.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
                     if (i == 2)
                         view.copy(mode = BlockView.Mode.READ, isSelected = true)
                     else
@@ -3503,7 +3564,7 @@ open class PageViewModelTest {
 
         testObserver.assertValue(
             ViewState.Success(
-                listOf(title.copy(mode = BlockView.Mode.READ)) + initial.map { view ->
+                listOf(titleView.copy(mode = BlockView.Mode.READ)) + initial.map { view ->
                     view.copy(mode = BlockView.Mode.READ)
                 }
             )
@@ -3534,12 +3595,10 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
-                children = paragraphs.map { it.id }
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                children = listOf(header.id) + paragraphs.map { it.id }
             )
-        ) + paragraphs
+        ) + listOf(header, title) + paragraphs
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
@@ -3566,9 +3625,9 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
+        val titleView = BlockView.Title.Document(
+            id = title.id,
+            text = title.content<TXT>().text,
             isFocused = false
         )
 
@@ -3582,7 +3641,7 @@ open class PageViewModelTest {
             }
         )
 
-        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+        testObserver.assertValue(ViewState.Success(listOf(titleView) + initial))
 
         vm.onEnterMultiSelectModeClicked()
 
@@ -3590,7 +3649,7 @@ open class PageViewModelTest {
 
         testObserver.assertValue(
             ViewState.Success(
-                listOf(title.copy(mode = BlockView.Mode.READ)) + initial.map { view ->
+                listOf(titleView.copy(mode = BlockView.Mode.READ)) + initial.map { view ->
                     view.copy(mode = BlockView.Mode.READ)
                 }
             )
@@ -3600,7 +3659,7 @@ open class PageViewModelTest {
 
         testObserver.assertValue(
             ViewState.Success(
-                listOf(title.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
+                listOf(titleView.copy(mode = BlockView.Mode.READ)) + initial.mapIndexed { i, view ->
                     if (i == 0)
                         view.copy(mode = BlockView.Mode.READ, isSelected = true)
                     else
@@ -3613,7 +3672,7 @@ open class PageViewModelTest {
 
         coroutineTestRule.advanceTime(300)
 
-        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+        testObserver.assertValue(ViewState.Success(listOf(titleView) + initial))
     }
 
     private fun stubClosePage(
@@ -3795,7 +3854,8 @@ open class PageViewModelTest {
                 move = move,
                 turnIntoDocument = turnIntoDocument,
                 analytics = analytics
-            )
+            ),
+            bridge = Bridge()
         )
     }
 
@@ -3842,12 +3902,10 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
-                children = paragraphs.map { it.id }
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                children = listOf(header.id) + paragraphs.map { it.id }
             )
-        ) + paragraphs
+        ) + listOf(header, title) + paragraphs
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
@@ -3874,9 +3932,9 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
+        val titleView = BlockView.Title.Document(
+            id = title.id,
+            text = title.content<TXT>().text,
             isFocused = false
         )
 
@@ -3904,7 +3962,7 @@ open class PageViewModelTest {
             }
         )
 
-        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+        testObserver.assertValue(ViewState.Success(listOf(titleView) + initial))
 
         vm.onEnterMultiSelectModeClicked()
 
@@ -3959,12 +4017,12 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    type = Block.Content.Smart.Type.PAGE
                 ),
-                children = paragraphs.map { it.id }
+                children = listOf(header.id) + paragraphs.map { it.id }
             )
-        ) + paragraphs
+        ) + listOf(header, title) + paragraphs
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
@@ -3991,9 +4049,9 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
+        val titleView = BlockView.Title.Document(
+            id = title.id,
+            text = title.content<TXT>().text,
             isFocused = false
         )
 
@@ -4021,7 +4079,7 @@ open class PageViewModelTest {
             }
         )
 
-        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+        testObserver.assertValue(ViewState.Success(listOf(titleView) + initial))
 
         vm.onEnterMultiSelectModeClicked()
 
@@ -4084,12 +4142,10 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
-                children = paragraphs.map { it.id }
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                children = listOf(header.id) + paragraphs.map { it.id }
             )
-        ) + paragraphs
+        ) + listOf(header, title) + paragraphs
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
@@ -4116,9 +4172,9 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
+        val titleView = BlockView.Title.Document(
+            id = title.id,
+            text = title.content<TXT>().text,
             isFocused = false
         )
 
@@ -4146,7 +4202,7 @@ open class PageViewModelTest {
             }
         )
 
-        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+        testObserver.assertValue(ViewState.Success(listOf(titleView) + initial))
 
         vm.onEnterMultiSelectModeClicked()
 
@@ -4177,6 +4233,7 @@ open class PageViewModelTest {
 
     @Test
     fun `should be four selected blocks after select all click`() {
+
         // SETUP
 
         val root = MockDataFactory.randomUuid()
@@ -4228,12 +4285,10 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
-                children = paragraphs.map { it.id }
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                children = listOf(header.id) + paragraphs.map { it.id }
             )
-        ) + paragraphs
+        ) + listOf(header, title) + paragraphs
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
@@ -4260,9 +4315,9 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
+        val titleView = BlockView.Title.Document(
+            id = title.id,
+            text = title.content<TXT>().text,
             isFocused = false
         )
 
@@ -4297,7 +4352,7 @@ open class PageViewModelTest {
             }
         )
 
-        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+        testObserver.assertValue(ViewState.Success(listOf(titleView) + initial))
 
         vm.onEnterMultiSelectModeClicked()
 
@@ -4371,12 +4426,12 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    Block.Content.Smart.Type.PAGE
                 ),
-                children = paragraphs.map { it.id }
+                children = listOf(header.id) + paragraphs.map { it.id }
             )
-        ) + paragraphs
+        ) + listOf(header, title) + paragraphs
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
@@ -4403,9 +4458,9 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val title = BlockView.Title.Document(
-            id = root,
-            text = null,
+        val titleView = BlockView.Title.Document(
+            id = title.id,
+            text = title.content<TXT>().text,
             isFocused = false
         )
 
@@ -4440,7 +4495,7 @@ open class PageViewModelTest {
             }
         )
 
-        testObserver.assertValue(ViewState.Success(listOf(title) + initial))
+        testObserver.assertValue(ViewState.Success(listOf(titleView) + initial))
 
         vm.onEnterMultiSelectModeClicked()
 
@@ -4506,9 +4561,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = blocks.map { it.id }
             )
         ) + blocks
@@ -4688,9 +4741,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = blocks.map { it.id }
             )
         ) + blocks
@@ -4761,9 +4812,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = blocks.map { it.id }
             )
         ) + blocks
@@ -4856,9 +4905,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
                 children = blocks.map { it.id }
             )
         ) + blocks

@@ -28,6 +28,29 @@ fun Map<Id, List<Block>>.descendants(parent: Id): List<Id> {
 }
 
 /**
+ * Finds title block for a [Document]
+ * @return title block
+ * @throws NoSuchElementException if there was no title block in this document.
+ */
+fun Document.title(): Block {
+    val header = first { block ->
+        val cnt = block.content
+        cnt is Content.Layout && cnt.type == Content.Layout.Type.HEADER
+    }
+    val children = filter { header.children.contains(it.id) }
+    return children.first { child ->
+        val cnt = child.content
+        cnt is Content.Text && cnt.style == Content.Text.Style.TITLE
+    }
+}
+
+fun Document.titleId(): Id? {
+    return find { block ->
+        block.content is Content.Text && block.content.isTitle()
+    }?.id
+}
+
+/**
  * Transform block structure for rendering purposes.
  * @param anchor a root or a parent block for some children blocks.
  */

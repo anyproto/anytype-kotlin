@@ -89,8 +89,8 @@ interface BlockRepository {
      */
     suspend fun uploadBlock(command: Command.UploadBlock): Payload
 
-    suspend fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon)
-    suspend fun setDocumentImageIcon(command: Command.SetDocumentImageIcon)
+    suspend fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload
+    suspend fun setDocumentImageIcon(command: Command.SetDocumentImageIcon): Payload
 
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
 

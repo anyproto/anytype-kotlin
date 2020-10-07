@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 import android.text.Editable
 import android.view.View
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.ThemeColor
 import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.common.isLinksPresent
 import com.anytypeio.anytype.core_ui.extensions.color
@@ -133,7 +132,11 @@ abstract class Text(
             setOnLongClickListener(
                 EditorLongClickListener(
                     t = item.id,
-                    click = { onBlockLongClick(root, it, clicked) }
+                    click = {
+                        // TODO do not call this methed directly, ask permission from vm
+                        enableReadMode()
+                        onBlockLongClick(root, it, clicked)
+                    }
                 )
             )
 

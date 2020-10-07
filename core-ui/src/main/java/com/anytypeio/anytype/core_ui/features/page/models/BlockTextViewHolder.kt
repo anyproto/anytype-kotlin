@@ -34,6 +34,7 @@ interface Item : Focusable, BlockView.TextSupport, BlockView.Permission, BlockVi
     override val body: String get() = text
 }
 
+@Deprecated("Work in progress")
 abstract class BlockTextViewHolder(
     view: View,
     private val textWatcher: BlockTextWatcher,

@@ -40,4 +40,6 @@ interface Proxy<T> {
     class Payloads : Subject<Payload>()
 
     class Error : Subject<Throwable>()
+
+    class Toast : Subject<String>()
 }

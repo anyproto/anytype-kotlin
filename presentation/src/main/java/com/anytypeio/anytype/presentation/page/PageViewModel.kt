@@ -221,6 +221,11 @@ class PageViewModel(
                 .stream()
                 .collect { _toasts.offer(it.message ?: "Unknown error") }
         }
+        viewModelScope.launch {
+            orchestrator.proxies.toasts
+                .stream()
+                .collect { _toasts.send(it) }
+        }
     }
 
     private suspend fun processEvents(events: List<Event>) {

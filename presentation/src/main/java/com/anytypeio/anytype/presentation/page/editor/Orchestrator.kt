@@ -634,7 +634,7 @@ class Orchestrator(
                         )
                     ).proceed(
                         success = {
-                            Timber.d("Copy sucessful")
+                            proxies.toasts.send("Copied!")
                             val event = EventAnalytics.Anytype(
                                 name = BLOCK_COPY,
                                 props = Props.empty(),

@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import kotlinx.android.synthetic.main.activity_style.*
+import kotlinx.android.synthetic.main.activity_long_clicked.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber

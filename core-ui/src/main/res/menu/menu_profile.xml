@@ -7,9 +7,6 @@
         android:id="@+id/redo"
         android:title="@string/redo" />
     <item
-        android:id="@+id/archive"
-        android:title="@string/archive" />
-    <item
         android:id="@+id/select"
         android:title="@string/select" />
 </menu>

@@ -17,6 +17,7 @@
 
 ### Fixes & tech 🚒
 
+* Prevent user from archiving profile document (#962)
 * Show toast message when editor's content is copied to in-app clipboard (#958)
 * Prevent view without focus from gaining focus on long click (#954)
 * Support and render title as simple text block (#799)

@@ -16,6 +16,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MARKUP_LINK
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MENTION_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MULTI_SELECT_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_PROFILE_ICON_MENU
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_PROFILE_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_STYLE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_TURN_INTO
 import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_STYLE
@@ -824,11 +825,29 @@ class PageViewModel(
     }
 
     fun onDocumentMenuClicked() {
-        dispatch(command = Command.OpenDocumentMenu)
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = POPUP_DOCUMENT_MENU
-        )
+        blocks.find { it.id == context }?.let { root ->
+            val content = root.content
+            check(content is Content.Smart)
+            when (content.type) {
+                Content.Smart.Type.PROFILE -> {
+                    dispatch(command = Command.OpenProfileMenu)
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = POPUP_PROFILE_MENU
+                    )
+                }
+                Content.Smart.Type.PAGE -> {
+                    dispatch(command = Command.OpenDocumentMenu)
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = POPUP_DOCUMENT_MENU
+                    )
+                }
+                else -> {
+                    Timber.e("Trying to open menu for unexpected smart content: ${content.type}")
+                }
+            }
+        }
     }
 
     fun onEmptyBlockBackspaceClicked(id: String) {

@@ -20,6 +20,7 @@ object EventsDictionary {
     const val POPUP_MULTI_SELECT_MENU = "PopupMultiSelectMenu"
     const val POPUP_CHOOSE_EMOJI = "PopupChooseEmojiMenu"
     const val POPUP_DOCUMENT_MENU = "PopupDocumentMenu"
+    const val POPUP_PROFILE_MENU = "PopupProfileMenu"
     const val POPUP_DOCUMENT_ICON_MENU = "PopupDocumentIconMenu"
     const val POPUP_PROFILE_ICON_MENU = "PopupProfileIconMenu"
     const val POPUP_MENTION_MENU = "PopupMentionMenu"

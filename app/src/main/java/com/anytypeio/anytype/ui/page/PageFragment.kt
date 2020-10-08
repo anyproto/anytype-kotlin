@@ -43,6 +43,7 @@ import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.anytypeio.anytype.core_ui.features.page.scrollandmove.*
 import com.anytypeio.anytype.core_ui.menu.DocumentPopUpMenu
+import com.anytypeio.anytype.core_ui.menu.ProfilePopUpMenu
 import com.anytypeio.anytype.core_ui.model.UiBlock
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.state.ControlPanelState
@@ -488,17 +489,6 @@ open class PageFragment :
         }
     }
 
-    private fun showToolbarMenu() {
-        DocumentPopUpMenu(
-            context = requireContext(),
-            view = topToolbar.menu,
-            onArchiveClicked = vm::onArchiveThisPageClicked,
-            onRedoClicked = vm::onActionRedoClicked,
-            onUndoClicked = vm::onActionUndoClicked,
-            onEnterMultiSelect = vm::onEnterMultiSelectModeClicked
-        ).show()
-    }
-
     override fun onAddBookmarkUrlClicked(target: String, url: String) {
         vm.onAddBookmarkUrl(target = target, url = url)
     }
@@ -699,6 +689,15 @@ open class PageFragment :
                         context = requireContext(),
                         view = topToolbar.menu,
                         onArchiveClicked = vm::onArchiveThisPageClicked,
+                        onRedoClicked = vm::onActionRedoClicked,
+                        onUndoClicked = vm::onActionUndoClicked,
+                        onEnterMultiSelect = vm::onEnterMultiSelectModeClicked
+                    ).show()
+                }
+                is Command.OpenProfileMenu -> {
+                    ProfilePopUpMenu(
+                        context = requireContext(),
+                        view = topToolbar.menu,
                         onRedoClicked = vm::onActionRedoClicked,
                         onUndoClicked = vm::onActionUndoClicked,
                         onEnterMultiSelect = vm::onEnterMultiSelectModeClicked

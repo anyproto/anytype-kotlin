@@ -14,4 +14,5 @@ include ':app',
         ':library-emojifier',
         ':sample',
         ':clipboard',
-        ':analytics'
+        ':analytics',
+        ':middleware-lib'

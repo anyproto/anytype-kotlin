@@ -41,7 +41,7 @@ ext {
     gson_version = '2.8.6'
     rxrelay_version = '2.1.0'
     better_link_method_version = '2.2.0'
-    table_view_version = '0.8.8'
+    table_view_version = '0.8.9.2'
     rxbinding_version = '3.0.0'
     permission_disp_version = '4.6.0'
     pickt_version = "0.1.11"

@@ -766,6 +766,7 @@ class BlockAdapter(
                         }
                     )
                     setTextInputClickListener { onTitleTextInputClicked() }
+                    holder.content.clipboardInterceptor = clipboardInterceptor
                 }
             }
             is Title.Profile -> {
@@ -788,6 +789,7 @@ class BlockAdapter(
                         }
                     )
                     setTextInputClickListener { onTitleTextInputClicked() }
+                    holder.content.clipboardInterceptor = clipboardInterceptor
                 }
             }
             is Code -> {

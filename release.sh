@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+TYPES=(patch minor major)
+
+RELEASE_TYPE=$1
+
+if ! [ "$RELEASE_TYPE" = "${TYPES[0]}" ] && ! [ "$RELEASE_TYPE" = "${TYPES[1]}" ] && ! [ "$RELEASE_TYPE" = "${TYPES[2]}" ]; then
+  echo "Please provide release type: major, minor or patch"
+  exit 1
+fi;
+
 read -p "Hi there. Do you want to make a release? " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
@@ -15,7 +24,17 @@ then
         echo
         echo -n "Incrementing app version... "
 
-        ./gradlew -q :app:incrementVersionPatch
+        if [ "$RELEASE_TYPE" = "${TYPES[0]}" ]; then
+          ./gradlew -q :app:incrementVersionPatch
+        fi;
+
+        if [ "$RELEASE_TYPE" = "${TYPES[1]}" ]; then
+          ./gradlew -q :app:incrementVersionMinor
+        fi;
+
+        if [ "$RELEASE_TYPE" = "${TYPES[2]}" ]; then
+          ./gradlew -q :app:incrementVersionMajor
+        fi;
 
         echo Done.
         echo

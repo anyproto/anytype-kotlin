@@ -4,7 +4,7 @@ TOKEN=$1
 
 PROPERTY_PATH="middleware.path"
 PROPERTY_VERSION="middleware.version"
-LIBRARY_PATH="middleware-lib/lib.aar"
+LIBRARY_PATH="libs/lib.aar"
 
 REPO="anytypeio/go-anytype-middleware"
 FILE="lib.tar.gz"
@@ -39,7 +39,8 @@ printf "Done\n"
 
 printf "Preparing files\n"
 
-mv /tmp/lib/lib.aar middleware-lib/
+mkdir -p libs/
+mv /tmp/lib/lib.aar libs/
 
 rm -rf /tmp/lib
 rm -rf $FILE

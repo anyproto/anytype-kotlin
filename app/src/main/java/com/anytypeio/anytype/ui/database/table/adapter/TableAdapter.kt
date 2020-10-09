@@ -15,7 +15,7 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 const val VIEW_TYPE_DEFAULT = 0
 
 class TableAdapter(context: Context) :
-    AbstractTableAdapter<ColumnView, RowView, CellView>() {
+    AbstractTableAdapter<ColumnView, RowView, CellView>(context) {
 
     // -------------- Cell --------------------
 
@@ -76,6 +76,14 @@ class TableAdapter(context: Context) :
                 else -> throw RuntimeException(Throwable("Unknown view type!"))
             }
         }
+
+    override fun onBindCellViewHolder(
+        holder: AbstractViewHolder?,
+        cellItemModel: Any?,
+        columnPosition: Int,
+        rowPosition: Int
+    ) {
+    }
 
     // -------------- Column --------------------
 
@@ -153,10 +161,34 @@ class TableAdapter(context: Context) :
         }
     }
 
+    override fun onBindColumnHeaderViewHolder(
+        holder: AbstractViewHolder?,
+        columnHeaderItemModel: Any?,
+        columnPosition: Int
+    ) {
+    }
+
     // -------------- Row --------------------
 
     override fun getRowHeaderItemViewType(position: Int): Int =
         VIEW_TYPE_DEFAULT
+
+    override fun onBindRowHeaderViewHolder(
+        holder: AbstractViewHolder?,
+        rowHeaderItemModel: Any?,
+        rowPosition: Int
+    ) = Unit
+
+    override fun onCreateRowHeaderViewHolder(
+        parent: ViewGroup?,
+        viewType: Int
+    ): AbstractViewHolder {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onCreateCornerView(): View {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     companion object {
 
@@ -173,39 +205,6 @@ class TableAdapter(context: Context) :
         val VIEW_TYPE_EMAIL = 11
         val VIEW_TYPE_PHONE = 12
         val VIEW_TYPE_NEW = 13
-    }
-
-    override fun onBindCellViewHolder(
-        holder: AbstractViewHolder,
-        cellItemModel: CellView?,
-        columnPosition: Int,
-        rowPosition: Int
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBindColumnHeaderViewHolder(
-        holder: AbstractViewHolder,
-        columnHeaderItemModel: ColumnView?,
-        columnPosition: Int
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBindRowHeaderViewHolder(
-        holder: AbstractViewHolder,
-        rowHeaderItemModel: RowView?,
-        rowPosition: Int
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
-        TODO("Not yet implemented")
-    }
-
-    override fun onCreateCornerView(parent: ViewGroup): View {
-        TODO("Not yet implemented")
     }
 }
 

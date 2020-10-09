@@ -1,5 +1,19 @@
 # Change log for Android @Anytype app.
 
+## Version 0.1.1 (WIP)
+
+### New features & enhancements 🚀
+
+* Disable animation for edit-mode in order to increase editor performance (#884)
+
+### Design & UX 🔳
+
+*
+
+### Fixes & tech 🚒
+
+*
+
 ## Version 0.1.0
 
 ### New features 🚀

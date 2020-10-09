@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.`interface`
 
-import android.text.Editable
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -74,10 +73,11 @@ interface TextHolder {
     }
 
     fun setFocus(item: Focusable) {
-        if (item.isFocused)
+        if (item.isFocused) {
             focus()
-        else
+        } else {
             content.clearFocus()
+        }
     }
 
     fun focus() {
@@ -86,12 +86,13 @@ interface TextHolder {
             post {
                 if (!hasFocus()) {
                     if (requestFocus()) {
-                        context.imm().showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+                        context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
                     } else {
                         Timber.d("Couldn't gain focus")
                     }
-                } else
+                } else {
                     Timber.d("Already had focus")
+                }
             }
         }
     }

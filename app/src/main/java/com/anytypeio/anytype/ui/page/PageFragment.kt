@@ -609,6 +609,7 @@ open class PageFragment :
                     ).show(childFragmentManager, null)
                 }
                 is Command.OpenAddBlockPanel -> {
+                    hideKeyboard()
                     AddBlockFragment.newInstance().show(childFragmentManager, null)
                 }
                 is Command.OpenTurnIntoPanel -> {

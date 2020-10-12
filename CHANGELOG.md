@@ -12,7 +12,7 @@
 
 ### Fixes & tech 🚒
 
-*
+* Change min sdk to Android 24 (#976)
 
 ## Version 0.1.0
 

@@ -136,6 +136,7 @@ dependencies {
     implementation analyticsDependencies.amplitude
 
     implementation applicationDependencies.blurry
+    implementation applicationDependencies.photoView
 
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.junit

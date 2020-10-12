@@ -69,4 +69,9 @@ sealed class Command {
     object OpenProfileMenu : Command()
 
     object AlertDialog : Command()
+
+    data class OpenFullScreenImage(
+        val target: Id,
+        val url: Url
+    ) : Command()
 }

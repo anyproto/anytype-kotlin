@@ -15,6 +15,11 @@ class UrlBuilder(val gateway: Gateway) {
     fun image(hash: String?): Url = gateway.obtain() + IMAGE_PATH + hash + DEFAULT_WIDTH_PARAM
 
     /**
+     * Builds original image url for given [hash]
+     */
+    fun original(hash: String?): Url = gateway.obtain() + IMAGE_PATH + hash
+
+    /**
      * Builds small image url for given [hash]
      */
     fun thumbnail(hash: String): Url = gateway.obtain() + IMAGE_PATH + hash + THUMBNAIL_WIDTH_PARAM

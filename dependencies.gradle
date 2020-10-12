@@ -31,6 +31,7 @@ ext {
     exoplayer_version = '2.11.3'
     glide_version = '4.11.0'
     blurry_version = '3.0.0'
+    photo_view_version = '2.3.0'
     dagger_version = '2.28.3'
     javaxAnnotations_version = '1.0'
     javaxInject_version = '1'
@@ -106,6 +107,7 @@ ext {
             betterLinkMovement:         "me.saket:better-link-movement-method:$better_link_method_version",
             emojiCompat:                "androidx.emoji:emoji-appcompat:$emoji_compat_version",
             blurry:                     "jp.wasabeef:blurry:$blurry_version",
+            photoView:                  "com.github.chrisbanes:PhotoView:$photo_view_version",
             glide:                      "com.github.bumptech.glide:glide:$glide_version",
             glideCompiler:              "com.github.bumptech.glide:compiler:$glide_version",
             daggerCompiler:             "com.google.dagger:dagger-compiler:$dagger_version",

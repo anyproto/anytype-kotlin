@@ -94,7 +94,7 @@ interface AppNavigation {
         ) : Command()
 
         data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
-        object OpenPageSearch: Command()
+        object OpenPageSearch : Command()
         data class OpenArchive(val target: String) : Command()
     }
 

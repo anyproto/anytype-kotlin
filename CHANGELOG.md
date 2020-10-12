@@ -4,6 +4,7 @@
 
 ### New features & enhancements 🚀
 
+* Images can be full screen when tapped, allowing users to zoom in (#968)
 * Disable animation for edit-mode in order to increase editor performance (#884)
 
 ### Design & UX 🔳

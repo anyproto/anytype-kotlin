@@ -349,10 +349,14 @@
         android:id="@+id/pageSearchFragment"
         android:name="com.anytypeio.anytype.ui.search.PageSearchFragment"
         android:label="PageSearchFragment"
-        tools:layout="@layout/fragment_page_search"/>
+        tools:layout="@layout/fragment_page_search" />
     <fragment
         android:id="@+id/archiveFragment"
         android:name="com.anytypeio.anytype.ui.archive.ArchiveFragment"
         android:label="ArchiveFragment" />
+    <fragment
+        android:id="@+id/fullScreenImageFragment"
+        android:name="com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment"
+        android:label="FullScreenImageFragment" />
 
 </navigation>

@@ -69,6 +69,7 @@ import com.anytypeio.anytype.presentation.page.editor.Command
 import com.anytypeio.anytype.presentation.page.editor.ViewState
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.page.modals.*
 import com.anytypeio.anytype.ui.page.modals.actions.BlockActionToolbarFactory
 import com.anytypeio.anytype.ui.page.modals.actions.DocumentIconActionMenuFragment
@@ -704,6 +705,17 @@ open class PageFragment :
                         onUndoClicked = vm::onActionUndoClicked,
                         onEnterMultiSelect = vm::onEnterMultiSelectModeClicked
                     ).show()
+                }
+                is Command.OpenFullScreenImage -> {
+                    val screen = FullScreenPictureFragment.new(command.target, command.url).apply {
+                        enterTransition = Fade()
+                        exitTransition = Fade()
+                    }
+                    childFragmentManager
+                        .beginTransaction()
+                        .add(R.id.root, screen)
+                        .addToBackStack(null)
+                        .commit()
                 }
                 is Command.AlertDialog -> {
                     if (childFragmentManager.findFragmentByTag(TAG_ALERT) == null) {

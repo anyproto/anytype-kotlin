@@ -66,5 +66,4 @@ abstract class NavigationFragment(
             is Command.OpenPageSearch -> navigation.openPageSearch()
         }
     }
-
 }

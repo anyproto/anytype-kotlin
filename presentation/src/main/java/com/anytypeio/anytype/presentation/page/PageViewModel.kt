@@ -2361,7 +2361,21 @@ class PageViewModel(
         }
         is ListenerType.Picture.View -> {
             when (mode) {
-                EditorMode.EDITING -> Unit
+                EditorMode.EDITING -> {
+                    val target = blocks.find { it.id == clicked.target }
+                    if (target != null) {
+                        val content = target.content
+                        check(content is Content.File)
+                        dispatch(
+                            Command.OpenFullScreenImage(
+                                target = clicked.target,
+                                url = urlBuilder.original(content.hash)
+                            )
+                        )
+                    } else {
+                        Timber.e("Could not find target for picture")
+                    }
+                }
                 EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }

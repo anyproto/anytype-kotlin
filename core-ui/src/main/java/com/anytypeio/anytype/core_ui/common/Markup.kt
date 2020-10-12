@@ -282,5 +282,5 @@ fun Editable.setMentionSpan(
     }
 }
 
-fun List<Markup.Mark>.isLinksPresent(): Boolean =
+fun List<Markup.Mark>.isLinksOrMentionsPresent(): Boolean =
     this.any { it.type == Markup.Type.LINK || it.type == Markup.Type.MENTION }

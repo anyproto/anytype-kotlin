@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_ui.common.*
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.extensions.preserveSelection
 import com.anytypeio.anytype.core_ui.extensions.range
+import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.menu.EditorContextMenu
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
@@ -13,7 +14,6 @@ import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
-import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
 
 /**
@@ -46,11 +46,14 @@ interface TextBlockHolder : TextHolder {
         markup: Markup,
         clicked: (ListenerType) -> Unit,
         textColor: Int
-    ) =
+    ) {
+        content.applyMovementMethod(markup)
+
         when (markup.marks.any { it.type == Markup.Type.MENTION }) {
             true -> setSpannableWithMention(markup, clicked, textColor)
             false -> setSpannable(markup, textColor)
         }
+    }
 
     private fun setSpannable(markup: Markup, textColor: Int) {
         content.setText(markup.toSpannable(textColor = textColor), TextView.BufferType.SPANNABLE)
@@ -63,7 +66,6 @@ interface TextBlockHolder : TextHolder {
                                         textColor: Int
     ) {
         content.dismissMentionWatchers()
-        content.movementMethod = BetterLinkMovementMethod.getInstance()
         with(content) {
             val sizes = getMentionImageSizeAndPadding()
             setText(
@@ -94,9 +96,7 @@ interface TextBlockHolder : TextHolder {
     }
 
     fun setMarkup(markup: Markup, clicked: (ListenerType) -> Unit, textColor: Int) {
-        if (markup.marks.isLinksPresent()) {
-            content.setLinksClickable()
-        }
+        content.applyMovementMethod(markup)
         with(content) {
             val sizes = getMentionImageSizeAndPadding()
             text?.setMarkup(

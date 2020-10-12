@@ -4,8 +4,8 @@ import android.text.Editable
 import android.view.View
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.getBlockTextColor
-import com.anytypeio.anytype.core_ui.common.isLinksPresent
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.page.ListenerType
@@ -44,7 +44,7 @@ abstract class Text(
 
             enableEditMode()
 
-            makeLinkClickable(item)
+            content.applyMovementMethod(item)
 
             clearTextWatchers()
 
@@ -156,11 +156,5 @@ abstract class Text(
 
     fun selection(item: BlockView.Selectable) {
         select(item)
-    }
-
-    fun makeLinkClickable(item: BlockView.TextBlockProps) {
-        if (item.marks.isLinksPresent()) {
-            content.setLinksClickable()
-        }
     }
 }

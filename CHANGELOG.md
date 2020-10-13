@@ -13,6 +13,7 @@
 
 ### Fixes & tech 🚒
 
+* Fix soft input visibility/focusing issues on Android 7 (#966)
 * Change min sdk to Android 24 (#976)
 * Cannot set carriage into an empty text block in large documents (#906)
 

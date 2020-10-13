@@ -1,17 +1,20 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
+import android.os.Build
 import android.text.Editable
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.getBlockTextColor
-import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
+import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.page.ListenerType
 import com.anytypeio.anytype.core_ui.features.page.TextBlockHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
+import com.anytypeio.anytype.core_utils.ext.imm
 
 abstract class Text(
     view: View
@@ -71,8 +74,18 @@ abstract class Text(
             setOnFocusChangeListener { _, hasFocus ->
                 item.isFocused = hasFocus
                 onFocusChanged(item.id, hasFocus)
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+                    if (hasFocus) {
+                        imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)
+                    }
+                }
             }
-            setOnClickListener { onTextInputClicked(item.id) }
+            setOnClickListener {
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+                    content.context.imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)
+                }
+                onTextInputClicked(item.id)
+            }
             enableEnterKeyDetector(
                 onSplitLineEnterClicked = { range ->
                     content.text?.let { editable ->

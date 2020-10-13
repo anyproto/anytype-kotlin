@@ -1,8 +1,10 @@
 package com.anytypeio.anytype.core_ui.features.page
 
+import android.os.Build
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.BuildConfig
@@ -56,6 +58,7 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
+import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import timber.log.Timber
 
@@ -765,7 +768,13 @@ class BlockAdapter(
                             }
                         }
                     )
-                    setTextInputClickListener { onTitleTextInputClicked() }
+                    setTextInputClickListener {
+                        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+                            content.context.imm()
+                                .showSoftInput(content, InputMethodManager.SHOW_FORCED)
+                        }
+                        onTitleTextInputClicked()
+                    }
                     holder.content.clipboardInterceptor = clipboardInterceptor
                 }
             }
@@ -788,7 +797,13 @@ class BlockAdapter(
                             }
                         }
                     )
-                    setTextInputClickListener { onTitleTextInputClicked() }
+                    setTextInputClickListener {
+                        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+                            content.context.imm()
+                                .showSoftInput(content, InputMethodManager.SHOW_FORCED)
+                        }
+                        onTitleTextInputClicked()
+                    }
                     holder.content.clipboardInterceptor = clipboardInterceptor
                 }
             }

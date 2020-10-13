@@ -14,6 +14,7 @@
 
 ### Fixes & tech 🚒
 
+* When scroll-and-move is enabled, should move blocks according to document order, not selection order (#971)
 * Emoji cross-platform sync issues (#969)
 * Fix soft input visibility/focusing issues on Android 7 (#966)
 * Change min sdk to Android 24 (#976)

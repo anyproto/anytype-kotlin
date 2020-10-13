@@ -730,6 +730,137 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         }
     }
 
+    @Test
+    fun `should move blocks following document order, not selection order`() {
+
+        // SETUP
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            )
+        )
+
+        val b = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val c = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val d = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val e = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val f = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(a.id, b.id, c.id, d.id, e.id, f.id)
+        )
+
+        val document = listOf(page, a, b, c, d, e, f)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+        stubMove()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+
+        vm.apply {
+
+            onBlockFocusChanged(
+                id = a.id,
+                hasFocus = true
+            )
+
+            onEnterMultiSelectModeClicked()
+
+            onTextInputClicked(d.id)
+            onTextInputClicked(c.id)
+            onTextInputClicked(f.id)
+            onTextInputClicked(b.id)
+
+            onEnterScrollAndMoveClicked()
+
+            onApplyScrollAndMove(
+                target = a.id,
+                ratio = 0.1f
+            )
+        }
+
+        // Verifying order of selected blocks used in request
+
+        verifyBlocking(move, times(1)) {
+            invoke(
+                params = Move.Params(
+                    context = root,
+                    targetContext = root,
+                    targetId = a.id,
+                    blockIds = listOf(b.id, c.id, d.id, f.id),
+                    position = Position.TOP
+                )
+            )
+        }
+
+        clearPendingCoroutines()
+    }
+
     private fun clearPendingCoroutines() {
         coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }

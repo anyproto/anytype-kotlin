@@ -2208,6 +2208,8 @@ class PageViewModel(
         ratio: Float
     ) {
 
+        val ordering = views.mapIndexed { index, view -> view.id to index }.toMap()
+
         val exclude = mutableSetOf<String>()
 
         var moveTarget = target
@@ -2267,7 +2269,7 @@ class PageViewModel(
                         context = context,
                         target = moveTarget,
                         targetContext = targetContext,
-                        blocks = selected - exclude,
+                        blocks = (selected - exclude).sortedBy { id -> ordering[id] },
                         position = position
                     )
                 )
@@ -2297,7 +2299,7 @@ class PageViewModel(
                         context = context,
                         target = moveTarget,
                         targetContext = targetContext,
-                        blocks = selected - exclude,
+                        blocks = (selected - exclude).sortedBy { id -> ordering[id] },
                         position = position
                     )
                 )

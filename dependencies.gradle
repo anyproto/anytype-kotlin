@@ -181,10 +181,6 @@ ext {
             roomTesting:        "androidx.room:room-testing:$room_version"
     ]
 
-    libraryPageIconPicker = [
-            emojiJava:          "com.vdurmont:emoji-java:5.1.1"
-    ]
-
     analytics = [
             amplitude:       "com.amplitude:android-sdk:$amplitude_version"
     ]

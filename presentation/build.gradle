@@ -33,11 +33,6 @@ dependencies {
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
     def analyticsDependencies = rootProject.ext.analytics
-    def lib = rootProject.ext.libraryPageIconPicker
-
-    implementation(lib.emojiJava) {
-        exclude group: 'org.json', module: 'json'
-    }
 
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines

@@ -581,7 +581,13 @@ class PageViewModel(
         if (editorHasChildrenScreens) {
             dispatch(Command.PopBackStack)
         } else {
-            proceedWithExiting()
+            val state = controlPanelViewState.value
+            checkNotNull(state) { "Control panel state is null" }
+            if (state.stylingToolbar.isVisible) {
+                onCloseBlockStyleToolbarClicked()
+            } else {
+                proceedWithExiting()
+            }
         }
     }
 

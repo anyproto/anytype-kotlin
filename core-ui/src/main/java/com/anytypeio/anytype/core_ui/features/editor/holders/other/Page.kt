@@ -35,6 +35,7 @@ class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder
 
         when {
             item.emoji != null -> {
+                icon.setImageDrawable(null)
                 image.setImageDrawable(null)
                 try {
                     Glide
@@ -47,6 +48,8 @@ class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder
                 }
             }
             item.image != null -> {
+                icon.setImageDrawable(null)
+                emoji.setImageDrawable(null)
                 image.visible()
                 Glide
                     .with(image)
@@ -56,8 +59,9 @@ class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder
                     .into(image)
             }
             item.isEmpty -> {
-                icon.setImageResource(R.drawable.ic_block_empty_page)
+                emoji.setImageDrawable(null)
                 image.setImageDrawable(null)
+                icon.setImageResource(R.drawable.ic_block_empty_page)
             }
             else -> {
                 icon.setImageResource(R.drawable.ic_block_page_without_emoji)

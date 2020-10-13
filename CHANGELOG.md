@@ -17,6 +17,7 @@
 * Fix soft input visibility/focusing issues on Android 7 (#966)
 * Change min sdk to Android 24 (#976)
 * Cannot set carriage into an empty text block in large documents (#906)
+* When changing icon for a document, link block should not have overlaying images (#890)
 
 ## Version 0.1.0
 

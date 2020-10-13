@@ -81,7 +81,7 @@ interface Interactor {
                     patterns.contains(Pattern.DIVIDER) -> replaceBy(
                         context = context,
                         target = update.target,
-                        prototype = Block.Prototype.Divider
+                        prototype = Block.Prototype.DividerLine
                     )
                     else -> proxies.saves.send(update)
                 }

@@ -53,7 +53,7 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_TOGGLE = 10
         const val HOLDER_PAGE = 13
         const val HOLDER_PAGE_ARCHIVE = 37
-        const val HOLDER_DIVIDER = 16
+
         const val HOLDER_HIGHLIGHT = 17
 
         const val HOLDER_VIDEO = 19
@@ -74,6 +74,9 @@ open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         const val HOLDER_FILE_PLACEHOLDER = 32
         const val HOLDER_FILE_UPLOAD = 33
         const val HOLDER_FILE_ERROR = 34
+
+        const val HOLDER_DIVIDER_LINE = 16
+        const val HOLDER_DIVIDER_DOTS = 38
 
         const val FOCUS_TIMEOUT_MILLIS = 16L
         const val KEYBOARD_SHOW_DELAY = 16L

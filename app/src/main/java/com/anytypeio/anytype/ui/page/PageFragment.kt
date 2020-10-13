@@ -512,7 +512,8 @@ open class PageFragment :
             UiBlock.IMAGE -> vm.onAddFileBlockClicked(Block.Content.File.Type.IMAGE)
             UiBlock.VIDEO -> vm.onAddFileBlockClicked(Block.Content.File.Type.VIDEO)
             UiBlock.BOOKMARK -> vm.onAddBookmarkBlockClicked()
-            UiBlock.LINE_DIVIDER -> vm.onAddDividerBlockClicked()
+            UiBlock.LINE_DIVIDER -> vm.onAddDividerBlockClicked(Block.Content.Divider.Type.LINE)
+            UiBlock.THREE_DOTS -> vm.onAddDividerBlockClicked(Block.Content.Divider.Type.DOTS)
             UiBlock.LINK_TO_OBJECT -> vm.onAddLinkToObjectClicked()
             else -> toast(NOT_IMPLEMENTED_MESSAGE)
         }

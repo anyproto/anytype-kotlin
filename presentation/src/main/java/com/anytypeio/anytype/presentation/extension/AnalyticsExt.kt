@@ -38,11 +38,19 @@ fun Block.Prototype.getAnalyticsEvent(
         is Block.Prototype.Link -> {
             Props(mapOf(PROP_TYPE to "link"))
         }
-        Block.Prototype.Divider -> {
+        Block.Prototype.DividerLine -> {
             Props(
                 mapOf(
                     PROP_TYPE to "div",
                     PROP_STYLE to "line"
+                )
+            )
+        }
+        Block.Prototype.DividerDots -> {
+            Props(
+                mapOf(
+                    PROP_TYPE to "div",
+                    PROP_STYLE to "dots"
                 )
             )
         }

@@ -2684,7 +2684,7 @@ open class PageViewModelTest {
     }
 
     @Test
-    fun `should create a new divider block after currently focused block`() {
+    fun `should create a new line divider block after currently focused block`() {
 
         val root = MockDataFactory.randomUuid()
         val paragraph = MockBlockFactory.makeParagraphBlock()
@@ -2727,7 +2727,7 @@ open class PageViewModelTest {
 
         vm.onAddBlockToolbarClicked()
 
-        vm.onAddDividerBlockClicked()
+        vm.onAddDividerBlockClicked(type = Block.Content.Divider.Type.LINE)
 
         runBlockingTest {
             verify(createBlock, times(1)).invoke(
@@ -2736,7 +2736,67 @@ open class PageViewModelTest {
                         context = root,
                         target = title.id,
                         position = Position.BOTTOM,
-                        prototype = Block.Prototype.Divider
+                        prototype = Block.Prototype.DividerLine
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should create a new dots divider block after currently focused block`() {
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    map = mapOf("icon" to "")
+                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                children = listOf(title.id, paragraph.id)
+            ),
+            title,
+            paragraph
+        )
+
+        stubObserveEvents()
+        stubOpenPage(
+            events = listOf(
+                Event.Command.ShowBlock(
+                    root = root,
+                    blocks = page,
+                    context = root
+                )
+            )
+        )
+        stubCreateBlock(root = root)
+        buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        vm.onBlockFocusChanged(
+            id = title.id,
+            hasFocus = true
+        )
+
+        vm.onAddBlockToolbarClicked()
+
+        vm.onAddDividerBlockClicked(type = Block.Content.Divider.Type.DOTS)
+
+        runBlockingTest {
+            verify(createBlock, times(1)).invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        context = root,
+                        target = title.id,
+                        position = Position.BOTTOM,
+                        prototype = Block.Prototype.DividerDots
                     )
                 )
             )

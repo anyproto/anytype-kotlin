@@ -9,7 +9,8 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BULLET
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CHECKBOX
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CODE_SNIPPET
-import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER
+import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER_DOTS
+import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER_LINE
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_ERROR
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_PLACEHOLDER
@@ -745,16 +746,29 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     /**
-     * UI-model for a divider block.
+     * UI-model for a line divider block.
      * @property id block's id
      */
     @Parcelize
-    data class Divider(
+    data class DividerLine(
         override val id: String,
         override val isSelected: Boolean = false,
         override val indent: Int = 0
     ) : BlockView(), Selectable, Indentable {
-        override fun getViewType() = HOLDER_DIVIDER
+        override fun getViewType() = HOLDER_DIVIDER_LINE
+    }
+
+    /**
+     * UI-model for a dots divider block.
+     * @property id block's id
+     */
+    @Parcelize
+    data class DividerDots(
+        override val id: String,
+        override val isSelected: Boolean = false,
+        override val indent: Int = 0
+    ) : BlockView(), Selectable, Indentable {
+        override fun getViewType() = HOLDER_DIVIDER_DOTS
     }
 
     enum class Mode { READ, EDIT }

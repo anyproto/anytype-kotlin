@@ -1835,10 +1835,14 @@ class PageViewModel(
         proceedWithUpdatingTextStyle(style, listOf(orchestrator.stores.focus.current().id))
     }
 
-    fun onAddDividerBlockClicked() {
+    fun onAddDividerBlockClicked(type: Content.Divider.Type) {
 
         val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
         val content = focused.content
+        val prototype = when (type) {
+            Content.Divider.Type.LINE -> Prototype.DividerLine
+            Content.Divider.Type.DOTS -> Prototype.DividerDots
+        }
 
         if (content is Content.Text && content.text.isEmpty()) {
             viewModelScope.launch {
@@ -1846,7 +1850,7 @@ class PageViewModel(
                     Intent.CRUD.Replace(
                         context = context,
                         target = focused.id,
-                        prototype = Prototype.Divider
+                        prototype = prototype
                     )
                 )
             }
@@ -1873,7 +1877,7 @@ class PageViewModel(
                         context = context,
                         target = target,
                         position = position,
-                        prototype = Prototype.Divider
+                        prototype = prototype
                     )
                 )
             }

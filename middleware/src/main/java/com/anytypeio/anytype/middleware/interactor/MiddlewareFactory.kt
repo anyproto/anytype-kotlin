@@ -23,9 +23,15 @@ class MiddlewareFactory {
                 }
                 builder.setText(text).build()
             }
-            is BlockEntity.Prototype.Divider -> {
+            is BlockEntity.Prototype.DividerLine -> {
                 val divider = Block.Content.Div.newBuilder().apply {
                     style = Block.Content.Div.Style.Line
+                }
+                builder.setDiv(divider).build()
+            }
+            is BlockEntity.Prototype.DividerDots -> {
+                val divider = Block.Content.Div.newBuilder().apply {
+                    style = Block.Content.Div.Style.Dots
                 }
                 builder.setDiv(divider).build()
             }

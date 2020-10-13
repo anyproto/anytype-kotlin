@@ -687,7 +687,7 @@ class BlockExtensionTest {
         val block = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
-            content = Block.Content.Divider,
+            content = Block.Content.Divider(type = Block.Content.Divider.Type.LINE),
             children = emptyList()
         )
         val range = IntRange(10, 13)

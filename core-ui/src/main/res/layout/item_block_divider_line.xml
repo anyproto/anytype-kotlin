@@ -9,6 +9,6 @@
 
     <View
         android:id="@+id/divider"
-        style="@style/BlockDividerStyle" />
+        style="@style/BlockDividerLineStyle" />
 
 </FrameLayout>

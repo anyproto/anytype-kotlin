@@ -476,7 +476,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             context = root,
             target = title.id,
             position = Position.BOTTOM,
-            prototype = Block.Prototype.Divider
+            prototype = Block.Prototype.DividerLine
         )
 
         val document = listOf(page, header, title)
@@ -495,7 +495,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
                 id = title.id,
                 hasFocus = true
             )
-            onAddDividerBlockClicked()
+            onAddDividerBlockClicked(type = Block.Content.Divider.Type.LINE)
         }
 
         verifyBlocking(createBlock, times(1)) { invoke(params) }
@@ -530,7 +530,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             context = root,
             target = title.id,
             position = Position.BOTTOM,
-            prototype = Block.Prototype.Divider
+            prototype = Block.Prototype.DividerLine
         )
 
         val document = listOf(page, header, title)
@@ -549,7 +549,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
                 id = title.id,
                 hasFocus = true
             )
-            onAddDividerBlockClicked()
+            onAddDividerBlockClicked(type = Block.Content.Divider.Type.LINE)
         }
 
         verifyBlocking(createBlock, times(1)) { invoke(params) }

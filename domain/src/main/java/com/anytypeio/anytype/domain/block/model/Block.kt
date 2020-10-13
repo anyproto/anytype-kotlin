@@ -200,7 +200,9 @@ data class Block(
             val favicon: Hash?
         ) : Content()
 
-        object Divider : Content()
+        data class Divider(val type: Type) : Content() {
+            enum class Type { LINE, DOTS }
+        }
     }
 
     /**
@@ -228,7 +230,8 @@ data class Block(
             val target: Id
         ) : Prototype()
 
-        object Divider : Prototype()
+        object DividerLine : Prototype()
+        object DividerDots : Prototype()
         object Bookmark : Prototype()
     }
 

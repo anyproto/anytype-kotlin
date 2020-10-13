@@ -200,6 +200,7 @@ fun BlockEntity.Content.Layout.layout() : Layout {
         BlockEntity.Content.Layout.Type.ROW -> builder.style = LayoutStyle.Row
         BlockEntity.Content.Layout.Type.COLUMN -> builder.style = LayoutStyle.Column
         BlockEntity.Content.Layout.Type.DIV -> builder.style = LayoutStyle.Div
+        BlockEntity.Content.Layout.Type.HEADER -> builder.style = LayoutStyle.Header
     }
     return builder.build()
 }
@@ -208,8 +209,13 @@ fun BlockEntity.Content.Layout.layout() : Layout {
 
 //region divider mapping
 
-fun BlockEntity.Content.Divider.divider() : Divider {
-    return Divider.newBuilder().setStyle(DividerStyle.Line).build()
+fun BlockEntity.Content.Divider.divider(): Divider {
+    val builder = Divider.newBuilder()
+    when (type) {
+        BlockEntity.Content.Divider.Type.LINE -> builder.style = Block.Content.Div.Style.Line
+        BlockEntity.Content.Divider.Type.DOTS -> builder.style = Block.Content.Div.Style.Dots
+    }
+    return builder.build()
 }
 
 //endregion

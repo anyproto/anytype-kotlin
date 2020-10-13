@@ -33,7 +33,8 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BULLET
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CHECKBOX
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_CODE_SNIPPET
-import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER
+import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER_DOTS
+import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_DIVIDER_LINE
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_ERROR
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_PLACEHOLDER
@@ -360,10 +361,19 @@ class BlockAdapter(
                     )
                 )
             }
-            HOLDER_DIVIDER -> {
-                Divider(
+            HOLDER_DIVIDER_LINE -> {
+                DividerLine(
                     view = inflater.inflate(
-                        R.layout.item_block_divider,
+                        R.layout.item_block_divider_line,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_DIVIDER_DOTS -> {
+                DividerDots(
+                    view = inflater.inflate(
+                        R.layout.item_block_divider_dots,
                         parent,
                         false
                     )
@@ -602,7 +612,8 @@ class BlockAdapter(
                             onSelectionChanged = onSelectionChanged
                         )
                     }
-                    is Divider -> onBindViewHolder(holder, position)
+                    is DividerLine -> onBindViewHolder(holder, position)
+                    is DividerDots -> onBindViewHolder(holder, position)
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
                 }
             }
@@ -920,9 +931,15 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is Divider -> {
+            is DividerLine -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Divider,
+                    item = blocks[position] as BlockView.DividerLine,
+                    clicked = onClickListener
+                )
+            }
+            is DividerDots -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.DividerDots,
                     clicked = onClickListener
                 )
             }

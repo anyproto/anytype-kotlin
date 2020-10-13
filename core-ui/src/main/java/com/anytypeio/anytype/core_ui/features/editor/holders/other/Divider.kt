@@ -9,22 +9,24 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.page.ListenerType
 import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.anytypeio.anytype.core_utils.ext.dimen
-import kotlinx.android.synthetic.main.item_block_divider.view.*
+import kotlinx.android.synthetic.main.item_block_divider_line.view.*
 
-class Divider(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder {
+open class Divider(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder {
 
     val divider: View get() = itemView.divider
 
     fun bind(
-        item: BlockView.Divider,
+        id: String,
+        item: BlockView.Indentable,
+        isItemSelected: Boolean,
         clicked: (ListenerType) -> Unit
     ) = with(itemView) {
         indentize(item)
-        isSelected = item.isSelected
-        setOnClickListener { clicked(ListenerType.DividerClick(item.id)) }
+        isSelected = isItemSelected
+        setOnClickListener { clicked(ListenerType.DividerClick(id)) }
         setOnLongClickListener(
             EditorLongClickListener(
-                t = item.id,
+                t = id,
                 click = { onBlockLongClick(itemView, it, clicked) }
             )
         )

@@ -145,8 +145,11 @@ fun Block.Content.Layout.toEntity(): BlockEntity.Content.Layout {
     )
 }
 
-fun BlockEntity.Content.Divider.toDomain() = Block.Content.Divider
-
+fun BlockEntity.Content.Divider.toDomain(): Block.Content.Divider {
+    return Block.Content.Divider(
+        type = Block.Content.Divider.Type.valueOf(type.name)
+    )
+}
 
 fun BlockEntity.Content.Smart.toDomain() = Block.Content.Smart(
     type = Block.Content.Smart.Type.valueOf(type.name)
@@ -246,7 +249,11 @@ fun Block.Content.Link.toEntity(): BlockEntity.Content.Link {
     )
 }
 
-fun Block.Content.Divider.toEntity() = BlockEntity.Content.Divider
+fun Block.Content.Divider.toEntity(): BlockEntity.Content.Divider {
+    return BlockEntity.Content.Divider(
+        type = BlockEntity.Content.Divider.Type.valueOf(type.name)
+    )
+}
 
 fun Block.Content.Text.Mark.toEntity(): BlockEntity.Content.Text.Mark {
     return BlockEntity.Content.Text.Mark(
@@ -560,7 +567,8 @@ fun Block.Prototype.toEntity(): BlockEntity.Prototype = when (this) {
         )
     }
     is Block.Prototype.Bookmark -> BlockEntity.Prototype.Bookmark
-    is Block.Prototype.Divider -> BlockEntity.Prototype.Divider
+    is Block.Prototype.DividerLine -> BlockEntity.Prototype.DividerLine
+    is Block.Prototype.DividerDots -> BlockEntity.Prototype.DividerDots
     is Block.Prototype.File -> {
         BlockEntity.Prototype.File(
             type = BlockEntity.Content.File.Type.valueOf(this.type.name),

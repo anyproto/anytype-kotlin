@@ -97,7 +97,9 @@ data class BlockEntity(
             val favicon: String?
         ) : Content()
 
-        object Divider : Content()
+        data class Divider(val type: Type) : Content() {
+            enum class Type { LINE, DOTS }
+        }
     }
 
     sealed class Prototype {
@@ -118,7 +120,8 @@ data class BlockEntity(
             val target: String
         ) : Prototype()
 
-        object Divider : Prototype()
+        object DividerLine : Prototype()
+        object DividerDots : Prototype()
         object Bookmark : Prototype()
     }
 

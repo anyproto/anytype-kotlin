@@ -7,8 +7,13 @@
     android:background="@drawable/item_block_multi_select_mode_selector"
     android:layout_height="wrap_content">
 
-    <View
+    <ImageView
         android:id="@+id/divider"
-        style="@style/BlockDividerStyle" />
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_three_dots" />
 
 </FrameLayout>

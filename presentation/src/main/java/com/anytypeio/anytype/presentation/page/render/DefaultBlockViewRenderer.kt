@@ -316,7 +316,7 @@ class DefaultBlockViewRenderer(
                 }
                 is Content.Divider -> {
                     counter.reset()
-                    result.add(divider(block, indent))
+                    result.add(divider(id = block.id, content = content, indent = indent))
                 }
                 is Content.Link -> {
                     counter.reset()
@@ -572,12 +572,19 @@ class DefaultBlockViewRenderer(
     )
 
     private fun divider(
-        block: Block,
+        id: Id,
+        content: Content.Divider,
         indent: Int
-    ) = BlockView.Divider(
-        id = block.id,
-        indent = indent
-    )
+    ): BlockView = when (content.type) {
+        Content.Divider.Type.LINE -> BlockView.DividerLine(
+            id = id,
+            indent = indent
+        )
+        Content.Divider.Type.DOTS -> BlockView.DividerDots(
+            id = id,
+            indent = indent
+        )
+    }
 
     private fun file(
         mode: EditorMode,

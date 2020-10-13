@@ -29,7 +29,8 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.MediaPlaceholder.Picture -> copy(isSelected = newSelection)
     is BlockView.Error.Picture -> copy(isSelected = newSelection)
     is BlockView.Upload.Picture -> copy(isSelected = newSelection)
-    is BlockView.Divider -> copy(isSelected = newSelection)
+    is BlockView.DividerLine -> copy(isSelected = newSelection)
+    is BlockView.DividerDots -> copy(isSelected = newSelection)
     is BlockView.Code -> copy(isSelected = newSelection)
     else -> this
 }

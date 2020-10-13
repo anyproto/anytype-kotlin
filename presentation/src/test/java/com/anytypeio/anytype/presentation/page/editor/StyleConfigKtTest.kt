@@ -20,7 +20,7 @@ class StyleConfigKtTest {
         val given = Block(
             id = child,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Divider,
+            content = Block.Content.Divider(type = Block.Content.Divider.Type.LINE),
             children = emptyList()
         )
         val result = given.getStyleConfig(focus = null, selection = null)

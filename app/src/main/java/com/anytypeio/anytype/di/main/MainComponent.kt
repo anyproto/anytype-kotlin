@@ -47,4 +47,5 @@ interface MainComponent {
     fun linkToObjectBuilder(): LinkToObjectSubComponent.Builder
     fun moveToBuilder(): MoveToSubComponent.Builder
     fun pageSearchComponentBuilder(): PageSearchSubComponent.Builder
+    fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder
 }

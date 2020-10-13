@@ -7,6 +7,10 @@ class ComponentManager(private val main: MainComponent) {
 
     val mainComponent = main
 
+    val mainEntryComponent = Component {
+        main.mainEntryComponentBuilder().module(MainEntryModule).build()
+    }
+
     private val authComponent = Component {
         main.authComponentBuilder().authModule(AuthModule).build()
     }

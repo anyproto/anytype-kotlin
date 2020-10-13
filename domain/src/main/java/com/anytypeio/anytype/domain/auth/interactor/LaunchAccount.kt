@@ -4,14 +4,17 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.device.PathProvider
+import kotlinx.coroutines.Dispatchers
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Sets current account for current application session.
  */
 class LaunchAccount(
     private val repository: AuthRepository,
-    private val pathProvider: PathProvider
-) : BaseUseCase<String, BaseUseCase.None>() {
+    private val pathProvider: PathProvider,
+    private val context: CoroutineContext = Dispatchers.IO
+) : BaseUseCase<String, BaseUseCase.None>(context) {
 
     override suspend fun run(params: None) = try {
         repository.startAccount(

@@ -65,11 +65,10 @@ object SplashModule {
     fun provideLaunchAccountUseCase(
         authRepository: AuthRepository,
         pathProvider: PathProvider
-    ): LaunchAccount =
-        LaunchAccount(
-            repository = authRepository,
-            pathProvider = pathProvider
-        )
+    ): LaunchAccount = LaunchAccount(
+        repository = authRepository,
+        pathProvider = pathProvider
+    )
 
     @JvmStatic
     @PerScreen

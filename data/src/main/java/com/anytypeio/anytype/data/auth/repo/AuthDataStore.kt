@@ -29,4 +29,6 @@ interface AuthDataStore {
     suspend fun logout()
     suspend fun getAccounts(): List<AccountEntity>
     suspend fun setCurrentAccount(id: String)
+
+    suspend fun getVersion(): String
 }

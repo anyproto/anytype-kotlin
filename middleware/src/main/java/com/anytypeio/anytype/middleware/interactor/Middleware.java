@@ -1062,6 +1062,24 @@ public class Middleware {
         return new Response.Media.Upload(response.getHash());
     }
 
+    public Commands.Rpc.Version.Get.Response getMiddlewareVersion() throws Exception {
+        Commands.Rpc.Version.Get.Request request = Commands.Rpc.Version.Get.Request
+                .newBuilder()
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Commands.Rpc.Version.Get.Response response = service.getVersion(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return response;
+    }
+
     public Localstore.PageInfoWithLinks getPageInfoWithLinks(String pageId) throws Exception {
         Navigation.GetPageInfoWithLinks.Request request = Navigation.GetPageInfoWithLinks.Request
                 .newBuilder()

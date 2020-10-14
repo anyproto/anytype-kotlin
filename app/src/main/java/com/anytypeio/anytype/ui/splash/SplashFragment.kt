@@ -2,8 +2,8 @@ package com.anytypeio.anytype.ui.splash
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -25,12 +25,7 @@ class SplashFragment : NavigationFragment(R.layout.fragment_splash), Observer<Vi
 
     @Inject
     lateinit var factory: SplashViewModelFactory
-
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(SplashViewModel::class.java)
-    }
+    private val vm by viewModels<SplashViewModel> { factory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -82,4 +82,6 @@ public interface MiddlewareService {
     Navigation.ListPages.Response listPages(Navigation.ListPages.Request request) throws Exception;
 
     Commands.Rpc.Page.Create.Response pageCreate(Commands.Rpc.Page.Create.Request request) throws Exception;
+
+    Commands.Rpc.Version.Get.Response getVersion(Commands.Rpc.Version.Get.Request request) throws Exception;
 }

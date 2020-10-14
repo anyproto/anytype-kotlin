@@ -27,6 +27,7 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.state.observe(viewLifecycleOwner, this)
+        vm.version.observe(viewLifecycleOwner, { version(it) })
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         vm.onViewCreated()
 
@@ -66,6 +67,10 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
                 state.data.avatar?.let { avatar.icon(it) }
             }
         }
+    }
+
+    private fun version(version: String) {
+        tvVersion.text = "Android v${BuildConfig.VERSION_NAME}-alpha ($version)"
     }
 
     override fun injectDependencies() {

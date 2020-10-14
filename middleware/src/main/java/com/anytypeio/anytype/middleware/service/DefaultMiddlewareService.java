@@ -402,4 +402,15 @@ public class DefaultMiddlewareService implements MiddlewareService {
             return response;
         }
     }
+
+    @Override
+    public Commands.Rpc.Version.Get.Response getVersion(Commands.Rpc.Version.Get.Request request) throws Exception {
+        byte[] encoded = Service.versionGet(request.toByteArray());
+        Commands.Rpc.Version.Get.Response response = Commands.Rpc.Version.Get.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Commands.Rpc.Version.Get.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
 }

@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetCurrentAccount
+import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 
 class ProfileViewModelFactory(
     private val logout: Logout,
     private val getCurrentAccount: GetCurrentAccount,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val getLibraryVersion: GetLibraryVersion
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -17,7 +19,8 @@ class ProfileViewModelFactory(
         return ProfileViewModel(
             logout = logout,
             getCurrentAccount = getCurrentAccount,
-            analytics = analytics
+            analytics = analytics,
+            getLibraryVersion = getLibraryVersion
         ) as T
     }
 }

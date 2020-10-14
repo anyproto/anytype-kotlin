@@ -44,4 +44,6 @@ interface AuthRepository {
      * @param id account's id
      */
     suspend fun setCurrentAccount(id: String)
+
+    suspend fun getVersion(): String
 }

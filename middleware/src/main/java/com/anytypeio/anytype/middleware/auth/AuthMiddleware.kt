@@ -76,4 +76,8 @@ class AuthMiddleware(
     override suspend fun logout() {
         middleware.logout()
     }
+
+    override suspend fun getVersion(): String {
+        return middleware.middlewareVersion.version
+    }
 }

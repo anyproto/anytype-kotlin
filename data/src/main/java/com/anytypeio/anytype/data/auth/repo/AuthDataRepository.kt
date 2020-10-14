@@ -66,4 +66,6 @@ class AuthDataRepository(
     override suspend fun setCurrentAccount(id: String) {
         factory.cache.setCurrentAccount(id)
     }
+
+    override suspend fun getVersion(): String = factory.remote.getVersion()
 }

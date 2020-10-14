@@ -4,5 +4,5 @@ import com.anytypeio.anytype.domain.common.Url
 
 data class ProfileView(
     val name: String,
-    val avatar: Url? = null
+    val avatar: Url? = null,
 )

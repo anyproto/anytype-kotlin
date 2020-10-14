@@ -66,4 +66,6 @@ class AuthRemoteDataStore(
     override suspend fun updateAccount(account: AccountEntity) {
         throw UnsupportedOperationException()
     }
+
+    override suspend fun getVersion(): String = authRemote.getVersion()
 }

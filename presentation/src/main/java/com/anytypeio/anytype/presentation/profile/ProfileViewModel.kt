@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.profile
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.amplitude.api.Amplitude
@@ -14,6 +15,7 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.auth.interactor.GetCurrentAccount
+import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -23,11 +25,15 @@ import timber.log.Timber
 class ProfileViewModel(
     private val getCurrentAccount: GetCurrentAccount,
     private val logout: Logout,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val getLibraryVersion: GetLibraryVersion
 ) : ViewStateViewModel<ViewState<ProfileView>>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     private var target = ""
+
+    protected val libVersion = MutableLiveData<String>()
+    val version: LiveData<String> = libVersion
 
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
         MutableLiveData()
@@ -35,6 +41,7 @@ class ProfileViewModel(
     fun onViewCreated() {
         stateData.postValue(ViewState.Init)
         proceedWithGettingAccount()
+        proceedWithGetVersion()
     }
 
     fun onBackButtonClicked() {
@@ -71,6 +78,17 @@ class ProfileViewModel(
                             )
                         )
                     )
+                }
+            )
+        }
+    }
+
+    private fun proceedWithGetVersion() {
+        getLibraryVersion.invoke(scope = viewModelScope, params = BaseUseCase.None) { result ->
+            result.either(
+                fnL = { e -> Timber.e(e, "Error while getting middleware version") },
+                fnR = { version ->
+                    libVersion.postValue(version)
                 }
             )
         }

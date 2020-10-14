@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.GetCurrentAccount
+import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -38,11 +39,13 @@ object ProfileModule {
     fun provideProfileViewModelFactory(
         logout: Logout,
         getCurrentAccount: GetCurrentAccount,
-        analytics: Analytics
+        analytics: Analytics,
+        getLibraryVersion: GetLibraryVersion
     ): ProfileViewModelFactory = ProfileViewModelFactory(
         logout = logout,
         getCurrentAccount = getCurrentAccount,
-        analytics = analytics
+        analytics = analytics,
+        getLibraryVersion = getLibraryVersion
     )
 
     @JvmStatic
@@ -59,4 +62,11 @@ object ProfileModule {
         repo: BlockRepository,
         builder: UrlBuilder
     ): GetCurrentAccount = GetCurrentAccount(repo = repo, builder = builder)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetVersion(
+        repo: AuthRepository
+    ): GetLibraryVersion = GetLibraryVersion(repo)
 }

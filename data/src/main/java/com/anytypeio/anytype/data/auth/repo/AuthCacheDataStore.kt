@@ -57,4 +57,8 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
     override suspend fun setCurrentAccount(id: String) {
         cache.setCurrentAccount(id)
     }
+
+    override suspend fun getVersion(): String {
+        throw UnsupportedOperationException()
+    }
 }

@@ -7,7 +7,6 @@ import android.text.InputType
 import android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
 import android.text.Spanned
 import android.text.TextWatcher
-import android.text.method.ArrowKeyMovementMethod
 import android.text.util.Linkify
 import android.util.AttributeSet
 import android.view.KeyEvent

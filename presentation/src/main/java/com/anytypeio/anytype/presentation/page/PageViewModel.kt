@@ -1525,25 +1525,27 @@ class PageViewModel(
     fun onBlockToolbarStyleClicked() {
         val target = orchestrator.stores.focus.current().id
         val view = views.first { it.id == target }
-        if (view is BlockView.Title) {
-            _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
-        } else {
-            val textSelection = orchestrator.stores.textSelection.current()
-            controlPanelInteractor.onEvent(
-                ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                    target = blocks.first { it.id == orchestrator.stores.focus.current().id },
-                    focused = textSelection.isNotEmpty,
-                    selection = textSelection.selection
+        when (view) {
+            is BlockView.Title -> _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
+            is BlockView.Code -> _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR)
+            else -> {
+                val textSelection = orchestrator.stores.textSelection.current()
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
+                        target = blocks.first { it.id == orchestrator.stores.focus.current().id },
+                        focused = textSelection.isNotEmpty,
+                        selection = textSelection.selection
+                    )
                 )
-            )
-            viewModelScope.sendEvent(
-                analytics = analytics,
-                eventName = EventsDictionary.BTN_STYLE_MENU
-            )
-            viewModelScope.sendEvent(
-                analytics = analytics,
-                eventName = POPUP_STYLE
-            )
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_STYLE_MENU
+                )
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = POPUP_STYLE
+                )
+            }
         }
     }
 
@@ -2781,6 +2783,8 @@ class PageViewModel(
             "Opening action menu for title currently not supported"
         const val CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR =
             "Opening style panel for title currently not supported"
+        const val CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR =
+            "Opening style panel for code block currently not supported"
     }
 
     data class MarkupAction(

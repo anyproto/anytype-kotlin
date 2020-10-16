@@ -816,4 +816,38 @@ class BlockViewDiffUtilTest {
             actual = payload
         )
     }
+
+    @Test
+    fun `should detect search highlight changes in paragraph block`() {
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Text.Paragraph(
+            id = id,
+            highlights = emptySet(),
+            text = MockDataFactory.randomString()
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            highlights = setOf(0..1)
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.SEARCH_HIGHLIGHT_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
 }

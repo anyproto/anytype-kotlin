@@ -2,12 +2,16 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.state.ControlPanelState
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
+import com.nhaarman.mockitokotlin2.verifyBlocking
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
@@ -168,4 +172,57 @@ class EditorTitleTest : EditorPresentationTestSetup() {
         }
     }
 
+    @Test
+    fun `should start updating title on title-text-changed event with delay`() {
+
+        // SETUP
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                children = listOf(header.id)
+            ),
+            header,
+            title
+        )
+
+        stubInterceptEvents()
+        stubOpenDocument(page)
+        stubUpdateText()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        val update = MockDataFactory.randomString()
+
+        vm.onTitleBlockTextChanged(
+            BlockView.Title.Document(
+                id = title.id,
+                text = update
+            )
+        )
+
+        verifyZeroInteractions(updateTitle)
+        verifyZeroInteractions(updateText)
+
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        verifyZeroInteractions(updateTitle)
+
+        verifyBlocking(updateText) {
+            invoke(
+                UpdateText.Params(
+                    context = root,
+                    text = update,
+                    target = title.id,
+                    marks = emptyList()
+                )
+            )
+        }
+    }
 }

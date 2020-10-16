@@ -124,9 +124,16 @@ sealed class ControlPanelMachine {
             val style: Block.Content.Text.Style
         ) : Event()
 
-        data class OnBlockActionToolbarStyleClicked(val target: Block,
-                                                    val focused: Boolean,
-                                                    val selection: IntRange?) : Event()
+        data class OnBlockActionToolbarStyleClicked(
+            val target: Block,
+            val focused: Boolean,
+            val selection: IntRange?
+        ) : Event()
+
+        sealed class SearchToolbar : Event() {
+            object OnEnterSearchMode : SearchToolbar()
+            object OnExitSearchMode : SearchToolbar()
+        }
 
         /**
          * Styling-toolbar-related events
@@ -299,6 +306,21 @@ sealed class ControlPanelMachine {
             is Event.MultiSelect -> {
                 handleMultiSelectEvent(event, state)
             }
+            is Event.SearchToolbar.OnEnterSearchMode -> state.copy(
+                searchToolbar = Toolbar.SearchToolbar(isVisible = true),
+                mainToolbar = Toolbar.Main(isVisible = false),
+                multiSelect = Toolbar.MultiSelect(
+                    isVisible = false,
+                    isScrollAndMoveEnabled = false,
+                    count = 0
+                ),
+                stylingToolbar = Toolbar.Styling.reset(),
+                navigationToolbar = Toolbar.Navigation(isVisible = false)
+            )
+            is Event.SearchToolbar.OnExitSearchMode -> state.copy(
+                searchToolbar = state.searchToolbar.copy(isVisible = false),
+                navigationToolbar = state.navigationToolbar.copy(isVisible = true)
+            )
             is Event.SAM -> {
                 handleScrollAndMoveEvent(event, state)
             }

@@ -1,7 +1,11 @@
 package com.anytypeio.anytype.core_ui.reactive
 
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
+import androidx.annotation.CheckResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
@@ -17,6 +21,36 @@ fun View.clicks(): Flow<Unit> = callbackFlow<Unit> {
     }
     setOnClickListener(listener)
     awaitClose { setOnClickListener(null) }
+}.conflate()
+
+@CheckResult
+@OptIn(ExperimentalCoroutinesApi::class)
+fun EditText.textChanges(): Flow<CharSequence> = callbackFlow<CharSequence> {
+    checkMainThread()
+    val listener = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
+        override fun afterTextChanged(s: Editable) = Unit
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            safeOffer(s)
+        }
+    }
+    addTextChangedListener(listener)
+    awaitClose { removeTextChangedListener(listener) }
+}.conflate()
+
+@CheckResult
+@OptIn(ExperimentalCoroutinesApi::class)
+fun EditText.afterTextChanges(): Flow<CharSequence> = callbackFlow<CharSequence> {
+    checkMainThread()
+    val listener = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) = Unit
+        override fun afterTextChanged(s: Editable) {
+            safeOffer(s.toString())
+        }
+    }
+    addTextChangedListener(listener)
+    awaitClose { removeTextChangedListener(listener) }
 }.conflate()
 
 @UseExperimental(ExperimentalCoroutinesApi::class)

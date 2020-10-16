@@ -36,6 +36,7 @@ import com.anytypeio.anytype.core_ui.features.page.styling.StylingMode
 import com.anytypeio.anytype.core_ui.model.UiBlock
 import com.anytypeio.anytype.core_ui.state.ControlPanelState
 import com.anytypeio.anytype.core_ui.widgets.ActionItemType
+import com.anytypeio.anytype.core_ui.widgets.toolbar.SearchToolbarWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.MentionAdapter
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.getMentionName
@@ -73,6 +74,7 @@ import com.anytypeio.anytype.presentation.page.editor.*
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
 import com.anytypeio.anytype.presentation.page.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.page.search.search
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.Bridge
@@ -82,6 +84,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.regex.Pattern
 
 class PageViewModel(
     private val openPage: OpenPage,
@@ -648,8 +651,15 @@ class PageViewModel(
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
     }
 
-    fun onTitleTextChanged(text: String) {
-        viewModelScope.launch { titleChannel.send(text) }
+    fun onTitleBlockTextChanged(view: BlockView.Title) {
+        val new = views.map { if (it.id == view.id) view else it }
+        val update = TextUpdate.Default(
+            target = view.id,
+            text = view.text ?: EMPTY_TEXT,
+            markup = emptyList()
+        )
+        viewModelScope.launch { orchestrator.stores.views.update(new) }
+        viewModelScope.launch { orchestrator.proxies.changes.send(update) }
     }
 
     fun onTextBlockTextChanged(
@@ -1328,6 +1338,39 @@ class PageViewModel(
                     context = context
                 )
             )
+        }
+    }
+
+    fun onEnterSearchModeClicked() {
+        mode = EditorMode.SEARCH
+        viewModelScope.launch { orchestrator.stores.views.update(views.toReadMode()) }
+        viewModelScope.launch { renderCommand.send(Unit) }
+        viewModelScope.launch { controlPanelInteractor.onEvent(ControlPanelMachine.Event.SearchToolbar.OnEnterSearchMode) }
+    }
+
+    fun onSearchToolbarEvent(event: SearchToolbarWidget.Event) {
+        when (event) {
+            is SearchToolbarWidget.Event.Query -> {
+                val query = event.query.trim()
+                val update = if (query.isEmpty()) {
+                    views.clearSearchHighlights()
+                } else {
+                    val flags = Pattern.MULTILINE or Pattern.CASE_INSENSITIVE
+                    val escaped = Pattern.quote(query)
+                    val pattern = Pattern.compile(escaped, flags)
+                    views.highlight { txt -> txt.search(pattern) }
+                }
+                viewModelScope.launch { orchestrator.stores.views.update(update) }
+                viewModelScope.launch { renderCommand.send(Unit) }
+            }
+            is SearchToolbarWidget.Event.Cancel -> {
+                mode = EditorMode.EDITING
+                val update = views.clearSearchHighlights().toEditMode()
+                viewModelScope.launch { orchestrator.stores.views.update(update) }
+                viewModelScope.launch { renderCommand.send(Unit) }
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.SearchToolbar.OnExitSearchMode)
+            }
+            else -> _toasts.offer("not implemented")
         }
     }
 
@@ -2768,6 +2811,7 @@ class PageViewModel(
     }
 
     companion object {
+        const val EMPTY_TEXT = ""
         const val EMPTY_CONTEXT = ""
         const val EMPTY_FOCUS_ID = ""
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L

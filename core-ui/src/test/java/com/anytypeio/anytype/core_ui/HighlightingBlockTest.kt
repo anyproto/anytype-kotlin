@@ -107,7 +107,7 @@ class HighlightingBlockTest {
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
             onTextBlockTextChanged = {},
-            onTitleTextChanged = onTitleTextChanged,
+            onTitleBlockTextChanged = {},
             onContextMenuStyleClick = {},
             onTitleTextInputClicked = {},
             onClickListener = {},

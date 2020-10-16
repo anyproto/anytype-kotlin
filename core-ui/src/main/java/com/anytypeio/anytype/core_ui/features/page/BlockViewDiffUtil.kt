@@ -105,6 +105,11 @@ class BlockViewDiffUtil(
                 changes.add(ALIGNMENT_CHANGED)
         }
 
+        if (newBlock is BlockView.Searchable && oldBlock is BlockView.Searchable) {
+            if (newBlock.highlights != oldBlock.highlights)
+                changes.add(SEARCH_HIGHLIGHT_CHANGED)
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -128,6 +133,7 @@ class BlockViewDiffUtil(
         val isModeChanged: Boolean get() = changes.contains(READ_WRITE_MODE_CHANGED)
         val isSelectionChanged: Boolean get() = changes.contains(SELECTION_CHANGED)
         val isTitleIconChanged: Boolean get() = changes.contains(TITLE_ICON_CHANGED)
+        val isSearchHighlightChanged: Boolean get() = changes.contains(SEARCH_HIGHLIGHT_CHANGED)
         val isAlignmentChanged: Boolean get() = changes.contains(ALIGNMENT_CHANGED)
 
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
@@ -154,5 +160,6 @@ class BlockViewDiffUtil(
         const val ALIGNMENT_CHANGED = 11
         const val CURSOR_CHANGED = 12
         const val TITLE_ICON_CHANGED = 13
+        const val SEARCH_HIGHLIGHT_CHANGED = 14
     }
 }

@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_ui.state
 import com.anytypeio.anytype.core_ui.common.Alignment
 import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.core_ui.features.page.styling.StylingMode
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingType
 import com.anytypeio.anytype.core_ui.model.StyleConfig
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
 
@@ -18,7 +17,8 @@ data class ControlPanelState(
     val mainToolbar: Toolbar.Main,
     val stylingToolbar: Toolbar.Styling,
     val multiSelect: Toolbar.MultiSelect,
-    val mentionToolbar: Toolbar.MentionToolbar
+    val mentionToolbar: Toolbar.MentionToolbar,
+    val searchToolbar: Toolbar.SearchToolbar = Toolbar.SearchToolbar(isVisible = false)
 ) {
 
     sealed class Toolbar {
@@ -154,6 +154,13 @@ data class ControlPanelState(
                 )
             }
         }
+
+        /**
+         * Search toolbar.
+         */
+        data class SearchToolbar(
+            override val isVisible: Boolean
+        ) : Toolbar()
     }
 
     /**
@@ -196,6 +203,9 @@ data class ControlPanelState(
                 updateList = false,
                 mentionFrom = null,
                 mentions = emptyList()
+            ),
+            searchToolbar = Toolbar.SearchToolbar(
+                isVisible = false
             )
         )
     }

@@ -3378,68 +3378,6 @@ open class PageViewModelTest {
     }
 
     @Test
-    fun `should start updating title on title-text-changed event with delay`() {
-
-        // SETUP
-
-        val root = MockDataFactory.randomUuid()
-        val title = MockBlockFactory.makeTitleBlock()
-
-        val page = listOf(
-            Block(
-                id = root,
-                fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
-                children = listOf(title.id)
-            ),
-            title
-        )
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowBlock(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        stubUpdateTitle()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        // TESTING
-
-        val update = MockDataFactory.randomString()
-
-        vm.onTitleTextChanged(update)
-
-        runBlockingTest {
-            verify(updateTitle, never()).invoke(
-                params = any()
-            )
-        }
-
-        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
-
-        runBlockingTest {
-            verify(updateTitle, times(1)).invoke(
-                params = any()
-            )
-        }
-    }
-
-    @Test
     fun `should enter multi-select mode and select blocks`() {
 
         // SETUP

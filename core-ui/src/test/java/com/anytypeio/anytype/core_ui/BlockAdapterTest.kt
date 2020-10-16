@@ -5,7 +5,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.text.Editable
 import android.text.InputType
-import android.view.inputmethod.EditorInfo
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.marginLeft
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +27,9 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.text.*
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.FileUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.PictureUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
-import com.anytypeio.anytype.core_ui.features.page.*
+import com.anytypeio.anytype.core_ui.features.page.BlockAdapter
+import com.anytypeio.anytype.core_ui.features.page.BlockView
+import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.BACKGROUND_COLOR_CHANGED
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.CURSOR_CHANGED
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.FOCUS_CHANGED
@@ -36,6 +37,7 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.R
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.SELECTION_CHANGED
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
+import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.hexColorCode
@@ -1495,7 +1497,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val events = mutableListOf<Editable>()
+        val events = mutableListOf<BlockView.Title>()
 
         val title = BlockView.Title.Document(
             text = MockDataFactory.randomString(),
@@ -1507,9 +1509,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(
             views = views,
-            onTitleTextChanged = { editable ->
-                events.add(editable)
-            }
+            onTitleBlockTextChanged = { events.add(it) }
         )
 
         val recycler = RecyclerView(context).apply {
@@ -1526,9 +1526,11 @@ class BlockAdapterTest {
 
         assertTrue { events.isEmpty() }
 
-        holder.content.setText(MockDataFactory.randomString())
+        val changed = MockDataFactory.randomString()
 
-        assertTrue { events.size == 1 && events.first() == holder.content.text }
+        holder.content.setText(changed)
+
+        assertTrue { events.size == 1 && events.first() == title.copy(text = changed) }
     }
 
     /**
@@ -3346,7 +3348,7 @@ class BlockAdapterTest {
         views: List<BlockView>,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit = { _, _, _ -> },
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
-        onTitleTextChanged: (Editable) -> Unit = {},
+        onTitleBlockTextChanged: (BlockView.Title) -> Unit = {},
         onTextChanged: (String, Editable) -> Unit = { _, _ -> }
     ): BlockAdapter {
         return BlockAdapter(
@@ -3364,7 +3366,7 @@ class BlockAdapterTest {
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
             onTextBlockTextChanged = {},
-            onTitleTextChanged = onTitleTextChanged,
+            onTitleBlockTextChanged = onTitleBlockTextChanged,
             onContextMenuStyleClick = {},
             onTitleTextInputClicked = {},
             onClickListener = {},

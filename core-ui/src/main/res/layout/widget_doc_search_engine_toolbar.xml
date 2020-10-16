@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="52dp">
+
+    <ImageView
+        android:id="@+id/docSearchPreviousSearchResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/content_description_document_previous_search_result_icon"
+        android:src="@drawable/ic_search_previous_result"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/docSearchNextSearchResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:contentDescription="@string/content_description_document_next_search_result_icon"
+        android:src="@drawable/ic_search_next_result"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/docSearchPreviousSearchResult"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/docSearchCancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="@string/cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/docSearchRectangle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/rectangle_doc_search"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/docSearchCancelButton"
+        app:layout_constraintStart_toEndOf="@+id/docSearchNextSearchResult"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/docSearchSearchIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:contentDescription="@string/content_description_document_search_icon"
+        android:src="@drawable/ic_doc_search"
+        app:layout_constraintBottom_toBottomOf="@+id/docSearchRectangle"
+        app:layout_constraintStart_toStartOf="@+id/docSearchRectangle"
+        app:layout_constraintTop_toTopOf="@+id/docSearchRectangle" />
+
+    <ImageView
+        android:id="@+id/docSearchClearIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@string/content_description_document_clear_search_icon"
+        android:src="@drawable/ic_doc_search_delete"
+        app:layout_constraintBottom_toBottomOf="@+id/docSearchRectangle"
+        app:layout_constraintEnd_toEndOf="@+id/docSearchRectangle"
+        app:layout_constraintTop_toTopOf="@+id/docSearchRectangle" />
+
+    <EditText
+        android:id="@+id/docSearchInputField"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:background="@null"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:fontFamily="@font/inter_regular"
+        android:hint="@string/your_search_query"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@+id/docSearchRectangle"
+        app:layout_constraintEnd_toStartOf="@+id/docSearchClearIcon"
+        app:layout_constraintStart_toEndOf="@+id/docSearchSearchIcon"
+        app:layout_constraintTop_toTopOf="@+id/docSearchRectangle" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

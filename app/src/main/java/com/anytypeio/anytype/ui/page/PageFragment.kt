@@ -151,11 +151,6 @@ open class PageFragment :
     private val pageAdapter by lazy {
         BlockAdapter(
             blocks = mutableListOf(),
-            onTitleTextChanged = { editable ->
-                vm.onTitleTextChanged(
-                    text = editable.toString()
-                )
-            },
             onTextChanged = { id, editable ->
                 vm.onTextChanged(
                     id = id,
@@ -164,6 +159,7 @@ open class PageFragment :
                 )
             },
             onTextBlockTextChanged = vm::onTextBlockTextChanged,
+            onTitleBlockTextChanged = vm::onTitleBlockTextChanged,
             onSelectionChanged = vm::onSelectionChanged,
             onCheckboxClicked = vm::onCheckboxClicked,
             onFocusChanged = vm::onBlockFocusChanged,
@@ -480,6 +476,10 @@ open class PageFragment :
                 vm.onCloseBlockStyleToolbarClicked()
             }
         }
+
+        lifecycleScope.launch {
+            searchToolbar.events().collect { vm.onSearchToolbarEvent(it) }
+        }
     }
 
     private fun onApplyScrollAndMoveClicked() {
@@ -695,7 +695,8 @@ open class PageFragment :
                         onArchiveClicked = vm::onArchiveThisPageClicked,
                         onRedoClicked = vm::onActionRedoClicked,
                         onUndoClicked = vm::onActionUndoClicked,
-                        onEnterMultiSelect = vm::onEnterMultiSelectModeClicked
+                        onEnterMultiSelect = vm::onEnterMultiSelectModeClicked,
+                        onSearchClicked = vm::onEnterSearchModeClicked
                     ).show()
                 }
                 is Command.OpenProfileMenu -> {
@@ -704,7 +705,8 @@ open class PageFragment :
                         view = topToolbar.menu,
                         onRedoClicked = vm::onActionRedoClicked,
                         onUndoClicked = vm::onActionUndoClicked,
-                        onEnterMultiSelect = vm::onEnterMultiSelectModeClicked
+                        onEnterMultiSelect = vm::onEnterMultiSelectModeClicked,
+                        onSearchClicked = vm::onEnterSearchModeClicked
                     ).show()
                 }
                 is Command.OpenFullScreenImage -> {
@@ -893,6 +895,14 @@ open class PageFragment :
             } else {
                 mentionSuggesterToolbar.invisible()
                 recycler.removeItemDecoration(footerMentionDecorator)
+            }
+        }
+
+        state.searchToolbar.apply {
+            if (isVisible) {
+                searchToolbar.visible()
+            } else {
+                searchToolbar.gone()
             }
         }
     }

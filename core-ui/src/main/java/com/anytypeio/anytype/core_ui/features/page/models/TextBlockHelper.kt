@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.common.ThemeColor
-import com.anytypeio.anytype.core_ui.common.setMarkup
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget

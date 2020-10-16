@@ -2,9 +2,11 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.os.Build
 import android.text.Editable
+import android.text.Spannable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.extensions.color
@@ -120,6 +122,16 @@ abstract class Text(
             clicked = clicked,
             textColor = item.getBlockTextColor()
         )
+        if (item is BlockView.Searchable) {
+            item.highlights.forEach { highlight ->
+                content.editableText.setSpan(
+                    SearchHighlightSpan(),
+                    highlight.first,
+                    highlight.last,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+        }
     }
 
     private fun setStyle(item: BlockView.TextBlockProps) {
@@ -141,7 +153,6 @@ abstract class Text(
     ) {
 
         content.apply {
-
             setOnLongClickListener(
                 EditorLongClickListener(
                     t = item.id,

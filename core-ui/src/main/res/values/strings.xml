@@ -26,6 +26,10 @@
     <string name="content_description_bookmark_image">Bookmark image</string>
     <string name="content_description_toggle_icon">Toggle icon</string>
     <string name="content_description_turn_into_arrow">Turn into arrow</string>
+    <string name="content_description_document_previous_search_result_icon">Document previous search result icon</string>
+    <string name="content_description_document_next_search_result_icon">Document next search result icon</string>
+    <string name="content_description_document_search_icon">Document search icon</string>
+    <string name="content_description_document_clear_search_icon">Document clear search icon</string>
 
     <string name="option_toolbar_header_turn_into">Turn into</string>
     <string name="option_toolbar_header_add_block">Add block</string>
@@ -213,6 +217,7 @@
     <string name="redo">Redo</string>
     <string name="copy">Copy</string>
     <string name="select">Select</string>
+    <string name="search">Search</string>
 
     <string name="choose_emoji">Choose emoji</string>
     <string name="logo_transition">logo_transition</string>
@@ -227,6 +232,7 @@
     <string name="move">Move</string>
     <string name="mention_suggester_new_page">Create new page</string>
     <string name="widget_archive_select_pages">Select pages</string>
+    <string name="your_search_query">Search</string>
     <plurals name="page_selected">
         <item quantity="zero">Select pages</item>
         <item quantity="one">%d page selected</item>

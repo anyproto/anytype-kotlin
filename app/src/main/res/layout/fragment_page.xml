@@ -50,6 +50,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.SearchToolbarWidget
+            android:id="@+id/searchToolbar"
+            android:layout_width="0dp"
+            android:visibility="gone"
+            android:layout_height="@dimen/default_toolbar_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
             android:layout_width="0dp"

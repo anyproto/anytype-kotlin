@@ -1,12 +1,13 @@
 package com.anytypeio.anytype.core_ui.features.page
 
 import android.text.Editable
+import android.text.Spannable
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.common.*
+import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.extensions.preserveSelection
 import com.anytypeio.anytype.core_ui.extensions.range
-import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.menu.EditorContextMenu
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
@@ -14,6 +15,7 @@ import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
+import com.anytypeio.anytype.core_utils.ext.removeSpans
 import timber.log.Timber
 
 /**
@@ -193,7 +195,21 @@ interface TextBlockHolder : TextHolder {
                 )
             }
         } else if (payload.markupChanged()) {
-            setMarkup(item, clicked, item.getBlockTextColor())
+            content.pauseTextWatchers { setMarkup(item, clicked, item.getBlockTextColor()) }
+        }
+
+        if (payload.isSearchHighlightChanged) {
+            if (item is BlockView.Searchable) {
+                content.editableText.removeSpans<SearchHighlightSpan>()
+                item.highlights.forEach { highlight ->
+                    content.editableText.setSpan(
+                        SearchHighlightSpan(),
+                        highlight.first,
+                        highlight.last,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
         }
 
         if (payload.textColorChanged()) {
@@ -210,19 +226,21 @@ interface TextBlockHolder : TextHolder {
         }
 
         if (payload.readWriteModeChanged()) {
-            if (item.mode == BlockView.Mode.EDIT) {
-                content.clearTextWatchers()
-                setupTextWatcher(item) { id, editable ->
-                    item.apply {
-                        text = editable.toString()
-                        marks = editable.marks()
+            content.pauseTextWatchers {
+                if (item.mode == BlockView.Mode.EDIT) {
+                    content.clearTextWatchers()
+                    setupTextWatcher(item) { id, editable ->
+                        item.apply {
+                            text = editable.toString()
+                            marks = editable.marks()
+                        }
+                        onTextChanged(item)
                     }
-                    onTextChanged(item)
+                    content.selectionWatcher = { onSelectionChanged(item.id, it) }
+                    enableEditMode()
+                } else {
+                    enableReadMode()
                 }
-                content.selectionWatcher = { onSelectionChanged(item.id, it) }
-                enableEditMode()
-            } else {
-                enableReadMode()
             }
         }
 

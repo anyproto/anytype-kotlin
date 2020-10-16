@@ -74,7 +74,7 @@ class BlockAdapter(
     private var blocks: List<BlockView>,
     private val onTextBlockTextChanged: (BlockView.Text) -> Unit,
     private val onTextChanged: (String, Editable) -> Unit,
-    private val onTitleTextChanged: (Editable) -> Unit,
+    private val onTitleBlockTextChanged: (BlockView.Title) -> Unit,
     private val onTitleTextInputClicked: () -> Unit,
     private val onSelectionChanged: (String, IntRange) -> Unit,
     private val onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit,
@@ -764,7 +764,7 @@ class BlockAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Document,
-                        onTitleTextChanged = onTitleTextChanged,
+                        onTitleTextChanged = onTitleBlockTextChanged,
                         onFocusChanged = onFocusChanged,
                         onPageIconClicked = onPageIconClicked
                     )
@@ -793,7 +793,7 @@ class BlockAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Profile,
-                        onTitleTextChanged = onTitleTextChanged,
+                        onTitleTextChanged = onTitleBlockTextChanged,
                         onFocusChanged = onFocusChanged,
                         onProfileIconClicked = onProfileIconClicked
                     )

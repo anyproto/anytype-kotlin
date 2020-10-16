@@ -371,7 +371,7 @@ class HeaderBlockTest {
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
             onTextBlockTextChanged = {},
-            onTitleTextChanged = onTitleTextChanged,
+            onTitleBlockTextChanged = {},
             onContextMenuStyleClick = {},
             onTitleTextInputClicked = {},
             onClickListener = {},

@@ -35,6 +35,7 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.RawValue
 
 /**
  * UI-models for different types of blocks.
@@ -105,6 +106,16 @@ sealed class BlockView : ViewType, Parcelable {
         val cursor: Int?
     }
 
+    /**
+     * Views implementing this interface are supposed to highlight search results.
+     * @property highlights search results that meet query.
+     * @property target currently selected search result
+     */
+    interface Searchable {
+        val highlights: Set<IntRange>
+        val target: IntRange
+    }
+
     interface TextBlockProps :
         Markup,
         Focusable,
@@ -117,7 +128,7 @@ sealed class BlockView : ViewType, Parcelable {
         val id: String
     }
 
-    sealed class Text : BlockView(), TextBlockProps {
+    sealed class Text : BlockView(), TextBlockProps, Searchable {
 
         // Dynamic properties (expected to be synchronised with framework widget)
 
@@ -153,7 +164,9 @@ sealed class BlockView : ViewType, Parcelable {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val alignment: Alignment? = null,
-            override val cursor: Int? = null
+            override val cursor: Int? = null,
+            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val target: @RawValue IntRange = IntRange.EMPTY
         ) : Text() {
             override fun getViewType() = HOLDER_PARAGRAPH
             override val body: String get() = text
@@ -180,7 +193,9 @@ sealed class BlockView : ViewType, Parcelable {
                 override val mode: Mode = Mode.EDIT,
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
-                override val cursor: Int? = null
+                override val cursor: Int? = null,
+                override val highlights: @RawValue Set<IntRange> = emptySet(),
+                override val target: @RawValue IntRange = IntRange.EMPTY
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_ONE
                 override val body: String get() = text
@@ -205,7 +220,9 @@ sealed class BlockView : ViewType, Parcelable {
                 override val mode: Mode = Mode.EDIT,
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
-                override val cursor: Int? = null
+                override val cursor: Int? = null,
+                override val highlights: @RawValue Set<IntRange> = emptySet(),
+                override val target: @RawValue IntRange = IntRange.EMPTY
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_TWO
                 override val body: String get() = text
@@ -230,7 +247,9 @@ sealed class BlockView : ViewType, Parcelable {
                 override val mode: Mode = Mode.EDIT,
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
-                override val cursor: Int? = null
+                override val cursor: Int? = null,
+                override val highlights: @RawValue Set<IntRange> = emptySet(),
+                override val target: @RawValue IntRange = IntRange.EMPTY
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_THREE
                 override val body: String get() = text
@@ -255,7 +274,9 @@ sealed class BlockView : ViewType, Parcelable {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
-            override val alignment: Alignment? = null
+            override val alignment: Alignment? = null,
+            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val target: @RawValue IntRange = IntRange.EMPTY
         ) : Text() {
             override fun getViewType() = HOLDER_HIGHLIGHT
             override val body: String get() = text
@@ -280,7 +301,9 @@ sealed class BlockView : ViewType, Parcelable {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
-            override val alignment: Alignment? = null
+            override val alignment: Alignment? = null,
+            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val target: @RawValue IntRange = IntRange.EMPTY
         ) : Text(), Checkable {
             override fun getViewType() = HOLDER_CHECKBOX
             override val body: String get() = text
@@ -305,7 +328,9 @@ sealed class BlockView : ViewType, Parcelable {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
-            override val alignment: Alignment? = null
+            override val alignment: Alignment? = null,
+            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val target: @RawValue IntRange = IntRange.EMPTY
         ) : Text() {
             override fun getViewType() = HOLDER_BULLET
             override val body: String get() = text
@@ -331,6 +356,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
+            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val target: @RawValue IntRange = IntRange.EMPTY,
             val number: Int
         ) : Text() {
             override fun getViewType() = HOLDER_NUMBERED
@@ -357,6 +384,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
+            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val target: @RawValue IntRange = IntRange.EMPTY,
             val toggled: Boolean = false,
             val isEmpty: Boolean = false
         ) : Text() {
@@ -383,8 +412,10 @@ sealed class BlockView : ViewType, Parcelable {
             val emoji: String? = null,
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
-            override val cursor: Int? = null
-        ) : BlockView.Title() {
+            override val cursor: Int? = null,
+            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val target: @RawValue IntRange = IntRange.EMPTY,
+        ) : BlockView.Title(), Searchable {
             override fun getViewType() = HOLDER_TITLE
         }
 
@@ -401,8 +432,10 @@ sealed class BlockView : ViewType, Parcelable {
             override var text: String?,
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
-            override val cursor: Int? = null
-        ) : BlockView.Title() {
+            override val cursor: Int? = null,
+            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val target: @RawValue IntRange = IntRange.EMPTY,
+        ) : BlockView.Title(), Searchable {
             override fun getViewType() = HOLDER_PROFILE_TITLE
         }
 

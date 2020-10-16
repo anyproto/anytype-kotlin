@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.content.res.ColorStateList
 import android.text.Editable
+import android.text.Spannable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
@@ -9,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.postDelayed
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.extensions.avatarColor
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.page.BlockView
@@ -19,6 +21,7 @@ import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.firstDigitByHash
 import com.anytypeio.anytype.core_utils.ext.imm
+import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.bumptech.glide.Glide
@@ -62,6 +65,18 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
     }
 
+    fun applySearchHighlights(item: BlockView.Searchable) {
+        content.editableText.removeSpans<SearchHighlightSpan>()
+        item.highlights.forEach { highlight ->
+            content.editableText.setSpan(
+                SearchHighlightSpan(),
+                highlight.first,
+                highlight.last,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+    }
+
     open fun setImage(item: BlockView.Title) {
         item.image?.let { url ->
             image.visible()
@@ -101,10 +116,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 focus(item.isFocused)
             }
             if (payload.readWriteModeChanged()) {
-                if (item.mode == BlockView.Mode.EDIT)
-                    enableEditMode()
-                else
-                    enableReadMode()
+                content.pauseTextWatchers {
+                    if (item.mode == BlockView.Mode.EDIT)
+                        enableEditMode()
+                    else
+                        enableReadMode()
+                }
             }
         }
     }
@@ -133,16 +150,20 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         fun bind(
             item: BlockView.Title.Document,
-            onTitleTextChanged: (Editable) -> Unit,
+            onTitleTextChanged: (BlockView.Title) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onPageIconClicked: () -> Unit
         ) {
             super.bind(
                 item = item,
-                onTitleTextChanged = onTitleTextChanged,
+                onTitleTextChanged = {
+                    item.text = it.toString()
+                    onTitleTextChanged(item)
+                },
                 onFocusChanged = onFocusChanged
             )
             setEmoji(item)
+            applySearchHighlights(item)
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onPageIconClicked() }
             }
@@ -158,6 +179,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     if (payload.isTitleIconChanged) {
                         setEmoji(item)
                         setImage(item)
+                    }
+                    if (payload.isSearchHighlightChanged) {
+                        applySearchHighlights(item)
                     }
                 }
             }
@@ -229,12 +253,20 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         fun bind(
             item: BlockView.Title.Profile,
-            onTitleTextChanged: (Editable) -> Unit,
+            onTitleTextChanged: (BlockView.Title) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onProfileIconClicked: () -> Unit
         ) {
             Timber.d("Binding profile title view: $item")
-            super.bind(item, onTitleTextChanged, onFocusChanged)
+            super.bind(
+                item = item,
+                onFocusChanged = onFocusChanged,
+                onTitleTextChanged = {
+                    item.text = it.toString()
+                    onTitleTextChanged(item)
+                },
+            )
+            applySearchHighlights(item)
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onProfileIconClicked() }
             }
@@ -275,6 +307,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 payloads.forEach { payload ->
                     if (payload.isTitleIconChanged) {
                         setImage(item)
+                    }
+                    if (payload.isSearchHighlightChanged) {
+                        applySearchHighlights(item)
                     }
                 }
             }

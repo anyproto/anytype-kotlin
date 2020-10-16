@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_ui.model.StyleConfig
 import com.anytypeio.anytype.domain.block.model.Block
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import kotlin.test.assertEquals
 
 class StyleConfigKtTest {
 
@@ -20,7 +19,7 @@ class StyleConfigKtTest {
         val given = Block(
             id = child,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Divider(type = Block.Content.Divider.Type.LINE),
+            content = Block.Content.Divider(style = Block.Content.Divider.Style.LINE),
             children = emptyList()
         )
         val result = given.getStyleConfig(focus = null, selection = null)
@@ -207,10 +206,7 @@ class StyleConfigKtTest {
         val result = given.getStyleConfig(focus = null, selection = null)
 
         val expected = StyleConfig.emptyState()
-        assertEquals(
-            expected = expected,
-            actual = result
-        )
+        assertEquals(expected, result)
     }
 
     @Test(expected = IllegalStateException::class)

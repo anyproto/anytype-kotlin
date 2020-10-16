@@ -189,4 +189,7 @@ class BlockDataRepository(
         replace = replace,
         position = PositionEntity.valueOf(position.name)
     ).toDomain()
+
+    override suspend fun updateDivider(command: Command.UpdateDivider): Payload =
+        factory.remote.updateDivider(command = command.toEntity()).toDomain()
 }

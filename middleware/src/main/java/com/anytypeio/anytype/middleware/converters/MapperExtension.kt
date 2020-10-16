@@ -128,9 +128,9 @@ fun Block.link(): BlockEntity.Content.Link = BlockEntity.Content.Link(
 )
 
 fun Block.divider(): BlockEntity.Content.Divider = BlockEntity.Content.Divider(
-    type = when (div.style) {
-        Block.Content.Div.Style.Line -> BlockEntity.Content.Divider.Type.LINE
-        Block.Content.Div.Style.Dots -> BlockEntity.Content.Divider.Type.DOTS
+    style = when (div.style) {
+        Block.Content.Div.Style.Line -> BlockEntity.Content.Divider.Style.LINE
+        Block.Content.Div.Style.Dots -> BlockEntity.Content.Divider.Style.DOTS
         else -> throw IllegalStateException("Unexpected div style: ${div.style}")
     }
 )

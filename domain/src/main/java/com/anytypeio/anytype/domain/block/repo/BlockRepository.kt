@@ -110,4 +110,6 @@ interface BlockRepository {
         replace: Boolean,
         position: Position
     ): Payload
+
+    suspend fun updateDivider(command: Command.UpdateDivider): Payload
 }

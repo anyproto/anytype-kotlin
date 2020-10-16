@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.Counter
+import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
@@ -159,6 +160,7 @@ object EditorSessionModule {
         splitBlock: SplitBlock,
         mergeBlocks: MergeBlocks,
         unlinkBlocks: UnlinkBlocks,
+        updateDivider: UpdateDivider,
         updateTextStyle: UpdateTextStyle,
         updateCheckbox: UpdateCheckbox,
         downloadFile: DownloadFile,
@@ -191,6 +193,7 @@ object EditorSessionModule {
         redo = redo,
         updateTextStyle = updateTextStyle,
         updateCheckbox = updateCheckbox,
+        updateDivider = updateDivider,
         memory = memory,
         downloadFile = downloadFile,
         updateTitle = updateTitle,
@@ -294,6 +297,15 @@ object EditorUseCaseModule {
     fun provideDuplicateBlockUseCase(
         repo: BlockRepository
     ): DuplicateBlock = DuplicateBlock(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideUpdateDivider(
+        repo: BlockRepository
+    ): UpdateDivider = UpdateDivider(
         repo = repo
     )
 

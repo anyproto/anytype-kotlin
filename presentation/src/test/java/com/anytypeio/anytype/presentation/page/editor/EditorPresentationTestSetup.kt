@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
+import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.clipboard.Copy
@@ -70,6 +71,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var updateTextColor: UpdateTextColor
+
+    @Mock
+    lateinit var updateDivider: UpdateDivider
 
     @Mock
     lateinit var analytics: Analytics
@@ -186,6 +190,7 @@ open class EditorPresentationTestSetup {
                 uploadBlock = uploadBlock,
                 splitBlock = splitBlock,
                 unlinkBlocks = unlinkBlocks,
+                updateDivider = updateDivider,
                 memory = memory,
                 stores = storage,
                 proxies = proxies,

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_BACKGROUND_COLOR
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_COPY
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_CREATE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_DIVIDER_UPDATE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_DOWNLOAD_FILE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_DUPLICATE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_MERGE
@@ -25,6 +26,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPDATE_TITLE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPLOAD
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
@@ -50,6 +52,7 @@ class Orchestrator(
     private val updateBackgroundColor: UpdateBackgroundColor,
     private val duplicateBlock: DuplicateBlock,
     private val splitBlock: SplitBlock,
+    private val updateDivider: UpdateDivider,
     private val mergeBlocks: MergeBlocks,
     private val unlinkBlocks: UnlinkBlocks,
     private val updateTextStyle: UpdateTextStyle,
@@ -644,6 +647,29 @@ class Orchestrator(
                                 )
                             )
                             sendEvent(event)
+                        },
+                        failure = defaultOnError
+                    )
+                }
+                is Intent.Divider.UpdateStyle -> {
+                    val startTime = System.currentTimeMillis()
+                    updateDivider(
+                        params = UpdateDivider.Params(
+                            context = intent.context,
+                            targets = intent.targets,
+                            style = intent.style
+                        )
+                    ).proceed(
+                        success = { payload ->
+                            val event = EventAnalytics.Anytype(
+                                name = BLOCK_DIVIDER_UPDATE,
+                                props = Props.empty(),
+                                duration = EventAnalytics.Duration(
+                                    start = startTime,
+                                    middleware = System.currentTimeMillis()
+                                )
+                            )
+                            defaultPayloadWithEvent(Pair(payload, event))
                         },
                         failure = defaultOnError
                     )

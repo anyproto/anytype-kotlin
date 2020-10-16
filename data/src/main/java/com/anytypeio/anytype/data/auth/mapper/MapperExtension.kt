@@ -147,7 +147,7 @@ fun Block.Content.Layout.toEntity(): BlockEntity.Content.Layout {
 
 fun BlockEntity.Content.Divider.toDomain(): Block.Content.Divider {
     return Block.Content.Divider(
-        type = Block.Content.Divider.Type.valueOf(type.name)
+        style = Block.Content.Divider.Style.valueOf(style.name)
     )
 }
 
@@ -251,7 +251,7 @@ fun Block.Content.Link.toEntity(): BlockEntity.Content.Link {
 
 fun Block.Content.Divider.toEntity(): BlockEntity.Content.Divider {
     return BlockEntity.Content.Divider(
-        type = BlockEntity.Content.Divider.Type.valueOf(type.name)
+        style = BlockEntity.Content.Divider.Style.valueOf(style.name)
     )
 }
 
@@ -445,6 +445,16 @@ fun Command.UploadFile.toEntity(): CommandEntity.UploadFile = CommandEntity.Uplo
     type = BlockEntity.Content.File.Type.valueOf(type.name)
 )
 
+fun Command.UpdateDivider.toEntity(): CommandEntity.UpdateDivider =
+    CommandEntity.UpdateDivider(
+        context = context,
+        targets = targets,
+        style = when (style) {
+            Block.Content.Divider.Style.LINE -> BlockEntity.Content.Divider.Style.LINE
+            Block.Content.Divider.Style.DOTS -> BlockEntity.Content.Divider.Style.DOTS
+        }
+    )
+
 fun Position.toEntity(): PositionEntity {
     return PositionEntity.valueOf(name)
 }
@@ -550,6 +560,16 @@ fun EventEntity.toDomain(): Event {
                 mime = mime,
                 hash = hash,
                 name = name
+            )
+        }
+        is EventEntity.Command.UpdateDivider -> {
+            Event.Command.UpdateDividerBlock(
+                context = context,
+                id = id,
+                style = when (style) {
+                    BlockEntity.Content.Divider.Style.LINE -> Block.Content.Divider.Style.LINE
+                    BlockEntity.Content.Divider.Style.DOTS -> Block.Content.Divider.Style.DOTS
+                }
             )
         }
     }

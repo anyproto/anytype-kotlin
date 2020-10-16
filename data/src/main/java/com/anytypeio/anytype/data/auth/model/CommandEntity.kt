@@ -162,4 +162,10 @@ class CommandEntity {
         val range: IntRange?,
         val blocks: List<BlockEntity>
     )
+
+    data class UpdateDivider(
+        val context: String,
+        val targets: List<String>,
+        val style: BlockEntity.Content.Divider.Style
+    )
 }

@@ -12,11 +12,13 @@ import com.anytypeio.anytype.core_ui.features.page.styling.StylingEvent
 import com.anytypeio.anytype.core_ui.features.page.styling.StylingMode
 import com.anytypeio.anytype.core_ui.features.page.styling.StylingType
 import com.anytypeio.anytype.core_ui.model.StyleConfig
+import com.anytypeio.anytype.core_ui.model.UiBlock
 import com.anytypeio.anytype.core_ui.state.ControlPanelState
 import com.anytypeio.anytype.core_ui.widgets.ActionItemType
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
+import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.block.model.Position
@@ -95,6 +97,9 @@ open class PageViewModelTest {
 
     @Mock
     lateinit var unlinkBlocks: UnlinkBlocks
+
+    @Mock
+    lateinit var updateDivider: UpdateDivider
 
     @Mock
     lateinit var updateTextStyle: UpdateTextStyle
@@ -2004,7 +2009,7 @@ open class PageViewModelTest {
 
         val newStyle = Block.Content.Text.Style.H1
 
-        vm.onTurnIntoStyleClicked(style = newStyle)
+        vm.onTurnIntoBlockClicked(secondChild, UiBlock.HEADER_ONE)
 
         runBlockingTest {
             verify(updateTextStyle, times(1)).invoke(
@@ -2727,7 +2732,7 @@ open class PageViewModelTest {
 
         vm.onAddBlockToolbarClicked()
 
-        vm.onAddDividerBlockClicked(type = Block.Content.Divider.Type.LINE)
+        vm.onAddDividerBlockClicked(style = Block.Content.Divider.Style.LINE)
 
         runBlockingTest {
             verify(createBlock, times(1)).invoke(
@@ -2787,7 +2792,7 @@ open class PageViewModelTest {
 
         vm.onAddBlockToolbarClicked()
 
-        vm.onAddDividerBlockClicked(type = Block.Content.Divider.Type.DOTS)
+        vm.onAddDividerBlockClicked(style = Block.Content.Divider.Style.DOTS)
 
         runBlockingTest {
             verify(createBlock, times(1)).invoke(
@@ -3837,6 +3842,7 @@ open class PageViewModelTest {
                 uploadBlock = uploadBlock,
                 splitBlock = splitBlock,
                 unlinkBlocks = unlinkBlocks,
+                updateDivider = updateDivider,
                 memory = memory,
                 stores = storage,
                 proxies = proxies,

@@ -575,12 +575,12 @@ class DefaultBlockViewRenderer(
         id: Id,
         content: Content.Divider,
         indent: Int
-    ): BlockView = when (content.type) {
-        Content.Divider.Type.LINE -> BlockView.DividerLine(
+    ): BlockView = when (content.style) {
+        Content.Divider.Style.LINE -> BlockView.DividerLine(
             id = id,
             indent = indent
         )
-        Content.Divider.Type.DOTS -> BlockView.DividerDots(
+        Content.Divider.Style.DOTS -> BlockView.DividerDots(
             id = id,
             indent = indent
         )

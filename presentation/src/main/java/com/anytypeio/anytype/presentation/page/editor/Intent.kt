@@ -156,4 +156,13 @@ sealed class Intent {
             val url: String
         ) : Bookmark()
     }
+
+    sealed class Divider : Intent() {
+
+        class UpdateStyle(
+            val context: Id,
+            val targets: List<Id>,
+            val style: Block.Content.Divider.Style
+        ) : Divider()
+    }
 }

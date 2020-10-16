@@ -90,7 +90,7 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
             )
             onTurnIntoBlockClicked(
                 target = child.id,
-                block = UiBlock.PAGE
+                uiBlock = UiBlock.PAGE
             )
         }
 

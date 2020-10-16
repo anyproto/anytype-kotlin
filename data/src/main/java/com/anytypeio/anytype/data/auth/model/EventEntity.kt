@@ -89,5 +89,11 @@ sealed class EventEntity {
             val size: Long? = null,
             val mime: String? = null
         ) : Command()
+
+        data class UpdateDivider(
+            override val context: String,
+            val id: String,
+            val style: BlockEntity.Content.Divider.Style
+        ) : Command()
     }
 }

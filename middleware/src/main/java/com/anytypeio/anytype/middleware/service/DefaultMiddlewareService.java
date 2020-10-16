@@ -413,4 +413,15 @@ public class DefaultMiddlewareService implements MiddlewareService {
             return response;
         }
     }
+
+    @Override
+    public BlockList.Set.Div.Style.Response blockListSetDivStyle(BlockList.Set.Div.Style.Request request) throws Exception {
+        byte[] encoded = Service.blockListSetDivStyle(request.toByteArray());
+        BlockList.Set.Div.Style.Response response = BlockList.Set.Div.Style.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != BlockList.Set.Div.Style.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
 }

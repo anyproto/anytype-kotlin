@@ -27,8 +27,9 @@ import androidx.core.animation.doOnStart
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.ChangeBounds
@@ -140,11 +141,7 @@ open class PageFragment :
         MentionFooterItemDecorator(screen = screen)
     }
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(PageViewModel::class.java)
-    }
+    private val vm by viewModels<PageViewModel> { factory }
 
     private lateinit var pickiT: PickiT
 
@@ -512,15 +509,15 @@ open class PageFragment :
             UiBlock.IMAGE -> vm.onAddFileBlockClicked(Block.Content.File.Type.IMAGE)
             UiBlock.VIDEO -> vm.onAddFileBlockClicked(Block.Content.File.Type.VIDEO)
             UiBlock.BOOKMARK -> vm.onAddBookmarkBlockClicked()
-            UiBlock.LINE_DIVIDER -> vm.onAddDividerBlockClicked(Block.Content.Divider.Type.LINE)
-            UiBlock.THREE_DOTS -> vm.onAddDividerBlockClicked(Block.Content.Divider.Type.DOTS)
+            UiBlock.LINE_DIVIDER -> vm.onAddDividerBlockClicked(Block.Content.Divider.Style.LINE)
+            UiBlock.THREE_DOTS -> vm.onAddDividerBlockClicked(Block.Content.Divider.Style.DOTS)
             UiBlock.LINK_TO_OBJECT -> vm.onAddLinkToObjectClicked()
             else -> toast(NOT_IMPLEMENTED_MESSAGE)
         }
     }
 
-    override fun onTurnIntoBlockClicked(target: String, block: UiBlock) {
-        vm.onTurnIntoBlockClicked(target, block)
+    override fun onTurnIntoBlockClicked(target: String, uiBlock: UiBlock) {
+        vm.onTurnIntoBlockClicked(target, uiBlock)
     }
 
     override fun onTurnIntoMultiSelectBlockClicked(block: UiBlock) {
@@ -537,10 +534,10 @@ open class PageFragment :
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        vm.state.observe(viewLifecycleOwner, { render(it) })
+        vm.state.observe(viewLifecycleOwner) { render(it) }
         vm.navigation.observe(viewLifecycleOwner, navObserver)
-        vm.controlPanelViewState.observe(viewLifecycleOwner, { render(it) })
-        vm.commands.observe(viewLifecycleOwner, { execute(it) })
+        vm.controlPanelViewState.observe(viewLifecycleOwner) { render(it) }
+        vm.commands.observe(viewLifecycleOwner) { execute(it) }
         vm.toasts.onEach { toast(it) }.launchIn(lifecycleScope)
     }
 

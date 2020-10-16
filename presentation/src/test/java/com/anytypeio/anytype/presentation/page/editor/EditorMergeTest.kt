@@ -345,7 +345,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
         val a = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Divider(type = Block.Content.Divider.Type.LINE),
+            content = Block.Content.Divider(style = Block.Content.Divider.Style.LINE),
             children = emptyList()
         )
 

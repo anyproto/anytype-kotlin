@@ -495,7 +495,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
                 id = title.id,
                 hasFocus = true
             )
-            onAddDividerBlockClicked(type = Block.Content.Divider.Type.LINE)
+            onAddDividerBlockClicked(style = Block.Content.Divider.Style.LINE)
         }
 
         verifyBlocking(createBlock, times(1)) { invoke(params) }
@@ -549,7 +549,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
                 id = title.id,
                 hasFocus = true
             )
-            onAddDividerBlockClicked(type = Block.Content.Divider.Type.LINE)
+            onAddDividerBlockClicked(style = Block.Content.Divider.Style.LINE)
         }
 
         verifyBlocking(createBlock, times(1)) { invoke(params) }

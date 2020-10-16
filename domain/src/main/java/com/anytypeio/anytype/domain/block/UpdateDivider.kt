@@ -1,22 +1,22 @@
-package com.anytypeio.anytype.domain.block.interactor
+package com.anytypeio.anytype.domain.block
 
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.block.model.Block.Content.Text
+import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.block.model.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.event.model.Payload
 
 /**
- * Use-case for updating a block's text style
+ * Use-case for updating a divider style
  */
-open class UpdateTextStyle(
+open class UpdateDivider(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, UpdateTextStyle.Params>() {
+) : BaseUseCase<Payload, UpdateDivider.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        repo.updateTextStyle(
-            command = Command.UpdateStyle(
+        repo.updateDivider(
+            command = Command.UpdateDivider(
                 style = params.style,
                 context = params.context,
                 targets = params.targets
@@ -27,11 +27,11 @@ open class UpdateTextStyle(
     /**
      * @property context context id
      * @property targets id of the target blocks, whose style we need to update.
-     * @property style new style for the target block.
+     * @property style new style for the target blocks.
      */
     data class Params(
         val context: Id,
         val targets: List<Id>,
-        val style: Text.Style
+        val style: Block.Content.Divider.Style
     )
 }

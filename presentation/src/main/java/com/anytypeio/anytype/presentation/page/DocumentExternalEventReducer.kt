@@ -97,6 +97,17 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
             },
             target = { block -> block.id == event.id }
         )
+        is Event.Command.UpdateDividerBlock -> state.replace(
+            replacement = { block ->
+                val content = block.content<Block.Content.Divider>()
+                block.copy(
+                    content = content.copy(
+                        style = event.style
+                    )
+                )
+            },
+            target = { block -> block.id == event.id }
+        )
 
         else -> state.also { Timber.d("Ignoring event: $event") }
     }

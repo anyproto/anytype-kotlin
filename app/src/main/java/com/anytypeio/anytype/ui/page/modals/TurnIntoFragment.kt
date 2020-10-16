@@ -10,9 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.anytypeio.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter
-import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.model.UiBlock
-import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.domain.common.Id
 import com.google.android.material.bottomsheet.BottomSheetBehavior

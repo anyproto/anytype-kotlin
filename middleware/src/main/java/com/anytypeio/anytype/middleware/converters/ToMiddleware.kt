@@ -211,9 +211,9 @@ fun BlockEntity.Content.Layout.layout() : Layout {
 
 fun BlockEntity.Content.Divider.divider(): Divider {
     val builder = Divider.newBuilder()
-    when (type) {
-        BlockEntity.Content.Divider.Type.LINE -> builder.style = Block.Content.Div.Style.Line
-        BlockEntity.Content.Divider.Type.DOTS -> builder.style = Block.Content.Div.Style.Dots
+    when (style) {
+        BlockEntity.Content.Divider.Style.LINE -> builder.style = Block.Content.Div.Style.Line
+        BlockEntity.Content.Divider.Style.DOTS -> builder.style = Block.Content.Div.Style.Dots
     }
     return builder.build()
 }

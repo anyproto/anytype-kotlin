@@ -97,8 +97,8 @@ data class BlockEntity(
             val favicon: String?
         ) : Content()
 
-        data class Divider(val type: Type) : Content() {
-            enum class Type { LINE, DOTS }
+        data class Divider(val style: Style) : Content() {
+            enum class Style { LINE, DOTS }
         }
     }
 

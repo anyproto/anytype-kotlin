@@ -47,6 +47,8 @@ public interface MiddlewareService {
 
     BlockList.Set.Text.Style.Response blockSetTextStyle(BlockList.Set.Text.Style.Request request) throws Exception;
 
+    BlockList.Set.Div.Style.Response blockListSetDivStyle(BlockList.Set.Div.Style.Request request) throws Exception;
+
     BlockList.Move.Response blockListMove(BlockList.Move.Request request) throws Exception;
 
     Block.Unlink.Response blockUnlink(Block.Unlink.Request request) throws Exception;

@@ -305,4 +305,16 @@ sealed class Command {
         val range: IntRange?,
         val blocks: List<Block>
     )
+
+    /**
+     * Command for updating style for divider blocks.
+     * @property context context id
+     * @property targets id of the target blocks, whose style we need to update.
+     * @property style new style for the target block.
+     */
+    data class UpdateDivider(
+        val context: Id,
+        val targets: List<Id>,
+        val style: Block.Content.Divider.Style
+    )
 }

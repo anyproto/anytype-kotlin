@@ -1161,4 +1161,36 @@ public class Middleware {
 
         return mapper.toPayload(response.getEvent());
     }
+
+    public PayloadEntity updateDividerStyle(CommandEntity.UpdateDivider command) throws Exception {
+
+        Models.Block.Content.Div.Style style = null;
+
+        switch (command.getStyle()) {
+            case LINE:
+                style = Models.Block.Content.Div.Style.Line;
+                break;
+            case DOTS:
+                style = Models.Block.Content.Div.Style.Dots;
+                break;
+        }
+
+        BlockList.Set.Div.Style.Request request = BlockList.Set.Div.Style.Request.newBuilder()
+                .setContextId(command.getContext())
+                .addAllBlockIds(command.getTargets())
+                .setStyle(style)
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        BlockList.Set.Div.Style.Response response = service.blockListSetDivStyle(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return mapper.toPayload(response.getEvent());
+    }
 }

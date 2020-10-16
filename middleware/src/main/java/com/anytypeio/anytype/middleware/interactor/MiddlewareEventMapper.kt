@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Events
 import anytype.Events.Event
+import anytype.model.Models
 import com.anytypeio.anytype.data.auth.model.BlockEntity
 import com.anytypeio.anytype.data.auth.model.EventEntity
 import com.anytypeio.anytype.middleware.converters.blocks
@@ -156,6 +157,18 @@ fun Event.Message.toEntity(
                 blockSetBookmark.faviconHash.value
             else
                 null
+        )
+    }
+    Event.Message.ValueCase.BLOCKSETDIV -> {
+        val style = when (blockSetDiv.style.value) {
+            Models.Block.Content.Div.Style.Line -> BlockEntity.Content.Divider.Style.LINE
+            Models.Block.Content.Div.Style.Dots -> BlockEntity.Content.Divider.Style.DOTS
+            else -> throw IllegalStateException("Unexpected divider block style: ${blockSetDiv.style.value}")
+        }
+        EventEntity.Command.UpdateDivider(
+            context = context,
+            id = blockSetDiv.id,
+            style = style
         )
     }
     else -> null

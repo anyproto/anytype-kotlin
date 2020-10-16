@@ -70,6 +70,10 @@ import com.anytypeio.anytype.presentation.mapper.toMentionView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.page.ControlPanelMachine.Interactor
+import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeCategoriesForDivider
+import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForDotsDivider
+import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForLineDivider
+import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForText
 import com.anytypeio.anytype.presentation.page.editor.*
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
 import com.anytypeio.anytype.presentation.page.render.BlockViewRenderer
@@ -109,7 +113,6 @@ class PageViewModel(
     BlockViewRenderer by renderer,
     ToggleStateHolder by renderer,
     SelectionStateHolder by orchestrator.memory.selections,
-    TurnIntoActionReceiver,
     StateReducer<List<Block>, Event> by reducer {
 
     private val session = MutableStateFlow(Session.IDLE)
@@ -388,7 +391,7 @@ class PageViewModel(
         renderizePipeline
             .stream()
             .filter { it.isNotEmpty() }
-            .onEach(this::refreshStyleToolbar)
+            .onEach { document -> refreshStyleToolbar(document) }
             .withLatestFrom(
                 orchestrator.stores.focus.stream(),
                 orchestrator.stores.details.stream()
@@ -930,7 +933,7 @@ class PageViewModel(
         if (content.text.isNotEmpty()) {
             proceedWithCreatingNewTextBlock(id, content.style)
         } else {
-            proceedWithUpdatingTextStyle(
+            proceedUpdateTextStyle(
                 style = Content.Text.Style.P,
                 targets = listOf(id)
             )
@@ -1178,23 +1181,27 @@ class PageViewModel(
             }
             ActionItemType.TurnInto -> {
                 val excludedTypes = mutableListOf<String>()
+                val excludedCategories = mutableListOf<String>()
                 val target = blocks.first { it.id == id }
-                if (target.content is Content.Text) {
-                    excludedTypes.apply {
-                        add(UiBlock.FILE.name)
-                        add(UiBlock.IMAGE.name)
-                        add(UiBlock.VIDEO.name)
-                        add(UiBlock.BOOKMARK.name)
-                        add(UiBlock.LINE_DIVIDER.name)
-                        add(UiBlock.THREE_DOTS.name)
-                        add(UiBlock.LINK_TO_OBJECT.name)
+                when (val content = target.content) {
+                    is Content.Text -> excludedTypes.addAll(excludeTypesForText())
+                    is Content.Divider -> {
+                        excludedCategories.addAll(excludeCategoriesForDivider())
+                        when (content.style) {
+                            Content.Divider.Style.LINE -> excludedTypes.addAll(
+                                excludeTypesForLineDivider()
+                            )
+                            Content.Divider.Style.DOTS -> excludedTypes.addAll(
+                                excludeTypesForDotsDivider()
+                            )
+                        }
                     }
                 }
                 onExitActionMode()
                 dispatch(
                     Command.OpenTurnIntoPanel(
                         target = id,
-                        excludedCategories = emptyList(),
+                        excludedCategories = excludedCategories,
                         excludedTypes = excludedTypes
                     )
                 )
@@ -1840,16 +1847,89 @@ class PageViewModel(
         )
     }
 
-    override fun onTurnIntoBlockClicked(target: String, block: UiBlock) {
-        if (block.isText() || block.isCode()) {
-            proceedWithUpdatingTextStyle(
-                style = block.style(),
-                targets = listOf(target)
-            )
-        } else if (block == UiBlock.PAGE) {
-            proceedWithTurningIntoDocument(listOf(target))
-        }
+    // ----------------- Turn Into -----------------------------------------
+
+    fun onTurnIntoMultiSelectBlockClicked(uiBlock: UiBlock) {
+        proceedUpdateBlockStyle(
+            targets = currentSelection().toList(),
+            uiBlock = uiBlock,
+            action = {
+                clearSelections()
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
+            },
+            errorAction = { _toasts.offer("Cannot convert selected blocks to $uiBlock") }
+        )
+    }
+
+    fun onTurnIntoBlockClicked(target: String, uiBlock: UiBlock) {
+        proceedUpdateBlockStyle(
+            targets = listOf(target),
+            uiBlock = uiBlock,
+            errorAction = { _toasts.offer("Cannot convert block to $uiBlock") }
+        )
         dispatch(Command.PopBackStack)
+    }
+
+    private fun proceedUpdateBlockStyle(
+        targets: List<String>,
+        uiBlock: UiBlock,
+        action: (() -> Unit)? = null,
+        errorAction: (() -> Unit)? = null
+    ) {
+        when (uiBlock) {
+            UiBlock.TEXT, UiBlock.HEADER_ONE,
+            UiBlock.HEADER_TWO, UiBlock.HEADER_THREE,
+            UiBlock.HIGHLIGHTED, UiBlock.CHECKBOX,
+            UiBlock.BULLETED, UiBlock.NUMBERED,
+            UiBlock.TOGGLE, UiBlock.CODE -> {
+                action?.invoke()
+                proceedUpdateTextStyle(targets, uiBlock.style())
+            }
+            UiBlock.PAGE -> {
+                action?.invoke()
+                proceedWithTurningIntoDocument(targets)
+            }
+            UiBlock.LINE_DIVIDER -> {
+                action?.invoke()
+                proceedUpdateDividerStyle(targets, Content.Divider.Style.LINE)
+            }
+            UiBlock.THREE_DOTS -> {
+                action?.invoke()
+                proceedUpdateDividerStyle(targets, Content.Divider.Style.DOTS)
+            }
+            UiBlock.LINK_TO_OBJECT -> errorAction?.invoke()
+            UiBlock.FILE -> errorAction?.invoke()
+            UiBlock.IMAGE -> errorAction?.invoke()
+            UiBlock.VIDEO -> errorAction?.invoke()
+            UiBlock.BOOKMARK -> errorAction?.invoke()
+        }
+    }
+
+    private fun proceedUpdateTextStyle(
+        targets: List<String>,
+        style: Content.Text.Style
+    ) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Text.UpdateStyle(
+                    context = context,
+                    targets = targets,
+                    style = style
+                )
+            )
+        }
+    }
+
+    private fun proceedUpdateDividerStyle(targets: List<String>, style: Content.Divider.Style) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Divider.UpdateStyle(
+                    context = context,
+                    targets = targets,
+                    style = style
+                )
+            )
+        }
     }
 
     private fun proceedWithTurningIntoDocument(targets: List<String>) {
@@ -1863,36 +1943,13 @@ class PageViewModel(
         }
     }
 
-    override fun onTurnIntoMultiSelectBlockClicked(block: UiBlock) {
-        if (block.isText() || block.isCode()) {
-            val targets = currentSelection().toList()
-            clearSelections()
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
-            proceedWithUpdatingTextStyle(
-                style = block.style(),
-                targets = targets
-            )
-        } else if (block == UiBlock.PAGE) {
-            val targets = currentSelection().toList()
-            clearSelections()
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
-            proceedWithTurningIntoDocument(targets)
-        } else {
-            _toasts.offer("Cannot convert selected blocks to $block")
-        }
-    }
-
-    fun onTurnIntoStyleClicked(style: Content.Text.Style) {
-        proceedWithUpdatingTextStyle(style, listOf(orchestrator.stores.focus.current().id))
-    }
-
-    fun onAddDividerBlockClicked(type: Content.Divider.Type) {
+    fun onAddDividerBlockClicked(style: Content.Divider.Style) {
 
         val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
         val content = focused.content
-        val prototype = when (type) {
-            Content.Divider.Type.LINE -> Prototype.DividerLine
-            Content.Divider.Type.DOTS -> Prototype.DividerDots
+        val prototype = when (style) {
+            Content.Divider.Style.LINE -> Prototype.DividerLine
+            Content.Divider.Style.DOTS -> Prototype.DividerDots
         }
 
         if (content is Content.Text && content.text.isEmpty()) {
@@ -1935,21 +1992,6 @@ class PageViewModel(
         }
 
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
-    }
-
-    private fun proceedWithUpdatingTextStyle(
-        style: Content.Text.Style,
-        targets: List<String>
-    ) {
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Text.UpdateStyle(
-                    context = context,
-                    targets = targets,
-                    style = style
-                )
-            )
-        }
     }
 
     fun onOutsideClicked() {

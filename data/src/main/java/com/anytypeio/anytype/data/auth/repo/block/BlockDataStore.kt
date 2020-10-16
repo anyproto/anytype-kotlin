@@ -55,4 +55,6 @@ interface BlockDataStore {
         replace: Boolean,
         position: PositionEntity
     ): PayloadEntity
+
+    suspend fun updateDivider(command: CommandEntity.UpdateDivider) : PayloadEntity
 }

@@ -141,5 +141,11 @@ sealed class Event {
             val mime: String? = null,
             val size: Long? = null
         ) : Command()
+
+        data class UpdateDividerBlock(
+            override val context: String,
+            val id: Id,
+            val style: Block.Content.Divider.Style
+        ) : Command()
     }
 }

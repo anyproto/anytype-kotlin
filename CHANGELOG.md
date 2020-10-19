@@ -10,7 +10,7 @@
 
 ### Design & UX 🔳
 
-*
+* Navigation icons updated (#992)
 
 ### Fixes & tech 🚒
 

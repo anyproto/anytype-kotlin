@@ -55,6 +55,8 @@ sealed class Command {
 
     object CloseKeyboard : Command()
 
+    object ClearSearchInput : Command()
+
     data class OpenActionBar(
         val block: BlockView,
         val dimensions: BlockDimensions

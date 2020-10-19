@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.core.view.postDelayed
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
+import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.extensions.avatarColor
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.page.BlockView
@@ -75,6 +76,17 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
+    }
+
+    fun applySearchTargetHighlight(item: BlockView.Searchable) {
+        content.editableText.removeSpans<SearchTargetHighlightSpan>()
+        if (!item.target.isEmpty())
+            content.editableText.setSpan(
+                SearchTargetHighlightSpan(),
+                item.target.first,
+                item.target.last,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
     }
 
     open fun setImage(item: BlockView.Title) {
@@ -164,6 +176,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             )
             setEmoji(item)
             applySearchHighlights(item)
+            applySearchTargetHighlight(item)
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onPageIconClicked() }
             }
@@ -182,6 +195,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     }
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)
+                    }
+                    if (payload.isSearchTargetHighlightChanged) {
+                        applySearchTargetHighlight(item)
                     }
                 }
             }
@@ -267,6 +283,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 },
             )
             applySearchHighlights(item)
+            applySearchTargetHighlight(item)
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onProfileIconClicked() }
             }
@@ -310,6 +327,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     }
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)
+                    }
+                    if (payload.isSearchTargetHighlightChanged) {
+                        applySearchTargetHighlight(item)
                     }
                 }
             }

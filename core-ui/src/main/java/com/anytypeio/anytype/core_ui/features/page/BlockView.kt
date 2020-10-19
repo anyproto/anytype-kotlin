@@ -112,7 +112,7 @@ sealed class BlockView : ViewType, Parcelable {
      * @property target currently selected search result
      */
     interface Searchable {
-        val highlights: Set<IntRange>
+        val highlights: List<IntRange>
         val target: IntRange
     }
 
@@ -165,7 +165,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val alignment: Alignment? = null,
             override val cursor: Int? = null,
-            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val highlights: @RawValue List<IntRange> = emptyList(),
             override val target: @RawValue IntRange = IntRange.EMPTY
         ) : Text() {
             override fun getViewType() = HOLDER_PARAGRAPH
@@ -194,7 +194,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override val cursor: Int? = null,
-                override val highlights: @RawValue Set<IntRange> = emptySet(),
+                override val highlights: @RawValue List<IntRange> = emptyList(),
                 override val target: @RawValue IntRange = IntRange.EMPTY
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_ONE
@@ -221,7 +221,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override val cursor: Int? = null,
-                override val highlights: @RawValue Set<IntRange> = emptySet(),
+                override val highlights: @RawValue List<IntRange> = emptyList(),
                 override val target: @RawValue IntRange = IntRange.EMPTY
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_TWO
@@ -248,7 +248,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override val cursor: Int? = null,
-                override val highlights: @RawValue Set<IntRange> = emptySet(),
+                override val highlights: @RawValue List<IntRange> = emptyList(),
                 override val target: @RawValue IntRange = IntRange.EMPTY
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_THREE
@@ -275,7 +275,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val highlights: @RawValue List<IntRange> = emptyList(),
             override val target: @RawValue IntRange = IntRange.EMPTY
         ) : Text() {
             override fun getViewType() = HOLDER_HIGHLIGHT
@@ -302,7 +302,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val highlights: @RawValue List<IntRange> = emptyList(),
             override val target: @RawValue IntRange = IntRange.EMPTY
         ) : Text(), Checkable {
             override fun getViewType() = HOLDER_CHECKBOX
@@ -329,7 +329,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val highlights: @RawValue List<IntRange> = emptyList(),
             override val target: @RawValue IntRange = IntRange.EMPTY
         ) : Text() {
             override fun getViewType() = HOLDER_BULLET
@@ -356,7 +356,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val highlights: @RawValue List<IntRange> = emptyList(),
             override val target: @RawValue IntRange = IntRange.EMPTY,
             val number: Int
         ) : Text() {
@@ -384,7 +384,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val highlights: @RawValue List<IntRange> = emptyList(),
             override val target: @RawValue IntRange = IntRange.EMPTY,
             val toggled: Boolean = false,
             val isEmpty: Boolean = false
@@ -413,7 +413,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
             override val cursor: Int? = null,
-            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val highlights: @RawValue List<IntRange> = emptyList(),
             override val target: @RawValue IntRange = IntRange.EMPTY,
         ) : BlockView.Title(), Searchable {
             override fun getViewType() = HOLDER_TITLE
@@ -433,7 +433,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
             override val cursor: Int? = null,
-            override val highlights: @RawValue Set<IntRange> = emptySet(),
+            override val highlights: @RawValue List<IntRange> = emptyList(),
             override val target: @RawValue IntRange = IntRange.EMPTY,
         ) : BlockView.Title(), Searchable {
             override fun getViewType() = HOLDER_PROFILE_TITLE

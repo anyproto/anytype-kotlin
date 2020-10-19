@@ -825,12 +825,12 @@ class BlockViewDiffUtilTest {
 
         val oldBlock = BlockView.Text.Paragraph(
             id = id,
-            highlights = emptySet(),
+            highlights = emptyList(),
             text = MockDataFactory.randomString()
         )
 
         val newBlock: BlockView = oldBlock.copy(
-            highlights = setOf(0..1)
+            highlights = listOf(0..1)
         )
 
         val old = listOf(oldBlock)

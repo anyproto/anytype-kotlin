@@ -33,10 +33,17 @@ class SearchToolbarWidget : ConstraintLayout {
         val next = docSearchNextSearchResult.clicks().map { Event.Next }
         val previous = docSearchPreviousSearchResult.clicks().map { Event.Previous }
         val cancel = docSearchCancelButton.clicks().map { Event.Cancel }
-        val clear = docSearchClearIcon.clicks().onEach { docSearchInputField.setText("") }
-            .map { Event.Clear }
+        val clear = docSearchClearIcon.clicks().onEach { clearSearchInput() }.map { Event.Clear }
         val queries = docSearchInputField.afterTextChanges().map { Event.Query(it.toString()) }
         return flowOf(cancel, clear, queries, next, previous).flattenMerge()
+    }
+
+    fun clear() {
+        clearSearchInput()
+    }
+
+    private fun clearSearchInput() {
+        docSearchInputField.setText("")
     }
 
     private fun inflate() {

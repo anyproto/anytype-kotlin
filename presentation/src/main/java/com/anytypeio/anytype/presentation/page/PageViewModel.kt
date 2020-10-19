@@ -115,6 +115,8 @@ class PageViewModel(
     SelectionStateHolder by orchestrator.memory.selections,
     StateReducer<List<Block>, Event> by reducer {
 
+    val searchResultScrollPosition = MutableStateFlow(NO_SEARCH_RESULT_POSITION)
+
     private val session = MutableStateFlow(Session.IDLE)
 
     private val views: List<BlockView> get() = orchestrator.stores.views.current()
@@ -1356,6 +1358,7 @@ class PageViewModel(
     }
 
     fun onSearchToolbarEvent(event: SearchToolbarWidget.Event) {
+        if (mode != EditorMode.SEARCH) return
         when (event) {
             is SearchToolbarWidget.Event.Query -> {
                 val query = event.query.trim()
@@ -1370,12 +1373,31 @@ class PageViewModel(
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
             }
+            is SearchToolbarWidget.Event.Next -> {
+                val update = views.nextSearchTarget()
+                viewModelScope.launch { orchestrator.stores.views.update(update) }
+                viewModelScope.launch { renderCommand.send(Unit) }
+                val target =
+                    update.find { view -> view is BlockView.Searchable && !view.target.isEmpty() }
+                val pos = update.indexOf(target)
+                searchResultScrollPosition.value = pos
+            }
+            is SearchToolbarWidget.Event.Previous -> {
+                val update = views.previousSearchTarget()
+                viewModelScope.launch { orchestrator.stores.views.update(update) }
+                viewModelScope.launch { renderCommand.send(Unit) }
+                val target =
+                    update.find { view -> view is BlockView.Searchable && !view.target.isEmpty() }
+                val pos = update.indexOf(target)
+                searchResultScrollPosition.value = pos
+            }
             is SearchToolbarWidget.Event.Cancel -> {
                 mode = EditorMode.EDITING
                 val update = views.clearSearchHighlights().toEditMode()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.SearchToolbar.OnExitSearchMode)
+                dispatch(Command.ClearSearchInput)
             }
             else -> _toasts.offer("not implemented")
         }
@@ -2853,6 +2875,7 @@ class PageViewModel(
     }
 
     companion object {
+        const val NO_SEARCH_RESULT_POSITION = -1
         const val EMPTY_TEXT = ""
         const val EMPTY_CONTEXT = ""
         const val EMPTY_FOCUS_ID = ""

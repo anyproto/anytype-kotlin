@@ -539,6 +539,10 @@ open class PageFragment :
         vm.controlPanelViewState.observe(viewLifecycleOwner) { render(it) }
         vm.commands.observe(viewLifecycleOwner) { execute(it) }
         vm.toasts.onEach { toast(it) }.launchIn(lifecycleScope)
+        vm.searchResultScrollPosition
+            .filter { it != PageViewModel.NO_SEARCH_RESULT_POSITION }
+            .onEach { recycler.smoothScrollToPosition(it) }
+            .launchIn(lifecycleScope)
     }
 
     override fun onDestroyView() {
@@ -722,6 +726,9 @@ open class PageFragment :
                         AlertUpdateAppFragment().show(childFragmentManager, TAG_ALERT)
                     } else {
                     }
+                }
+                is Command.ClearSearchInput -> {
+                    searchToolbar.clear()
                 }
             }
         }

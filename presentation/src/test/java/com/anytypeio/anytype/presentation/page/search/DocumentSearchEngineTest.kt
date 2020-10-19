@@ -18,7 +18,7 @@ class DocumentSearchEngineTest {
         val result = text.search(pattern)
 
         assertEquals(
-            expected = setOf(),
+            expected = listOf(),
             actual = result
         )
     }
@@ -35,7 +35,7 @@ class DocumentSearchEngineTest {
         val result = text.search(pattern)
 
         assertEquals(
-            expected = setOf(0..3, 6..9),
+            expected = listOf(0..3, 6..9),
             actual = result
         )
     }
@@ -52,7 +52,7 @@ class DocumentSearchEngineTest {
         val result = text.search(pattern)
 
         assertEquals(
-            expected = setOf(3..6),
+            expected = listOf(3..6),
             actual = result
         )
     }
@@ -69,7 +69,7 @@ class DocumentSearchEngineTest {
         val result = text.search(pattern)
 
         assertEquals(
-            expected = setOf(4..7),
+            expected = listOf(4..7),
             actual = result
         )
     }
@@ -86,7 +86,7 @@ class DocumentSearchEngineTest {
         val result = text.search(pattern)
 
         assertEquals(
-            expected = setOf(0..1, 5..6, 10..11),
+            expected = listOf(0..1, 5..6, 10..11),
             actual = result
         )
     }

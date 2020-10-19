@@ -108,6 +108,8 @@ class BlockViewDiffUtil(
         if (newBlock is BlockView.Searchable && oldBlock is BlockView.Searchable) {
             if (newBlock.highlights != oldBlock.highlights)
                 changes.add(SEARCH_HIGHLIGHT_CHANGED)
+            if (newBlock.target != oldBlock.target)
+                changes.add(SEARCH_TARGET_HIGHLIGHT_CHANGED)
         }
 
         return if (changes.isNotEmpty())
@@ -134,6 +136,10 @@ class BlockViewDiffUtil(
         val isSelectionChanged: Boolean get() = changes.contains(SELECTION_CHANGED)
         val isTitleIconChanged: Boolean get() = changes.contains(TITLE_ICON_CHANGED)
         val isSearchHighlightChanged: Boolean get() = changes.contains(SEARCH_HIGHLIGHT_CHANGED)
+        val isSearchTargetHighlightChanged: Boolean
+            get() = changes.contains(
+                SEARCH_TARGET_HIGHLIGHT_CHANGED
+            )
         val isAlignmentChanged: Boolean get() = changes.contains(ALIGNMENT_CHANGED)
 
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
@@ -161,5 +167,6 @@ class BlockViewDiffUtil(
         const val CURSOR_CHANGED = 12
         const val TITLE_ICON_CHANGED = 13
         const val SEARCH_HIGHLIGHT_CHANGED = 14
+        const val SEARCH_TARGET_HIGHLIGHT_CHANGED = 15
     }
 }

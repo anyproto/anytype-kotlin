@@ -51,6 +51,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.anytypeio.anytype.core_ui.widgets.toolbar.SearchToolbarWidget
+            android:background="@color/white"
             android:id="@+id/searchToolbar"
             android:layout_width="0dp"
             android:visibility="gone"

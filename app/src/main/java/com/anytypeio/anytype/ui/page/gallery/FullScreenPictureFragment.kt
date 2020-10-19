@@ -29,6 +29,7 @@ class FullScreenPictureFragment : BaseFragment(R.layout.fragment_full_screen_pic
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Glide.with(picture).load(url).into(picture)
+        picture.setOnClickListener { parentFragmentManager.popBackStack() }
     }
 
     override fun injectDependencies() {}

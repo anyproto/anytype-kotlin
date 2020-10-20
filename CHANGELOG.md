@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.1.1 (WIP)
+## Version 0.1.1
 
 ### New features & enhancements 🚀
 
@@ -8,6 +8,8 @@
 * Images can be full screen when tapped, allowing users to zoom in (#968)
 * Disable animation for edit-mode in order to increase editor performance (#884)
 * Should close style toolbar (instead of closing document) when back button pressed (#973)
+* Create a new line inside code snippet on enter press (#970)
+* Integrate three dots divider (#978)
 
 ### Design & UX 🔳
 

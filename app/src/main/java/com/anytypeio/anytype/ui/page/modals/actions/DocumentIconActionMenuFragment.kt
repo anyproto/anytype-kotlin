@@ -220,13 +220,18 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == SELECT_IMAGE_CODE) {
             data?.data?.let { uri ->
-                val path = uri.parsePath(requireContext())
-                vm.onEvent(
-                    Contract.Event.OnImagePickedFromGallery(
-                        context = target,
-                        path = path
+                try {
+                    val path = uri.parsePath(requireContext())
+                    vm.onEvent(
+                        Contract.Event.OnImagePickedFromGallery(
+                            context = target,
+                            path = path
+                        )
                     )
-                )
+                } catch (e: Exception) {
+                    Timber.e(COULD_NOT_PARSE_PATH_ERROR)
+                    toast(COULD_NOT_PARSE_PATH_ERROR)
+                }
             }
         }
     }
@@ -276,5 +281,6 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
         private const val ANIM_DURATION = 200L
         private const val ARG_TARGET_ID_KEY = "arg.picker.target.id"
         private const val MISSING_TARGET_ERROR = "Missing target id"
+        private const val COULD_NOT_PARSE_PATH_ERROR = "Could not parse path to your image"
     }
 }

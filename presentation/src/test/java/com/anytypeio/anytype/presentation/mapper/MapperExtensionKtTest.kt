@@ -682,4 +682,38 @@ class MapperExtensionKtTest {
 
         assertEquals(expected, result)
     }
+
+    @Test
+    fun `should not map mark if required param is null`() {
+
+        val source = "Everything was in confusion in the Oblonskys’ house"
+
+        val marks: List<Block.Content.Text.Mark> = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                type = Block.Content.Text.Mark.Type.TEXT_COLOR
+            ),
+            Block.Content.Text.Mark(
+                range = 10..20,
+                type = Block.Content.Text.Mark.Type.BACKGROUND_COLOR
+            ),
+            Block.Content.Text.Mark(
+                range = 30..50,
+                type = Block.Content.Text.Mark.Type.LINK
+            )
+        )
+
+        val content = Block.Content.Text(
+            text = source,
+            marks = marks,
+            style = Block.Content.Text.Style.P
+        )
+
+        val result = content.marks()
+
+        assertEquals(
+            actual = result,
+            expected = emptyList()
+        )
+    }
 }

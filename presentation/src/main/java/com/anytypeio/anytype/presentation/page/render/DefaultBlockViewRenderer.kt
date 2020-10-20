@@ -610,6 +610,12 @@ class DefaultBlockViewRenderer(
             indent = indent,
             mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
         )
+        Content.File.Type.NONE -> content.toFileView(
+            id = block.id,
+            urlBuilder = urlBuilder,
+            indent = indent,
+            mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
+        )
         else -> throw IllegalStateException("Unexpected file type: ${content.type}")
     }
 

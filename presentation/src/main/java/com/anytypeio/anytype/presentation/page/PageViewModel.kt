@@ -407,6 +407,7 @@ class PageViewModel(
                     details = details
                 )
             }
+            .catch { emit(emptyList()) }
             .onEach { views ->
                 orchestrator.stores.views.update(views)
                 renderCommand.send(Unit)

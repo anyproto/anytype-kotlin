@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.navigation.DocumentInfo
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 import com.anytypeio.anytype.presentation.settings.EditorSettings
+import timber.log.Timber
 
 fun Block.Content.File.toPictureView(
     id: String,
@@ -150,28 +151,43 @@ fun Block.Content.Text.marks(
                 )
             }
             Block.Content.Text.Mark.Type.TEXT_COLOR -> {
-                Markup.Mark(
-                    from = mark.range.first,
-                    to = mark.range.last,
-                    type = Markup.Type.TEXT_COLOR,
-                    param = checkNotNull(mark.param)
-                )
+                try {
+                    Markup.Mark(
+                        from = mark.range.first,
+                        to = mark.range.last,
+                        type = Markup.Type.TEXT_COLOR,
+                        param = checkNotNull(mark.param)
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Could not parse param from ${mark.type}")
+                    null
+                }
             }
             Block.Content.Text.Mark.Type.LINK -> {
-                Markup.Mark(
-                    from = mark.range.first,
-                    to = mark.range.last,
-                    type = Markup.Type.LINK,
-                    param = checkNotNull(mark.param)
-                )
+                try {
+                    Markup.Mark(
+                        from = mark.range.first,
+                        to = mark.range.last,
+                        type = Markup.Type.LINK,
+                        param = checkNotNull(mark.param)
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Could not parse param from ${mark.type}")
+                    null
+                }
             }
             Block.Content.Text.Mark.Type.BACKGROUND_COLOR -> {
-                Markup.Mark(
-                    from = mark.range.first,
-                    to = mark.range.last,
-                    type = Markup.Type.BACKGROUND_COLOR,
-                    param = checkNotNull(mark.param)
-                )
+                try {
+                    Markup.Mark(
+                        from = mark.range.first,
+                        to = mark.range.last,
+                        type = Markup.Type.BACKGROUND_COLOR,
+                        param = checkNotNull(mark.param)
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Could not parse param from ${mark.type}")
+                    null
+                }
             }
             Block.Content.Text.Mark.Type.KEYBOARD -> {
                 Markup.Mark(

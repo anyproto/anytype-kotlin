@@ -24,6 +24,7 @@
 * Change min sdk to Android 24 (#976)
 * Cannot set carriage into an empty text block in large documents (#906)
 * When changing icon for a document, link block should not have overlaying images (#890)
+* Should show a correct error message when trying to move a block on the same position (#1007)
 
 ## Version 0.1.0
 

@@ -2346,7 +2346,11 @@ class PageViewModel(
         val selected = currentSelection().toList()
 
         if (selected.contains(target)) {
-            _toasts.offer(CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR)
+            if (position == Position.INNER) {
+                _toasts.offer(CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR)
+            } else if (selected.size == 1) {
+                _toasts.offer(CANNOT_MOVE_BLOCK_ON_SAME_POSITION)
+            }
             return
         }
 
@@ -2888,6 +2892,7 @@ class PageViewModel(
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
         const val DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE = 150L
         const val INITIAL_INDENT = 0
+        const val CANNOT_MOVE_BLOCK_ON_SAME_POSITION = "Selected block is already on the position"
         const val CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR = "A block cannot be moved inside itself."
         const val CANNOT_BE_PARENT_ERROR = "This block does not support nesting."
         const val CANNOT_MOVE_PARENT_INTO_CHILD =

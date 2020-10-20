@@ -3,10 +3,15 @@ package com.anytypeio.anytype.core_ui.widgets.toolbar
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.reactive.afterTextChanges
 import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
+import com.anytypeio.anytype.core_utils.ext.hideKeyboard
+import com.anytypeio.anytype.core_utils.ext.imm
 import kotlinx.android.synthetic.main.widget_doc_search_engine_toolbar.view.*
 import kotlinx.coroutines.flow.*
 
@@ -35,11 +40,28 @@ class SearchToolbarWidget : ConstraintLayout {
         val cancel = docSearchCancelButton.clicks().map { Event.Cancel }
         val clear = docSearchClearIcon.clicks().onEach { clearSearchInput() }.map { Event.Clear }
         val queries = docSearchInputField.afterTextChanges().map { Event.Query(it.toString()) }
-        return flowOf(cancel, clear, queries, next, previous).flattenMerge()
+        val action = docSearchInputField
+            .editorActionEvents { (it == EditorInfo.IME_ACTION_SEARCH) }
+            .onEach {
+                docSearchInputField.clearFocus()
+                docSearchInputField.hideKeyboard()
+            }
+            .map { Event.Search }
+
+        return flowOf(cancel, clear, queries, next, previous, action).flattenMerge()
     }
 
     fun clear() {
         clearSearchInput()
+    }
+
+    fun focus(context: Context) {
+        docSearchInputField.apply {
+            post {
+                requestFocus()
+                context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
+            }
+        }
     }
 
     private fun clearSearchInput() {
@@ -54,6 +76,7 @@ class SearchToolbarWidget : ConstraintLayout {
         object Clear : Event()
         object Cancel : Event()
         object Next : Event()
+        object Search : Event()
         object Previous : Event()
         data class Query(val query: String) : Event()
     }

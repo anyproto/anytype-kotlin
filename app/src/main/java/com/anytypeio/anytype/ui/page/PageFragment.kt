@@ -905,6 +905,7 @@ open class PageFragment :
         state.searchToolbar.apply {
             if (isVisible) {
                 searchToolbar.visible()
+                searchToolbar.focus(requireContext())
             } else {
                 searchToolbar.gone()
             }

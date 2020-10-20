@@ -4,6 +4,7 @@
 
 ### New features & enhancements 🚀
 
+* Search on page. Search through text blocks (except code block) on page (#990)
 * Images can be full screen when tapped, allowing users to zoom in (#968)
 * Disable animation for edit-mode in order to increase editor performance (#884)
 * Should close style toolbar (instead of closing document) when back button pressed (#973)

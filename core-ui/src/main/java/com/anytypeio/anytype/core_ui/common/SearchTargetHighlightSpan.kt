@@ -5,6 +5,6 @@ import android.text.style.BackgroundColorSpan
 
 class SearchTargetHighlightSpan(color: Int = COLOR) : BackgroundColorSpan(color) {
     companion object {
-        const val COLOR = Color.YELLOW
+        val COLOR = Color.parseColor("#33FFB522")
     }
 }

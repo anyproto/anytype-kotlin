@@ -1377,8 +1377,7 @@ class PageViewModel(
                 val update = views.nextSearchTarget()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
-                val target =
-                    update.find { view -> view is BlockView.Searchable && !view.target.isEmpty() }
+                val target = update.find { it is BlockView.Searchable && !it.target.isEmpty() }
                 val pos = update.indexOf(target)
                 searchResultScrollPosition.value = pos
             }
@@ -1386,8 +1385,7 @@ class PageViewModel(
                 val update = views.previousSearchTarget()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
-                val target =
-                    update.find { view -> view is BlockView.Searchable && !view.target.isEmpty() }
+                val target = update.find { it is BlockView.Searchable && !it.target.isEmpty() }
                 val pos = update.indexOf(target)
                 searchResultScrollPosition.value = pos
             }
@@ -1399,7 +1397,14 @@ class PageViewModel(
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.SearchToolbar.OnExitSearchMode)
                 dispatch(Command.ClearSearchInput)
             }
-            else -> _toasts.offer("not implemented")
+            is SearchToolbarWidget.Event.Search -> {
+                val update = views.nextSearchTarget()
+                viewModelScope.launch { orchestrator.stores.views.update(update) }
+                viewModelScope.launch { renderCommand.send(Unit) }
+                val target = update.find { it is BlockView.Searchable && !it.target.isEmpty() }
+                val pos = update.indexOf(target)
+                searchResultScrollPosition.value = pos
+            }
         }
     }
 

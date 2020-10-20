@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:text="@string/cancel"
+        android:text="@string/done"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -81,6 +81,7 @@
         android:singleLine="true"
         android:fontFamily="@font/inter_regular"
         android:hint="@string/your_search_query"
+        android:imeOptions="actionSearch"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="@+id/docSearchRectangle"
         app:layout_constraintEnd_toStartOf="@+id/docSearchClearIcon"

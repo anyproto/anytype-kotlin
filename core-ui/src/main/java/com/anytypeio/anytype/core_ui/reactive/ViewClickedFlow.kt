@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import androidx.annotation.CheckResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.SendChannel
@@ -52,6 +53,25 @@ fun EditText.afterTextChanges(): Flow<CharSequence> = callbackFlow<CharSequence>
     addTextChangedListener(listener)
     awaitClose { removeTextChangedListener(listener) }
 }.conflate()
+
+@CheckResult
+@OptIn(ExperimentalCoroutinesApi::class)
+fun TextView.editorActionEvents(
+    handled: (Int) -> Boolean
+): Flow<Int> = callbackFlow {
+    checkMainThread()
+    val listener = TextView.OnEditorActionListener { _, actionId, _ ->
+        if (handled(actionId)) {
+            safeOffer(actionId)
+            true
+        } else {
+            false
+        }
+    }
+    setOnEditorActionListener(listener)
+    awaitClose { setOnEditorActionListener(null) }
+}.conflate()
+
 
 @UseExperimental(ExperimentalCoroutinesApi::class)
 fun <E> SendChannel<E>.safeOffer(value: E): Boolean {

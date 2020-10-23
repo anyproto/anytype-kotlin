@@ -378,6 +378,33 @@ class MentionTextWatcherTest {
         )
     }
 
+    @Test
+    fun `should erase mention on start event`() {
+
+        val events: MutableList<MentionTextWatcher.MentionTextWatcherState> = mutableListOf()
+
+        val watcher = buildMentionWatcher { state -> events.add(state) }
+
+        watcher.onTextChanged("start @ end", 6, 0, 1)
+        watcher.onTextChanged("start @a end", 7, 0, 1)
+        watcher.onTextChanged("start @a  end", 8, 0, 1)
+        watcher.onTextChanged("start @a @ end", 9, 0, 1)
+        watcher.onTextChanged("start @a @b end", 10, 0, 1)
+
+        assertEquals(
+            expected = listOf(
+                MentionTextWatcher.MentionTextWatcherState.Start(start = 6),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@"),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@a"),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@a "),
+                MentionTextWatcher.MentionTextWatcherState.Start(start = 9),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@"),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@b")
+            ),
+            actual = events
+        )
+    }
+
     private fun buildMentionWatcher(
         onMentionEvent: (MentionTextWatcher.MentionTextWatcherState) -> Unit
     ): MentionTextWatcher {

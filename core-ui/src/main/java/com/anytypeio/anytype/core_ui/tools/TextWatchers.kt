@@ -78,6 +78,7 @@ class MentionTextWatcher(
         if (isMentionSuggestTriggered(text, start, count)) {
             Timber.d("interceptMentionStarted text:$text, start:$start")
             mentionCharPosition = start
+            mention = ""
             onMentionEvent(MentionTextWatcherState.Start(mentionCharPosition))
         }
 

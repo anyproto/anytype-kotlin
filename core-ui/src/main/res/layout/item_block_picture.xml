@@ -14,14 +14,11 @@
         app:cardCornerRadius="8dp">
 
         <ImageView
+            android:adjustViewBounds="true"
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/block_with_a_picture"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:contentDescription="@string/block_with_a_picture" />
 
         <TextView
             android:visibility="invisible"

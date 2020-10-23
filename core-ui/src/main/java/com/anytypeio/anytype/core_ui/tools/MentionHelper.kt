@@ -24,8 +24,8 @@ object MentionHelper {
         return false
     }
 
-    fun isMentionDeleted(start: Int, count: Int, after: Int, mentionPosition: Int): Boolean =
-        mentionPosition != NO_MENTION_POSITION && start <= mentionPosition && after < count
+    fun isMentionDeleted(start: Int, mentionPosition: Int): Boolean =
+        mentionPosition != NO_MENTION_POSITION && start <= mentionPosition
 
     /**
      * return subsequence from [startIndex] to end of sequence with limit [takeNumber]
@@ -40,5 +40,26 @@ object MentionHelper {
             s.subSequence(startIndex = startIndex, endIndex = pos).take(takeNumber)
         else
             s.subSequence(startIndex = startIndex, endIndex = s.length).take(takeNumber)
+    }
+
+    /**
+     * Replace char sequence range in [mention] with start index [replacementStart]
+     * by new [replacement] char sequence
+     * @property before See TextWatcher.onTextChanged property before
+     */
+    fun getUpdatedMention(
+        replacement: CharSequence,
+        replacementStart: Int,
+        before: Int,
+        mention: String
+    ): String = try {
+        val range = replacementStart until replacementStart + before
+        if (range.first > mention.length) {
+            mention
+        } else {
+            mention.replaceRange(range = range, replacement = replacement)
+        }
+    } catch (e: Exception) {
+        mention
     }
 }

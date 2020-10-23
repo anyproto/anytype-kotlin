@@ -176,14 +176,10 @@ class MentionHelperTest {
     fun `should be deleted mention char when start equal mentionPosition`() {
 
         val start = 12
-        val count = 10
-        val after = 0
         val mentionPosition = 12
 
         val result = MentionHelper.isMentionDeleted(
             start = start,
-            count = count,
-            after = after,
             mentionPosition = mentionPosition
         )
 
@@ -194,14 +190,10 @@ class MentionHelperTest {
     fun `should be deleted mention char when start smaller then mentionPosition`() {
 
         val start = 11
-        val count = 10
-        val after = 6
         val mentionPosition = 12
 
         val result = MentionHelper.isMentionDeleted(
             start = start,
-            count = count,
-            after = after,
             mentionPosition = mentionPosition
         )
 
@@ -212,14 +204,10 @@ class MentionHelperTest {
     fun `should not delete mention char when start bigger then mentionPosition`() {
 
         val start = 13
-        val count = 10
-        val after = 6
         val mentionPosition = 12
 
         val result = MentionHelper.isMentionDeleted(
             start = start,
-            count = count,
-            after = after,
             mentionPosition = mentionPosition
         )
 
@@ -230,14 +218,10 @@ class MentionHelperTest {
     fun `should not delete mention char when start bigger then mentionPosition and after 0`() {
 
         val start = 13
-        val count = 10
-        val after = 0
         val mentionPosition = 12
 
         val result = MentionHelper.isMentionDeleted(
             start = start,
-            count = count,
-            after = after,
             mentionPosition = mentionPosition
         )
 

@@ -83,7 +83,7 @@ class PageNavigationViewModel(
                 analytics = analytics,
                 eventName = EventsDictionary.SCREEN_DOCUMENT
             )
-            navigate(EventWrapper(AppNavigation.Command.ExitToDesktopAndOpenPage(pageId = pageId)))
+            navigate(EventWrapper(AppNavigation.Command.LaunchDocument(pageId)))
         }
     }
 

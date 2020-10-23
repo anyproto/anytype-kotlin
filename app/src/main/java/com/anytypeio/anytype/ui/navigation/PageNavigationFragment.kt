@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.minusAssign
 import androidx.core.view.plusAssign
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.navigation.FilterView
@@ -32,12 +33,7 @@ class PageNavigationFragment
 
     @Inject
     lateinit var factory: PageNavigationViewModelFactory
-
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(PageNavigationViewModel::class.java)
-    }
+    private val vm by viewModels<PageNavigationViewModel> { factory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

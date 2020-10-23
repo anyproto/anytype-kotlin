@@ -122,7 +122,6 @@ abstract class Text(
         )
         if (item is BlockView.Searchable) {
             applySearchHighlight(item)
-            applySearchTargetHighlight(item)
         }
     }
 

@@ -30,7 +30,7 @@ abstract class Media(view: View) : BlockViewHolder(view), BlockViewHolder.Indent
         }
     }
 
-    fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
+    open fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
         check(item is BlockView.Media) { "Expected a media, but was: $item" }
         payloads.forEach { payload ->
             if (payload.isSelectionChanged) {

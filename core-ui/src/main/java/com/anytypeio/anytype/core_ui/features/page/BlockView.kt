@@ -108,12 +108,22 @@ sealed class BlockView : ViewType, Parcelable {
 
     /**
      * Views implementing this interface are supposed to highlight search results.
-     * @property highlights search results that meet query.
-     * @property target currently selected search result
      */
     interface Searchable {
-        val highlights: List<IntRange>
-        val target: IntRange
+        val searchFields: List<Field>
+
+        data class Field(
+            val key: String = DEFAULT_SEARCH_FIELD_KEY,
+            val highlights: List<IntRange> = emptyList(),
+            val target: IntRange = IntRange.EMPTY
+        ) {
+
+            val isTargeted = !target.isEmpty()
+
+            companion object {
+                const val DEFAULT_SEARCH_FIELD_KEY = "default"
+            }
+        }
     }
 
     interface TextBlockProps :
@@ -165,8 +175,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val alignment: Alignment? = null,
             override val cursor: Int? = null,
-            override val highlights: @RawValue List<IntRange> = emptyList(),
-            override val target: @RawValue IntRange = IntRange.EMPTY
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
         ) : Text() {
             override fun getViewType() = HOLDER_PARAGRAPH
             override val body: String get() = text
@@ -194,8 +203,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override val cursor: Int? = null,
-                override val highlights: @RawValue List<IntRange> = emptyList(),
-                override val target: @RawValue IntRange = IntRange.EMPTY
+                override val searchFields: @RawValue List<Searchable.Field> = emptyList()
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_ONE
                 override val body: String get() = text
@@ -221,8 +229,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override val cursor: Int? = null,
-                override val highlights: @RawValue List<IntRange> = emptyList(),
-                override val target: @RawValue IntRange = IntRange.EMPTY
+                override val searchFields: @RawValue List<Searchable.Field> = emptyList()
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_TWO
                 override val body: String get() = text
@@ -248,8 +255,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override val cursor: Int? = null,
-                override val highlights: @RawValue List<IntRange> = emptyList(),
-                override val target: @RawValue IntRange = IntRange.EMPTY
+                override val searchFields: @RawValue List<Searchable.Field> = emptyList()
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_THREE
                 override val body: String get() = text
@@ -275,8 +281,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val highlights: @RawValue List<IntRange> = emptyList(),
-            override val target: @RawValue IntRange = IntRange.EMPTY
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
         ) : Text() {
             override fun getViewType() = HOLDER_HIGHLIGHT
             override val body: String get() = text
@@ -302,8 +307,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val highlights: @RawValue List<IntRange> = emptyList(),
-            override val target: @RawValue IntRange = IntRange.EMPTY
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
         ) : Text(), Checkable {
             override fun getViewType() = HOLDER_CHECKBOX
             override val body: String get() = text
@@ -329,8 +333,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val highlights: @RawValue List<IntRange> = emptyList(),
-            override val target: @RawValue IntRange = IntRange.EMPTY
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
         ) : Text() {
             override fun getViewType() = HOLDER_BULLET
             override val body: String get() = text
@@ -356,8 +359,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val highlights: @RawValue List<IntRange> = emptyList(),
-            override val target: @RawValue IntRange = IntRange.EMPTY,
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
             val number: Int
         ) : Text() {
             override fun getViewType() = HOLDER_NUMBERED
@@ -384,8 +386,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val highlights: @RawValue List<IntRange> = emptyList(),
-            override val target: @RawValue IntRange = IntRange.EMPTY,
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
             val toggled: Boolean = false,
             val isEmpty: Boolean = false
         ) : Text() {
@@ -413,8 +414,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
             override val cursor: Int? = null,
-            override val highlights: @RawValue List<IntRange> = emptyList(),
-            override val target: @RawValue IntRange = IntRange.EMPTY,
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
         ) : BlockView.Title(), Searchable {
             override fun getViewType() = HOLDER_TITLE
         }
@@ -433,8 +433,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
             override val cursor: Int? = null,
-            override val highlights: @RawValue List<IntRange> = emptyList(),
-            override val target: @RawValue IntRange = IntRange.EMPTY,
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
         ) : BlockView.Title(), Searchable {
             override fun getViewType() = HOLDER_PROFILE_TITLE
         }
@@ -666,15 +665,16 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class File(
             override val id: String,
-            override val indent: Int,
+            override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
             val size: Long?,
             val name: String?,
             val mime: String?,
             val hash: String?,
             val url: String
-        ) : Media() {
+        ) : Media(), Searchable {
             override fun getViewType() = HOLDER_FILE
         }
 
@@ -707,16 +707,23 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Bookmark(
             override val id: String,
-            override val indent: Int,
+            override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
             val url: String,
             val title: String?,
             val description: String?,
-            val faviconUrl: String?,
-            val imageUrl: String?
-        ) : Media() {
+            val faviconUrl: String? = null,
+            val imageUrl: String? = null,
+        ) : Media(), Searchable {
             override fun getViewType() = HOLDER_BOOKMARK
+
+            companion object {
+                const val SEARCH_FIELD_DESCRIPTION_KEY = "description"
+                const val SEARCH_FIELD_TITLE_KEY = "title"
+                const val SEARCH_FIELD_URL_KEY = "url"
+            }
         }
 
         /**
@@ -750,11 +757,12 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String,
         override val indent: Int,
         override val isSelected: Boolean = false,
+        override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
         var text: String? = null,
         val emoji: String?,
         val image: String?,
         val isEmpty: Boolean = false
-    ) : BlockView(), Indentable, Selectable {
+    ) : BlockView(), Indentable, Selectable, Searchable {
         override fun getViewType() = HOLDER_PAGE
     }
 
@@ -770,11 +778,12 @@ sealed class BlockView : ViewType, Parcelable {
         override val id: String,
         override val indent: Int,
         override val isSelected: Boolean = false,
+        override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
         var text: String? = null,
         val emoji: String?,
         val image: String?,
         val isEmpty: Boolean = false
-    ) : BlockView(), Indentable, Selectable {
+    ) : BlockView(), Indentable, Selectable, Searchable {
         override fun getViewType() = HOLDER_PAGE_ARCHIVE
     }
 

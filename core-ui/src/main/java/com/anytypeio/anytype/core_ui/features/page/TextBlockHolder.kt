@@ -114,26 +114,26 @@ interface TextBlockHolder : TextHolder {
 
     }
 
-    fun applySearchTargetHighlight(item: BlockView.Searchable) {
-        content.editableText.removeSpans<SearchTargetHighlightSpan>()
-        if (!item.target.isEmpty())
-            content.editableText.setSpan(
-                SearchTargetHighlightSpan(),
-                item.target.first,
-                item.target.last,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-    }
-
     fun applySearchHighlight(item: BlockView.Searchable) {
         content.editableText.removeSpans<SearchHighlightSpan>()
-        item.highlights.forEach { highlight ->
-            content.editableText.setSpan(
-                SearchHighlightSpan(),
-                highlight.first,
-                highlight.last,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+        content.editableText.removeSpans<SearchTargetHighlightSpan>()
+        item.searchFields.forEach { field ->
+            field.highlights.forEach { highlight ->
+                content.editableText.setSpan(
+                    SearchHighlightSpan(),
+                    highlight.first,
+                    highlight.last,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+            if (field.isTargeted) {
+                content.editableText.setSpan(
+                    SearchTargetHighlightSpan(),
+                    field.target.first,
+                    field.target.last,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
         }
     }
 
@@ -223,10 +223,6 @@ interface TextBlockHolder : TextHolder {
 
         if (payload.isSearchHighlightChanged) {
             applySearchHighlight(item)
-        }
-
-        if (payload.isSearchTargetHighlightChanged) {
-            applySearchTargetHighlight(item)
         }
 
         if (payload.textColorChanged()) {

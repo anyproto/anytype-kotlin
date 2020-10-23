@@ -1,5 +1,10 @@
 package com.anytypeio.anytype.core_ui.features.page
 
+import com.anytypeio.anytype.core_ui.features.page.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
+import com.anytypeio.anytype.core_ui.features.page.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
+import com.anytypeio.anytype.core_ui.features.page.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_URL_KEY
+import com.anytypeio.anytype.core_ui.features.page.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
+
 fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
     when (view) {
         is BlockView.Text.Paragraph -> view.copy(mode = BlockView.Mode.READ)
@@ -70,149 +75,218 @@ fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
 
 fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
     when (view) {
-        is BlockView.Text.Paragraph -> view.copy(highlights = emptyList(), target = IntRange.EMPTY)
-        is BlockView.Text.Numbered -> view.copy(highlights = emptyList(), target = IntRange.EMPTY)
-        is BlockView.Text.Bulleted -> view.copy(highlights = emptyList(), target = IntRange.EMPTY)
-        is BlockView.Text.Checkbox -> view.copy(highlights = emptyList(), target = IntRange.EMPTY)
-        is BlockView.Text.Toggle -> view.copy(highlights = emptyList(), target = IntRange.EMPTY)
-        is BlockView.Text.Header.One -> view.copy(highlights = emptyList(), target = IntRange.EMPTY)
-        is BlockView.Text.Header.Two -> view.copy(highlights = emptyList(), target = IntRange.EMPTY)
-        is BlockView.Text.Header.Three -> view.copy(
-            highlights = emptyList(),
-            target = IntRange.EMPTY
-        )
-        is BlockView.Text.Highlight -> view.copy(highlights = emptyList(), target = IntRange.EMPTY)
-        is BlockView.Title.Document -> view.copy(highlights = emptyList(), target = IntRange.EMPTY)
-        is BlockView.Title.Profile -> view.copy(highlights = emptyList(), target = IntRange.EMPTY)
+        is BlockView.Text.Paragraph -> view.copy(searchFields = emptyList())
+        is BlockView.Text.Numbered -> view.copy(searchFields = emptyList())
+        is BlockView.Text.Bulleted -> view.copy(searchFields = emptyList())
+        is BlockView.Text.Checkbox -> view.copy(searchFields = emptyList())
+        is BlockView.Text.Toggle -> view.copy(searchFields = emptyList())
+        is BlockView.Text.Header.One -> view.copy(searchFields = emptyList())
+        is BlockView.Text.Header.Two -> view.copy(searchFields = emptyList())
+        is BlockView.Text.Header.Three -> view.copy(searchFields = emptyList())
+        is BlockView.Text.Highlight -> view.copy(searchFields = emptyList())
+        is BlockView.Title.Document -> view.copy(searchFields = emptyList())
+        is BlockView.Title.Profile -> view.copy(searchFields = emptyList())
+        is BlockView.Media.Bookmark -> view.copy(searchFields = emptyList())
+        is BlockView.Media.File -> view.copy(searchFields = emptyList())
+        is BlockView.Page -> view.copy(searchFields = emptyList())
+        is BlockView.PageArchive -> view.copy(searchFields = emptyList())
         else -> view.also { check(view !is BlockView.Searchable) }
     }
 }
 
-fun List<BlockView>.highlight(highlighter: (String) -> List<IntRange>) = map { view ->
+fun List<BlockView>.highlight(
+    highlighter: (List<Pair<String, String>>) -> List<BlockView.Searchable.Field>
+) = map { view ->
     when (view) {
         is BlockView.Text.Paragraph -> {
-            view.copy(highlights = highlighter(view.text))
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
+            view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Text.Numbered -> {
-            view.copy(highlights = highlighter(view.text))
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
+            view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Text.Bulleted -> {
-            view.copy(highlights = highlighter(view.text))
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
+            view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Text.Checkbox -> {
-            view.copy(highlights = highlighter(view.text))
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
+            view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Text.Toggle -> {
-            view.copy(highlights = highlighter(view.text))
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
+            view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Text.Header.One -> {
-            view.copy(highlights = highlighter(view.text))
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
+            view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Text.Header.Two -> {
-            view.copy(highlights = highlighter(view.text))
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
+            view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Text.Header.Three -> {
-            view.copy(highlights = highlighter(view.text))
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
+            view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Text.Highlight -> {
-            view.copy(highlights = highlighter(view.text))
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
+            view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Title.Document -> {
-            view.copy(highlights = highlighter(view.text ?: ""))
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Title.Profile -> {
-            view.copy(highlights = highlighter(view.text ?: ""))
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.Media.Bookmark -> {
+            val fields = listOf(
+                SEARCH_FIELD_DESCRIPTION_KEY to view.description.orEmpty(),
+                SEARCH_FIELD_TITLE_KEY to view.title.orEmpty(),
+                SEARCH_FIELD_URL_KEY to view.url
+            )
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.Media.File -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.name.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.Page -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.PageArchive -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
         }
         else -> view.also { check(view !is BlockView.Searchable) }
     }
+}
+
+fun BlockView.setHighlight(
+    highlights: List<BlockView.Searchable.Field>
+): BlockView = when (this) {
+    is BlockView.Text.Paragraph -> copy(searchFields = highlights)
+    is BlockView.Text.Numbered -> copy(searchFields = highlights)
+    is BlockView.Text.Bulleted -> copy(searchFields = highlights)
+    is BlockView.Text.Checkbox -> copy(searchFields = highlights)
+    is BlockView.Text.Toggle -> copy(searchFields = highlights)
+    is BlockView.Text.Header.One -> copy(searchFields = highlights)
+    is BlockView.Text.Header.Two -> copy(searchFields = highlights)
+    is BlockView.Text.Header.Three -> copy(searchFields = highlights)
+    is BlockView.Text.Highlight -> copy(searchFields = highlights)
+    is BlockView.Title.Document -> copy(searchFields = highlights)
+    is BlockView.Title.Profile -> copy(searchFields = highlights)
+    is BlockView.Media.Bookmark -> copy(searchFields = highlights)
+    is BlockView.Media.File -> copy(searchFields = highlights)
+    is BlockView.Page -> copy(searchFields = highlights)
+    is BlockView.PageArchive -> copy(searchFields = highlights)
+    else -> this.also { check(this !is BlockView.Searchable) }
 }
 
 fun List<BlockView>.nextSearchTarget(): List<BlockView> {
-    val currentSearchTargetView = find { view ->
-        view is BlockView.Searchable && !view.target.isEmpty()
+    val currentTargetView = find { view ->
+        view is BlockView.Searchable && view.searchFields.any { it.isTargeted }
     }
-    if (currentSearchTargetView == null) {
-        val nextTargetCandidate = find { view ->
-            view is BlockView.Searchable && view.highlights.isNotEmpty()
+    if (currentTargetView == null) {
+        val nextCandidate = find { view ->
+            view is BlockView.Searchable && view.searchFields.any { it.highlights.isNotEmpty() }
         }
-        if (nextTargetCandidate == null) {
+        if (nextCandidate == null) {
             return this
         } else {
-            check(nextTargetCandidate is BlockView.Searchable)
-            val nextSearchTargetRange = nextTargetCandidate.highlights.first()
+            check(nextCandidate is BlockView.Searchable)
+            val nextFieldCandidateIndex = nextCandidate.searchFields.indexOfFirst { field ->
+                field.highlights.isNotEmpty()
+            }
+            val highlights = nextCandidate.searchFields.mapIndexed { index, field ->
+                if (index == nextFieldCandidateIndex) {
+                    field.copy(target = field.highlights.first())
+                } else {
+                    field
+                }
+            }
             return map { view ->
-                if (view.id == nextTargetCandidate.id) {
-                    when (view) {
-                        is BlockView.Text.Paragraph -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Numbered -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Bulleted -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Checkbox -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Toggle -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Header.One -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Header.Two -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Header.Three -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Highlight -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Title.Document -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Title.Profile -> view.copy(target = nextSearchTargetRange)
-                        else -> view.also { check(view !is BlockView.Searchable) }
-                    }
+                if (view.id == nextCandidate.id) {
+                    view.setHighlight(highlights)
                 } else {
                     view
                 }
             }
         }
     } else {
-        check(currentSearchTargetView is BlockView.Searchable)
-        val index = currentSearchTargetView.highlights.indexOf(currentSearchTargetView.target)
-        if (index < currentSearchTargetView.highlights.size - 1) {
-            val nextSearchTargetRange = currentSearchTargetView.highlights[index.inc()]
+        check(currentTargetView is BlockView.Searchable)
+        val currentField = currentTargetView.searchFields.first { it.isTargeted }
+        val currentHighlightIndex = currentField.highlights.indexOf(currentField.target)
+        if (currentHighlightIndex < currentField.highlights.size.dec()) {
+            val highlights = currentTargetView.searchFields.map { field ->
+                if (field.key == currentField.key) {
+                    field.copy(target = currentField.highlights[currentHighlightIndex.inc()])
+                } else {
+                    field
+                }
+            }
             return map { view ->
-                if (view.id == currentSearchTargetView.id) {
-                    when (view) {
-                        is BlockView.Text.Paragraph -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Numbered -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Bulleted -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Checkbox -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Toggle -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Header.One -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Header.Two -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Header.Three -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Text.Highlight -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Title.Document -> view.copy(target = nextSearchTargetRange)
-                        is BlockView.Title.Profile -> view.copy(target = nextSearchTargetRange)
-                        else -> view.also { check(view !is BlockView.Searchable) }
-                    }
+                if (view.id == currentTargetView.id) {
+                    view.setHighlight(highlights)
                 } else {
                     view
                 }
             }
         } else {
-            val nextViews = subList(indexOf(currentSearchTargetView).inc(), size)
-            val nextTargetCandidate = nextViews.find { view ->
-                view is BlockView.Searchable && view.highlights.isNotEmpty()
-            }
-            if (nextTargetCandidate == null) {
-                return this
-            } else {
-                check(nextTargetCandidate is BlockView.Searchable)
+            val currentTargetFieldIndex = currentTargetView.searchFields.indexOf(currentField)
+            val nextFields = currentTargetView.searchFields.subList(
+                currentTargetFieldIndex.inc(),
+                currentTargetView.searchFields.size
+            )
+            val nextFieldTargetCandidate = nextFields.find { it.highlights.isNotEmpty() }
+            if (nextFieldTargetCandidate != null) {
+                val highlights = currentTargetView.searchFields.map { field ->
+                    when (field.key) {
+                        currentField.key -> field.copy(target = IntRange.EMPTY)
+                        nextFieldTargetCandidate.key -> {
+                            field.copy(target = nextFieldTargetCandidate.highlights.first())
+                        }
+                        else -> field
+                    }
+                }
                 return map { view ->
-                    val range: IntRange = if (view.id == nextTargetCandidate.id)
-                        nextTargetCandidate.highlights.first()
-                    else
-                        IntRange.EMPTY
-                    when (view) {
-                        is BlockView.Text.Paragraph -> view.copy(target = range)
-                        is BlockView.Text.Numbered -> view.copy(target = range)
-                        is BlockView.Text.Bulleted -> view.copy(target = range)
-                        is BlockView.Text.Checkbox -> view.copy(target = range)
-                        is BlockView.Text.Toggle -> view.copy(target = range)
-                        is BlockView.Text.Header.One -> view.copy(target = range)
-                        is BlockView.Text.Header.Two -> view.copy(target = range)
-                        is BlockView.Text.Header.Three -> view.copy(target = range)
-                        is BlockView.Text.Highlight -> view.copy(target = range)
-                        is BlockView.Title.Document -> view.copy(target = range)
-                        is BlockView.Title.Profile -> view.copy(target = range)
-                        else -> view.also { check(view !is BlockView.Searchable) }
+                    if (view.id == currentTargetView.id) {
+                        view.setHighlight(highlights)
+                    } else {
+                        view
+                    }
+                }
+            } else {
+                val nextViews = subList(indexOf(currentTargetView).inc(), size)
+                val nextCandidate = nextViews.find { view ->
+                    view is BlockView.Searchable && view.searchFields.any { it.highlights.isNotEmpty() }
+                }
+                if (nextCandidate == null) {
+                    return this
+                } else {
+                    check(nextCandidate is BlockView.Searchable)
+                    return map { view ->
+                        when (view.id) {
+                            nextCandidate.id -> view.setHighlight(
+                                nextCandidate.searchFields.mapIndexed { index, field ->
+                                    if (index == 0) {
+                                        field.copy(target = field.highlights.first())
+                                    } else {
+                                        field
+                                    }
+                                }
+                            )
+                            currentTargetView.id -> view.setHighlight(
+                                currentTargetView.searchFields.map { field ->
+                                    field.copy(target = IntRange.EMPTY)
+                                }
+                            )
+                            else -> view
+                        }
                     }
                 }
             }
@@ -221,63 +295,82 @@ fun List<BlockView>.nextSearchTarget(): List<BlockView> {
 }
 
 fun List<BlockView>.previousSearchTarget(): List<BlockView> {
-    val currentSearchTargetView = find { view ->
-        view is BlockView.Searchable && !view.target.isEmpty()
+    val currentTargetView = find { view ->
+        view is BlockView.Searchable && view.searchFields.any { it.isTargeted }
     }
-    if (currentSearchTargetView == null) {
+    if (currentTargetView == null) {
         return this
     } else {
-        check(currentSearchTargetView is BlockView.Searchable)
-        val index = currentSearchTargetView.highlights.indexOf(currentSearchTargetView.target)
-        if (index > 0) {
-            val previousSearchTargetRange = currentSearchTargetView.highlights[index.dec()]
+        check(currentTargetView is BlockView.Searchable)
+        val currentField = currentTargetView.searchFields.first { it.isTargeted }
+        val currentHighlightIndex = currentField.highlights.indexOf(currentField.target)
+        if (currentHighlightIndex > 0) {
+            val highlights = currentTargetView.searchFields.map { field ->
+                if (field.key == currentField.key) {
+                    field.copy(target = currentField.highlights[currentHighlightIndex.dec()])
+                } else {
+                    field
+                }
+            }
             return map { view ->
-                if (view.id == currentSearchTargetView.id) {
-                    when (view) {
-                        is BlockView.Text.Paragraph -> view.copy(target = previousSearchTargetRange)
-                        is BlockView.Text.Numbered -> view.copy(target = previousSearchTargetRange)
-                        is BlockView.Text.Bulleted -> view.copy(target = previousSearchTargetRange)
-                        is BlockView.Text.Checkbox -> view.copy(target = previousSearchTargetRange)
-                        is BlockView.Text.Toggle -> view.copy(target = previousSearchTargetRange)
-                        is BlockView.Text.Header.One -> view.copy(target = previousSearchTargetRange)
-                        is BlockView.Text.Header.Two -> view.copy(target = previousSearchTargetRange)
-                        is BlockView.Text.Header.Three -> view.copy(target = previousSearchTargetRange)
-                        is BlockView.Text.Highlight -> view.copy(target = previousSearchTargetRange)
-                        is BlockView.Title.Document -> view.copy(target = previousSearchTargetRange)
-                        is BlockView.Title.Profile -> view.copy(target = previousSearchTargetRange)
-                        else -> view.also { check(view !is BlockView.Searchable) }
-                    }
+                if (view.id == currentTargetView.id) {
+                    view.setHighlight(highlights)
                 } else {
                     view
                 }
             }
         } else {
-            val previousViews = subList(0, indexOf(currentSearchTargetView))
-            val previousTargetCandidate = previousViews.findLast { view ->
-                view is BlockView.Searchable && view.highlights.isNotEmpty()
-            }
-            if (previousTargetCandidate == null) {
-                return this
-            } else {
-                check(previousTargetCandidate is BlockView.Searchable)
+            val currentTargetFieldIndex = currentTargetView.searchFields.indexOf(currentField)
+            val previousFields = currentTargetView.searchFields.subList(
+                0,
+                currentTargetFieldIndex
+            )
+            val previousFieldTargetCandidate =
+                previousFields.findLast { it.highlights.isNotEmpty() }
+            if (previousFieldTargetCandidate != null) {
+                val highlights = currentTargetView.searchFields.map { field ->
+                    when (field.key) {
+                        currentField.key -> field.copy(target = IntRange.EMPTY)
+                        previousFieldTargetCandidate.key -> {
+                            field.copy(target = previousFieldTargetCandidate.highlights.last())
+                        }
+                        else -> field
+                    }
+                }
                 return map { view ->
-                    val range: IntRange = if (view.id == previousTargetCandidate.id)
-                        previousTargetCandidate.highlights.last()
-                    else
-                        IntRange.EMPTY
-                    when (view) {
-                        is BlockView.Text.Paragraph -> view.copy(target = range)
-                        is BlockView.Text.Numbered -> view.copy(target = range)
-                        is BlockView.Text.Bulleted -> view.copy(target = range)
-                        is BlockView.Text.Checkbox -> view.copy(target = range)
-                        is BlockView.Text.Toggle -> view.copy(target = range)
-                        is BlockView.Text.Header.One -> view.copy(target = range)
-                        is BlockView.Text.Header.Two -> view.copy(target = range)
-                        is BlockView.Text.Header.Three -> view.copy(target = range)
-                        is BlockView.Text.Highlight -> view.copy(target = range)
-                        is BlockView.Title.Document -> view.copy(target = range)
-                        is BlockView.Title.Profile -> view.copy(target = range)
-                        else -> view.also { check(view !is BlockView.Searchable) }
+                    if (view.id == currentTargetView.id) {
+                        view.setHighlight(highlights)
+                    } else {
+                        view
+                    }
+                }
+            } else {
+                val previousViews = subList(0, indexOf(currentTargetView))
+                val previousCandidate = previousViews.findLast { view ->
+                    view is BlockView.Searchable && view.searchFields.any { it.highlights.isNotEmpty() }
+                }
+                if (previousCandidate == null) {
+                    return this
+                } else {
+                    check(previousCandidate is BlockView.Searchable)
+                    return map { view ->
+                        when (view.id) {
+                            previousCandidate.id -> view.setHighlight(
+                                previousCandidate.searchFields.mapIndexed { index, field ->
+                                    if (index == previousCandidate.searchFields.size.dec()) {
+                                        field.copy(target = field.highlights.last())
+                                    } else {
+                                        field
+                                    }
+                                }
+                            )
+                            currentTargetView.id -> view.setHighlight(
+                                currentTargetView.searchFields.map { field ->
+                                    field.copy(target = IntRange.EMPTY)
+                                }
+                            )
+                            else -> view
+                        }
                     }
                 }
             }

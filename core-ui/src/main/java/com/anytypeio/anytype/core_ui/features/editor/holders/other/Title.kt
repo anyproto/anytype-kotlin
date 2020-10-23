@@ -68,25 +68,25 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     fun applySearchHighlights(item: BlockView.Searchable) {
         content.editableText.removeSpans<SearchHighlightSpan>()
-        item.highlights.forEach { highlight ->
-            content.editableText.setSpan(
-                SearchHighlightSpan(),
-                highlight.first,
-                highlight.last,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-    }
-
-    fun applySearchTargetHighlight(item: BlockView.Searchable) {
         content.editableText.removeSpans<SearchTargetHighlightSpan>()
-        if (!item.target.isEmpty())
-            content.editableText.setSpan(
-                SearchTargetHighlightSpan(),
-                item.target.first,
-                item.target.last,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+        item.searchFields.forEach { field ->
+            field.highlights.forEach { highlight ->
+                content.editableText.setSpan(
+                    SearchHighlightSpan(),
+                    highlight.first,
+                    highlight.last,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+            if (field.isTargeted) {
+                content.editableText.setSpan(
+                    SearchTargetHighlightSpan(),
+                    field.target.first,
+                    field.target.last,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+        }
     }
 
     open fun setImage(item: BlockView.Title) {
@@ -176,7 +176,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             )
             setEmoji(item)
             applySearchHighlights(item)
-            applySearchTargetHighlight(item)
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onPageIconClicked() }
             }
@@ -195,9 +194,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     }
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)
-                    }
-                    if (payload.isSearchTargetHighlightChanged) {
-                        applySearchTargetHighlight(item)
                     }
                 }
             }
@@ -283,7 +279,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 },
             )
             applySearchHighlights(item)
-            applySearchTargetHighlight(item)
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onProfileIconClicked() }
             }
@@ -327,9 +322,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     }
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)
-                    }
-                    if (payload.isSearchTargetHighlightChanged) {
-                        applySearchTargetHighlight(item)
                     }
                 }
             }

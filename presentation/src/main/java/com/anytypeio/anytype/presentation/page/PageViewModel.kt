@@ -1369,7 +1369,14 @@ class PageViewModel(
                     val flags = Pattern.MULTILINE or Pattern.CASE_INSENSITIVE
                     val escaped = Pattern.quote(query)
                     val pattern = Pattern.compile(escaped, flags)
-                    views.highlight { txt -> txt.search(pattern) }
+                    views.highlight { pairs ->
+                        pairs.map { (key, txt) ->
+                            BlockView.Searchable.Field(
+                                key = key,
+                                highlights = txt.search(pattern)
+                            )
+                        }
+                    }
                 }
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
@@ -1378,7 +1385,9 @@ class PageViewModel(
                 val update = views.nextSearchTarget()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
-                val target = update.find { it is BlockView.Searchable && !it.target.isEmpty() }
+                val target = update.find { view ->
+                    view is BlockView.Searchable && view.searchFields.any { it.isTargeted }
+                }
                 val pos = update.indexOf(target)
                 searchResultScrollPosition.value = pos
             }
@@ -1386,7 +1395,9 @@ class PageViewModel(
                 val update = views.previousSearchTarget()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
-                val target = update.find { it is BlockView.Searchable && !it.target.isEmpty() }
+                val target = update.find { view ->
+                    view is BlockView.Searchable && view.searchFields.any { it.isTargeted }
+                }
                 val pos = update.indexOf(target)
                 searchResultScrollPosition.value = pos
             }
@@ -1402,7 +1413,9 @@ class PageViewModel(
                 val update = views.nextSearchTarget()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
-                val target = update.find { it is BlockView.Searchable && !it.target.isEmpty() }
+                val target = update.find { view ->
+                    view is BlockView.Searchable && view.searchFields.any { it.isTargeted }
+                }
                 val pos = update.indexOf(target)
                 searchResultScrollPosition.value = pos
             }

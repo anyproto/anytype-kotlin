@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.domain.block.model.Position
+import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import com.anytypeio.anytype.ui.archive.ArchiveFragment
@@ -168,10 +169,11 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.linkToFragment, bundle)
     }
 
-    override fun openMoveTo(targets: List<String>, context: String) {
+    override fun openMoveTo(targets: List<String>, context: String, excluded: List<Id>) {
         val bundle = bundleOf(
             MoveToFragment.CONTEXT_ID_KEY to context,
-            MoveToFragment.TARGETS_ID_KEY to ArrayList(targets)
+            MoveToFragment.TARGETS_ID_KEY to ArrayList(targets),
+            MoveToFragment.EXCLUDED_ID_KEY to ArrayList(excluded)
         )
         navController?.navigate(R.id.moveToFragment, bundle)
     }

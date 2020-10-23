@@ -60,7 +60,8 @@ abstract class NavigationFragment(
             )
             is Command.OpenMoveToScreen -> navigation.openMoveTo(
                 targets = command.targets,
-                context = command.context
+                context = command.context,
+                excluded = command.excluded
             )
             is Command.ExitToDesktopAndOpenPage -> navigation.exitToDesktopAndOpenPage(command.pageId)
             is Command.OpenPageSearch -> navigation.openPageSearch()

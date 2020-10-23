@@ -1233,11 +1233,23 @@ class PageViewModel(
                     analytics = analytics,
                     eventName = EventsDictionary.SCREEN_MOVE_TO
                 )
+
+                val excluded = mutableListOf<Id>()
+
+                val target = blocks.find { it.id == id }
+
+                if (target != null) {
+                    (target.content as? Content.Link)?.let { content ->
+                        excluded.add(content.target)
+                    }
+                }
+
                 navigate(
                     EventWrapper(
                         AppNavigation.Command.OpenMoveToScreen(
                             context = context,
-                            targets = listOf(id)
+                            targets = listOf(id),
+                            excluded = excluded
                         )
                     )
                 )

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.navigation
 
 import com.anytypeio.anytype.domain.block.model.Position
+import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 
 interface AppNavigation {
@@ -37,7 +38,7 @@ interface AppNavigation {
     fun exitToDesktop()
     fun openDebugSettings()
     fun openPageNavigation(target: String)
-    fun openMoveTo(targets: List<String>, context: String)
+    fun openMoveTo(targets: List<String>, context: String, excluded: List<Id>)
     fun openLinkTo(target: String, context: String, replace: Boolean, position: Position)
     fun openPageSearch()
     fun exitToDesktopAndOpenPage(pageId: String)
@@ -88,9 +89,15 @@ interface AppNavigation {
             val position: Position
         ) : Command()
 
+        /**
+         * @property context operation's context (document id)
+         * @property [targets] list of ids of blocks to move
+         * @property [excluded] list of ids of documents, into which [targets] can't be moved
+         */
         data class OpenMoveToScreen(
             val context: String,
-            val targets: List<String>
+            val targets: List<String>,
+            val excluded: List<Id>
         ) : Command()
 
         data class ExitToDesktopAndOpenPage(val pageId: String) : Command()

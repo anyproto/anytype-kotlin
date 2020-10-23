@@ -85,9 +85,10 @@ class MoveToViewModel(
 
     fun onLinkClicked(
         target: Id,
-        context: Id
+        context: Id,
+        excluded: List<Id>
     ) {
-        isMovingDisabled.value = (target == context || target == home)
+        isMovingDisabled.value = (target == context || target == home || excluded.contains(target))
         proceedWithGettingDocumentLinks(target)
     }
 

@@ -36,6 +36,10 @@ class MoveToFragment : ViewStateFragment<ViewState<PageNavigationView>>(R.layout
         get() = arguments?.getStringArrayList(TARGETS_ID_KEY)
             ?: throw IllegalStateException("Missing target")
 
+    private val excluded: List<String>
+        get() = arguments?.getStringArrayList(EXCLUDED_ID_KEY)
+            ?: throw IllegalStateException("Missing target")
+
     private val targetContext: String
         get() = arguments?.getString(CONTEXT_ID_KEY)
             ?: throw IllegalStateException("Missing target")
@@ -93,14 +97,14 @@ class MoveToFragment : ViewStateFragment<ViewState<PageNavigationView>>(R.layout
                     }
                 )
                 viewPager.adapter = PageNavigationAdapter(
-                    onClick = { vm.onLinkClicked(it, targetContext) }
+                    onClick = { vm.onLinkClicked(it, targetContext, excluded) }
                 ) { links ->
                     filterContainer.plusAssign(
                         FilterView(requireContext()).apply {
                             cancelClicked = { closeFilterView() }
                             pageClicked = {
                                 closeFilterView()
-                                vm.onLinkClicked(it, targetContext)
+                                vm.onLinkClicked(it, targetContext, excluded)
                             }
                             bind(links)
                         }
@@ -207,8 +211,9 @@ class MoveToFragment : ViewStateFragment<ViewState<PageNavigationView>>(R.layout
     }
 
     companion object {
-        const val TARGETS_ID_KEY = "arg.link_to.targets"
-        const val CONTEXT_ID_KEY = "arg.link_to.context"
+        const val TARGETS_ID_KEY = "arg.move_to.targets"
+        const val CONTEXT_ID_KEY = "arg.move_to.context"
+        const val EXCLUDED_ID_KEY = "arg.move_to.excluded"
         const val POSITION_FROM = 0
         const val POSITION_TO = 1
     }

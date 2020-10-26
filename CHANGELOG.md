@@ -9,6 +9,7 @@
 ### Fixes & tech 🚒
 
 * Fix soft input visibility/focusing issues on Android 7.1 (#1029)
+* Keyboard won't show up in code snippet (#1024)
 
 ## Version 0.1.1
 

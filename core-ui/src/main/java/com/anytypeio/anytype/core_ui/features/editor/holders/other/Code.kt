@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
+import android.os.Build
+import android.os.Build.VERSION_CODES.N
+import android.os.Build.VERSION_CODES.N_MR1
 import android.text.Editable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -69,11 +72,18 @@ class Code(view: View) : BlockViewHolder(view) {
             content.setOnFocusChangeListener { _, focused ->
                 item.isFocused = focused
                 onFocusChanged(item.id, focused)
+                if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
+                    if (focused) {
+                        imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)
+                    }
+                }
             }
             content.selectionWatcher = { onSelectionChanged(item.id, it) }
         }
 
-        content.setOnClickListener { onTextInputClicked(item.id) }
+        content.setOnClickListener {
+            onTextInputClicked(item.id)
+        }
     }
 
     fun indentize(item: BlockView.Indentable) {

@@ -269,11 +269,14 @@ fun List<BlockView>.nextSearchTarget(): List<BlockView> {
                     return this
                 } else {
                     check(nextCandidate is BlockView.Searchable)
+                    val nextFieldCandidateIndex = nextCandidate.searchFields.indexOfFirst { field ->
+                        field.highlights.isNotEmpty()
+                    }
                     return map { view ->
                         when (view.id) {
                             nextCandidate.id -> view.setHighlight(
                                 nextCandidate.searchFields.mapIndexed { index, field ->
-                                    if (index == 0) {
+                                    if (index == nextFieldCandidateIndex) {
                                         field.copy(target = field.highlights.first())
                                     } else {
                                         field

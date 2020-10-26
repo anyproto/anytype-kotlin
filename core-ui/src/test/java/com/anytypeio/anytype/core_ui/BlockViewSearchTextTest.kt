@@ -937,6 +937,81 @@ class BlockViewSearchTextTest {
     }
 
     @Test
+    fun `should find search result in the first highlight of the second field of the first next view having highlights`() {
+
+        val field1 = BlockView.Searchable.Field(
+            key = MockDataFactory.randomUuid(),
+            highlights = listOf(1..2, 3..4),
+            target = IntRange.EMPTY
+        )
+
+        val field2 = BlockView.Searchable.Field(
+            key = MockDataFactory.randomUuid(),
+            highlights = listOf(3..4, 5..6),
+            target = 5..6
+        )
+
+        val p1Field = BlockView.Searchable.Field(
+            highlights = listOf(),
+            target = IntRange.EMPTY
+        )
+
+        val p2Field1 = BlockView.Searchable.Field(
+            highlights = emptyList(),
+            target = IntRange.EMPTY
+        )
+
+        val p2Field2 = BlockView.Searchable.Field(
+            highlights = listOf(3..4, 5..6),
+            target = IntRange.EMPTY
+        )
+
+        val bookmark = BlockView.Media.Bookmark(
+            id = MockDataFactory.randomUuid(),
+            title = MockDataFactory.randomString(),
+            description = MockDataFactory.randomString(),
+            searchFields = listOf(field1, field2),
+            url = MockDataFactory.randomString()
+        )
+
+        val p1 = BlockView.Text.Paragraph(
+            id = MockDataFactory.randomUuid(),
+            text = MockDataFactory.randomString(),
+            searchFields = listOf(p1Field)
+        )
+
+        val p2 = BlockView.Text.Paragraph(
+            id = MockDataFactory.randomUuid(),
+            text = MockDataFactory.randomString(),
+            searchFields = listOf(p2Field1, p2Field2)
+        )
+
+        val views = listOf(bookmark, p1, p2)
+
+        val expected = listOf(
+            bookmark.copy(
+                searchFields = listOf(
+                    field1,
+                    field2.copy(target = IntRange.EMPTY)
+                )
+            ),
+            p1,
+            p2.copy(
+                searchFields = listOf(
+                    p2Field1,
+                    p2Field2.copy(
+                        target = 3..4
+                    )
+                )
+            )
+        )
+
+        val actual = views.nextSearchTarget()
+
+        assertEquals(expected = expected, actual = actual)
+    }
+
+    @Test
     fun `should find first result in the first highlight of the second field of the view following paragraph without highlights`() {
 
         val pField = BlockView.Searchable.Field(

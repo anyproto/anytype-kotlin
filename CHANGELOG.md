@@ -5,6 +5,7 @@
 ### New features & enhancements 🚀
 
 * Inherit style properties from the previous list item when creating a new list item on enter press (#1017)
+* Enabled search-on-page for profile document (#1027)
 
 ### Fixes & tech 🚒
 

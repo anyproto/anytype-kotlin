@@ -58,6 +58,7 @@ dependencies {
     implementation applicationDependencies.timber
     implementation applicationDependencies.betterLinkMovement
     implementation applicationDependencies.exoPlayer
+    implementation applicationDependencies.urlcleaner
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

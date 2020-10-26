@@ -1,10 +1,19 @@
 package com.anytypeio.anytype.core_ui.common
 
-import android.graphics.Color
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.graphics.Typeface
+import android.net.Uri
+import android.provider.Browser
 import android.text.Annotation
 import android.text.TextPaint
 import android.text.style.*
+import android.view.View
+import com.anytypeio.anytype.core_utils.ext.timber
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.shekhargulati.urlcleaner.UrlCleaner
+import timber.log.Timber
 
 interface Span {
     class Bold : StyleSpan(Typeface.BOLD), Span
@@ -16,6 +25,34 @@ interface Span {
         override fun updateDrawState(ds: TextPaint) {
             super.updateDrawState(ds)
             ds.color = color
+        }
+
+        override fun onClick(widget: View) {
+            val intent = createIntent(widget.context, url)
+            try {
+                widget.context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                e.timber()
+                normalizeUrl(widget.context, url)
+            }
+        }
+
+        private fun normalizeUrl(context: Context, url: String) {
+            val normilizedUrl = UrlCleaner.normalizeUrl(url)
+            val intent = createIntent(context, normilizedUrl)
+            try {
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                e.timber()
+                context.toast("Could't open url:$normilizedUrl")
+            }
+        }
+
+        private fun createIntent(context: Context, url: String): Intent {
+            val uri = Uri.parse(url)
+            return Intent(Intent.ACTION_VIEW, uri).apply {
+                putExtra(Browser.EXTRA_APPLICATION_ID, context.packageName)
+            }
         }
     }
     class Font(family: String) : TypefaceSpan(family), Span

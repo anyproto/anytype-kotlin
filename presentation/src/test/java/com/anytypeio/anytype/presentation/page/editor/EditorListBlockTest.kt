@@ -3,13 +3,13 @@ package com.anytypeio.anytype.presentation.page.editor
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_ui.features.page.BlockView
-import com.anytypeio.anytype.domain.block.interactor.CreateBlock
+import com.anytypeio.anytype.domain.block.interactor.SplitBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Position
 import com.anytypeio.anytype.domain.event.model.Event
 import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.presentation.MockBlockFactory
+import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
@@ -36,7 +36,9 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should start creating a new bulleted-list item on endline-enter-pressed event inside a bullet block`() {
+    fun `should start splitting new bulleted-list item on endline-enter-pressed event inside a bullet block`() {
+
+        // SETUP
 
         val style = Block.Content.Text.Style.BULLET
         val child = MockDataFactory.randomUuid()
@@ -49,9 +51,16 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubOpenDocument(page)
-        stubCreateBlock(root)
+        stubSplitBlock()
+        stubUpdateText()
 
         val vm = buildViewModel()
+
+        val target = page.last()
+
+        val txt = target.content<Block.Content.Text>().text
+
+        // TESTING
 
         vm.onStart(root)
 
@@ -62,26 +71,28 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         vm.onEndLineEnterClicked(
             id = child,
-            text = page.last().content<TXT>().text,
+            text = txt,
             marks = emptyList()
         )
 
-        verifyBlocking(createBlock, times(1)) {
+        verifyBlocking(splitBlock, times(1)) {
             invoke(
-                params = CreateBlock.Params(
+                params = SplitBlock.Params(
                     context = root,
-                    target = child,
-                    prototype = Block.Prototype.Text(
-                        style = style
-                    ),
-                    position = Position.BOTTOM
+                    block = page.last(),
+                    range = txt.length..txt.length,
+                    isToggled = null
                 )
             )
         }
+
+        clearPendingTextUpdate()
     }
 
     @Test
     fun `should start creating a new checkbox item on endline-enter-pressed event inside a bullet block`() {
+
+        // SETUP
 
         val style = Block.Content.Text.Style.CHECKBOX
         val child = MockDataFactory.randomUuid()
@@ -94,9 +105,16 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubOpenDocument(page)
-        stubCreateBlock(root)
+        stubSplitBlock()
+        stubUpdateText()
 
         val vm = buildViewModel()
+
+        val target = page.last()
+
+        val txt = target.content<Block.Content.Text>().text
+
+        // TESTING
 
         vm.onStart(root)
 
@@ -111,22 +129,24 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             marks = emptyList()
         )
 
-        verifyBlocking(createBlock, times(1)) {
+        verifyBlocking(splitBlock, times(1)) {
             invoke(
-                params = CreateBlock.Params(
+                params = SplitBlock.Params(
                     context = root,
-                    target = child,
-                    prototype = Block.Prototype.Text(
-                        style = style
-                    ),
-                    position = Position.BOTTOM
+                    block = page.last(),
+                    range = txt.length..txt.length,
+                    isToggled = null
                 )
             )
         }
+
+        clearPendingTextUpdate()
     }
 
     @Test
-    fun `should start creating a new numbered item on endline-enter-pressed event inside a bullet block`() {
+    fun `should start splitting a new numbered item on endline-enter-pressed event inside a bullet block`() {
+
+        // SETUP
 
         val style = Block.Content.Text.Style.NUMBERED
         val child = MockDataFactory.randomUuid()
@@ -139,9 +159,16 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubOpenDocument(page)
-        stubCreateBlock(root)
+        stubSplitBlock()
+        stubUpdateText()
 
         val vm = buildViewModel()
+
+        val target = page.last()
+
+        val txt = target.content<Block.Content.Text>().text
+
+        // TESTING
 
         vm.onStart(root)
 
@@ -156,22 +183,22 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             marks = emptyList()
         )
 
-        verifyBlocking(createBlock, times(1)) {
+        verifyBlocking(splitBlock, times(1)) {
             invoke(
-                params = CreateBlock.Params(
+                params = SplitBlock.Params(
                     context = root,
-                    target = child,
-                    prototype = Block.Prototype.Text(
-                        style = style
-                    ),
-                    position = Position.BOTTOM
+                    block = page.last(),
+                    range = txt.length..txt.length,
+                    isToggled = null
                 )
             )
         }
+
+        clearPendingTextUpdate()
     }
 
     @Test
-    fun `should start creating a new toggle block on endline-enter-pressed event inside a bullet block`() {
+    fun `should start splitting toggle block on endline-enter-pressed event inside a bullet block`() {
 
         val style = Block.Content.Text.Style.TOGGLE
         val child = MockDataFactory.randomUuid()
@@ -182,9 +209,14 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             style = style
         )
 
+        val target = page.last()
+
+        val txt = target.content<Block.Content.Text>().text
+
         stubInterceptEvents()
         stubOpenDocument(page)
-        stubCreateBlock(root)
+        stubUpdateText()
+        stubSplitBlock()
 
         val vm = buildViewModel()
 
@@ -197,22 +229,22 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         vm.onEndLineEnterClicked(
             id = child,
-            text = page.last().content<Block.Content.Text>().text,
+            text = target.content<Block.Content.Text>().text,
             marks = emptyList()
         )
 
-        verifyBlocking(createBlock, times(1)) {
+        verifyBlocking(splitBlock, times(1)) {
             invoke(
-                params = CreateBlock.Params(
+                params = SplitBlock.Params(
                     context = root,
-                    target = child,
-                    prototype = Block.Prototype.Text(
-                        style = style
-                    ),
-                    position = Position.BOTTOM
+                    block = page.last(),
+                    range = txt.length..txt.length,
+                    isToggled = false
                 )
             )
         }
+
+        clearPendingTextUpdate()
     }
 
     @Test
@@ -768,5 +800,9 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         )
 
         vm.state.test().assertValue(after)
+    }
+
+    private fun clearPendingTextUpdate() {
+        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 }

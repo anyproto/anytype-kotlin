@@ -1,5 +1,15 @@
 # Change log for Android @Anytype app.
 
+## Version 0.1.2 (WIP)
+
+### New features & enhancements 🚀
+
+* Inherit style properties from the previous list item when creating a new list item on enter press (#1017)
+
+### Fixes & tech 🚒
+
+*
+
 ## Version 0.1.1
 
 ### New features & enhancements 🚀

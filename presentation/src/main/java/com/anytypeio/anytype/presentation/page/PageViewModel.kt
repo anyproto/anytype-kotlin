@@ -934,7 +934,12 @@ class PageViewModel(
         id: String
     ) {
         if (content.text.isNotEmpty()) {
-            proceedWithCreatingNewTextBlock(id, content.style)
+            proceedWithSplitEvent(
+                target = id,
+                range = content.text.length..content.text.length,
+                marks = content.marks,
+                text = content.text
+            )
         } else {
             proceedUpdateTextStyle(
                 style = Content.Text.Style.P,

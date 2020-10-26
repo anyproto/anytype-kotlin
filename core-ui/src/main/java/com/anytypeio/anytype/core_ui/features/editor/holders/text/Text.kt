@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.os.Build
+import android.os.Build.VERSION_CODES.N
+import android.os.Build.VERSION_CODES.N_MR1
 import android.text.Editable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -74,14 +76,14 @@ abstract class Text(
             setOnFocusChangeListener { _, hasFocus ->
                 item.isFocused = hasFocus
                 onFocusChanged(item.id, hasFocus)
-                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+                if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
                     if (hasFocus) {
                         imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)
                     }
                 }
             }
             setOnClickListener {
-                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+                if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
                     content.context.imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)
                 }
                 onTextInputClicked(item.id)

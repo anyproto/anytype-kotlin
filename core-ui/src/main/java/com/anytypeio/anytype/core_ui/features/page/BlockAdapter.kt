@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.page
 
 import android.os.Build
+import android.os.Build.VERSION_CODES.N
+import android.os.Build.VERSION_CODES.N_MR1
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -780,7 +782,7 @@ class BlockAdapter(
                         }
                     )
                     setTextInputClickListener {
-                        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+                        if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
                             content.context.imm()
                                 .showSoftInput(content, InputMethodManager.SHOW_FORCED)
                         }
@@ -809,7 +811,7 @@ class BlockAdapter(
                         }
                     )
                     setTextInputClickListener {
-                        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+                        if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
                             content.context.imm()
                                 .showSoftInput(content, InputMethodManager.SHOW_FORCED)
                         }

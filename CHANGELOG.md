@@ -8,7 +8,7 @@
 
 ### Fixes & tech 🚒
 
-*
+* Fix soft input visibility/focusing issues on Android 7.1 (#1029)
 
 ## Version 0.1.1
 

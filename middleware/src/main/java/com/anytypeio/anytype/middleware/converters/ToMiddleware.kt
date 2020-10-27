@@ -30,6 +30,12 @@ fun BlockEntity.block(): Block {
 
     when (val content = content) {
         is BlockEntity.Content.Text -> {
+            if (content.backgroundColor != null) {
+                builder.backgroundColor = content.backgroundColor
+            }
+            if (content.align != null) {
+                builder.align = content.align?.toMiddleware()
+            }
             builder.text = content.text()
         }
         is BlockEntity.Content.Bookmark -> {
@@ -57,12 +63,17 @@ fun BlockEntity.block(): Block {
 //region text block mapping
 
 fun BlockEntity.Content.Text.text(): Text {
-    return Text
-        .newBuilder()
-        .setText(text)
-        .setMarks(marks())
-        .setStyle(style.toMiddleware())
-        .build()
+    val builder = Text.newBuilder()
+    builder.text = text
+    builder.marks = marks()
+    builder.style = style.toMiddleware()
+    if (color != null) {
+        builder.color = color
+    }
+    isChecked?.let {
+        builder.checked = it
+    }
+    return builder.build()
 }
 
 fun BlockEntity.Content.Text.marks(): Marks {

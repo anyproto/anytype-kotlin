@@ -231,6 +231,10 @@ fun Block.Content.Text.toEntity(): BlockEntity.Content.Text {
     return BlockEntity.Content.Text(
         text = text,
         marks = marks.map { it.toEntity() },
+        color = color,
+        backgroundColor = backgroundColor,
+        align = align?.toEntity(),
+        isChecked = isChecked,
         style = BlockEntity.Content.Text.Style.valueOf(style.name)
     )
 }

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Build.VERSION_CODES.N
 import android.os.Build.VERSION_CODES.N_MR1
@@ -7,9 +8,11 @@ import android.text.Editable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.Focusable
+import com.anytypeio.anytype.core_ui.common.ThemeColorCode
 import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
@@ -28,6 +31,8 @@ class Code(view: View) : BlockViewHolder(view) {
         get() = itemView
     val content: CodeTextInputWidget
         get() = itemView.snippet
+    val container: LinearLayout
+        get() = itemView.snippetContainer
 
     fun bind(
         item: BlockView.Code,
@@ -42,6 +47,7 @@ class Code(view: View) : BlockViewHolder(view) {
             content.setText(item.text)
             content.enableReadMode()
             select(item)
+            setBackgroundColor(item.backgroundColor)
         } else {
             content.enableEditMode()
 
@@ -60,6 +66,8 @@ class Code(view: View) : BlockViewHolder(view) {
             content.clearTextWatchers()
 
             content.setText(item.text)
+
+            setBackgroundColor(item.backgroundColor)
 
             setFocus(item)
 
@@ -131,6 +139,10 @@ class Code(view: View) : BlockViewHolder(view) {
             setFocus(item)
         }
 
+        if (payload.backgroundColorChanged()) {
+            setBackgroundColor(item.backgroundColor)
+        }
+
         if (payload.isIndentChanged) {
             indentize(item)
         }
@@ -162,6 +174,19 @@ class Code(view: View) : BlockViewHolder(view) {
                     Timber.d("Already had focus")
                 }
             }
+        }
+    }
+
+    private fun setBackgroundColor(color: String? = null) {
+        Timber.d("Setting background color: $color")
+        if (color != null) {
+            val value = ThemeColorCode.values().find { value -> value.title == color }
+            if (value != null)
+                (container.background as? GradientDrawable)?.setColor(value.background)
+            else
+                Timber.e("Could not find value for background color: $color")
+        } else {
+            (container.background as? GradientDrawable)?.setColor(ThemeColorCode.DEFAULT.background)
         }
     }
 }

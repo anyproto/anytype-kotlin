@@ -474,6 +474,8 @@ class DefaultBlockViewRenderer(
         mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
+        backgroundColor = content.backgroundColor,
+        color = content.color,
         isFocused = block.id == focus.id,
         indent = indent
     )

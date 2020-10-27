@@ -536,7 +536,9 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.Duplicate,
             ActionItemType.Divider,
-            ActionItemType.MoveTo
+            ActionItemType.MoveTo,
+            ActionItemType.DividerExtended,
+            ActionItemType.Style
         )
 
         val DIVIDER = listOf(

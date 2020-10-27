@@ -1,11 +1,14 @@
 package com.anytypeio.anytype.ui.page.modals.actions
 
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.common.ThemeColorCode
 import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.widgets.text.CodeTextInputWidget
 
@@ -33,6 +36,15 @@ class CodeBlockActionToolbar : BlockActionToolbar() {
         view.findViewById<CodeTextInputWidget>(R.id.snippet).apply {
             enableReadMode()
             setText(block.text)
+        }
+        view.findViewById<LinearLayout>(R.id.snippetContainer).apply {
+            if (block.backgroundColor != null) {
+                val value =
+                    ThemeColorCode.values().find { value -> value.title == block.backgroundColor }
+                if (value != null) {
+                    (background as? GradientDrawable)?.setColor(value.background)
+                }
+            }
         }
         setConstraints()
     }

@@ -221,7 +221,7 @@ fun Block.Content.Text.getMarkupStyle(style: Block.Content.Text.Style) = when (s
     }
     Block.Content.Text.Style.CODE_SNIPPET -> {
         StyleConfig(
-            visibleTypes = listOf(StylingType.BACKGROUND),
+            visibleTypes = emptyList(),
             enabledMarkup = emptyList(),
             enabledAlignment = emptyList()
         )

@@ -1115,7 +1115,7 @@ class StyleConfigKtTest {
         val result = given.getStyleConfig(focus = true, selection = IntRange(11, 12))
 
         val expected = StyleConfig(
-            visibleTypes = listOf(StylingType.BACKGROUND),
+            visibleTypes = listOf(),
             enabledMarkup = listOf(),
             enabledAlignment = listOf()
         )

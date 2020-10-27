@@ -1632,29 +1632,39 @@ class PageViewModel(
 
     fun onBlockToolbarStyleClicked() {
         val target = orchestrator.stores.focus.current().id
-        val view = views.first { it.id == target }
-        when (view) {
+        when (views.first { it.id == target }) {
             is BlockView.Title -> _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
-            is BlockView.Code -> _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR)
+            is BlockView.Code -> {
+                val selection = orchestrator.stores.textSelection.current().selection
+                if (selection != null && selection.first != selection.last) {
+                    _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR)
+                } else {
+                    proceedWithStyleToolbarEvent()
+                }
+            }
             else -> {
-                val textSelection = orchestrator.stores.textSelection.current()
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                        target = blocks.first { it.id == orchestrator.stores.focus.current().id },
-                        focused = textSelection.isNotEmpty,
-                        selection = textSelection.selection
-                    )
-                )
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_STYLE_MENU
-                )
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = POPUP_STYLE
-                )
+                proceedWithStyleToolbarEvent()
             }
         }
+    }
+
+    private fun proceedWithStyleToolbarEvent() {
+        val textSelection = orchestrator.stores.textSelection.current()
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
+                target = blocks.first { it.id == orchestrator.stores.focus.current().id },
+                focused = textSelection.isNotEmpty,
+                selection = textSelection.selection
+            )
+        )
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_STYLE_MENU
+        )
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = POPUP_STYLE
+        )
     }
 
     fun onBlockToolbarBlockActionsClicked() {

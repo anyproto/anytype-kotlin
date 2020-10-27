@@ -42,7 +42,7 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
                             text = event.text ?: content.text,
                             marks = event.marks ?: content.marks,
                             isChecked = event.checked ?: content.isChecked,
-                            align = event.alignment
+                            align = event.alignment ?: content.align
                         )
                     )
                 else

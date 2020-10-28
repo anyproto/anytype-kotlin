@@ -1,0 +1,37 @@
+{
+  "keywords": [
+    {
+      "pattern": "\\b(?:abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|exports|extends|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|module|native|new|non-sealed|null|open|opens|package|permits|private|protected|provides|public|record|requires|return|sealed|short|static|strictfp|super|switch|synchronized|this|throw|throws|to|transient|transitive|try|uses|var|void|volatile|while|with|yield)\\b",
+      "color": "#bd2c00",
+      "key": "keyword"
+    }
+  ],
+  "operators": [],
+  "other": [
+    {
+      "pattern": "\\(|\\)|\\[|\\]|:|;|\\.|\\||;|\\&|\\{|\\}",
+      "color": "#b71c1c",
+      "key": ""
+    },
+    {
+      "pattern": "@\\w+",
+      "color": "#b87333",
+      "key": "annotation"
+    },
+    {
+      "pattern": "\\b\\d+[\\.]?\\d*([eE]\\-?\\d+)?[lLdDfF]?\\b|\\b0x[a-fA-F\\d]+\\b",
+      "color": "#f4511e",
+      "key:": ""
+    },
+    {
+      "pattern": "(\\\"(.*)\\\"|\\\"(.*)\\\")",
+      "color": "#ff0000",
+      "key": ""
+    },
+    {
+      "pattern": "\\b[A-Z](?:\\w*[a-z]\\w*)?\\b",
+      "color": "#6e5494",
+      "key": "class"
+    }
+  ]
+}

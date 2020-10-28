@@ -1,0 +1,53 @@
+{
+  "keywords": [
+    {
+      "pattern": "\\b(?:abstract|as|asserts|async|await|break|case|catch|class|const|constructor|continue|debugger|declare|default|delete|do|else|enum|export|extends|finally|for|from|function|get|if|implements|import|in|instanceof|interface|is|keyof|let|module|namespace|new|null|of|package|private|protected|public|readonly|return|require|set|static|super|switch|this|throw|try|type|typeof|undefined|var|void|while|with|yield)\\b",
+      "color": "#bd2c00",
+      "key": "keyword"
+    },
+    {
+      "pattern": "\\b(?:string|Function|any|number|boolean|Array|symbol|console|Promise|unknown|never)\\b",
+      "color": "#bd2c00",
+      "key": "keyword"
+    }
+  ],
+  "operators": [
+    {
+      "pattern": "--|\\+\\+|\\*\\*=?|=>|&&=?|\\|\\|=?|[!=]==|<<=?|>>>?=?|[-+*/%&|^!=<>]=?|\\.{3}|\\?\\?=?|\\?\\.?|[~:]",
+      "color": "#bd2c00",
+      "key": "keyword"
+    }
+  ],
+  "other": [
+    {
+      "pattern": "#?[_$a-zA-Z\\xA0-\\uFFFF][$\\w\\xA0-\\uFFFF]*(?=\\s*(?:\\.\\s*(?:apply|bind|call)\\s*)?\\()",
+      "color": "#6e5494",
+      "key": "function"
+    },
+    {
+      "pattern": "\\(|\\)|\\[|\\]|:|;|\\.|\\||;|\\&|\\{|\\}",
+      "color": "#b71c1c",
+      "key": ""
+    },
+    {
+      "pattern": "@\\w+",
+      "color": "#b87333",
+      "key": "annotation"
+    },
+    {
+      "pattern": "\\b(?:(?:0[xX](?:[\\dA-Fa-f](?:_[\\dA-Fa-f])?)+|0[bB](?:[01](?:_[01])?)+|0[oO](?:[0-7](?:_[0-7])?)+)n?|(?:\\d(?:_\\d)?)+n|NaN|Infinity)\\b|(?:\\b(?:\\d(?:_\\d)?)+\\.?(?:\\d(?:_\\d)?)*|\\B\\.(?:\\d(?:_\\d)?)+)(?:[Ee][+-]?(?:\\d(?:_\\d)?)+)?",
+      "color": "#f4511e",
+      "key": "number"
+    },
+    {
+      "pattern": "(\\\"(.*)\\\"|\\\"(.*)\\\")",
+      "color": "#4078c0",
+      "key": ""
+    },
+    {
+      "pattern": "(\\b(?:class|extends|implements|instanceof|interface|new|type)\\s+)(?!keyof\\b)[_$a-zA-Z\\xA0-\\uFFFF][$\\w\\xA0-\\uFFFF]*(?:\\s*<(?:[^<>]|<(?:[^<>]|<[^<>]*>)*>)*>)?",
+      "color": "#6e5494",
+      "key": "class"
+    }
+  ]
+}

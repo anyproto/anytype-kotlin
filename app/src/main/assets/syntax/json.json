@@ -1,0 +1,41 @@
+{
+  "keywords": [],
+  "operators": [],
+  "other": [
+    {
+      "pattern": "\"(?:\\\\.|[^\\\\\"\\r\\n])*\"(?=\\s*:)",
+      "color": "#b71c1c",
+      "key": "property"
+    },
+    {
+      "pattern": "\"(?!\\s*:)(?:\\\\.|[^\\\\\"\\r\\n])*\"(?!\\s*:)",
+      "color": "#4078c0",
+      "key": "string"
+    },
+    {
+      "pattern": ":",
+      "color": "#6e5494",
+      "key": "operator"
+    },
+    {
+      "pattern": "-?\\b\\d+(?:\\.\\d+)?(?:e[+-]?\\d+)?\\b",
+      "color": "#6e5494",
+      "key": "number"
+    },
+    {
+      "pattern": "\\b(?:true|false)\\b",
+      "color": "#6e5494",
+      "key": "boolean"
+    },
+    {
+      "pattern": "\\bnull\\b",
+      "color": "#6e5494",
+      "key": "null"
+    },
+    {
+      "pattern": "[{}[\\\\],]",
+      "color": "#b8b8b8",
+      "key": "punctuation"
+    }
+  ]
+}

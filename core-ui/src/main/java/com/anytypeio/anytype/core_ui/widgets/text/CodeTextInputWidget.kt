@@ -1,14 +1,21 @@
 package com.anytypeio.anytype.core_ui.widgets.text
 
 import android.content.Context
+import android.text.Editable
 import android.text.InputType.*
 import android.text.TextWatcher
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
+import com.anytypeio.anytype.library_syntax_highlighter.*
 import timber.log.Timber
 
-class CodeTextInputWidget : AppCompatEditText {
+class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
+
+    override val rules: MutableList<Syntax> = mutableListOf()
+    override val source: Editable get() = editableText
+
+    private val syntaxTextWatcher = SyntaxTextWatcher { highlight() }
 
     private val watchers: MutableList<TextWatcher> = mutableListOf()
 
@@ -17,6 +24,7 @@ class CodeTextInputWidget : AppCompatEditText {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         setup()
+        setupSyntaxHighlighter()
     }
 
     constructor(
@@ -25,10 +33,17 @@ class CodeTextInputWidget : AppCompatEditText {
         defStyle: Int
     ) : super(context, attrs, defStyle) {
         setup()
+        setupSyntaxHighlighter()
     }
 
     private fun setup() {
         enableEditMode()
+    }
+
+    private fun setupSyntaxHighlighter() {
+        addRules(context.obtainSyntaxRules(Syntaxes.KOTLIN))
+        highlight()
+        addTextChangedListener(syntaxTextWatcher)
     }
 
     fun enableEditMode() {
@@ -46,7 +61,7 @@ class CodeTextInputWidget : AppCompatEditText {
     }
 
     override fun addTextChangedListener(watcher: TextWatcher) {
-        watchers.add(watcher)
+        if (watcher !is SyntaxTextWatcher) watchers.add(watcher)
         super.addTextChangedListener(watcher)
     }
 

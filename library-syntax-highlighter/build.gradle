@@ -1,11 +1,12 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlinx-serialization'
 
 android {
     def config = rootProject.extensions.getByName("ext")
 
-    compileSdkVersion config["compile_sdk"]
+    compileSdkVersion compile_sdk
 
     defaultConfig {
         minSdkVersion config["min_sdk"]
@@ -43,27 +44,15 @@ dependencies {
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
 
-    implementation project(':core-utils')
-    implementation project(':library-emojifier')
-    implementation project(':library-syntax-highlighter')
-
     implementation applicationDependencies.appcompat
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines
     implementation applicationDependencies.androidxCore
-
-    implementation applicationDependencies.design
-    implementation applicationDependencies.recyclerView
-    implementation applicationDependencies.constraintLayout
-    implementation applicationDependencies.glide
     implementation applicationDependencies.timber
-    implementation applicationDependencies.betterLinkMovement
-    implementation applicationDependencies.exoPlayer
-    implementation applicationDependencies.urlcleaner
+    implementation applicationDependencies.kotlinxSerializationJson
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.robolectric
     testImplementation unitTestDependencies.androidXTestCore
-    testImplementation unitTestDependencies.mockitoKotlin
 }

@@ -85,6 +85,7 @@ dependencies {
     implementation project(':library-kanban-widget')
     implementation project(':library-page-icon-picker-widget')
     implementation project(':library-emojifier')
+    implementation project(':library-syntax-highlighter')
     implementation project(':analytics')
 
     def applicationDependencies = rootProject.ext.mainApplication

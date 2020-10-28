@@ -7,7 +7,7 @@ allprojects {
 
 ext {
     // Kotlin
-    kotlin_coroutines_version = '1.4.0'
+    kotlin_coroutines_version = '1.3.9'
 
     // AndroidX
     androidx_core_version = '1.5.0-alpha02'

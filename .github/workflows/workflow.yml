@@ -1,6 +1,6 @@
 on:
   push:
-    branches: fix/1013-block-code-background
+    branches: develop
 name: CI
 jobs:
   setup-android:

@@ -81,9 +81,10 @@ class Numbered(
         item: BlockView,
         onTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
-        clicked: (ListenerType) -> Unit
+        clicked: (ListenerType) -> Unit,
+        onMentionEvent: (MentionEvent) -> Unit
     ) {
-        super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked)
+        super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked, onMentionEvent)
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.NUMBER_CHANGED))
                 number.text = (item as BlockView.Text.Numbered).number.addDot()

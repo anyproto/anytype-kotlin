@@ -212,7 +212,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -265,7 +266,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -319,7 +321,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -383,7 +386,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -540,7 +544,8 @@ class BlockAdapterTest {
             item = updated,
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -1754,7 +1759,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -2262,7 +2268,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -2296,7 +2303,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -2330,7 +2338,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -2434,7 +2443,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -2535,7 +2545,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -2682,7 +2693,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -2829,7 +2841,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -2979,7 +2992,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -3134,7 +3148,8 @@ class BlockAdapterTest {
             ),
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(

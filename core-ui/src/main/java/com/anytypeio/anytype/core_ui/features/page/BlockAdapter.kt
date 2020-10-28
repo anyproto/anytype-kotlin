@@ -417,7 +417,8 @@ class BlockAdapter(
                             item = blocks[position],
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener
+                            clicked = onClickListener,
+                            onMentionEvent = onMentionEvent
                         )
                     }
                     is Bulleted -> {
@@ -426,7 +427,8 @@ class BlockAdapter(
                             item = blocks[position],
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener
+                            clicked = onClickListener,
+                            onMentionEvent = onMentionEvent
                         )
                     }
                     is Checkbox -> {
@@ -435,7 +437,8 @@ class BlockAdapter(
                             item = blocks[position],
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener
+                            clicked = onClickListener,
+                            onMentionEvent = onMentionEvent
                         )
                     }
                     is Title.Document -> {
@@ -456,7 +459,8 @@ class BlockAdapter(
                             item = blocks[position],
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener
+                            clicked = onClickListener,
+                            onMentionEvent = onMentionEvent
                         )
                     }
                     is HeaderOne -> {
@@ -465,7 +469,8 @@ class BlockAdapter(
                             item = blocks[position],
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener
+                            clicked = onClickListener,
+                            onMentionEvent = onMentionEvent
                         )
                     }
                     is HeaderTwo -> {
@@ -474,7 +479,8 @@ class BlockAdapter(
                             item = blocks[position],
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener
+                            clicked = onClickListener,
+                            onMentionEvent = onMentionEvent
                         )
                     }
                     is HeaderThree -> {
@@ -483,7 +489,8 @@ class BlockAdapter(
                             item = blocks[position],
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener
+                            clicked = onClickListener,
+                            onMentionEvent = onMentionEvent
                         )
                     }
                     is Toggle -> {
@@ -492,7 +499,8 @@ class BlockAdapter(
                             item = blocks[position],
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener
+                            clicked = onClickListener,
+                            onMentionEvent = onMentionEvent
                         )
                     }
                     is Highlight -> {
@@ -501,7 +509,8 @@ class BlockAdapter(
                             item = blocks[position],
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener
+                            clicked = onClickListener,
+                            onMentionEvent = onMentionEvent
                         )
                     }
                     is File -> {

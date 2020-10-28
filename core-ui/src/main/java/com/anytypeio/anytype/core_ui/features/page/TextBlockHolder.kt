@@ -159,7 +159,7 @@ interface TextBlockHolder : TextHolder {
 
     fun setupTextWatcher(
         item: BlockView,
-        onMentionEvent: ((MentionEvent) -> Unit)? = null,
+        onMentionEvent: ((MentionEvent) -> Unit),
         onTextChanged: (String, Editable) -> Unit,
     ) {
         content.addTextChangedListener(
@@ -171,13 +171,13 @@ interface TextBlockHolder : TextHolder {
     }
 
     fun setupMentionWatcher(
-        onMentionEvent: ((MentionEvent) -> Unit)?
+        onMentionEvent: ((MentionEvent) -> Unit)
     ) {
         content.addTextChangedListener(
             MentionTextWatcher { state ->
                 when (state) {
                     is MentionTextWatcher.MentionTextWatcherState.Start -> {
-                        onMentionEvent?.invoke(
+                        onMentionEvent.invoke(
                             MentionEvent.MentionSuggestStart(
                                 cursorCoordinate = content.cursorYBottomCoordinate(),
                                 mentionStart = state.start
@@ -185,11 +185,11 @@ interface TextBlockHolder : TextHolder {
                         )
                     }
                     MentionTextWatcher.MentionTextWatcherState.Stop -> {
-                        onMentionEvent?.invoke(MentionEvent.MentionSuggestStop)
+                        onMentionEvent.invoke(MentionEvent.MentionSuggestStop)
                     }
 
                     is MentionTextWatcher.MentionTextWatcherState.Text -> {
-                        onMentionEvent?.invoke(MentionEvent.MentionSuggestText(state.text))
+                        onMentionEvent.invoke(MentionEvent.MentionSuggestText(state.text))
                     }
                 }
             }
@@ -201,7 +201,8 @@ interface TextBlockHolder : TextHolder {
         item: BlockView,
         onTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
-        clicked: (ListenerType) -> Unit
+        clicked: (ListenerType) -> Unit,
+        onMentionEvent: (MentionEvent) -> Unit
     ) = payloads.forEach { payload ->
 
         check(item is BlockView.Text)
@@ -242,13 +243,17 @@ interface TextBlockHolder : TextHolder {
             content.pauseTextWatchers {
                 if (item.mode == BlockView.Mode.EDIT) {
                     content.clearTextWatchers()
-                    setupTextWatcher(item) { id, editable ->
-                        item.apply {
-                            text = editable.toString()
-                            marks = editable.marks()
-                        }
-                        onTextChanged(item)
-                    }
+                    setupTextWatcher(
+                        item = item,
+                        onTextChanged = { _, editable ->
+                            item.apply {
+                                text = editable.toString()
+                                marks = editable.marks()
+                            }
+                            onTextChanged(item)
+                        },
+                        onMentionEvent = onMentionEvent
+                    )
                     content.selectionWatcher = { onSelectionChanged(item.id, it) }
                     enableEditMode()
                 } else {

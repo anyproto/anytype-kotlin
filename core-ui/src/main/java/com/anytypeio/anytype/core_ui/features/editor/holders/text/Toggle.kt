@@ -104,10 +104,11 @@ class Toggle(
         item: BlockView,
         onTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
-        clicked: (ListenerType) -> Unit
+        clicked: (ListenerType) -> Unit,
+        onMentionEvent: (MentionEvent) -> Unit
     ) {
         check(item is BlockView.Text.Toggle) { "Expected a toggle block, but was: $item" }
-        super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked)
+        super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked, onMentionEvent)
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.TOGGLE_EMPTY_STATE_CHANGED))
                 placeholder.isVisible = item.isEmpty

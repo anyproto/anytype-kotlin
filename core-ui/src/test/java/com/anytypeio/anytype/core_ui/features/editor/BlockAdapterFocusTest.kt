@@ -114,7 +114,8 @@ class BlockAdapterFocusTest : BlockAdapterTestSetup() {
             item = focused,
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(

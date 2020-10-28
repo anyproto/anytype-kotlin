@@ -228,7 +228,8 @@ class HeaderBlockTest {
             item = updated,
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -284,7 +285,8 @@ class HeaderBlockTest {
             item = updated,
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(
@@ -340,7 +342,8 @@ class HeaderBlockTest {
             item = updated,
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            clicked = {}
+            clicked = {},
+            onMentionEvent = {}
         )
 
         assertEquals(

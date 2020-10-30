@@ -12,6 +12,10 @@
 * Fix soft input visibility/focusing issues on Android 7.1 (#1029)
 * Keyboard won't show up in code snippet (#1024)
 
+### Middleware ⚙
+
+* Updated middleware protocol to `0.13.22` (#)
+
 ## Version 0.1.1
 
 ### New features & enhancements 🚀

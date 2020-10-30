@@ -1658,7 +1658,7 @@ message Rpc {
     }
 
     /*
-     * Namespace, that agregates subtopics and actions, that relates to wallet.
+     * Namespace, that aggregates subtopics and actions, that relates to wallet.
     */
     message Wallet {
         message Create {
@@ -1720,6 +1720,32 @@ message Rpc {
                 }
             }
         }
+
+        message Convert {
+            message Request {
+                string mnemonic = 1; // Mnemonic of a wallet to convert
+                string entropy = 2; // entropy of a wallet to convert
+
+            }
+
+            message Response {
+                Error error = 1; // Error while trying to recover a wallet
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0; // No error; wallet successfully recovered
+                        UNKNOWN_ERROR = 1; // Any other errors
+                        BAD_INPUT = 2; // mnemonic is wrong
+                    }
+                }
+
+                string entropy = 2;
+                string mnemonic = 3;
+            }
+        }
+
     }
 
     /*

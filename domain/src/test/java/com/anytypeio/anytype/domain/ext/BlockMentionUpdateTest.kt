@@ -31,6 +31,67 @@ class BlockMentionUpdateTest {
     }
 
     @Test
+    fun `should add mention and return block with proper color,background, align props`() {
+
+        val mentionTrigger = "@m"
+        val from = 0
+        val givenText = "ne"
+        val mentionText = "NewPage"
+        val mentionHash = MockDataFactory.randomUuid()
+
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Text(
+                marks = listOf(),
+                style = Block.Content.Text.Style.CHECKBOX,
+                text = givenText,
+                color = "red",
+                backgroundColor = "lime",
+                align = Block.Align.AlignCenter,
+                isChecked = true
+            ),
+            children = emptyList()
+        )
+
+        val result = block.addMention(
+            mentionText = mentionText,
+            from = from,
+            mentionId = mentionHash,
+            mentionTrigger = mentionTrigger
+        )
+
+        val expected = Block(
+            id = block.id,
+            fields = block.fields,
+            content = Block.Content.Text(
+                marks = listOf(
+                    Block.Content.Text.Mark(
+                        range = IntRange(
+                            start = from,
+                            endInclusive = from + mentionText.length
+                        ),
+                        type = Block.Content.Text.Mark.Type.MENTION,
+                        param = mentionHash
+                    )
+                ),
+                style = Block.Content.Text.Style.CHECKBOX,
+                text = "NewPage ",
+                color = "red",
+                backgroundColor = "lime",
+                align = Block.Align.AlignCenter,
+                isChecked = true
+            ),
+            children = emptyList()
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
     fun `should replace mentionTrigger with mention 2`() {
 
         val mentionTrigger = "@r"

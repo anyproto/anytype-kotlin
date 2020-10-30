@@ -177,7 +177,11 @@ fun Block.addMention(mentionText: String, mentionId: String, from: Int, mentionT
                 replace = newText,
                 from = from,
                 to = from + mentionTrigger.length
-            )
+            ),
+            color = content.color,
+            backgroundColor = content.backgroundColor,
+            isChecked = content.isChecked,
+            align = content.align
         )
     )
 }

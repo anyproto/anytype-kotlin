@@ -7,6 +7,7 @@ import android.text.Editable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.Checkable
 import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.extensions.color
@@ -124,6 +125,9 @@ abstract class Text(
         )
         if (item is BlockView.Searchable) {
             applySearchHighlight(item)
+        }
+        if (item is Checkable) {
+            applyCheckedCheckboxColorSpan(item.isChecked)
         }
     }
 

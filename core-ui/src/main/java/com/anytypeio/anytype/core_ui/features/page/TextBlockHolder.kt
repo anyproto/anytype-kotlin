@@ -111,7 +111,18 @@ interface TextBlockHolder : TextHolder {
                 textColor = textColor
             )
         }
+    }
 
+    fun applyCheckedCheckboxColorSpan(isChecked: Boolean) {
+        content.editableText.removeSpans<CheckedCheckboxColorSpan>()
+        if (isChecked) {
+            content.editableText.setSpan(
+                CheckedCheckboxColorSpan(),
+                0,
+                content.editableText.length,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+        }
     }
 
     fun applySearchHighlight(item: BlockView.Searchable) {
@@ -218,8 +229,16 @@ interface TextBlockHolder : TextHolder {
                     textColor = item.getBlockTextColor()
                 )
             }
+            if (item is Checkable) {
+                applyCheckedCheckboxColorSpan(item.isChecked)
+            }
         } else if (payload.markupChanged()) {
-            content.pauseTextWatchers { setMarkup(item, clicked, item.getBlockTextColor()) }
+            content.pauseTextWatchers {
+                setMarkup(item, clicked, item.getBlockTextColor())
+                if (item is Checkable) {
+                    applyCheckedCheckboxColorSpan(item.isChecked)
+                }
+            }
         }
 
         if (payload.isSearchHighlightChanged) {

@@ -1,12 +1,10 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
-import android.content.Context
 import android.text.Editable
 import android.view.View
 import android.widget.ImageView
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.features.page.*
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -60,11 +58,6 @@ class Checkbox(
         onBackPressedCallback = onBackPressedCallback
     ).also {
         checkbox.isActivated = item.isChecked
-        updateTextColor(
-            context = itemView.context,
-            color = item.color,
-            isSelected = checkbox.isActivated
-        )
         setCheckboxClickListener(item, onCheckboxClicked)
         setupMentionWatcher(onMentionEvent)
     }
@@ -77,11 +70,7 @@ class Checkbox(
             if (mode == BlockView.Mode.EDIT) {
                 item.isChecked = !item.isChecked
                 checkbox.isActivated = !checkbox.isActivated
-                updateTextColor(
-                    context = itemView.context,
-                    isSelected = checkbox.isActivated,
-                    color = item.color
-                )
+                applyCheckedCheckboxColorSpan(item.isChecked)
                 onCheckboxClicked(item)
             }
         }
@@ -110,20 +99,5 @@ class Checkbox(
 
     override fun select(item: BlockView.Selectable) {
         container.isSelected = item.isSelected
-    }
-
-    private fun updateTextColor(
-        context: Context,
-        isSelected: Boolean,
-        color: String?
-    ) {
-        if (isSelected) {
-            content.setTextColor(context.color(R.color.checkbox_state_checked))
-        } else {
-            if (color != null)
-                super.setTextColor(color)
-            else
-                content.setTextColor(context.color(R.color.black))
-        }
     }
 }

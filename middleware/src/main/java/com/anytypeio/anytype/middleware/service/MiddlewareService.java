@@ -86,4 +86,6 @@ public interface MiddlewareService {
     Commands.Rpc.Page.Create.Response pageCreate(Commands.Rpc.Page.Create.Request request) throws Exception;
 
     Commands.Rpc.Version.Get.Response getVersion(Commands.Rpc.Version.Get.Request request) throws Exception;
+
+    BlockList.Set.Fields.Response blockListSetFields(BlockList.Set.Fields.Request request) throws Exception;
 }

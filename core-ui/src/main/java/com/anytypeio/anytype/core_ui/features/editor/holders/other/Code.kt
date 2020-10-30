@@ -9,6 +9,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.Focusable
@@ -22,11 +23,14 @@ import com.anytypeio.anytype.core_ui.widgets.text.CodeTextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.imm
+import com.anytypeio.anytype.library_syntax_highlighter.Syntaxes
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import timber.log.Timber
 
 class Code(view: View) : BlockViewHolder(view) {
 
+    val menu: TextView
+        get() = itemView.code_menu
     val root: View
         get() = itemView
     val content: CodeTextInputWidget
@@ -91,6 +95,18 @@ class Code(view: View) : BlockViewHolder(view) {
 
         content.setOnClickListener {
             onTextInputClicked(item.id)
+        }
+
+        menu.setOnClickListener {
+            clicked(ListenerType.Code.SelectLanguage(item.id))
+        }
+
+        if (!item.lang.isNullOrEmpty()) {
+            content.setupSyntax(item.lang)
+            menu.text = item.lang.capitalize()
+        } else {
+            content.setupSyntax(Syntaxes.GENERIC)
+            menu.setText(R.string.block_code_menu_title)
         }
     }
 

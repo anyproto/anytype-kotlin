@@ -112,4 +112,6 @@ interface BlockRepository {
     ): Payload
 
     suspend fun updateDivider(command: Command.UpdateDivider): Payload
+
+    suspend fun setFields(command: Command.SetFields): Payload
 }

@@ -174,7 +174,10 @@ open class PageViewModelTest {
     lateinit var turnIntoDocument: TurnIntoDocument
 
     @Mock
-    lateinit var gateway : Gateway
+    lateinit var updateFields: UpdateFields
+
+    @Mock
+    lateinit var gateway: Gateway
 
     @Mock
     lateinit var analytics: Analytics
@@ -3857,7 +3860,8 @@ open class PageViewModelTest {
                 copy = copy,
                 move = move,
                 turnIntoDocument = turnIntoDocument,
-                analytics = analytics
+                analytics = analytics,
+                updateFields = updateFields
             ),
             bridge = Bridge()
         )

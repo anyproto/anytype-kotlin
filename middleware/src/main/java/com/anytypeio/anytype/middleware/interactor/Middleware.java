@@ -14,6 +14,7 @@ import com.anytypeio.anytype.middleware.service.MiddlewareService;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import anytype.Commands;
@@ -1186,6 +1187,38 @@ public class Middleware {
         }
 
         BlockList.Set.Div.Style.Response response = service.blockListSetDivStyle(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return mapper.toPayload(response.getEvent());
+    }
+
+    public PayloadEntity setFields(CommandEntity.SetFields command) throws Exception {
+
+        List<BlockList.Set.Fields.Request.BlockField> fields = new ArrayList<>();
+
+        for (int i = 0; i < command.getFields().size(); i++) {
+            Pair<String, BlockEntity.Fields> item = command.getFields().get(i);
+            BlockList.Set.Fields.Request.BlockField field = BlockList.Set.Fields.Request.BlockField
+                    .newBuilder()
+                    .setBlockId(item.getFirst())
+                    .setFields(mapper.toMiddleware(item.getSecond()))
+                    .build();
+            fields.add(field);
+        }
+
+        BlockList.Set.Fields.Request request = BlockList.Set.Fields.Request.newBuilder()
+                .setContextId(command.getContext())
+                .addAllBlockFields(fields)
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        BlockList.Set.Fields.Response response = service.blockListSetFields(request);
 
         if (BuildConfig.DEBUG) {
             Timber.d(response.getClass().getName() + "\n" + response.toString());

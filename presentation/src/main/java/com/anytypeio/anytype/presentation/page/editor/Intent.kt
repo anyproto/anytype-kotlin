@@ -63,6 +63,11 @@ sealed class Intent {
             val next: Id?,
             val effects: List<SideEffect> = emptyList()
         ) : CRUD()
+
+        class UpdateFields(
+            val context: Id,
+            val fields: List<Pair<Id, Block.Fields>>
+        ) : CRUD()
     }
 
     sealed class Clipboard : Intent() {

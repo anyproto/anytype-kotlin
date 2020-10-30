@@ -32,6 +32,7 @@ data class Block(
         val iconEmoji: String? by default
         val iconImage: String? by default
         val isArchived: Boolean? by default
+        val lang: String? by default
 
         companion object {
             fun empty(): Fields = Fields(emptyMap())

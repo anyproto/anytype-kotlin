@@ -22,11 +22,15 @@ sealed class ListenerType {
         data class Error(val target: String) : Picture()
     }
 
-    sealed class Video: ListenerType() {
+    sealed class Video : ListenerType() {
         data class View(val target: String) : Video()
         data class Placeholder(val target: String) : Video()
         data class Upload(val target: String) : Video()
         data class Error(val target: String) : Video()
+    }
+
+    sealed class Code : ListenerType() {
+        data class SelectLanguage(val target: String) : Code()
     }
 
     data class LongClick(val target: String, val dimensions: BlockDimensions) : ListenerType()
@@ -34,9 +38,9 @@ sealed class ListenerType {
     data class EditableBlock(val target: String) : ListenerType()
     object TitleBlock : ListenerType()
 
-    data class Page(val target: String): ListenerType()
+    data class Page(val target: String) : ListenerType()
 
-    data class Mention(val target: String): ListenerType()
+    data class Mention(val target: String) : ListenerType()
 
     data class DividerClick(val target: String) : ListenerType()
 }

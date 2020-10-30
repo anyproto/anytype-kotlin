@@ -477,7 +477,8 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         color = content.color,
         isFocused = block.id == focus.id,
-        indent = indent
+        indent = indent,
+        lang = block.fields.lang
     )
 
     private fun highlight(

@@ -587,4 +587,70 @@ class MiddlewareTest {
         verify(service, times(1)).uploadFile(request)
         verifyNoMoreInteractions(service)
     }
+
+    @Test
+    fun `should create request for setting block fields`() {
+
+        // SETUP
+
+        val ctx = MockDataFactory.randomUuid()
+
+        val block1 = MockDataFactory.randomUuid()
+        val block2 = MockDataFactory.randomUuid()
+
+        val command = CommandEntity.SetFields(
+            context = ctx,
+            fields = listOf(
+                Pair(
+                    block1,
+                    BlockEntity.Fields(
+                        map = mutableMapOf(
+                            "lang" to "kotlin"
+                        )
+                    )
+                ),
+                Pair(
+                    block2,
+                    BlockEntity.Fields(
+                        map = mutableMapOf(
+                            "lang" to "python"
+                        )
+                    )
+                )
+            )
+        )
+
+        val fields = listOf(
+            BlockList.Set.Fields.Request.BlockField.newBuilder()
+                .setBlockId(block1)
+                .setFields(
+                    Struct.newBuilder()
+                        .putFields("lang", Value.newBuilder().setStringValue("kotlin").build())
+                )
+                .build(),
+            BlockList.Set.Fields.Request.BlockField.newBuilder()
+                .setBlockId(block2)
+                .setFields(
+                    Struct.newBuilder()
+                        .putFields("lang", Value.newBuilder().setStringValue("python").build())
+                )
+                .build()
+        )
+
+        val request = BlockList.Set.Fields.Request.newBuilder()
+            .setContextId(ctx)
+            .addAllBlockFields(fields)
+            .build()
+
+        service.stub {
+            on { blockListSetFields(request) } doReturn BlockList.Set.Fields.Response.getDefaultInstance()
+        }
+
+        // TESTING
+
+        middleware.setFields(command)
+
+        verify(service, times(1)).blockListSetFields(request)
+        verifyNoMoreInteractions(service)
+    }
 }

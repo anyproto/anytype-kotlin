@@ -64,6 +64,7 @@ class Orchestrator(
     private val uploadBlock: UploadBlock,
     private val setupBookmark: SetupBookmark,
     private val turnIntoDocument: TurnIntoDocument,
+    private val updateFields: UpdateFields,
     private val move: Move,
     private val copy: Copy,
     private val paste: Paste,
@@ -199,6 +200,17 @@ class Orchestrator(
                             proxies.payloads.send(payload)
                             sendEvent(event)
                         }
+                    )
+                }
+                is Intent.CRUD.UpdateFields -> {
+                    updateFields(
+                        params = UpdateFields.Params(
+                            context = intent.context,
+                            fields = intent.fields
+                        )
+                    ).proceed(
+                        failure = {},
+                        success = { proxies.payloads.send(it) }
                     )
                 }
                 is Intent.Text.Split -> {

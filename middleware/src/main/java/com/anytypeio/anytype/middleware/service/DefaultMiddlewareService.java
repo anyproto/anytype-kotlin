@@ -424,4 +424,15 @@ public class DefaultMiddlewareService implements MiddlewareService {
             return response;
         }
     }
+
+    @Override
+    public BlockList.Set.Fields.Response blockListSetFields(BlockList.Set.Fields.Request request) throws Exception {
+        byte[] encoded = Service.blockListSetFields(request.toByteArray());
+        BlockList.Set.Fields.Response response = BlockList.Set.Fields.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != BlockList.Set.Fields.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
 }

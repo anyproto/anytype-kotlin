@@ -12,6 +12,8 @@ interface SyntaxHighlighter {
     val source: Editable
     val rules: MutableList<Syntax>
 
+    fun setupSyntax(lang: String?)
+
     fun addRules(new: List<Syntax>) {
         rules.apply {
             clear()
@@ -20,7 +22,7 @@ interface SyntaxHighlighter {
     }
 
     fun highlight() {
-        clear()
+        clearHighlights()
         rules.forEach { syntax ->
             val matcher = syntax.matcher(source.toString())
             while (matcher.find()) {
@@ -34,7 +36,7 @@ interface SyntaxHighlighter {
         }
     }
 
-    fun clear() {
+    fun clearHighlights() {
         val current = source.getSpans(0, source.length, SyntaxColorSpan::class.java)
         current.forEach { span -> source.removeSpan(span) }
     }

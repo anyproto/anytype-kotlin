@@ -60,6 +60,7 @@ import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindo
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.block.model.Block.Content.Text
+import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.ext.getFirstLinkMarkupParam
 import com.anytypeio.anytype.domain.ext.getSubstring
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -98,6 +99,7 @@ open class PageFragment :
     OnFragmentInteractionListener,
     AddBlockFragment.AddBlockActionReceiver,
     TurnIntoActionReceiver,
+    SelectProgrammingLanguageReceiver,
     ClipboardInterceptor,
     PickiTCallbacks {
 
@@ -730,6 +732,10 @@ open class PageFragment :
                 is Command.ClearSearchInput -> {
                     searchToolbar.clear()
                 }
+                is Command.Dialog.SelectLanguage -> {
+                    SelectProgrammingLanguageFragment.new(command.target)
+                        .show(childFragmentManager, null)
+                }
             }
         }
     }
@@ -1177,6 +1183,11 @@ open class PageFragment :
 
     override fun onExitToDesktopClicked() {
         vm.navigateToDesktop()
+    }
+
+    override fun onLanguageSelected(target: Id, key: String) {
+        Timber.d("key: $key")
+        vm.onSelectProgrammingLanguageClicked(target, key)
     }
 
     //------------ End of Anytype Custom Context Menu ------------

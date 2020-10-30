@@ -165,6 +165,11 @@ class BlockMiddleware(
         position: PositionEntity
     ): PayloadEntity = middleware.linkToObject(context, target, block, replace, position)
 
-    override suspend fun updateDivider(command: CommandEntity.UpdateDivider): PayloadEntity =
-        middleware.updateDividerStyle(command)
+    override suspend fun updateDivider(
+        command: CommandEntity.UpdateDivider
+    ): PayloadEntity = middleware.updateDividerStyle(command)
+
+    override suspend fun setFields(
+        command: CommandEntity.SetFields
+    ): PayloadEntity = middleware.setFields(command)
 }

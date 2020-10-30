@@ -8,7 +8,9 @@ import com.anytypeio.anytype.data.auth.model.PayloadEntity
 import com.anytypeio.anytype.data.auth.model.PositionEntity
 import com.anytypeio.anytype.middleware.converters.block
 import com.anytypeio.anytype.middleware.converters.blocks
+import com.anytypeio.anytype.middleware.converters.fields
 import com.anytypeio.anytype.middleware.converters.toMiddleware
+import com.google.protobuf.Struct
 
 class MiddlewareMapper {
 
@@ -46,7 +48,11 @@ class MiddlewareMapper {
         return alignment.toMiddleware()
     }
 
-    fun toEntity(blocks: List<Block>) : List<BlockEntity> {
+    fun toEntity(blocks: List<Block>): List<BlockEntity> {
         return blocks.blocks()
+    }
+
+    fun toMiddleware(fields: BlockEntity.Fields): Struct {
+        return fields.fields()
     }
 }

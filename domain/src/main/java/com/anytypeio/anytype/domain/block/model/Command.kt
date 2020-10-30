@@ -317,4 +317,9 @@ sealed class Command {
         val targets: List<Id>,
         val style: Block.Content.Divider.Style
     )
+
+    data class SetFields(
+        val context: Id,
+        val fields: List<Pair<Id, Block.Fields>>
+    )
 }

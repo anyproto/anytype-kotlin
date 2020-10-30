@@ -2632,6 +2632,12 @@ class PageViewModel(
                 else -> Unit
             }
         }
+        is ListenerType.Code.SelectLanguage -> {
+            when (mode) {
+                EditorMode.EDITING -> dispatch(Command.Dialog.SelectLanguage(clicked.target))
+                else -> Unit
+            }
+        }
     }
 
     fun onPlusButtonPressed() {
@@ -2922,6 +2928,24 @@ class PageViewModel(
                 false
             }
         } ?: run { false }
+    }
+
+    fun onSelectProgrammingLanguageClicked(target: Id, key: String) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.CRUD.UpdateFields(
+                    context = context,
+                    fields = listOf(
+                        Pair(
+                            target,
+                            Block.Fields(
+                                mapOf("lang" to key)
+                            )
+                        )
+                    )
+                )
+            )
+        }
     }
 
     companion object {

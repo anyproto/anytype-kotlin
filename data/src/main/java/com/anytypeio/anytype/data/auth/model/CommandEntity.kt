@@ -168,4 +168,9 @@ class CommandEntity {
         val targets: List<String>,
         val style: BlockEntity.Content.Divider.Style
     )
+
+    data class SetFields(
+        val context: String,
+        val fields: List<Pair<String, BlockEntity.Fields>>
+    )
 }

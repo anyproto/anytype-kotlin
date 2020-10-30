@@ -76,4 +76,8 @@ sealed class Command {
         val target: Id,
         val url: Url
     ) : Command()
+
+    sealed class Dialog : Command() {
+        data class SelectLanguage(val target: String) : Dialog()
+    }
 }

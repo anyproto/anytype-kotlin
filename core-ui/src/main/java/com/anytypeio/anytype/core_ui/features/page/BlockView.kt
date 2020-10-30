@@ -472,7 +472,8 @@ sealed class BlockView : ViewType, Parcelable {
         override val isSelected: Boolean = false,
         override val color: String? = null,
         override val backgroundColor: String? = null,
-        override val indent: Int = 0
+        override val indent: Int = 0,
+        val lang: String? = null
     ) : BlockView(), Permission, Selectable, Focusable, Indentable, TextSupport {
         override fun getViewType() = HOLDER_CODE_SNIPPET
     }

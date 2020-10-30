@@ -56,5 +56,7 @@ interface BlockRemote {
         position: PositionEntity
     ): PayloadEntity
 
-    suspend fun updateDivider(command: CommandEntity.UpdateDivider) : PayloadEntity
+    suspend fun updateDivider(command: CommandEntity.UpdateDivider): PayloadEntity
+
+    suspend fun setFields(command: CommandEntity.SetFields): PayloadEntity
 }

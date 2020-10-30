@@ -103,4 +103,19 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
         }
         super.onSelectionChanged(selStart, selEnd)
     }
+
+    override fun setupSyntax(lang: String?) {
+        if (lang == null) {
+            rules.clear()
+            clearHighlights()
+        } else {
+            val result = context.obtainSyntaxRules(lang)
+            if (result.isEmpty()) {
+                addRules(context.obtainGenericSyntaxRules())
+            } else {
+                addRules(result)
+            }
+            highlight()
+        }
+    }
 }

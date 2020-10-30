@@ -106,6 +106,9 @@ open class EditorPresentationTestSetup {
     lateinit var uploadBlock: UploadBlock
 
     @Mock
+    lateinit var updateFields: UpdateFields
+
+    @Mock
     lateinit var paste: Paste
 
     @Mock
@@ -205,7 +208,8 @@ open class EditorPresentationTestSetup {
                 copy = copy,
                 move = move,
                 turnIntoDocument = turnIntoDocument,
-                analytics = analytics
+                analytics = analytics,
+                updateFields = updateFields
             ),
             bridge = Bridge()
         )

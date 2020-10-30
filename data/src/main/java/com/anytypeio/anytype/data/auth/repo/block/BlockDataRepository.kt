@@ -3,6 +3,8 @@ package com.anytypeio.anytype.data.auth.repo.block
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.mapper.toDomain
 import com.anytypeio.anytype.data.auth.mapper.toEntity
+import com.anytypeio.anytype.data.auth.model.BlockEntity
+import com.anytypeio.anytype.data.auth.model.CommandEntity
 import com.anytypeio.anytype.data.auth.model.PositionEntity
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.model.Command
@@ -34,7 +36,8 @@ class BlockDataRepository(
         Result.Failure(Error.BackwardCompatibility)
     }
 
-    override suspend fun openProfile(id: String): Payload = factory.remote.openProfile(id).toDomain()
+    override suspend fun openProfile(id: String): Payload =
+        factory.remote.openProfile(id).toDomain()
 
     override suspend fun closeDashboard(id: String) {
         factory.remote.closeDashboard(id)
@@ -42,7 +45,7 @@ class BlockDataRepository(
 
     override suspend fun updateAlignment(
         command: Command.UpdateAlignment
-    ) : Payload = factory.remote.updateAlignment(command.toEntity()).toDomain()
+    ): Payload = factory.remote.updateAlignment(command.toEntity()).toDomain()
 
     override suspend fun createPage(parentId: String, emoji: String?) =
         factory.remote.createPage(parentId, emoji)
@@ -61,7 +64,7 @@ class BlockDataRepository(
 
     override suspend fun updateTextStyle(
         command: Command.UpdateStyle
-    ) : Payload = factory.remote.updateTextStyle(command.toEntity()).toDomain()
+    ): Payload = factory.remote.updateTextStyle(command.toEntity()).toDomain()
 
     override suspend fun updateTextColor(
         command: Command.UpdateTextColor
@@ -144,11 +147,11 @@ class BlockDataRepository(
 
     override suspend fun undo(
         command: Command.Undo
-    ) : Payload = factory.remote.undo(command.toEntity()).toDomain()
+    ): Payload = factory.remote.undo(command.toEntity()).toDomain()
 
     override suspend fun redo(
         command: Command.Redo
-    ) : Payload = factory.remote.redo(command.toEntity()).toDomain()
+    ): Payload = factory.remote.redo(command.toEntity()).toDomain()
 
     override suspend fun archiveDocument(
         command: Command.ArchiveDocument
@@ -190,6 +193,18 @@ class BlockDataRepository(
         position = PositionEntity.valueOf(position.name)
     ).toDomain()
 
-    override suspend fun updateDivider(command: Command.UpdateDivider): Payload =
-        factory.remote.updateDivider(command = command.toEntity()).toDomain()
+    override suspend fun updateDivider(
+        command: Command.UpdateDivider
+    ): Payload = factory.remote.updateDivider(command = command.toEntity()).toDomain()
+
+    override suspend fun setFields(
+        command: Command.SetFields
+    ): Payload = factory.remote.setFields(
+        command = CommandEntity.SetFields(
+            context = command.context,
+            fields = command.fields.map { (id, fields) ->
+                id to BlockEntity.Fields(fields.map.toMutableMap())
+            }
+        )
+    ).toDomain()
 }

@@ -167,6 +167,7 @@ object EditorSessionModule {
         updateTitle: UpdateTitle,
         updateText: UpdateText,
         uploadBlock: UploadBlock,
+        updateFields: UpdateFields,
         updateAlignment: UpdateAlignment,
         setupBookmark: SetupBookmark,
         turnIntoDocument: TurnIntoDocument,
@@ -209,7 +210,8 @@ object EditorSessionModule {
         move = move,
         paste = paste,
         copy = copy,
-        analytics = analytics
+        analytics = analytics,
+        updateFields = updateFields
     )
 }
 
@@ -520,4 +522,11 @@ object EditorUseCaseModule {
     ): TurnIntoDocument = TurnIntoDocument(
         repo = repo
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideUpdateFieldsUseCase(
+        repo: BlockRepository
+    ): UpdateFields = UpdateFields(repo)
 }

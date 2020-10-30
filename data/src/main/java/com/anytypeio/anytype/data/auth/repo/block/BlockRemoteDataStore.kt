@@ -148,6 +148,11 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         position = position
     )
 
-    override suspend fun updateDivider(command: CommandEntity.UpdateDivider): PayloadEntity =
-        remote.updateDivider(command)
+    override suspend fun updateDivider(
+        command: CommandEntity.UpdateDivider
+    ): PayloadEntity = remote.updateDivider(command)
+
+    override suspend fun setFields(
+        command: CommandEntity.SetFields
+    ): PayloadEntity = remote.setFields(command)
 }

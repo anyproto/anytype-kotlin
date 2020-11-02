@@ -8,6 +8,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
 import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
 import com.anytypeio.anytype.domain.device.PathProvider
@@ -19,6 +20,7 @@ import timber.log.Timber
 
 class KeychainLoginViewModel(
     private val recoverWallet: RecoverWallet,
+    private val convertWallet: ConvertWallet,
     private val saveMnemonic: SaveMnemonic,
     private val pathProvider: PathProvider,
     private val analytics: Analytics
@@ -39,6 +41,17 @@ class KeychainLoginViewModel(
 
     fun onBackButtonPressed() {
         navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
+    }
+
+    fun onGetEntropy(entropy: String) {
+        viewModelScope.launch {
+            convertWallet(
+                params = ConvertWallet.Request(entropy)
+            ).proceed(
+                failure = { Timber.e(it, "Error while convert wallet") },
+                success = { mnemonic -> proceedWithRecoveringWallet(mnemonic) }
+            )
+        }
     }
 
     private fun proceedWithRecoveringWallet(chain: String) {

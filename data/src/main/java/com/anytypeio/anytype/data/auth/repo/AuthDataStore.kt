@@ -23,6 +23,7 @@ interface AuthDataStore {
 
     suspend fun createWallet(path: String): WalletEntity
     suspend fun recoverWallet(path: String, mnemonic: String)
+    suspend fun convertWallet(entropy: String): String
     suspend fun saveMnemonic(mnemonic: String)
     suspend fun getMnemonic(): String
 

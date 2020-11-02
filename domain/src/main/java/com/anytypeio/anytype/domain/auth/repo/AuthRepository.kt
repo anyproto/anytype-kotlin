@@ -27,6 +27,8 @@ interface AuthRepository {
 
     suspend fun getCurrentAccountId(): String
 
+    suspend fun convertWallet(entropy: String): String
+
     suspend fun createWallet(path: String): Wallet
 
     suspend fun recoverWallet(path: String, mnemonic: String)

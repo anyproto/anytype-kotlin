@@ -73,6 +73,8 @@ class AuthMiddleware(
         middleware.recoverWallet(path, mnemonic)
     }
 
+    override suspend fun convertWallet(entropy: String): String = middleware.convertWallet(entropy)
+
     override suspend fun logout() {
         middleware.logout()
     }

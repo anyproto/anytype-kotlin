@@ -35,17 +35,29 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageView
+                android:id="@+id/ivqrcode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="24dp"
+                android:visibility="gone"
+                android:contentDescription="@string/content_description_qr_image"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title"
+                app:srcCompat="@drawable/ic_qr_code" />
+
             <View
                 android:id="@+id/divider"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_marginStart="@dimen/auth_default_margin_start"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
                 android:background="@color/auth_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title" />
+                app:layout_constraintTop_toBottomOf="@+id/ivqrcode" />
 
             <EditText
                 android:id="@+id/keychainInputField"
@@ -105,6 +117,23 @@
                 app:layout_constraintBottom_toBottomOf="@+id/loginButton"
                 app:layout_constraintEnd_toEndOf="@+id/loginButton"
                 app:layout_constraintTop_toTopOf="@+id/loginButton" />
+
+            <TextView
+                android:id="@+id/tvqrcode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="20dp"
+                android:drawableEnd="@drawable/ic_arrow_forward"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/or_scan_qr_code"
+                android:textSize="17sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/ivqrcode"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ivqrcode"
+                app:layout_constraintTop_toTopOf="@+id/ivqrcode" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

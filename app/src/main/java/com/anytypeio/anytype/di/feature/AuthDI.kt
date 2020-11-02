@@ -281,11 +281,13 @@ object KeychainLoginModule {
     fun provideKeychainLoginViewModelFactory(
         pathProvider: PathProvider,
         recoverWallet: RecoverWallet,
+        convertWallet: ConvertWallet,
         saveMnemonic: SaveMnemonic,
         analytics: Analytics
     ): KeychainLoginViewModelFactory {
         return KeychainLoginViewModelFactory(
             pathProvider = pathProvider,
+            convertWallet = convertWallet,
             recoverWallet = recoverWallet,
             saveMnemonic = saveMnemonic,
             analytics = analytics
@@ -311,6 +313,17 @@ object KeychainLoginModule {
     ): SaveMnemonic {
         return SaveMnemonic(
             repository = authRepository
+        )
+    }
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideConvertWallet(
+        authRepository: AuthRepository
+    ) : ConvertWallet {
+        return ConvertWallet(
+            authRepository = authRepository
         )
     }
 }

@@ -47,6 +47,7 @@ ext {
     rxbinding_version = '3.0.0'
     permission_disp_version = '4.6.0'
     pickt_version = "0.1.11"
+    zxing_version = "4.1.0"
     urlcleaner_version = "0.4.0"
 
     // Unit Testing
@@ -130,10 +131,11 @@ ext {
             permissionDisp:             "org.permissionsdispatcher:permissionsdispatcher:$permission_disp_version",
             permissionDispCompiler:     "org.permissionsdispatcher:permissionsdispatcher-processor:$permission_disp_version",
             pickT:                      "com.github.HBiSoft:PickiT:$pickt_version",
+            zxing:                      "com.journeyapps:zxing-android-embedded:$zxing_version",
             urlcleaner:                 "com.shekhargulati.urlcleaner:urlcleaner:$urlcleaner_version",
-            kotlinxSerializationJson:     "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_json_version",
-            crashlytics:               "com.google.firebase:firebase-crashlytics:$crashlytics_version",
-            firebaseCore:              "com.google.firebase:firebase-core:$firebase_core_version"
+            kotlinxSerializationJson:   "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_json_version",
+            crashlytics:                "com.google.firebase:firebase-crashlytics:$crashlytics_version",
+            firebaseCore:               "com.google.firebase:firebase-core:$firebase_core_version"
     ]
 
     unitTesting = [

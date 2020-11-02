@@ -37,6 +37,17 @@ public class DefaultMiddlewareService implements MiddlewareService {
     }
 
     @Override
+    public Wallet.Convert.Response walletConvert(Wallet.Convert.Request request) throws Exception {
+        byte[] encoded = Service.walletConvert(request.toByteArray());
+        Wallet.Convert.Response response = Wallet.Convert.Response.parseFrom(encoded);
+        if (response.getError() != null && response.getError().getCode() != Wallet.Convert.Response.Error.Code.NULL) {
+            throw new Exception(response.getError().getDescription());
+        } else {
+            return response;
+        }
+    }
+
+    @Override
     public Account.Create.Response accountCreate(Account.Create.Request request) throws Exception {
         byte[] encoded = Service.accountCreate(request.toByteArray());
         Account.Create.Response response = Account.Create.Response.parseFrom(encoded);

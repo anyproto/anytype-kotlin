@@ -24,6 +24,7 @@
     <string name="content_description_more_button">More button</string>
     <string name="content_description_avatar_image">Avatar image</string>
     <string name="content_description_bookmark_image">Bookmark image</string>
+    <string name="content_description_qr_image">QR code</string>
     <string name="content_description_toggle_icon">Toggle icon</string>
     <string name="content_description_turn_into_arrow">Turn into arrow</string>
     <string name="content_description_document_previous_search_result_icon">Document previous search result icon</string>

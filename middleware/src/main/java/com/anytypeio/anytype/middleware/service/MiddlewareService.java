@@ -17,6 +17,8 @@ public interface MiddlewareService {
 
     Wallet.Create.Response walletCreate(Wallet.Create.Request request) throws Exception;
 
+    Wallet.Convert.Response walletConvert(Wallet.Convert.Request request) throws Exception;
+
     Wallet.Recover.Response walletRecover(Wallet.Recover.Request request) throws Exception;
 
     Account.Create.Response accountCreate(Account.Create.Request request) throws Exception;

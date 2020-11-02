@@ -34,6 +34,10 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
         throw UnsupportedOperationException()
     }
 
+    override suspend fun convertWallet(entropy: String): String {
+        throw UnsupportedOperationException()
+    }
+
     override suspend fun recoverWallet(path: String, mnemonic: String) {
         throw UnsupportedOperationException()
     }

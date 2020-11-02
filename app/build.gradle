@@ -138,6 +138,7 @@ dependencies {
 
     implementation applicationDependencies.blurry
     implementation applicationDependencies.photoView
+    implementation applicationDependencies.zxing
 
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.junit

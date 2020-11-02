@@ -56,7 +56,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="sign_up">Sign up</string>
     <string name="type_your_keychain">Type your keychain phrase</string>
     <string name="login_with_keychain">Login with keychain</string>
-    <string name="or_scan_qr_code">or Scan QR code</string>
+    <string name="or_scan_qr_code">Scan QR code</string>
     <string name="choose_pin_code">Choose pin code</string>
     <string name="congratulations">Congratulations!</string>
     <string name="time_to_update_title">It\'s time to update</string>

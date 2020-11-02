@@ -1,9 +1,10 @@
 package com.anytypeio.anytype.ui.auth
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.presentation.auth.congratulation.ViewState
 import com.anytypeio.anytype.presentation.auth.keychain.KeychainLoginViewModel
 import com.anytypeio.anytype.presentation.auth.keychain.KeychainLoginViewModelFactory
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.android.synthetic.main.fragment_keychain_login.*
 import javax.inject.Inject
 
@@ -20,12 +22,7 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
 
     @Inject
     lateinit var factory: KeychainLoginViewModelFactory
-
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(KeychainLoginViewModel::class.java)
-    }
+    private val vm by viewModels<KeychainLoginViewModel> { factory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -81,6 +78,21 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
             )
         }
         backButton.setOnClickListener { vm.onBackButtonPressed() }
+        tvqrcode.setOnClickListener {
+            IntentIntegrator.forSupportFragment(this).initiateScan()
+        }
+        ivqrcode.setOnClickListener {
+            IntentIntegrator.forSupportFragment(this).initiateScan()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null && result.contents != null) {
+            vm.onGetEntropy(result.contents)
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
     }
 
     override fun injectDependencies() {

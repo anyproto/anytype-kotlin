@@ -35,6 +35,9 @@ class AuthRemoteDataStore(
         authRemote.recoverWallet(path, mnemonic)
     }
 
+    override suspend fun convertWallet(entropy: String): String =
+        authRemote.convertWallet(entropy)
+
     override suspend fun saveMnemonic(mnemonic: String) {
         throw UnsupportedOperationException()
     }

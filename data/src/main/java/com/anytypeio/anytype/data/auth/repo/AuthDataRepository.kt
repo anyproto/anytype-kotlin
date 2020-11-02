@@ -41,6 +41,9 @@ class AuthDataRepository(
         path: String
     ): Wallet = factory.remote.createWallet(path).toDomain()
 
+    override suspend fun convertWallet(entropy: String): String =
+        factory.remote.convertWallet(entropy)
+
     override suspend fun recoverWallet(path: String, mnemonic: String) {
         factory.remote.recoverWallet(path, mnemonic)
     }

@@ -145,6 +145,25 @@ public class Middleware {
         }
     }
 
+    public String convertWallet(String entropy) throws Exception {
+        Wallet.Convert.Request request = Wallet.Convert.Request
+                .newBuilder()
+                .setEntropy(entropy)
+                .build();
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(request.getClass().getName() + "\n" + request.toString());
+        }
+
+        Wallet.Convert.Response response = service.walletConvert(request);
+
+        if (BuildConfig.DEBUG) {
+            Timber.d(response.getClass().getName() + "\n" + response.toString());
+        }
+
+        return response.getMnemonic();
+    }
+
     public void logout() throws Exception {
         Account.Stop.Request request = Account.Stop.Request
                 .newBuilder()

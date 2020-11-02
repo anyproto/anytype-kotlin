@@ -4,13 +4,26 @@
 
 ### New features & enhancements 🚀
 
+* Code-snippet syntax highlighting | First iteration: support syntax highlighting natively for Kotlin, Javascript, Go, Python, Typescript, Json, and Css. Add generic syntax highlight for other programming languages (#989)
+* When creating a new page via mention suggester, should generate title for the new page from what user typed after mention character (#994)
 * Inherit style properties from the previous list item when creating a new list item on enter press (#1017)
 * Enabled search-on-page for profile document (#1027)
+* Search text through media blocks (bookmark, link, file) (#1008)
+* User can change code block's background color (#1013)
 
 ### Fixes & tech 🚒
 
+* Should not delete a text block's style properties when creating a mention inside this block (#699)
+* When checkbox is checked, all text should have the same color, even if this text block has markup (#833)
+* When switching from read mode to edit mode, create-mention trigger does not work (#1037)
+* When copying a text block to clipboard, copy also its style properties (#1015)
+* It's impossible to open the linked text just after adding link to this text (#883)
+* When navigating to a document via navigation-structure screen, open this new document without passing by dashboard-screen (#1010)
+* Prevent from moving link into the document that this link is pointing to (#1025)
 * Fix soft input visibility/focusing issues on Android 7.1 (#1029)
 * Keyboard won't show up in code snippet (#1024)
+* When changing image block's indentation, image is not scaled correctly (#1021)
+* Setup for the upcoming login-with-qr-code feature (#822)
 
 ### Middleware ⚙
 

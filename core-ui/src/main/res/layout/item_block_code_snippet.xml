@@ -34,6 +34,7 @@
             android:text="@string/block_code_menu_title" />
 
         <HorizontalScrollView
+            android:fillViewport="true"
             android:scrollbars="none"
             android:overScrollMode="never"
             android:id="@+id/scroll"

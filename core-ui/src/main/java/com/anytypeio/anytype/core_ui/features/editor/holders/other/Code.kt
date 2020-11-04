@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_ui.widgets.text.CodeTextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.imm
+import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
 import com.anytypeio.anytype.library_syntax_highlighter.Syntaxes
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import timber.log.Timber
@@ -90,6 +91,9 @@ class Code(view: View) : BlockViewHolder(view) {
                     }
                 }
             }
+
+            // TODO add backspace detector
+
             content.selectionWatcher = { onSelectionChanged(item.id, it) }
         }
 
@@ -204,5 +208,20 @@ class Code(view: View) : BlockViewHolder(view) {
         } else {
             (container.background as? GradientDrawable)?.setColor(ThemeColorCode.DEFAULT.background)
         }
+    }
+
+    fun enableBackspaceDetector(
+        onEmptyBlockBackspaceClicked: () -> Unit,
+        onNonEmptyBlockBackspaceClicked: () -> Unit
+    ) {
+        content.setOnKeyListener(
+            BackspaceKeyDetector {
+                if (content.text.toString().isEmpty()) {
+                    onEmptyBlockBackspaceClicked()
+                } else {
+                    onNonEmptyBlockBackspaceClicked()
+                }
+            }
+        )
     }
 }

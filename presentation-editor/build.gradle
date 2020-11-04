@@ -25,7 +25,6 @@ dependencies {
 
     implementation project(':domain')
     implementation project(':core-utils')
-    implementation project(':core-ui')
     implementation project(':library-page-icon-picker-widget')
 
     def applicationDependencies = rootProject.ext.mainApplication

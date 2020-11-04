@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.presentation.page.editor.Markup
 import kotlinx.android.synthetic.main.widget_markup_toolbar.view.*
 import kotlinx.coroutines.flow.flattenMerge
 import kotlinx.coroutines.flow.flowOf

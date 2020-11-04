@@ -3,12 +3,12 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.media
 import android.graphics.drawable.Drawable
 import android.view.View
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.features.page.BlockView
-import com.anytypeio.anytype.core_ui.features.page.ListenerType
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.indentize
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException

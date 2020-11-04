@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.imm
 import kotlinx.android.synthetic.main.widget_doc_search_engine_toolbar.view.*
 import kotlinx.coroutines.flow.*
+import com.anytypeio.anytype.presentation.page.editor.search.SearchInDocEvent as Event
 
 class SearchToolbarWidget : ConstraintLayout {
 
@@ -70,15 +71,6 @@ class SearchToolbarWidget : ConstraintLayout {
 
     private fun inflate() {
         LayoutInflater.from(context).inflate(R.layout.widget_doc_search_engine_toolbar, this)
-    }
-
-    sealed class Event {
-        object Clear : Event()
-        object Cancel : Event()
-        object Next : Event()
-        object Search : Event()
-        object Previous : Event()
-        data class Query(val query: String) : Event()
     }
 
     companion object

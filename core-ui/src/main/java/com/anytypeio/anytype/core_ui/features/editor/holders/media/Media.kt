@@ -1,9 +1,13 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.media
 
 import android.view.View
-import com.anytypeio.anytype.core_ui.features.page.*
+import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
+import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
 import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions
+import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 abstract class Media(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder {
 

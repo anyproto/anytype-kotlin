@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_ui.features.navigation.PageLinkView
-import com.anytypeio.anytype.core_ui.features.navigation.filterBy
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.timber
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
@@ -14,7 +12,9 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.navigation.PageLinkView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.navigation.filterBy
 import kotlinx.coroutines.launch
 
 class PageSearchViewModel(

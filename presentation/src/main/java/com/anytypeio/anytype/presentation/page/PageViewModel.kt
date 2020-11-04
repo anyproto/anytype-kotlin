@@ -23,23 +23,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_STYLE
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_ui.common.Alignment
-import com.anytypeio.anytype.core_ui.common.Focusable
-import com.anytypeio.anytype.core_ui.common.Markup
-import com.anytypeio.anytype.core_ui.extensions.updateSelection
-import com.anytypeio.anytype.core_ui.features.page.*
-import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.END_RANGE
-import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
-import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingEvent
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingMode
-import com.anytypeio.anytype.core_ui.model.UiBlock
-import com.anytypeio.anytype.core_ui.state.ControlPanelState
-import com.anytypeio.anytype.core_ui.widgets.ActionItemType
-import com.anytypeio.anytype.core_ui.widgets.toolbar.SearchToolbarWidget
-import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
-import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.MentionAdapter
-import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.getMentionName
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
@@ -75,6 +58,23 @@ import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesFor
 import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForLineDivider
 import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForText
 import com.anytypeio.anytype.presentation.page.editor.*
+import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
+import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.page.editor.ext.*
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.mention.Mention
+import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
+import com.anytypeio.anytype.presentation.page.editor.mention.getMentionName
+import com.anytypeio.anytype.presentation.page.editor.model.Alignment
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.Focusable
+import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor.Companion.END_RANGE
+import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
+import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
+import com.anytypeio.anytype.presentation.page.editor.search.SearchInDocEvent
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
 import com.anytypeio.anytype.presentation.page.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
@@ -1375,10 +1375,10 @@ class PageViewModel(
         viewModelScope.launch { controlPanelInteractor.onEvent(ControlPanelMachine.Event.SearchToolbar.OnEnterSearchMode) }
     }
 
-    fun onSearchToolbarEvent(event: SearchToolbarWidget.Event) {
+    fun onSearchToolbarEvent(event: SearchInDocEvent) {
         if (mode != EditorMode.SEARCH) return
         when (event) {
-            is SearchToolbarWidget.Event.Query -> {
+            is SearchInDocEvent.Query -> {
                 val query = event.query.trim()
                 val update = if (query.isEmpty()) {
                     views.clearSearchHighlights()
@@ -1398,7 +1398,7 @@ class PageViewModel(
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
             }
-            is SearchToolbarWidget.Event.Next -> {
+            is SearchInDocEvent.Next -> {
                 val update = views.nextSearchTarget()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
@@ -1408,7 +1408,7 @@ class PageViewModel(
                 val pos = update.indexOf(target)
                 searchResultScrollPosition.value = pos
             }
-            is SearchToolbarWidget.Event.Previous -> {
+            is SearchInDocEvent.Previous -> {
                 val update = views.previousSearchTarget()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
@@ -1418,7 +1418,7 @@ class PageViewModel(
                 val pos = update.indexOf(target)
                 searchResultScrollPosition.value = pos
             }
-            is SearchToolbarWidget.Event.Cancel -> {
+            is SearchInDocEvent.Cancel -> {
                 mode = EditorMode.EDITING
                 val update = views.clearSearchHighlights().toEditMode()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
@@ -1426,7 +1426,7 @@ class PageViewModel(
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.SearchToolbar.OnExitSearchMode)
                 dispatch(Command.ClearSearchInput)
             }
-            is SearchToolbarWidget.Event.Search -> {
+            is SearchInDocEvent.Search -> {
                 val update = views.nextSearchTarget()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
@@ -2804,7 +2804,7 @@ class PageViewModel(
     fun onAddMentionNewPageClicked(name: String) {
 
         val params = CreateNewDocument.Params(
-            name = name.removePrefix(MentionAdapter.MENTION_PREFIX)
+            name = name.removePrefix(Mention.MENTION_PREFIX)
         )
 
         val startTime = System.currentTimeMillis()

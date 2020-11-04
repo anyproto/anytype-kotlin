@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.ui.page.modals.actions
 
 import androidx.core.os.bundleOf
-import com.anytypeio.anytype.core_ui.features.page.BlockDimensions
-import com.anytypeio.anytype.core_ui.features.page.BlockView
+import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 object BlockActionToolbarFactory {
 

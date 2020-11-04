@@ -7,8 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 class ErrorActionToolbar : BlockActionToolbar() {
 

@@ -2,11 +2,6 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_ui.common.Markup
-import com.anytypeio.anytype.core_ui.features.page.BlockView
-import com.anytypeio.anytype.core_ui.features.page.MentionEvent
-import com.anytypeio.anytype.core_ui.state.ControlPanelState
-import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.ext.content
@@ -14,6 +9,10 @@ import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.page.CreateNewDocument
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.presentation.page.PageViewModel
+import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.page.editor.mention.Mention
+import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test

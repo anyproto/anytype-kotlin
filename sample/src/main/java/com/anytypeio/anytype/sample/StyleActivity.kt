@@ -3,11 +3,10 @@ package com.anytypeio.anytype.sample
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import com.anytypeio.anytype.core_ui.common.Alignment
-import com.anytypeio.anytype.core_ui.common.Markup
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingType
-import com.anytypeio.anytype.core_ui.model.StyleConfig
-import com.anytypeio.anytype.core_ui.state.ControlPanelState
+import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.page.editor.model.Alignment
+import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingType
 import kotlinx.android.synthetic.main.activity_style.*
 
 class StyleActivity: AppCompatActivity() {
@@ -35,9 +34,12 @@ class StyleActivity: AppCompatActivity() {
                         Markup.Type.KEYBOARD,
                         Markup.Type.LINK
                     ),
-                    enabledAlignment = listOf(Alignment.START, Alignment.END)
+                    enabledAlignment = listOf(
+                        Alignment.START,
+                        Alignment.END
+                    )
                 ),
-                props = ControlPanelState.Toolbar.Styling.Props(
+                props = com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState.Toolbar.Styling.Props(
                     isBold = false,
                     isItalic = false,
                     isStrikethrough = true,

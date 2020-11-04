@@ -2,11 +2,10 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.placeholders
 
 import android.view.View
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.features.page.BlockView
-import com.anytypeio.anytype.core_ui.features.page.ListenerType
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.indentize
-import kotlinx.android.synthetic.main.item_block_file_placeholder.view.*
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 class FilePlaceholder(view: View) : MediaPlaceholder(view) {
 

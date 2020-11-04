@@ -1,13 +1,5 @@
 package com.anytypeio.anytype.presentation.page
 
-import com.anytypeio.anytype.core_ui.common.Alignment
-import com.anytypeio.anytype.core_ui.common.Markup
-import com.anytypeio.anytype.core_ui.common.ThemeColor
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingMode
-import com.anytypeio.anytype.core_ui.state.ControlPanelState
-import com.anytypeio.anytype.core_ui.state.ControlPanelState.Companion.init
-import com.anytypeio.anytype.core_ui.state.ControlPanelState.Toolbar
-import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.domain.ext.overlap
@@ -16,7 +8,15 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.extension.isInRange
 import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.page.ControlPanelMachine.*
-import com.anytypeio.anytype.presentation.page.editor.getStyleConfig
+import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState.Companion.init
+import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState.Toolbar
+import com.anytypeio.anytype.presentation.page.editor.mention.Mention
+import com.anytypeio.anytype.presentation.page.editor.model.Alignment
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
+import com.anytypeio.anytype.presentation.page.editor.styling.getStyleConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -272,7 +272,7 @@ sealed class ControlPanelMachine {
             is Event.OnTextInputClicked -> {
                 if (state.stylingToolbar.isVisible) {
                     state.copy(
-                        stylingToolbar = Toolbar.Styling.reset(),
+                        stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
                         mainToolbar = state.mainToolbar.copy(isVisible = true),
                         navigationToolbar = state.navigationToolbar.copy(
                             isVisible = false

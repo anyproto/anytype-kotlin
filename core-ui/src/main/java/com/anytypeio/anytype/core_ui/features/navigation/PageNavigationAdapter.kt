@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.presentation.navigation.PageLinkView
 
 class PageNavigationAdapter(
     private val onClick: (String) -> Unit,

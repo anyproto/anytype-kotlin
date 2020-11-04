@@ -2,8 +2,6 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.view.View
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.Markup
-import com.anytypeio.anytype.core_ui.menu.ContextMenuType
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import kotlinx.android.synthetic.main.item_block_header_three.view.*
 

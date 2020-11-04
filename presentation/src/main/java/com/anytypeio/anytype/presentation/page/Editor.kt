@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.page
 
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.presentation.page.editor.Proxy
 import com.anytypeio.anytype.presentation.page.editor.Store
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 
 interface Editor {

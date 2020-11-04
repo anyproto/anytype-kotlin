@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.page.render
 
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.page.EditorMode
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 /**
  * Converts business tree-like data structures to flattened view data structures.

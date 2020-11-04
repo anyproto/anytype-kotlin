@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.MentionAdapter
+import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import kotlinx.android.synthetic.main.widget_mention_menu.view.*
 
 class MentionToolbar @JvmOverloads constructor(

@@ -13,12 +13,12 @@ import android.view.ViewTreeObserver
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.menu.ContextMenuType
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateContentBounds
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.lerp
+import com.anytypeio.anytype.presentation.page.editor.Markup
 import java.lang.ref.WeakReference
 
 class AnytypeContextMenu constructor(

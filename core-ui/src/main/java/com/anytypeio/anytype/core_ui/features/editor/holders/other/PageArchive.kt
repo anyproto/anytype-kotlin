@@ -5,18 +5,22 @@ import android.text.SpannableStringBuilder
 import android.view.View
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.common.Span
-import com.anytypeio.anytype.core_ui.features.page.*
-import com.anytypeio.anytype.core_ui.features.page.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
+import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
+import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
+import com.anytypeio.anytype.core_ui.features.page.SupportNesting
 import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_block_page_archived.view.*
@@ -71,7 +75,7 @@ class PageArchive(view: View) : BlockViewHolder(view), BlockViewHolder.Indentabl
                 try {
                     Glide
                         .with(emoji)
-                        .load(Emojifier.uri(item.emoji))
+                        .load(Emojifier.uri(item.emoji!!))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(emoji)
                 } catch (e: Exception) {

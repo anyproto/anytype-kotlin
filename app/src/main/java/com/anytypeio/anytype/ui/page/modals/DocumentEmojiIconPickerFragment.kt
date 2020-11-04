@@ -17,10 +17,11 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
-import com.anytypeio.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerViewHolder
 import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModel
 import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModel.ViewState
 import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModelFactory
+import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView.Companion.HOLDER_EMOJI_CATEGORY_HEADER
+import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView.Companion.HOLDER_EMOJI_ITEM
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
@@ -87,8 +88,8 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int) =
                         when (val type = emojiPickerAdapter.getItemViewType(position)) {
-                            DocumentEmojiIconPickerViewHolder.HOLDER_EMOJI_ITEM -> 1
-                            DocumentEmojiIconPickerViewHolder.HOLDER_EMOJI_CATEGORY_HEADER -> PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT
+                            HOLDER_EMOJI_ITEM -> 1
+                            HOLDER_EMOJI_CATEGORY_HEADER -> PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT
                             else -> throw IllegalStateException("$UNEXPECTED_VIEW_TYPE_MESSAGE: $type")
                         }
                 }

@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.library_page_icon_picker_widget.R
-import com.anytypeio.anytype.library_page_icon_picker_widget.model.EmojiPickerView
+import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_page_icon_picker_emoji_category_header.view.*
@@ -49,10 +49,5 @@ sealed class DocumentEmojiIconPickerViewHolder(view: View) : RecyclerView.ViewHo
 
             itemView.setOnClickListener { onEmojiClicked(item.unicode) }
         }
-    }
-
-    companion object {
-        const val HOLDER_EMOJI_CATEGORY_HEADER = 1
-        const val HOLDER_EMOJI_ITEM = 2
     }
 }

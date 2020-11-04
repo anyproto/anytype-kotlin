@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.core_ui.features.navigation
 
 import com.anytypeio.anytype.core_ui.MockDataFactory
+import com.anytypeio.anytype.presentation.navigation.PageLinkView
+import com.anytypeio.anytype.presentation.navigation.filterBy
+import com.anytypeio.anytype.presentation.navigation.isContainsText
 import org.junit.Assert.*
 import org.junit.Test
 

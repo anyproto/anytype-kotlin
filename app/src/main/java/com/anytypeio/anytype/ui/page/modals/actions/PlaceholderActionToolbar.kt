@@ -7,11 +7,11 @@ import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_FILE_PLACEHOLDER
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_PICTURE_PLACEHOLDER
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 class PlaceholderActionToolbar : BlockActionToolbar() {
 

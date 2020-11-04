@@ -5,11 +5,11 @@ import android.text.method.ArrowKeyMovementMethod
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.MockDataFactory
-import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
+import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import org.junit.Test
 import org.junit.runner.RunWith

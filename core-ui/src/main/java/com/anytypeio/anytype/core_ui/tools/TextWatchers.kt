@@ -2,10 +2,10 @@ package com.anytypeio.anytype.core_ui.tools
 
 import android.text.Editable
 import android.text.TextWatcher
-import com.anytypeio.anytype.core_ui.features.page.MentionEvent
 import com.anytypeio.anytype.core_ui.tools.MentionHelper.getUpdatedMention
 import com.anytypeio.anytype.core_ui.tools.MentionHelper.isMentionDeleted
 import com.anytypeio.anytype.core_ui.tools.MentionHelper.isMentionSuggestTriggered
+import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
 import timber.log.Timber
 
 class DefaultTextWatcher(val onTextChanged: (Editable) -> Unit) : TextWatcher {

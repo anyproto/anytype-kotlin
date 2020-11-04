@@ -1,14 +1,14 @@
 package com.anytypeio.anytype.presentation.page
 
 import MockDataFactory
-import com.anytypeio.anytype.core_ui.features.page.BlockDimensions
-import com.anytypeio.anytype.core_ui.features.page.BlockView
-import com.anytypeio.anytype.core_ui.features.page.ListenerType
-import com.anytypeio.anytype.core_ui.widgets.ActionItemType
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.event.model.Event
 import com.anytypeio.anytype.domain.ext.content
+import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.page.editor.ViewState
+import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import kotlinx.coroutines.delay

@@ -14,7 +14,6 @@ import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.extensions.avatarColor
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
@@ -25,6 +24,7 @@ import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_block_title.view.*
@@ -205,7 +205,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     try {
                         Glide
                             .with(emoji)
-                            .load(Emojifier.uri(item.emoji))
+                            .load(Emojifier.uri(item.emoji!!))
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .into(emoji)
                     } catch (e: Throwable) {

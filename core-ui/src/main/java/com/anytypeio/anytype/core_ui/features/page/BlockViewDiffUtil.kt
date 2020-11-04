@@ -1,9 +1,10 @@
 package com.anytypeio.anytype.core_ui.features.page
 
 import androidx.recyclerview.widget.DiffUtil
-import com.anytypeio.anytype.core_ui.common.Focusable
-import com.anytypeio.anytype.core_ui.common.Markup
-import com.anytypeio.anytype.core_ui.features.page.BlockView.Indentable
+import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Indentable
+import com.anytypeio.anytype.presentation.page.editor.model.Focusable
 import timber.log.Timber
 
 class BlockViewDiffUtil(

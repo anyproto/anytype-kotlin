@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config

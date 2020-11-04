@@ -7,9 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.getBlockTextColor
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.addDot
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 class NumberedBlockActionToolbar : BlockActionToolbar() {
 

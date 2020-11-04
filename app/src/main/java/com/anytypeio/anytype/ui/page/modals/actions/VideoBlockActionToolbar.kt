@@ -6,8 +6,8 @@ import android.view.View
 import android.widget.ImageView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.BuildConfig
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView

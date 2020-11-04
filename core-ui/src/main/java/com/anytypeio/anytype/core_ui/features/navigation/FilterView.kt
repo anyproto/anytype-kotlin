@@ -4,20 +4,19 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.SearchView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.navigation.PageLinkView
+import com.anytypeio.anytype.presentation.navigation.filterBy
 import kotlinx.android.synthetic.main.view_page_links_filter.view.*
 import kotlinx.android.synthetic.main.widget_search_view.view.*
-import timber.log.Timber
 
 class FilterView @JvmOverloads constructor(
     context: Context,

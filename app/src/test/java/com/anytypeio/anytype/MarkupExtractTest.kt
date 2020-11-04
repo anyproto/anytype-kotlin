@@ -3,13 +3,13 @@ package com.anytypeio.anytype
 import android.os.Build
 import android.text.Spannable
 import android.text.SpannableString
-import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.core_ui.common.Span
-import com.anytypeio.anytype.core_ui.common.ThemeColor
 import com.anytypeio.anytype.core_ui.common.toSpannable
 import com.anytypeio.anytype.domain.block.model.Block.Content.Text.Mark
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.ext.isSpanInRange
+import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import org.junit.Before

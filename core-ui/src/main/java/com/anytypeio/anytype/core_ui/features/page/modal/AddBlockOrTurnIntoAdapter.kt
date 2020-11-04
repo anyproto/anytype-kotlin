@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.ViewType
-import com.anytypeio.anytype.core_ui.model.UiBlock
+import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
 import kotlinx.android.synthetic.main.item_add_block_or_turn_into_item.view.*
 import kotlinx.android.synthetic.main.item_add_block_or_turn_into_section.view.*
 

@@ -8,8 +8,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.features.page.BlockDimensions
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
+import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
 
 fun Context.toast(
     msg: CharSequence,

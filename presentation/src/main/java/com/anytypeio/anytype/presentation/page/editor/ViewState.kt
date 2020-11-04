@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.page.editor
 
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 sealed class ViewState {
     object Loading : ViewState()

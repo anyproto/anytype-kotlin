@@ -1,9 +1,7 @@
 package com.anytypeio.anytype.core_ui.common
 
 import android.content.Context
-import android.os.Parcelable
 import android.text.Editable
-import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ClickableSpan
 import android.view.View
@@ -13,67 +11,9 @@ import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.removeSpans
-import kotlinx.android.parcel.Parcelize
+import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import timber.log.Timber
-
-/**
- * Classes implementing this interface should support markup rendering.
- */
-interface Markup {
-
-    /**
-     * A text body that this markup should be applied to.
-     */
-    val body: String
-
-    /**
-     * List of marks associated with the text body.
-     */
-    var marks: List<Mark>
-
-    /**
-     * @property from caracter index where this markup starts (inclusive)
-     * @property to caracter index where this markup ends (inclusive)
-     * @property type markup's type
-     */
-    @Parcelize
-    data class Mark(
-        val from: Int,
-        val to: Int,
-        val type: Type,
-        val param: String? = null,
-        val extras: Map<String, String?> = emptyMap()
-    ) : Parcelable {
-
-        val image: String? by extras
-        val emoji: String? by extras
-
-        fun color(): Int? = ThemeColor.values().find { color -> color.title == param }?.text
-        fun background(): Int? =
-            ThemeColor.values().find { color -> color.title == param }?.background
-
-    }
-
-    /**
-     * Markup types.
-     */
-    enum class Type {
-        ITALIC,
-        BOLD,
-        STRIKETHROUGH,
-        TEXT_COLOR,
-        BACKGROUND_COLOR,
-        LINK,
-        KEYBOARD,
-        MENTION
-    }
-
-    companion object {
-        const val DEFAULT_SPANNABLE_FLAG = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-        const val MENTION_SPANNABLE_FLAG = Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        const val SPAN_MONOSPACE = "monospace"
-    }
-}
 
 fun Markup.toSpannable(
     textColor: Int,
@@ -257,7 +197,7 @@ fun Editable.setMentionSpan(
                 placeholder = context.drawable(R.drawable.ic_block_page_without_emoji),
                 imageSize = mentionImageSize,
                 imagePadding = mentionImagePadding,
-                param = mark.param,
+                param = mark.param!!,
                 emoji = if (mark.extras.isNotEmpty()) mark.emoji else null,
                 image = if (mark.extras.isNotEmpty()) mark.image else null
             ),
@@ -268,7 +208,7 @@ fun Editable.setMentionSpan(
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 (widget as? TextInputWidget)?.enableReadMode()
-                click?.invoke( mark.param)
+                click?.invoke(mark.param!!)
             }
         }
         setSpan(

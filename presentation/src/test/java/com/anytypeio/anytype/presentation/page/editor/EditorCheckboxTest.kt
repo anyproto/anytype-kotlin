@@ -2,12 +2,12 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.UpdateCheckbox
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.ext.content
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Before

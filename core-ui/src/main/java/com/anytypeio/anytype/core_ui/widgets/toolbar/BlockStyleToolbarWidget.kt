@@ -11,12 +11,12 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.viewpager2.widget.ViewPager2
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.page.styling.BlockStyleAdapter
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingEvent
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingMode
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingType
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_ui.state.ControlPanelState.Toolbar.Styling.Props
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState.Toolbar.Styling.Props
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingType
 import kotlinx.android.synthetic.main.widget_block_style_toolbar.view.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow

@@ -7,8 +7,8 @@ import android.widget.ImageView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.getBlockTextColor
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 class ParagraphBlockActionToolbar : BlockActionToolbar() {
 

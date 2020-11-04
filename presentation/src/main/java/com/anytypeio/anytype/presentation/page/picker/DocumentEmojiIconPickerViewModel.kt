@@ -9,7 +9,6 @@ import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.emojifier.suggest.model.EmojiSuggest
-import com.anytypeio.anytype.library_page_icon_picker_widget.model.EmojiPickerView
 import com.anytypeio.anytype.presentation.page.editor.Proxy
 import com.anytypeio.anytype.presentation.util.Bridge
 import kotlinx.coroutines.Dispatchers

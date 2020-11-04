@@ -1,9 +1,8 @@
 package com.anytypeio.anytype.presentation.page.editor
 
-import com.anytypeio.anytype.core_ui.features.page.BlockDimensions
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 sealed class Command {
 

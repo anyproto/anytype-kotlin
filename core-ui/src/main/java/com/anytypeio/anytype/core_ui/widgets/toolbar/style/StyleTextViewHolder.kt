@@ -2,10 +2,10 @@ package com.anytypeio.anytype.core_ui.widgets.toolbar.style
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.common.Alignment
-import com.anytypeio.anytype.core_ui.common.Markup
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingEvent
-import com.anytypeio.anytype.core_ui.state.ControlPanelState
+import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.page.editor.model.Alignment
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
 import kotlinx.android.synthetic.main.block_style_toolbar_style.view.*
 
 class StyleTextViewHolder(view: View): RecyclerView.ViewHolder(view) {

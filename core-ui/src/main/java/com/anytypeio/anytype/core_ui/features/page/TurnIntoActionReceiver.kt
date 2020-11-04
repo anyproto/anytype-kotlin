@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.page
 
-import com.anytypeio.anytype.core_ui.model.UiBlock
+import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
+
 
 interface TurnIntoActionReceiver {
     /**

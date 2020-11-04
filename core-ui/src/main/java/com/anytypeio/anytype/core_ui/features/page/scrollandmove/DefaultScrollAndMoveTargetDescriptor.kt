@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.page.scrollandmove
 
+import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTarget
+import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor
+
 
 class DefaultScrollAndMoveTargetDescriptor : ScrollAndMoveTargetDescriptor {
 

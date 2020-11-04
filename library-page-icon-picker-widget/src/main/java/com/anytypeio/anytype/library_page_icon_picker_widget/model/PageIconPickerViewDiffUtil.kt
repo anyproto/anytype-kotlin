@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.library_page_icon_picker_widget.model
 
 import androidx.recyclerview.widget.DiffUtil
+import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView
 
 class PageIconPickerViewDiffUtil(
     private val old: List<EmojiPickerView>,

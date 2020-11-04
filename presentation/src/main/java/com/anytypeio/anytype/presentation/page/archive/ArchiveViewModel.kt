@@ -6,9 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_ui.extensions.updateSelection
-import com.anytypeio.anytype.core_ui.features.page.BlockView
-import com.anytypeio.anytype.core_ui.features.page.ListenerType
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
@@ -34,6 +31,9 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.page.editor.Command
 import com.anytypeio.anytype.presentation.page.editor.Orchestrator
 import com.anytypeio.anytype.presentation.page.editor.Proxy
+import com.anytypeio.anytype.presentation.page.editor.ext.updateSelection
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder

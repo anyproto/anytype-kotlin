@@ -1,13 +1,13 @@
 package com.anytypeio.anytype.presentation.page
 
 import MockDataFactory
-import com.anytypeio.anytype.core_ui.common.Alignment
-import com.anytypeio.anytype.core_ui.common.Markup
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingMode
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingType
-import com.anytypeio.anytype.core_ui.model.StyleConfig
-import com.anytypeio.anytype.core_ui.state.ControlPanelState
 import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.page.editor.model.Alignment
+import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingType
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule

@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.view.View
-import com.anytypeio.anytype.core_ui.features.page.BlockView
-import com.anytypeio.anytype.core_ui.features.page.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 class DividerLine(view: View) : Divider(view) {
 

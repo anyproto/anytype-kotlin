@@ -7,17 +7,17 @@ import android.text.Editable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.Checkable
 import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.extensions.color
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
-import com.anytypeio.anytype.core_ui.features.page.ListenerType
 import com.anytypeio.anytype.core_ui.features.page.TextBlockHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.anytypeio.anytype.core_utils.ext.imm
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.Checkable
 
 abstract class Text(
     view: View

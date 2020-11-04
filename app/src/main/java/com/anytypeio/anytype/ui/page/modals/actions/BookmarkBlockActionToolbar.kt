@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.features.page.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.bumptech.glide.Glide
 
 class BookmarkBlockActionToolbar : BlockActionToolbar() {

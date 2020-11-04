@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.extension
 
-import com.anytypeio.anytype.core_ui.common.Markup
+import com.anytypeio.anytype.presentation.page.editor.Markup
 import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

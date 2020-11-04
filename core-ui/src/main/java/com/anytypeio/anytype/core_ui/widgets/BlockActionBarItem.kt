@@ -6,22 +6,8 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.drawable
+import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
 import kotlinx.android.synthetic.main.action_item.view.*
-
-sealed class ActionItemType {
-    object AddBelow : ActionItemType()
-    object TurnInto : ActionItemType()
-    object Delete : ActionItemType()
-    object Duplicate : ActionItemType()
-    object Rename : ActionItemType()
-    object MoveTo : ActionItemType()
-    object Style : ActionItemType()
-    object Download : ActionItemType()
-    object Replace : ActionItemType()
-    object AddCaption : ActionItemType()
-    object Divider : ActionItemType()
-    object DividerExtended : ActionItemType()
-}
 
 class BlockActionBarItem @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0

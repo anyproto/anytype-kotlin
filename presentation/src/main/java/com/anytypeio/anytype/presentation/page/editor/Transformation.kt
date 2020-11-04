@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.presentation.page.editor
 
-import com.anytypeio.anytype.core_ui.common.Markup
-import com.anytypeio.anytype.core_ui.common.ThemeColor
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.block.model.Block.Content.Text.Mark
 import com.anytypeio.anytype.domain.ext.addMark

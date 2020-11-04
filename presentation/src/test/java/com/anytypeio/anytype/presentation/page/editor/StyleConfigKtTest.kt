@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
-import com.anytypeio.anytype.core_ui.common.Alignment
-import com.anytypeio.anytype.core_ui.common.Markup
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingType
-import com.anytypeio.anytype.core_ui.model.StyleConfig
 import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.presentation.page.editor.model.Alignment
+import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingType
+import com.anytypeio.anytype.presentation.page.editor.styling.getStyleConfig
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

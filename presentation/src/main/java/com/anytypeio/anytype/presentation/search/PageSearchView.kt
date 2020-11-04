@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.search
 
-import com.anytypeio.anytype.core_ui.features.navigation.PageLinkView
+import com.anytypeio.anytype.presentation.navigation.PageLinkView
+
 
 sealed class PageSearchView {
     object Init : PageSearchView()

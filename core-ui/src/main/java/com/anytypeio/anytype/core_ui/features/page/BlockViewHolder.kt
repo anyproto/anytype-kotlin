@@ -4,6 +4,9 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions
+import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 /**
  * Viewholder for rendering different type of blocks (i.e its UI-models).

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.features.editor.base
 
-import com.anytypeio.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.*
@@ -28,6 +27,7 @@ import com.anytypeio.anytype.presentation.page.PageViewModelFactory
 import com.anytypeio.anytype.presentation.page.editor.Interactor
 import com.anytypeio.anytype.presentation.page.editor.Orchestrator
 import com.anytypeio.anytype.presentation.page.editor.Proxy
+import com.anytypeio.anytype.presentation.page.editor.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder

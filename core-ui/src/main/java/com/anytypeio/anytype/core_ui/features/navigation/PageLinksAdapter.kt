@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.presentation.navigation.PageLinkView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_page_link.view.*
@@ -65,7 +66,7 @@ class PageLinksAdapter(
             }
             if (link.emoji != null) {
                 try {
-                    Emojifier.uri(link.emoji).let { uri ->
+                    Emojifier.uri(link.emoji!!).let { uri ->
                         Glide
                             .with(icon)
                             .load(uri)

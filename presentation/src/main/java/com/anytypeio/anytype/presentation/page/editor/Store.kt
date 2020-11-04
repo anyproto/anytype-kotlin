@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.page.editor
 
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.editor.Editor
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.page.render
 
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.block.model.Block.Content
@@ -10,6 +9,7 @@ import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.EditorMode
 import com.anytypeio.anytype.presentation.mapper.*
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
 import timber.log.Timber
 

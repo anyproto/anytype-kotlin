@@ -7,9 +7,11 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.features.page.SupportNesting
-import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.END_RANGE
-import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
-import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
+import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTarget
+import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor
+import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor.Companion.END_RANGE
+import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
+import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
 
 class ScrollAndMoveTargetHighlighter(
     private val screen: Point,

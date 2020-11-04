@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.presentation.page
 
 import MockDataFactory
-import com.anytypeio.anytype.core_ui.common.Alignment
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.common.Id
@@ -11,6 +9,8 @@ import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.ext.asMap
 import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.page.editor.model.Alignment
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder

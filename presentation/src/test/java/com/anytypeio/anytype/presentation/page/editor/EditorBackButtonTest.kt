@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.page.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_ui.widgets.ActionItemType
 import com.anytypeio.anytype.domain.page.ClosePage
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
+import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verifyBlocking

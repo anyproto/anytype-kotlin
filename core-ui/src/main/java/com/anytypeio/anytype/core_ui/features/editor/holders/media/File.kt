@@ -8,17 +8,17 @@ import android.text.style.RelativeSizeSpan
 import android.view.View
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.extensions.color
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
-import com.anytypeio.anytype.core_ui.features.page.ListenerType
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.indentize
 import com.anytypeio.anytype.core_utils.ext.removeSpans
+import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import kotlinx.android.synthetic.main.item_block_file.view.*
 
 class File(view: View) : Media(view) {
@@ -32,10 +32,10 @@ class File(view: View) : Media(view) {
         super.bind(item, clicked)
         name.enableReadMode()
         if (item.size != null && item.name != null) {
-            val size = Formatter.formatFileSize(itemView.context, item.size)
+            val size = Formatter.formatFileSize(itemView.context, item.size!!)
             val spannable = SpannableString("${item.name}  $size")
-            val start = item.name.length + 2
-            val end = item.name.length + 2 + size.length
+            val start = item.name!!.length + 2
+            val end = item.name!!.length + 2 + size.length
             spannable.setSpan(
                 RelativeSizeSpan(0.87f),
                 start,

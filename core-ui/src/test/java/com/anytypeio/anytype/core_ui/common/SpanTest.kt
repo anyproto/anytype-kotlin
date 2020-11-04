@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.common
 import android.os.Build
 import androidx.core.text.getSpans
 import com.anytypeio.anytype.core_utils.ext.hasSpan
+import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import org.junit.Before

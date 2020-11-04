@@ -10,7 +10,6 @@ import androidx.core.view.marginLeft
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
-import com.anytypeio.anytype.core_ui.common.ThemeColor
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.PictureError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.VideoError
@@ -28,7 +27,6 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.upload.FileUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.PictureUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
 import com.anytypeio.anytype.core_ui.features.page.BlockAdapter
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.BACKGROUND_COLOR_CHANGED
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.CURSOR_CHANGED
@@ -41,6 +39,8 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.hexColorCode
+import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.nhaarman.mockitokotlin2.mock
 import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*

@@ -4,9 +4,14 @@ import android.text.Editable
 import android.view.View
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.features.page.*
+import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
+import com.anytypeio.anytype.core_ui.features.page.TextBlockHolder
+import com.anytypeio.anytype.core_ui.features.page.marks
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 abstract class Header(
     view: View

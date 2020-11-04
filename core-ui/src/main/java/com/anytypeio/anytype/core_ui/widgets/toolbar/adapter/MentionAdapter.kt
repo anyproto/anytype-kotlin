@@ -8,6 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.presentation.page.editor.mention.Mention
+import com.anytypeio.anytype.presentation.page.editor.mention.Mention.Companion.MENTION_PREFIX
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_mention.view.*
@@ -103,7 +105,7 @@ class MentionAdapter(
                     try {
                         Glide
                             .with(image)
-                            .load(Emojifier.uri(item.emoji))
+                            .load(Emojifier.uri(item.emoji!!))
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .into(image)
                     } catch (e: Throwable) {
@@ -126,23 +128,13 @@ class MentionAdapter(
     }
 
     companion object {
-        const val MENTION_PREFIX = "@"
         const val POSITION_NEW_PAGE = 0
         const val TYPE_NEW_PAGE = 1
         const val TYPE_MENTION = 2
     }
 }
 
-data class Mention(
-    val id: String,
-    val title: String,
-    val emoji: String?,
-    val image: String?
-)
-
 fun List<Mention>.filterBy(text: String): List<Mention> =
     if (text.isNotEmpty()) filter { it.isContainsText(text) } else this
 
 fun Mention.isContainsText(text: String): Boolean = title.contains(text, true)
-
-fun String.getMentionName(untitled: String): String = if (this.isBlank()) untitled else this

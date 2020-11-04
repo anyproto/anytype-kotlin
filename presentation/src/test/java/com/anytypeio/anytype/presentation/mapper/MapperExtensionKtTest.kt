@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.mapper
 
 import MockDataFactory
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock

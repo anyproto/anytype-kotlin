@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -24,6 +23,7 @@ import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.presentation.page.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.PageViewModel
+import com.anytypeio.anytype.presentation.page.editor.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder

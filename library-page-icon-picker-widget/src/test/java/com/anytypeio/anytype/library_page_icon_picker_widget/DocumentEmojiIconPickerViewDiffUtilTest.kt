@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.library_page_icon_picker_widget
 
-import com.anytypeio.anytype.library_page_icon_picker_widget.model.EmojiPickerView
 import com.anytypeio.anytype.library_page_icon_picker_widget.model.PageIconPickerViewDiffUtil
+import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView
 import org.junit.Test
 import kotlin.test.assertEquals
 

@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 class UploadActionToolbar : BlockActionToolbar() {
 

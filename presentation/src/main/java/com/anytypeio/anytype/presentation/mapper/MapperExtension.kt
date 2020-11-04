@@ -1,16 +1,16 @@
 package com.anytypeio.anytype.presentation.mapper
 
-import com.anytypeio.anytype.core_ui.common.Alignment
-import com.anytypeio.anytype.core_ui.common.Markup
-import com.anytypeio.anytype.core_ui.features.navigation.PageLinkView
-import com.anytypeio.anytype.core_ui.features.page.BlockView
-import com.anytypeio.anytype.core_ui.model.UiBlock
-import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.Mention
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.navigation.DocumentInfo
 import com.anytypeio.anytype.presentation.desktop.DashboardView
+import com.anytypeio.anytype.presentation.navigation.PageLinkView
+import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.page.editor.mention.Mention
+import com.anytypeio.anytype.presentation.page.editor.model.Alignment
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import timber.log.Timber
 

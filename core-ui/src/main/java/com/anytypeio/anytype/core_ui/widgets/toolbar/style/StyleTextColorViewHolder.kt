@@ -2,8 +2,8 @@ package com.anytypeio.anytype.core_ui.widgets.toolbar.style
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.common.ThemeColor
-import com.anytypeio.anytype.core_ui.features.page.styling.StylingEvent
+import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
 import kotlinx.android.synthetic.main.block_style_toolbar_color.view.*
 
 class StyleTextColorViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.presentation.extension
 
-import com.anytypeio.anytype.core_ui.common.Markup
 import com.anytypeio.anytype.domain.ext.overlap
 import com.anytypeio.anytype.domain.misc.Overlap
+import com.anytypeio.anytype.presentation.page.editor.Markup
 
 /**
  * Check if list of marks contains [Markup.Type] in selection range

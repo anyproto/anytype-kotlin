@@ -3,13 +3,13 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.`interface`
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import com.anytypeio.anytype.core_ui.common.Alignment
-import com.anytypeio.anytype.core_ui.common.Focusable
-import com.anytypeio.anytype.core_ui.common.ThemeColor
-import com.anytypeio.anytype.core_ui.features.page.BlockView
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
+import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.presentation.page.editor.model.Alignment
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.Focusable
 import timber.log.Timber
 
 /**

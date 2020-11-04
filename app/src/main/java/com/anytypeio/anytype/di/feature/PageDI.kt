@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_ui.features.page.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.block.UpdateDivider
@@ -25,6 +24,7 @@ import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.PageViewModelFactory
 import com.anytypeio.anytype.presentation.page.editor.Interactor
 import com.anytypeio.anytype.presentation.page.editor.Orchestrator
+import com.anytypeio.anytype.presentation.page.editor.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder

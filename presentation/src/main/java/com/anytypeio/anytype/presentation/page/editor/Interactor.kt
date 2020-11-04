@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.page.editor
 
-import com.anytypeio.anytype.core_ui.features.page.pattern.Matcher
-import com.anytypeio.anytype.core_ui.features.page.pattern.Pattern
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.presentation.page.Editor
+import com.anytypeio.anytype.presentation.page.editor.pattern.Matcher
+import com.anytypeio.anytype.presentation.page.editor.pattern.Pattern
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
 
 interface Interactor {

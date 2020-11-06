@@ -20,8 +20,8 @@ import com.anytypeio.anytype.middleware.block.BlockMiddleware
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.interactor.MiddlewareFactory
 import com.anytypeio.anytype.middleware.interactor.MiddlewareMapper
-import com.anytypeio.anytype.middleware.service.DefaultMiddlewareService
 import com.anytypeio.anytype.middleware.service.MiddlewareService
+import com.anytypeio.anytype.middleware.service.MiddlewareServiceImplementation
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.persistence.repo.DefaultDebugSettingsCache
@@ -210,7 +210,7 @@ object DataModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideMiddlewareService(): MiddlewareService = DefaultMiddlewareService()
+    fun provideMiddlewareService(): MiddlewareService = MiddlewareServiceImplementation()
 
     @JvmStatic
     @Provides

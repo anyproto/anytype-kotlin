@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -31,18 +30,15 @@ dependencies {
     def libraryPath = project.rootProject.file(props.getProperty('middleware.path'))
     implementation(files(libraryPath))
 
-    implementation project(':protobuf')
+    implementation project(':protocol')
     implementation project(':data')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
-    def protobufDependencies = rootProject.ext.protobuf
 
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.timber
     implementation applicationDependencies.coroutines
-
-    implementation protobufDependencies.protobufJava
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

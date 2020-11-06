@@ -80,6 +80,7 @@ ext {
 
     protobuf_java_version = '3.9.2'
     protoc_version = '3.9.0'
+    wire_version = '3.5.0'
 
     // DB
 
@@ -176,7 +177,8 @@ ext {
 
     protobuf = [
             protobufJava:       "com.google.protobuf:protobuf-java:$protobuf_java_version",
-            protoc:             "com.google.protobuf:protoc:$protoc_version"
+            protoc:             "com.google.protobuf:protoc:$protoc_version",
+            wireRuntime:        "com.squareup.wire:wire-runtime:$wire_version"
     ]
 
     db = [

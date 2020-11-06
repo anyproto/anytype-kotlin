@@ -167,7 +167,7 @@ fun Block.toEntity(): BlockEntity {
     return BlockEntity(
         id = id,
         children = children,
-        fields = BlockEntity.Fields(map = fields.map.toMutableMap()),
+        fields = BlockEntity.Fields(map = fields.map),
         content = content.toEntity()
     )
 }
@@ -249,7 +249,7 @@ fun Block.Content.Link.toEntity(): BlockEntity.Content.Link {
     return BlockEntity.Content.Link(
         target = target,
         type = BlockEntity.Content.Link.Type.valueOf(type.name),
-        fields = BlockEntity.Fields(map = fields.map.toMutableMap())
+        fields = BlockEntity.Fields(map = fields.map)
     )
 }
 

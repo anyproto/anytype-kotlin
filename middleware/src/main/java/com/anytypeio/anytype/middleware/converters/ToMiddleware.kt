@@ -1,10 +1,8 @@
 package com.anytypeio.anytype.middleware.converters
 
-import anytype.model.Models.Block
-import anytype.model.Models.Range
+import anytype.model.Block
+import anytype.model.Range
 import com.anytypeio.anytype.data.auth.model.BlockEntity
-import com.google.protobuf.Struct
-import com.google.protobuf.Value
 
 typealias Mark = Block.Content.Text.Mark
 typealias File = Block.Content.File
@@ -23,118 +21,99 @@ typealias DividerStyle = Block.Content.Div.Style
 //region block mapping
 
 fun BlockEntity.block(): Block {
-
-    val builder = Block.newBuilder()
-
-    builder.id = id
-
-    when (val content = content) {
+    return when (val content = content) {
         is BlockEntity.Content.Text -> {
-            if (content.backgroundColor != null) {
-                builder.backgroundColor = content.backgroundColor
-            }
-            if (content.align != null) {
-                builder.align = content.align?.toMiddleware()
-            }
-            builder.text = content.text()
+            Block(
+                text = content.text(),
+                backgroundColor = content.backgroundColor.orEmpty(),
+                align = content.align?.toMiddleware() ?: Block.Align.AlignLeft
+            )
         }
         is BlockEntity.Content.Bookmark -> {
-            builder.bookmark = content.bookmark()
+            Block(bookmark = content.bookmark())
         }
         is BlockEntity.Content.File -> {
-            builder.file = content.file()
+            Block(file_ = content.file())
         }
         is BlockEntity.Content.Link -> {
-            builder.link = content.link()
+            Block(link = content.link())
         }
         is BlockEntity.Content.Layout -> {
-            builder.layout = content.layout()
+            Block(layout = content.layout())
         }
         is BlockEntity.Content.Divider -> {
-            builder.div = content.divider()
+            Block(div = content.divider())
         }
+        else -> Block()
     }
-
-    return builder.build()
 }
 
 //endregion
 
 //region text block mapping
 
-fun BlockEntity.Content.Text.text(): Text {
-    val builder = Text.newBuilder()
-    builder.text = text
-    builder.marks = marks()
-    builder.style = style.toMiddleware()
-    if (color != null) {
-        builder.color = color
-    }
-    isChecked?.let {
-        builder.checked = it
-    }
-    return builder.build()
-}
+fun BlockEntity.Content.Text.text(): Text = Text(
+    text = text,
+    marks = marks(),
+    style = style.toMiddleware(),
+    color = color.orEmpty(),
+    checked = isChecked ?: false
+)
 
-fun BlockEntity.Content.Text.marks(): Marks {
-    return Marks
-        .newBuilder()
-        .addAllMarks(marks.map { it.mark() })
-        .build()
-}
+fun BlockEntity.Content.Text.marks(): Marks = Marks(marks = marks.map { it.mark() })
 
 fun BlockEntity.Content.Text.Mark.mark(): Mark = when (type) {
     BlockEntity.Content.Text.Mark.Type.BOLD -> {
-        Mark.newBuilder()
-            .setType(Block.Content.Text.Mark.Type.Bold)
-            .setRange(range.range())
-            .build()
+        Mark(
+            type = Block.Content.Text.Mark.Type.Bold,
+            range = range.range()
+        )
     }
     BlockEntity.Content.Text.Mark.Type.ITALIC -> {
-        Mark.newBuilder()
-            .setType(Block.Content.Text.Mark.Type.Italic)
-            .setRange(range.range())
-            .build()
+        Mark(
+            type = Block.Content.Text.Mark.Type.Italic,
+            range = range.range()
+        )
     }
     BlockEntity.Content.Text.Mark.Type.STRIKETHROUGH -> {
-        Mark.newBuilder()
-            .setType(Block.Content.Text.Mark.Type.Strikethrough)
-            .setRange(range.range())
-            .build()
+        Mark(
+            type = Block.Content.Text.Mark.Type.Strikethrough,
+            range = range.range()
+        )
     }
     BlockEntity.Content.Text.Mark.Type.TEXT_COLOR -> {
-        Mark.newBuilder()
-            .setType(Block.Content.Text.Mark.Type.TextColor)
-            .setRange(range.range())
-            .setParam(param)
-            .build()
+        Mark(
+            type = Block.Content.Text.Mark.Type.TextColor,
+            range = range.range(),
+            param_ = param.orEmpty()
+        )
     }
     BlockEntity.Content.Text.Mark.Type.LINK -> {
-        Mark.newBuilder()
-            .setType(Block.Content.Text.Mark.Type.Link)
-            .setRange(range.range())
-            .setParam(param)
-            .build()
+        Mark(
+            type = Block.Content.Text.Mark.Type.Link,
+            range = range.range(),
+            param_ = param.orEmpty()
+        )
     }
     BlockEntity.Content.Text.Mark.Type.BACKGROUND_COLOR -> {
-        Mark.newBuilder()
-            .setType(Block.Content.Text.Mark.Type.BackgroundColor)
-            .setRange(range.range())
-            .setParam(param)
-            .build()
+        Mark(
+            type = Block.Content.Text.Mark.Type.BackgroundColor,
+            range = range.range(),
+            param_ = param.orEmpty()
+        )
     }
     BlockEntity.Content.Text.Mark.Type.KEYBOARD -> {
-        Mark.newBuilder()
-            .setType(Block.Content.Text.Mark.Type.Keyboard)
-            .setRange(range.range())
-            .build()
+        Mark(
+            type = Block.Content.Text.Mark.Type.Keyboard,
+            range = range.range(),
+        )
     }
     BlockEntity.Content.Text.Mark.Type.MENTION -> {
-        Mark.newBuilder()
-            .setType(Block.Content.Text.Mark.Type.Mention)
-            .setRange(range.range())
-            .setParam(param)
-            .build()
+        Mark(
+            type = Block.Content.Text.Mark.Type.Mention,
+            range = range.range(),
+            param_ = param.orEmpty()
+        )
     }
     else -> throw IllegalStateException("Unsupported mark type: ${type.name}")
 }
@@ -143,30 +122,26 @@ fun BlockEntity.Content.Text.Mark.mark(): Mark = when (type) {
 
 //region bookmark block mapping
 
-fun BlockEntity.Content.Bookmark.bookmark(): Bookmark {
-    val builder = Bookmark.newBuilder()
-    description?.let { builder.setDescription(it) }
-    favicon?.let { builder.setFaviconHash(it) }
-    title?.let { builder.setTitle(it) }
-    url?.let { builder.setUrl(it) }
-    image?.let { builder.setImageHash(it) }
-    return builder.build()
-}
+fun BlockEntity.Content.Bookmark.bookmark(): Bookmark = Bookmark(
+    description = description.orEmpty(),
+    faviconHash = favicon.orEmpty(),
+    title = title.orEmpty(),
+    url = url.orEmpty(),
+    imageHash = image.orEmpty()
+)
 
 //endregion
 
 //region file block mapping
 
-fun BlockEntity.Content.File.file(): File {
-    val builder = File.newBuilder()
-    hash?.let { builder.setHash(it) }
-    name?.let { builder.setName(it) }
-    mime?.let { builder.setMime(it) }
-    size?.let { builder.setSize(it) }
-    state?.let { builder.setState(it.state()) }
-    type?.let { builder.setType(it.type()) }
-    return builder.build()
-}
+fun BlockEntity.Content.File.file(): File = File(
+    hash = hash.orEmpty(),
+    name = name.orEmpty(),
+    mime = mime.orEmpty(),
+    size = size ?: 0,
+    state = state?.state() ?: Block.Content.File.State.Empty,
+    type = type?.type() ?: Block.Content.File.Type.None
+)
 
 fun BlockEntity.Content.File.State.state(): FileState = when (this) {
     BlockEntity.Content.File.State.EMPTY -> FileState.Empty
@@ -186,13 +161,11 @@ fun BlockEntity.Content.File.Type.type(): FileType = when (this) {
 
 //region link mapping
 
-fun BlockEntity.Content.Link.link(): Link {
-    return Link.newBuilder()
-        .setTargetBlockId(target)
-        .setStyle(type.type())
-        .setFields(fields.fields())
-        .build()
-}
+fun BlockEntity.Content.Link.link(): Link = Link(
+    targetBlockId = target,
+    style = type.type(),
+    fields = fields.map
+)
 
 fun BlockEntity.Content.Link.Type.type() : LinkType = when(this) {
     BlockEntity.Content.Link.Type.ARCHIVE -> LinkType.Archive
@@ -205,54 +178,26 @@ fun BlockEntity.Content.Link.Type.type() : LinkType = when(this) {
 
 //region layout mapping
 
-fun BlockEntity.Content.Layout.layout() : Layout {
-    val builder = Layout.newBuilder()
-    when(type) {
-        BlockEntity.Content.Layout.Type.ROW -> builder.style = LayoutStyle.Row
-        BlockEntity.Content.Layout.Type.COLUMN -> builder.style = LayoutStyle.Column
-        BlockEntity.Content.Layout.Type.DIV -> builder.style = LayoutStyle.Div
-        BlockEntity.Content.Layout.Type.HEADER -> builder.style = LayoutStyle.Header
-    }
-    return builder.build()
+fun BlockEntity.Content.Layout.layout(): Layout = when (type) {
+    BlockEntity.Content.Layout.Type.ROW -> Layout(style = LayoutStyle.Row)
+    BlockEntity.Content.Layout.Type.COLUMN -> Layout(style = LayoutStyle.Column)
+    BlockEntity.Content.Layout.Type.DIV -> Layout(style = LayoutStyle.Div)
+    BlockEntity.Content.Layout.Type.HEADER -> Layout(style = LayoutStyle.Header)
 }
 
 //endregion
 
 //region divider mapping
 
-fun BlockEntity.Content.Divider.divider(): Divider {
-    val builder = Divider.newBuilder()
-    when (style) {
-        BlockEntity.Content.Divider.Style.LINE -> builder.style = Block.Content.Div.Style.Line
-        BlockEntity.Content.Divider.Style.DOTS -> builder.style = Block.Content.Div.Style.Dots
-    }
-    return builder.build()
+fun BlockEntity.Content.Divider.divider(): Divider = when (style) {
+    BlockEntity.Content.Divider.Style.LINE -> Divider(style = Block.Content.Div.Style.Line)
+    BlockEntity.Content.Divider.Style.DOTS -> Divider(style = Block.Content.Div.Style.Dots)
 }
 
 //endregion
 
 //region other mapping
 
-fun BlockEntity.Fields.fields() : Struct {
-    val builder = Struct.newBuilder()
-    map.forEach { (key, value) ->
-        if (key != null && value != null)
-            when(value) {
-                is String -> {
-                    builder.putFields(key, Value.newBuilder().setStringValue(value).build())
-                }
-                is Boolean -> {
-                    builder.putFields(key, Value.newBuilder().setBoolValue(value).build())
-                }
-                is Double-> {
-                    builder.putFields(key, Value.newBuilder().setNumberValue(value).build())
-                }
-                else -> throw IllegalStateException("Unexpected value type: ${value::class.java}")
-            }
-    }
-    return builder.build()
-}
-
-fun IntRange.range(): Range = Range.newBuilder().setFrom(first).setTo(last).build()
+fun IntRange.range(): Range = Range(from = first, to = last)
 
 //endregion

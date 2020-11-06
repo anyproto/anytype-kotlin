@@ -24,7 +24,7 @@ data class Block(
      * Block fields containing useful block properties.
      * @property map map containing fields
      */
-    data class Fields(val map: Map<String?, Any?>) {
+    data class Fields(val map: Map<String, Any?>) {
 
         private val default = map.withDefault { null }
 

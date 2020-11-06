@@ -1,8 +1,9 @@
 package com.anytypeio.anytype
 
-import anytype.Commands.Rpc.*
-import anytype.model.Models
-import anytype.model.Models.Range
+import anytype.ResponseEvent
+import anytype.Rpc
+import anytype.model.Block
+import anytype.model.Range
 import com.anytypeio.anytype.common.MockDataFactory
 import com.anytypeio.anytype.data.auth.model.BlockEntity
 import com.anytypeio.anytype.data.auth.model.CommandEntity
@@ -11,8 +12,6 @@ import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.interactor.MiddlewareFactory
 import com.anytypeio.anytype.middleware.interactor.MiddlewareMapper
 import com.anytypeio.anytype.middleware.service.MiddlewareService
-import com.google.protobuf.Struct
-import com.google.protobuf.Value
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
 import org.junit.Test
@@ -42,10 +41,10 @@ class MiddlewareTest {
 
         // SETUP
 
-        val request = Account.Stop.Request.newBuilder().build()
+        val request = Rpc.Account.Stop.Request()
 
         service.stub {
-            on { accountStop(request) } doReturn Account.Stop.Response.getDefaultInstance()
+            on { accountStop(request) } doReturn Rpc.Account.Stop.Response()
         }
 
         // TESTING
@@ -68,19 +67,18 @@ class MiddlewareTest {
             emoji = null
         )
 
-        val response = Block.CreatePage.Response
-            .newBuilder()
-            .setBlockId(MockDataFactory.randomUuid())
-            .setTargetId(MockDataFactory.randomUuid())
-            .build()
+        val response = Rpc.Block.CreatePage.Response(
+            blockId = MockDataFactory.randomUuid(),
+            targetId = MockDataFactory.randomUuid(),
+            event = ResponseEvent()
+        )
 
-        val request = Block.CreatePage.Request
-            .newBuilder()
-            .setContextId(command.context)
-            .setTargetId(command.target)
-            .setPosition(Models.Block.Position.Inner)
-            .setDetails(Struct.getDefaultInstance())
-            .build()
+        val request = Rpc.Block.CreatePage.Request(
+            contextId = command.context,
+            targetId = command.target,
+            position = Block.Position.Inner,
+            details = mapOf<String, Any?>()
+        )
 
         service.stub {
             on { blockCreatePage(any()) } doReturn response
@@ -117,26 +115,18 @@ class MiddlewareTest {
             emoji = emoji
         )
 
-        val response = Block.CreatePage.Response
-            .newBuilder()
-            .setBlockId(MockDataFactory.randomUuid())
-            .setTargetId(MockDataFactory.randomUuid())
-            .build()
+        val response = Rpc.Block.CreatePage.Response(
+            blockId = MockDataFactory.randomUuid(),
+            targetId = MockDataFactory.randomUuid(),
+            event = ResponseEvent()
+        )
 
-        val request = Block.CreatePage.Request
-            .newBuilder()
-            .setContextId(command.context)
-            .setTargetId(command.target)
-            .setPosition(Models.Block.Position.Inner)
-            .setDetails(
-                Struct.newBuilder()
-                    .putFields(
-                        "iconEmoji",
-                        Value.newBuilder().setStringValue(emoji).build()
-                    )
-                    .build()
-            )
-            .build()
+        val request = Rpc.Block.CreatePage.Request(
+            contextId = command.context,
+            targetId = command.target,
+            position = Block.Position.Inner,
+            details = mapOf("iconEmoji" to emoji)
+        )
 
         service.stub {
             on { blockCreatePage(any()) } doReturn response
@@ -172,26 +162,23 @@ class MiddlewareTest {
             )
         )
 
-        val response = Block.Create.Response
-            .newBuilder()
-            .setBlockId(MockDataFactory.randomUuid())
-            .build()
+        val response = Rpc.Block.Create.Response(
+            blockId = MockDataFactory.randomUuid(),
+            event = ResponseEvent()
+        )
 
-        val model = Models.Block
-            .newBuilder()
-            .setText(
-                Models.Block.Content.Text
-                    .newBuilder()
-                    .setStyle(Models.Block.Content.Text.Style.Numbered)
+        val model = Block(
+            text = Block.Content.Text(
+                style = Block.Content.Text.Style.Numbered
             )
+        )
 
-        val request = Block.Create.Request
-            .newBuilder()
-            .setContextId(command.context)
-            .setTargetId(command.target)
-            .setPosition(Models.Block.Position.Replace)
-            .setBlock(model)
-            .build()
+        val request = Rpc.Block.Create.Request(
+            contextId = command.context,
+            targetId = command.target,
+            position = Block.Position.Replace,
+            block = model
+        )
 
         service.stub {
             on { blockCreate(any()) } doReturn response
@@ -222,28 +209,27 @@ class MiddlewareTest {
             emoji = MockDataFactory.randomString()
         )
 
-        val response = Block.Set.Details.Response.getDefaultInstance()
+        val response = Rpc.Block.Set.Details.Response(event = ResponseEvent())
 
         val emojiIconKey = "iconEmoji"
         val imageIconKey = "iconImage"
 
-        val emojiValue = Value.newBuilder().setStringValue(command.emoji)
+        val emojiValue = command.emoji
 
-        val emojiDetail = Block.Set.Details.Detail.newBuilder()
-            .setKey(emojiIconKey)
-            .setValue(emojiValue)
+        val emojiDetail = Rpc.Block.Set.Details.Detail(
+            key = emojiIconKey, value = emojiValue
+        )
 
-        val imageValue = Value.newBuilder().setStringValue("")
+        val imageValue = ""
 
-        val imageDetail = Block.Set.Details.Detail.newBuilder()
-            .setKey(imageIconKey)
-            .setValue(imageValue)
+        val imageDetail = Rpc.Block.Set.Details.Detail(
+            key = imageIconKey
+        )
 
-        val request = Block.Set.Details.Request.newBuilder()
-            .setContextId(command.context)
-            .addDetails(emojiDetail)
-            .addDetails(imageDetail)
-            .build()
+        val request = Rpc.Block.Set.Details.Request(
+            contextId = command.context,
+            details = listOf(emojiDetail, imageDetail)
+        )
 
         service.stub {
             on { blockSetDetails(any()) } doReturn response
@@ -267,29 +253,22 @@ class MiddlewareTest {
             hash = MockDataFactory.randomUuid()
         )
 
-        val response = Block.Set.Details.Response.getDefaultInstance()
+        val response = Rpc.Block.Set.Details.Response(event = ResponseEvent())
 
         val imageIconKey = "iconImage"
 
-        val imageIconValue = Value.newBuilder().setStringValue(command.hash)
+        val imageIconValue = command.hash
 
-        val imageIconDetail = Block.Set.Details.Detail.newBuilder()
-            .setKey(imageIconKey)
-            .setValue(imageIconValue)
+        val imageIconDetail = Rpc.Block.Set.Details.Detail(imageIconKey,imageIconValue)
 
         val emojiIconKey = "iconEmoji"
 
-        val emojiIconValue = Value.newBuilder().setStringValue("")
+        val emojiIconDetail = Rpc.Block.Set.Details.Detail(emojiIconKey)
 
-        val emojiIconDetail = Block.Set.Details.Detail.newBuilder()
-            .setKey(emojiIconKey)
-            .setValue(emojiIconValue)
-
-        val request = Block.Set.Details.Request.newBuilder()
-            .setContextId(command.context)
-            .addDetails(imageIconDetail)
-            .addDetails(emojiIconDetail)
-            .build()
+        val request = Rpc.Block.Set.Details.Request(
+            contextId = command.context,
+            details = listOf(imageIconDetail, emojiIconDetail)
+        )
 
         service.stub {
             on { blockSetDetails(any()) } doReturn response
@@ -313,20 +292,18 @@ class MiddlewareTest {
             title = MockDataFactory.randomString()
         )
 
-        val response = Block.Set.Details.Response.getDefaultInstance()
+        val response = Rpc.Block.Set.Details.Response()
 
         val key = "name"
 
-        val value = Value.newBuilder().setStringValue(command.title)
+        val value = command.title
 
-        val details = Block.Set.Details.Detail.newBuilder()
-            .setKey(key)
-            .setValue(value)
+        val details = Rpc.Block.Set.Details.Detail(key, value)
 
-        val request = Block.Set.Details.Request.newBuilder()
-            .setContextId(command.context)
-            .addDetails(details)
-            .build()
+        val request = Rpc.Block.Set.Details.Request(
+            contextId = command.context,
+            details = listOf(details)
+        )
 
         service.stub {
             on { blockSetDetails(any()) } doReturn response
@@ -354,26 +331,26 @@ class MiddlewareTest {
             )
         )
 
-        val request = BlockList.Set.Text.Style.Request
-            .newBuilder()
-            .setStyle(Models.Block.Content.Text.Style.Checkbox)
-            .addAllBlockIds(command.targets)
-            .setContextId(command.context)
-            .build()
+        val request = Rpc.BlockList.Set.Text.Style.Request(
+            contextId = command.context,
+            blockIds = command.targets,
+            style = Block.Content.Text.Style.Checkbox
+        )
 
         service.stub {
-            on { blockSetTextStyle(request) } doReturn BlockList.Set.Text.Style.Response.getDefaultInstance()
+            on { blockListSetTextStyle(request) } doReturn
+                    Rpc.BlockList.Set.Text.Style.Response(event = ResponseEvent())
         }
 
         // TESTING
 
-        assertTrue { request.blockIdsList.size == 2 }
-        assertTrue { request.blockIdsList[0] == command.targets[0] }
-        assertTrue { request.blockIdsList[1] == command.targets[1] }
+        assertTrue { request.blockIds.size == 2 }
+        assertTrue { request.blockIds[0] == command.targets[0] }
+        assertTrue { request.blockIds[1] == command.targets[1] }
 
         middleware.updateTextStyle(command)
 
-        verify(service, times(1)).blockSetTextStyle(request)
+        verify(service, times(1)).blockListSetTextStyle(request)
         verifyNoMoreInteractions(service)
     }
 
@@ -392,19 +369,18 @@ class MiddlewareTest {
             position = PositionEntity.TOP
         )
 
-        val position = Models.Block.Position.Top
+        val position = Block.Position.Top
 
-        val request = BlockList.Move.Request
-            .newBuilder()
-            .setContextId(command.contextId)
-            .setTargetContextId(command.contextId)
-            .setPosition(position)
-            .addAllBlockIds(command.blockIds)
-            .setDropTargetId(command.dropTargetId)
-            .build()
+        val request = Rpc.BlockList.Move.Request(
+            contextId = command.contextId,
+            targetContextId = command.contextId,
+            position = position,
+            blockIds = command.blockIds,
+            dropTargetId = command.dropTargetId
+        )
 
         service.stub {
-            on { blockListMove(request) } doReturn BlockList.Move.Response.getDefaultInstance()
+            on { blockListMove(request) } doReturn Rpc.BlockList.Move.Response(event = ResponseEvent())
         }
 
         // TESTING
@@ -432,20 +408,19 @@ class MiddlewareTest {
             blocks = emptyList()
         )
 
-        val range = Range.newBuilder().setFrom(0).setTo(5).build()
+        val range = Range(0, 5)
 
-        val request = Block.Paste.Request
-            .newBuilder()
-            .setContextId(command.context)
-            .setFocusedBlockId(command.focus)
-            .setTextSlot(command.text)
-            .setHtmlSlot(command.html)
-            .setSelectedTextRange(range)
-            .addAllSelectedBlockIds(command.selected)
-            .build()
+        val request = Rpc.Block.Paste.Request(
+            contextId = command.context,
+            focusedBlockId = command.focus,
+            textSlot = command.text,
+            htmlSlot = command.html.orEmpty(),
+            selectedTextRange = range,
+            selectedBlockIds = command.selected
+        )
 
         service.stub {
-            on { blockPaste(request) } doReturn Block.Paste.Response.getDefaultInstance()
+            on { blockPaste(request) } doReturn Rpc.Block.Paste.Response(event = ResponseEvent())
         }
 
         // TESTING
@@ -471,23 +446,16 @@ class MiddlewareTest {
             mode = BlockEntity.Content.Text.SplitMode.BOTTOM
         )
 
-        val request = Block.Split.Request
-            .newBuilder()
-            .setRange(
-                Range
-                    .newBuilder()
-                    .setFrom(command.range.first)
-                    .setTo(command.range.last)
-                    .build()
-            )
-            .setStyle(Models.Block.Content.Text.Style.Checkbox)
-            .setContextId(context)
-            .setBlockId(command.target)
-            .setMode(Block.Split.Request.Mode.BOTTOM)
-            .build()
+        val request = Rpc.Block.Split.Request(
+            range = Range(command.range.first, command.range.last),
+            style = Block.Content.Text.Style.Checkbox,
+            contextId = context,
+            blockId = command.target,
+            mode = Rpc.Block.Split.Request.Mode.BOTTOM
+        )
 
         service.stub {
-            on { blockSplit(request) } doReturn Block.Split.Response.getDefaultInstance()
+            on { blockSplit(request) } doReturn Rpc.Block.Split.Response(event = ResponseEvent())
         }
 
         // TESTING
@@ -510,14 +478,13 @@ class MiddlewareTest {
             type = BlockEntity.Content.File.Type.IMAGE
         )
 
-        val request = UploadFile.Request
-            .newBuilder()
-            .setLocalPath(path)
-            .setType(Models.Block.Content.File.Type.Image)
-            .build()
+        val request = Rpc.UploadFile.Request(
+            localPath = path,
+            type = Block.Content.File.Type.Image
+        )
 
         service.stub {
-            on { uploadFile(request) } doReturn UploadFile.Response.getDefaultInstance()
+            on { uploadFile(request) } doReturn Rpc.UploadFile.Response()
         }
 
         // TESTING
@@ -540,14 +507,13 @@ class MiddlewareTest {
             type = BlockEntity.Content.File.Type.FILE
         )
 
-        val request = UploadFile.Request
-            .newBuilder()
-            .setLocalPath(path)
-            .setType(Models.Block.Content.File.Type.File)
-            .build()
+        val request = Rpc.UploadFile.Request(
+            localPath = path,
+            type = Block.Content.File.Type.File
+        )
 
         service.stub {
-            on { uploadFile(request) } doReturn UploadFile.Response.getDefaultInstance()
+            on { uploadFile(request) } doReturn Rpc.UploadFile.Response()
         }
 
         // TESTING
@@ -570,14 +536,13 @@ class MiddlewareTest {
             type = BlockEntity.Content.File.Type.VIDEO
         )
 
-        val request = UploadFile.Request
-            .newBuilder()
-            .setLocalPath(path)
-            .setType(Models.Block.Content.File.Type.Video)
-            .build()
+        val request = Rpc.UploadFile.Request(
+            localPath = path,
+            type = Block.Content.File.Type.Video
+        )
 
         service.stub {
-            on { uploadFile(request) } doReturn UploadFile.Response.getDefaultInstance()
+            on { uploadFile(request) } doReturn Rpc.UploadFile.Response()
         }
 
         // TESTING
@@ -621,29 +586,23 @@ class MiddlewareTest {
         )
 
         val fields = listOf(
-            BlockList.Set.Fields.Request.BlockField.newBuilder()
-                .setBlockId(block1)
-                .setFields(
-                    Struct.newBuilder()
-                        .putFields("lang", Value.newBuilder().setStringValue("kotlin").build())
-                )
-                .build(),
-            BlockList.Set.Fields.Request.BlockField.newBuilder()
-                .setBlockId(block2)
-                .setFields(
-                    Struct.newBuilder()
-                        .putFields("lang", Value.newBuilder().setStringValue("python").build())
-                )
-                .build()
+            Rpc.BlockList.Set.Fields.Request.BlockField(
+                blockId = block1,
+                fields = mapOf("lang" to "kotlin")
+            ),
+            Rpc.BlockList.Set.Fields.Request.BlockField(
+                blockId = block2,
+                fields = mapOf("lang" to "python")
+            )
         )
 
-        val request = BlockList.Set.Fields.Request.newBuilder()
-            .setContextId(ctx)
-            .addAllBlockFields(fields)
-            .build()
+        val request = Rpc.BlockList.Set.Fields.Request(
+            contextId = ctx,
+            blockFields = fields
+        )
 
         service.stub {
-            on { blockListSetFields(request) } doReturn BlockList.Set.Fields.Response.getDefaultInstance()
+            on { blockListSetFields(request) } doReturn Rpc.BlockList.Set.Fields.Response(event = ResponseEvent())
         }
 
         // TESTING

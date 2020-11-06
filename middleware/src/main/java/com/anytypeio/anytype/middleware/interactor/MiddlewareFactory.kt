@@ -1,52 +1,40 @@
 package com.anytypeio.anytype.middleware.interactor
 
-import anytype.model.Models.Block
+import anytype.model.Block
 import com.anytypeio.anytype.data.auth.model.BlockEntity
-import com.anytypeio.anytype.middleware.converters.state
-import com.anytypeio.anytype.middleware.converters.toMiddleware
-import com.anytypeio.anytype.middleware.converters.type
+import com.anytypeio.anytype.middleware.converters.*
 
 class MiddlewareFactory {
 
     fun create(prototype: BlockEntity.Prototype): Block {
-
-        val builder = Block.newBuilder()
-
         return when (prototype) {
             is BlockEntity.Prototype.Bookmark -> {
-                val bookmark = Block.Content.Bookmark.getDefaultInstance()
-                builder.setBookmark(bookmark).build()
+                Block(bookmark = Bookmark())
             }
             is BlockEntity.Prototype.Text -> {
-                val text = Block.Content.Text.newBuilder().apply {
-                    style = prototype.style.toMiddleware()
-                }
-                builder.setText(text).build()
+                val text = Block.Content.Text(style = prototype.style.toMiddleware())
+                Block(text = text)
             }
             is BlockEntity.Prototype.DividerLine -> {
-                val divider = Block.Content.Div.newBuilder().apply {
-                    style = Block.Content.Div.Style.Line
-                }
-                builder.setDiv(divider).build()
+                val divider = Block.Content.Div(style = Block.Content.Div.Style.Line)
+                Block(div = divider)
             }
             is BlockEntity.Prototype.DividerDots -> {
-                val divider = Block.Content.Div.newBuilder().apply {
-                    style = Block.Content.Div.Style.Dots
-                }
-                builder.setDiv(divider).build()
+                val divider = Block.Content.Div(style = Block.Content.Div.Style.Dots)
+                Block(div = divider)
             }
             is BlockEntity.Prototype.File -> {
-                val file = Block.Content.File.newBuilder().apply {
-                    state = prototype.state.state()
+                val file = File(
+                    state = prototype.state.state(),
                     type = prototype.type.type()
-                }
-                builder.setFile(file).build()
+                )
+                Block(file_ = file)
             }
             is BlockEntity.Prototype.Link -> {
-                val link = Block.Content.Link.newBuilder().apply {
+                val link = Block.Content.Link(
                     targetBlockId = prototype.target
-                }
-                builder.setLink(link).build()
+                )
+                Block(link = link)
             }
             else -> throw IllegalStateException("Unexpected prototype: $prototype")
         }

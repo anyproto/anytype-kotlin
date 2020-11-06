@@ -203,7 +203,7 @@ class BlockDataRepository(
         command = CommandEntity.SetFields(
             context = command.context,
             fields = command.fields.map { (id, fields) ->
-                id to BlockEntity.Fields(fields.map.toMutableMap())
+                id to BlockEntity.Fields(fields.map)
             }
         )
     ).toDomain()

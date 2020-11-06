@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.middleware
 
-import anytype.Events
+import anytype.Event
 import kotlinx.coroutines.flow.Flow
 
 interface EventProxy {
-    fun flow(): Flow<Events.Event>
+    fun flow(): Flow<Event>
 }

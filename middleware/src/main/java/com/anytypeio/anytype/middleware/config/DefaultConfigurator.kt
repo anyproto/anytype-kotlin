@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.middleware.config
 
-import anytype.Commands.Rpc.Config
+import anytype.Rpc.Config
 import com.anytypeio.anytype.data.auth.model.ConfigEntity
 import com.anytypeio.anytype.data.auth.repo.config.Configurator
 import service.Service
@@ -33,15 +33,16 @@ class DefaultConfigurator : Configurator {
     }
 
     private fun fetchConfig(): Config.Get.Response {
-        val request = Config.Get.Request.newBuilder().build()
-        val encoded = Service.configGet(request.toByteArray())
-        val response = Config.Get.Response.parseFrom(encoded)
+        val request = Config.Get.Request()
+        val encoded = Service.configGet(Config.Get.Request.ADAPTER.encode(request))
+        val response = Config.Get.Response.ADAPTER.decode(encoded)
         return parseResponse(response)
     }
 
     private fun parseResponse(response: Config.Get.Response): Config.Get.Response {
-        return if (response.error != null && response.error.code != Config.Get.Response.Error.Code.NULL) {
-            throw Exception(response.error.description)
+        val error = response.error
+        return if (error != null && error.code != Config.Get.Response.Error.Code.NULL) {
+            throw Exception(error.description)
         } else {
             response
         }

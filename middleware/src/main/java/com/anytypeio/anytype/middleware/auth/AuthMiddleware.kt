@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.middleware.auth
 
-import anytype.Events
-import anytype.model.Models
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.data.auth.repo.AuthRemote
@@ -26,8 +24,7 @@ class AuthMiddleware(
         AccountEntity(
             id = response.id,
             name = response.name,
-            color = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.COLOR)
-                response.avatar.color else null
+            color = response.avatar?.color
         )
     }
 
@@ -40,8 +37,7 @@ class AuthMiddleware(
             AccountEntity(
                 id = response.id,
                 name = response.name,
-                color = if (response.avatar.avatarCase == Models.Account.Avatar.AvatarCase.COLOR)
-                    response.avatar.color else null
+                color = response.avatar?.color
             )
         }
     }
@@ -53,17 +49,21 @@ class AuthMiddleware(
     override fun observeAccounts() = events
         .flow()
         .filter { event ->
-            event.messagesList.any { message ->
-                message.valueCase == Events.Event.Message.ValueCase.ACCOUNTSHOW
+            event.messages.any { message ->
+                message.accountShow != null
             }
         }
         .map { event ->
-            event.messagesList.filter { message ->
-                message.valueCase == Events.Event.Message.ValueCase.ACCOUNTSHOW
+            event.messages.filter { message ->
+                message.accountShow != null
             }
         }
         .flatMapConcat { messages -> messages.asFlow() }
-        .map { event -> event.accountShow.toAccountEntity() }
+        .map {
+            val event = it.accountShow
+            checkNotNull(event)
+            event.toAccountEntity()
+        }
 
     override suspend fun createWallet(
         path: String
@@ -80,6 +80,6 @@ class AuthMiddleware(
     }
 
     override suspend fun getVersion(): String {
-        return middleware.middlewareVersion.version
+        return middleware.getMiddlewareVersion().version
     }
 }

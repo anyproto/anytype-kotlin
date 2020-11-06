@@ -1,15 +1,12 @@
 package com.anytypeio.anytype
 
-import anytype.Events.Event
-import anytype.Events.Event.Message
-import anytype.model.Models
+import anytype.Event
+import anytype.model.Block
 import com.anytypeio.anytype.common.MockDataFactory
 import com.anytypeio.anytype.data.auth.model.BlockEntity
 import com.anytypeio.anytype.data.auth.model.EventEntity
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
-import com.google.protobuf.Struct
-import com.google.protobuf.Value
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.flow.collect
@@ -39,21 +36,14 @@ class MiddlewareEventChannelTest {
 
         val context = MockDataFactory.randomUuid()
 
-        val msg = Event.Block.Show
-            .newBuilder()
-            .setRootId(context)
-            .addAllBlocks(emptyList())
-            .build()
+        val msg = Event.Block.Show(
+            rootId = context,
+            blocks = emptyList()
+        )
 
-        val message = Message
-            .newBuilder()
-            .setBlockShow(msg)
+        val message = Event.Message(blockShow = msg)
 
-        val event = Event
-            .newBuilder()
-            .setContextId(context)
-            .addMessages(message)
-            .build()
+        val event = Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
             on { flow() } doReturn flowOf(event)
@@ -82,21 +72,14 @@ class MiddlewareEventChannelTest {
 
         val context = MockDataFactory.randomUuid()
 
-        val msg = Event.Block.Show
-            .newBuilder()
-            .setRootId(MockDataFactory.randomString())
-            .addAllBlocks(emptyList())
-            .build()
+        val msg = Event.Block.Show(
+            rootId = MockDataFactory.randomString(),
+            blocks = emptyList()
+        )
 
-        val message = Message
-            .newBuilder()
-            .setBlockShow(msg)
+        val message = Event.Message(blockShow = msg)
 
-        val event = Event
-            .newBuilder()
-            .setContextId(MockDataFactory.randomUuid())
-            .addMessages(message)
-            .build()
+        val event = Event(contextId = MockDataFactory.randomUuid(), messages = listOf(message))
 
         proxy.stub {
             on { flow() } doReturn flowOf(event)
@@ -117,21 +100,14 @@ class MiddlewareEventChannelTest {
 
         val context = MockDataFactory.randomUuid()
 
-        val msg = Event.Block.Show
-            .newBuilder()
-            .setRootId(context)
-            .addAllBlocks(emptyList())
-            .build()
+        val msg = Event.Block.Show(
+            rootId = context,
+            blocks = emptyList()
+        )
 
-        val message = Message
-            .newBuilder()
-            .setBlockShow(msg)
+        val message = Event.Message(blockShow = msg)
 
-        val event = Event
-            .newBuilder()
-            .setContextId(context)
-            .addMessages(message)
-            .build()
+        val event = Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
             on { flow() } doReturn flowOf(event)
@@ -162,33 +138,25 @@ class MiddlewareEventChannelTest {
         val name = "video1.mp4"
         val mime = "video/*"
         val size = 999111L
-        val state = Models.Block.Content.File.State.Done
-        val type = Models.Block.Content.File.Type.Video
+        val state = Block.Content.File.State.Done
+        val type = Block.Content.File.Type.Video
 
         val context = MockDataFactory.randomUuid()
         val id = MockDataFactory.randomUuid()
 
-        val msg = Message
-            .newBuilder()
-            .blockSetFileBuilder
-            .setId(id)
-            .setHash(Event.Block.Set.File.Hash.newBuilder().setValue(hash).build())
-            .setMime(Event.Block.Set.File.Mime.newBuilder().setValue(mime).build())
-            .setSize(Event.Block.Set.File.Size.newBuilder().setValue(size).build())
-            .setType(Event.Block.Set.File.Type.newBuilder().setValue(type).build())
-            .setState(Event.Block.Set.File.State.newBuilder().setValue(state).build())
-            .setName(Event.Block.Set.File.Name.newBuilder().setValue(name).build())
-            .build()
+        val msg = Event.Block.Set.File(
+            id = id,
+            hash = Event.Block.Set.File.Hash(hash),
+            mime = Event.Block.Set.File.Mime(mime),
+            size = Event.Block.Set.File.Size(size),
+            type = Event.Block.Set.File.Type(type),
+            state = Event.Block.Set.File.State(state),
+            name = Event.Block.Set.File.Name(name)
+        )
 
-        val message = Message
-            .newBuilder()
-            .setBlockSetFile(msg)
+        val message = Event.Message(blockSetFile = msg)
 
-        val event = Event
-            .newBuilder()
-            .setContextId(context)
-            .addMessages(message)
-            .build()
+        val event = Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
             on { flow() } doReturn flowOf(event)
@@ -223,21 +191,11 @@ class MiddlewareEventChannelTest {
         val context = MockDataFactory.randomUuid()
         val id = MockDataFactory.randomUuid()
 
-        val msg = Message
-            .newBuilder()
-            .blockSetFileBuilder
-            .setId(id)
-            .build()
+        val msg = Event.Block.Set.File(id = id)
 
-        val message = Message
-            .newBuilder()
-            .setBlockSetFile(msg)
+        val message = Event.Message(blockSetFile = msg)
 
-        val event = Event
-            .newBuilder()
-            .setContextId(context)
-            .addMessages(message)
-            .build()
+        val event = Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
             on { flow() } doReturn flowOf(event)
@@ -267,22 +225,11 @@ class MiddlewareEventChannelTest {
         val id = MockDataFactory.randomUuid()
         val color = MockDataFactory.randomString()
 
-        val msg = Message
-            .newBuilder()
-            .blockSetBackgroundColorBuilder
-            .setId(id)
-            .setBackgroundColor(color)
-            .build()
+        val msg = Event.Block.Set.BackgroundColor(id = id, backgroundColor = color)
 
-        val message = Message
-            .newBuilder()
-            .setBlockSetBackgroundColor(msg)
+        val message = Event.Message(blockSetBackgroundColor = msg)
 
-        val event = Event
-            .newBuilder()
-            .setContextId(context)
-            .addMessages(message)
-            .build()
+        val event = Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
             on { flow() } doReturn flowOf(event)
@@ -318,27 +265,17 @@ class MiddlewareEventChannelTest {
 
         val details = BlockEntity.Fields(map = mutableMapOf(icon, name))
 
-        val msg = Message
-            .newBuilder()
-            .blockSetDetailsBuilder
-            .setId(id)
-            .setDetails(
-                Struct.newBuilder()
-                    .putFields(icon.first, Value.newBuilder().setStringValue(icon.second).build())
-                    .putFields(name.first, Value.newBuilder().setStringValue(name.second).build())
-                    .build()
+        val msg = Event.Block.Set.Details(
+            id = id,
+            details = mapOf(
+                icon.first to icon.second,
+                name.first to name.second
             )
-            .build()
+        )
 
-        val message = Message
-            .newBuilder()
-            .setBlockSetDetails(msg)
+        val message = Event.Message(blockSetDetails = msg)
 
-        val event = Event
-            .newBuilder()
-            .setContextId(context)
-            .addMessages(message)
-            .build()
+        val event = Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
             on { flow() } doReturn flowOf(event)

@@ -1,16 +1,14 @@
 package com.anytypeio.anytype.middleware.interactor
 
-import anytype.Commands
-import anytype.Events
-import anytype.model.Models.Block
+import anytype.ResponseEvent
+import anytype.Rpc
+import anytype.model.Block
 import com.anytypeio.anytype.data.auth.model.BlockEntity
 import com.anytypeio.anytype.data.auth.model.PayloadEntity
 import com.anytypeio.anytype.data.auth.model.PositionEntity
 import com.anytypeio.anytype.middleware.converters.block
 import com.anytypeio.anytype.middleware.converters.blocks
-import com.anytypeio.anytype.middleware.converters.fields
 import com.anytypeio.anytype.middleware.converters.toMiddleware
-import com.google.protobuf.Struct
 
 class MiddlewareMapper {
 
@@ -26,21 +24,23 @@ class MiddlewareMapper {
         return position.toMiddleware()
     }
 
-    fun toMiddleware(mode: BlockEntity.Content.Text.SplitMode): Commands.Rpc.Block.Split.Request.Mode {
+    fun toMiddleware(mode: BlockEntity.Content.Text.SplitMode): Rpc.Block.Split.Request.Mode {
         return when (mode) {
-            BlockEntity.Content.Text.SplitMode.BOTTOM -> Commands.Rpc.Block.Split.Request.Mode.BOTTOM
-            BlockEntity.Content.Text.SplitMode.TOP -> Commands.Rpc.Block.Split.Request.Mode.TOP
-            BlockEntity.Content.Text.SplitMode.INNER -> Commands.Rpc.Block.Split.Request.Mode.INNER
+            BlockEntity.Content.Text.SplitMode.BOTTOM -> Rpc.Block.Split.Request.Mode.BOTTOM
+            BlockEntity.Content.Text.SplitMode.TOP -> Rpc.Block.Split.Request.Mode.TOP
+            BlockEntity.Content.Text.SplitMode.INNER -> Rpc.Block.Split.Request.Mode.INNER
         }
     }
 
-    fun toPayload(response: Events.ResponseEvent): PayloadEntity {
+    fun toPayload(response: ResponseEvent?): PayloadEntity {
+
+        checkNotNull(response)
 
         val context = response.contextId
 
         return PayloadEntity(
             context = context,
-            events = response.messagesList.mapNotNull { it.toEntity(context) }
+            events = response.messages.mapNotNull { it.toEntity(context) }
         )
     }
 
@@ -50,9 +50,5 @@ class MiddlewareMapper {
 
     fun toEntity(blocks: List<Block>): List<BlockEntity> {
         return blocks.blocks()
-    }
-
-    fun toMiddleware(fields: BlockEntity.Fields): Struct {
-        return fields.fields()
     }
 }

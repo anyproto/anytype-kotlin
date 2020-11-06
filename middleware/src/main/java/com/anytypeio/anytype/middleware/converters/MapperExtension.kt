@@ -1,68 +1,56 @@
 package com.anytypeio.anytype.middleware.converters
 
-import anytype.Events
-import anytype.model.Localstore
-import anytype.model.Models.Account
-import anytype.model.Models.Block
+import anytype.Event
+import anytype.SmartBlockType
+import anytype.model.Block
+import anytype.model.PageInfo
+import anytype.model.PageInfoWithLinks
+import anytype.model.PageLinksInfo
 import com.anytypeio.anytype.data.auth.model.*
-import com.google.protobuf.Struct
-import com.google.protobuf.Value
 import timber.log.Timber
 
-fun Events.Event.Account.Show.toAccountEntity(): AccountEntity {
+fun Event.Account.Show.toAccountEntity(): AccountEntity {
+    val acc = account
+    checkNotNull(acc)
     return AccountEntity(
-        id = account.id,
-        name = account.name,
-        color = if (account.avatar.avatarCase == Account.Avatar.AvatarCase.COLOR)
-            account.avatar.color
-        else null
+        id = acc.id,
+        name = acc.name,
+        color = acc.avatar?.color
     )
 }
 
-fun Block.fields(): BlockEntity.Fields = BlockEntity.Fields().also { result ->
-    fields.fieldsMap.forEach { (key, value) ->
-        result.map[key] = when (val case = value.kindCase) {
-            Value.KindCase.NUMBER_VALUE -> value.numberValue
-            Value.KindCase.STRING_VALUE -> value.stringValue
-            else -> throw IllegalStateException("$case is not supported.")
-        }
-    }
-}
+fun Block.fields(): BlockEntity.Fields = BlockEntity.Fields(fields?.toMap().orEmpty())
 
-fun Events.SmartBlockType.entity(): BlockEntity.Content.Smart.Type = when (this) {
-    Events.SmartBlockType.Archive -> BlockEntity.Content.Smart.Type.ARCHIVE
-    Events.SmartBlockType.Page -> BlockEntity.Content.Smart.Type.PAGE
-    Events.SmartBlockType.Breadcrumbs -> BlockEntity.Content.Smart.Type.BREADCRUMBS
-    Events.SmartBlockType.Home -> BlockEntity.Content.Smart.Type.HOME
-    Events.SmartBlockType.ProfilePage -> BlockEntity.Content.Smart.Type.PROFILE
+fun SmartBlockType.entity(): BlockEntity.Content.Smart.Type = when (this) {
+    SmartBlockType.Archive -> BlockEntity.Content.Smart.Type.ARCHIVE
+    SmartBlockType.Page -> BlockEntity.Content.Smart.Type.PAGE
+    SmartBlockType.Breadcrumbs -> BlockEntity.Content.Smart.Type.BREADCRUMBS
+    SmartBlockType.Home -> BlockEntity.Content.Smart.Type.HOME
+    SmartBlockType.ProfilePage -> BlockEntity.Content.Smart.Type.PROFILE
     else -> throw IllegalStateException("Unexpected smart block type: $this")
 }
 
-fun Struct.fields(): BlockEntity.Fields = BlockEntity.Fields().also { result ->
-    fieldsMap.forEach { (key, value) ->
-        result.map[key] = when (val case = value.kindCase) {
-            Value.KindCase.NUMBER_VALUE -> value.numberValue
-            Value.KindCase.STRING_VALUE -> value.stringValue
-            Value.KindCase.BOOL_VALUE -> value.boolValue
-            else -> throw IllegalStateException("$case is not supported.")
-        }
-    }
+fun Map<String, *>?.fields() : BlockEntity.Fields = BlockEntity.Fields(this?.toMap().orEmpty())
+
+fun Block.text(): BlockEntity.Content.Text {
+    val t = checkNotNull(text)
+    return BlockEntity.Content.Text(
+        text = t.text,
+        marks = t.marks?.marks?.marks().orEmpty(),
+        style = t.style.entity(),
+        isChecked = t.checked,
+        color = if (t.color.isNotEmpty()) t.color else null,
+        backgroundColor = if (backgroundColor.isNotEmpty()) backgroundColor else null,
+        align = align.entity()
+    )
 }
 
-fun Block.text(): BlockEntity.Content.Text = BlockEntity.Content.Text(
-    text = text.text,
-    marks = text.marks.marksList.marks(),
-    style = text.style.entity(),
-    isChecked = text.checked,
-    color = if (text.color.isNotEmpty()) text.color else null,
-    backgroundColor = if (backgroundColor.isNotEmpty()) backgroundColor else null,
-    align = if (align != null) align.entity() else null
-)
-
 fun List<Block.Content.Text.Mark>.marks(): List<BlockEntity.Content.Text.Mark> = map { mark ->
+    val range = mark.range
+    checkNotNull(range) {"mark range is null"}
     BlockEntity.Content.Text.Mark(
-        range = IntRange(mark.range.from, mark.range.to),
-        param = if (mark.param.isNotEmpty()) mark.param else null,
+        range = IntRange(range.from, range.to),
+        param = if (mark.param_.isNotEmpty()) mark.param_ else null,
         type = when (mark.type) {
             Block.Content.Text.Mark.Type.Bold -> {
                 BlockEntity.Content.Text.Mark.Type.BOLD
@@ -97,55 +85,46 @@ fun List<Block.Content.Text.Mark>.marks(): List<BlockEntity.Content.Text.Mark> =
 }
 
 fun Block.layout(): BlockEntity.Content.Layout = BlockEntity.Content.Layout(
-    type = when (layout.style) {
+    type = when (layout?.style) {
         Block.Content.Layout.Style.Column -> BlockEntity.Content.Layout.Type.COLUMN
         Block.Content.Layout.Style.Row -> BlockEntity.Content.Layout.Type.ROW
         Block.Content.Layout.Style.Div -> BlockEntity.Content.Layout.Type.DIV
         Block.Content.Layout.Style.Header -> BlockEntity.Content.Layout.Type.HEADER
-        else -> throw IllegalStateException("Unexpected layout style: ${layout.style}")
+        else -> throw IllegalStateException("Unexpected layout style: ${layout?.style}")
     }
 )
 
 fun Block.link(): BlockEntity.Content.Link = BlockEntity.Content.Link(
-    type = when (link.style) {
+    type = when (link?.style) {
         Block.Content.Link.Style.Page -> BlockEntity.Content.Link.Type.PAGE
         Block.Content.Link.Style.Dataview -> BlockEntity.Content.Link.Type.DATA_VIEW
         Block.Content.Link.Style.Archive -> BlockEntity.Content.Link.Type.ARCHIVE
         Block.Content.Link.Style.Dashboard -> BlockEntity.Content.Link.Type.DASHBOARD
-        else -> throw IllegalStateException("Unexpected link style: ${link.style}")
+        else -> throw IllegalStateException("Unexpected link style: ${link?.style}")
     },
-    target = link.targetBlockId,
-    fields = BlockEntity.Fields().also { result ->
-        link.fields.fieldsMap.forEach { (key, value) ->
-            result.map[key] = when (val case = value.kindCase) {
-                Value.KindCase.NUMBER_VALUE -> value.numberValue
-                Value.KindCase.STRING_VALUE -> value.stringValue
-                Value.KindCase.BOOL_VALUE -> value.boolValue
-                else -> throw IllegalStateException("$case is not supported.")
-            }
-        }
-    }
+    target = link?.targetBlockId.orEmpty(),
+    fields = BlockEntity.Fields(link?.fields?.toMap().orEmpty())
 )
 
 fun Block.divider(): BlockEntity.Content.Divider = BlockEntity.Content.Divider(
-    style = when (div.style) {
+    style = when (div?.style) {
         Block.Content.Div.Style.Line -> BlockEntity.Content.Divider.Style.LINE
         Block.Content.Div.Style.Dots -> BlockEntity.Content.Divider.Style.DOTS
-        else -> throw IllegalStateException("Unexpected div style: ${div.style}")
+        else -> throw IllegalStateException("Unexpected div style: ${div?.style}")
     }
 )
 
 fun Block.icon(): BlockEntity.Content.Icon = BlockEntity.Content.Icon(
-    name = icon.name
+    name = icon?.name.orEmpty()
 )
 
 fun Block.file(): BlockEntity.Content.File = BlockEntity.Content.File(
-    hash = file.hash,
-    name = file.name,
-    size = file.size,
-    mime = file.mime,
-    type = file.type.entity(),
-    state = file.state.entity()
+    hash = file_?.hash,
+    name = file_?.name,
+    size = file_?.size,
+    mime = file_?.mime,
+    type = file_?.type?.entity(),
+    state = file_?.state?.entity()
 )
 
 fun Block.Align.entity(): BlockEntity.Align = when (this) {
@@ -172,42 +151,42 @@ fun Block.Content.File.State.entity(): BlockEntity.Content.File.State = when (th
 }
 
 fun Block.bookmark(): BlockEntity.Content.Bookmark = BlockEntity.Content.Bookmark(
-    url = bookmark.url.ifEmpty { null },
-    description = bookmark.description.ifEmpty { null },
-    title = bookmark.title.ifEmpty { null },
-    image = bookmark.imageHash.ifEmpty { null },
-    favicon = bookmark.faviconHash.ifEmpty { null }
+    url = bookmark?.url?.ifEmpty { null },
+    description = bookmark?.description?.ifEmpty { null },
+    title = bookmark?.title?.ifEmpty { null },
+    image = bookmark?.imageHash?.ifEmpty { null },
+    favicon = bookmark?.faviconHash?.ifEmpty { null }
 )
 
 fun List<Block>.blocks(
-    types: Map<String, Events.SmartBlockType> = emptyMap()
+    types: Map<String, SmartBlockType> = emptyMap()
 ): List<BlockEntity> = mapNotNull { block ->
-    when (block.contentCase) {
-        Block.ContentCase.TEXT -> {
+    when {
+        block.text != null -> {
             BlockEntity(
                 id = block.id,
-                children = block.childrenIdsList.toList(),
+                children = block.childrenIds,
                 fields = block.fields(),
                 content = block.text()
             )
         }
-        Block.ContentCase.LAYOUT -> {
+        block.layout != null -> {
             BlockEntity(
                 id = block.id,
-                children = block.childrenIdsList,
+                children = block.childrenIds,
                 fields = block.fields(),
                 content = block.layout()
             )
         }
-        Block.ContentCase.LINK -> {
+        block.link != null -> {
             BlockEntity(
                 id = block.id,
-                children = block.childrenIdsList,
+                children = block.childrenIds,
                 fields = block.fields(),
                 content = block.link()
             )
         }
-        Block.ContentCase.DIV -> {
+        block.div != null -> {
             BlockEntity(
                 id = block.id,
                 children = emptyList(),
@@ -215,34 +194,34 @@ fun List<Block>.blocks(
                 content = block.divider()
             )
         }
-        Block.ContentCase.FILE -> {
+        block.file_ != null -> {
             BlockEntity(
                 id = block.id,
-                children = block.childrenIdsList,
+                children = block.childrenIds,
                 fields = block.fields(),
                 content = block.file()
             )
         }
-        Block.ContentCase.ICON -> {
+        block.icon != null -> {
             BlockEntity(
                 id = block.id,
-                children = block.childrenIdsList,
+                children = block.childrenIds,
                 fields = block.fields(),
                 content = block.icon()
             )
         }
-        Block.ContentCase.BOOKMARK -> {
+        block.bookmark != null -> {
             BlockEntity(
                 id = block.id,
-                children = block.childrenIdsList,
+                children = block.childrenIds,
                 fields = block.fields(),
                 content = block.bookmark()
             )
         }
-        Block.ContentCase.SMARTBLOCK -> {
+        block.smartblock != null -> {
             BlockEntity(
                 id = block.id,
-                children = block.childrenIdsList,
+                children = block.childrenIds,
                 content = BlockEntity.Content.Smart(
                     type = types[block.id]?.entity() ?: throw IllegalStateException("Type missing")
                 ),
@@ -250,7 +229,7 @@ fun List<Block>.blocks(
             )
         }
         else -> {
-            Timber.d("Ignoring content type: ${block.contentCase}")
+            Timber.d("Ignoring content type: ${block}")
             null
         }
     }
@@ -315,30 +294,36 @@ fun BlockEntity.Align.toMiddleware(): Block.Align = when (this) {
     BlockEntity.Align.AlignRight -> Block.Align.AlignRight
 }
 
-fun Localstore.PageInfo.toEntity(): DocumentInfoEntity = DocumentInfoEntity(
+fun PageInfo.fields(): BlockEntity.Fields = BlockEntity.Fields(details?.toMap().orEmpty())
+
+fun PageInfo.toEntity(): DocumentInfoEntity = DocumentInfoEntity(
     id = id,
-    fields = details.fields(),
+    fields = fields(),
     hasInboundLinks = hasInboundLinks,
     snippet = snippet,
     type = pageType.let { type ->
         when (type) {
-            Localstore.PageInfo.Type.Page -> DocumentInfoEntity.Type.PAGE
-            Localstore.PageInfo.Type.Archive -> DocumentInfoEntity.Type.ARCHIVE
-            Localstore.PageInfo.Type.ProfilePage -> DocumentInfoEntity.Type.PROFILE_PAGE
-            Localstore.PageInfo.Type.Home -> DocumentInfoEntity.Type.HOME
-            Localstore.PageInfo.Type.Set -> DocumentInfoEntity.Type.SET
+            PageInfo.Type.Page -> DocumentInfoEntity.Type.PAGE
+            PageInfo.Type.Archive -> DocumentInfoEntity.Type.ARCHIVE
+            PageInfo.Type.ProfilePage -> DocumentInfoEntity.Type.PROFILE_PAGE
+            PageInfo.Type.Home -> DocumentInfoEntity.Type.HOME
+            PageInfo.Type.Set -> DocumentInfoEntity.Type.SET
             else -> throw IllegalStateException("Unexpected page info type: $type")
         }
     }
 )
 
-fun Localstore.PageLinksInfo.toEntity() = PageLinksEntity(
-    inbound = inboundList.map { it.toEntity() },
-    outbound = outboundList.map { it.toEntity() }
+fun PageLinksInfo.toEntity() = PageLinksEntity(
+    inbound = inbound.map { it.toEntity() },
+    outbound = outbound.map { it.toEntity() }
 )
 
-fun Localstore.PageInfoWithLinks.toEntity() = PageInfoWithLinksEntity(
-    id = id,
-    docInfo = info.toEntity(),
-    links = links.toEntity()
-)
+fun PageInfoWithLinks.toEntity(): PageInfoWithLinksEntity {
+    checkNotNull(info) { "info property is null" }
+    checkNotNull(links) { "links property is null" }
+    return PageInfoWithLinksEntity(
+        id = id,
+        docInfo = info!!.toEntity(),
+        links = links!!.toEntity()
+    )
+}

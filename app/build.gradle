@@ -94,6 +94,7 @@ dependencies {
     def devDependencies = rootProject.ext.development
     def databaseDependencies = rootProject.ext.db
     def analyticsDependencies = rootProject.ext.analytics
+    def protobufDependencies = rootProject.ext.protobuf
 
 
     //Compile time dependencies
@@ -158,6 +159,8 @@ dependencies {
     androidTestImplementation unitTestDependencies.coroutineTesting
 
     debugImplementation acceptanceTesting.fragmentTesting
+
+    implementation protobufDependencies.wireRuntime
 }
 
 apply plugin: 'com.google.gms.google-services'

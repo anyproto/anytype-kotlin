@@ -10,7 +10,7 @@ class BlockMiddleware(
     private val middleware: Middleware
 ) : BlockRemote {
 
-    override suspend fun getConfig(): ConfigEntity = middleware.config
+    override suspend fun getConfig(): ConfigEntity = middleware.getConfig()
 
     override suspend fun openDashboard(
         contextId: String,
@@ -155,7 +155,7 @@ class BlockMiddleware(
         middleware.getPageInfoWithLinks(pageId).toEntity()
 
     override suspend fun getListPages(): List<DocumentInfoEntity> =
-        middleware.listPages.map { it.toEntity() }
+        middleware.getListPages().map { it.toEntity() }
 
     override suspend fun linkToObject(
         context: String,

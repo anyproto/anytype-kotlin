@@ -209,6 +209,7 @@
     <string name="action_bar_replace">Replace</string>
     <string name="action_bar_add_caption">Add caption</string>
     <string name="action_bar_rename">Rename</string>
+    <string name="action_bar_sam">Scroll &amp; move</string>
     <string name="more">More</string>
     <string name="done">Done</string>
     <string name="select_scroll_and_move_blocks">To start, select blocks</string>

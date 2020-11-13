@@ -62,6 +62,10 @@ class BlockActionBarItem @JvmOverloads constructor(
                 R.string.action_bar_add_caption,
                 R.drawable.ic_action_add_caption
             )
+            ActionItemType.SAM -> updateContent(
+                R.string.action_bar_sam,
+                R.drawable.ic_action_sam
+            )
             else -> throw RuntimeException("Unknown action item type:$itemType")
         }
     }

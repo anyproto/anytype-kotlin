@@ -1283,6 +1283,14 @@ class PageViewModel(
                     dispatch(Command.RequestDownloadPermission(id))
                 }
             }
+            ActionItemType.SAM -> {
+                mode = EditorMode.SCROLL_AND_MOVE
+                viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
+                viewModelScope.launch { refresh() }
+                proceedWithSAMQuickStartSelection(id)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnQuickStart(1))
+                dispatch(Command.PopBackStack)
+            }
             ActionItemType.Replace -> {
                 _toasts.offer("Replace not implemented")
             }
@@ -1292,6 +1300,7 @@ class PageViewModel(
             ActionItemType.Divider -> {
                 _toasts.offer("not implemented")
             }
+            else -> Timber.d("Action ignored: $action")
         }
     }
 
@@ -2308,6 +2317,10 @@ class PageViewModel(
     }
 
     private fun onBlockMultiSelectClicked(target: Id) {
+        proceedWithTogglingSelection(target)
+    }
+
+    private fun proceedWithTogglingSelection(target: Id) {
         (stateData.value as? ViewState.Success)?.let { state ->
 
             var allow = true
@@ -2331,6 +2344,40 @@ class PageViewModel(
             }
 
             onMultiSelectModeBlockClicked()
+
+            val update = state.blocks.map { view ->
+                if (view.id == target || descendants.contains(view.id))
+                    view.updateSelection(newSelection = isSelected(target))
+                else
+                    view
+            }
+
+            stateData.postValue(ViewState.Success(update))
+        }
+    }
+
+    private fun proceedWithSAMQuickStartSelection(target: Id) {
+        (stateData.value as? ViewState.Success)?.let { state ->
+
+            var allow = true
+
+            val parent = blocks.find { it.children.contains(target) }
+
+            if (parent != null && parent.id != context) {
+                if (isSelected(parent.id)) allow = false
+            }
+
+            if (!allow) return
+
+            toggleSelection(target)
+
+            val descendants = blocks.asMap().descendants(parent = target)
+
+            if (isSelected(target)) {
+                descendants.forEach { child -> select(child) }
+            } else {
+                descendants.forEach { child -> unselect(child) }
+            }
 
             val update = state.blocks.map { view ->
                 if (view.id == target || descendants.contains(view.id))

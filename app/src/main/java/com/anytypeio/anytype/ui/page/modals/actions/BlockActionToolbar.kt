@@ -456,13 +456,17 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.Duplicate,
             ActionItemType.Divider,
-            ActionItemType.MoveTo
+            ActionItemType.MoveTo,
+            ActionItemType.Divider,
+            ActionItemType.SAM
         )
 
         val PAGE_ARCHIVE = listOf(
             ActionItemType.AddBelow,
             ActionItemType.DividerExtended,
-            ActionItemType.Delete
+            ActionItemType.Delete,
+            ActionItemType.Divider,
+            ActionItemType.SAM
         )
 
         val TEXT = listOf(
@@ -475,6 +479,8 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Duplicate,
             ActionItemType.Divider,
             ActionItemType.MoveTo,
+            ActionItemType.Divider,
+            ActionItemType.SAM,
             ActionItemType.DividerExtended,
             ActionItemType.Style
         )
@@ -489,6 +495,8 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Duplicate,
             ActionItemType.Divider,
             ActionItemType.MoveTo,
+            ActionItemType.Divider,
+            ActionItemType.SAM,
             ActionItemType.DividerExtended,
             ActionItemType.Style
         )
@@ -502,7 +510,9 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.Download,
             ActionItemType.Divider,
-            ActionItemType.MoveTo
+            ActionItemType.MoveTo,
+            ActionItemType.Divider,
+            ActionItemType.SAM,
         )
 
         val FILE = listOf(
@@ -514,7 +524,9 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.Download,
             ActionItemType.Divider,
-            ActionItemType.MoveTo
+            ActionItemType.MoveTo,
+            ActionItemType.Divider,
+            ActionItemType.SAM
         )
 
         val BOOKMARK = listOf(
@@ -524,7 +536,9 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.Duplicate,
             ActionItemType.Divider,
-            ActionItemType.MoveTo
+            ActionItemType.MoveTo,
+            ActionItemType.Divider,
+            ActionItemType.SAM
         )
 
         val CODE = listOf(
@@ -537,6 +551,8 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Duplicate,
             ActionItemType.Divider,
             ActionItemType.MoveTo,
+            ActionItemType.Divider,
+            ActionItemType.SAM,
             ActionItemType.DividerExtended,
             ActionItemType.Style
         )
@@ -550,7 +566,9 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.Divider,
             ActionItemType.Duplicate,
             ActionItemType.Divider,
-            ActionItemType.MoveTo
+            ActionItemType.MoveTo,
+            ActionItemType.Divider,
+            ActionItemType.SAM
         )
     }
 }

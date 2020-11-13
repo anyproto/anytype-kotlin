@@ -170,6 +170,7 @@ sealed class ControlPanelMachine {
             object OnApply : SAM()
             object OnExit : SAM()
             object OnEnter : SAM()
+            data class OnQuickStart(val countOnStart: Int) : SAM()
         }
 
         /**
@@ -642,6 +643,19 @@ sealed class ControlPanelMachine {
             is Event.SAM.OnEnter -> state.copy(
                 multiSelect = state.multiSelect.copy(
                     isScrollAndMoveEnabled = true
+                )
+            )
+            is Event.SAM.OnQuickStart -> state.copy(
+                multiSelect = state.multiSelect.copy(
+                    isVisible = true,
+                    isScrollAndMoveEnabled = true,
+                    count = event.countOnStart
+                ),
+                mainToolbar = state.mainToolbar.copy(
+                    isVisible = false
+                ),
+                navigationToolbar = state.navigationToolbar.copy(
+                    isVisible = false
                 )
             )
             is Event.SAM.OnApply -> state.copy(

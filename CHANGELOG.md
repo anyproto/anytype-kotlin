@@ -1,6 +1,12 @@
 # Change log for Android @Anytype app.
 
-## Version 0.1.2 (WIP)
+## Version 0.1.3
+
+### New features & enhancements 🚀
+
+* Start scrolling-and-moving a block via action menu (no longer need to enter multi-selection mode in order to scroll-and-move a block) (#1055)
+
+## Version 0.1.2
 
 ### New features & enhancements 🚀
 

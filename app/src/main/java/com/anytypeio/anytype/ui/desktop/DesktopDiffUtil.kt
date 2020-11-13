@@ -41,6 +41,9 @@ class DesktopDiffUtil(
             if (oldDoc.image != newDoc.image) {
                 changes.add(IMAGE_CHANGED)
             }
+            if (oldDoc.isLoading != newDoc.isLoading) {
+                changes.add(LOADING_STATE_CHANGED)
+            }
         }
 
         if (oldDoc is DashboardView.Archive && newDoc is DashboardView.Archive) {
@@ -71,6 +74,9 @@ class DesktopDiffUtil(
     data class Payload(
         val changes: List<Int>
     ) {
+
+        val isLoadingChanged: Boolean = changes.contains(LOADING_STATE_CHANGED)
+
         fun targetChanged() = changes.contains(TARGET_CHANGED)
         fun titleChanged() = changes.contains(TITLE_CHANGED)
         fun emojiChanged() = changes.contains(EMOJI_CHANGED)
@@ -82,5 +88,6 @@ class DesktopDiffUtil(
         const val TITLE_CHANGED = 3
         const val EMOJI_CHANGED = 4
         const val IMAGE_CHANGED = 5
+        const val LOADING_STATE_CHANGED = 6
     }
 }

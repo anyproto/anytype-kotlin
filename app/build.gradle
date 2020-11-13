@@ -138,6 +138,7 @@ dependencies {
     implementation analyticsDependencies.amplitude
 
     implementation applicationDependencies.blurry
+    implementation applicationDependencies.shimmerLayout
     implementation applicationDependencies.photoView
     implementation applicationDependencies.zxing
 

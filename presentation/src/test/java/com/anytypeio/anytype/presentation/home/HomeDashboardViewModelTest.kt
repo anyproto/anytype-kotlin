@@ -246,7 +246,8 @@ class HomeDashboardViewModelTest {
             DashboardView.Document(
                 id = page.id,
                 target = targetId,
-                isArchived = false
+                isArchived = false,
+                isLoading = true
             )
         )
 

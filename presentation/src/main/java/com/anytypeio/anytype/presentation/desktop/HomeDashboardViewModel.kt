@@ -266,8 +266,11 @@ class HomeDashboardViewModel(
             )
         }
 
-    fun onDocumentClicked(target: Id) {
-        proceedWithOpeningDocument(target)
+    fun onDocumentClicked(target: Id, isLoading: Boolean) {
+        if (!isLoading)
+            proceedWithOpeningDocument(target)
+        else
+            Timber.d("Skipping on-document click due to loading state")
     }
 
     fun onArchivedClicked(target: Id) {

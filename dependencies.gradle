@@ -32,6 +32,7 @@ ext {
     exoplayer_version = '2.11.3'
     glide_version = '4.11.0'
     blurry_version = '3.0.0'
+    shimmer_layout_version = "0.5.0"
     photo_view_version = '2.3.0'
     dagger_version = '2.28.3'
     javaxAnnotations_version = '1.0'
@@ -136,7 +137,8 @@ ext {
             urlcleaner:                 "com.shekhargulati.urlcleaner:urlcleaner:$urlcleaner_version",
             kotlinxSerializationJson:   "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_json_version",
             crashlytics:                "com.google.firebase:firebase-crashlytics:$crashlytics_version",
-            firebaseCore:               "com.google.firebase:firebase-core:$firebase_core_version"
+            firebaseCore:               "com.google.firebase:firebase-core:$firebase_core_version",
+            shimmerLayout:              "com.facebook.shimmer:shimmer:$shimmer_layout_version"
     ]
 
     unitTesting = [

@@ -58,7 +58,8 @@ fun List<DashboardView>.updateDetails(
                             else
                                 null
                         },
-                        isArchived = details.isArchived ?: false
+                        isArchived = details.isArchived ?: false,
+                        isLoading = false
                     )
                 } else {
                     view

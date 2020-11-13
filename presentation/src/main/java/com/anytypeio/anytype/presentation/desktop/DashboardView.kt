@@ -7,12 +7,14 @@ sealed class DashboardView {
 
     abstract val id: Id
     abstract val isArchived: Boolean
+    abstract val isLoading: Boolean
 
     data class Profile(
         override val id: Id,
         val name: String,
         val avatar: Url? = null,
-        override val isArchived: Boolean = false
+        override val isArchived: Boolean = false,
+        override val isLoading: Boolean = false
     ) : DashboardView()
 
     data class Document(
@@ -21,13 +23,15 @@ sealed class DashboardView {
         val title: String? = null,
         val emoji: String? = null,
         val image: String? = null,
-        override val isArchived: Boolean
+        override val isArchived: Boolean,
+        override val isLoading: Boolean = false
     ) : DashboardView()
 
     data class Archive(
         override val id: Id,
         val target: Id,
         val title: String,
-        override val isArchived: Boolean = false
+        override val isArchived: Boolean = false,
+        override val isLoading: Boolean = false
     ) : DashboardView()
 }

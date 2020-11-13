@@ -7,8 +7,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.tools.SupportDragAndDropBehavior
+import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.desktop.DashboardView
@@ -20,7 +22,7 @@ import timber.log.Timber
 
 class DashboardAdapter(
     private var data: List<DashboardView>,
-    private val onDocumentClicked: (Id) -> Unit,
+    private val onDocumentClicked: (Id, Boolean) -> Unit,
     private val onArchiveClicked: (Id) -> Unit
 ) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>(), SupportDragAndDropBehavior {
 
@@ -63,10 +65,14 @@ class DashboardAdapter(
             is ViewHolder.DocumentHolder -> {
                 with(holder) {
                     val item = data[position] as DashboardView.Document
-                    bindClick(item.target, onDocumentClicked)
+                    bindClick(item.target) { id ->
+                        val d = data[bindingAdapterPosition] as DashboardView.Document
+                        onDocumentClicked(id, d.isLoading)
+                    }
                     bindTitle(item.title)
                     bindEmoji(item.emoji)
                     bindImage(item.image)
+                    bindLoading(item.isLoading)
                 }
             }
             is ViewHolder.ArchiveHolder -> {
@@ -120,7 +126,10 @@ class DashboardAdapter(
         with(holder) {
             val item = data[position] as DashboardView.Document
             if (payload.targetChanged()) {
-                bindClick(item.target, onDocumentClicked)
+                bindClick(item.target) { id ->
+                    val d = data[bindingAdapterPosition] as DashboardView.Document
+                    onDocumentClicked(id, d.isLoading)
+                }
             }
             if (payload.titleChanged()) {
                 bindTitle(item.title)
@@ -130,6 +139,9 @@ class DashboardAdapter(
             }
             if (payload.imageChanged()) {
                 bindImage(item.image)
+            }
+            if (payload.isLoadingChanged) {
+                bindLoading(item.isLoading)
             }
         }
     }
@@ -157,6 +169,7 @@ class DashboardAdapter(
             private val tvTitle = itemView.title
             private val ivEmoji = itemView.emojiIcon
             private val ivImage = itemView.image
+            private val shimmer = itemView.shimmer
 
             fun bindClick(
                 target: Id,
@@ -170,6 +183,18 @@ class DashboardAdapter(
                     tvTitle.setText(R.string.untitled)
                 else
                     tvTitle.text = title
+            }
+
+            fun bindLoading(isLoading: Boolean) {
+                if (isLoading) {
+                    tvTitle.invisible()
+                    shimmer.startShimmer()
+                    shimmer.visible()
+                } else {
+                    shimmer.stopShimmer()
+                    shimmer.invisible()
+                    tvTitle.visible()
+                }
             }
 
             fun bindEmoji(emoji: String?) {

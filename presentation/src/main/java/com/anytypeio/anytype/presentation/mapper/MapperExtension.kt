@@ -299,7 +299,7 @@ fun Block.Content.Link.toPageView(
     id: String,
     details: Block.Details,
     builder: UrlBuilder
-): DashboardView.Document? {
+): DashboardView.Document {
     return DashboardView.Document(
         id = id,
         target = target,
@@ -310,7 +310,8 @@ fun Block.Content.Link.toPageView(
         image = details.details[target]?.iconImage?.let { name ->
             if (name.isNotEmpty()) builder.image(name) else null
         },
-        isArchived = details.details[target]?.isArchived ?: false
+        isArchived = details.details[target]?.isArchived ?: false,
+        isLoading = !details.details.containsKey(target)
     )
 }
 

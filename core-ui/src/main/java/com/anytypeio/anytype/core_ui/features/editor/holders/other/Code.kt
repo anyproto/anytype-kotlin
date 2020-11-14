@@ -99,6 +99,9 @@ class Code(view: View) : BlockViewHolder(view) {
 
         content.setOnClickListener {
             onTextInputClicked(item.id)
+            if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
+                content.context.imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)
+            }
         }
 
         menu.setOnClickListener {

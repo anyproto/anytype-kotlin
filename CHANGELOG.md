@@ -6,6 +6,10 @@
 
 * Start scrolling-and-moving a block via action menu (no longer need to enter multi-selection mode in order to scroll-and-move a block) (#1055)
 
+### Fixes & tech 🚒
+
+* Keyboard won't show up in code snippet on Android 7 (#1024)
+
 ## Version 0.1.2
 
 ### New features & enhancements 🚀

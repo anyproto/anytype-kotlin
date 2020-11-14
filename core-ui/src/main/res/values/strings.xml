@@ -235,6 +235,7 @@
     <string name="mention_suggester_new_page">Create new page</string>
     <string name="widget_archive_select_pages">Select pages</string>
     <string name="your_search_query">Search</string>
+    <string name="syncing">Syncing…</string>
     <plurals name="page_selected">
         <item quantity="zero">Select pages</item>
         <item quantity="one">%d page selected</item>

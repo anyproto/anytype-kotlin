@@ -190,11 +190,19 @@ fun Editable.setMentionSpan(
     mentionImagePadding: Int = 0
 ) : Editable = this.apply {
     if (!mark.param.isNullOrBlank()) {
+
+        val isLoading = mark.isLoading == Markup.Mark.IS_LOADING_VALUE
+
+        val placeholder = if (isLoading)
+            context.drawable(R.drawable.ic_mention_loading_state)
+        else
+            context.drawable(R.drawable.ic_block_page_without_emoji)
+
         setSpan(
             MentionSpan(
                 onImageResourceReady = onImageReady,
                 context = context,
-                placeholder = context.drawable(R.drawable.ic_block_page_without_emoji),
+                placeholder = placeholder,
                 imageSize = mentionImageSize,
                 imagePadding = mentionImagePadding,
                 param = mark.param!!,
@@ -205,18 +213,21 @@ fun Editable.setMentionSpan(
             mark.to,
             Markup.MENTION_SPANNABLE_FLAG
         )
-        val clickableSpan = object : ClickableSpan() {
-            override fun onClick(widget: View) {
-                (widget as? TextInputWidget)?.enableReadMode()
-                click?.invoke(mark.param!!)
+
+        if (!isLoading) {
+            val clickableSpan = object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    (widget as? TextInputWidget)?.enableReadMode()
+                    click?.invoke(mark.param!!)
+                }
             }
+            setSpan(
+                clickableSpan,
+                mark.from,
+                mark.to,
+                Markup.MENTION_SPANNABLE_FLAG
+            )
         }
-        setSpan(
-            clickableSpan,
-            mark.from,
-            mark.to,
-            Markup.MENTION_SPANNABLE_FLAG
-        )
     } else {
         Timber.e("Get MentionSpan without param!")
     }

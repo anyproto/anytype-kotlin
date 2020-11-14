@@ -33,13 +33,20 @@ interface Markup {
         val extras: Map<String, String?> = emptyMap()
     ) : Parcelable {
 
-        val image: String? by extras
-        val emoji: String? by extras
+        private val default = extras.withDefault { null }
+
+        val image: String? by default
+        val emoji: String? by default
+        val isLoading: String? by default
 
         fun color(): Int? = ThemeColor.values().find { color -> color.title == param }?.text
         fun background(): Int? =
             ThemeColor.values().find { color -> color.title == param }?.background
 
+        companion object {
+            const val IS_LOADING_VALUE = "true"
+            const val IS_NOT_LOADING_VALUE = "false"
+        }
     }
 
     /**

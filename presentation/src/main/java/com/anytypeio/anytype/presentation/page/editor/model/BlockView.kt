@@ -108,6 +108,13 @@ sealed class BlockView : ViewType, Parcelable {
     }
 
     /**
+     * Views implementing this interface can indicate that its content is loading
+     */
+    interface Loadable {
+        val isLoading: Boolean
+    }
+
+    /**
      * Views implementing this interface are supposed to highlight search results.
      */
     interface Searchable {
@@ -759,14 +766,15 @@ sealed class BlockView : ViewType, Parcelable {
     @Parcelize
     data class Page(
         override val id: String,
-        override val indent: Int,
+        override val indent: Int = 0,
         override val isSelected: Boolean = false,
         override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+        override val isLoading: Boolean = false,
         var text: String? = null,
-        val emoji: String?,
-        val image: String?,
-        val isEmpty: Boolean = false
-    ) : BlockView(), Indentable, Selectable, Searchable {
+        val emoji: String? = null,
+        val image: String? = null,
+        val isEmpty: Boolean = false,
+    ) : BlockView(), Indentable, Selectable, Searchable, Loadable {
         override fun getViewType() = HOLDER_PAGE
     }
 

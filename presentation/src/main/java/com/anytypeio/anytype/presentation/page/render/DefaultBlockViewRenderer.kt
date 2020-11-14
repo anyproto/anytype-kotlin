@@ -723,7 +723,8 @@ class DefaultBlockViewRenderer(
                 null
         },
         text = details.details[content.target]?.name,
-        indent = indent
+        indent = indent,
+        isLoading = !details.details.containsKey(content.target)
     )
 
     private fun pageArchive(

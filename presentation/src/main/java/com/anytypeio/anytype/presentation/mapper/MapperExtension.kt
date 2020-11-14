@@ -201,6 +201,8 @@ fun Block.Content.Text.marks(
                 val emoji: String?
                 val image: String?
 
+                var isLoading = Markup.Mark.IS_NOT_LOADING_VALUE
+
                 if (details != null) {
                     emoji = details.details[mark.param]?.iconEmoji?.let { icon ->
                         if (icon.isEmpty()) null else icon
@@ -208,9 +210,14 @@ fun Block.Content.Text.marks(
                     image = details.details[mark.param]?.iconImage?.let { icon ->
                         if (icon.isEmpty()) null else icon
                     }
+
+                    if (!details.details.containsKey(mark.param))
+                        isLoading = Markup.Mark.IS_LOADING_VALUE
+
                 } else {
                     emoji = null
                     image = null
+                    isLoading = Markup.Mark.IS_LOADING_VALUE
                 }
 
                 Markup.Mark(
@@ -220,7 +227,8 @@ fun Block.Content.Text.marks(
                     param = mark.param,
                     extras = mapOf(
                         "image" to image?.let { urlBuilder?.thumbnail(it) },
-                        "emoji" to emoji
+                        "emoji" to emoji,
+                        "isLoading" to isLoading
                     )
                 )
             }

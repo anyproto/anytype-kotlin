@@ -192,7 +192,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     param = mentionHash,
                                     extras = mapOf(
                                         "image" to null,
-                                        "emoji" to null
+                                        "emoji" to null,
+                                        "isLoading" to Markup.Mark.IS_LOADING_VALUE
                                     )
                                 )
                             ),
@@ -359,7 +360,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     param = newPageId,
                                     extras = mapOf(
                                         "image" to null,
-                                        "emoji" to null
+                                        "emoji" to null,
+                                        "isLoading" to Markup.Mark.IS_LOADING_VALUE
                                     )
                                 )
                             ),
@@ -526,7 +528,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     param = newPageId,
                                     extras = mapOf(
                                         "image" to null,
-                                        "emoji" to null
+                                        "emoji" to null,
+                                        "isLoading" to Markup.Mark.IS_LOADING_VALUE
                                     )
                                 )
                             ),

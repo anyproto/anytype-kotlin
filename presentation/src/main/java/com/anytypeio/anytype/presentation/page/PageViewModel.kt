@@ -2146,10 +2146,16 @@ class PageViewModel(
         renderizePipeline.send(blocks)
     }
 
-    private fun onPageClicked(target: String) =
-        proceedWithOpeningPage(
-            target = blocks.first { it.id == target }.content<Content.Link>().target
-        )
+    private fun onPageClicked(target: String) {
+        val view = views.find { it.id == target }
+        if (view is BlockView.Loadable && !view.isLoading) {
+            proceedWithOpeningPage(
+                target = blocks.first { it.id == target }.content<Content.Link>().target
+            )
+        } else {
+            _toasts.offer("Still syncing...")
+        }
+    }
 
     private fun onMentionClicked(target: String) {
         proceedWithClearingFocus()

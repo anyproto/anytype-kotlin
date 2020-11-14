@@ -111,6 +111,11 @@ class BlockViewDiffUtil(
                 changes.add(SEARCH_HIGHLIGHT_CHANGED)
         }
 
+        if (newBlock is BlockView.Loadable && oldBlock is BlockView.Loadable) {
+            if (newBlock.isLoading != oldBlock.isLoading)
+                changes.add(LOADING_STATE_CHANGED)
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -124,6 +129,7 @@ class BlockViewDiffUtil(
         val changes: List<Int>
     ) {
 
+        val isLoadingChanged: Boolean get() = changes.contains(LOADING_STATE_CHANGED)
         val isIndentChanged: Boolean get() = changes.contains(INDENT_CHANGED)
         val isCursorChanged: Boolean get() = changes.contains(CURSOR_CHANGED)
         val isMarkupChanged: Boolean get() = changes.contains(MARKUP_CHANGED)
@@ -162,5 +168,6 @@ class BlockViewDiffUtil(
         const val CURSOR_CHANGED = 12
         const val TITLE_ICON_CHANGED = 13
         const val SEARCH_HIGHLIGHT_CHANGED = 14
+        const val LOADING_STATE_CHANGED = 15
     }
 }

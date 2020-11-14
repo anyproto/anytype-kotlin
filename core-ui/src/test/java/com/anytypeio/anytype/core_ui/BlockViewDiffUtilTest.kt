@@ -818,6 +818,40 @@ class BlockViewDiffUtilTest {
     }
 
     @Test
+    fun `should detect loading-state change in link block`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Page(
+            id = id,
+            isLoading = true,
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            isLoading = false
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.LOADING_STATE_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
     fun `should detect search highlight changes in paragraph block`() {
         val index = 0
 

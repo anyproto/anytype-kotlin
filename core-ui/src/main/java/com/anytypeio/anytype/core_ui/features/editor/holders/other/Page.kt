@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.page.SupportNesting
 import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -25,11 +26,14 @@ import timber.log.Timber
 class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder, SupportNesting {
 
     private val untitled = itemView.resources.getString(R.string.untitled)
+    private val iconContainer = itemView.pageIconContainer
     private val icon = itemView.pageIcon
     private val emoji = itemView.linkEmoji
     private val image = itemView.linkImage
     private val title = itemView.pageTitle
     private val guideline = itemView.pageGuideline
+    private val progress = itemView.progress
+    private val syncing = itemView.syncing
 
     fun bind(
         item: BlockView.Page,
@@ -88,6 +92,22 @@ class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder
                 click = { onBlockLongClick(itemView, it, clicked) }
             )
         )
+
+        bindLoading(item.isLoading)
+    }
+
+    private fun bindLoading(isLoading: Boolean) {
+        if (isLoading) {
+            iconContainer.invisible()
+            title.invisible()
+            progress.visible()
+            syncing.visible()
+        } else {
+            progress.invisible()
+            syncing.invisible()
+            iconContainer.visible()
+            title.visible()
+        }
     }
 
     private fun applySearchHighlight(item: BlockView.Searchable) {
@@ -135,6 +155,8 @@ class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder
             if (payload.isSearchHighlightChanged) {
                 applySearchHighlight(item)
             }
+            if (payload.isLoadingChanged)
+                bindLoading(item.isLoading)
         }
     }
 }

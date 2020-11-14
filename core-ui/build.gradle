@@ -57,6 +57,7 @@ dependencies {
     implementation applicationDependencies.recyclerView
     implementation applicationDependencies.constraintLayout
     implementation applicationDependencies.glide
+    implementation applicationDependencies.shimmerLayout
     implementation applicationDependencies.timber
     implementation applicationDependencies.betterLinkMovement
     implementation applicationDependencies.exoPlayer

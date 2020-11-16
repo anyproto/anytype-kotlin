@@ -59,7 +59,7 @@ class Orchestrator(
     private val updateCheckbox: UpdateCheckbox,
     private val updateTitle: UpdateTitle,
     private val downloadFile: DownloadFile,
-    private val updateText: UpdateText,
+    val updateText: UpdateText,
     private val updateAlignment: UpdateAlignment,
     private val uploadBlock: UploadBlock,
     private val setupBookmark: SetupBookmark,

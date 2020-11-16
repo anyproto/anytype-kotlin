@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.block.model.Block.Content
 import com.anytypeio.anytype.domain.block.model.Block.Prototype
@@ -602,7 +603,7 @@ class PageViewModel(
             if (state.stylingToolbar.isVisible) {
                 onCloseBlockStyleToolbarClicked()
             } else {
-                proceedWithExiting()
+                proceedWithExitingBack()
             }
         }
     }
@@ -613,15 +614,39 @@ class PageViewModel(
     }
 
     fun onBackButtonPressed() {
-        proceedWithExiting()
+        proceedWithExitingBack()
     }
 
     fun onBottomSheetHidden() {
-        proceedWithExitingToDesktop()
+        proceedWithExitingToDashboard()
     }
 
-    private fun proceedWithExiting() {
-        sendPendingTextUpdateIfPresent()
+    private fun proceedWithExitingBack() {
+        val update = pendingTextUpdate
+        if (update != null) {
+            viewModelScope.launch {
+                orchestrator.proxies.saves.send(null)
+                orchestrator.proxies.changes.send(null)
+            }
+            viewModelScope.launch {
+                orchestrator.updateText(
+                    UpdateText.Params(
+                        context = context,
+                        text = update.text,
+                        marks = update.markup,
+                        target = update.target
+                    )
+                ).proceed(
+                    failure = { exitBack() },
+                    success = { exitBack() }
+                )
+            }
+        } else {
+            exitBack()
+        }
+    }
+
+    private fun exitBack() {
         when (session.value) {
             Session.ERROR -> navigate(EventWrapper(AppNavigation.Command.Exit))
             Session.IDLE -> navigate(EventWrapper(AppNavigation.Command.Exit))
@@ -638,26 +663,37 @@ class PageViewModel(
         }
     }
 
-    private fun proceedWithExitingToDesktop() {
-        sendPendingTextUpdateIfPresent()
-        viewModelScope.launch {
-            closePage(ClosePage.Params(context)).proceed(
-                success = { navigateToDesktop() },
-                failure = { Timber.e(it, "Error while closing the test page") }
-            )
+    private fun proceedWithExitingToDashboard() {
+        val update = pendingTextUpdate
+        if (update != null) {
+            viewModelScope.launch {
+                orchestrator.proxies.saves.send(null)
+                orchestrator.proxies.changes.send(null)
+            }
+            viewModelScope.launch {
+                orchestrator.updateText(
+                    UpdateText.Params(
+                        context = context,
+                        text = update.text,
+                        marks = update.markup,
+                        target = update.target
+                    )
+                ).proceed(
+                    failure = { exitDashboard() },
+                    success = { exitDashboard() }
+                )
+            }
+        } else {
+            exitDashboard()
         }
     }
 
-    private fun sendPendingTextUpdateIfPresent() {
-        val update = pendingTextUpdate
-        if (update != null) {
-            val intent = Intent.Text.UpdateText(
-                context = context,
-                target = update.target,
-                text = update.text,
-                marks = update.markup.filter { it.range.first != it.range.last }
+    private fun exitDashboard() {
+        viewModelScope.launch {
+            closePage(ClosePage.Params(context)).proceed(
+                success = { navigateToDesktop() },
+                failure = { Timber.e(it, "Error while closing this page: $context") }
             )
-            proceedWithUpdatingText(intent)
         }
     }
 
@@ -2246,7 +2282,7 @@ class PageViewModel(
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while archiving page") },
-                success = { proceedWithExiting() }
+                success = { proceedWithExitingBack() }
             )
         }
     }

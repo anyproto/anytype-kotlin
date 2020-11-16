@@ -9,6 +9,7 @@
 
 ### Fixes & tech 🚒
 
+* Should save the latest text input if you close the page quickly (#1067)
 * Keyboard won't show up in code snippet on Android 7 (#1024)
 
 ## Version 0.1.2

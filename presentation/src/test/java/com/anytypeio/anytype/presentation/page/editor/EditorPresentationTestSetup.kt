@@ -341,4 +341,10 @@ open class EditorPresentationTestSetup {
         }
     }
 
+    fun stubClosePage() {
+        closePage.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+    }
+
 }

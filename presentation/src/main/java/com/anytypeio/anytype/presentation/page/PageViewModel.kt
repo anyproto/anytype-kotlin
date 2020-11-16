@@ -169,6 +169,11 @@ class PageViewModel(
      */
     private var mentionFrom = -1
 
+    /**
+     * Currently pending text update. If null, it is not present or already dispatched.
+     */
+    private var pendingTextUpdate: TextUpdate? = null
+
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
 
@@ -453,7 +458,9 @@ class PageViewModel(
             .proxies
             .saves
             .stream()
+            .onEach { pendingTextUpdate = it }
             .debounce(TEXT_CHANGES_DEBOUNCE_DURATION)
+            .onEach { if (it == pendingTextUpdate) pendingTextUpdate = null }
             .filterNotNull()
             .onEach { update ->
                 blocks = blocks.map { block ->
@@ -614,6 +621,7 @@ class PageViewModel(
     }
 
     private fun proceedWithExiting() {
+        sendPendingTextUpdateIfPresent()
         when (session.value) {
             Session.ERROR -> navigate(EventWrapper(AppNavigation.Command.Exit))
             Session.IDLE -> navigate(EventWrapper(AppNavigation.Command.Exit))
@@ -631,11 +639,25 @@ class PageViewModel(
     }
 
     private fun proceedWithExitingToDesktop() {
-        closePage(viewModelScope, ClosePage.Params(context)) { result ->
-            result.either(
-                fnR = { navigateToDesktop() },
-                fnL = { Timber.e(it, "Error while closing the test page") }
+        sendPendingTextUpdateIfPresent()
+        viewModelScope.launch {
+            closePage(ClosePage.Params(context)).proceed(
+                success = { navigateToDesktop() },
+                failure = { Timber.e(it, "Error while closing the test page") }
             )
+        }
+    }
+
+    private fun sendPendingTextUpdateIfPresent() {
+        val update = pendingTextUpdate
+        if (update != null) {
+            val intent = Intent.Text.UpdateText(
+                context = context,
+                target = update.target,
+                text = update.text,
+                marks = update.markup.filter { it.range.first != it.range.last }
+            )
+            proceedWithUpdatingText(intent)
         }
     }
 
@@ -668,9 +690,7 @@ class PageViewModel(
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
     }
 
-    fun onTextBlockTextChanged(
-        view: BlockView.Text
-    ) {
+    fun onTextBlockTextChanged(view: BlockView.Text) {
 
         Timber.d("Text block's text changed: $view")
 

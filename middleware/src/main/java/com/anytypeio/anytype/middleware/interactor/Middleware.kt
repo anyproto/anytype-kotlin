@@ -15,7 +15,6 @@ import com.anytypeio.anytype.middleware.model.SelectAccountResponse
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import timber.log.Timber
 import java.util.*
-import kotlin.jvm.Throws
 
 class Middleware(
     private val service: MiddlewareService,
@@ -31,15 +30,11 @@ class Middleware(
 
         val request = Rpc.Config.Get.Request()
 
-        if (BuildConfig.DEBUG) {
-            Timber.d(request.toString())
-        }
+        if (BuildConfig.DEBUG) logRequest(request)
 
         val response = service.configGet(request)
 
-        if (BuildConfig.DEBUG) {
-            Timber.d(response.toString())
-        }
+        if (BuildConfig.DEBUG) logResponse(response)
 
         return ConfigEntity(
             response.homeBlockId,

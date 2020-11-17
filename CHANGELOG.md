@@ -6,6 +6,7 @@
 
 * Show loading state when referenced documents are being synced on dashboard, inside a page or in mention (#1072)
 * Start scrolling-and-moving a block via action menu (no longer need to enter multi-selection mode in order to scroll-and-move a block) (#1055)
+* Added loading state for logout operation (#1099)
 
 ### Fixes & tech 🚒
 

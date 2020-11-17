@@ -18,8 +18,13 @@ import com.anytypeio.anytype.domain.auth.interactor.GetCurrentAccount
 import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ProfileViewModel(
@@ -29,6 +34,9 @@ class ProfileViewModel(
     private val getLibraryVersion: GetLibraryVersion
 ) : ViewStateViewModel<ViewState<ProfileView>>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
+
+    private val _isLoggingOut = MutableStateFlow(false)
+    val isLoggingOut: StateFlow<Boolean> = _isLoggingOut
 
     private var target = ""
 
@@ -100,17 +108,23 @@ class ProfileViewModel(
             eventName = EventsDictionary.BTN_PROFILE_LOG_OUT
         )
         val startTime = System.currentTimeMillis()
-        logout.invoke(viewModelScope, BaseUseCase.None) { result ->
-            result.either(
-                fnL = { e ->
-                    Timber.e(e, "Error while logging out")
-                },
-                fnR = {
-                    sendEvent(startTime)
-                    Amplitude.getInstance().userId = null
-                    navigation.postValue(EventWrapper(AppNavigation.Command.StartSplashFromDesktop))
+        viewModelScope.launch {
+            logout(params = BaseUseCase.None).collect { status ->
+                when (status) {
+                    is Interactor.Status.Started -> {
+                        _isLoggingOut.value = true
+                    }
+                    is Interactor.Status.Success -> {
+                        _isLoggingOut.value = false
+                        sendEvent(startTime)
+                        Amplitude.getInstance().userId = null
+                        navigation.postValue(EventWrapper(AppNavigation.Command.StartSplashFromDesktop))
+                    }
+                    is Interactor.Status.Error -> {
+                        Timber.e(status.throwable, "Error while logging out")
+                    }
                 }
-            )
+            }
         }
     }
 

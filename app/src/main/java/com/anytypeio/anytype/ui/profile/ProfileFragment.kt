@@ -3,10 +3,12 @@ package com.anytypeio.anytype.ui.profile
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.avatarColor
 import com.anytypeio.anytype.core_utils.ext.firstDigitByHash
+import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.ViewState
@@ -16,6 +18,8 @@ import com.anytypeio.anytype.presentation.profile.ProfileViewModel
 import com.anytypeio.anytype.presentation.profile.ProfileViewModelFactory
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragment_profile) {
@@ -30,8 +34,16 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
         vm.version.observe(viewLifecycleOwner, { version(it) })
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         vm.onViewCreated()
-
         backButtonContainer.setOnClickListener { vm.onBackButtonClicked() }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        lifecycleScope.launch {
+            vm.isLoggingOut.collect { isLoggingOut ->
+                if (isLoggingOut) logoutProgressBar.visible() else logoutProgressBar.invisible()
+            }
+        }
     }
 
     override fun render(state: ViewState<ProfileView>) {

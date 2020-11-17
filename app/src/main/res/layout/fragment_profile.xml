@@ -256,6 +256,16 @@
             android:textColor="#ACA996"
             android:textSize="17sp" />
 
+        <ProgressBar
+            tools:visibility="visible"
+            android:visibility="invisible"
+            android:id="@+id/logoutProgressBar"
+            android:theme="@style/GreyProgressBar"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+
     </androidx.cardview.widget.CardView>
 
     <TextView

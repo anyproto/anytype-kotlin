@@ -50,6 +50,9 @@ message Event {
             Process.New processNew = 101;
             Process.Update processUpdate = 102;
             Process.Done processDone = 103;
+
+            Status.CafeConnect connStatus = 110;
+            Status.ThreadSync threadStatus = 111;
         }
     }
 
@@ -555,6 +558,23 @@ message Event {
         }
     }
 
+    message Status {
+        message CafeConnect {
+            bool connected = 1;
+        }
+
+        message ThreadSync {
+            SyncStatus status = 1;
+            int64 lastPull = 2;
+
+            enum SyncStatus {
+                Unknown = 0;
+                InProgress = 1;
+                Success = 2;
+                Failure = 3;
+            }
+        }
+    }
 }
 
 enum SmartBlockType {

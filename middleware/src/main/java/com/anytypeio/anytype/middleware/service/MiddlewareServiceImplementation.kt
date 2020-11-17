@@ -445,8 +445,9 @@ class MiddlewareServiceImplementation : MiddlewareService {
     }
 
     override fun blockListSetFields(request: BlockList.Set.Fields.Request): BlockList.Set.Fields.Response {
-        val encoded =
-            Service.blockListSetFields(BlockList.Set.Fields.Request.ADAPTER.encode(request))
+        val encoded = Service.blockListSetFields(
+            BlockList.Set.Fields.Request.ADAPTER.encode(request)
+        )
         val response = BlockList.Set.Fields.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != BlockList.Set.Fields.Response.Error.Code.NULL) {

@@ -56,6 +56,15 @@ fun EditText.afterTextChanges(): Flow<CharSequence> = callbackFlow<CharSequence>
 
 @CheckResult
 @OptIn(ExperimentalCoroutinesApi::class)
+fun View.layoutChanges(): Flow<Unit> = callbackFlow {
+    checkMainThread()
+    val listener = View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> safeOffer(Unit) }
+    addOnLayoutChangeListener(listener)
+    awaitClose { removeOnLayoutChangeListener(listener) }
+}.conflate()
+
+@CheckResult
+@OptIn(ExperimentalCoroutinesApi::class)
 fun TextView.editorActionEvents(
     handled: (Int) -> Boolean
 ): Flow<Int> = callbackFlow {

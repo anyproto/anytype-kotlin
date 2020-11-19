@@ -47,6 +47,7 @@ import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTa
 import com.anytypeio.anytype.core_ui.menu.DocumentPopUpMenu
 import com.anytypeio.anytype.core_ui.menu.ProfilePopUpMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_ui.reactive.layoutChanges
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.FirstItemInvisibilityDetector
 import com.anytypeio.anytype.core_ui.tools.MentionFooterItemDecorator
@@ -964,14 +965,13 @@ open class PageFragment :
 
             val offset = recycler.computeVerticalScrollOffset()
 
-            recycler.addItemDecoration(scrollAndMoveTargetHighlighter)
-
-            if (offset < screen.y / 3) {
-                lifecycleScope.launch {
-                    delay(100)
-                    recycler.smoothScrollBy(0, screen.y / 3)
+            lifecycleScope.launch {
+                recycler.layoutChanges().take(1).collect {
+                    if (offset < screen.y / 3) recycler.scrollBy(0, screen.y / 3)
                 }
             }
+
+            recycler.addItemDecoration(scrollAndMoveTargetHighlighter)
 
             showTargeterWithAnimation()
 
@@ -988,6 +988,8 @@ open class PageFragment :
                 searchScrollAndMoveTarget()
                 recycler.invalidate()
             }
+        } else {
+            Timber.d("Skipping enter scroll-and-move")
         }
     }
 

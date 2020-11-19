@@ -12,6 +12,7 @@
 
 * Should save the latest text input if you close the page quickly (#1067)
 * Keyboard won't show up in code snippet on Android 7 (#1024)
+* Do not crash if document's title is broken after paste (#1108)
 
 ### Middleware ⚙
 

@@ -26,6 +26,7 @@ import com.anytypeio.anytype.ui.page.PageFragment
 import kotlinx.android.synthetic.main.fragment_desktop.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 import javax.inject.Inject
 
 class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop) {
@@ -46,7 +47,11 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
                     }
             },
             onItemDropped = { index ->
-                vm.onItemDropped(dashboardAdapter.provideAdapterData()[index])
+                try {
+                    vm.onItemDropped(dashboardAdapter.provideAdapterData()[index])
+                } catch (e: Exception) {
+                    Timber.e(e, "Error while dropping item at index: $index")
+                }
             }
         )
     }

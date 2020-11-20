@@ -13,7 +13,7 @@ import android.view.View
 import com.anytypeio.anytype.core_utils.ext.timber
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.shekhargulati.urlcleaner.UrlCleaner
-import timber.log.Timber
+import com.shekhargulati.urlcleaner.UrlCleanerException
 
 interface Span {
     class Bold : StyleSpan(Typeface.BOLD), Span
@@ -38,13 +38,21 @@ interface Span {
         }
 
         private fun normalizeUrl(context: Context, url: String) {
-            val normilizedUrl = UrlCleaner.normalizeUrl(url)
-            val intent = createIntent(context, normilizedUrl)
             try {
-                context.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
+                val normilizedUrl = UrlCleaner.normalizeUrl(url)
+                val intent = createIntent(context, normilizedUrl)
+                try {
+                    context.startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    e.timber()
+                    context.toast("Couldn't open url:$normilizedUrl")
+                }
+            } catch (e: UrlCleanerException) {
                 e.timber()
-                context.toast("Could't open url:$normilizedUrl")
+                context.toast("Couldn't parse url")
+            } catch (e: IllegalArgumentException) {
+                e.timber()
+                context.toast("Couldn't parse url")
             }
         }
 

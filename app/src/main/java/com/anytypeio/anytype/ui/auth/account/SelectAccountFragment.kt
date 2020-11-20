@@ -2,12 +2,14 @@ package com.anytypeio.anytype.ui.auth.account
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.auth.account.SelectAccountViewModel
 import com.anytypeio.anytype.presentation.auth.account.SelectAccountViewModelFactory
@@ -19,12 +21,7 @@ class SelectAccountFragment : NavigationFragment(R.layout.fragment_select_accoun
 
     @Inject
     lateinit var factory: SelectAccountViewModelFactory
-
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(SelectAccountViewModel::class.java)
-    }
+    private val vm by viewModels<SelectAccountViewModel> { factory }
 
     private val profileAdapter by lazy {
         SelectAccountAdapter(
@@ -51,11 +48,16 @@ class SelectAccountFragment : NavigationFragment(R.layout.fragment_select_accoun
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        vm.state.observe(viewLifecycleOwner, Observer { state ->
+        vm.state.observe(viewLifecycleOwner, { state ->
             profileAdapter.update(state)
         })
+        vm.error.observe(viewLifecycleOwner) { observeError(it) }
 
         vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
+    }
+
+    private fun observeError(msg: String) {
+        requireActivity().toast(msg)
     }
 
     override fun injectDependencies() {

@@ -70,7 +70,8 @@ class KeychainLoginViewModel(
             val middleTime = System.currentTimeMillis()
             result.either(
                 fnR = {
-                        proceedWithSavingMnemonic(chain, createEvent(startTime, middleTime))
+                    state.postValue(ViewState.Success(true))
+                    proceedWithSavingMnemonic(chain, createEvent(startTime, middleTime))
                 },
                 fnL = {
                     state.postValue(ViewState.Error(it.localizedMessage))

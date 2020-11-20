@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -43,7 +42,7 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupNavigation()
-        vm.state.observe(viewLifecycleOwner, Observer { state ->
+        vm.state.observe(viewLifecycleOwner, { state ->
             when (state) {
                 ViewState.Loading -> {
                     progress.visibility = View.VISIBLE
@@ -55,7 +54,7 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
                     requireActivity().toast(state.error)
                 }
                 is ViewState.Success -> {
-                    loginButton.isEnabled = false
+                    loginButton.isEnabled = true
                     progress.visibility = View.INVISIBLE
                 }
             }

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.anytypeio.anytype.domain.auth.model.Account
+import com.anytypeio.anytype.presentation.auth.congratulation.ViewState
 import com.anytypeio.anytype.presentation.auth.model.SelectAccountView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -23,6 +24,7 @@ class SelectAccountViewModel(
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
     val state by lazy { MutableLiveData<List<SelectAccountView>>() }
+    val error by lazy { MutableLiveData<String>() }
 
     private val accountChannel = Channel<Account>()
 
@@ -58,7 +60,11 @@ class SelectAccountViewModel(
             viewModelScope, StartLoadingAccounts.Params()
         ) { result ->
             result.either(
-                fnL = { e -> Timber.e(e, "Error while account loading") },
+                fnL = { e ->
+                    Timber.e(e, "Error while account loading")
+                    error.postValue("Error while account loading \n ${e.localizedMessage}")
+                    navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
+                },
                 fnR = {
                     Timber.d("Account loading successfully finished")
                 }

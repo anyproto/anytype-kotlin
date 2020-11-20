@@ -1,5 +1,17 @@
 # Change log for Android @Anytype app.
 
+## Version 0.1.4
+
+### Fixes & tech 🚒
+
+* Do not crash while DND on home dashboard if dropped item's index is invalid (#1111)
+* When failed to fetch account after logging in with mnemonic phrase, return to keychain-login screen (#1112)
+* Do not crash when failed to normalize url in markup (#1113)
+
+### Middleware ⚙
+
+* Updated middleware protocol to `0.13.26` (#1110)
+
 ## Version 0.1.3
 
 ### New features & enhancements 🚀

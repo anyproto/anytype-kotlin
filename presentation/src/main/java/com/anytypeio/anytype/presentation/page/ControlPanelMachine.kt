@@ -635,11 +635,31 @@ sealed class ControlPanelMachine {
             event: Event.SAM,
             state: ControlPanelState
         ): ControlPanelState = when (event) {
-            is Event.SAM.OnExit -> state.copy(
-                multiSelect = state.multiSelect.copy(
-                    isScrollAndMoveEnabled = false
-                )
-            )
+            is Event.SAM.OnExit -> {
+                if (state.multiSelect.isQuickScrollAndMoveMode) {
+                    state.copy(
+                        multiSelect = state.multiSelect.copy(
+                            isVisible = false,
+                            isScrollAndMoveEnabled = false,
+                            isQuickScrollAndMoveMode = false,
+                            count = NO_BLOCK_SELECTED
+                        ),
+                        mainToolbar = state.mainToolbar.copy(
+                            isVisible = false
+                        ),
+                        navigationToolbar = state.navigationToolbar.copy(
+                            isVisible = true
+                        )
+                    )
+                } else {
+                    state.copy(
+                        multiSelect = state.multiSelect.copy(
+                            isScrollAndMoveEnabled = false,
+                            isQuickScrollAndMoveMode = false
+                        )
+                    )
+                }
+            }
             is Event.SAM.OnEnter -> state.copy(
                 multiSelect = state.multiSelect.copy(
                     isScrollAndMoveEnabled = true
@@ -649,6 +669,7 @@ sealed class ControlPanelMachine {
                 multiSelect = state.multiSelect.copy(
                     isVisible = true,
                     isScrollAndMoveEnabled = true,
+                    isQuickScrollAndMoveMode = true,
                     count = event.countOnStart
                 ),
                 mainToolbar = state.mainToolbar.copy(
@@ -658,12 +679,30 @@ sealed class ControlPanelMachine {
                     isVisible = false
                 )
             )
-            is Event.SAM.OnApply -> state.copy(
-                multiSelect = state.multiSelect.copy(
-                    count = NO_BLOCK_SELECTED,
-                    isScrollAndMoveEnabled = false
-                )
-            )
+            is Event.SAM.OnApply -> {
+                if (state.multiSelect.isQuickScrollAndMoveMode) {
+                    state.copy(
+                        multiSelect = state.multiSelect.copy(
+                            isVisible = false,
+                            isScrollAndMoveEnabled = false,
+                            count = NO_BLOCK_SELECTED
+                        ),
+                        mainToolbar = state.mainToolbar.copy(
+                            isVisible = false
+                        ),
+                        navigationToolbar = state.navigationToolbar.copy(
+                            isVisible = true
+                        )
+                    )
+                } else {
+                    state.copy(
+                        multiSelect = state.multiSelect.copy(
+                            count = NO_BLOCK_SELECTED,
+                            isScrollAndMoveEnabled = false
+                        )
+                    )
+                }
+            }
         }
 
         private fun handleOnSelectionChangedForMentionState(

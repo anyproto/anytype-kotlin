@@ -2,6 +2,10 @@
 
 ## Version 0.1.4
 
+### New features & enhancements 🚀
+
+* When entering into scroll-and-move mode via action menu, exit into editing mode, not multi-select mode (#1126)
+
 ### Fixes & tech 🚒
 
 * Do not crash while DND on home dashboard if dropped item's index is invalid (#1111)

@@ -1810,12 +1810,18 @@ class PageViewModel(
     }
 
     fun onExitScrollAndMoveClicked() {
-        mode = EditorMode.MULTI_SELECT
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnExit)
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.BTN_SCROLL_MOVE_CANCEL
         )
+        if (controlPanelViewState.value?.multiSelect?.isQuickScrollAndMoveMode == true) {
+            mode = EditorMode.EDITING
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnExit)
+            viewModelScope.launch { refresh() }
+        } else {
+            mode = EditorMode.MULTI_SELECT
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnExit)
+        }
     }
 
     fun onApplyScrollAndMoveClicked() {
@@ -2531,9 +2537,13 @@ class PageViewModel(
 
             clearSelections()
 
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
+            mode = if (controlPanelViewState.value?.multiSelect?.isQuickScrollAndMoveMode == true) {
+                EditorMode.EDITING
+            } else {
+                EditorMode.MULTI_SELECT
+            }
 
-            mode = EditorMode.MULTI_SELECT
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
 
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
@@ -2561,9 +2571,13 @@ class PageViewModel(
 
             clearSelections()
 
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
+            mode = if (controlPanelViewState.value?.multiSelect?.isQuickScrollAndMoveMode == true) {
+                EditorMode.EDITING
+            } else {
+                EditorMode.MULTI_SELECT
+            }
 
-            mode = EditorMode.MULTI_SELECT
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
 
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(

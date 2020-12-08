@@ -2,12 +2,14 @@ package com.anytypeio.anytype.ui.search
 
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.navigation.PageLinksAdapter
+import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.di.common.componentManager
@@ -17,7 +19,6 @@ import com.anytypeio.anytype.presentation.search.PageSearchViewModelFactory
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_page_search.*
-import kotlinx.android.synthetic.main.fragment_page_search.sheet
 import javax.inject.Inject
 
 class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_page_search) {
@@ -60,6 +61,15 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
         vm.onViewCreated()
     }
 
+    private fun focusSearchInput() {
+        filterInputField.apply {
+            post {
+                requestFocus()
+                context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
+            }
+        }
+    }
+
     override fun render(state: PageSearchView) {
         when (state) {
             PageSearchView.Init -> {
@@ -86,6 +96,7 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
                 recyclerView.layoutManager = LinearLayoutManager(requireContext())
                 recyclerView.adapter = searchAdapter
                 vm.onGetPageList(searchText = "")
+                focusSearchInput()
             }
             PageSearchView.Loading -> {
                 recyclerView.invisible()

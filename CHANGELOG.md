@@ -5,6 +5,7 @@
 ### New features & enhancements 🚀
 
 * When entering into scroll-and-move mode via action menu, exit into editing mode, not multi-select mode (#1126)
+* Show soft input when opening global-search screen (#1120)
 
 ### Fixes & tech 🚒
 

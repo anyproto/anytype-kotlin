@@ -28,7 +28,7 @@
 
 ### Middleware ⚙
 
-* Updated middleware protocol to `0.13.24` (#1100)
+* Updated middleware protocol to `0.14.0` (#1100)
 
 ## Version 0.1.2
 

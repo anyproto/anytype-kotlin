@@ -2,7 +2,10 @@ package com.anytypeio.anytype.ui.page.modals.actions
 
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
@@ -17,10 +20,21 @@ class HeaderOneBlockActionToolbar : BlockActionToolbar() {
         block = arguments?.getParcelable(ARG_BLOCK)!!
     }
 
-    override fun blockLayout() = R.layout.item_block_header_one_preview
+    override fun blockLayout() = R.layout.item_block_header_one
     override fun getBlock(): BlockView = block
 
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
+        view.findViewById<FrameLayout>(R.id.root).apply {
+            setPadding(0,0,0,0)
+            updateLayoutParams<FrameLayout.LayoutParams> {
+                topMargin = 0
+            }
+            processBackgroundColor(
+                root = this,
+                color = block.backgroundColor,
+                bgImage = backgroundView
+            )
+        }
         view.findViewById<TextInputWidget>(R.id.headerOne).apply {
             enableReadMode()
             setBlockText(this, block.text, block, block.getBlockTextColor())
@@ -30,11 +44,6 @@ class HeaderOneBlockActionToolbar : BlockActionToolbar() {
                 color = block.color
             )
         }
-        processBackgroundColor(
-            root = view.findViewById(R.id.root),
-            color = block.backgroundColor,
-            bgImage = backgroundView
-        )
         setConstraints()
     }
 

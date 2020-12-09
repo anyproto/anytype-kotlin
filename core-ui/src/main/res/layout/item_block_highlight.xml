@@ -3,18 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/DefaultDocumentContainerStyle">
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    android:paddingStart="@dimen/default_document_item_padding_start"
+    android:paddingEnd="@dimen/default_document_item_padding_end">
 
     <LinearLayout
         android:id="@+id/highlightBlockContentContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="1dp"
         android:background="@drawable/item_block_multi_select_mode_selector"
         android:orientation="horizontal"
         android:paddingStart="@dimen/default_document_content_padding_start"
-        android:paddingTop="6dp"
         android:paddingEnd="@dimen/default_document_content_padding_end"
-        android:paddingBottom="6dp"
         tools:background="@drawable/item_block_multi_select_selected"
         tools:ignore="UselessParent">
 

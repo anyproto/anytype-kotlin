@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.event.model.Event
 import com.anytypeio.anytype.domain.ext.content
+import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE
 import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
@@ -1039,6 +1040,102 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                     && !state.multiSelect.isScrollAndMoveEnabled
                     && state.multiSelect.count == 1
         }
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should exit to editor mode on system back button event`() {
+
+        // SETUP
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val focus = listOf(a.id, title.id).random()
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, a.id)
+        )
+
+        val document = listOf(page, header, title, a)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        vm.apply {
+            onBlockFocusChanged(id = focus, hasFocus = true)
+            onEnterMultiSelectModeClicked()
+            onSystemBackPressed(false)
+        }
+
+        coroutineTestRule.advanceTime(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
+
+        vm.controlPanelViewState.test().assertValue { state ->
+            !state.multiSelect.isVisible
+                    && !state.multiSelect.isQuickScrollAndMoveMode
+                    && !state.multiSelect.isScrollAndMoveEnabled
+                    && state.multiSelect.count == 0
+        }
+
+        coroutineTestRule.advanceTime(PageViewModel.DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE + 100)
+
+        vm.state.test().assertValue(
+            ViewState.Success(
+                listOf(
+                    BlockView.Title.Document(
+                        id = title.id,
+                        text = title.content<TXT>().text,
+                        mode = BlockView.Mode.EDIT,
+                    ),
+                    BlockView.Text.Paragraph(
+                        id = a.id,
+                        text = a.content<TXT>().text,
+                        mode = BlockView.Mode.EDIT,
+                        isSelected = false
+                    )
+                )
+            )
+        )
 
         clearPendingCoroutines()
     }

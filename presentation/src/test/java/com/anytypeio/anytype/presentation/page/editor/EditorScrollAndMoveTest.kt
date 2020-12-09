@@ -8,7 +8,9 @@ import com.anytypeio.anytype.domain.block.model.Position
 import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verifyBlocking
@@ -223,6 +225,98 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                 )
             )
         }
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should exit to editor mode on system back button event`() {
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(a.id)
+        )
+
+        val document = listOf(page, a)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onBlockFocusChanged(
+                id = a.id,
+                hasFocus = true
+            )
+            onEnterMultiSelectModeClicked()
+            onTextInputClicked(a.id)
+            onEnterScrollAndMoveClicked()
+            onSystemBackPressed(false)
+        }
+
+        coroutineTestRule.advanceTime(PageViewModel.DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE + 100)
+
+        vm.controlPanelViewState.test().apply {
+            assertValue(
+                ControlPanelState(
+                    navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                        isVisible = true
+                    ),
+                    mainToolbar = ControlPanelState.Toolbar.Main(
+                        isVisible = false
+                    ),
+                    stylingToolbar = ControlPanelState.Toolbar.Styling(
+                        isVisible = false,
+                        mode = null
+                    ),
+                    multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                        isVisible = false,
+                        isScrollAndMoveEnabled = false,
+                        isQuickScrollAndMoveMode = false,
+                        count = 0
+                    ),
+                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                        isVisible = false,
+                        cursorCoordinate = null,
+                        mentionFilter = null,
+                        mentionFrom = null
+                    )
+                )
+            )
+        }
+
+        coroutineTestRule.advanceTime(PageViewModel.DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE + 100)
+
+        vm.state.test().assertValue(
+            ViewState.Success(
+                listOf(
+                    BlockView.Text.Paragraph(
+                        id = a.id,
+                        text = a.content<TXT>().text,
+                        mode = BlockView.Mode.EDIT,
+                        isSelected = false
+                    )
+                )
+            )
+        )
 
         clearPendingCoroutines()
     }

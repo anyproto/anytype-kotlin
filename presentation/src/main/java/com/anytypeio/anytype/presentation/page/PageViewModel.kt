@@ -604,10 +604,16 @@ class PageViewModel(
         } else {
             val state = controlPanelViewState.value
             checkNotNull(state) { "Control panel state is null" }
-            if (state.stylingToolbar.isVisible) {
-                onCloseBlockStyleToolbarClicked()
-            } else {
-                proceedWithExitingBack()
+            when {
+                state.stylingToolbar.isVisible -> {
+                    onCloseBlockStyleToolbarClicked()
+                }
+                state.multiSelect.isVisible -> {
+                    onExitMultiSelectModeClicked()
+                }
+                else -> {
+                    proceedWithExitingBack()
+                }
             }
         }
     }
@@ -1790,7 +1796,7 @@ class PageViewModel(
         mode = EditorMode.EDITING
         clearSelections()
         viewModelScope.launch {
-            delay(300)
+            delay(DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE)
             orchestrator.stores.focus.update(Editor.Focus.empty())
             refresh()
         }
@@ -3082,6 +3088,7 @@ class PageViewModel(
         const val EMPTY_FOCUS_ID = ""
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
         const val DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE = 150L
+        const val DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE = 300L
         const val INITIAL_INDENT = 0
         const val CANNOT_MOVE_BLOCK_ON_SAME_POSITION = "Selected block is already on the position"
         const val CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR = "A block cannot be moved inside itself."

@@ -586,6 +586,7 @@ sealed class ControlPanelMachine {
                 multiSelect = state.multiSelect.copy(
                     isVisible = false,
                     isScrollAndMoveEnabled = false,
+                    isQuickScrollAndMoveMode = false,
                     count = NO_BLOCK_SELECTED
                 ),
                 mainToolbar = state.mainToolbar.copy(

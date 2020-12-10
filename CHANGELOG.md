@@ -6,6 +6,11 @@
 
 * When entering into scroll-and-move mode via action menu, exit into editing mode, not multi-select mode (#1126)
 * Show soft input when opening global-search screen (#1120)
+* Instead of navigating to dashboard, return to editor mode when pressing back button in multi-select mode (#1106)
+
+### Design & UX 🔳
+
+* Remove redundant space from header block's background (#1127)
 
 ### Fixes & tech 🚒
 

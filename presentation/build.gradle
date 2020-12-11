@@ -33,13 +33,10 @@ dependencies {
     def analyticsDependencies = rootProject.ext.analytics
 
     implementation applicationDependencies.kotlin
-    implementation applicationDependencies.coroutines
+    implementation applicationDependencies.coroutinesAndroid
 
     implementation applicationDependencies.viewModel
     implementation applicationDependencies.viewModelExtensions
-
-    implementation applicationDependencies.rxjava2
-    implementation applicationDependencies.rxRelay
 
     implementation applicationDependencies.timber
 
@@ -51,6 +48,5 @@ dependencies {
     testImplementation unitTestDependencies.coroutineTesting
     testImplementation unitTestDependencies.liveDataTesting
     testImplementation unitTestDependencies.archCoreTesting
-
-    androidTestImplementation 'androidx.test:core:1.2.0'
+    testImplementation unitTestDependencies.androidXTestCore
 }

@@ -32,16 +32,13 @@ dependencies {
     implementation applicationDependencies.appcompat
 
     implementation applicationDependencies.kotlin
-    implementation applicationDependencies.coroutines
+    implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.dagger
 
     implementation applicationDependencies.timber
     implementation applicationDependencies.crashlytics
 
     implementation applicationDependencies.constraintLayout
-
-    implementation applicationDependencies.rxjava2
-    implementation applicationDependencies.rxAndroid
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

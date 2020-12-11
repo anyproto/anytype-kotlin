@@ -47,7 +47,7 @@ dependencies {
     implementation project(':domain')
     implementation project(':core-utils')
     implementation appDependencies.gson
-    implementation appDependencies.coroutines
+    implementation appDependencies.coroutinesAndroid
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

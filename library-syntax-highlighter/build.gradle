@@ -46,7 +46,7 @@ dependencies {
 
     implementation applicationDependencies.appcompat
     implementation applicationDependencies.kotlin
-    implementation applicationDependencies.coroutines
+    implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.androidxCore
     implementation applicationDependencies.timber
     implementation applicationDependencies.kotlinxSerializationJson

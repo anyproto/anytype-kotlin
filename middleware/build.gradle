@@ -38,7 +38,7 @@ dependencies {
 
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.timber
-    implementation applicationDependencies.coroutines
+    implementation applicationDependencies.coroutinesAndroid
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

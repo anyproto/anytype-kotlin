@@ -52,7 +52,7 @@ dependencies {
     implementation project(':data')
 
     implementation applicationDependencies.kotlin
-    implementation applicationDependencies.coroutines
+    implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.timber
 
     testImplementation unitTestDependencies.junit

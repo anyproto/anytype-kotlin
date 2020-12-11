@@ -1,4 +1,3 @@
-include ':protocol'
 include ':app',
         ':core-utils',
         ':middleware',
@@ -7,7 +6,6 @@ include ':app',
         ':data',
         ':device',
         ':presentation',
-        ':presentation-editor',
         ':core-ui',
         ':library-kanban-widget',
         ':library-page-icon-picker-widget',
@@ -15,4 +13,5 @@ include ':app',
         ':library-syntax-highlighter',
         ':sample',
         ':clipboard',
-        ':analytics'
+        ':analytics',
+        ':protocol'

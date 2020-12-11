@@ -31,7 +31,7 @@ dependencies {
     def databaseDependencies = rootProject.ext.db
 
     implementation applicationDependencies.kotlin
-    implementation applicationDependencies.coroutines
+    implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.gson
 
     implementation databaseDependencies.room

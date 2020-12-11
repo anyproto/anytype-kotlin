@@ -29,7 +29,7 @@ dependencies {
     def app = rootProject.ext.mainApplication
     def analytics = rootProject.ext.analytics
     implementation app.kotlin
-    implementation app.coroutines
+    implementation app.coroutinesAndroid
     implementation app.timber
     implementation analytics.amplitude
 }

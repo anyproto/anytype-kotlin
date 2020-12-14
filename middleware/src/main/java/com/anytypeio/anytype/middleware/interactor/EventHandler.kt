@@ -3,12 +3,11 @@ package com.anytypeio.anytype.middleware.interactor
 import anytype.Event
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.EventProxy
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.launch
 import service.Service.setEventHandlerMobile
 import timber.log.Timber
 import java.io.IOException
@@ -17,7 +16,7 @@ class EventHandler(
     private val scope: CoroutineScope = GlobalScope
 ) : EventProxy {
 
-    private val channel = BroadcastChannel<Event>(1)
+    private val channel = MutableSharedFlow<Event>(0, 1)
 
     init {
         scope.launch {
@@ -31,18 +30,19 @@ class EventHandler(
 
     private suspend fun handle(bytes: ByteArray) {
         try {
-            Event.ADAPTER.decode(bytes).let {
-                logEvent(it)
-                channel.send(it)
-            }
+            val event = withContext(Dispatchers.IO) { Event.ADAPTER.decode(bytes) }.also { logEvent(it) }
+            channel.emit(event)
         } catch (e: IOException) {
             Timber.e(e, "Error while deserializing message")
         }
     }
 
-    private fun logEvent(it: Event?) {
-        if (BuildConfig.DEBUG) Timber.d("New event from middleware:\n$it")
+    private fun logEvent(event: Event) {
+        if (BuildConfig.DEBUG) {
+            val message = "[" + "\n" + event::class.java.name + ":" + "\n" + event.toString() + "\n" + "]"
+            Timber.d(message)
+        }
     }
 
-    override fun flow(): Flow<Event> = channel.asFlow()
+    override fun flow(): Flow<Event> = channel
 }

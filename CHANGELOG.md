@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.1.5 (WIP)
+
+### Fixes & tech 🚒
+
+* Event processing: switched from `BroadcastChannel` to `SharedFlow` (#1180)
+
 ## Version 0.1.4
 
 ### New features & enhancements 🚀

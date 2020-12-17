@@ -45,6 +45,7 @@ import com.anytypeio.anytype.domain.ext.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
+import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
@@ -99,6 +100,7 @@ class PageViewModel(
     private val createNewDocument: CreateNewDocument,
     private val archiveDocument: ArchiveDocument,
     private val interceptEvents: InterceptEvents,
+    private val interceptThreadStatus: InterceptThreadStatus,
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
     private val reducer: StateReducer<List<Block>, Event>,
@@ -501,6 +503,12 @@ class PageViewModel(
                 .build(InterceptEvents.Params(context))
                 .map { events -> processEvents(events) }
                 .collect { refresh() }
+        }
+
+        jobs += viewModelScope.launch {
+            interceptThreadStatus
+                .build(InterceptThreadStatus.Params(context))
+                .collect { _toasts.send(it.toString()) }
         }
 
         jobs += viewModelScope.launch {

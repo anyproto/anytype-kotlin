@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
+import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.page.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.PageViewModel
@@ -47,6 +48,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
+
+    @Mock
+    lateinit var interceptThreadStatus: InterceptThreadStatus
 
     @Mock
     lateinit var createBlock: CreateBlock
@@ -163,6 +167,7 @@ open class EditorPresentationTestSetup {
             closePage = closePage,
             createPage = createPage,
             interceptEvents = interceptEvents,
+            interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMark,
             removeLinkMark = removeLinkMark,
             reducer = DocumentExternalEventReducer(),

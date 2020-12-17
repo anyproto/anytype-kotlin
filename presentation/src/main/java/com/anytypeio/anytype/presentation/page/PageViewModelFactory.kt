@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
+import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.page.editor.Orchestrator
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
@@ -25,6 +26,7 @@ open class PageViewModelFactory(
     private val createNewDocument: CreateNewDocument,
     private val archiveDocument: ArchiveDocument,
     private val interceptEvents: InterceptEvents,
+    private val interceptThreadStatus: InterceptThreadStatus,
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
     private val documentEventReducer: StateReducer<List<Block>, Event>,
@@ -43,6 +45,7 @@ open class PageViewModelFactory(
             closePage = closePage,
             archiveDocument = archiveDocument,
             interceptEvents = interceptEvents,
+            interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
             createPage = createPage,

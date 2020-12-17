@@ -19,6 +19,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
+import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.presentation.page.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.PageViewModelFactory
@@ -81,6 +83,7 @@ object EditorSessionModule {
         openPage: OpenPage,
         closePage: ClosePage,
         interceptEvents: InterceptEvents,
+        interceptThreadStatus: InterceptThreadStatus,
         updateLinkMarks: UpdateLinkMarks,
         removeLinkMark: RemoveLinkMark,
         createPage: CreatePage,
@@ -101,6 +104,7 @@ object EditorSessionModule {
         createDocument = createDocument,
         createNewDocument = createNewDocument,
         interceptEvents = interceptEvents,
+        interceptThreadStatus = interceptThreadStatus,
         updateLinkMarks = updateLinkMarks,
         removeLinkMark = removeLinkMark,
         documentEventReducer = documentExternalEventReducer,
@@ -271,6 +275,16 @@ object EditorUseCaseModule {
     fun provideInterceptEventsUseCase(
         channel: EventChannel
     ): InterceptEvents = InterceptEvents(
+        channel = channel,
+        context = Dispatchers.IO
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun providesInterceptThreadStatusUseCase(
+        channel: ThreadStatusChannel
+    ): InterceptThreadStatus = InterceptThreadStatus(
         channel = channel,
         context = Dispatchers.IO
     )

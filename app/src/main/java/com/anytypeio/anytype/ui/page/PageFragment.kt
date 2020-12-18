@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Point
 import android.net.Uri
 import android.os.Build
@@ -38,7 +39,9 @@ import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
+import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.core_ui.features.page.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.anytypeio.anytype.core_ui.features.page.scrollandmove.DefaultScrollAndMoveTargetDescriptor
@@ -61,6 +64,7 @@ import com.anytypeio.anytype.domain.block.model.Block.Content.Text
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.ext.getFirstLinkMarkupParam
 import com.anytypeio.anytype.domain.ext.getSubstring
+import com.anytypeio.anytype.domain.status.SyncStatus
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.page.PageViewModel
@@ -456,7 +460,8 @@ open class PageFragment :
         topToolbar.menu
             .clicks()
             .onEach {
-            vm.onDocumentMenuClicked() }
+                vm.onDocumentMenuClicked()
+            }
             .launchIn(lifecycleScope)
 
         topToolbar.back.clicks().onEach {
@@ -550,6 +555,23 @@ open class PageFragment :
             .filter { it != PageViewModel.NO_SEARCH_RESULT_POSITION }
             .onEach { recycler.smoothScrollToPosition(it) }
             .launchIn(lifecycleScope)
+
+        vm.syncStatus.onEach { status -> bindSyncStatus(status) }.launchIn(lifecycleScope)
+    }
+
+    private fun bindSyncStatus(status: SyncStatus?) {
+        when (status) {
+            SyncStatus.UNKNOWN, SyncStatus.FAILED, SyncStatus.OFFLINE -> topToolbar.status.tint(
+                color = requireContext().color(R.color.sync_status_red)
+            )
+            SyncStatus.SYNCING -> topToolbar.status.tint(
+                color = requireContext().color(R.color.sync_status_orange)
+            )
+            SyncStatus.SYNCED -> topToolbar.status.tint(
+                color = requireContext().color(R.color.sync_status_green)
+            )
+            else -> topToolbar.status.tint(Color.WHITE)
+        }
     }
 
     override fun onDestroyView() {
@@ -832,7 +854,7 @@ open class PageFragment :
     }
 
     private fun render(state: ControlPanelState) {
-        
+
         if (state.navigationToolbar.isVisible) {
             placeholder.requestFocus()
             hideKeyboard()

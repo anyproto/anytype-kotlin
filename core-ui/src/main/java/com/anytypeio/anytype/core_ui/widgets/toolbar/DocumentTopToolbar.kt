@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.widget_document_top_toolbar.view.*
 
 class DocumentTopToolbar : ConstraintLayout {
 
+    val status: View get() = syncStatusBadge
     val back: View get() = toolbarBackButton
     val menu: View get() = toolbarMenu
     val container: FrameLayout get() = toolbarIconContainer

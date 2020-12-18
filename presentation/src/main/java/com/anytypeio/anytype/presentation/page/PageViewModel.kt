@@ -46,6 +46,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.status.SyncStatus
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
@@ -117,6 +118,8 @@ class PageViewModel(
     ToggleStateHolder by renderer,
     SelectionStateHolder by orchestrator.memory.selections,
     StateReducer<List<Block>, Event> by reducer {
+
+    val syncStatus = MutableStateFlow<SyncStatus?>(null)
 
     val searchResultScrollPosition = MutableStateFlow(NO_SEARCH_RESULT_POSITION)
 
@@ -508,7 +511,7 @@ class PageViewModel(
         jobs += viewModelScope.launch {
             interceptThreadStatus
                 .build(InterceptThreadStatus.Params(context))
-                .collect { _toasts.send(it.toString()) }
+                .collect { syncStatus.value = it }
         }
 
         jobs += viewModelScope.launch {

@@ -2,6 +2,8 @@ package com.anytypeio.anytype.di.main
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import com.anytypeio.anytype.data.auth.repo.*
 import com.anytypeio.anytype.data.auth.repo.block.BlockDataRepository
 import com.anytypeio.anytype.data.auth.repo.block.BlockDataStoreFactory
@@ -27,6 +29,7 @@ import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.persistence.repo.DefaultDebugSettingsCache
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -80,11 +83,13 @@ object DataModule {
     @Singleton
     fun provideAuthCache(
         db: AnytypeDatabase,
-        prefs: SharedPreferences
+        @Named("default") defaultPrefs: SharedPreferences,
+        @Named("encrypted") encryptedPrefs: SharedPreferences
     ): AuthCache {
         return DefaultAuthCache(
             db = db,
-            prefs = prefs
+            defaultPrefs = defaultPrefs,
+            encryptedPrefs = encryptedPrefs
         )
     }
 
@@ -92,7 +97,7 @@ object DataModule {
     @Provides
     @Singleton
     fun provideDebugSettingsCache(
-        prefs: SharedPreferences
+        @Named("default") prefs: SharedPreferences,
     ): DebugSettingsCache {
         return DefaultDebugSettingsCache(
             prefs = prefs
@@ -120,9 +125,24 @@ object DataModule {
     @JvmStatic
     @Provides
     @Singleton
+    @Named("default")
     fun provideSharedPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
     }
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    @Named("encrypted")
+    fun provideEncryptedSharedPreferences(
+        context: Context
+    ): SharedPreferences = EncryptedSharedPreferences.create(
+        "encrypted_prefs",
+        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
+        context,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
 
     @JvmStatic
     @Provides

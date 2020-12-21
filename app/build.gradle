@@ -141,6 +141,8 @@ dependencies {
     implementation applicationDependencies.photoView
     implementation applicationDependencies.zxing
 
+    implementation applicationDependencies.androidxSecurityCrypto
+
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.robolectric

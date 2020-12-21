@@ -9,7 +9,8 @@ import com.anytypeio.anytype.persistence.mapper.toTable
 
 class DefaultAuthCache(
     private val db: AnytypeDatabase,
-    private val prefs: SharedPreferences
+    private val defaultPrefs: SharedPreferences,
+    private val encryptedPrefs: SharedPreferences
 ) : AuthCache {
 
     override suspend fun saveAccount(account: AccountEntity) {
@@ -25,30 +26,66 @@ class DefaultAuthCache(
             ?: throw IllegalStateException("Account with the following id not found: $id")
     }
 
+    /**
+     * N.B. Migrating sensitive data from default to encrypted prefs.
+     */
     override suspend fun getCurrentAccountId(): String {
-        val id: String? = prefs.getString(CURRENT_ACCOUNT_ID_KEY, null)
-        return id ?: throw IllegalStateException("Current account not set")
+        val nonEncryptedId = defaultPrefs.getString(CURRENT_ACCOUNT_ID_KEY, null)
+        return if (nonEncryptedId != null) {
+            encryptedPrefs.edit().putString(CURRENT_ACCOUNT_ID_KEY, nonEncryptedId).apply()
+            defaultPrefs.edit().remove(CURRENT_ACCOUNT_ID_KEY).apply()
+            nonEncryptedId
+        } else {
+            val encryptedId = encryptedPrefs.getString(CURRENT_ACCOUNT_ID_KEY, null)
+            encryptedId ?: throw IllegalStateException("Current account not set")
+        }
     }
 
+    /**
+     * N.B. Migrating sensitive data from default to encrypted prefs.
+     */
     override suspend fun saveMnemonic(mnemonic: String) {
-        prefs.edit().putString(MNEMONIC_KEY, mnemonic).apply()
+        defaultPrefs.edit().remove(MNEMONIC_KEY).apply()
+        encryptedPrefs.edit().putString(MNEMONIC_KEY, mnemonic).apply()
     }
 
+    /**
+     * N.B. Migrating sensitive data from default to encrypted prefs.
+     */
     override suspend fun getMnemonic(): String {
-        return prefs.getString(MNEMONIC_KEY, null)
-            ?: throw IllegalStateException("Mnemonic is missing.")
+        val nonEncryptedMnemonic = defaultPrefs.getString(MNEMONIC_KEY, null)
+        return if (nonEncryptedMnemonic != null) {
+            encryptedPrefs.edit().putString(MNEMONIC_KEY, nonEncryptedMnemonic).apply()
+            defaultPrefs.edit().remove(MNEMONIC_KEY).apply()
+            nonEncryptedMnemonic
+        } else {
+            val encryptedMnemonic = encryptedPrefs.getString(MNEMONIC_KEY, null)
+            encryptedMnemonic ?: throw IllegalStateException("Mnemonic is missing")
+        }
     }
 
     override suspend fun logout() {
         db.accountDao().clear()
-        prefs.edit().putString(MNEMONIC_KEY, null).apply()
+        defaultPrefs
+            .edit()
+            .remove(MNEMONIC_KEY)
+            .remove(CURRENT_ACCOUNT_ID_KEY)
+            .apply()
+        encryptedPrefs
+            .edit()
+            .remove(MNEMONIC_KEY)
+            .remove(CURRENT_ACCOUNT_ID_KEY)
+            .apply()
     }
 
     override suspend fun getAccounts() = db.accountDao().getAccounts().map { it.toEntity() }
 
-
+    /**
+     * N.B. Migrating sensitive data from default to encrypted prefs.
+     */
     override suspend fun setCurrentAccount(id: String) {
-        prefs.edit().putString(CURRENT_ACCOUNT_ID_KEY, id).apply()
+        defaultPrefs.edit().remove(CURRENT_ACCOUNT_ID_KEY).apply()
+        encryptedPrefs.edit().putString(CURRENT_ACCOUNT_ID_KEY, id).apply()
     }
 
     companion object {

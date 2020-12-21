@@ -23,7 +23,6 @@ android {
 }
 
 dependencies {
-
     implementation project(':data')
 
     def applicationDependencies = rootProject.ext.mainApplication

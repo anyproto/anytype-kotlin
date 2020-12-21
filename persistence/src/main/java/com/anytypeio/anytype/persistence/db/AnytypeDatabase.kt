@@ -25,5 +25,4 @@ abstract class AnytypeDatabase : RoomDatabase() {
             Config.DATABASE_NAME
         ).build()
     }
-
 }

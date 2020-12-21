@@ -9,11 +9,15 @@ sealed class Intent {
     sealed class Document : Intent() {
 
         class Undo(
-            val context: Id
+            val context: Id,
+            val onSuccessSideEffect: () -> Unit,
+            val onFailureSideEffect: () -> Unit
         ) : Document()
 
         class Redo(
-            val context: Id
+            val context: Id,
+            val onSuccessSideEffect: () -> Unit,
+            val onFailureSideEffect: () -> Unit
         ) : Document()
 
         class UpdateTitle(

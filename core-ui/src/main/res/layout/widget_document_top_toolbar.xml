@@ -53,7 +53,7 @@
         android:textSize="15sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/toolbarIconContainer"
-        app:layout_constraintEnd_toStartOf="@+id/toolbarMenu"
+        app:layout_constraintEnd_toStartOf="@+id/btnUndo"
         app:layout_constraintStart_toEndOf="@+id/toolbarIconContainer"
         app:layout_constraintTop_toTopOf="@+id/toolbarIconContainer"
         tools:text="Documents title" />
@@ -79,5 +79,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:backgroundTint="@color/anytype_text_green" />
+
+    <ImageView
+        android:id="@+id/btnUndo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:src="@drawable/ic_undo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnRedo"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/btnRedo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:src="@drawable/ic_redo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/toolbarMenu"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </merge>

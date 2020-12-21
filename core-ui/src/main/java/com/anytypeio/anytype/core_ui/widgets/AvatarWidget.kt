@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -13,7 +12,6 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.widget_avatar.view.*
-import java.io.ByteArrayInputStream
 
 class AvatarWidget : FrameLayout {
 
@@ -56,7 +54,7 @@ class AvatarWidget : FrameLayout {
 
     fun bind(name: String, color: Int? = null) {
         initials.visible()
-        initials.text = if (name.isNotEmpty()) name.first().toUpperCase().toString() else ""
+        initials.text = if (name.isNotEmpty()) name.first().toUpperCase().toString() else name
         icon.invisible()
         backgroundTintList = ColorStateList.valueOf(color ?: randomColor(name))
     }

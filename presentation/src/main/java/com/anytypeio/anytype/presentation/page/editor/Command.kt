@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.domain.status.SyncStatus
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 sealed class Command {
@@ -65,9 +66,19 @@ sealed class Command {
         val url: Url
     ) : Command()
 
-    object OpenDocumentMenu : Command()
+    data class OpenDocumentMenu(
+        val status: SyncStatus,
+        val title: String?,
+        val emoji: String?,
+        val image: String?
+    ) : Command()
 
-    object OpenProfileMenu : Command()
+    data class OpenProfileMenu(
+        val status: SyncStatus,
+        val title: String?,
+        val emoji: String?,
+        val image: String?
+    ) : Command()
 
     object AlertDialog : Command()
 

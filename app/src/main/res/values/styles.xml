@@ -179,4 +179,9 @@
         <item name="cornerSizeBottomLeft">0dp</item>
     </style>
 
+    <style name="DocMenuOptionTextStyle">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>

@@ -20,6 +20,8 @@ class DocumentTopToolbar : ConstraintLayout {
     val title: TextView get() = toolbarTitle
     val emoji: TextView get() = toolbarEmojiIcon
     val image: ImageView get() = toolbarImageIcon
+    val undo: ImageView get() = btnUndo
+    val redo: ImageView get() = btnRedo
 
     constructor(
         context: Context
@@ -40,5 +42,15 @@ class DocumentTopToolbar : ConstraintLayout {
 
     private fun inflate() {
         LayoutInflater.from(context).inflate(R.layout.widget_document_top_toolbar, this)
+    }
+
+    fun setUndoState(isEnabled: Boolean) {
+        //btnUndo.alpha = if (isEnabled) 1.0f else 0.3f
+        //btnUndo.isEnabled = isEnabled
+    }
+
+    fun setRedoState(isEnabled: Boolean) {
+        //btnRedo.alpha = if (isEnabled) 1.0f else 0.3f
+        //btnRedo.isEnabled = isEnabled
     }
 }

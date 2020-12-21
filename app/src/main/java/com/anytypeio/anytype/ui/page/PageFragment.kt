@@ -47,8 +47,6 @@ import com.anytypeio.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.anytypeio.anytype.core_ui.features.page.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetHighlighter
-import com.anytypeio.anytype.core_ui.menu.DocumentPopUpMenu
-import com.anytypeio.anytype.core_ui.menu.ProfilePopUpMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.layoutChanges
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
@@ -85,6 +83,8 @@ import com.anytypeio.anytype.ui.page.modals.*
 import com.anytypeio.anytype.ui.page.modals.actions.BlockActionToolbarFactory
 import com.anytypeio.anytype.ui.page.modals.actions.DocumentIconActionMenuFragment
 import com.anytypeio.anytype.ui.page.modals.actions.ProfileIconActionMenuFragment
+import com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet
+import com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet.DocumentMenuActionReceiver
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
@@ -109,6 +109,7 @@ open class PageFragment :
     AddBlockFragment.AddBlockActionReceiver,
     TurnIntoActionReceiver,
     SelectProgrammingLanguageReceiver,
+    DocumentMenuActionReceiver,
     ClipboardInterceptor,
     PickiTCallbacks {
 
@@ -469,6 +470,14 @@ open class PageFragment :
             vm.onBackButtonPressed()
         }.launchIn(lifecycleScope)
 
+        topToolbar.undo.clicks().onEach {
+            vm.onActionUndoClicked()
+        }.launchIn(lifecycleScope)
+
+        topToolbar.redo.clicks().onEach {
+            vm.onActionRedoClicked()
+        }.launchIn(lifecycleScope)
+
         mentionSuggesterToolbar.setupClicks(
             mentionClick = vm::onMentionSuggestClick,
             newPageClick = vm::onAddMentionNewPageClicked
@@ -557,6 +566,8 @@ open class PageFragment :
             .launchIn(lifecycleScope)
 
         vm.syncStatus.onEach { status -> bindSyncStatus(status) }.launchIn(lifecycleScope)
+        vm.isUndoEnabled.onEach { topToolbar.setUndoState(it) }.launchIn(lifecycleScope)
+        vm.isRedoEnabled.onEach { topToolbar.setRedoState(it) }.launchIn(lifecycleScope)
     }
 
     private fun bindSyncStatus(status: SyncStatus?) {
@@ -719,25 +730,25 @@ open class PageFragment :
                     }
                 }
                 is Command.OpenDocumentMenu -> {
-                    DocumentPopUpMenu(
-                        context = requireContext(),
-                        view = topToolbar.menu,
-                        onArchiveClicked = vm::onArchiveThisPageClicked,
-                        onRedoClicked = vm::onActionRedoClicked,
-                        onUndoClicked = vm::onActionUndoClicked,
-                        onEnterMultiSelect = vm::onEnterMultiSelectModeClicked,
-                        onSearchClicked = vm::onEnterSearchModeClicked
-                    ).show()
+                    hideKeyboard()
+                    val fr = DocMenuBottomSheet.new(
+                        title = command.title,
+                        status = command.status,
+                        image = command.image,
+                        emoji = command.emoji
+                    )
+                    fr.show(childFragmentManager, null)
                 }
                 is Command.OpenProfileMenu -> {
-                    ProfilePopUpMenu(
-                        context = requireContext(),
-                        view = topToolbar.menu,
-                        onRedoClicked = vm::onActionRedoClicked,
-                        onUndoClicked = vm::onActionUndoClicked,
-                        onEnterMultiSelect = vm::onEnterMultiSelectModeClicked,
-                        onSearchClicked = vm::onEnterSearchModeClicked
-                    ).show()
+                    hideKeyboard()
+                    val fr = DocMenuBottomSheet.new(
+                        title = command.title,
+                        status = command.status,
+                        image = command.image,
+                        emoji = command.emoji,
+                        isProfile = true
+                    )
+                    fr.show(childFragmentManager, null)
                 }
                 is Command.OpenFullScreenImage -> {
                     val screen = FullScreenPictureFragment.new(command.target, command.url).apply {
@@ -854,7 +865,6 @@ open class PageFragment :
     }
 
     private fun render(state: ControlPanelState) {
-
         if (state.navigationToolbar.isVisible) {
             placeholder.requestFocus()
             hideKeyboard()
@@ -1218,6 +1228,19 @@ open class PageFragment :
         vm.onSelectProgrammingLanguageClicked(target, key)
     }
 
+    override fun onArchiveClicked() {
+        vm.onArchiveThisPageClicked()
+    }
+
+    override fun onSearchOnPageClicked() {
+        vm.onEnterSearchModeClicked()
+    }
+
+    override fun onDismissBlockActionToolbar() {
+        Blurry.delete(root)
+        vm.onDismissBlockActionMenu(childFragmentManager.backStackEntryCount > 0)
+    }
+
     //------------ End of Anytype Custom Context Menu ------------
 
     companion object {
@@ -1241,11 +1264,6 @@ open class PageFragment :
 
         const val TAG_ALERT = "tag.alert"
         const val TAG_LINK = "tag.link"
-    }
-
-    override fun onDismissBlockActionToolbar() {
-        Blurry.delete(root)
-        vm.onDismissBlockActionMenu(childFragmentManager.backStackEntryCount > 0)
     }
 }
 

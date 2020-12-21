@@ -425,7 +425,7 @@ class Orchestrator(
                             context = intent.context
                         )
                     ).proceed(
-                        failure = defaultOnError,
+                        failure = defaultOnError.also { intent.onFailureSideEffect },
                         success = { payload ->
                             val event = EventAnalytics.Anytype(
                                 name = BLOCK_REDO,
@@ -435,7 +435,9 @@ class Orchestrator(
                                     middleware = System.currentTimeMillis()
                                 )
                             )
-                            defaultPayloadWithEvent(Pair(payload, event))
+                            defaultPayloadWithEvent(Pair(payload, event)).also {
+                                intent.onSuccessSideEffect()
+                            }
                         }
                     )
                 }
@@ -446,7 +448,7 @@ class Orchestrator(
                             context = intent.context
                         )
                     ).proceed(
-                        failure = defaultOnError,
+                        failure = defaultOnError.also { intent.onFailureSideEffect() },
                         success = { payload ->
                             val event = EventAnalytics.Anytype(
                                 name = BLOCK_UNDO,
@@ -456,7 +458,9 @@ class Orchestrator(
                                     middleware = System.currentTimeMillis()
                                 )
                             )
-                            defaultPayloadWithEvent(Pair(payload, event))
+                            defaultPayloadWithEvent(Pair(payload, event)).also {
+                                intent.onSuccessSideEffect()
+                            }
                         }
                     )
                 }

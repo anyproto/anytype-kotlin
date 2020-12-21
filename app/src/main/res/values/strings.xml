@@ -143,5 +143,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="telegram_app">https://t.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
     <string name="telegram_web">http://www.telegram.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
     <string name="fetching_your_account">Fetching your account…</string>
+    <string name="search_on_page">Search on page</string>
 
 </resources>

@@ -242,4 +242,10 @@
         <item quantity="other">%d pages selected</item>
     </plurals>
 
+    <string name="sync_status_unknown">Preparing…</string>
+    <string name="sync_status_offline">No connection</string>
+    <string name="sync_status_syncing">Syncing…</string>
+    <string name="sync_status_synced">Synced</string>
+    <string name="sync_status_failed">Not synced</string>
+
 </resources>

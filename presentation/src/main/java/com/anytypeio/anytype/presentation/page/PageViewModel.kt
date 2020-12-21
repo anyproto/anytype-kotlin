@@ -121,6 +121,9 @@ class PageViewModel(
 
     val syncStatus = MutableStateFlow<SyncStatus?>(null)
 
+    val isUndoEnabled = MutableStateFlow(false)
+    val isRedoEnabled = MutableStateFlow(false)
+
     val searchResultScrollPosition = MutableStateFlow(NO_SEARCH_RESULT_POSITION)
 
     private val session = MutableStateFlow(Session.IDLE)
@@ -929,14 +932,58 @@ class PageViewModel(
             check(content is Content.Smart)
             when (content.type) {
                 Content.Smart.Type.PROFILE -> {
-                    dispatch(command = Command.OpenProfileMenu)
+                    val details = orchestrator.stores.details.current().details
+                    dispatch(
+                        command = Command.OpenProfileMenu(
+                            status = syncStatus.value ?: SyncStatus.UNKNOWN,
+                            title = try {
+                                blocks.title().content<Content.Text>().text
+                            } catch (e: Throwable) {
+                                null
+                            },
+                            emoji = details[context]?.iconEmoji?.let { name ->
+                                if (name.isNotEmpty())
+                                    name
+                                else
+                                    null
+                            },
+                            image = details[context]?.iconImage?.let { name ->
+                                if (name.isNotEmpty())
+                                    urlBuilder.image(name)
+                                else
+                                    null
+                            }
+                        )
+                    )
                     viewModelScope.sendEvent(
                         analytics = analytics,
                         eventName = POPUP_PROFILE_MENU
                     )
                 }
                 Content.Smart.Type.PAGE -> {
-                    dispatch(command = Command.OpenDocumentMenu)
+                    val details = orchestrator.stores.details.current().details
+                    dispatch(
+                        command = Command.OpenDocumentMenu(
+                            status = syncStatus.value ?: SyncStatus.UNKNOWN,
+                            title = try {
+                                blocks.title().content<Content.Text>().text
+                            } catch (e: Throwable) {
+                                null
+                            },
+                            emoji = details[context]?.iconEmoji?.let { name ->
+                                if (name.isNotEmpty())
+                                    name
+                                else
+                                    null
+                            },
+                            image = details[context]?.iconImage?.let { name ->
+                                if (name.isNotEmpty())
+                                    urlBuilder.image(name)
+                                else
+                                    null
+                            }
+                        )
+                    )
                     viewModelScope.sendEvent(
                         analytics = analytics,
                         eventName = POPUP_DOCUMENT_MENU
@@ -1438,7 +1485,9 @@ class PageViewModel(
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.Undo(
-                    context = context
+                    context = context,
+                    onSuccessSideEffect = { isUndoEnabled.value = true },
+                    onFailureSideEffect = { isUndoEnabled.value = false }
                 )
             )
         }
@@ -1448,7 +1497,9 @@ class PageViewModel(
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.Redo(
-                    context = context
+                    context = context,
+                    onSuccessSideEffect = { isRedoEnabled.value = true },
+                    onFailureSideEffect = { isRedoEnabled.value = false }
                 )
             )
         }

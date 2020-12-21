@@ -79,6 +79,9 @@ open class ArchiveFragment : NavigationFragment(R.layout.fragment_archive) {
             vm.onBackButtonPressed()
         }.launchIn(lifecycleScope)
 
+        topToolbar.undo.invisible()
+        topToolbar.redo.invisible()
+
         with(bottomMenu) {
             update(COUNTER_INIT)
             findViewById<TextView>(R.id.btnPutBack).setOnClickListener {

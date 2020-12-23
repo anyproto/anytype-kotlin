@@ -1,9 +1,13 @@
 package com.anytypeio.anytype.presentation.page.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.domain.ext.content
+import com.anytypeio.anytype.domain.status.SyncStatus
+import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory.page
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory.profile
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import org.junit.Before
 import org.junit.Rule
@@ -46,7 +50,12 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         vm.onDocumentMenuClicked()
 
         observer.assertValue { value ->
-            value.peekContent() == Command.OpenProfileMenu
+            value.peekContent() == Command.OpenProfileMenu(
+                status = SyncStatus.UNKNOWN,
+                title = MockTypicalDocumentFactory.title.content<TXT>().text,
+                emoji = null,
+                image = null
+            )
         }
     }
 
@@ -96,7 +105,12 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         vm.onDocumentMenuClicked()
 
         observer.assertValue { value ->
-            value.peekContent() == Command.OpenDocumentMenu
+            value.peekContent() == Command.OpenDocumentMenu(
+                status = SyncStatus.UNKNOWN,
+                title = MockTypicalDocumentFactory.title.content<TXT>().text,
+                emoji = null,
+                image = null
+            )
         }
     }
 

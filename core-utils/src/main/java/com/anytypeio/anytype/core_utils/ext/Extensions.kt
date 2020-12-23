@@ -54,7 +54,7 @@ inline fun <T> List<T>.replace(replacement: (T) -> T, target: (T) -> Boolean): L
     return map { if (target(it)) replacement(it) else it }
 }
 
-fun Context.toast(msg: CharSequence) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+fun Context.toast(msg: CharSequence) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 fun Fragment.toast(msg: CharSequence) = requireActivity().toast(msg)
 
 fun String.isEndLineClick(range: IntRange): Boolean = range.first == length && range.last == length

@@ -2,6 +2,8 @@ package com.anytypeio.anytype.middleware.service
 
 import anytype.Rpc.*
 import anytype.Rpc.Config
+import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
+import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
 import service.Service
 
 class MiddlewareServiceImplementation : MiddlewareService {
@@ -99,7 +101,10 @@ class MiddlewareServiceImplementation : MiddlewareService {
         val response = Block.Open.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Block.Open.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            if (error.code == Block.Open.Response.Error.Code.ANYTYPE_NEEDS_UPGRADE)
+                throw BackwardCompatilityNotSupportedException()
+            else
+                throw Exception(error.description)
         } else {
             return response
         }
@@ -322,7 +327,10 @@ class MiddlewareServiceImplementation : MiddlewareService {
         val response = Block.Undo.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Block.Undo.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            if (error.code == Block.Undo.Response.Error.Code.CAN_NOT_MOVE)
+                throw UndoRedoExhaustedException()
+            else
+                throw Exception(error.description)
         } else {
             return response
         }
@@ -333,7 +341,10 @@ class MiddlewareServiceImplementation : MiddlewareService {
         val response = Block.Redo.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Block.Redo.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            if (error.code == Block.Redo.Response.Error.Code.CAN_NOT_MOVE)
+                throw UndoRedoExhaustedException()
+            else
+                throw Exception(error.description)
         } else {
             return response
         }

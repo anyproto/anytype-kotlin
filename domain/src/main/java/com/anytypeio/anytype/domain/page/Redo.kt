@@ -11,7 +11,7 @@ import com.anytypeio.anytype.domain.event.model.Payload
  */
 class Redo(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, Redo.Params>() {
+) : BaseUseCase<Redo.Result, Redo.Params>() {
 
     override suspend fun run(params: Params) = safe {
         repo.redo(
@@ -28,4 +28,9 @@ class Redo(
     data class Params(
         val context: Id
     )
+
+    sealed class Result {
+        data class Success(val payload: Payload) : Result()
+        object Exhausted : Result()
+    }
 }

@@ -48,6 +48,7 @@ import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
@@ -2849,9 +2850,11 @@ open class PageViewModelTest {
 
         undo.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
-                Payload(
-                    context = root,
-                    events = emptyList()
+                Undo.Result.Success(
+                    Payload(
+                        context = root,
+                        events = emptyList()
+                    )
                 )
             )
         }
@@ -2912,9 +2915,11 @@ open class PageViewModelTest {
 
         redo.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
-                Payload(
-                    context = root,
-                    events = emptyList()
+                Redo.Result.Success(
+                    Payload(
+                        context = root,
+                        events = emptyList()
+                    )
                 )
             )
         }
@@ -3718,19 +3723,31 @@ open class PageViewModelTest {
         }
     }
 
-    fun stubObserveEvents(flow: Flow<List<Event>> = flowOf()) {
+    fun stubObserveEvents(
+        flow: Flow<List<Event>> = flowOf(),
+        stubInterceptThreadStatus: Boolean = true
+    ) {
         interceptEvents.stub {
             onBlocking { build(any()) } doReturn flow
+        }
+        if (stubInterceptThreadStatus) stubInterceptThreadStatus()
+    }
+
+    fun stubInterceptThreadStatus() {
+        interceptThreadStatus.stub {
+            onBlocking { build(any()) } doReturn emptyFlow()
         }
     }
 
     fun stubInterceptEvents(
         params: InterceptEvents.Params = InterceptEvents.Params(context = root),
-        flow: Flow<List<Event>> = flowOf()
+        flow: Flow<List<Event>> = flowOf(),
+        stubInterceptThreadStatus: Boolean = true
     ) {
         interceptEvents.stub {
             onBlocking { build(params) } doReturn flow
         }
+        if (stubInterceptThreadStatus) stubInterceptThreadStatus()
     }
 
     private fun stubUpdateText() {
@@ -3758,9 +3775,9 @@ open class PageViewModelTest {
             onBlocking { invoke(any()) } doReturn Either.Right(
                 Pair(
                     MockDataFactory.randomString(), Payload(
-                        context = root,
-                        events = listOf()
-                    )
+                    context = root,
+                    events = listOf()
+                )
                 )
             )
         }

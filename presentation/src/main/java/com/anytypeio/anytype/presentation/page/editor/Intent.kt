@@ -10,14 +10,12 @@ sealed class Intent {
 
         class Undo(
             val context: Id,
-            val onSuccessSideEffect: () -> Unit,
-            val onFailureSideEffect: () -> Unit
+            val onUndoExhausted: () -> Unit
         ) : Document()
 
         class Redo(
             val context: Id,
-            val onSuccessSideEffect: () -> Unit,
-            val onFailureSideEffect: () -> Unit
+            val onRedoExhausted: () -> Unit
         ) : Document()
 
         class UpdateTitle(

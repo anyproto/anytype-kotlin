@@ -9,6 +9,8 @@ import com.anytypeio.anytype.domain.common.Hash
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.config.Config
 import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.domain.page.Redo
+import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.navigation.DocumentInfo
 import com.anytypeio.anytype.domain.page.navigation.PageInfoWithLinks
 
@@ -94,8 +96,8 @@ interface BlockRepository {
 
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
 
-    suspend fun undo(command: Command.Undo): Payload
-    suspend fun redo(command: Command.Redo): Payload
+    suspend fun undo(command: Command.Undo): Undo.Result
+    suspend fun redo(command: Command.Redo): Redo.Result
 
     suspend fun copy(command: Command.Copy): Copy.Response
     suspend fun paste(command: Command.Paste): Paste.Response

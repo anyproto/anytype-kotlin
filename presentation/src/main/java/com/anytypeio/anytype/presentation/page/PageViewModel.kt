@@ -1486,8 +1486,7 @@ class PageViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Document.Undo(
                     context = context,
-                    onSuccessSideEffect = { isUndoEnabled.value = true },
-                    onFailureSideEffect = { isUndoEnabled.value = false }
+                    onUndoExhausted = { _toasts.offer("Nothing to undo.") }
                 )
             )
         }
@@ -1498,8 +1497,7 @@ class PageViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Document.Redo(
                     context = context,
-                    onSuccessSideEffect = { isRedoEnabled.value = true },
-                    onFailureSideEffect = { isRedoEnabled.value = false }
+                    onRedoExhausted = { _toasts.offer("Nothing to redo.") }
                 )
             )
         }

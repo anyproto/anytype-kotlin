@@ -11,7 +11,7 @@ import com.anytypeio.anytype.domain.event.model.Payload
  */
 class Undo(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, Undo.Params>() {
+) : BaseUseCase<Undo.Result, Undo.Params>() {
 
     override suspend fun run(params: Params) = safe {
         repo.undo(
@@ -28,4 +28,9 @@ class Undo(
     data class Params(
         val context: Id
     )
+
+    sealed class Result {
+        data class Success(val payload: Payload) : Result()
+        object Exhausted : Result()
+    }
 }

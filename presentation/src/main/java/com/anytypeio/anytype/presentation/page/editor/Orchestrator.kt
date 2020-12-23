@@ -425,8 +425,8 @@ class Orchestrator(
                             context = intent.context
                         )
                     ).proceed(
-                        failure = defaultOnError.also { intent.onFailureSideEffect },
-                        success = { payload ->
+                        failure = defaultOnError,
+                        success = { result ->
                             val event = EventAnalytics.Anytype(
                                 name = BLOCK_REDO,
                                 props = Props.empty(),
@@ -435,8 +435,10 @@ class Orchestrator(
                                     middleware = System.currentTimeMillis()
                                 )
                             )
-                            defaultPayloadWithEvent(Pair(payload, event)).also {
-                                intent.onSuccessSideEffect()
+                            if (result is Redo.Result.Success) {
+                                defaultPayloadWithEvent(Pair(result.payload, event))
+                            } else {
+                                intent.onRedoExhausted()
                             }
                         }
                     )
@@ -448,8 +450,8 @@ class Orchestrator(
                             context = intent.context
                         )
                     ).proceed(
-                        failure = defaultOnError.also { intent.onFailureSideEffect() },
-                        success = { payload ->
+                        failure = defaultOnError,
+                        success = { result ->
                             val event = EventAnalytics.Anytype(
                                 name = BLOCK_UNDO,
                                 props = Props.empty(),
@@ -458,8 +460,10 @@ class Orchestrator(
                                     middleware = System.currentTimeMillis()
                                 )
                             )
-                            defaultPayloadWithEvent(Pair(payload, event)).also {
-                                intent.onSuccessSideEffect()
+                            if (result is Undo.Result.Success) {
+                                defaultPayloadWithEvent(Pair(result.payload, event))
+                            } else {
+                                intent.onUndoExhausted()
                             }
                         }
                     )

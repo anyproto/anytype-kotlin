@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
+import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
 import com.anytypeio.anytype.data.auth.mapper.toDomain
 import com.anytypeio.anytype.data.auth.mapper.toEntity
 import com.anytypeio.anytype.data.auth.model.BlockEntity
@@ -16,6 +17,8 @@ import com.anytypeio.anytype.domain.common.Hash
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.domain.page.Redo
+import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.navigation.DocumentInfo
 import com.anytypeio.anytype.domain.page.navigation.PageInfoWithLinks
 
@@ -147,11 +150,19 @@ class BlockDataRepository(
 
     override suspend fun undo(
         command: Command.Undo
-    ): Payload = factory.remote.undo(command.toEntity()).toDomain()
+    ): Undo.Result = try {
+        Undo.Result.Success(factory.remote.undo(command.toEntity()).toDomain())
+    } catch (e: UndoRedoExhaustedException) {
+        Undo.Result.Exhausted
+    }
 
     override suspend fun redo(
         command: Command.Redo
-    ): Payload = factory.remote.redo(command.toEntity()).toDomain()
+    ): Redo.Result = try {
+        Redo.Result.Success(factory.remote.redo(command.toEntity()).toDomain())
+    } catch (e: UndoRedoExhaustedException) {
+        Redo.Result.Exhausted
+    }
 
     override suspend fun archiveDocument(
         command: Command.ArchiveDocument

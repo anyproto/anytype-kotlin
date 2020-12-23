@@ -33,6 +33,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.Mock
 
@@ -254,16 +255,20 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubObserveEvents(flow: Flow<List<Event>> = flowOf()) {
-        interceptEvents.stub { onBlocking { build() } doReturn flow }
-    }
-
     fun stubInterceptEvents(
         params: InterceptEvents.Params = InterceptEvents.Params(context = root),
-        flow: Flow<List<Event>> = flowOf()
+        flow: Flow<List<Event>> = flowOf(),
+        stubInterceptThreadStatus: Boolean = true
     ) {
         interceptEvents.stub {
             onBlocking { build(params) } doReturn flow
+        }
+        if (stubInterceptThreadStatus) stubInterceptThreadStatus()
+    }
+
+    fun stubInterceptThreadStatus() {
+        interceptThreadStatus.stub {
+            onBlocking { build(any()) } doReturn emptyFlow()
         }
     }
 

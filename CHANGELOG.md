@@ -1,6 +1,16 @@
 # Change log for Android @Anytype app.
 
-## Version 0.1.5 (WIP)
+## Version 0.1.5
+
+### New features & enhancements 🚀
+
+* Displaying sync status for documents (#1188)
+* Enhanced security for sensitive data: introduce encrypted storage (#1189)
+
+### Design & UX 🔳
+
+* Redesigned document's menu (#1188)
+* Move undo/redo buttons on top toolbar (#1188)
 
 ### Fixes & tech 🚒
 

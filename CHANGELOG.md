@@ -5,7 +5,7 @@
 ### New features & enhancements 🚀
 
 * Displaying sync status for documents (#1188)
-* Enhanced security for sensitive data: introduce encrypted storage (#1189)
+* Encrypted storage for sensitive data (#1189)
 
 ### Design & UX 🔳
 

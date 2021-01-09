@@ -891,4 +891,74 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             actual = testMM::class.java
         )
     }
+
+    @Test
+    fun `should be default movement method when text has no marks`() {
+        val events = mutableListOf<Pair<String, Boolean>>()
+
+        val paragraph = BlockView.Text.Paragraph(
+            text = "text with links",
+            marks = listOf(
+                Markup.Mark(
+                    from = 10,
+                    to = 15,
+                    type = Markup.Type.LINK,
+                    param = "www.anytype.io"
+                )
+            ),
+            id = MockDataFactory.randomUuid(),
+            isFocused = true
+        )
+
+        val views = listOf(paragraph)
+
+        val adapter = buildAdapter(
+            views = views,
+            onFocusChanged = { id, hasFocus ->
+                events.add(Pair(id, hasFocus))
+            }
+        )
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is Paragraph)
+
+        // TESTING
+
+        val paragraphUpdated = paragraph.copy(
+            text = "",
+            marks = listOf(),
+            isFocused = false
+        )
+
+        holder.processChangePayload(
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(
+                        BlockViewDiffUtil.TEXT_CHANGED,
+                        BlockViewDiffUtil.MARKUP_CHANGED,
+                        BlockViewDiffUtil.FOCUS_CHANGED
+                    ),
+                )
+            ),
+            item = paragraphUpdated,
+            clicked = {},
+            onSelectionChanged = { _, _ -> },
+            onTextChanged = {},
+            onMentionEvent = {}
+        )
+
+        val testMM = holder.content.movementMethod
+
+        assertEquals(
+            expected = ArrowKeyMovementMethod::class.java,
+            actual = testMM::class.java
+        )
+    }
 }

@@ -11,7 +11,7 @@ fun TextInputWidget.preserveSelection(block: () -> Unit) = synchronized(this) {
 }
 
 fun TextInputWidget.applyMovementMethod(item: Markup) {
-    if (item.marks.isLinksOrMentionsPresent()) {
+    if (item.marks.isNotEmpty() && item.marks.isLinksOrMentionsPresent()) {
         setLinksClickable()
     } else {
         setDefaultMovementMethod()

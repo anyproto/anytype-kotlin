@@ -44,19 +44,19 @@ interface TextBlockHolder : TextHolder {
         markup: Markup,
         clicked: (ListenerType) -> Unit,
         textColor: Int
-    ) =
+    ) {
+        content.applyMovementMethod(markup)
         when (markup.marks.isEmpty()) {
             true -> content.setText(text)
             false -> setBlockSpannableText(markup, clicked, textColor)
         }
+    }
 
     private fun setBlockSpannableText(
         markup: Markup,
         clicked: (ListenerType) -> Unit,
         textColor: Int
     ) {
-        content.applyMovementMethod(markup)
-
         when (markup.marks.any { it.type == Markup.Type.MENTION }) {
             true -> setSpannableWithMention(markup, clicked, textColor)
             false -> setSpannable(markup, textColor)

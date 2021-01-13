@@ -141,6 +141,11 @@ class BlockDataRepository(
         command: Command.SetDocumentImageIcon
     ): Payload = factory.remote.setDocumentImageIcon(command.toEntity()).toDomain()
 
+    override suspend fun setDocumentCoverColor(
+        ctx: String,
+        color: String
+    ): Payload = factory.remote.setDocumentCover(ctx = ctx, color = color).toDomain()
+
     override suspend fun setupBookmark(
         command: Command.SetupBookmark
     ): Payload = factory.remote.setupBookmark(command.toEntity()).toDomain()

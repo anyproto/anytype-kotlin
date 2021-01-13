@@ -121,12 +121,48 @@
     </FrameLayout>
 
     <View
-        android:id="@+id/optionDivider"
+        android:id="@+id/optionDivider1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintTop_toBottomOf="@+id/searchOnPageContainer" />
+
+    <FrameLayout
+        android:id="@+id/addCoverContainer"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/optionDivider1">
+
+        <TextView
+            style="@style/DocMenuOptionTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:text="Add cover" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_doc_menu_doc_style" />
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/optionDivider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/addCoverContainer" />
 
     <FrameLayout
         android:id="@+id/archiveContainer"
@@ -138,7 +174,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/optionDivider">
+        app:layout_constraintTop_toBottomOf="@+id/optionDivider2">
 
         <TextView
             style="@style/DocMenuOptionTextStyle"

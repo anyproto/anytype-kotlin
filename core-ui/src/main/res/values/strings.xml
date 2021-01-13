@@ -247,5 +247,6 @@
     <string name="sync_status_syncing">Syncing…</string>
     <string name="sync_status_synced">Synced</string>
     <string name="sync_status_failed">Not synced</string>
+    <string name="content_description_document_cover">Document\'s cover</string>
 
 </resources>

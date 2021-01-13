@@ -80,6 +80,8 @@ sealed class Command {
         val image: String?
     ) : Command()
 
+    data class OpenCoverGallery(val ctx: String) : Command()
+
     object AlertDialog : Command()
 
     data class OpenFullScreenImage(

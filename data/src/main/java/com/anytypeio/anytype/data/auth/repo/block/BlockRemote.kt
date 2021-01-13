@@ -33,6 +33,7 @@ interface BlockRemote {
     suspend fun closeDashboard(id: String)
     suspend fun setDocumentEmojiIcon(command: CommandEntity.SetDocumentEmojiIcon): PayloadEntity
     suspend fun setDocumentImageIcon(command: CommandEntity.SetDocumentImageIcon): PayloadEntity
+    suspend fun setDocumentCoverColor(ctx: String, color: String): PayloadEntity
     suspend fun uploadBlock(command: CommandEntity.UploadBlock): PayloadEntity
     suspend fun setupBookmark(command: CommandEntity.SetupBookmark) : PayloadEntity
     suspend fun undo(command: CommandEntity.Undo) : PayloadEntity

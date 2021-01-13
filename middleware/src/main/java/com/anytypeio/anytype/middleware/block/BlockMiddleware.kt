@@ -115,13 +115,18 @@ class BlockMiddleware(
         command: CommandEntity.SetDocumentImageIcon
     ): PayloadEntity = middleware.setDocumentImageIcon(command)
 
+    override suspend fun setDocumentCoverColor(
+        ctx: String,
+        color: String
+    ): PayloadEntity = middleware.setDocumentCoverColor(ctx = ctx, color = color)
+
     override suspend fun setupBookmark(
         command: CommandEntity.SetupBookmark
     ): PayloadEntity = middleware.setupBookmark(command)
 
     override suspend fun undo(
         command: CommandEntity.Undo
-    ) : PayloadEntity = middleware.undo(command)
+    ): PayloadEntity = middleware.undo(command)
 
     override suspend fun redo(
         command: CommandEntity.Redo

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.page.editor.model
 
 import android.os.Parcelable
 import com.anytypeio.anytype.core_utils.ui.ViewType
+import com.anytypeio.anytype.presentation.page.cover.CoverColor
 import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_ARCHIVE_TITLE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_BOOKMARK
@@ -407,6 +408,7 @@ sealed class BlockView : ViewType, Parcelable {
 
         abstract val image: String?
         abstract var text: String?
+        abstract var coverColor: CoverColor?
 
         /**
          * UI-model for a title block.
@@ -417,7 +419,8 @@ sealed class BlockView : ViewType, Parcelable {
         data class Document(
             override val id: String,
             override var isFocused: Boolean = false,
-            override var text: String?,
+            override var text: String? = null,
+            override var coverColor: CoverColor? = null,
             val emoji: String? = null,
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
@@ -436,8 +439,9 @@ sealed class BlockView : ViewType, Parcelable {
         @Parcelize
         data class Profile(
             override val id: String,
-            override var isFocused: Boolean,
-            override var text: String?,
+            override var isFocused: Boolean = false,
+            override var text: String? = null,
+            override var coverColor: CoverColor? = null,
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
             override val cursor: Int? = null,
@@ -458,6 +462,7 @@ sealed class BlockView : ViewType, Parcelable {
             override var isFocused: Boolean = false,
             override var text: String?,
             override val image: String? = null,
+            override var coverColor: CoverColor? = null,
             override val mode: Mode = Mode.READ,
             override val cursor: Int? = null
         ) : Title() {

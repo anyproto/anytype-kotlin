@@ -34,7 +34,8 @@ interface BlockDataStore {
     suspend fun closeDashboard(id: String)
     suspend fun setDocumentEmojiIcon(command: CommandEntity.SetDocumentEmojiIcon): PayloadEntity
     suspend fun setDocumentImageIcon(command: CommandEntity.SetDocumentImageIcon): PayloadEntity
-    suspend fun setupBookmark(command: CommandEntity.SetupBookmark) : PayloadEntity
+    suspend fun setDocumentCover(ctx: String, color: String): PayloadEntity
+    suspend fun setupBookmark(command: CommandEntity.SetupBookmark): PayloadEntity
     suspend fun undo(command: CommandEntity.Undo) : PayloadEntity
     suspend fun redo(command: CommandEntity.Redo) : PayloadEntity
     suspend fun archiveDocument(command: CommandEntity.ArchiveDocument)

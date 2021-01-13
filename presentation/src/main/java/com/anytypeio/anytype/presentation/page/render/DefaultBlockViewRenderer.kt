@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.EditorMode
 import com.anytypeio.anytype.presentation.mapper.*
+import com.anytypeio.anytype.presentation.page.cover.CoverColor
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
 import timber.log.Timber
@@ -651,6 +652,10 @@ class DefaultBlockViewRenderer(
 
         check(rootContent is Content.Smart)
 
+        val cover = details.details[root.id]?.coverId?.let { id ->
+            CoverColor.values().find { it.code == id }
+        }
+
         return when (rootContent.type) {
             Content.Smart.Type.PAGE -> BlockView.Title.Document(
                 mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -669,7 +674,8 @@ class DefaultBlockViewRenderer(
                         null
                 },
                 isFocused = block.id == focus.id,
-                cursor = cursor
+                cursor = cursor,
+                coverColor = cover
             )
             Content.Smart.Type.PROFILE -> BlockView.Title.Profile(
                 mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -682,7 +688,8 @@ class DefaultBlockViewRenderer(
                         null
                 },
                 isFocused = block.id == focus.id,
-                cursor = cursor
+                cursor = cursor,
+                coverColor = cover
             )
             else -> throw IllegalStateException("Unexpected root block content: ${root.content}")
         }

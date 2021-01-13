@@ -19,11 +19,9 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-import com.anytypeio.anytype.core_utils.ext.firstDigitByHash
-import com.anytypeio.anytype.core_utils.ext.imm
-import com.anytypeio.anytype.core_utils.ext.removeSpans
-import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.presentation.page.cover.CoverColor
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -46,6 +44,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         onFocusChanged: (String, Boolean) -> Unit
     ) {
         setImage(item)
+        setCover(item.coverColor)
         if (item.mode == BlockView.Mode.READ) {
             enableReadMode()
             content.setText(item.text, TextView.BufferType.EDITABLE)
@@ -62,6 +61,20 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             content.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
                 if (hasFocus) showKeyboard()
+            }
+        }
+    }
+
+    private fun setCover(coverColor: CoverColor?) {
+        if (coverColor != null) {
+            itemView.findViewById<ImageView?>(R.id.cover)?.apply {
+                visible()
+                setBackgroundColor(coverColor.color)
+            }
+        } else {
+            itemView.findViewById<ImageView?>(R.id.cover)?.apply {
+                setImageDrawable(null)
+                gone()
             }
         }
     }

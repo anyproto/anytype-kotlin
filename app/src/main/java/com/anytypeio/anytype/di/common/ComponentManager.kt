@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.common
 
 import com.anytypeio.anytype.di.feature.*
 import com.anytypeio.anytype.di.main.MainComponent
+import com.anytypeio.anytype.domain.common.Id
 
 class ComponentManager(private val main: MainComponent) {
 
@@ -179,6 +180,14 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val docCoverGalleryComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .docCoverGalleryComponentBuilder()
+            .module(SelectDocCoverModule)
+            .build()
+    }
+
     class Component<T>(private val builder: () -> T) {
 
         private var instance: T? = null
@@ -201,6 +210,19 @@ class ComponentManager(private val main: MainComponent) {
         fun new(id: String) = builder().also { map[id] = it }
 
         fun release(id: String) {
+            map.remove(id)
+        }
+    }
+
+    class DependentComponentMap<T>(private val builder: (Id) -> T) {
+
+        private val map = mutableMapOf<String, T>()
+
+        fun get(id: Id) = map[id] ?: builder(id).also { map[id] = it }
+
+        fun new(id: Id) = builder(id).also { map[id] = it }
+
+        fun release(id: Id) {
             map.remove(id)
         }
     }

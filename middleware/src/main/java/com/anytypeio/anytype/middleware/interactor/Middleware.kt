@@ -23,6 +23,7 @@ class Middleware(
 ) {
     private val iconEmojiKey = "iconEmoji"
     private val iconImageKey = "iconImage"
+    private val coverIdKey = "coverId"
     private val nameKey = "name"
 
     @Throws(Exception::class)
@@ -589,6 +590,25 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
+        return mapper.toPayload(response.event)
+    }
+
+    @Throws(Exception::class)
+    fun setDocumentCoverColor(
+        ctx: String,
+        color: String
+    ): PayloadEntity {
+        val detail = Rpc.Block.Set.Details.Detail(
+            key = coverIdKey,
+            value = color
+        )
+        val request = Rpc.Block.Set.Details.Request(
+            contextId = ctx,
+            details = listOf(detail)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockSetDetails(request)
+        if (BuildConfig.DEBUG) logResponse(response)
         return mapper.toPayload(response.event)
     }
 

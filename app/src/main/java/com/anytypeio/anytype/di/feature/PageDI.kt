@@ -49,6 +49,8 @@ interface PageSubComponent {
     }
 
     fun inject(fragment: PageFragment)
+
+    fun docCoverGalleryComponentBuilder(): SelectDocCoverSubComponent.Builder
 }
 
 

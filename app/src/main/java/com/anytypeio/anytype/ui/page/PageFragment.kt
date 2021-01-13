@@ -78,6 +78,7 @@ import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment
 import com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.page.modals.*
 import com.anytypeio.anytype.ui.page.modals.actions.BlockActionToolbarFactory
@@ -750,6 +751,10 @@ open class PageFragment :
                     )
                     fr.show(childFragmentManager, null)
                 }
+                is Command.OpenCoverGallery -> {
+                    val fr = DocCoverSliderFragment.new(command.ctx)
+                    fr.show(childFragmentManager, null)
+                }
                 is Command.OpenFullScreenImage -> {
                     val screen = FullScreenPictureFragment.new(command.target, command.url).apply {
                         enterTransition = Fade()
@@ -1234,6 +1239,10 @@ open class PageFragment :
 
     override fun onSearchOnPageClicked() {
         vm.onEnterSearchModeClicked()
+    }
+
+    override fun onAddCoverClicked() {
+        vm.onAddCoverClicked()
     }
 
     override fun onDismissBlockActionToolbar() {

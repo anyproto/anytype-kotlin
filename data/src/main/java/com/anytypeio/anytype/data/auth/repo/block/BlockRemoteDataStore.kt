@@ -97,6 +97,11 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: CommandEntity.SetDocumentImageIcon
     ): PayloadEntity = remote.setDocumentImageIcon(command)
 
+    override suspend fun setDocumentCover(
+        ctx: String,
+        color: String
+    ): PayloadEntity = remote.setDocumentCoverColor(ctx = ctx, color = color)
+
     override suspend fun setupBookmark(
         command: CommandEntity.SetupBookmark
     ): PayloadEntity = remote.setupBookmark(command)

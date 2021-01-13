@@ -10,10 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.*
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.firstDigitByHash
-import com.anytypeio.anytype.core_utils.ext.gone
-import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.domain.common.Url
 import com.anytypeio.anytype.domain.status.SyncStatus
@@ -40,18 +37,25 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         bindTitle()
         bindSyncStatus(status)
         closeButton.clicks().onEach { dismiss() }.launchIn(lifecycleScope)
+
         searchOnPageContainer
             .clicks()
             .onEach {
-                (parentFragment as? DocumentMenuActionReceiver)?.onSearchOnPageClicked()
-                dismiss()
+                withParent<DocumentMenuActionReceiver> { onSearchOnPageClicked() }.also { dismiss() }
             }
             .launchIn(lifecycleScope)
+
         archiveContainer
             .clicks()
             .onEach {
-                (parentFragment as? DocumentMenuActionReceiver)?.onArchiveClicked()
-                dismiss()
+                withParent<DocumentMenuActionReceiver> { onArchiveClicked() }.also { dismiss() }
+            }
+            .launchIn(lifecycleScope)
+
+        addCoverContainer
+            .clicks()
+            .onEach {
+                withParent<DocumentMenuActionReceiver> { onAddCoverClicked() }.also { dismiss() }
             }
             .launchIn(lifecycleScope)
 
@@ -141,5 +145,6 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
     interface DocumentMenuActionReceiver {
         fun onArchiveClicked()
         fun onSearchOnPageClicked()
+        fun onAddCoverClicked()
     }
 }

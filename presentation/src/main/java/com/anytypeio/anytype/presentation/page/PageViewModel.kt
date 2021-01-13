@@ -2363,6 +2363,10 @@ class PageViewModel(
         }
     }
 
+    fun onAddCoverClicked() {
+        dispatch(Command.OpenCoverGallery(context))
+    }
+
     fun onAddBookmarkBlockClicked() {
 
         val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }

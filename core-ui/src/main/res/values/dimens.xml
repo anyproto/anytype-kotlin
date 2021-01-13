@@ -93,6 +93,7 @@
     <dimen name="footer_default_height">50dp</dimen>
 
     <dimen name="default_dashboard_item_spacing">10dp</dimen>
+    <dimen name="cover_gallery_item_spacing">8dp</dimen>
 
     <dimen name="indent">28dp</dimen>
 

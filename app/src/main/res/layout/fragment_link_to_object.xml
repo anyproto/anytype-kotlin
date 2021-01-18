@@ -34,14 +34,14 @@
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
-                style="@style/PageNavigationTab"
+                style="@style/DefaultTabLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:background="@color/white"
-                app:tabBackground="@drawable/custom_tab_indicator"
-                app:tabTextAppearance="@style/TabTextStyle" />
+                app:tabBackground="@drawable/default_tab_indicator"
+                app:tabTextAppearance="@style/DefaultTabTextStyle" />
         </FrameLayout>
 
     </com.google.android.material.appbar.AppBarLayout>

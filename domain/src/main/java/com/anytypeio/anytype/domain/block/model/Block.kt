@@ -31,6 +31,7 @@ data class Block(
         val name: String? by default
         val iconEmoji: String? by default
         val coverId: String? by default
+        val coverType: Double? by default
         val iconImage: String? by default
         val isArchived: Boolean? by default
         val lang: String? by default

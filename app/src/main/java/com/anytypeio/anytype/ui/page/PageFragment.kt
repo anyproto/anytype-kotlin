@@ -78,6 +78,7 @@ import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.anytypeio.anytype.ui.page.cover.DocCoverAction
 import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment
 import com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.page.modals.*
@@ -112,6 +113,7 @@ open class PageFragment :
     SelectProgrammingLanguageReceiver,
     DocumentMenuActionReceiver,
     ClipboardInterceptor,
+    DocCoverAction,
     PickiTCallbacks {
 
     private val screen: Point by lazy { screen() }
@@ -192,6 +194,7 @@ open class PageFragment :
             onTextInputClicked = vm::onTextInputClicked,
             onPageIconClicked = vm::onPageIconClicked,
             onProfileIconClicked = vm::onProfileIconClicked,
+            onCoverClicked = vm::onAddCoverClicked,
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
             onContextMenuStyleClick = vm::onEditorContextMenuStyleClicked,
@@ -1243,6 +1246,18 @@ open class PageFragment :
 
     override fun onAddCoverClicked() {
         vm.onAddCoverClicked()
+    }
+
+    override fun onImagePicked(path: String) {
+        vm.onDocCoverImagePicked(path)
+    }
+
+    override fun onImageSelected(hash: String) {
+        vm.onDocCoverImageSelected(hash)
+    }
+
+    override fun onRemoveCover() {
+        vm.onRemoveCover()
     }
 
     override fun onDismissBlockActionToolbar() {

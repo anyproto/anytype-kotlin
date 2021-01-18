@@ -36,6 +36,8 @@ import com.anytypeio.anytype.domain.block.model.Block.Prototype
 import com.anytypeio.anytype.domain.block.model.Position
 import com.anytypeio.anytype.domain.common.Document
 import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.domain.cover.RemoveDocCover
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -105,6 +107,8 @@ class PageViewModel(
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
     private val reducer: StateReducer<List<Block>, Event>,
+    private val setDocCoverImage: SetDocCoverImage,
+    private val removeDocCover: RemoveDocCover,
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
     private val orchestrator: Orchestrator,
@@ -2365,6 +2369,47 @@ class PageViewModel(
 
     fun onAddCoverClicked() {
         dispatch(Command.OpenCoverGallery(context))
+    }
+
+    fun onDocCoverImagePicked(path: String) {
+        viewModelScope.launch {
+            setDocCoverImage(
+                SetDocCoverImage.Params.FromPath(
+                    context = context,
+                    path = path
+                )
+            ).proceed(
+                failure = { Timber.e(it, "Error while setting doc cover image") },
+                success = { orchestrator.proxies.payloads.send(it) }
+            )
+        }
+    }
+
+    fun onDocCoverImageSelected(hash: String) {
+        viewModelScope.launch {
+            setDocCoverImage(
+                SetDocCoverImage.Params.FromHash(
+                    context = context,
+                    hash = hash
+                )
+            ).proceed(
+                failure = { Timber.e(it, "Error while setting doc cover image") },
+                success = { orchestrator.proxies.payloads.send(it) }
+            )
+        }
+    }
+
+    fun onRemoveCover() {
+        viewModelScope.launch {
+            removeDocCover(
+                RemoveDocCover.Params(
+                    ctx = context
+                )
+            ).proceed(
+                failure = { Timber.e(it, "Error while removing doc cover") },
+                success = { orchestrator.proxies.payloads.send(it) }
+            )
+        }
     }
 
     fun onAddBookmarkBlockClicked() {

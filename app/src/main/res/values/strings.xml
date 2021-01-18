@@ -144,5 +144,12 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="telegram_web">http://www.telegram.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
     <string name="fetching_your_account">Fetching your account…</string>
     <string name="search_on_page">Search on page</string>
+    <string name="choose_an_image">Choose an image</string>
+    <string name="optimal_dimensions_in_width_1080_pixels">Optimal dimensions in width 1080 pixels</string>
+    <string name="cover_size">Cover size</string>
+    <string name="tab_upload_image">Upload image</string>
+    <string name="tab_gallery">Gallery</string>
+
+    <string name="remove">Remove</string>
 
 </resources>

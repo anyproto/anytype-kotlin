@@ -4,6 +4,8 @@ import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.block.model.Block
 import com.anytypeio.anytype.domain.block.model.Block.Content
 import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.domain.cover.CoverType
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -12,7 +14,6 @@ import com.anytypeio.anytype.presentation.mapper.*
 import com.anytypeio.anytype.presentation.page.cover.CoverColor
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
-import timber.log.Timber
 
 class DefaultBlockViewRenderer(
     private val counter: Counter,
@@ -631,9 +632,6 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         details: Block.Details
     ): BlockView.Title {
-
-        Timber.d("Focus while building title: $focus")
-
         val cursor: Int?
 
         cursor = if (focus.id == block.id) {
@@ -649,11 +647,31 @@ class DefaultBlockViewRenderer(
         }
 
         val rootContent = root.content
+        val rootDetails = details.details[root.id]
 
         check(rootContent is Content.Smart)
 
-        val cover = details.details[root.id]?.coverId?.let { id ->
-            CoverColor.values().find { it.code == id }
+        var coverColor: CoverColor? = null
+        var coverImage: Url? = null
+        var coverGradient: String? = null
+
+        when (rootDetails?.coverType?.toInt()) {
+            CoverType.UPLOADED_IMAGE.code -> {
+                coverImage = rootDetails.coverId?.let { id ->
+                    urlBuilder.image(id)
+                }
+            }
+            CoverType.BUNDLED_IMAGE.code -> {
+                // TODO
+            }
+            CoverType.COLOR.code -> {
+                coverColor = rootDetails.coverId?.let { id ->
+                    CoverColor.values().find { it.code == id }
+                }
+            }
+            CoverType.GRADIENT.code -> {
+                coverGradient = rootDetails.coverId
+            }
         }
 
         return when (rootContent.type) {
@@ -675,7 +693,9 @@ class DefaultBlockViewRenderer(
                 },
                 isFocused = block.id == focus.id,
                 cursor = cursor,
-                coverColor = cover
+                coverColor = coverColor,
+                coverImage = coverImage,
+                coverGradient = coverGradient,
             )
             Content.Smart.Type.PROFILE -> BlockView.Title.Profile(
                 mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -689,7 +709,9 @@ class DefaultBlockViewRenderer(
                 },
                 isFocused = block.id == focus.id,
                 cursor = cursor,
-                coverColor = cover
+                coverColor = coverColor,
+                coverImage = coverImage,
+                coverGradient = coverGradient
             )
             else -> throw IllegalStateException("Unexpected root block content: ${root.content}")
         }

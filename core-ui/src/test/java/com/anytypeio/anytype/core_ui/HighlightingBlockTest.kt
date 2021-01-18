@@ -113,7 +113,8 @@ class HighlightingBlockTest {
             onClickListener = {},
             clipboardInterceptor = clipboardInterceptor,
             onMentionEvent = {},
-            onBackPressedCallback = { false }
+            onBackPressedCallback = { false },
+            onCoverClicked = {}
         )
     }
 }

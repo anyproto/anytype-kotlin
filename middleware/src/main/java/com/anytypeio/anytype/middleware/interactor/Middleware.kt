@@ -9,6 +9,7 @@ import anytype.model.PageInfoWithLinks
 import anytype.model.Range
 import com.anytypeio.anytype.data.auth.model.*
 import com.anytypeio.anytype.middleware.BuildConfig
+import com.anytypeio.anytype.middleware.const.Constants
 import com.anytypeio.anytype.middleware.model.CreateAccountResponse
 import com.anytypeio.anytype.middleware.model.CreateWalletResponse
 import com.anytypeio.anytype.middleware.model.SelectAccountResponse
@@ -24,6 +25,7 @@ class Middleware(
     private val iconEmojiKey = "iconEmoji"
     private val iconImageKey = "iconImage"
     private val coverIdKey = "coverId"
+    private val coverTypeKey = "coverType"
     private val nameKey = "name"
 
     @Throws(Exception::class)
@@ -598,13 +600,83 @@ class Middleware(
         ctx: String,
         color: String
     ): PayloadEntity {
-        val detail = Rpc.Block.Set.Details.Detail(
+        val coverIdDetail = Rpc.Block.Set.Details.Detail(
             key = coverIdKey,
             value = color
         )
+        val coverTypeDetail = Rpc.Block.Set.Details.Detail(
+            key = coverTypeKey,
+            value = Constants.COVER_TYPE_COLOR.toDouble()
+        )
         val request = Rpc.Block.Set.Details.Request(
             contextId = ctx,
-            details = listOf(detail)
+            details = listOf(coverIdDetail, coverTypeDetail)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockSetDetails(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return mapper.toPayload(response.event)
+    }
+
+    @Throws(Exception::class)
+    fun setDocumentCoverGradient(
+        ctx: String,
+        gradient: String
+    ): PayloadEntity {
+        val coverIdDetail = Rpc.Block.Set.Details.Detail(
+            key = coverIdKey,
+            value = gradient
+        )
+        val coverTypeDetail = Rpc.Block.Set.Details.Detail(
+            key = coverTypeKey,
+            value = Constants.COVER_TYPE_GRADIENT.toDouble()
+        )
+        val request = Rpc.Block.Set.Details.Request(
+            contextId = ctx,
+            details = listOf(coverIdDetail, coverTypeDetail)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockSetDetails(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return mapper.toPayload(response.event)
+    }
+
+    @Throws(Exception::class)
+    fun setDocumentCoverImage(
+        ctx: String,
+        hash: String
+    ): PayloadEntity {
+        val coverIdDetail = Rpc.Block.Set.Details.Detail(
+            key = coverIdKey,
+            value = hash
+        )
+        val coverTypeDetail = Rpc.Block.Set.Details.Detail(
+            key = coverTypeKey,
+            value = Constants.COVER_TYPE_UPLOADED_IMAGE.toDouble()
+        )
+        val request = Rpc.Block.Set.Details.Request(
+            contextId = ctx,
+            details = listOf(coverIdDetail, coverTypeDetail)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockSetDetails(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return mapper.toPayload(response.event)
+    }
+
+    @Throws(Exception::class)
+    fun removeDocumentCover(ctx: String): PayloadEntity {
+        val coverIdDetail = Rpc.Block.Set.Details.Detail(
+            key = coverIdKey,
+            value = null
+        )
+        val coverTypeDetail = Rpc.Block.Set.Details.Detail(
+            key = coverTypeKey,
+            value = Constants.COVER_TYPE_NONE.toDouble()
+        )
+        val request = Rpc.Block.Set.Details.Request(
+            contextId = ctx,
+            details = listOf(coverIdDetail, coverTypeDetail)
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockSetDetails(request)

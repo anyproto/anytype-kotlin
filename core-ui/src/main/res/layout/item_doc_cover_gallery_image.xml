@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="4dp"
+    android:layout_height="72dp">
+
+    <ImageView
+        android:layout_height="match_parent"
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/content_description_cover_image_view" />
+</androidx.cardview.widget.CardView>

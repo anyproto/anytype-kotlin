@@ -188,6 +188,14 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val uploadDocCoverImageComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .uploadDocCoverImageComponentBuilder()
+            .module(UploadDocCoverImageModule)
+            .build()
+    }
+
     class Component<T>(private val builder: () -> T) {
 
         private var instance: T? = null

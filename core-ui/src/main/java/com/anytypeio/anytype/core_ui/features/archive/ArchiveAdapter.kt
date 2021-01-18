@@ -69,6 +69,7 @@ class ArchiveAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Archive,
+                        onCoverClicked = {},
                         onTitleTextChanged = {},
                         onFocusChanged = { _, _ -> }
                     )

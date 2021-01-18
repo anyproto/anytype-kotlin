@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".ui.page.cover.DocCoverSliderFragment">
 
@@ -23,32 +24,38 @@
 
     </FrameLayout>
 
-    <LinearLayout
-        android:id="@+id/tabContainer"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        style="@style/DefaultTabLayoutStyle"
+        android:layout_height="wrap_content"
+        app:tabBackground="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Gallery" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Upload image" />
-
-    </LinearLayout>
+        app:tabTextAppearance="@style/DefaultTabTextStyle" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"
+        android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_weight="1" />
+
+    <FrameLayout
+        android:id="@+id/bottomToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <TextView
+            android:id="@+id/btnRemove"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/remove"
+            android:textColor="#E89D00" />
+
+    </FrameLayout>
 
 </LinearLayout>

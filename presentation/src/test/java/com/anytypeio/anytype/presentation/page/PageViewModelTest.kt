@@ -14,6 +14,8 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.cover.RemoveDocCover
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.model.Event
@@ -133,6 +135,12 @@ open class PageViewModelTest {
 
     @Mock
     lateinit var downloadFile: DownloadFile
+
+    @Mock
+    lateinit var setDocCoverImage: SetDocCoverImage
+
+    @Mock
+    lateinit var removeDocCover: RemoveDocCover
 
     @Mock
     lateinit var uploadBlock: UploadBlock
@@ -3880,7 +3888,9 @@ open class PageViewModelTest {
                 analytics = analytics,
                 updateFields = updateFields
             ),
-            bridge = Bridge()
+            bridge = Bridge(),
+            setDocCoverImage = setDocCoverImage,
+            removeDocCover = removeDocCover
         )
     }
 

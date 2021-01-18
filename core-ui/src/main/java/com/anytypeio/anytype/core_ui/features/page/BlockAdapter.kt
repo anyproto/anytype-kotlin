@@ -91,6 +91,7 @@ class BlockAdapter(
     private val onClickListener: (ListenerType) -> Unit,
     private val onPageIconClicked: () -> Unit,
     private val onProfileIconClicked: () -> Unit,
+    private val onCoverClicked: () -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
     private val onContextMenuStyleClick: (IntRange) -> Unit,
@@ -780,7 +781,8 @@ class BlockAdapter(
                         item = blocks[position] as BlockView.Title.Document,
                         onTitleTextChanged = onTitleBlockTextChanged,
                         onFocusChanged = onFocusChanged,
-                        onPageIconClicked = onPageIconClicked
+                        onPageIconClicked = onPageIconClicked,
+                        onCoverClicked = onCoverClicked
                     )
                     enableEnterKeyDetector(
                         onSplitLineEnterClicked = { range ->
@@ -809,7 +811,8 @@ class BlockAdapter(
                         item = blocks[position] as BlockView.Title.Profile,
                         onTitleTextChanged = onTitleBlockTextChanged,
                         onFocusChanged = onFocusChanged,
-                        onProfileIconClicked = onProfileIconClicked
+                        onProfileIconClicked = onProfileIconClicked,
+                        onCoverClicked = onCoverClicked
                     )
                     enableEnterKeyDetector(
                         onSplitLineEnterClicked = { range ->

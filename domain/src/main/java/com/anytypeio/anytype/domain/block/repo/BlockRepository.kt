@@ -94,6 +94,9 @@ interface BlockRepository {
     suspend fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload
     suspend fun setDocumentImageIcon(command: Command.SetDocumentImageIcon): Payload
     suspend fun setDocumentCoverColor(ctx: String, color: String): Payload
+    suspend fun setDocumentCoverGradient(ctx: String, gradient: String): Payload
+    suspend fun setDocumentCoverImage(ctx: String, hash: String): Payload
+    suspend fun removeDocumentCover(ctx: String): Payload
 
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
 

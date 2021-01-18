@@ -144,7 +144,21 @@ class BlockDataRepository(
     override suspend fun setDocumentCoverColor(
         ctx: String,
         color: String
-    ): Payload = factory.remote.setDocumentCover(ctx = ctx, color = color).toDomain()
+    ): Payload = factory.remote.setDocumentCoverColor(ctx = ctx, color = color).toDomain()
+
+    override suspend fun setDocumentCoverGradient(
+        ctx: String,
+        gradient: String
+    ): Payload = factory.remote.setDocumentCoverGradient(ctx = ctx, gradient = gradient).toDomain()
+
+    override suspend fun setDocumentCoverImage(
+        ctx: String,
+        hash: String
+    ): Payload = factory.remote.setDocumentCoverImage(ctx = ctx, hash = hash).toDomain()
+
+    override suspend fun removeDocumentCover(
+        ctx: String
+    ): Payload = factory.remote.removeDocumentCover(ctx).toDomain()
 
     override suspend fun setupBookmark(
         command: Command.SetupBookmark

@@ -120,6 +120,20 @@ class BlockMiddleware(
         color: String
     ): PayloadEntity = middleware.setDocumentCoverColor(ctx = ctx, color = color)
 
+    override suspend fun setDocumentCoverGradient(
+        ctx: String,
+        gradient: String
+    ): PayloadEntity = middleware.setDocumentCoverGradient(ctx = ctx, gradient = gradient)
+
+    override suspend fun setDocumentCoverImage(
+        ctx: String,
+        hash: String
+    ): PayloadEntity = middleware.setDocumentCoverImage(ctx = ctx, hash = hash)
+
+    override suspend fun removeDocumentCover(
+        ctx: String
+    ): PayloadEntity = middleware.removeDocumentCover(ctx)
+
     override suspend fun setupBookmark(
         command: CommandEntity.SetupBookmark
     ): PayloadEntity = middleware.setupBookmark(command)

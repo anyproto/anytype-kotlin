@@ -40,6 +40,12 @@ class BlockViewDiffUtil(
                 changes.add(TEXT_CHANGED)
             if (newBlock.emoji != oldBlock.emoji || newBlock.image != oldBlock.image)
                 changes.add(TITLE_ICON_CHANGED)
+            if (newBlock.coverColor != oldBlock.coverColor
+                || newBlock.coverGradient != oldBlock.coverGradient
+                || newBlock.coverImage != oldBlock.coverImage
+            ) {
+                changes.add(COVER_CHANGED)
+            }
         }
 
         if (newBlock is BlockView.Title.Profile && oldBlock is BlockView.Title.Profile) {
@@ -47,6 +53,12 @@ class BlockViewDiffUtil(
                 changes.add(TEXT_CHANGED)
             if (newBlock.image != oldBlock.image)
                 changes.add(TITLE_ICON_CHANGED)
+            if (newBlock.coverColor != oldBlock.coverColor
+                || newBlock.coverGradient != oldBlock.coverGradient
+                || newBlock.coverImage != oldBlock.coverImage
+            ) {
+                changes.add(COVER_CHANGED)
+            }
         }
 
         if (newBlock is BlockView.TextSupport && oldBlock is BlockView.TextSupport) {
@@ -132,6 +144,7 @@ class BlockViewDiffUtil(
         val isLoadingChanged: Boolean get() = changes.contains(LOADING_STATE_CHANGED)
         val isIndentChanged: Boolean get() = changes.contains(INDENT_CHANGED)
         val isCursorChanged: Boolean get() = changes.contains(CURSOR_CHANGED)
+        val isCoverChanged: Boolean get() = changes.contains(COVER_CHANGED)
         val isMarkupChanged: Boolean get() = changes.contains(MARKUP_CHANGED)
         val isTextChanged: Boolean get() = changes.contains(TEXT_CHANGED)
         val isTextColorChanged: Boolean get() = changes.contains(TEXT_COLOR_CHANGED)
@@ -169,5 +182,6 @@ class BlockViewDiffUtil(
         const val TITLE_ICON_CHANGED = 13
         const val SEARCH_HIGHLIGHT_CHANGED = 14
         const val LOADING_STATE_CHANGED = 15
+        const val COVER_CHANGED = 16
     }
 }

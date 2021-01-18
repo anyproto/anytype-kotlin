@@ -9,6 +9,8 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
+import com.anytypeio.anytype.domain.cover.RemoveDocCover
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -51,6 +53,7 @@ interface PageSubComponent {
     fun inject(fragment: PageFragment)
 
     fun docCoverGalleryComponentBuilder(): SelectDocCoverSubComponent.Builder
+    fun uploadDocCoverImageComponentBuilder(): UploadDocCoverImageSubComponent.Builder
 }
 
 
@@ -92,6 +95,8 @@ object EditorSessionModule {
         createDocument: CreateDocument,
         createNewDocument: CreateNewDocument,
         documentExternalEventReducer: DocumentExternalEventReducer,
+        setDocCoverImage: SetDocCoverImage,
+        removeDocCover: RemoveDocCover,
         urlBuilder: UrlBuilder,
         renderer: DefaultBlockViewRenderer,
         archiveDocument: ArchiveDocument,
@@ -110,6 +115,8 @@ object EditorSessionModule {
         updateLinkMarks = updateLinkMarks,
         removeLinkMark = removeLinkMark,
         documentEventReducer = documentExternalEventReducer,
+        setDocCoverImage = setDocCoverImage,
+        removeDocCover = removeDocCover,
         urlBuilder = urlBuilder,
         renderer = renderer,
         archiveDocument = archiveDocument,
@@ -545,4 +552,18 @@ object EditorUseCaseModule {
     fun provideUpdateFieldsUseCase(
         repo: BlockRepository
     ): UpdateFields = UpdateFields(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDocCoverImageUseCase(
+        repo: BlockRepository
+    ): SetDocCoverImage = SetDocCoverImage(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRemoveDocCoverUseCase(
+        repo: BlockRepository
+    ): RemoveDocCover = RemoveDocCover(repo)
 }

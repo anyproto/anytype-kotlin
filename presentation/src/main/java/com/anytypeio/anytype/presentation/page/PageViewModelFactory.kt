@@ -6,6 +6,8 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.domain.cover.RemoveDocCover
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.model.Event
 import com.anytypeio.anytype.domain.event.model.Payload
@@ -25,6 +27,8 @@ open class PageViewModelFactory(
     private val createDocument: CreateDocument,
     private val createNewDocument: CreateNewDocument,
     private val archiveDocument: ArchiveDocument,
+    private val setDocCoverImage: SetDocCoverImage,
+    private val removeDocCover: RemoveDocCover,
     private val interceptEvents: InterceptEvents,
     private val interceptThreadStatus: InterceptThreadStatus,
     private val updateLinkMarks: UpdateLinkMarks,
@@ -54,6 +58,8 @@ open class PageViewModelFactory(
             renderer = renderer,
             createDocument = createDocument,
             createNewDocument = createNewDocument,
+            setDocCoverImage = setDocCoverImage,
+            removeDocCover = removeDocCover,
             orchestrator = interactor,
             getListPages = getListPages,
             analytics = analytics,

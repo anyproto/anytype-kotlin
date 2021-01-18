@@ -12,13 +12,14 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.page.modal.DocCoverGalleryAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.presentation.page.cover.SelectDocCoverViewModel
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_doc_cover_gallery.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class DocCoverGalleryFragment : BaseFragment(R.layout.fragment_doc_cover_gallery) {
@@ -32,7 +33,9 @@ class DocCoverGalleryFragment : BaseFragment(R.layout.fragment_doc_cover_gallery
 
     private val docCoverGalleryAdapter by lazy {
         DocCoverGalleryAdapter(
-            onSolidColorClicked = { vm.onSolidColorSelected(color = it, ctx = ctx) }
+            onSolidColorClicked = { vm.onSolidColorSelected(color = it, ctx = ctx) },
+            onGradientClicked = { vm.onGradientColorSelected(gradient = it, ctx = ctx) },
+            onImageClicked = { withParent<DocCoverAction> { onImageSelected(it) } }
         )
     }
 
@@ -63,12 +66,12 @@ class DocCoverGalleryFragment : BaseFragment(R.layout.fragment_doc_cover_gallery
                                 outRect.left = spacing
                                 outRect.bottom = 0
                             }
-                            is DocCoverGalleryAdapter.ViewHolder.Color -> {
+                            else -> {
                                 outRect.left = spacing
                                 outRect.right = spacing
                                 outRect.top = spacing * 2
                                 val total = parent.adapter?.itemCount ?: 0
-                                if (position >= total - SPAN_COUNT)
+                                if (position >= total - 1)
                                     outRect.bottom = spacing * 4
                                 else
                                     outRect.bottom = 0
@@ -82,7 +85,8 @@ class DocCoverGalleryFragment : BaseFragment(R.layout.fragment_doc_cover_gallery
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        lifecycleScope.launch { vm.views.collect { docCoverGalleryAdapter.views = it } }
+        lifecycleScope.subscribe(vm.views) { docCoverGalleryAdapter.views = it }
+        lifecycleScope.subscribe(vm.isDismissed) { if (it) withParent<BottomSheetDialogFragment> { dismiss() } }
     }
 
     override fun injectDependencies() {

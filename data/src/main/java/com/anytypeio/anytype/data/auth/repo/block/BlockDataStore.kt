@@ -34,14 +34,17 @@ interface BlockDataStore {
     suspend fun closeDashboard(id: String)
     suspend fun setDocumentEmojiIcon(command: CommandEntity.SetDocumentEmojiIcon): PayloadEntity
     suspend fun setDocumentImageIcon(command: CommandEntity.SetDocumentImageIcon): PayloadEntity
-    suspend fun setDocumentCover(ctx: String, color: String): PayloadEntity
+    suspend fun setDocumentCoverColor(ctx: String, color: String): PayloadEntity
+    suspend fun setDocumentCoverGradient(ctx: String, gradient: String): PayloadEntity
+    suspend fun setDocumentCoverImage(ctx: String, hash: String): PayloadEntity
+    suspend fun removeDocumentCover(ctx: String): PayloadEntity
     suspend fun setupBookmark(command: CommandEntity.SetupBookmark): PayloadEntity
-    suspend fun undo(command: CommandEntity.Undo) : PayloadEntity
-    suspend fun redo(command: CommandEntity.Redo) : PayloadEntity
+    suspend fun undo(command: CommandEntity.Undo): PayloadEntity
+    suspend fun redo(command: CommandEntity.Redo): PayloadEntity
     suspend fun archiveDocument(command: CommandEntity.ArchiveDocument)
     suspend fun turnIntoDocument(command: CommandEntity.TurnIntoDocument): List<Id>
-    suspend fun paste(command: CommandEntity.Paste) : Response.Clipboard.Paste
-    suspend fun copy(command: CommandEntity.Copy) : Response.Clipboard.Copy
+    suspend fun paste(command: CommandEntity.Paste): Response.Clipboard.Paste
+    suspend fun copy(command: CommandEntity.Copy): Response.Clipboard.Copy
 
     suspend fun uploadFile(command: CommandEntity.UploadFile): String
 

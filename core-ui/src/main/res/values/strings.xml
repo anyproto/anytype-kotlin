@@ -248,5 +248,8 @@
     <string name="sync_status_synced">Synced</string>
     <string name="sync_status_failed">Not synced</string>
     <string name="content_description_document_cover">Document\'s cover</string>
+    <string name="content_description_cover_image_view">Cover image view</string>
+    <string name="cover_color_solid">Color solid</string>
+    <string name="cover_gradients">Gradients</string>
 
 </resources>

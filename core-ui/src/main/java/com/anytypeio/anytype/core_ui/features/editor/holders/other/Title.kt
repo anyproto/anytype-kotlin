@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.page.cover.CoverColor
+import com.anytypeio.anytype.presentation.page.cover.CoverGradient
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -34,6 +35,8 @@ import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
+    val ivCover: ImageView? get() = itemView.findViewById(R.id.cover)
+
     abstract val icon: FrameLayout
     abstract val image: ImageView
     override val root: View = itemView
@@ -41,10 +44,15 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
     fun bind(
         item: BlockView.Title,
         onTitleTextChanged: (Editable) -> Unit,
-        onFocusChanged: (String, Boolean) -> Unit
+        onFocusChanged: (String, Boolean) -> Unit,
+        onCoverClicked: () -> Unit
     ) {
         setImage(item)
-        setCover(item.coverColor)
+        setCover(
+            coverColor = item.coverColor,
+            coverImage = item.coverImage,
+            coverGradient = item.coverGradient
+        )
         if (item.mode == BlockView.Mode.READ) {
             enableReadMode()
             content.setText(item.text, TextView.BufferType.EDITABLE)
@@ -63,18 +71,54 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 if (hasFocus) showKeyboard()
             }
         }
+        itemView.findViewById<ImageView?>(R.id.cover)?.apply {
+            setOnClickListener { onCoverClicked() }
+        }
     }
 
-    private fun setCover(coverColor: CoverColor?) {
-        if (coverColor != null) {
-            itemView.findViewById<ImageView?>(R.id.cover)?.apply {
-                visible()
-                setBackgroundColor(coverColor.color)
+    private fun setCover(
+        coverColor: CoverColor?,
+        coverImage: String?,
+        coverGradient: String?
+    ) {
+        when {
+            coverColor != null -> {
+                ivCover?.apply {
+                    visible()
+                    setImageDrawable(null)
+                    setBackgroundColor(coverColor.color)
+                }
             }
-        } else {
-            itemView.findViewById<ImageView?>(R.id.cover)?.apply {
-                setImageDrawable(null)
-                gone()
+            coverImage != null -> {
+                ivCover?.apply {
+                    visible()
+                    setBackgroundColor(0)
+                    Glide
+                        .with(itemView)
+                        .load(coverImage)
+                        .centerCrop()
+                        .into(this)
+                }
+            }
+            coverGradient != null -> {
+                ivCover?.apply {
+                    setImageDrawable(null)
+                    setBackgroundColor(0)
+                    when (coverGradient) {
+                        CoverGradient.YELLOW -> setBackgroundResource(R.drawable.cover_gradient_yellow)
+                        CoverGradient.RED -> setBackgroundResource(R.drawable.cover_gradient_red)
+                        CoverGradient.BLUE -> setBackgroundResource(R.drawable.cover_gradient_blue)
+                        CoverGradient.TEAL -> setBackgroundResource(R.drawable.cover_gradient_teal)
+                    }
+                    visible()
+                }
+            }
+            else -> {
+                ivCover?.apply {
+                    setImageDrawable(null)
+                    setBackgroundColor(0)
+                    gone()
+                }
             }
         }
     }
@@ -148,6 +192,14 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                         enableReadMode()
                 }
             }
+
+            if (payload.isCoverChanged) {
+                setCover(
+                    coverColor = item.coverColor,
+                    coverImage = item.coverImage,
+                    coverGradient = item.coverGradient
+                )
+            }
         }
     }
 
@@ -177,7 +229,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             item: BlockView.Title.Document,
             onTitleTextChanged: (BlockView.Title) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            onPageIconClicked: () -> Unit
+            onPageIconClicked: () -> Unit,
+            onCoverClicked: () -> Unit
         ) {
             super.bind(
                 item = item,
@@ -185,7 +238,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     item.text = it.toString()
                     onTitleTextChanged(item)
                 },
-                onFocusChanged = onFocusChanged
+                onFocusChanged = onFocusChanged,
+                onCoverClicked = onCoverClicked
             )
             setEmoji(item)
             applySearchHighlights(item)
@@ -251,7 +305,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             super.bind(
                 item = item,
                 onTitleTextChanged = {},
-                onFocusChanged = { _, _ -> }
+                onFocusChanged = { _, _ -> },
+                onCoverClicked = {}
             )
             setImage(item)
         }
@@ -280,7 +335,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             item: BlockView.Title.Profile,
             onTitleTextChanged: (BlockView.Title) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
-            onProfileIconClicked: () -> Unit
+            onProfileIconClicked: () -> Unit,
+            onCoverClicked: () -> Unit
         ) {
             Timber.d("Binding profile title view: $item")
             super.bind(
@@ -290,6 +346,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     item.text = it.toString()
                     onTitleTextChanged(item)
                 },
+                onCoverClicked = onCoverClicked
             )
             applySearchHighlights(item)
             if (item.mode == BlockView.Mode.EDIT) {

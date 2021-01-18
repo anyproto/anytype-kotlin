@@ -1,6 +1,6 @@
 [
   {
-    "id": "the-crystal-pallac",
+    "id": "the-crystal-pallace",
     "name": "Camille Pissarro - The Crystal Palace",
     "group": "Art Institute of Chicago – Impressionism",
     "hash": "bafybeicab5x3i4zo74rnoqd7oipzb2r63ejoidsp2rrxh2xulzisee2fum"
@@ -40,6 +40,12 @@
     "name": "Pierre-Auguste Renoir — Fruits of the Midi",
     "group": "Art Institute of Chicago – Impressionism",
     "hash": "bafybeidl6xzxsjhgamb7t4qgjjjif7bkvtpthhewprgjoiedouqj2vgjwi"
+  },
+  {
+    "id": "autumn",
+    "name": "Wilson H. Irvine — Autumn",
+    "group": "Art Institute of Chicago – Impressionism",
+    "hash": "bafybeiabhvkc26qafmora5hxvxwb34feyfc6btoe3ybwlxxkyu2ymk22sm"
   },
   {
     "id": "big-electric-chair",
@@ -88,6 +94,12 @@
     "name": "Roy Lichtenstein — Landscape 3",
     "group": "Art Institute of Chicago – Pop Art",
     "hash": "bafybeidf2fwr4pmoldksbify2n36ufd4e6po4nt664rnidw5jl2k3nuzqi"
+  },
+  {
+    "id": "third-sleep",
+    "name": "Kay Sage In the Third Sleep",
+    "group": "Art Institute of Chicago – Surrealism",
+    "hash": "bafybeiaq23nrbztctw36xtayerd6qheoi2ae2x2nods3ksosgfizbrzxqq"
   },
   {
     "id": "banquet",

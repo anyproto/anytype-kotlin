@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.page.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.PageViewModel
+import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.page.editor.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
@@ -163,6 +164,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var gateway: Gateway
 
+    @Mock
+    lateinit var coverImageHashProvider: CoverImageHashProvider
+
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): PageViewModel {
@@ -187,7 +191,8 @@ open class EditorPresentationTestSetup {
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
-                counter = Counter.Default()
+                counter = Counter.Default(),
+                coverImageHashProvider = coverImageHashProvider
             ),
             archiveDocument = archiveDocument,
             createDocument = createDocument,

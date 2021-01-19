@@ -12,13 +12,15 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.EditorMode
 import com.anytypeio.anytype.presentation.mapper.*
 import com.anytypeio.anytype.presentation.page.cover.CoverColor
+import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
 
 class DefaultBlockViewRenderer(
     private val counter: Counter,
     private val urlBuilder: UrlBuilder,
-    private val toggleStateHolder: ToggleStateHolder
+    private val toggleStateHolder: ToggleStateHolder,
+    private val coverImageHashProvider: CoverImageHashProvider
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
     override suspend fun Map<Id, List<Block>>.render(
@@ -662,7 +664,10 @@ class DefaultBlockViewRenderer(
                 }
             }
             CoverType.BUNDLED_IMAGE.code -> {
-                // TODO
+                val hash = rootDetails.coverId?.let { id ->
+                    coverImageHashProvider.provide(id)
+                }
+                if (hash != null) coverImage = urlBuilder.image(hash)
             }
             CoverType.COLOR.code -> {
                 coverColor = rootDetails.coverId?.let { id ->

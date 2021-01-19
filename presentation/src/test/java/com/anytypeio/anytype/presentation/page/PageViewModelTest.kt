@@ -28,6 +28,7 @@ import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.page.editor.*
 import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
@@ -192,6 +193,9 @@ open class PageViewModelTest {
 
     @Mock
     lateinit var analytics: Analytics
+
+    @Mock
+    lateinit var coverImageHashProvider: CoverImageHashProvider
 
     lateinit var vm: PageViewModel
 
@@ -3861,7 +3865,8 @@ open class PageViewModelTest {
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
-                counter = Counter.Default()
+                counter = Counter.Default(),
+                coverImageHashProvider = coverImageHashProvider
             ),
             archiveDocument = archiveDocument,
             createDocument = createDocument,

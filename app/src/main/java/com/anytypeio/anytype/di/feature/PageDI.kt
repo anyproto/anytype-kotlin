@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.presentation.page.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.PageViewModelFactory
+import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.page.editor.Interactor
 import com.anytypeio.anytype.presentation.page.editor.Orchestrator
 import com.anytypeio.anytype.presentation.page.editor.pattern.DefaultPatternMatcher
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.Bridge
+import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.page.PageFragment
 import dagger.Module
 import dagger.Provides
@@ -131,12 +133,18 @@ object EditorSessionModule {
     fun provideDefaultBlockViewRenderer(
         urlBuilder: UrlBuilder,
         toggleStateHolder: ToggleStateHolder,
-        counter: Counter
+        counter: Counter,
+        coverImageHashProvider: CoverImageHashProvider
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
         toggleStateHolder = toggleStateHolder,
-        counter = counter
+        counter = counter,
+        coverImageHashProvider = coverImageHashProvider
     )
+
+    @JvmStatic
+    @Provides
+    fun provideCoverImageHashProvider(): CoverImageHashProvider = DefaultCoverImageHashProvider()
 
     @JvmStatic
     @Provides

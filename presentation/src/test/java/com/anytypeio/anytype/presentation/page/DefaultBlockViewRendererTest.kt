@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.ext.asMap
 import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.render.BlockViewRenderer
@@ -50,9 +51,13 @@ class DefaultBlockViewRendererTest {
     @Mock
     lateinit var gateway: Gateway
 
+    @Mock
+    lateinit var coverImageHashProvider: CoverImageHashProvider
+
     private lateinit var renderer: DefaultBlockViewRenderer
 
     private lateinit var wrapper: BlockViewRenderWrapper
+
 
     @Before
     fun setup() {
@@ -60,7 +65,8 @@ class DefaultBlockViewRendererTest {
         renderer = DefaultBlockViewRenderer(
             urlBuilder = UrlBuilder(gateway),
             toggleStateHolder = toggleStateHolder,
-            counter = Counter.Default()
+            counter = Counter.Default(),
+            coverImageHashProvider = coverImageHashProvider
         )
     }
 

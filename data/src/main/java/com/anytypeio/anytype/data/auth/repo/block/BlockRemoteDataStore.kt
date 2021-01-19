@@ -174,4 +174,14 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun setFields(
         command: CommandEntity.SetFields
     ): PayloadEntity = remote.setFields(command)
+
+    override suspend fun turnInto(
+        context: String,
+        targets: List<String>,
+        style: BlockEntity.Content.Text.Style
+    ): PayloadEntity = remote.turnInto(
+        context = context,
+        targets = targets,
+        style = style
+    )
 }

@@ -158,7 +158,10 @@ open class EditorPresentationTestSetup {
     lateinit var turnIntoDocument: TurnIntoDocument
 
     @Mock
-    lateinit var gateway : Gateway
+    lateinit var turnIntoStyle: TurnIntoStyle
+
+    @Mock
+    lateinit var gateway: Gateway
 
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
@@ -223,7 +226,8 @@ open class EditorPresentationTestSetup {
                 move = move,
                 turnIntoDocument = turnIntoDocument,
                 analytics = analytics,
-                updateFields = updateFields
+                updateFields = updateFields,
+                turnIntoStyle = turnIntoStyle
             ),
             bridge = Bridge(),
             removeDocCover = removeDocCover,
@@ -287,6 +291,20 @@ open class EditorPresentationTestSetup {
         events: List<Event> = emptyList()
     ) {
         updateTextStyle.stub {
+            onBlocking { invoke(params ?: any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = events
+                )
+            )
+        }
+    }
+
+    fun stubTurnIntoStyle(
+        params: TurnIntoStyle.Params? = null,
+        events: List<Event> = emptyList()
+    ) {
+        turnIntoStyle.stub {
             onBlocking { invoke(params ?: any()) } doReturn Either.Right(
                 Payload(
                     context = root,

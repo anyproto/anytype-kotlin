@@ -467,4 +467,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun blockListTurnInto(request: BlockList.TurnInto.Request): BlockList.TurnInto.Response {
+        val encoded = Service.blockListTurnInto(
+            BlockList.TurnInto.Request.ADAPTER.encode(request)
+        )
+        val response = BlockList.TurnInto.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != BlockList.TurnInto.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

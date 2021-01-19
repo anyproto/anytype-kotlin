@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.middleware.service
 
 import anytype.Rpc.*
-import kotlin.jvm.Throws
 
 /**
  * Service for interacting with the backend.
@@ -123,4 +122,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun blockListSetFields(request: BlockList.Set.Fields.Request): BlockList.Set.Fields.Response
+
+    @Throws(Exception::class)
+    fun blockListTurnInto(request: BlockList.TurnInto.Request): BlockList.TurnInto.Response
 }

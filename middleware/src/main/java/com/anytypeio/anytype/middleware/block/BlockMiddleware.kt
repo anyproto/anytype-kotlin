@@ -191,4 +191,14 @@ class BlockMiddleware(
     override suspend fun setFields(
         command: CommandEntity.SetFields
     ): PayloadEntity = middleware.setFields(command)
+
+    override suspend fun turnInto(
+        context: String,
+        targets: List<String>,
+        style: BlockEntity.Content.Text.Style
+    ): PayloadEntity = middleware.blockListTurnInto(
+        context = context,
+        targets = targets,
+        style = style
+    )
 }

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.common.Hash
 import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.domain.common.TextStyle
 import com.anytypeio.anytype.domain.config.Config
 import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.page.Redo
@@ -120,4 +121,10 @@ interface BlockRepository {
     suspend fun updateDivider(command: Command.UpdateDivider): Payload
 
     suspend fun setFields(command: Command.SetFields): Payload
+
+    suspend fun turnInto(
+        context: Id,
+        targets: List<Id>,
+        style: TextStyle
+    ): Payload
 }

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.common.Hash
 import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.domain.common.TextStyle
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.page.Redo
@@ -236,5 +237,15 @@ class BlockDataRepository(
                 id to BlockEntity.Fields(fields.map)
             }
         )
+    ).toDomain()
+
+    override suspend fun turnInto(
+        context: Id,
+        targets: List<Id>,
+        style: TextStyle
+    ): Payload = factory.remote.turnInto(
+        context = context,
+        targets = targets,
+        style = BlockEntity.Content.Text.Style.valueOf(style.name)
     ).toDomain()
 }

@@ -182,6 +182,9 @@ open class PageViewModelTest {
     lateinit var turnIntoDocument: TurnIntoDocument
 
     @Mock
+    lateinit var turnIntoStyle: TurnIntoStyle
+
+    @Mock
     lateinit var updateFields: UpdateFields
 
     @Mock
@@ -2005,7 +2008,7 @@ open class PageViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        stubUpdateTextStyle()
+        stubTurnIntoStyle()
 
         buildViewModel()
 
@@ -2023,9 +2026,9 @@ open class PageViewModelTest {
         vm.onTurnIntoBlockClicked(secondChild, UiBlock.HEADER_ONE)
 
         runBlockingTest {
-            verify(updateTextStyle, times(1)).invoke(
+            verify(turnIntoStyle, times(1)).invoke(
                 params = eq(
-                    UpdateTextStyle.Params(
+                    TurnIntoStyle.Params(
                         context = root,
                         targets = listOf(secondChild),
                         style = newStyle
@@ -3825,6 +3828,17 @@ open class PageViewModelTest {
         }
     }
 
+    private fun stubTurnIntoStyle(
+        payload: Payload = Payload(
+            context = MockDataFactory.randomUuid(),
+            events = emptyList()
+        )
+    ) {
+        turnIntoStyle.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(payload)
+        }
+    }
+
     fun buildViewModel(urlBuilder: UrlBuilder = builder) {
 
         val storage = Editor.Storage()
@@ -3886,7 +3900,8 @@ open class PageViewModelTest {
                 move = move,
                 turnIntoDocument = turnIntoDocument,
                 analytics = analytics,
-                updateFields = updateFields
+                updateFields = updateFields,
+                turnIntoStyle = turnIntoStyle
             ),
             bridge = Bridge(),
             setDocCoverImage = setDocCoverImage,

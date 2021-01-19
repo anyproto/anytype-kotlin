@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.domain.block.model.Block
@@ -85,8 +86,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         stubOpenDocument(document)
         stubInterceptEvents()
-        stubUpdateTextStyle(
-            params = UpdateTextStyle.Params(
+        stubTurnIntoStyle(
+            params = TurnIntoStyle.Params(
                 style = Block.Content.Text.Style.QUOTE,
                 context = root,
                 targets = listOf(a.id)

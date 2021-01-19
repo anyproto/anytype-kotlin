@@ -6,3 +6,4 @@ typealias Id = String
 typealias Url = String
 typealias Hash = String
 typealias Document = List<Block>
+typealias TextStyle = Block.Content.Text.Style

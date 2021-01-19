@@ -63,4 +63,10 @@ interface BlockRemote {
     suspend fun updateDivider(command: CommandEntity.UpdateDivider): PayloadEntity
 
     suspend fun setFields(command: CommandEntity.SetFields): PayloadEntity
+
+    suspend fun turnInto(
+        context: String,
+        targets: List<String>,
+        style: BlockEntity.Content.Text.Style
+    ): PayloadEntity
 }

@@ -100,7 +100,7 @@ object EditorSessionModule {
         urlBuilder: UrlBuilder,
         renderer: DefaultBlockViewRenderer,
         archiveDocument: ArchiveDocument,
-        interactor: Orchestrator,
+        orchestrator: Orchestrator,
         getListPages: GetListPages,
         analytics: Analytics,
         bridge: Bridge<Payload>
@@ -120,7 +120,7 @@ object EditorSessionModule {
         urlBuilder = urlBuilder,
         renderer = renderer,
         archiveDocument = archiveDocument,
-        interactor = interactor,
+        orchestrator = orchestrator,
         getListPages = getListPages,
         analytics = analytics,
         bridge = bridge
@@ -140,8 +140,7 @@ object EditorSessionModule {
 
     @JvmStatic
     @Provides
-    fun provideDocumentExternalEventReducer(): DocumentExternalEventReducer =
-        DocumentExternalEventReducer()
+    fun provideDocumentExternalEventReducer(): DocumentExternalEventReducer = DocumentExternalEventReducer()
 
     @JvmStatic
     @Provides
@@ -175,6 +174,7 @@ object EditorSessionModule {
         unlinkBlocks: UnlinkBlocks,
         updateDivider: UpdateDivider,
         updateTextStyle: UpdateTextStyle,
+        turnInto: TurnIntoStyle,
         updateCheckbox: UpdateCheckbox,
         downloadFile: DownloadFile,
         updateTitle: UpdateTitle,
@@ -224,7 +224,8 @@ object EditorSessionModule {
         paste = paste,
         copy = copy,
         analytics = analytics,
-        updateFields = updateFields
+        updateFields = updateFields,
+        turnIntoStyle = turnInto
     )
 }
 
@@ -566,4 +567,9 @@ object EditorUseCaseModule {
     fun provideRemoveDocCoverUseCase(
         repo: BlockRepository
     ): RemoveDocCover = RemoveDocCover(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideTurnIntoUseCase(repo: BlockRepository): TurnIntoStyle = TurnIntoStyle(repo)
 }

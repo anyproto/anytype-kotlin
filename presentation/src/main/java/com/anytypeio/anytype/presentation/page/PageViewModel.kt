@@ -1069,7 +1069,7 @@ class PageViewModel(
                 text = content.text
             )
         } else {
-            proceedUpdateTextStyle(
+            proceedWithUpdateTextStyle(
                 style = Content.Text.Style.P,
                 targets = listOf(id)
             )
@@ -2096,7 +2096,7 @@ class PageViewModel(
             UiBlock.BULLETED, UiBlock.NUMBERED,
             UiBlock.TOGGLE, UiBlock.CODE -> {
                 action?.invoke()
-                proceedUpdateTextStyle(targets, uiBlock.style())
+                proceedWithTurnIntoStyle(targets, uiBlock.style())
             }
             UiBlock.PAGE -> {
                 action?.invoke()
@@ -2118,7 +2118,22 @@ class PageViewModel(
         }
     }
 
-    private fun proceedUpdateTextStyle(
+    private fun proceedWithTurnIntoStyle(
+        targets: List<String>,
+        style: Content.Text.Style
+    ) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Text.TurnInto(
+                    context = context,
+                    targets = targets,
+                    style = style
+                )
+            )
+        }
+    }
+
+    private fun proceedWithUpdateTextStyle(
         targets: List<String>,
         style: Content.Text.Style
     ) {

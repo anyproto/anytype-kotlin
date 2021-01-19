@@ -952,6 +952,22 @@ class Middleware(
         return mapper.toPayload(response.event)
     }
 
+    fun blockListTurnInto(
+        context: String,
+        targets: List<String>,
+        style: BlockEntity.Content.Text.Style
+    ): PayloadEntity {
+        val request = BlockList.TurnInto.Request(
+            contextId = context,
+            blockIds = targets,
+            style = mapper.toMiddleware(style)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListTurnInto(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return mapper.toPayload(response.event)
+    }
+
     private fun logRequest(any: Any) {
         val message = "===> " + any::class.java.canonicalName + ":" + "\n" + any.toString()
         Timber.d(message)

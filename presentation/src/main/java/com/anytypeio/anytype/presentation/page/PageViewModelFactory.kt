@@ -36,7 +36,7 @@ open class PageViewModelFactory(
     private val documentEventReducer: StateReducer<List<Block>, Event>,
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
-    private val interactor: Orchestrator,
+    private val orchestrator: Orchestrator,
     private val getListPages: GetListPages,
     private val analytics: Analytics,
     private val bridge: Bridge<Payload>
@@ -60,7 +60,7 @@ open class PageViewModelFactory(
             createNewDocument = createNewDocument,
             setDocCoverImage = setDocCoverImage,
             removeDocCover = removeDocCover,
-            orchestrator = interactor,
+            orchestrator = orchestrator,
             getListPages = getListPages,
             analytics = analytics,
             bridge = bridge

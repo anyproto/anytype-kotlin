@@ -120,6 +120,12 @@ sealed class Intent {
             val style: Block.Content.Text.Style
         ) : Text()
 
+        class TurnInto(
+            val context: Id,
+            val targets: List<Id>,
+            val style: Block.Content.Text.Style
+        ) : Text()
+
         class UpdateCheckbox(
             val context: Id,
             val target: Id,

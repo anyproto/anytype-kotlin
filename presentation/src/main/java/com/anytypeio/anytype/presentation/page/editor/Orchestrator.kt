@@ -56,6 +56,7 @@ class Orchestrator(
     private val mergeBlocks: MergeBlocks,
     private val unlinkBlocks: UnlinkBlocks,
     private val updateTextStyle: UpdateTextStyle,
+    private val turnIntoStyle: TurnIntoStyle,
     private val updateCheckbox: UpdateCheckbox,
     private val updateTitle: UpdateTitle,
     private val downloadFile: DownloadFile,
@@ -329,6 +330,29 @@ class Orchestrator(
                     val startTime = System.currentTimeMillis()
                     updateTextStyle(
                         params = UpdateTextStyle.Params(
+                            context = intent.context,
+                            targets = intent.targets,
+                            style = intent.style
+                        )
+                    ).proceed(
+                        failure = defaultOnError,
+                        success = { payload ->
+                            val event = EventAnalytics.Anytype(
+                                name = BLOCK_UPDATE_STYLE,
+                                props = intent.style.getProps(),
+                                duration = EventAnalytics.Duration(
+                                    start = startTime,
+                                    middleware = System.currentTimeMillis()
+                                )
+                            )
+                            defaultPayloadWithEvent(Pair(payload, event))
+                        }
+                    )
+                }
+                is Intent.Text.TurnInto -> {
+                    val startTime = System.currentTimeMillis()
+                    turnIntoStyle(
+                        params = TurnIntoStyle.Params(
                             context = intent.context,
                             targets = intent.targets,
                             style = intent.style

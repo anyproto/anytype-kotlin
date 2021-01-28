@@ -1,5 +1,16 @@
 # Change log for Android @Anytype app.
 
+## Version 0.1.6
+
+### New features & enhancements 🚀
+
+* Introduce page's cover. First iteration does not support image repositioning (#1220)
+* Refactored turn-into operations (#1115)
+
+### Middleware ⚙
+
+* Updated middleware protocol to `0.14.2` (#1245)
+
 ## Version 0.1.5
 
 ### New features & enhancements 🚀

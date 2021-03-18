@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.1.7
+
+### Middleware ⚙
+
+* Updated middleware protocol to `0.14.7`
+
 ## Version 0.1.6
 
 ### New features & enhancements 🚀

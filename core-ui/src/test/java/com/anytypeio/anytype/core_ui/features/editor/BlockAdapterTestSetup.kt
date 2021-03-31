@@ -6,11 +6,12 @@ import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_ui.features.page.BlockAdapter
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
-import com.nhaarman.mockitokotlin2.mock
 
 open class BlockAdapterTestSetup {
 
-    val clipboardInterceptor: ClipboardInterceptor = mock()
+    val clipboardInterceptor: ClipboardInterceptor = object: ClipboardInterceptor {
+        override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
+    }
 
     val context: Context = ApplicationProvider.getApplicationContext()
 

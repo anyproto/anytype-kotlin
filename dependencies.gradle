@@ -51,6 +51,7 @@ ext {
 
     // Unit Testing
     robolectric_version = '4.3.1'
+    robolectric_latest_version = '4.5.1'
     junit_version = '4.12'
     mockito_version = '1.4.0'
     kluent_version = '1.14'
@@ -141,6 +142,7 @@ ext {
             kotlin:             "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             kotlinTest:         "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version",
             robolectric:        "org.robolectric:robolectric:$robolectric_version",
+            robolectricLatest:  "org.robolectric:robolectric:$robolectric_latest_version",
             junit:              "junit:junit:$junit_version",
             mockito:            "com.nhaarman:mockito-kotlin:$mockito_version",
             mockitoKotlin:      "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockito_kotlin_version",

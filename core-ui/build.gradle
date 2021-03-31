@@ -16,6 +16,10 @@ android {
         testInstrumentationRunner config["test_runner"]
     }
 
+    lintOptions {
+        abortOnError false
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -95,7 +99,7 @@ dependencies {
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
-    testImplementation unitTestDependencies.robolectric
+    testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.androidXTestCore
     testImplementation unitTestDependencies.mockitoKotlin
 }

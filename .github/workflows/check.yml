@@ -1,0 +1,14 @@
+on:
+# Specify branch, in order to trigger workflow on pushes.
+  push:
+    branches: []
+  pull_request:
+    branches: [develop]
+name: Run debug unit tests
+jobs:
+  setup-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - run: ./middleware.sh ${{ secrets.ANYTYPE_SECRET }}
+      - run: ./gradlew assembleDebug test -Dpre-dex=false

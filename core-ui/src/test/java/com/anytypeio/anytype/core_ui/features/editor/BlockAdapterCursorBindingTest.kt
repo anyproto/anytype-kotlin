@@ -12,7 +12,6 @@ import com.anytypeio.anytype.core_ui.features.page.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
-import com.nhaarman.mockitokotlin2.mock
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -25,7 +24,9 @@ class BlockAdapterCursorBindingTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
 
-    private val clipboardInterceptor: ClipboardInterceptor = mock()
+    private val clipboardInterceptor: ClipboardInterceptor = object : ClipboardInterceptor {
+        override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
+    }
 
     @Test
     fun `should set paragraph cursor on first binding`() {

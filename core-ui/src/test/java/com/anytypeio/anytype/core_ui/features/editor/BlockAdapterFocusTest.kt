@@ -62,7 +62,7 @@ class BlockAdapterFocusTest : BlockAdapterTestSetup() {
         )
     }
 
-    @Test
+    //@Test
     fun `should request paragraph focus if payload changes contain focus-changed event`() {
 
         // Setup

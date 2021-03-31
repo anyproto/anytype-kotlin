@@ -2,7 +2,7 @@ package com.anytypeio.anytype.ui.auth.pin
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.auth.pin.ChoosePinCodeViewModel
@@ -14,11 +14,7 @@ class ChoosePinCodeFragment : PinCodeFragment(R.layout.fragment_choose_pin_code)
     //@Inject
     lateinit var factory: ChoosePinCodeViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this)
-            .get(ChoosePinCodeViewModel::class.java)
-    }
+    private val vm : ChoosePinCodeViewModel by viewModels { factory }
 
     private val numPadAdapter by lazy {
         NumPadAdapter(

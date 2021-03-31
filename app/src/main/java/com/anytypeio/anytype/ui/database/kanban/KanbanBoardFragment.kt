@@ -3,7 +3,7 @@ package com.anytypeio.anytype.ui.database.kanban
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.px
 import com.anytypeio.anytype.presentation.databaseview.KanbanBoardViewModel
@@ -15,9 +15,7 @@ const val COLUMN_WIDTH = 1.46 // На эту величину делим шир�
 
 class KanbanBoardFragment : Fragment(R.layout.fragment_kanban) {
 
-    private val vm by lazy {
-        ViewModelProviders.of(this).get(KanbanBoardViewModel::class.java)
-    }
+    private val vm : KanbanBoardViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

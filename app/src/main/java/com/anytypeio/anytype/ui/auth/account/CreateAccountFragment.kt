@@ -10,8 +10,8 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.toast
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
@@ -32,12 +32,7 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
     @Inject
     lateinit var factory: CreateAccountViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(CreateAccountViewModel::class.java)
-    }
-
+    private val vm : CreateAccountViewModel by viewModels { factory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

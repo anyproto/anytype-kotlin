@@ -5,20 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.hide
 import com.anytypeio.anytype.core_utils.ext.show
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.databaseview.modals.AddDisplayViewModelFactory
 import com.anytypeio.anytype.presentation.databaseview.modals.AddDisplayViewModel
+import com.anytypeio.anytype.presentation.databaseview.modals.AddDisplayViewModelFactory
 import com.anytypeio.anytype.presentation.databaseview.modals.AddViewState
 import com.anytypeio.anytype.ui.base.NavigationBottomSheetFragment
 import kotlinx.android.synthetic.main.modal_add_view.*
 import javax.inject.Inject
 
+@Deprecated("legacy")
 class AddDisplayFragment : NavigationBottomSheetFragment() {
 
     @Inject
@@ -29,10 +30,7 @@ class AddDisplayFragment : NavigationBottomSheetFragment() {
     lateinit var galleryChosen: ImageView
     lateinit var kanbanChosen: ImageView
 
-    private val vm by lazy {
-        ViewModelProviders.of(this, factory)
-            .get(AddDisplayViewModel::class.java)
-    }
+    private val vm : AddDisplayViewModel by viewModels { factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,

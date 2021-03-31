@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.animation.AnimationUtils
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.showSnackbar
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -23,11 +23,7 @@ class SetupNewAccountFragment : NavigationFragment(R.layout.fragment_setup_new_a
     @Inject
     lateinit var factory: SetupNewAccountViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(SetupNewAccountViewModel::class.java)
-    }
+    private val vm : SetupNewAccountViewModel by viewModels { factory }
 
     private val animation by lazy {
         AnimationUtils.loadAnimation(requireContext(), R.anim.rotation)

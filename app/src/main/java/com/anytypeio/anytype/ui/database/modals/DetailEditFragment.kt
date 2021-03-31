@@ -4,9 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -19,6 +18,7 @@ import com.anytypeio.anytype.presentation.databaseview.modals.DetailEditViewMode
 import com.anytypeio.anytype.presentation.databaseview.modals.DetailEditViewModelFactory
 import com.anytypeio.anytype.presentation.databaseview.modals.DetailEditViewState
 import com.anytypeio.anytype.presentation.databaseview.models.ColumnView
+import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import kotlinx.android.synthetic.main.modals_properties_edit.*
 import javax.inject.Inject
 
@@ -39,11 +39,7 @@ class DetailEditFragment : BaseBottomSheetFragment() {
     @Inject
     lateinit var factory: DetailEditViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(DetailEditViewModel::class.java)
-    }
+    private val vm : DetailEditViewModel by viewModels { factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,

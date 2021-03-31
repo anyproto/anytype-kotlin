@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.auth.pin.ConfirmPinCodeViewModel
@@ -19,11 +19,7 @@ class ConfirmPinCodeFragment : PinCodeFragment(R.layout.fragment_confirm_pin_cod
     @Inject
     lateinit var factory: ConfirmPinCodeViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(ConfirmPinCodeViewModel::class.java)
-    }
+    private val vm : ConfirmPinCodeViewModel by viewModels { factory }
 
     private val numPadAdapter by lazy {
         NumPadAdapter(

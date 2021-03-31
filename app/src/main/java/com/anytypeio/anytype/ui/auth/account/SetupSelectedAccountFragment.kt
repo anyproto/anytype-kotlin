@@ -3,8 +3,8 @@ package com.anytypeio.anytype.ui.auth.account
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
@@ -29,11 +29,7 @@ open class SetupSelectedAccountFragment :
         animation.cancel()
     }
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(SetupSelectedAccountViewModel::class.java)
-    }
+    private val vm : SetupSelectedAccountViewModel by viewModels { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

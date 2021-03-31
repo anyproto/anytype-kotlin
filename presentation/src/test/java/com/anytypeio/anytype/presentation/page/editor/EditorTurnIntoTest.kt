@@ -2,8 +2,8 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.domain.block.interactor.TurnIntoDocument
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoDocument
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
@@ -333,13 +333,14 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
             UiBlock.LINK_TO_OBJECT.name,
             UiBlock.FILE.name,
             UiBlock.VIDEO.name,
-            UiBlock.IMAGE.name
+            UiBlock.IMAGE.name,
+            UiBlock.RELATION.name
         )
 
         check(result is Command.OpenMultiSelectTurnIntoPanel) { "Wrong command" }
 
         assertEquals(
-            expected = emptyList(),
+            expected = listOf(UiBlock.RELATION.name),
             actual = result.excludedCategories
         )
 

@@ -3,9 +3,8 @@ package com.anytypeio.anytype.ui.database.modals
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.hide
 import com.anytypeio.anytype.core_utils.ext.show
@@ -16,6 +15,7 @@ import com.anytypeio.anytype.presentation.databaseview.modals.SwitchDisplayViewS
 import com.anytypeio.anytype.presentation.databaseview.modals.SwitchDisplayViewViewModel
 import com.anytypeio.anytype.presentation.databaseview.modals.SwitchDisplayViewViewModelFactory
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import kotlinx.android.synthetic.main.modal_add_view.item_gallery
 import kotlinx.android.synthetic.main.modal_add_view.item_kanban
 import kotlinx.android.synthetic.main.modal_add_view.item_list
@@ -37,11 +37,7 @@ class SwitchDisplayFragment : NavigationFragment(R.layout.modal_switch_view) {
     @Inject
     lateinit var factory: SwitchDisplayViewViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(SwitchDisplayViewViewModel::class.java)
-    }
+    private val vm : SwitchDisplayViewViewModel by viewModels { factory }
 
     lateinit var listChosen: ImageView
     lateinit var tableChosen: ImageView

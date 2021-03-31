@@ -12,8 +12,8 @@ import android.view.View.OVER_SCROLL_NEVER
 import android.view.animation.OvershootInterpolator
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
@@ -61,11 +61,7 @@ class ProfileIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_profi
     @Inject
     lateinit var factory: DocumentIconActionMenuViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(DocumentIconActionMenuViewModel::class.java)
-    }
+    private val vm : DocumentIconActionMenuViewModel by viewModels { factory }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

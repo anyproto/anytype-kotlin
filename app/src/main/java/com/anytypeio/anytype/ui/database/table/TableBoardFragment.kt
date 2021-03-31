@@ -2,7 +2,7 @@ package com.anytypeio.anytype.ui.database.table
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.di.common.componentManager
@@ -16,16 +16,13 @@ import javax.inject.Inject
 
 const val TEST_ID = "1"
 
+@Deprecated("legacy")
 class DatabaseViewFragment : ViewStateFragment<ViewState<Table>>(R.layout.fragment_table) {
 
     @Inject
     lateinit var factory: TableBoardViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(TableBoardViewModel::class.java)
-    }
+    private val vm : TableBoardViewModel by viewModels { factory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

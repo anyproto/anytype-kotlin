@@ -2,7 +2,7 @@ package com.anytypeio.anytype.ui.auth
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.auth.start.StartLoginViewModel
@@ -16,11 +16,7 @@ class StartLoginFragment : NavigationFragment(R.layout.fragment_start_login) {
     @Inject
     lateinit var factory: StartLoginViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(StartLoginViewModel::class.java)
-    }
+    private val vm : StartLoginViewModel by viewModels { factory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

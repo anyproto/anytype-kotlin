@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.layout.ListDividerItemDecoration
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
@@ -16,10 +15,12 @@ import com.anytypeio.anytype.di.feature.DetailsModule
 import com.anytypeio.anytype.presentation.databaseview.modals.DetailsViewModel
 import com.anytypeio.anytype.presentation.databaseview.modals.DetailsViewModelFactory
 import com.anytypeio.anytype.presentation.databaseview.modals.DetailsViewState
+import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.anytypeio.anytype.ui.database.modals.adapter.DetailsAdapter
 import kotlinx.android.synthetic.main.modal_properties.*
 import javax.inject.Inject
 
+@Deprecated("legacy?")
 class DetailsFragment : BaseBottomSheetFragment() {
 
     companion object {
@@ -34,11 +35,7 @@ class DetailsFragment : BaseBottomSheetFragment() {
     @Inject
     lateinit var factory: DetailsViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(DetailsViewModel::class.java)
-    }
+    private val vm : DetailsViewModel by viewModels { factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,

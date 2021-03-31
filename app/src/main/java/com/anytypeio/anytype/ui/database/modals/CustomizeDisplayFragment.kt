@@ -3,9 +3,8 @@ package com.anytypeio.anytype.ui.database.modals
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.show
 import com.anytypeio.anytype.di.common.componentManager
@@ -15,9 +14,11 @@ import com.anytypeio.anytype.presentation.databaseview.modals.CustomizeDisplayVi
 import com.anytypeio.anytype.presentation.databaseview.modals.CustomizeDisplayViewModelFactory
 import com.anytypeio.anytype.presentation.databaseview.modals.CustomizeDisplayViewState
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import kotlinx.android.synthetic.main.modal_customize.*
 import javax.inject.Inject
 
+@Deprecated("legacy")
 class CustomizeDisplayFragment : NavigationFragment(R.layout.modal_customize) {
 
     companion object {
@@ -34,11 +35,7 @@ class CustomizeDisplayFragment : NavigationFragment(R.layout.modal_customize) {
     lateinit var filterCount: TextView
     lateinit var groupCount: TextView
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(CustomizeDisplayViewModel::class.java)
-    }
+    private val vm : CustomizeDisplayViewModel by viewModels { factory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

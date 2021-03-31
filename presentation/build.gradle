@@ -65,8 +65,8 @@ dependencies {
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutinesAndroid
 
-    implementation applicationDependencies.viewModel
-    implementation applicationDependencies.viewModelExtensions
+    implementation applicationDependencies.lifecycleViewModel
+    implementation applicationDependencies.lifecycleLiveData
 
     implementation applicationDependencies.timber
 

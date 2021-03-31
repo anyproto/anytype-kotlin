@@ -4,11 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.layout.ListDividerItemDecoration
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -19,6 +18,7 @@ import com.anytypeio.anytype.di.feature.DetailsReorderModule
 import com.anytypeio.anytype.presentation.databaseview.modals.DetailsReorderViewModel
 import com.anytypeio.anytype.presentation.databaseview.modals.DetailsReorderViewModelFactory
 import com.anytypeio.anytype.presentation.databaseview.modals.DetailsReorderViewState
+import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.ARGS_DB_ID
 import com.anytypeio.anytype.ui.database.modals.adapter.DetailsAdapter
 import com.anytypeio.anytype.ui.database.modals.helpers.DetailsTouchHelper
 import kotlinx.android.synthetic.main.modal_properties.*
@@ -39,11 +39,7 @@ class DetailsReorderFragment : BaseBottomSheetFragment() {
     @Inject
     lateinit var factory: DetailsReorderViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(DetailsReorderViewModel::class.java)
-    }
+    private val vm : DetailsReorderViewModel by viewModels { factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,

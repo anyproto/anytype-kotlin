@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.di.common.componentManager
@@ -17,11 +17,7 @@ import javax.inject.Inject
 
 class KeychainPhraseDialog : BottomSheetDialogFragment(), Observer<ViewState<String>> {
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(KeychainPhraseViewModel::class.java)
-    }
+    private val vm : KeychainPhraseViewModel by viewModels { factory }
 
     @Inject
     lateinit var factory: KeychainPhraseViewModelFactory

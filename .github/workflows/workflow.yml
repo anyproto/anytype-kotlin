@@ -1,6 +1,6 @@
 on:
   push:
-    branches: fix/resolve-issues-after-epic-merge
+    branches: develop
 name: CI
 jobs:
   setup-android:

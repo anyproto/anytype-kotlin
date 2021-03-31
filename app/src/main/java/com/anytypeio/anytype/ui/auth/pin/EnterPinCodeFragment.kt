@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
@@ -20,11 +20,7 @@ class EnterPinCodeFragment : BaseFragment(R.layout.fragment_enter_pin_code) {
     @Inject
     lateinit var factory: EnterPinCodeViewModelFactory
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(EnterPinCodeViewModel::class.java)
-    }
+    private val vm : EnterPinCodeViewModel by viewModels { factory }
 
     private val dotAdapter by lazy {
         DotAdapter(

@@ -2,11 +2,9 @@ package com.anytypeio.anytype.ui.database.list
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment
-import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.TAG_CUSTOMIZE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.layout.ListDividerItemDecoration
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
@@ -17,6 +15,8 @@ import com.anytypeio.anytype.presentation.databaseview.ListBoardViewState
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.database.filters.FiltersAdapter
 import com.anytypeio.anytype.ui.database.list.adapter.ListBoardAdapter
+import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment
+import com.anytypeio.anytype.ui.database.modals.ModalsNavFragment.Companion.TAG_CUSTOMIZE
 import kotlinx.android.synthetic.main.fragment_list_board.*
 import javax.inject.Inject
 
@@ -29,11 +29,7 @@ class ListBoardFragment :
     private lateinit var listBoardAdapter: ListBoardAdapter
     private lateinit var filtersAdapter: FiltersAdapter
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this, factory)
-            .get(ListBoardViewModel::class.java)
-    }
+    private val vm : ListBoardViewModel by viewModels { factory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

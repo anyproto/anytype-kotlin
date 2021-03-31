@@ -2,7 +2,7 @@ package com.anytypeio.anytype.ui.auth
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.auth.congratulation.CongratulationViewModel
 import com.anytypeio.anytype.ui.base.NavigationFragment
@@ -10,11 +10,7 @@ import kotlinx.android.synthetic.main.fragment_congratulation.*
 
 class CongratulationFragment : NavigationFragment(R.layout.fragment_congratulation) {
 
-    private val vm by lazy {
-        ViewModelProviders
-            .of(this)
-            .get(CongratulationViewModel::class.java)
-    }
+    val vm : CongratulationViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -5,7 +5,6 @@ import android.view.View
 import androidx.core.view.minusAssign
 import androidx.core.view.plusAssign
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.navigation.FilterView
 import com.anytypeio.anytype.core_ui.features.navigation.PageNavigationAdapter

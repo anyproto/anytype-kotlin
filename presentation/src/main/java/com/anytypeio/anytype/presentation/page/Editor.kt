@@ -13,6 +13,8 @@ interface Editor {
         val views: Store<List<BlockView>> = Store.Screen()
         val focus: Store<Focus> = Store.Focus()
         val details: Store.Details = Store.Details()
+        val relations: Store.Relations = Store.Relations()
+        val objectTypes: Store.ObjectTypes = Store.ObjectTypes()
         val textSelection: Store<Editor.TextSelection> = Store.TextSelection()
     }
 

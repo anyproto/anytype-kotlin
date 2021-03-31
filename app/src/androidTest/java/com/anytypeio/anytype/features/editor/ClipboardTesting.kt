@@ -14,16 +14,13 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.data.auth.model.ClipEntity
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Command
-import com.anytypeio.anytype.domain.clipboard.Paste
-import com.anytypeio.anytype.domain.event.model.Event
-import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestPageFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
+import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.ui.page.PageFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
@@ -190,7 +187,7 @@ class ClipboardTesting : EditorTestSetup() {
         }
 
         repo.stub {
-            onBlocking { paste(any()) } doReturn Paste.Response(
+            onBlocking { paste(any()) } doReturn Response.Clipboard.Paste(
                 cursor = 6,
                 payload = Payload(
                     context = root,
@@ -202,6 +199,7 @@ class ClipboardTesting : EditorTestSetup() {
         }
 
         stubInterceptEvents()
+        stubInterceptThreadStatus( )
         stubOpenDocument(document)
         stubUpdateText()
 
@@ -209,7 +207,7 @@ class ClipboardTesting : EditorTestSetup() {
 
         // TESTING
 
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(1, view))
+        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, view))
 
         // Click to open action mode
 
@@ -229,7 +227,7 @@ class ClipboardTesting : EditorTestSetup() {
         }
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.recycler.getChildAt(0)
             item.findViewById<TextInputWidget>(view).apply {
                 assertEquals(expected = result.length, actual = selectionStart)
                 assertEquals(expected = result.length, actual = selectionEnd)
@@ -255,6 +253,8 @@ class ClipboardTesting : EditorTestSetup() {
                 }
             )
         }
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     //endregion
@@ -464,7 +464,7 @@ class ClipboardTesting : EditorTestSetup() {
         }
 
         repo.stub {
-            onBlocking { paste(any()) } doReturn Paste.Response(
+            onBlocking { paste(any()) } doReturn Response.Clipboard.Paste(
                 cursor = -1,
                 payload = Payload(
                     context = root,
@@ -476,6 +476,7 @@ class ClipboardTesting : EditorTestSetup() {
         }
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(document)
         stubUpdateText()
 
@@ -483,7 +484,7 @@ class ClipboardTesting : EditorTestSetup() {
 
         // TESTING
 
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(1, targetBlockView))
+        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, targetBlockView))
 
         // Click to open action mode
 
@@ -517,21 +518,21 @@ class ClipboardTesting : EditorTestSetup() {
             )
         }
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, targetBlockView)).apply {
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(0, targetBlockView)).apply {
             check(matches(withText(text)))
         }
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, firstPastedBlockView)).apply {
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, firstPastedBlockView)).apply {
             check(matches(withText(pasted.first)))
         }
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(3, secondPastedBlockView)).apply {
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, secondPastedBlockView)).apply {
             check(matches(withText(pasted.second)))
             check(matches(hasFocus()))
         }
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(3)
+            val item = fragment.recycler.getChildAt(2)
             item.findViewById<TextInputWidget>(secondPastedBlockView).apply {
                 assertEquals(expected = pasted.second.length, actual = selectionStart)
                 assertEquals(expected = pasted.second.length, actual = selectionEnd)

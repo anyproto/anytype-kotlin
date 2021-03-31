@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.domain.cover
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Hash
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.Hash
-import com.anytypeio.anytype.domain.event.model.Payload
 
 class SetDocCoverImage(
     private val repo: BlockRepository

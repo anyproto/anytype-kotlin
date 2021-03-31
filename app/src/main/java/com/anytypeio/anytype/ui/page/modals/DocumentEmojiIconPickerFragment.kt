@@ -125,11 +125,11 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().documentEmojiIconPickerComponent.get().inject(this)
+        componentManager().documentEmojiIconPickerComponent.get(context).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().documentEmojiIconPickerComponent.release()
+        componentManager().documentEmojiIconPickerComponent.release(context)
     }
 
     private fun setModalToFullScreenState(dialog: BottomSheetDialog) =

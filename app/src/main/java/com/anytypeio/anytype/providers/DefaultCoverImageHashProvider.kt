@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.providers
 
-import com.anytypeio.anytype.domain.common.Hash
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Hash
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
 
 class DefaultCoverImageHashProvider : CoverImageHashProvider {

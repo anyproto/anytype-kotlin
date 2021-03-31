@@ -40,6 +40,13 @@ object Types {
     const val HOLDER_DIVIDER_LINE = 16
     const val HOLDER_DIVIDER_DOTS = 38
 
+    const val HOLDER_RELATION_PLACEHOLDER = 39
+    const val HOLDER_RELATION_DEFAULT = 40
+    const val HOLDER_RELATION_STATUS = 41
+    const val HOLDER_RELATION_TAGS = 42
+    const val HOLDER_RELATION_OBJECT = 43
+    const val HOLDER_RELATION_FILE = 44
+
     const val FOCUS_TIMEOUT_MILLIS = 16L
     const val KEYBOARD_SHOW_DELAY = 16L
 }

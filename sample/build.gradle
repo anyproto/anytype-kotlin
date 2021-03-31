@@ -28,6 +28,16 @@ android {
         }
     }
 
+    flavorDimensions 'default'
+    productFlavors {
+        stable {
+            dimension 'default'
+        }
+        experimental{
+            dimension 'default'
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

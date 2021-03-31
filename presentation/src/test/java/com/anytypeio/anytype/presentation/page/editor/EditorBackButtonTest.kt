@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.page.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.domain.page.ClosePage
+import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -83,7 +83,7 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
 
         assertTrue(stateBackPressed?.stylingToolbar?.isVisible == false)
 
-        val params = ClosePage.Params(id = root)
+        val params = CloseBlock.Params(id = root)
         verifyBlocking(closePage, times(1)) { invoke(params) }
     }
 }

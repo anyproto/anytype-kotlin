@@ -84,6 +84,8 @@
     <dimen name="dp_16">16dp</dimen>
     <dimen name="dp_12">12dp</dimen>
     <dimen name="dp_48">48dp</dimen>
+    <dimen name="dp_32">32dp</dimen>
+    <dimen name="dp_20">20dp</dimen>
     <dimen name="dp_45">45dp</dimen>
     <dimen name="dp_203">203dp</dimen>
 
@@ -129,5 +131,24 @@
     <dimen name="mention_list_padding_bottom">5dp</dimen>
     <dimen name="mention_suggester_padding_top">10dp</dimen>
     <dimen name="mention_divider_height">1dp</dimen>
+
+    <dimen name="viewer_grid_header_width">144dp</dimen>
+
+    <dimen name="viewer_base_item_list_height">40dp</dimen>
+    <dimen name="dv_viewer_filter_item_height">68dp</dimen>
+    <dimen name="db_viewer_filter_condition_item_height">48dp</dimen>
+    <dimen name="default_dragger_width">48dp</dimen>
+    <dimen name="default_dragger_height">4dp</dimen>
+    <dimen name="dv_viewer_filter_value_tag_height">20dp</dimen>
+    <dimen name="dv_grid_cell_height">20dp</dimen>
+    <dimen name="dv_grid_cell_description_height">22dp</dimen>
+    <dimen name="dv_grid_cell_width">144dp</dimen>
+
+    <dimen name="dv_tag_left_right_padding">5dp</dimen>
+    <dimen name="dv_tag_text_size">15sp</dimen>
+    <dimen name="edit_tag_list_text_margin_start">36dp</dimen>
+
+    <dimen name="relation_view_padding_top">12dp</dimen>
+    <dimen name="relation_view_padding_bottom">12dp</dimen>
 
 </resources>

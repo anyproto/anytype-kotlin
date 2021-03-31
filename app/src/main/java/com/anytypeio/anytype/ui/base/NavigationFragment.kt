@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command
+import timber.log.Timber
 
 abstract class NavigationFragment(
     @LayoutRes private val layout: Int
@@ -15,12 +16,11 @@ abstract class NavigationFragment(
         event.getContentIfNotHandled()?.let { navigate(it) }
     }
 
-    private fun navigate(command: Command) {
+    fun navigate(command: Command) {
 
         val navigation = (requireActivity() as AppNavigation.Provider).nav()
 
         when (command) {
-
             is Command.StartSplashFromDesktop -> navigation.startSplashFromDesktop()
             is Command.StartDesktopFromLogin -> navigation.startDesktopFromLogin()
             is Command.StartDesktopFromSplash -> navigation.startDesktopFromSplash()
@@ -39,6 +39,7 @@ abstract class NavigationFragment(
             is Command.OpenProfile -> navigation.openProfile()
             is Command.OpenPage -> navigation.openDocument(command.id, command.editorSettings)
             is Command.OpenArchive -> navigation.openArchive(command.target)
+            is Command.OpenObjectSet -> navigation.openObjectSet(command.target)
             is Command.LaunchDocument -> navigation.launchDocument(command.id)
             is Command.OpenDatabaseViewAddView -> navigation.openDatabaseViewAddView()
             is Command.OpenEditDatabase -> navigation.openEditDatabase()
@@ -65,6 +66,8 @@ abstract class NavigationFragment(
             )
             is Command.ExitToDesktopAndOpenPage -> navigation.exitToDesktopAndOpenPage(command.pageId)
             is Command.OpenPageSearch -> navigation.openPageSearch()
+            is Command.OpenCreateSetScreen -> navigation.openCreateSetScreen(command.ctx)
+            else -> Timber.d("Nav command ignored: $command")
         }
     }
 }

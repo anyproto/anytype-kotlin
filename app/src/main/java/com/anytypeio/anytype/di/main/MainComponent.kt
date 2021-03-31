@@ -16,8 +16,7 @@ import javax.inject.Singleton
         UtilModule::class,
         EmojiModule::class,
         ClipboardModule::class,
-        AnalyticsModule::class,
-        BridgeModule::class
+        AnalyticsModule::class
     ]
 )
 interface MainComponent {
@@ -39,8 +38,6 @@ interface MainComponent {
     fun pageComponentBuilder(): PageSubComponent.Builder
     fun archiveComponentBuilder(): ArchiveSubComponent.Builder
     fun linkAddComponentBuilder(): LinkSubComponent.Builder
-    fun documentActionMenuComponentBuilder(): DocumentActionMenuSubComponent.Builder
-    fun documentEmojiIconPickerComponentBuilder(): DocumentEmojiIconPickerSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
     fun debugSettingsBuilder(): DebugSettingsSubComponent.Builder
     fun navigationComponentBuilder(): PageNavigationSubComponent.Builder
@@ -48,4 +45,8 @@ interface MainComponent {
     fun moveToBuilder(): MoveToSubComponent.Builder
     fun pageSearchComponentBuilder(): PageSearchSubComponent.Builder
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder
+    fun createSetComponentBuilder(): CreateSetSubComponent.Builder
+    fun createObjectTypeComponentBuilder(): CreateObjectTypeSubComponent.Builder
+    fun objectSetComponentBuilder(): ObjectSetSubComponent.Builder
+    fun createDataViewRelationBuilder(): CreateDataViewRelationSubComponent.Builder
 }

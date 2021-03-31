@@ -119,6 +119,8 @@ abstract class BlockActionToolbar : Fragment() {
             is BlockView.MediaPlaceholder.Picture -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             is BlockView.Error.Picture -> addButtons(view, ACTIONS.VIDEO_PICTURE)
             is BlockView.Upload.Picture -> addButtons(view, ACTIONS.VIDEO_PICTURE)
+            is BlockView.Relation.Related -> addButtons(view, ACTIONS.RELATION)
+            is BlockView.Relation.Placeholder -> addButtons(view, ACTIONS.RELATION_PLACEHOLDER)
         }
         if (BuildConfig.DEBUG) {
             log(getBlock())
@@ -186,7 +188,7 @@ abstract class BlockActionToolbar : Fragment() {
     }
 
     private fun setBlockBackgroundColor(root: View, color: String? = null) {
-        if (color != null) {
+        if (!color.isNullOrEmpty()) {
             root.setBackgroundColor(
                 ThemeColor.values().first { value ->
                     value.title == color
@@ -569,6 +571,28 @@ abstract class BlockActionToolbar : Fragment() {
             ActionItemType.MoveTo,
             ActionItemType.Divider,
             ActionItemType.SAM
+        )
+
+        val RELATION_PLACEHOLDER = listOf(
+            ActionItemType.AddBelow,
+            ActionItemType.DividerExtended,
+            ActionItemType.Delete,
+            ActionItemType.Divider,
+            ActionItemType.Duplicate,
+            ActionItemType.Divider,
+            ActionItemType.SAM
+        )
+
+        val RELATION = listOf(
+            ActionItemType.AddBelow,
+            ActionItemType.DividerExtended,
+            ActionItemType.Delete,
+            ActionItemType.Divider,
+            ActionItemType.Duplicate,
+            ActionItemType.Divider,
+            ActionItemType.SAM,
+            ActionItemType.DividerExtended,
+            ActionItemType.Style
         )
     }
 }

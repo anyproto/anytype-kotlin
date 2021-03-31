@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.page.editor
 
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.status.SyncStatus
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
@@ -32,7 +32,7 @@ sealed class Command {
         val context: String
     ) : Command()
 
-    object OpenAddBlockPanel : Command()
+    data class OpenAddBlockPanel(val ctx: Id) : Command()
 
     data class Measure(val target: Id) : Command()
 
@@ -91,5 +91,15 @@ sealed class Command {
 
     sealed class Dialog : Command() {
         data class SelectLanguage(val target: String) : Dialog()
+    }
+
+    sealed class OpenObjectRelationScreen: Command(){
+        data class List(val ctx: String, val target: String?) : OpenObjectRelationScreen()
+        data class Add(val ctx: String, val target: String) : OpenObjectRelationScreen()
+        sealed class Value : OpenObjectRelationScreen() {
+            data class Default(val ctx: Id, val target: Id, val relation: Id) : OpenObjectRelationScreen.Value()
+            data class Text(val ctx: Id, val target: Id, val relation: Id) : OpenObjectRelationScreen.Value()
+            data class Date(val ctx: Id, val target: Id, val relation: Id) : OpenObjectRelationScreen.Value()
+        }
     }
 }

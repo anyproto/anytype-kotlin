@@ -21,7 +21,6 @@ import com.anytypeio.anytype.middleware.auth.AuthMiddleware
 import com.anytypeio.anytype.middleware.block.BlockMiddleware
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.interactor.MiddlewareFactory
-import com.anytypeio.anytype.middleware.interactor.MiddlewareMapper
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import com.anytypeio.anytype.middleware.service.MiddlewareServiceImplementation
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
@@ -213,19 +212,13 @@ object DataModule {
     @Singleton
     fun provideMiddleware(
         service: MiddlewareService,
-        factory: MiddlewareFactory,
-        mapper: MiddlewareMapper
-    ): Middleware = Middleware(service, factory, mapper)
+        factory: MiddlewareFactory
+    ): Middleware = Middleware(service, factory)
 
     @JvmStatic
     @Provides
     @Singleton
     fun provideMiddlewareFactory(): MiddlewareFactory = MiddlewareFactory()
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideMiddlewareMapper(): MiddlewareMapper = MiddlewareMapper()
 
     @JvmStatic
     @Provides

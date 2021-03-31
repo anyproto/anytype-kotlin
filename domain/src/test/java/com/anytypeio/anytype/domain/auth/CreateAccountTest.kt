@@ -3,8 +3,8 @@ package com.anytypeio.anytype.domain.auth
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.domain.common.CoroutineTestRule
-import com.anytypeio.anytype.domain.common.MockDataFactory
+import com.anytypeio.anytype.core_models.CoroutineTestRule
+import com.anytypeio.anytype.core_models.MockDataFactory
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking

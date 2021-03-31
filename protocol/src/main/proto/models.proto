@@ -2,6 +2,7 @@ syntax = "proto3";
 package anytype.model;
 option go_package = "pkg/lib/pb/model";
 
+import "relation.proto";
 import "google/protobuf/struct.proto";
 
 // deprecated
@@ -9,6 +10,8 @@ message SmartBlockSnapshotBase {
     repeated Block blocks = 1;
     google.protobuf.Struct details = 2;
     google.protobuf.Struct fileKeys = 3;
+    repeated anytype.relation.Relation extraRelations = 4;
+    repeated string objectTypes = 5;
 }
 
 message Block {
@@ -30,6 +33,7 @@ message Block {
         Content.Icon icon = 19;
         Content.Link link = 20;
         Content.Dataview dataview = 21;
+        Content.Relation relation = 22;
     }
 
 
@@ -192,9 +196,11 @@ message Block {
         }
 
         message Dataview {
-            string databaseId = 1;
+            string source = 1;
             repeated View views = 2;
-            string schemaURL = 3;
+            // index 3 is deprecated, was used for schemaURL in old-format sets
+            repeated anytype.relation.Relation relations = 4;
+            string activeView = 3; // saved within a session
 
             message View {
                 string id = 1;
@@ -213,23 +219,14 @@ message Block {
             }
 
             message Relation {
-                string id = 1;
+                string key = 1;
                 bool isVisible = 2;
                 int32 width = 3; // the displayed column % calculated based on other visible relations
+                // bool isReadOnly = 4; // deprecated
 
-                oneof options {
-                    EmptyOptions emptyOptions = 10;
-                    DateOptions dateOptions = 11;
-                }
-
-                message EmptyOptions {
-                }
-
-                message DateOptions {
-                    bool includeTime = 1;
-                    TimeFormat timeFormat = 2;
-                    DateFormat dateFormat = 3;
-                }
+                bool dateIncludeTime = 5;
+                TimeFormat timeFormat = 6;
+                DateFormat dateFormat = 7;
 
                 enum DateFormat {
                     MonthAbbrBeforeDay = 0; // Jul 30, 2020
@@ -246,7 +243,7 @@ message Block {
             }
 
             message Sort {
-                string relationId = 1;
+                string RelationKey = 1;
                 Type type = 2;
 
                 enum Type {
@@ -256,8 +253,8 @@ message Block {
             }
 
             message Filter {
-                Operator operator = 1;
-                string relationId = 2;
+                Operator operator = 1; // looks not applicable?
+                string RelationKey = 2;
                 string relationProperty = 5;
                 Condition condition = 3;
                 google.protobuf.Value value = 4;
@@ -280,8 +277,14 @@ message Block {
                     NotIn = 9;
                     Empty = 10;
                     NotEmpty = 11;
+                    AllIn = 12;
+                    NotAllIn = 13;
                 }
             }
+        }
+
+        message Relation {
+            string key = 1;
         }
     }
 }

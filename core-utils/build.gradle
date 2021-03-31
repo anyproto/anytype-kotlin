@@ -39,6 +39,8 @@ dependencies {
     implementation applicationDependencies.crashlytics
 
     implementation applicationDependencies.constraintLayout
+    implementation applicationDependencies.recyclerView
+
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

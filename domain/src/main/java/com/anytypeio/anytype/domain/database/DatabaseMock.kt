@@ -116,10 +116,6 @@ object DatabaseMock {
                         condition = FilterTypeCondition.NONE,
                         equality = FilterTypeEquality.EQUAL
                     )
-                ),
-                sorts = listOf(
-                    Sort(detailId = "1", type = SortType.ASC),
-                    Sort(detailId = "2", type = SortType.DESC)
                 )
             )
         )

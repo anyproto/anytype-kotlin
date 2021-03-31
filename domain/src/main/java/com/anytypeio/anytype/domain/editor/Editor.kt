@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.domain.editor
 
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Id
 
 interface Editor {
 

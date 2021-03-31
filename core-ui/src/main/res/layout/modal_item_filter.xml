@@ -20,11 +20,11 @@
 
     <TextView
         android:id="@+id/filter"
-        style="@style/ModalRowTestStyle"
+        style="@style/ViewerModalItemStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/modal_text_from_button_margin"
-        android:text="@string/filter"
+        android:text="@string/filter_by"
         app:layout_constraintBottom_toBottomOf="@+id/iconFilter"
         app:layout_constraintStart_toEndOf="@+id/iconFilter"
         app:layout_constraintTop_toTopOf="@+id/iconFilter" />
@@ -44,7 +44,7 @@
         android:id="@+id/filterCount"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="20dp"
         android:background="@drawable/circle_solid_default"
         android:gravity="center"
         android:textColor="@color/white"
@@ -52,6 +52,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/filterForward"
         app:layout_constraintEnd_toStartOf="@+id/filterForward"
         app:layout_constraintTop_toTopOf="@+id/filterForward"
-        tools:text="2" />
+        tools:text="2"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

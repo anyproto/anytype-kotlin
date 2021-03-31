@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/iconRelation"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="@dimen/dp_12"
+        android:layout_gravity="center_vertical"
+        tools:src="@drawable/ic_relation_text_32" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_weight="1.0"
+        android:ellipsize="end"
+        android:fontFamily="@font/inter_regular"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="#2C2B27"
+        android:textSize="17sp"
+        tools:text="We need to render the bottom sheet layout with possibilities" />
+
+    <ImageView
+        android:id="@+id/iconMore"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_more"
+        android:layout_gravity="center_vertical"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iconDrag"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginEnd="@dimen/dp_12"
+        android:layout_gravity="center_vertical"
+        app:srcCompat="@drawable/ic_dnd" />
+
+</LinearLayout>

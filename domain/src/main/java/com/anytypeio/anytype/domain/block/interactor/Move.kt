@@ -3,10 +3,10 @@ package com.anytypeio.anytype.domain.block.interactor
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move.Params
-import com.anytypeio.anytype.domain.block.model.Command.Move
-import com.anytypeio.anytype.domain.block.model.Position
+import com.anytypeio.anytype.core_models.Command.Move
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.core_models.Payload
 
 /**
  * Use-case for moving a group of blocks (cross-document, inside one document, one block after another, etc).

@@ -1,9 +1,12 @@
 package com.anytypeio.anytype.domain.page.navigation
 
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.CoroutineTestRule
-import com.anytypeio.anytype.domain.common.MockDataFactory
+import com.anytypeio.anytype.core_models.CoroutineTestRule
+import com.anytypeio.anytype.core_models.DocumentInfo
+import com.anytypeio.anytype.core_models.MockDataFactory
+import com.anytypeio.anytype.core_models.PageInfoWithLinks
+import com.anytypeio.anytype.core_models.PageLinks
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.ExperimentalCoroutinesApi

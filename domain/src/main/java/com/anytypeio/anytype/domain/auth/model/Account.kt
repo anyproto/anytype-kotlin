@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.domain.auth.model
 
-import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.core_models.Url
 
 /**
  * User account.

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/objectIcon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center_vertical"
+        app:imageSize="18dp"
+        app:emojiSize="18dp"
+        app:initialTextSize="12sp"
+        tools:background="@drawable/circle_solid_default" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="24dp"
+        android:gravity="center_vertical"
+        tools:text="F"
+        style="@style/RelationObjectTextStyle"
+        tools:visibility="visible"
+        android:visibility="gone" />
+
+</merge>

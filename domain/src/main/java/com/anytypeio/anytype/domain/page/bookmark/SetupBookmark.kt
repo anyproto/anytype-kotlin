@@ -2,10 +2,10 @@ package com.anytypeio.anytype.domain.page.bookmark
 
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.block.model.Command
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 
 /**
  * Use-case for setting up (i.e. fetching) a bookmark from url.

@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.extension
 
 import MockDataFactory
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.desktop.DashboardView

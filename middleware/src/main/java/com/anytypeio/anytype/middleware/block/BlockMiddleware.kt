@@ -1,21 +1,22 @@
 package com.anytypeio.anytype.middleware.block
 
-import com.anytypeio.anytype.data.auth.model.*
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
-import com.anytypeio.anytype.middleware.converters.mark
-import com.anytypeio.anytype.middleware.converters.toEntity
 import com.anytypeio.anytype.middleware.interactor.Middleware
+import com.anytypeio.anytype.middleware.mappers.toCoreModel
+import com.anytypeio.anytype.middleware.mappers.toCoreModels
+import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 
 class BlockMiddleware(
     private val middleware: Middleware
 ) : BlockRemote {
 
-    override suspend fun getConfig(): ConfigEntity = middleware.getConfig()
+    override suspend fun getConfig(): Config = middleware.getConfig()
 
     override suspend fun openDashboard(
         contextId: String,
         id: String
-    ): PayloadEntity = middleware.openDashboard(contextId, id)
+    ): Payload = middleware.openDashboard(contextId, id)
 
     override suspend fun closeDashboard(id: String) {
         middleware.closeDashboard(id)
@@ -24,59 +25,60 @@ class BlockMiddleware(
     override suspend fun createPage(parentId: String, emoji: String?): String =
         middleware.createPage(parentId, emoji)
 
-    override suspend fun createPage(command: CommandEntity.CreatePage): String =
+    override suspend fun createPage(command: Command.CreateNewDocument): String =
         middleware.createPage(command)
 
-    override suspend fun openPage(id: String): PayloadEntity = middleware.openBlock(id)
-    override suspend fun openProfile(id: String): PayloadEntity = middleware.openBlock(id)
+    override suspend fun openPage(id: String): Payload = middleware.openBlock(id)
+    override suspend fun openProfile(id: String): Payload = middleware.openBlock(id)
+    override suspend fun openObjectSet(id: String): Payload = middleware.openBlock(id)
 
     override suspend fun closePage(id: String) {
         middleware.closePage(id)
     }
 
-    override suspend fun updateDocumentTitle(command: CommandEntity.UpdateTitle) {
+    override suspend fun updateDocumentTitle(command: Command.UpdateTitle) {
         middleware.updateDocumentTitle(command)
     }
 
-    override suspend fun updateText(command: CommandEntity.UpdateText) {
+    override suspend fun updateText(command: Command.UpdateText) {
         middleware.updateText(
             command.contextId,
             command.blockId,
             command.text,
-            command.marks.map { it.mark() }
+            command.marks.map { it.toMiddlewareModel() }
         )
     }
 
-    override suspend fun uploadBlock(command: CommandEntity.UploadBlock) : PayloadEntity =
+    override suspend fun uploadBlock(command: Command.UploadBlock): Payload =
         middleware.uploadBlock(command)
 
     override suspend fun updateTextStyle(
-        command: CommandEntity.UpdateStyle
-    ) : PayloadEntity = middleware.updateTextStyle(command)
+        command: Command.UpdateStyle
+    ): Payload = middleware.updateTextStyle(command)
 
     override suspend fun updateTextColor(
-        command: CommandEntity.UpdateTextColor
-    ): PayloadEntity = middleware.updateTextColor(command)
+        command: Command.UpdateTextColor
+    ): Payload = middleware.updateTextColor(command)
 
     override suspend fun updateBackgroundColor(
-        command: CommandEntity.UpdateBackgroundColor
-    ): PayloadEntity = middleware.updateBackgroundColor(command)
+        command: Command.UpdateBackgroundColor
+    ): Payload = middleware.updateBackgroundColor(command)
 
     override suspend fun updateAlignment(
-        command: CommandEntity.UpdateAlignment
-    ) : PayloadEntity = middleware.updateAlignment(command)
+        command: Command.UpdateAlignment
+    ): Payload = middleware.updateAlignment(command)
 
     override suspend fun updateCheckbox(
-        command: CommandEntity.UpdateCheckbox
-    ): PayloadEntity = middleware.updateCheckbox(
+        command: Command.UpdateCheckbox
+    ): Payload = middleware.updateCheckbox(
         command.context,
         command.target,
         command.isChecked
     )
 
     override suspend fun create(
-        command: CommandEntity.Create
-    ): Pair<String, PayloadEntity> = middleware.createBlock(
+        command: Command.Create
+    ): Pair<String, Payload> = middleware.createBlock(
         command.context,
         command.target,
         command.position,
@@ -84,121 +86,286 @@ class BlockMiddleware(
     )
 
     override suspend fun createDocument(
-        command: CommandEntity.CreateDocument
-    ): Triple<String, String, PayloadEntity> = middleware.createDocument(command)
+        command: Command.CreateDocument
+    ): Triple<String, String, Payload> = middleware.createDocument(command)
 
     override suspend fun duplicate(
-        command: CommandEntity.Duplicate
-    ): Pair<String, PayloadEntity> = middleware.duplicate(command)
+        command: Command.Duplicate
+    ): Pair<String, Payload> = middleware.duplicate(command)
 
-    override suspend fun move(command: CommandEntity.Move): PayloadEntity {
+    override suspend fun move(command: Command.Move): Payload {
         return middleware.move(command)
     }
 
     override suspend fun unlink(
-        command: CommandEntity.Unlink
-    ): PayloadEntity = middleware.unlink(command)
+        command: Command.Unlink
+    ): Payload = middleware.unlink(command)
 
     override suspend fun merge(
-        command: CommandEntity.Merge
-    ): PayloadEntity = middleware.merge(command)
+        command: Command.Merge
+    ): Payload = middleware.merge(command)
 
     override suspend fun split(
-        command: CommandEntity.Split
-    ): Pair<String, PayloadEntity> = middleware.split(command)
+        command: Command.Split
+    ): Pair<String, Payload> = middleware.split(command)
 
     override suspend fun setDocumentEmojiIcon(
-        command: CommandEntity.SetDocumentEmojiIcon
-    ): PayloadEntity = middleware.setDocumentEmojiIcon(command)
+        command: Command.SetDocumentEmojiIcon
+    ): Payload = middleware.setDocumentEmojiIcon(command)
 
     override suspend fun setDocumentImageIcon(
-        command: CommandEntity.SetDocumentImageIcon
-    ): PayloadEntity = middleware.setDocumentImageIcon(command)
+        command: Command.SetDocumentImageIcon
+    ): Payload = middleware.setDocumentImageIcon(command)
 
     override suspend fun setDocumentCoverColor(
         ctx: String,
         color: String
-    ): PayloadEntity = middleware.setDocumentCoverColor(ctx = ctx, color = color)
+    ): Payload = middleware.setDocumentCoverColor(ctx = ctx, color = color)
 
     override suspend fun setDocumentCoverGradient(
         ctx: String,
         gradient: String
-    ): PayloadEntity = middleware.setDocumentCoverGradient(ctx = ctx, gradient = gradient)
+    ): Payload = middleware.setDocumentCoverGradient(ctx = ctx, gradient = gradient)
 
     override suspend fun setDocumentCoverImage(
         ctx: String,
         hash: String
-    ): PayloadEntity = middleware.setDocumentCoverImage(ctx = ctx, hash = hash)
+    ): Payload = middleware.setDocumentCoverImage(ctx = ctx, hash = hash)
 
     override suspend fun removeDocumentCover(
         ctx: String
-    ): PayloadEntity = middleware.removeDocumentCover(ctx)
+    ): Payload = middleware.removeDocumentCover(ctx)
 
     override suspend fun setupBookmark(
-        command: CommandEntity.SetupBookmark
-    ): PayloadEntity = middleware.setupBookmark(command)
+        command: Command.SetupBookmark
+    ): Payload = middleware.setupBookmark(command)
 
     override suspend fun undo(
-        command: CommandEntity.Undo
-    ): PayloadEntity = middleware.undo(command)
+        command: Command.Undo
+    ): Payload = middleware.undo(command)
 
     override suspend fun redo(
-        command: CommandEntity.Redo
-    ) : PayloadEntity = middleware.redo(command)
+        command: Command.Redo
+    ): Payload = middleware.redo(command)
 
     override suspend fun archiveDocument(
-        command: CommandEntity.ArchiveDocument
+        command: Command.ArchiveDocument
     ) = middleware.archiveDocument(command)
 
     override suspend fun turnIntoDocument(
-        command: CommandEntity.TurnIntoDocument
+        command: Command.TurnIntoDocument
     ): List<String> = middleware.turnIntoDocument(command)
 
     override suspend fun replace(
-        command: CommandEntity.Replace
-    ): Pair<String, PayloadEntity> = middleware.replace(command)
+        command: Command.Replace
+    ): Pair<String, Payload> = middleware.replace(command)
 
     override suspend fun paste(
-        command: CommandEntity.Paste
+        command: Command.Paste
     ): Response.Clipboard.Paste = middleware.paste(command)
 
     override suspend fun copy(
-        command: CommandEntity.Copy
+        command: Command.Copy
     ): Response.Clipboard.Copy = middleware.copy(command)
 
     override suspend fun uploadFile(
-        command: CommandEntity.UploadFile
+        command: Command.UploadFile
     ): String = middleware.uploadFile(command).hash
 
-    override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinksEntity =
-        middleware.getPageInfoWithLinks(pageId).toEntity()
+    override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks {
+        return middleware.getObjectInfoWithLinks(pageId).toCoreModel()
+    }
 
-    override suspend fun getListPages(): List<DocumentInfoEntity> =
-        middleware.getListPages().map { it.toEntity() }
+    override suspend fun getListPages(): List<DocumentInfo> {
+        return middleware.listObjects().map { it.toCoreModel() }
+    }
+
+    override suspend fun setRelationKey(command: Command.SetRelationKey): Payload {
+        return middleware.setRelationKey(command)
+    }
 
     override suspend fun linkToObject(
         context: String,
         target: String,
         block: String,
         replace: Boolean,
-        position: PositionEntity
-    ): PayloadEntity = middleware.linkToObject(context, target, block, replace, position)
+        position: Position
+    ): Payload = middleware.linkToObject(context, target, block, replace, position)
 
     override suspend fun updateDivider(
-        command: CommandEntity.UpdateDivider
-    ): PayloadEntity = middleware.updateDividerStyle(command)
+        command: Command.UpdateDivider
+    ): Payload = middleware.updateDividerStyle(command)
 
     override suspend fun setFields(
-        command: CommandEntity.SetFields
-    ): PayloadEntity = middleware.setFields(command)
+        command: Command.SetFields
+    ): Payload = middleware.setFields(command)
+
+    override suspend fun getTemplates(): List<ObjectType> {
+        return middleware.getObjectTypes().map { type -> type.toCoreModels() }
+    }
+
+    override suspend fun createTemplate(
+        prototype: ObjectType.Prototype
+    ): ObjectType = middleware.objectTypeCreate(prototype).toCoreModels()
+
+    override suspend fun createSet(
+        contextId: String,
+        targetId: String?,
+        position: Position,
+        objectType: String?
+    ): Response.Set.Create = middleware.createSet(
+        contextId, targetId, position, objectType
+    )
+
+    override suspend fun setActiveDataViewViewer(
+        context: String,
+        block: String,
+        view: String,
+        offset: Int,
+        limit: Int
+    ): Payload = middleware.setActiveDataViewViewer(
+        contextId = context,
+        blockId = block,
+        viewId = view,
+        offset = offset,
+        limit = limit
+    )
+
+    override suspend fun addDataViewRelation(
+        context: String,
+        target: String,
+        name: String,
+        format: Relation.Format
+    ): Payload = middleware.addDataViewRelation(
+        context = context,
+        target = target,
+        format = format,
+        name = name
+    )
+
+    override suspend fun updateDataViewViewer(
+        context: String,
+        target: String,
+        viewer: DVViewer
+    ): Payload = middleware.updateDataViewViewer(
+        context = context,
+        target = target,
+        viewer = viewer
+    )
+
+    override suspend fun duplicateDataViewViewer(
+        context: String,
+        target: String,
+        viewer: DVViewer
+    ): Payload = middleware.duplicateDataViewViewer(
+        context = context,
+        target = target,
+        viewer = viewer
+    )
+
+    override suspend fun createDataViewRecord(
+        context: String,
+        target: String
+    ): Map<String, Any?> = middleware.createDataViewRecord(context = context, target = target)
+
+    override suspend fun updateDataViewRecord(
+        context: String,
+        target: String,
+        record: String,
+        values: Map<String, Any?>
+    ) = middleware.updateDataViewRecord(
+        context = context,
+        target = target,
+        record = record,
+        values = values
+    )
+
+    override suspend fun addDataViewViewer(
+        ctx: String,
+        target: String,
+        name: String,
+        type: DVViewerType
+    ): Payload = middleware.addDataViewViewer(
+        ctx = ctx,
+        target = target,
+        name = name,
+        type = type
+    )
+
+    override suspend fun removeDataViewViewer(
+        ctx: String,
+        dataview: String,
+        viewer: String
+    ): Payload = middleware.removeDataViewViewer(
+        ctx = ctx,
+        dataview = dataview,
+        viewer = viewer
+    )
+
+    override suspend fun addDataViewRelationOption(
+        ctx: Id,
+        dataview: Id,
+        relation: Id,
+        record: Id,
+        name: String,
+        color: String
+    ): Pair<Payload, Id?> = middleware.addRecordRelationOption(
+        ctx = ctx,
+        dataview = dataview,
+        relation = relation,
+        record = record,
+        name = name,
+        color = color
+    )
+
+    override suspend fun addObjectRelationOption(
+        ctx: Id,
+        relation: Id,
+        name: Id,
+        color: String
+    ): Pair<Payload, Id?> = middleware.addObjectRelationOption(
+        ctx = ctx,
+        relation = relation,
+        name = name,
+        color = color
+    )
+
+    override suspend fun searchObjects(
+        sorts: List<DVSort>,
+        filters: List<DVFilter>,
+        fulltext: String,
+        offset: Int,
+        limit: Int
+    ): List<Map<String, Any?>> = middleware.searchObjects(
+        sorts = sorts,
+        filters = filters,
+        fulltext = fulltext,
+        offset = offset,
+        limit = limit
+    )
+
+    override suspend fun relationListAvailable(ctx: Id): List<Relation> =
+        middleware.relationListAvailable(ctx).map { it.toCoreModels() }
+
+    override suspend fun debugSync(): String = middleware.debugSync()
 
     override suspend fun turnInto(
         context: String,
         targets: List<String>,
-        style: BlockEntity.Content.Text.Style
-    ): PayloadEntity = middleware.blockListTurnInto(
+        style: CBTextStyle
+    ): Payload = middleware.blockListTurnInto(
         context = context,
         targets = targets,
         style = style
+    )
+
+    override suspend fun updateDetail(
+        ctx: Id,
+        key: String,
+        value: Any?
+    ): Payload = middleware.updateDetail(
+        ctx = ctx,
+        key = key,
+        value = value
     )
 }

@@ -6,22 +6,22 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Document
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.base.Result
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.common.Document
-import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.event.model.Event
-import com.anytypeio.anytype.domain.ext.asMap
-import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.domain.page.ArchiveDocument
-import com.anytypeio.anytype.domain.page.ClosePage
+import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.EditorMode
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.presentation.common.StateReducer
@@ -50,7 +50,7 @@ sealed class ArchiveViewState {
 
 class ArchiveViewModel(
     private val openPage: OpenPage,
-    private val closePage: ClosePage,
+    private val closePage: CloseBlock,
     private val archiveDocument: ArchiveDocument,
     private val interceptEvents: InterceptEvents,
     private val renderer: DefaultBlockViewRenderer,
@@ -105,7 +105,7 @@ class ArchiveViewModel(
             if (event is Event.Command.ShowBlock) {
                 orchestrator.stores.details.update(event.details)
             }
-            if (event is Event.Command.UpdateDetails) {
+            if (event is Event.Command.Details.Set) {
                 orchestrator.stores.details.add(event.target, event.details)
             }
             blocks = reduce(blocks, event)
@@ -145,7 +145,8 @@ class ArchiveViewModel(
                     anchor = context,
                     focus = Editor.Focus.empty(),
                     root = models.first { it.id == context },
-                    details = details
+                    details = details,
+                    relations = emptyList()
                 )
             }
             .map { views -> views.filterNot { it is BlockView.Page } }
@@ -253,7 +254,7 @@ class ArchiveViewModel(
     }
 
     private fun proceedWithExitingToDesktop() {
-        closePage(viewModelScope, ClosePage.Params(context)) { result ->
+        closePage(viewModelScope, CloseBlock.Params(context)) { result ->
             result.either(
                 fnR = {
                     viewModelScope.sendEvent(

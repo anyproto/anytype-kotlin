@@ -54,6 +54,9 @@ enum class UiBlock {
     },
     CODE {
         override fun category() = Category.OTHER
+    },
+    RELATION {
+        override fun category() = Category.RELATION
     };
 
     abstract fun category(): Category
@@ -65,6 +68,6 @@ enum class UiBlock {
     fun isCode(): Boolean = this == CODE
 
     enum class Category {
-        TEXT, LIST, OBJECT, OTHER
+        TEXT, LIST, OBJECT, RELATION, OTHER
     }
 }

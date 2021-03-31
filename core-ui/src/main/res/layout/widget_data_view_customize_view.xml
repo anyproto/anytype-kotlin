@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardElevation="16dp"
+    app:cardCornerRadius="12dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/dragger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="6dp"
+            android:contentDescription="@string/content_description_modal_icon"
+            android:src="@drawable/sheet_top"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/btnFilter"
+            android:layout_width="64dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/rect_data_view_customize_view_button"
+            app:layout_constraintEnd_toStartOf="@+id/btnGroup"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btnSort"
+            app:layout_constraintTop_toBottomOf="@+id/dragger">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_dv_customize_panel_filter" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/btnRelations"
+            android:layout_width="64dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/rect_data_view_customize_view_button"
+            app:layout_constraintEnd_toStartOf="@+id/btnSort"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dragger">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_dv_customize_panel_relations" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/btnSort"
+            android:layout_width="64dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/rect_data_view_customize_view_button"
+            app:layout_constraintEnd_toStartOf="@+id/btnFilter"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btnRelations"
+            app:layout_constraintTop_toBottomOf="@+id/dragger">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_dv_customize_panel_sort" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/btnGroup"
+            android:layout_width="64dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/rect_data_view_customize_view_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btnFilter"
+            app:layout_constraintTop_toBottomOf="@+id/dragger">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_dv_customize_panel_group" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvRelations"
+            style="@style/DataViewCustomizePanelTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/relations"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/btnRelations"
+            app:layout_constraintStart_toStartOf="@+id/btnRelations"
+            app:layout_constraintTop_toBottomOf="@+id/btnRelations" />
+
+        <TextView
+            android:id="@+id/tvSort"
+            style="@style/DataViewCustomizePanelTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/sort"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/btnSort"
+            app:layout_constraintStart_toStartOf="@+id/btnSort"
+            app:layout_constraintTop_toBottomOf="@+id/btnSort" />
+
+        <TextView
+            android:id="@+id/tvFilter"
+            style="@style/DataViewCustomizePanelTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/filter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/btnFilter"
+            app:layout_constraintStart_toStartOf="@+id/btnFilter"
+            app:layout_constraintTop_toBottomOf="@+id/btnFilter" />
+
+        <TextView
+            android:id="@+id/tvGroup"
+            style="@style/DataViewCustomizePanelTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/group"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/btnGroup"
+            app:layout_constraintStart_toStartOf="@+id/btnGroup"
+            app:layout_constraintTop_toBottomOf="@+id/btnGroup" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

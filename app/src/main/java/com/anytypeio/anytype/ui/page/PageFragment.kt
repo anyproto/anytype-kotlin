@@ -39,6 +39,12 @@ import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Block.Content.Text
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ext.getFirstLinkMarkupParam
+import com.anytypeio.anytype.core_models.ext.getSubstring
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
 import com.anytypeio.anytype.core_ui.extensions.tint
@@ -57,11 +63,6 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Block.Content.Text
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.ext.getFirstLinkMarkupParam
-import com.anytypeio.anytype.domain.ext.getSubstring
 import com.anytypeio.anytype.domain.status.SyncStatus
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.ext.extractMarks
@@ -78,6 +79,7 @@ import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.anytypeio.anytype.ui.database.modals.ObjectObjectRelationValueFragment
 import com.anytypeio.anytype.ui.page.cover.DocCoverAction
 import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment
 import com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment
@@ -87,6 +89,9 @@ import com.anytypeio.anytype.ui.page.modals.actions.DocumentIconActionMenuFragme
 import com.anytypeio.anytype.ui.page.modals.actions.ProfileIconActionMenuFragment
 import com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet
 import com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet.DocumentMenuActionReceiver
+import com.anytypeio.anytype.ui.relations.ObjectRelationDateValueFragment
+import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
+import com.anytypeio.anytype.ui.relations.ObjectRelationTextValueFragment
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
@@ -111,10 +116,14 @@ open class PageFragment :
     AddBlockFragment.AddBlockActionReceiver,
     TurnIntoActionReceiver,
     SelectProgrammingLanguageReceiver,
+    ObjectRelationTextValueFragment.EditObjectRelationTextValueReceiver,
+    ObjectRelationDateValueFragment.EditObjectRelationDateValueReceiver,
     DocumentMenuActionReceiver,
     ClipboardInterceptor,
     DocCoverAction,
     PickiTCallbacks {
+
+    private val ctx get() = arg<Id>(ID_KEY)
 
     private val screen: Point by lazy { screen() }
 
@@ -260,6 +269,13 @@ open class PageFragment :
                 topToolbar.container.visible()
             }
         }
+    }
+
+    override fun onAddObjectClicked(url: String, layout: ObjectType.Layout) {
+        vm.onAddNewObjectClicked(
+            type = url,
+            layout = layout
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -537,6 +553,7 @@ open class PageFragment :
             UiBlock.LINE_DIVIDER -> vm.onAddDividerBlockClicked(Block.Content.Divider.Style.LINE)
             UiBlock.THREE_DOTS -> vm.onAddDividerBlockClicked(Block.Content.Divider.Style.DOTS)
             UiBlock.LINK_TO_OBJECT -> vm.onAddLinkToObjectClicked()
+            UiBlock.RELATION -> vm.onAddRelationBlockClicked()
             else -> toast(NOT_IMPLEMENTED_MESSAGE)
         }
     }
@@ -604,6 +621,10 @@ open class PageFragment :
         vm.onActionMenuItemClicked(id, action)
     }
 
+    override fun onSetRelationKeyClicked(blockId: Id, key: Id) {
+        vm.onSetRelationKeyClicked(blockId = blockId, key = key)
+    }
+
     private fun execute(event: EventWrapper<Command>) {
         event.getContentIfNotHandled()?.let { command ->
             when (command) {
@@ -616,6 +637,7 @@ open class PageFragment :
                         y = shared.y + dimen(R.dimen.dp_48),
                         emoji = command.emoji,
                         target = command.target,
+                        ctx = ctx,
                         image = command.image
                     ).apply {
                         enterTransition = Fade()
@@ -636,6 +658,7 @@ open class PageFragment :
                     val fr = ProfileIconActionMenuFragment.new(
                         y = shared.y + dimen(R.dimen.dp_48),
                         target = command.target,
+                        ctx = ctx,
                         image = command.image,
                         name = command.name
                     ).apply {
@@ -657,7 +680,7 @@ open class PageFragment :
                 }
                 is Command.OpenAddBlockPanel -> {
                     hideKeyboard()
-                    AddBlockFragment.newInstance().show(childFragmentManager, null)
+                    AddBlockFragment.newInstance(command.ctx).show(childFragmentManager, null)
                 }
                 is Command.OpenTurnIntoPanel -> {
                     TurnIntoFragment.single(
@@ -782,6 +805,53 @@ open class PageFragment :
                     SelectProgrammingLanguageFragment.new(command.target)
                         .show(childFragmentManager, null)
                 }
+                is Command.OpenObjectRelationScreen.Add -> {
+                    hideKeyboard()
+                    ObjectRelationListFragment
+                        .new(
+                            ctx = command.ctx,
+                            target = command.target,
+                            mode = ObjectRelationListFragment.MODE_ADD
+                        )
+                        .show(childFragmentManager, null)
+                }
+                is Command.OpenObjectRelationScreen.List -> {
+                    hideKeyboard()
+                    ObjectRelationListFragment
+                        .new(
+                            ctx = command.ctx,
+                            target = command.target,
+                            mode = ObjectRelationListFragment.MODE_LIST
+                        )
+                        .show(childFragmentManager, null)
+                }
+                is Command.OpenObjectRelationScreen.Value.Default -> {
+                    hideKeyboard()
+                    val fr = ObjectObjectRelationValueFragment.new(
+                        ctx = command.ctx,
+                        target = command.target,
+                        relation = command.relation
+                    )
+                    fr.show(childFragmentManager, null)
+                }
+                is Command.OpenObjectRelationScreen.Value.Text -> {
+                    hideKeyboard()
+                    val fr = ObjectRelationTextValueFragment.new(
+                        ctx = command.ctx,
+                        objectId = command.target,
+                        relationId = command.relation
+                    )
+                    fr.show(childFragmentManager, null)
+                }
+                is Command.OpenObjectRelationScreen.Value.Date -> {
+                    hideKeyboard()
+                    val fr = ObjectRelationDateValueFragment.new(
+                        ctx = command.ctx,
+                        objectId = command.target,
+                        relationId = command.relation
+                    )
+                    fr.show(childFragmentManager, null)
+                }
             }
         }
     }
@@ -902,8 +972,10 @@ open class PageFragment :
                     topToolbar.invisible()
                     lifecycleScope.launch {
                         delay(DELAY_BEFORE_INIT_SAM_SEARCH)
-                        bottomMenu.showWithAnimation()
-                        showSelectButton()
+                        activity?.runOnUiThread {
+                            bottomMenu.showWithAnimation()
+                            showSelectButton()
+                        }
                     }
                 }
             } else {
@@ -1244,6 +1316,10 @@ open class PageFragment :
         vm.onEnterSearchModeClicked()
     }
 
+    override fun onDocRelationsClicked() {
+        vm.onDocRelationsClicked()
+    }
+
     override fun onAddCoverClicked() {
         vm.onAddCoverClicked()
     }
@@ -1263,6 +1339,35 @@ open class PageFragment :
     override fun onDismissBlockActionToolbar() {
         Blurry.delete(root)
         vm.onDismissBlockActionMenu(childFragmentManager.backStackEntryCount > 0)
+    }
+
+    override fun onRelationTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {
+        vm.onRelationTextValueChanged(
+            ctx = ctx,
+            value = text,
+            relationId = relationId
+        )
+    }
+
+    override fun onRelationTextNumberValueChanged(ctx: Id, number: Number, objectId: Id, relationId: Id) {
+        vm.onRelationTextValueChanged(
+            ctx = ctx,
+            value = number,
+            relationId = relationId
+        )
+    }
+
+    override fun onRelationDateValueChanged(
+        ctx: Id,
+        timeInSeconds: Number?,
+        objectId: Id,
+        relationId: Id
+    ) {
+        vm.onRelationTextValueChanged(
+            ctx = ctx,
+            relationId = relationId,
+            value = timeInSeconds
+        )
     }
 
     //------------ End of Anytype Custom Context Menu ------------
@@ -1298,4 +1403,5 @@ interface OnFragmentInteractionListener {
     fun onDismissBlockActionToolbar()
     fun onAddBookmarkUrlClicked(target: String, url: String)
     fun onExitToDesktopClicked()
+    fun onSetRelationKeyClicked(blockId: Id, key: Id)
 }

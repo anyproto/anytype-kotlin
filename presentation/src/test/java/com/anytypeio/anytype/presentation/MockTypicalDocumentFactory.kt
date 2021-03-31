@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation
 
 import MockDataFactory
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.common.Document
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Document
+import com.anytypeio.anytype.core_models.Id
 
 object MockTypicalDocumentFactory {
 

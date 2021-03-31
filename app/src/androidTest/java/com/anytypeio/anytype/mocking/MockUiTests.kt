@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.mocking
 
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 
 object MockUiTests {
 

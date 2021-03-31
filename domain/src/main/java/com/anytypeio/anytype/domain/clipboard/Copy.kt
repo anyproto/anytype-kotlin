@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.domain.clipboard
 
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Command
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Id
 
 class Copy(
     private val repo: BlockRepository,
@@ -35,17 +35,6 @@ class Copy(
     data class Params(
         val context: Id,
         val range: IntRange?,
-        val blocks: List<Block>
-    )
-
-    /**
-     * @param text plain text
-     * @param html optional html
-     * @param blocks anytype clipboard slot
-     */
-    class Response(
-        val text: String,
-        val html: String?,
         val blocks: List<Block>
     )
 }

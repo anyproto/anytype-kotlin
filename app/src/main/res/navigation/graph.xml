@@ -44,6 +44,9 @@
         <action
             android:id="@+id/action_desktopScreen_to_archiveFragment"
             app:destination="@id/archiveFragment" />
+        <action
+            android:id="@+id/from_desktop_to_create_sets"
+            app:destination="@id/createSetScreen" />
     </fragment>
 
     <fragment
@@ -324,7 +327,7 @@
         android:id="@+id/debugSettingsFragment"
         android:name="com.anytypeio.anytype.ui.settings.DebugSettingsFragment"
         android:label="DebugSettingsFragment"
-        tools:layout="@layout/fragment_debug_settings"/>
+        tools:layout="@layout/fragment_debug_settings" />
     <fragment
         android:id="@+id/pageNavigationFragment"
         android:name="com.anytypeio.anytype.ui.navigation.PageNavigationFragment"
@@ -332,8 +335,8 @@
         tools:layout="@layout/fragment_page_navigation">
         <argument
             android:name="ID_KEY"
-            app:argType="string"
-            android:defaultValue='""' />
+            android:defaultValue='""'
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/linkToFragment"
@@ -355,8 +358,17 @@
         android:name="com.anytypeio.anytype.ui.archive.ArchiveFragment"
         android:label="ArchiveFragment" />
     <fragment
+        android:id="@+id/objectSetScreen"
+        android:name="com.anytypeio.anytype.ui.sets.ObjectSetFragment"
+        android:label="ObjectSetScreen" />
+    <fragment
         android:id="@+id/fullScreenImageFragment"
         android:name="com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment"
         android:label="FullScreenImageFragment" />
+    <fragment
+        android:id="@+id/createSetScreen"
+        android:name="com.anytypeio.anytype.ui.sets.CreateObjectSetFragment"
+        android:label="CreateSetScreen"
+        tools:layout="@layout/fragment_create_set" />
 
 </navigation>

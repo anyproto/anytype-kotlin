@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/holderRoot"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    
+    <LinearLayout
+        android:id="@+id/headerContainer"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dv_grid_cell_description_height">
+        
+        <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+            android:id="@+id/objectIcon"
+            app:imageSize="18dp"
+            app:emojiSize="18dp"
+            app:initialTextSize="12sp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="18dp"
+            android:layout_height="18dp"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="6dp"
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_medium"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            tools:text="Name" />
+        
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rowCellRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+</LinearLayout>

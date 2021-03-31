@@ -1,8 +1,13 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.Counter
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -11,11 +16,11 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
@@ -27,13 +32,16 @@ import com.anytypeio.anytype.presentation.page.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.PageViewModelFactory
 import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.page.editor.Interactor
+import com.anytypeio.anytype.presentation.page.editor.InternalDetailModificationManager
 import com.anytypeio.anytype.presentation.page.editor.Orchestrator
 import com.anytypeio.anytype.presentation.page.editor.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.util.Bridge
+import com.anytypeio.anytype.presentation.relations.providers.*
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.page.PageFragment
 import dagger.Module
@@ -54,16 +62,26 @@ interface PageSubComponent {
 
     fun inject(fragment: PageFragment)
 
+    fun documentEmojiIconPickerComponentBuilder(): DocumentEmojiIconPickerSubComponent.Builder
+    fun documentActionMenuComponentBuilder(): DocumentActionMenuSubComponent.Builder
+
+    fun documentRelationSubComponent(): DocumentRelationSubComponent.Builder
+    fun editRelationCellComponent(): EditGridCellSubComponent.Builder
+    fun editDocRelationComponent() : ObjectObjectRelationValueSubComponent.Builder
+    fun editRelationDateComponent(): EditGridCellDateSubComponent.Builder
+
     fun docCoverGalleryComponentBuilder(): SelectDocCoverSubComponent.Builder
     fun uploadDocCoverImageComponentBuilder(): UploadDocCoverImageSubComponent.Builder
+
+    fun documentAddNewBlockComponentBuilder(): DocumentAddNewBlockSubComponent.Builder
 }
 
 
 /**
- * Sesssion-related dependencies, session being defined as active work with a document visible to our user.
+ * Session-related dependencies, session being defined as active work with a document visible to our user.
  * Hence, these dependencies are stateful and therefore should not be shared between different sessions of the same document.
  * Consider the following navigation scenario: Document A > Document B > Document A'.
- * In this case, statetul dependencies should not be shared between A and A'.
+ * In this case, stateful dependencies should not be shared between A and A'.
  */
 @Module
 object EditorSessionModule {
@@ -82,19 +100,21 @@ object EditorSessionModule {
 
     @JvmStatic
     @Provides
+    @PerScreen
     fun provideStorage(): Editor.Storage = Editor.Storage()
 
     @JvmStatic
     @Provides
     fun providePageViewModelFactory(
         openPage: OpenPage,
-        closePage: ClosePage,
+        closePage: CloseBlock,
         interceptEvents: InterceptEvents,
         interceptThreadStatus: InterceptThreadStatus,
         updateLinkMarks: UpdateLinkMarks,
         removeLinkMark: RemoveLinkMark,
         createPage: CreatePage,
         createDocument: CreateDocument,
+        createObject: CreateObject,
         createNewDocument: CreateNewDocument,
         documentExternalEventReducer: DocumentExternalEventReducer,
         setDocCoverImage: SetDocCoverImage,
@@ -105,12 +125,15 @@ object EditorSessionModule {
         orchestrator: Orchestrator,
         getListPages: GetListPages,
         analytics: Analytics,
-        bridge: Bridge<Payload>
+        dispatcher: Dispatcher<Payload>,
+        detailModificationManager: DetailModificationManager,
+        updateDetail: UpdateDetail
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
         createPage = createPage,
         createDocument = createDocument,
+        createObject = createObject,
         createNewDocument = createNewDocument,
         interceptEvents = interceptEvents,
         interceptThreadStatus = interceptThreadStatus,
@@ -125,7 +148,9 @@ object EditorSessionModule {
         orchestrator = orchestrator,
         getListPages = getListPages,
         analytics = analytics,
-        bridge = bridge
+        dispatcher = dispatcher,
+        detailModificationManager = detailModificationManager,
+        updateDetail = updateDetail
     )
 
     @JvmStatic
@@ -198,6 +223,7 @@ object EditorSessionModule {
         paste: Paste,
         undo: Undo,
         redo: Redo,
+        setRelationKey: SetRelationKey,
         analytics: Analytics
     ): Orchestrator = Orchestrator(
         stores = storage,
@@ -231,6 +257,7 @@ object EditorSessionModule {
         move = move,
         paste = paste,
         copy = copy,
+        setRelationKey = setRelationKey,
         analytics = analytics,
         updateFields = updateFields,
         turnIntoStyle = turnInto
@@ -265,7 +292,7 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideClosePageUseCase(
         repo: BlockRepository
-    ): ClosePage = ClosePage(
+    ): CloseBlock = CloseBlock(
         repo = repo
     )
 
@@ -364,6 +391,15 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideSetRelationKeyUseCase(
+        repo: BlockRepository
+    ): SetRelationKey = SetRelationKey(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideUploadUrl(
         repo: BlockRepository
     ): UploadBlock = UploadBlock(
@@ -453,6 +489,17 @@ object EditorUseCaseModule {
         repo: BlockRepository,
         documentEmojiIconProvider: DocumentEmojiIconProvider
     ): CreateDocument = CreateDocument(
+        repo = repo,
+        documentEmojiProvider = documentEmojiIconProvider
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateObjectUseCase(
+        repo: BlockRepository,
+        documentEmojiIconProvider: DocumentEmojiIconProvider
+    ): CreateObject = CreateObject(
         repo = repo,
         documentEmojiProvider = documentEmojiIconProvider
     )
@@ -565,6 +612,52 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideDefaultObjectRelationProvider(
+        storage: Editor.Storage
+    ) : ObjectRelationProvider = DefaultObjectRelationProvider(storage.relations)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDefaultObjectValueProvider(
+        storage: Editor.Storage
+    ) : ObjectValueProvider = DefaultObjectValueProvider(storage.details)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideObjectTypeProvider(
+        storage: Editor.Storage
+    ) : ObjectTypeProvider = object : ObjectTypeProvider {
+        override fun provide(): List<ObjectType> = storage.objectTypes.current()
+    }
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideObjectDetailProvider(
+        storage: Editor.Storage
+    ) : ObjectDetailProvider = object : ObjectDetailProvider {
+        override fun provide(): Map<Id, Block.Fields> = storage.details.current().details
+    }
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun providePayloadDispatcher() : Dispatcher<Payload> = Dispatcher.Default()
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDetailManager(
+        storage: Editor.Storage
+    ) : DetailModificationManager = InternalDetailModificationManager(
+        store = storage.details
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideSetDocCoverImageUseCase(
         repo: BlockRepository
     ): SetDocCoverImage = SetDocCoverImage(repo)
@@ -580,4 +673,11 @@ object EditorUseCaseModule {
     @Provides
     @PerScreen
     fun provideTurnIntoUseCase(repo: BlockRepository): TurnIntoStyle = TurnIntoStyle(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideUpdateDetailUseCase(
+        repository: BlockRepository
+    ) : UpdateDetail = UpdateDetail(repository)
 }

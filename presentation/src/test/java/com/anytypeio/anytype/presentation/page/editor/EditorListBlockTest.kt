@@ -4,9 +4,9 @@ import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.event.model.Event
-import com.anytypeio.anytype.domain.ext.content
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView

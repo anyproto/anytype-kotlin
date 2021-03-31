@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.presentation.page.editor
 
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
@@ -60,6 +62,7 @@ interface Store<T> {
             super.update(t)
         }
     }
+
     class Context : Conflated<String>("")
     class Screen : State<List<BlockView>>(emptyList())
 
@@ -68,6 +71,9 @@ interface Store<T> {
             update(current().copy(details = current().details + mapOf(target to fields)))
         }
     }
+
+    class Relations : State<List<Relation>>(emptyList())
+    class ObjectTypes : State<List<ObjectType>>(emptyList())
 
     class TextSelection : Conflated<Editor.TextSelection>(Editor.TextSelection.empty())
 }

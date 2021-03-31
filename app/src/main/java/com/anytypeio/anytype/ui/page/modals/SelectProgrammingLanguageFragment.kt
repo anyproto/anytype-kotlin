@@ -11,7 +11,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.features.page.modal.SelectProgrammingLanguageAdapter
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.library_syntax_highlighter.obtainLanguages
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_select_programming_language.*

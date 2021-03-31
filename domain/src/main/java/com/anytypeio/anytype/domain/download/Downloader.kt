@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.domain.download
 
-import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.core_models.Url
 
 /**
  * Base interface for downloaders.

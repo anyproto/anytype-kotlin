@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.domain.block.interactor
 
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.block.model.Block.Content.Text
-import com.anytypeio.anytype.domain.block.model.Command
+import com.anytypeio.anytype.core_models.Block.Content.Text
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 
 /**
  * Use-case for updating a block's text style

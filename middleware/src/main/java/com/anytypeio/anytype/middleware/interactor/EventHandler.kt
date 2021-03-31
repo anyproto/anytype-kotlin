@@ -4,10 +4,8 @@ import anytype.Event
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.EventProxy
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asFlow
 import service.Service.setEventHandlerMobile
 import timber.log.Timber
 import java.io.IOException

@@ -11,10 +11,13 @@
     <color name="orange">#FFBB2C</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#2C2B27</color>
+    <color name="gray">#ACA996</color>
     <color name="keychain_hint_color">#ACA996</color>
     <color name="blue">#3F51B5</color>
 
     <color name="auth_divider">#DFDDD0</color>
     <color name="hint_color">#ACA996</color>
+
+    <color name="orange_button_background_color">#FFB522</color>
 
 </resources>

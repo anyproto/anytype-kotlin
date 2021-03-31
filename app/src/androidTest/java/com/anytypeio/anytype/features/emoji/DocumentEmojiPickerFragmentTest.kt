@@ -19,7 +19,9 @@ import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.emojifier.suggest.model.EmojiModel
 import com.anytypeio.anytype.mocking.MockDataFactory
+import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModelFactory
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
@@ -34,6 +36,9 @@ import kotlin.test.assertEquals
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class DocumentEmojiPickerFragmentTest {
+
+    @Mock
+    lateinit var detailModificationManager: DetailModificationManager
 
     @Mock
     lateinit var suggester: EmojiSuggester
@@ -54,7 +59,9 @@ class DocumentEmojiPickerFragmentTest {
             DocumentEmojiIconPickerViewModelFactory(
                 emojiProvider = provider,
                 emojiSuggester = suggester,
-                setEmojiIcon = setEmojiIcon
+                setEmojiIcon = setEmojiIcon,
+                dispatcher = Dispatcher.Default(),
+                details = detailModificationManager
             )
     }
 

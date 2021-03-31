@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.reactive
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -37,6 +38,23 @@ fun EditText.textChanges(): Flow<CharSequence> = callbackFlow<CharSequence> {
     }
     addTextChangedListener(listener)
     awaitClose { removeTextChangedListener(listener) }
+}.conflate()
+
+@CheckResult
+@OptIn(ExperimentalCoroutinesApi::class)
+fun View.touches(handled: (MotionEvent) -> Boolean = { true }): Flow<MotionEvent> = callbackFlow<MotionEvent> {
+    checkMainThread()
+    val listener = View.OnTouchListener { _, event ->
+        performClick()
+        if (handled(event)) {
+            safeOffer(event)
+            true
+        } else {
+            false
+        }
+    }
+    setOnTouchListener(listener)
+    awaitClose { setOnTouchListener(null) }
 }.conflate()
 
 @CheckResult

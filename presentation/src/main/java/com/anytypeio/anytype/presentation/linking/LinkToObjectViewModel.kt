@@ -7,8 +7,8 @@ import com.anytypeio.anytype.core_utils.ext.timber
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.block.interactor.CreateLinkToObject
-import com.anytypeio.anytype.domain.block.model.Position
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.navigation.GetPageInfoWithLinks

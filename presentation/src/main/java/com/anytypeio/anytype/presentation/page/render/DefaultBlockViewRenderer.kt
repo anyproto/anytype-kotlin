@@ -1,10 +1,11 @@
 package com.anytypeio.anytype.presentation.page.render
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Block.Content
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.tools.Counter
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Block.Content
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.common.Url
 import com.anytypeio.anytype.domain.cover.CoverType
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
@@ -15,6 +16,8 @@ import com.anytypeio.anytype.presentation.page.cover.CoverColor
 import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.relations.view
+import timber.log.Timber
 
 class DefaultBlockViewRenderer(
     private val counter: Counter,
@@ -29,7 +32,8 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         anchor: Id,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        relations: List<Relation>
     ): List<BlockView> {
 
         val children = getValue(anchor)
@@ -89,7 +93,8 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        details = details
+                                        details = details,
+                                        relations = relations
                                     )
                                 )
                             }
@@ -115,7 +120,8 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        details = details
+                                        details = details,
+                                        relations = relations
                                     )
                                 )
                             }
@@ -141,7 +147,8 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        details = details
+                                        details = details,
+                                        relations = relations
                                     )
                                 )
                             }
@@ -166,7 +173,8 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        details = details
+                                        details = details,
+                                        relations = relations
                                     )
                                 )
                             }
@@ -191,7 +199,8 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        details = details
+                                        details = details,
+                                        relations = relations
                                     )
                                 )
                             }
@@ -216,7 +225,8 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        details = details
+                                        details = details,
+                                        relations = relations
                                     )
                                 )
                             }
@@ -241,7 +251,8 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        details = details
+                                        details = details,
+                                        relations = relations
                                     )
                                 )
                             }
@@ -266,7 +277,8 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        details = details
+                                        details = details,
+                                        relations = relations
                                     )
                                 )
                             }
@@ -291,7 +303,8 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        details = details
+                                        details = details,
+                                        relations = relations
                                     )
                                 )
                             }
@@ -307,7 +320,8 @@ class DefaultBlockViewRenderer(
                                         indent = indent.inc(),
                                         anchor = block.id,
                                         root = root,
-                                        details = details
+                                        details = details,
+                                        relations = relations
                                     )
                                 )
                             }
@@ -339,7 +353,22 @@ class DefaultBlockViewRenderer(
                             indent = indent,
                             anchor = block.id,
                             root = root,
-                            details = details
+                            details = details,
+                            relations = relations
+                        )
+                    )
+                }
+                is Content.RelationBlock -> {
+                    counter.reset()
+                    result.add(
+                        relation(
+                            ctx = root.id,
+                            block = block,
+                            content = content,
+                            indent = indent,
+                            details = details,
+                            relations = relations,
+                            urlBuilder = urlBuilder
                         )
                     )
                 }
@@ -657,7 +686,7 @@ class DefaultBlockViewRenderer(
         var coverImage: Url? = null
         var coverGradient: String? = null
 
-        when (rootDetails?.coverType?.toInt()) {
+        when (val type = rootDetails?.coverType?.toInt()) {
             CoverType.UPLOADED_IMAGE.code -> {
                 coverImage = rootDetails.coverId?.let { id ->
                     urlBuilder.image(id)
@@ -677,6 +706,7 @@ class DefaultBlockViewRenderer(
             CoverType.GRADIENT.code -> {
                 coverGradient = rootDetails.coverId
             }
+            else -> Timber.d("Missing cover type: $type")
         }
 
         return when (rootContent.type) {
@@ -793,6 +823,37 @@ class DefaultBlockViewRenderer(
             is Cursor.Start -> 0
             is Cursor.End -> content.text.length
             is Cursor.Range -> cursor.range.first
+        }
+    }
+
+    private fun relation(
+        ctx: Id,
+        block: Block,
+        content: Content.RelationBlock,
+        indent: Int,
+        details: Block.Details,
+        relations: List<Relation>,
+        urlBuilder: UrlBuilder
+    ) : BlockView.Relation {
+        if (content.key.isNullOrEmpty()) {
+            return BlockView.Relation.Placeholder(
+                id = block.id,
+                indent = indent
+            )
+        } else {
+            val relation = relations.first { it.key == content.key }
+            val view = relation.view(
+                details = details,
+                values = details.details[ctx]?.map ?: emptyMap(),
+                urlBuilder = urlBuilder
+            )
+            checkNotNull(view) { "Format not supported: ${relation.format} or some data missing" }
+            return BlockView.Relation.Related(
+                id = block.id,
+                view = view,
+                indent = indent,
+                background = content.background
+            )
         }
     }
 }

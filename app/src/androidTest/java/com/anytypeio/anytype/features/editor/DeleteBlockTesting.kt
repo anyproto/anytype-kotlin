@@ -12,12 +12,12 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.event.model.Event
-import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestPageFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
@@ -322,6 +322,7 @@ class DeleteBlockTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubOpenDocument(document)
+        stubInterceptThreadStatus()
         stubUpdateText()
 
         stubUnlinkBlocks(params, events)
@@ -331,7 +332,7 @@ class DeleteBlockTesting : EditorTestSetup() {
         // TESTING
 
         val target = Espresso.onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(2, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
         )
 
         target.apply {
@@ -347,7 +348,7 @@ class DeleteBlockTesting : EditorTestSetup() {
         verifyBlocking(unlinkBlocks, times(1)) { invoke(params) }
 
         Espresso.onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(1, firstViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(0, firstViewId)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
@@ -356,7 +357,7 @@ class DeleteBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.recycler.getChildAt(0)
             val view = item.findViewById<TextInputWidget>(firstViewId)
             assertEquals(
                 expected = 3,
@@ -566,8 +567,6 @@ class DeleteBlockTesting : EditorTestSetup() {
         }
 
         Thread.sleep(100)
-
-
 
         val target = Espresso.onView(
             withRecyclerView(R.id.recycler).atPositionOnView(1, firstViewId)

@@ -1,20 +1,21 @@
 package com.anytypeio.anytype.di.feature
 
-import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
+import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModelFactory
-import com.anytypeio.anytype.presentation.util.Bridge
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
 @Subcomponent(modules = [DocumentEmojiIconPickerModule::class])
-@PerScreen
+@PerModal
 interface DocumentEmojiIconPickerSubComponent {
 
     @Subcomponent.Builder
@@ -30,20 +31,22 @@ interface DocumentEmojiIconPickerSubComponent {
 class DocumentEmojiIconPickerModule {
 
     @Provides
-    @PerScreen
+    @PerModal
     fun provideDocumentEmojiIconPickerViewModel(
         setEmojiIcon: SetDocumentEmojiIcon,
         emojiSuggester: EmojiSuggester,
-        bridge: Bridge<Payload>
+        dispatcher: Dispatcher<Payload>,
+        details: DetailModificationManager
     ): DocumentEmojiIconPickerViewModelFactory = DocumentEmojiIconPickerViewModelFactory(
         setEmojiIcon = setEmojiIcon,
         emojiSuggester = emojiSuggester,
         emojiProvider = Emoji,
-        bridge = bridge
+        dispatcher = dispatcher,
+        details = details
     )
 
     @Provides
-    @PerScreen
+    @PerModal
     fun provideSetDocumentEmojiIconUseCase(
         repo: BlockRepository
     ): SetDocumentEmojiIcon = SetDocumentEmojiIcon(

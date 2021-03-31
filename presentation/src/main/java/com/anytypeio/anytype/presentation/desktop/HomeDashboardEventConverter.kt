@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.desktop
 
-import com.anytypeio.anytype.domain.event.model.Event
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 
 interface HomeDashboardEventConverter {
@@ -24,7 +24,9 @@ interface HomeDashboardEventConverter {
                         blocks = event.blocks,
                         context = event.context,
                         details = event.details,
-                        builder = builder
+                        builder = builder,
+                        objectTypePerObject = event.objectTypePerObject,
+                        objectTypes = event.objectTypes
                     )
                 }
                 Event.Command.ShowBlock.Type.PROFILE_PAGE -> {
@@ -48,7 +50,7 @@ interface HomeDashboardEventConverter {
                     )
                 }
             }
-            is Event.Command.UpdateDetails -> {
+            is Event.Command.Details.Set -> {
                 HomeDashboardStateMachine.Event.OnDetailsUpdated(
                     context = event.context,
                     target = event.target,

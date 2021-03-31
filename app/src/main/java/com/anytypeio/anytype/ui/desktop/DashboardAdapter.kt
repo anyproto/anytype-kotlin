@@ -11,7 +11,7 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 import com.bumptech.glide.Glide
@@ -23,12 +23,14 @@ import timber.log.Timber
 class DashboardAdapter(
     private var data: List<DashboardView>,
     private val onDocumentClicked: (Id, Boolean) -> Unit,
-    private val onArchiveClicked: (Id) -> Unit
+    private val onArchiveClicked: (Id) -> Unit,
+    private val onObjectSetClicked: (Id) -> Unit
 ) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>(), SupportDragAndDropBehavior {
 
     companion object {
         const val VIEW_TYPE_DOCUMENT = 0
         const val VIEW_TYPE_ARCHIVE = 1
+        const val VIEW_TYPE_SET = 2
         const val UNEXPECTED_TYPE_ERROR_MESSAGE = "Unexpected type"
         const val EMPTY_EMOJI = ""
     }
@@ -46,6 +48,11 @@ class DashboardAdapter(
                     ViewHolder.ArchiveHolder(it)
                 }
             }
+            VIEW_TYPE_SET -> {
+                inflater.inflate(R.layout.item_desktop_object_set, parent, false).let {
+                    ViewHolder.ObjectSetHolder(it)
+                }
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -54,6 +61,7 @@ class DashboardAdapter(
         return when (data[position]) {
             is DashboardView.Document -> VIEW_TYPE_DOCUMENT
             is DashboardView.Archive -> VIEW_TYPE_ARCHIVE
+            is DashboardView.ObjectSet -> VIEW_TYPE_SET
             else -> throw IllegalStateException(UNEXPECTED_TYPE_ERROR_MESSAGE)
         }
     }
@@ -73,6 +81,14 @@ class DashboardAdapter(
                     bindEmoji(item.emoji)
                     bindImage(item.image)
                     bindLoading(item.isLoading)
+                }
+            }
+            is ViewHolder.ObjectSetHolder -> {
+                with(holder) {
+                    val item = data[position] as DashboardView.ObjectSet
+                    bindClick(item.target, onObjectSetClicked)
+                    bindTitle(item.title)
+                    bindEmoji(item.emoji)
                 }
             }
             is ViewHolder.ArchiveHolder -> {
@@ -219,6 +235,40 @@ class DashboardAdapter(
                         .centerInside()
                         .circleCrop()
                         .into(ivImage)
+                }
+            }
+        }
+
+        class ObjectSetHolder(itemView: View) : ViewHolder(itemView) {
+
+            private val tvTitle = itemView.title
+            private val ivEmoji = itemView.emojiIcon
+
+            fun bindClick(
+                target: Id,
+                onClick: (Id) -> Unit
+            ) {
+                itemView.setOnClickListener { onClick(target) }
+            }
+
+            fun bindTitle(title: String?) {
+                if (title.isNullOrEmpty())
+                    tvTitle.setText(R.string.untitled)
+                else
+                    tvTitle.text = title
+            }
+
+            fun bindEmoji(emoji: String?) {
+                try {
+                    emoji?.let { unicode ->
+                        Glide
+                            .with(ivEmoji)
+                            .load(Emojifier.uri(unicode))
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(ivEmoji)
+                    }
+                } catch (e: Throwable) {
+                    Timber.e(e, "Could not set emoji icon")
                 }
             }
         }

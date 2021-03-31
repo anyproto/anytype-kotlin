@@ -5,7 +5,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.common.toSpannable
-import com.anytypeio.anytype.domain.block.model.Block.Content.Text.Mark
+import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.ext.isSpanInRange
 import com.anytypeio.anytype.presentation.page.editor.Markup

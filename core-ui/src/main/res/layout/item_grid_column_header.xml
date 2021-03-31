@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/viewer_grid_header_width"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/cellText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/inter_medium"
+        android:maxLines="1"
+        android:textColor="#ACA996"
+        android:textSize="13sp"
+        android:layout_gravity="center_vertical"
+        tools:text="Attachment" />
+
+</FrameLayout>

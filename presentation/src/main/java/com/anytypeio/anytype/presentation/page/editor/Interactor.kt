@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.page.editor
 
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.editor.pattern.Matcher
 import com.anytypeio.anytype.presentation.page.editor.pattern.Pattern

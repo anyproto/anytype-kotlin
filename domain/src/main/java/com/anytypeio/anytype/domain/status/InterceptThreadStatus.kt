@@ -1,13 +1,14 @@
 package com.anytypeio.anytype.domain.status
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.FlowUseCase
-import com.anytypeio.anytype.domain.common.Id
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlin.coroutines.CoroutineContext
 
 class InterceptThreadStatus(
-    private val context: CoroutineContext,
+    private val context: CoroutineContext = Dispatchers.IO,
     private val channel: ThreadStatusChannel,
 ) : FlowUseCase<SyncStatus, InterceptThreadStatus.Params>() {
 

@@ -14,7 +14,7 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Id
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_doc_cover_slider.*
 

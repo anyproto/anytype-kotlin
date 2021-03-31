@@ -2,10 +2,10 @@ package com.anytypeio.anytype.domain.block.interactor
 
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Command
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Id
 
 open class UpdateText(
     private val repo: BlockRepository

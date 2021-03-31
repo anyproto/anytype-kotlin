@@ -16,6 +16,8 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.PictureError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.VideoError
+import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setup
+import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setupPlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Bookmark
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.File
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Picture
@@ -25,6 +27,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.Bookma
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
+import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.*
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.FileUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.PictureUpload
@@ -61,11 +64,20 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
+import com.anytypeio.anytype.core_utils.ext.PopupExtensions
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_DEFAULT
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_FILE
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_OBJECT
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_PLACEHOLDER
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_STATUS
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_TAGS
+import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import timber.log.Timber
 
 /**
@@ -88,7 +100,7 @@ class BlockAdapter(
     private val onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
     private val onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
     private val onTextInputClicked: (String) -> Unit,
-    private val onClickListener: (ListenerType) -> Unit,
+    val onClickListener: (ListenerType) -> Unit,
     private val onPageIconClicked: () -> Unit,
     private val onProfileIconClicked: () -> Unit,
     private val onCoverClicked: () -> Unit,
@@ -395,6 +407,60 @@ class BlockAdapter(
                     onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
+            HOLDER_RELATION_DEFAULT -> {
+                RelationViewHolder.Default(
+                    view = inflater.inflate(
+                        R.layout.item_block_relation_default,
+                        parent,
+                        false
+                    )
+                ).setup(this)
+            }
+            HOLDER_RELATION_PLACEHOLDER -> {
+                RelationViewHolder.Placeholder(
+                    view = inflater.inflate(
+                        R.layout.item_block_relation_placeholder,
+                        parent,
+                        false
+                    )
+                ).setupPlaceholder(this)
+            }
+            HOLDER_RELATION_STATUS -> {
+                RelationViewHolder.Status(
+                    view = inflater.inflate(
+                        R.layout.item_block_relation_status,
+                        parent,
+                        false
+                    )
+                ).setup(this)
+            }
+            HOLDER_RELATION_TAGS -> {
+                RelationViewHolder.Tags(
+                    view = inflater.inflate(
+                        R.layout.item_block_relation_tag,
+                        parent,
+                        false
+                    )
+                ).setup(this)
+            }
+            HOLDER_RELATION_OBJECT -> {
+                RelationViewHolder.Object(
+                    view = inflater.inflate(
+                        R.layout.item_block_relation_object,
+                        parent,
+                        false
+                    )
+                ).setup(this)
+            }
+            HOLDER_RELATION_FILE -> {
+                RelationViewHolder.File(
+                    view = inflater.inflate(
+                        R.layout.item_block_relation_file,
+                        parent,
+                        false
+                    )
+                ).setup(this)
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -629,6 +695,8 @@ class BlockAdapter(
                     }
                     is DividerLine -> onBindViewHolder(holder, position)
                     is DividerDots -> onBindViewHolder(holder, position)
+                    is RelationViewHolder.Placeholder -> onBindViewHolder(holder, position)
+                    is RelationViewHolder -> onBindViewHolder(holder, position)
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
                 }
             }
@@ -959,6 +1027,50 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.DividerDots,
                     clicked = onClickListener
                 )
+            }
+            is RelationViewHolder.Placeholder -> {
+                val item = (blocks[position] as BlockView.Relation.Placeholder)
+                holder.bind(item = item)
+            }
+            is RelationViewHolder.Default -> {
+                val item = (blocks[position] as BlockView.Relation.Related)
+                holder.bind(item = item.view)
+                holder.indentize(item = item)
+                holder.setBackgroundColor(item.background)
+                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
+                container.isSelected = item.isSelected
+            }
+            is RelationViewHolder.Status -> {
+                val item = (blocks[position] as BlockView.Relation.Related)
+                holder.bind(item = item.view as DocumentRelationView.Status)
+                holder.indentize(item = item)
+                holder.setBackgroundColor(item.background)
+                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
+                container.isSelected = item.isSelected
+            }
+            is RelationViewHolder.Tags -> {
+                val item = (blocks[position] as BlockView.Relation.Related)
+                holder.bind(item = item.view as DocumentRelationView.Tags)
+                holder.indentize(item = item)
+                holder.setBackgroundColor(item.background)
+                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
+                container.isSelected = item.isSelected
+            }
+            is RelationViewHolder.Object -> {
+                val item = (blocks[position] as BlockView.Relation.Related)
+                holder.bind(item = item.view as DocumentRelationView.Object)
+                holder.indentize(item = item)
+                holder.setBackgroundColor(item.background)
+                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
+                container.isSelected = item.isSelected
+            }
+            is RelationViewHolder.File -> {
+                val item = (blocks[position] as BlockView.Relation.Related)
+                holder.bind(item = item.view as DocumentRelationView.File)
+                holder.indentize(item = item)
+                holder.setBackgroundColor(item.background)
+                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
+                container.isSelected = item.isSelected
             }
         }
 

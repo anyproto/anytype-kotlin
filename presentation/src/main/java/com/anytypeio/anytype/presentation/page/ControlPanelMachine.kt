@@ -1,9 +1,8 @@
 package com.anytypeio.anytype.presentation.page
 
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.ext.content
-import com.anytypeio.anytype.domain.ext.overlap
-import com.anytypeio.anytype.domain.misc.Overlap
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ext.overlap
+import com.anytypeio.anytype.core_models.misc.Overlap
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.extension.isInRange
 import com.anytypeio.anytype.presentation.mapper.marks
@@ -725,23 +724,37 @@ sealed class ControlPanelMachine {
             }
         }
 
-        private fun target(block: Block): Toolbar.Styling.Target {
-            val content = block.content<Block.Content.Text>()
-            return Toolbar.Styling.Target(
-                id = block.id,
-                text = content.text,
-                color = content.color,
-                background = content.backgroundColor,
-                alignment = content.align?.let { alignment ->
-                    when (alignment) {
-                        Block.Align.AlignLeft -> Alignment.START
-                        Block.Align.AlignRight -> Alignment.END
-                        Block.Align.AlignCenter -> Alignment.CENTER
-                    }
-                },
-                marks = content.marks()
-            )
-        }
+        //todo Need refactoring
+        private fun target(block: Block): Toolbar.Styling.Target =
+            when (val content = block.content) {
+                is Block.Content.RelationBlock -> {
+                    Toolbar.Styling.Target(
+                        id = block.id,
+                        text = "",
+                        color = null,
+                        background = content.background,
+                        alignment = null,
+                        marks = listOf()
+                    )
+                }
+                is Block.Content.Text -> {
+                    Toolbar.Styling.Target(
+                        id = block.id,
+                        text = content.text,
+                        color = content.color,
+                        background = content.backgroundColor,
+                        alignment = content.align?.let { alignment ->
+                            when (alignment) {
+                                Block.Align.AlignCenter -> Alignment.CENTER
+                                Block.Align.AlignLeft -> Alignment.START
+                                Block.Align.AlignRight -> Alignment.END
+                            }
+                        },
+                        marks = content.marks()
+                    )
+                }
+                else -> throw IllegalArgumentException("Unexpected block content type for Style Toolbar")
+            }
 
         private fun logState(text: String, state: ControlPanelState) {
             Timber.i(

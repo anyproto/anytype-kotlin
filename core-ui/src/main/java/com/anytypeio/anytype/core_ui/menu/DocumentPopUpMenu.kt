@@ -12,7 +12,8 @@ class DocumentPopUpMenu(
     onRedoClicked: () -> Unit,
     onUndoClicked: () -> Unit,
     onEnterMultiSelect: () -> Unit,
-    onSearchClicked: () -> Unit
+    onSearchClicked: () -> Unit,
+    onRelationsClicked: () -> Unit
 ) : PopupMenu(context, view) {
 
     init {
@@ -24,6 +25,7 @@ class DocumentPopUpMenu(
                 R.id.redo -> onRedoClicked()
                 R.id.select -> onEnterMultiSelect()
                 R.id.search -> onSearchClicked()
+                R.id.relations -> onRelationsClicked()
                 else -> throw IllegalStateException("Unexpected menu item: $item")
             }
             true

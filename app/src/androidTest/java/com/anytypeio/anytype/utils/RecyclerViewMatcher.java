@@ -11,7 +11,7 @@ import org.hamcrest.TypeSafeMatcher;
 
 public class RecyclerViewMatcher {
 
-    private final int recyclerViewId;
+    final int recyclerViewId;
 
     public RecyclerViewMatcher(int recyclerViewId) {
         this.recyclerViewId = recyclerViewId;
@@ -28,18 +28,21 @@ public class RecyclerViewMatcher {
             View childView;
 
             public void describeTo(Description description) {
-                String idDescription = Integer.toString(recyclerViewId);
+                String idRecyclerDescription = Integer.toString(recyclerViewId);
+                String idTargetViewDescription = Integer.toString(targetViewId);
                 if (this.resources != null) {
                     try {
-                        idDescription = this.resources.getResourceName(recyclerViewId);
-                    } catch (Resources.NotFoundException var4) {
-                        idDescription = String.format("%s (resource name not found)",
-                                Integer.valueOf
-                                        (recyclerViewId));
+                        idRecyclerDescription = this.resources.getResourceName(recyclerViewId);
+                    } catch (Resources.NotFoundException e) {
+                        idRecyclerDescription = String.format("%s (resource name not found)", recyclerViewId);
+                    }
+                    try {
+                        idTargetViewDescription = this.resources.getResourceName(targetViewId);
+                    } catch (Resources.NotFoundException e) {
+                        idTargetViewDescription = String.format("%s (resource name not found)", targetViewId);
                     }
                 }
-
-                description.appendText("with id: " + idDescription);
+                description.appendText("\nwith id: ["  + idTargetViewDescription + "] inside: [" + idRecyclerDescription + "]");
             }
 
             public boolean matchesSafely(View view) {
@@ -50,7 +53,14 @@ public class RecyclerViewMatcher {
                     RecyclerView recyclerView =
                             view.getRootView().findViewById(recyclerViewId);
                     if (recyclerView != null && recyclerView.getId() == recyclerViewId) {
-                        childView = recyclerView.findViewHolderForAdapterPosition(position).itemView;
+                        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+                        if (holder == null) {
+                            throw new IllegalStateException(
+                                    "No view holder found at position: " + position +
+                                            ". Actual child count: " + recyclerView.getChildCount()
+                            );
+                        }
+                        childView = holder.itemView;
                     } else {
                         return false;
                     }

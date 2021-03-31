@@ -3,9 +3,9 @@ package com.anytypeio.anytype.presentation.page.editor
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Position
-import com.anytypeio.anytype.domain.ext.content
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView

@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.page.toggle
 
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Id
 
 interface ToggleStateHolder {
 

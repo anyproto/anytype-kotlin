@@ -1,15 +1,16 @@
 package com.anytypeio.anytype.di.feature;
 
 import android.content.Context
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.device.DefaultGradientCollectionProvider
 import com.anytypeio.anytype.device.DeviceCoverCollectionProvider
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.cover.*
-import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.page.cover.SelectDocCoverViewModel
-import com.anytypeio.anytype.presentation.util.Bridge
+import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.page.cover.DocCoverGalleryFragment
 import com.google.gson.Gson
 import dagger.Module
@@ -37,17 +38,19 @@ object SelectDocCoverModule {
     fun provideSelectDocCoverViewModelFactory(
         setDocCoverColor: SetDocCoverColor,
         setDocCoverGradient: SetDocCoverGradient,
-        payloadDispatcher: Bridge<Payload>,
+        payloadDispatcher: Dispatcher<Payload>,
         getCoverCollection: GetCoverImageCollection,
         getCoverGradientCollection: GetCoverGradientCollection,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        detailModificationManager: DetailModificationManager
     ): SelectDocCoverViewModel.Factory = SelectDocCoverViewModel.Factory(
         setDocCoverColor = setDocCoverColor,
         setDocCoverGradient = setDocCoverGradient,
-        payloadDispatcher = payloadDispatcher,
+        dispatcher = payloadDispatcher,
         getCoverCollection = getCoverCollection,
         getCoverGradientCollection = getCoverGradientCollection,
-        urlBuilder = urlBuilder
+        urlBuilder = urlBuilder,
+        details = detailModificationManager
     )
 
     @JvmStatic

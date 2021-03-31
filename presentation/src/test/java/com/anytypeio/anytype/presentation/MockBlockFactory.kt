@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation
 
 import MockDataFactory
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 
 object MockBlockFactory {
 

@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.config.UseCustomContextMenu
+import com.anytypeio.anytype.domain.dataview.interactor.DebugSync
 import com.anytypeio.anytype.ui.settings.DebugSettingsFragment
 import dagger.Module
 import dagger.Provides
@@ -37,4 +39,8 @@ class DebugSettingsModule {
     ): GetDebugSettings = GetDebugSettings(
         repo = repo
     )
+
+    @Provides
+    @PerScreen
+    fun provideDebugSync(repo: BlockRepository) : DebugSync = DebugSync(repo = repo)
 }

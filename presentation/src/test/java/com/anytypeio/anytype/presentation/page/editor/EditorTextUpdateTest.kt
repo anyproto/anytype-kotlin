@@ -2,10 +2,10 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.ext.content
-import com.anytypeio.anytype.domain.page.ClosePage
+import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -120,7 +120,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
                 )
             )
             inOrder.verify(closePage, times(1)).invoke(
-                ClosePage.Params(id = root)
+                CloseBlock.Params(id = root)
             )
         }
 
@@ -198,7 +198,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
         vm.onBottomSheetHidden()
 
         verifyBlocking(closePage, times(1)) {
-            invoke(ClosePage.Params(id = root))
+            invoke(CloseBlock.Params(id = root))
         }
 
         verifyNoMoreInteractions(updateText)
@@ -271,7 +271,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
                 )
             )
             inOrder.verify(closePage, times(1)).invoke(
-                ClosePage.Params(id = root)
+                CloseBlock.Params(id = root)
             )
         }
 
@@ -349,7 +349,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
         vm.onSystemBackPressed(false)
 
         verifyBlocking(closePage, times(1)) {
-            invoke(ClosePage.Params(id = root))
+            invoke(CloseBlock.Params(id = root))
         }
 
         verifyNoMoreInteractions(updateText)

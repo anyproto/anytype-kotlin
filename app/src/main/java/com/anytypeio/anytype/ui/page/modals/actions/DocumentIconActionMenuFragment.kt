@@ -18,6 +18,8 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.parsePath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -43,6 +45,8 @@ import javax.inject.Inject
 
 class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page_icon),
     Observer<ViewState> {
+
+    private val ctx get() = arg<Id>(ARG_CONTEXT_ID_KEY)
 
     private val target: String
         get() = requireArguments()
@@ -250,11 +254,11 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
     }
 
     override fun injectDependencies() {
-        componentManager().documentIconActionMenuComponent.get().inject(this)
+        componentManager().documentIconActionMenuComponent.get(ctx).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().documentIconActionMenuComponent.release()
+        componentManager().documentIconActionMenuComponent.release(ctx)
     }
 
     companion object {
@@ -262,13 +266,15 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
             y: Float?,
             emoji: String?,
             image: String?,
-            target: String
+            target: String,
+            ctx: Id
         ): DocumentIconActionMenuFragment = DocumentIconActionMenuFragment().apply {
             arguments = bundleOf(
                 Y_KEY to y,
                 EMOJI_KEY to emoji,
                 IMAGE_KEY to image,
-                ARG_TARGET_ID_KEY to target
+                ARG_TARGET_ID_KEY to target,
+                ARG_CONTEXT_ID_KEY to ctx
             )
         }
 
@@ -280,6 +286,7 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
         private const val ANIM_START_DELAY = 200L
         private const val ANIM_DURATION = 200L
         private const val ARG_TARGET_ID_KEY = "arg.picker.target.id"
+        private const val ARG_CONTEXT_ID_KEY = "arg.picker.target.id"
         private const val MISSING_TARGET_ERROR = "Missing target id"
         private const val COULD_NOT_PARSE_PATH_ERROR = "Could not parse path to your image"
     }

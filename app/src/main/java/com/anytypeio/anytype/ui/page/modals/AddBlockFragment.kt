@@ -5,24 +5,48 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter
+import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.page.picker.AddBlockView
+import com.anytypeio.anytype.presentation.page.picker.DocumentAddBlockViewModel
+import com.anytypeio.anytype.presentation.page.picker.DocumentAddBlockViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_add_block.*
+import javax.inject.Inject
 
 class AddBlockFragment : BaseBottomSheetFragment() {
 
     companion object {
-        fun newInstance(): AddBlockFragment = AddBlockFragment()
+        fun newInstance(ctx: Id): AddBlockFragment = AddBlockFragment().apply {
+            arguments = bundleOf(CONTEXT_ID to ctx)
+        }
+
+        const val CONTEXT_ID = "arg.add-new-block.ctx"
     }
 
+    @Inject
+    lateinit var factory: DocumentAddBlockViewModelFactory
+    private val vm by viewModels<DocumentAddBlockViewModel> { factory }
+
+    private val ctx get() = argString(CONTEXT_ID)
+
     private val addBlockOrTurnIntoAdapter = AddBlockOrTurnIntoAdapter(
-        views = AddBlockOrTurnIntoAdapter.addBlockAdapterData(),
-        onUiBlockClicked = { type -> dispatchAndExit(type) }
+        views = mutableListOf(),
+        onUiBlockClicked = { type -> dispatchAndExit(type) },
+        onObjectClicked = { vm.onObjectTypeClicked(it) }
     )
 
     override fun onCreateView(
@@ -36,6 +60,33 @@ class AddBlockFragment : BaseBottomSheetFragment() {
         setupAdapter()
         close.setOnClickListener { dismiss() }
         skipCollapsedState()
+    }
+
+    override fun onStart() {
+        with(lifecycleScope) {
+            jobs += subscribe(vm.views) { observeViews(it) }
+            jobs += subscribe(vm.commands) { observeCommands(it) }
+        }
+        super.onStart()
+        vm.onStart()
+    }
+
+    private fun observeViews(views: List<AddBlockView>) {
+        addBlockOrTurnIntoAdapter.update(views)
+    }
+
+    private fun observeCommands(commands: DocumentAddBlockViewModel.Commands) {
+        when (commands) {
+            is DocumentAddBlockViewModel.Commands.NotifyOnObjectTypeClicked -> {
+                withParent<AddBlockActionReceiver> {
+                    onAddObjectClicked(
+                        commands.url,
+                        commands.layout
+                    )
+                }
+                dismiss()
+            }
+        }
     }
 
     private fun skipCollapsedState() {
@@ -63,10 +114,16 @@ class AddBlockFragment : BaseBottomSheetFragment() {
         dismiss()
     }
 
-    override fun injectDependencies() {}
-    override fun releaseDependencies() {}
+    override fun injectDependencies() {
+        componentManager().documentAddNewBlockComponent.get(ctx).inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().documentAddNewBlockComponent.release(ctx)
+    }
 
     interface AddBlockActionReceiver {
         fun onAddBlockClicked(block: UiBlock)
+        fun onAddObjectClicked(url: String, layout: ObjectType.Layout)
     }
 }

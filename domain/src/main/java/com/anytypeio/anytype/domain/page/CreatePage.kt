@@ -3,7 +3,7 @@ package com.anytypeio.anytype.domain.page
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.config.MainConfig
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 

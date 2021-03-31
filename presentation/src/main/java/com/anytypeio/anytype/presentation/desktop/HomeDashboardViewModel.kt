@@ -15,15 +15,15 @@ import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Position
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.event.model.Event
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardStateMachine.Interactor
@@ -62,7 +62,7 @@ class HomeDashboardViewModel(
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
-    private var targetPage = ""
+    private var ctx = ""
 
     init {
         startProcessingState()
@@ -89,7 +89,7 @@ class HomeDashboardViewModel(
         getConfig(viewModelScope, Unit) { result ->
             result.either(
                 fnR = { config ->
-                    targetPage = config.home
+                    ctx = config.home
                     startInterceptingEvents(context = config.home)
                     processDragAndDrop(context = config.home)
                 },
@@ -209,6 +209,15 @@ class HomeDashboardViewModel(
         }
     }
 
+    private fun proceedWithOpeningObjectSet(id: String) {
+        closeDashboard(viewModelScope, CloseDashboard.Param.home()) { result ->
+            result.either(
+                fnL = { e -> Timber.e(e, "Error while closing a dashobard") },
+                fnR = { navigateToObjectSet(id) }
+            )
+        }
+    }
+
     fun onNavigationDeepLink(pageId: String) {
         closeDashboard(viewModelScope, CloseDashboard.Param.home()) { result ->
             result.either(
@@ -258,6 +267,12 @@ class HomeDashboardViewModel(
         )
     }
 
+    private fun navigateToObjectSet(target: Id) {
+        navigation.postValue(
+            EventWrapper(AppNavigation.Command.OpenObjectSet(target = target))
+        )
+    }
+
     private fun getEditorSettingsAndOpenPage(id: String) =
         viewModelScope.launch {
             getDebugSettings(Unit).proceed(
@@ -277,6 +292,11 @@ class HomeDashboardViewModel(
         navigateToArchive(target)
     }
 
+    fun onObjectSetClicked(target: Id) {
+        Timber.d("onObjectSetClicked: $target")
+        proceedWithOpeningObjectSet(target)
+    }
+
     fun onProfileClicked() {
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -293,7 +313,7 @@ class HomeDashboardViewModel(
         navigation.postValue(
             EventWrapper(
                 AppNavigation.Command.OpenPageNavigationScreen(
-                    target = targetPage
+                    target = ctx
                 )
             )
         )
@@ -305,6 +325,15 @@ class HomeDashboardViewModel(
             eventName = EventsDictionary.SCREEN_SEARCH
         )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
+    }
+
+    fun onCreateNewObjectSetClicked() {
+        closeDashboard(viewModelScope, CloseDashboard.Param.home()) { result ->
+            result.either(
+                fnL = { e -> Timber.e(e, "Error while closing a dashobard") },
+                fnR = { navigate(EventWrapper(AppNavigation.Command.OpenCreateSetScreen(ctx))) }
+            )
+        }
     }
 
     /**

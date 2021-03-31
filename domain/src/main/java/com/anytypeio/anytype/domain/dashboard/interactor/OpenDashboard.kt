@@ -3,7 +3,7 @@ package com.anytypeio.anytype.domain.dashboard.interactor
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.core_models.Payload
 
 /**
  * Use-case for opening a dashboard by sending a special request.

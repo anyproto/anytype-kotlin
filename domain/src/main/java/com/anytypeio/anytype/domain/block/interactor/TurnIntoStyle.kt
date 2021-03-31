@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.domain.block.interactor
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.common.TextStyle
-import com.anytypeio.anytype.domain.event.model.Payload
 
 class TurnIntoStyle(
     private val repo: BlockRepository
@@ -23,6 +23,6 @@ class TurnIntoStyle(
     data class Params(
         val context: Id,
         val targets: List<Id>,
-        val style: TextStyle
+        val style: Block.Content.Text.Style
     )
 }

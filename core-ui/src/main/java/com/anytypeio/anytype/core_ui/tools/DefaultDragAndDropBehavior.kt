@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_utils.ui.ItemTouchHelperViewHolder
 import timber.log.Timber
 
 /**
@@ -41,6 +42,18 @@ open class DefaultDragAndDropBehavior(
         super.clearView(recyclerView, viewHolder)
         Timber.d("Adapter position: ${viewHolder.bindingAdapterPosition}")
         onItemDropped(viewHolder.bindingAdapterPosition)
+        if (viewHolder is ItemTouchHelperViewHolder) {
+            viewHolder.onItemClear()
+        }
+    }
+
+    override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+        if (actionState != ACTION_STATE_IDLE) {
+            if (viewHolder is ItemTouchHelperViewHolder) {
+                viewHolder.onItemSelected()
+            }
+        }
+        super.onSelectedChanged(viewHolder, actionState)
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}

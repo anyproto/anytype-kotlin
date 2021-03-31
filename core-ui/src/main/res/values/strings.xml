@@ -24,6 +24,8 @@
     <string name="content_description_more_button">More button</string>
     <string name="content_description_avatar_image">Avatar image</string>
     <string name="content_description_bookmark_image">Bookmark image</string>
+    <string name="content_description_filter_remove">Remove filter</string>
+    <string name="content_description_filter_format">Filter format</string>
     <string name="content_description_qr_image">QR code</string>
     <string name="content_description_toggle_icon">Toggle icon</string>
     <string name="content_description_turn_into_arrow">Turn into arrow</string>
@@ -61,6 +63,7 @@
     <string name="option_other_divider">Line divider</string>
     <string name="option_other_dots">Dots divider</string>
     <string name="option_other_code">Code snippet</string>
+    <string name="option_relation_relation">Relation</string>
 
     <string name="add_block_or_turn_into_subtitle_text">Write a plain text</string>
     <string name="add_block_or_turn_into_subtitle_header_one">Big headline of a chapter, paragraph or section</string>
@@ -80,6 +83,7 @@
     <string name="add_block_or_turn_into_subtitle_code">Capture code snippet</string>
     <string name="add_block_or_turn_into_subtitle_line_divider">Separate information with line</string>
     <string name="add_block_or_turn_into_subtitle_dots">Separate information with three dots</string>
+    <string name="add_block_or_turn_into_subtitle_relation">Meaningful connection between objects</string>
 
     <string name="toolbar_section_text">Text</string>
     <string name="toolbar_section_list">List</string>
@@ -88,6 +92,7 @@
     <string name="toolbar_section_tool">Tool</string>
     <string name="toolbar_section_media">Media</string>
     <string name="toolbar_section_objects">Objects</string>
+    <string name="toolbar_section_relation">Relation</string>
 
     <string name="toolbar_action_delete">Delete</string>
     <string name="toolbar_action_duplicate">Duplicate</string>
@@ -114,6 +119,7 @@
     <string name="kanban_view">Kanban view</string>
     <string name="properties">Properties</string>
     <string name="sort">Sort</string>
+    <string name="filter_by">Filter by</string>
     <string name="filter">Filter</string>
     <string name="group">Group</string>
     <string name="modal_view">View</string>
@@ -157,6 +163,7 @@
     <string name="hint_bullet">Bulleted list item</string>
     <string name="hint_numbered_list">Numbered list item</string>
     <string name="hint_toggle">Toggle block</string>
+    <string name="hint_empty">Empty</string>
 
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
 
@@ -220,6 +227,8 @@
     <string name="copy">Copy</string>
     <string name="select">Select</string>
     <string name="search">Search</string>
+    <string name="relations">Relations</string>
+    <string name="relation">Relation</string>
 
     <string name="choose_emoji">Choose emoji</string>
     <string name="logo_transition">logo_transition</string>
@@ -236,6 +245,9 @@
     <string name="widget_archive_select_pages">Select pages</string>
     <string name="your_search_query">Search</string>
     <string name="syncing">Syncing…</string>
+    <string name="choose_a_object_type_for_this_set">Choose a object type for this set</string>
+    <string name="new_set">New set</string>
+    <string name="create_new_object_type">Create new object type</string>
     <plurals name="page_selected">
         <item quantity="zero">Select pages</item>
         <item quantity="one">%d page selected</item>
@@ -247,9 +259,52 @@
     <string name="sync_status_syncing">Syncing…</string>
     <string name="sync_status_synced">Synced</string>
     <string name="sync_status_failed">Not synced</string>
+
+    <string name="relation_format_description">Description</string>
+    <string name="relation_format_title">Title</string>
+    <string name="relation_format_number">Number</string>
+    <string name="relation_format_date">Date</string>
+    <string name="relation_format_status">Status</string>
+    <string name="relation_format_file">File</string>
+    <string name="relation_format_checkbox">Checkbox</string>
+    <string name="relation_format_url">Url</string>
+    <string name="relation_format_email">Email</string>
+    <string name="relation_format_phone">Phone</string>
+    <string name="relation_format_emoji">Emoji</string>
+    <string name="relation_format_object">Object</string>
+    <string name="viewer_sorting_prefix">Then</string>
+    <string name="enter_value">Enter a value</string>
+    <string name="ityem_relations">Relations</string>
+    <string name="add_sort">Add a sort</string>
+    <string name="apply">Apply</string>
+    <string name="add_filter">Add a filter</string>
+    <string name="relation_format_tag">Tag</string>
+    <string name="unknown_number_of_objects">Unknown number of objects</string>
+    <string name="sort_from_first_to_last">First → Last</string>
+    <string name="sort_from_last_to_first">Last → First</string>
+    <string name="sort_from_one_to_nine">1 → 9</string>
+    <string name="sort_from_nine_to_one">9 → 1</string>
+    <string name="sort_from_a_to_z">A → Z</string>
+    <string name="sort_from_z_to_a">Z → A</string>
+    <string name="value_quotes">\"%1$s\"</string>
+    <string name="select_all">Select all</string>
+    <string name="value">Value</string>
+    <string name="empty">Empty</string>
+
+    <string name="dv_cell_description_hint">Add text…</string>
+    <string name="dv_cell_number_hint">Add number…</string>
+
+    <string name="unknown_object_type">Unknown type</string>
+    <string name="relation_format_short_text">Short text</string>
+    <string name="relation_format_long_text">Long text</string>
+    <string name="set_new_relation">Set new relation</string>
+
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
     <string name="cover_color_solid">Color solid</string>
     <string name="cover_gradients">Gradients</string>
+    <string name="clear">Clear</string>
+
+    <string name="create_option">Create option \"%1$s\"</string>
 
 </resources>

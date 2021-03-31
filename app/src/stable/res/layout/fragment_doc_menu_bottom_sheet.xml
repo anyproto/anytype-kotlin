@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="12dp"
+    android:background="@drawable/rectangle_doc_menu_background">
+
+    <FrameLayout
+        android:id="@+id/iconContainer"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            tools:src="@drawable/circle_solid_default" />
+
+        <com.anytypeio.anytype.core_ui.widgets.AvatarWidget
+            android:id="@+id/avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/circle_solid_default"
+            android:visibility="invisible" />
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/closeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="18dp"
+        android:src="@drawable/ic_doc_menu_close"
+        app:layout_constraintBottom_toBottomOf="@+id/iconContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/iconContainer" />
+
+    <View
+        android:id="@+id/badge"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/circle_solid_default"
+        android:backgroundTint="@color/white"
+        app:layout_constraintStart_toEndOf="@+id/iconContainer"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+        tools:background="@drawable/circle_solid_default"
+        tools:backgroundTint="@color/anytype_text_red" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/inter_medium"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toStartOf="@+id/closeButton"
+        app:layout_constraintStart_toEndOf="@+id/iconContainer"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Spaceship Earth" />
+
+    <TextView
+        android:id="@+id/tvSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:textSize="13sp"
+        android:lineHeight="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/badge"
+        app:layout_constraintStart_toEndOf="@+id/badge"
+        app:layout_constraintTop_toTopOf="@+id/badge"
+        tools:text="Offline" />
+
+    <View
+        android:background="#DFDDD0"
+        android:id="@+id/statusDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@+id/iconContainer" />
+
+    <FrameLayout
+        android:id="@+id/searchOnPageContainer"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/rectangle_doc_menu_top"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statusDivider">
+
+        <TextView
+            style="@style/DocMenuOptionTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:text="@string/search_on_page" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_doc_menu_search" />
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/optionDivider1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/searchOnPageContainer" />
+
+    <FrameLayout
+        android:id="@+id/addCoverContainer"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/optionDivider1">
+
+        <TextView
+            style="@style/DocMenuOptionTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:text="Add cover" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_doc_menu_doc_style" />
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/optionDivider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/addCoverContainer" />
+
+    <FrameLayout
+        android:id="@+id/archiveContainer"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/rectangle_doc_menu_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/optionDivider2">
+
+        <TextView
+            style="@style/DocMenuOptionTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:text="@string/archive" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_doc_menu_move_to_bin" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

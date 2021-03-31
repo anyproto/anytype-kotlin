@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.editor.model.Focusable
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule

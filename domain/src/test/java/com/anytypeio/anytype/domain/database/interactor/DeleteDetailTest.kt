@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.domain.database.interactor
 
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.common.CoroutineTestRule
+import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.domain.database.model.ContentDatabaseView
 import com.anytypeio.anytype.domain.database.model.DatabaseView
 import com.anytypeio.anytype.domain.database.model.Detail

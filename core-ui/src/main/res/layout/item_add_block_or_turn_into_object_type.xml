@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/iconWidget"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:emojiSize="28dp"
+        app:imageSize="@dimen/dp_48"
+        app:initialTextSize="28sp"
+        app:hasEmojiRoundedBackground="true"
+        android:layout_gravity="center_vertical"
+        tools:background="@drawable/circle_solid_default" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="12dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/inter_medium"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            tools:text="Charlie Chaplin" />
+
+        <TextView
+            android:id="@+id/tvSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/inter_regular"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            tools:text="Actor" />
+
+    </LinearLayout>
+
+</LinearLayout>

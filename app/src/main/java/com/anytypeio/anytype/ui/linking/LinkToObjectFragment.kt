@@ -14,7 +14,7 @@ import com.anytypeio.anytype.core_ui.layout.State
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.domain.block.model.Position
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModelFactory

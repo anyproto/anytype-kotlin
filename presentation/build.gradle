@@ -16,6 +16,35 @@ android {
 
     testOptions.unitTests.includeAndroidResources = true
 
+    flavorDimensions 'default'
+    productFlavors {
+        stable {
+            dimension 'default'
+        }
+        experimental{
+            dimension 'default'
+        }
+    }
+
+    sourceSets {
+        stable {
+            java {
+                srcDirs 'src/stable/java'
+            }
+            res {
+                srcDirs 'src/stable/res'
+            }
+        }
+        experimental {
+            java {
+                srcDirs 'src/experimental/java'
+            }
+            res {
+                srcDirs 'src/experimental/res'
+            }
+        }
+    }
+
     androidExtensions {
         experimental = true
     }
@@ -27,6 +56,7 @@ dependencies {
     implementation project(':core-utils')
     implementation project(':library-emojifier')
     implementation project(':analytics')
+    implementation project(':core-models')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
@@ -39,6 +69,8 @@ dependencies {
     implementation applicationDependencies.viewModelExtensions
 
     implementation applicationDependencies.timber
+
+    implementation applicationDependencies.urlcleaner
 
     implementation analyticsDependencies.amplitude
 

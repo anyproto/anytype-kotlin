@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.middleware.config
 
 import anytype.Rpc.Config
-import com.anytypeio.anytype.data.auth.model.ConfigEntity
 import com.anytypeio.anytype.data.auth.repo.config.Configurator
 import service.Service
 
+typealias CoreConfig = com.anytypeio.anytype.core_models.Config
 /**
  * Obtains middleware configuration data.
  */
@@ -12,9 +12,9 @@ class DefaultConfigurator : Configurator {
 
     override fun configure() = get()
 
-    private val builder: () -> ConfigEntity = {
+    private val builder: () -> CoreConfig = {
         fetchConfig().let { response ->
-            ConfigEntity(
+            CoreConfig(
                 home = response.homeBlockId,
                 gateway = response.gatewayUrl,
                 profile = response.profileBlockId
@@ -22,7 +22,7 @@ class DefaultConfigurator : Configurator {
         }
     }
 
-    private var instance: ConfigEntity? = null
+    private var instance: CoreConfig? = null
 
     fun get() = instance ?: builder().also { instance = it }
 

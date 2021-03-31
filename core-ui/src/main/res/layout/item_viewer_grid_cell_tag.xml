@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/viewer_grid_header_width"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tag0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/rect_dv_cell_tag_item"
+        android:visibility="gone"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="@dimen/dp_12"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="S"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tag1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/rect_dv_cell_tag_item"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/tag0"
+        app:layout_constraintStart_toEndOf="@+id/tag0"
+        app:layout_constraintTop_toTopOf="@+id/tag0"
+        tools:text="A"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tag2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/rect_dv_cell_tag_item"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/tag0"
+        app:layout_constraintStart_toEndOf="@+id/tag1"
+        app:layout_constraintTop_toTopOf="@+id/tag0"
+        tools:text="T"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tag3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/rect_dv_cell_tag_item"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/tag0"
+        app:layout_constraintStart_toEndOf="@+id/tag2"
+        app:layout_constraintTop_toTopOf="@+id/tag0"
+        tools:text="D"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tag4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/rect_dv_cell_tag_item"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/tag0"
+        app:layout_constraintStart_toEndOf="@+id/tag3"
+        app:layout_constraintTop_toTopOf="@+id/tag0"
+        tools:text="Z"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

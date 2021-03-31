@@ -15,14 +15,15 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.extensions.avatarColor
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.firstDigitByHash
 import com.anytypeio.anytype.core_utils.ext.parsePath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.common.Url
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.ActionMenuAdapter
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.ActionMenuDivider
 import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuViewModel
@@ -34,6 +35,8 @@ import javax.inject.Inject
 
 class ProfileIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_profile_icon),
     Observer<ViewState> {
+
+    private val ctx get() = arg<Id>(ARG_CONTEXT_ID_KEY)
 
     /**
      * avatar image url
@@ -208,11 +211,11 @@ class ProfileIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_profi
     }
 
     override fun injectDependencies() {
-        componentManager().documentIconActionMenuComponent.get().inject(this)
+        componentManager().documentIconActionMenuComponent.get(ctx).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().documentIconActionMenuComponent.release()
+        componentManager().documentIconActionMenuComponent.release(ctx)
     }
 
     private fun exit() {
@@ -224,13 +227,15 @@ class ProfileIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_profi
             y: Float?,
             image: String?,
             name: String?,
-            target: String
+            target: String,
+            ctx: Id
         ): ProfileIconActionMenuFragment = ProfileIconActionMenuFragment().apply {
             arguments = bundleOf(
                 Y_KEY to y,
                 IMAGE_KEY to image,
                 NAME_KEY to name,
-                ARG_TARGET_ID_KEY to target
+                ARG_TARGET_ID_KEY to target,
+                ARG_CONTEXT_ID_KEY to ctx
             )
         }
 
@@ -242,6 +247,7 @@ class ProfileIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_profi
         private const val ANIM_START_DELAY = 200L
         private const val ANIM_DURATION = 200L
         private const val ARG_TARGET_ID_KEY = "arg.picker.target.id"
+        private const val ARG_CONTEXT_ID_KEY = "arg.picker.target.context"
         private const val MISSING_TARGET_ERROR = "Missing target id"
     }
 }

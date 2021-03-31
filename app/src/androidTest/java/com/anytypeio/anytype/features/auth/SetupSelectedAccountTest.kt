@@ -11,6 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.device.PathProvider
@@ -51,6 +52,9 @@ class SetupSelectedAccountTest {
     lateinit var authRepository: AuthRepository
 
     @Mock
+    lateinit var analytics: Analytics
+
+    @Mock
     lateinit var pathProvider: PathProvider
 
     @Before
@@ -62,7 +66,8 @@ class SetupSelectedAccountTest {
         TestSetupSelectedAccountFragment.testViewModelFactory =
             SetupSelectedAccountViewModelFactory(
                 startAccount = startAccount,
-                pathProvider = pathProvider
+                pathProvider = pathProvider,
+                analytics = analytics
             )
     }
 

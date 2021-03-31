@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.page.editor.styling
 
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
 
@@ -25,6 +25,7 @@ fun Block.getStyleConfig(focus: Boolean?, selection: IntRange?): StyleConfig =
         is Block.Content.Link -> cnt.getLinkStyleConfig()
         is Block.Content.File -> cnt.getFileStyleConfig(focus)
         is Block.Content.Bookmark -> cnt.getBookmarkStyleConfig(focus)
+        is Block.Content.RelationBlock -> cnt.getRelationStyleConfig()
         else -> StyleConfig.emptyState()
     }
 
@@ -36,6 +37,12 @@ fun Block.Content.Bookmark.getBookmarkStyleConfig(focus: Boolean?): StyleConfig 
 fun Block.Content.Bookmark.getStyleConfig(): StyleConfig = StyleConfig.emptyState()
 
 fun Block.Content.Link.getLinkStyleConfig(): StyleConfig = StyleConfig(
+    visibleTypes = listOf(StylingType.BACKGROUND),
+    enabledMarkup = emptyList(),
+    enabledAlignment = emptyList()
+)
+
+fun Block.Content.RelationBlock.getRelationStyleConfig(): StyleConfig = StyleConfig(
     visibleTypes = listOf(StylingType.BACKGROUND),
     enabledMarkup = emptyList(),
     enabledAlignment = emptyList()

@@ -26,4 +26,12 @@ sealed class Either<out L, out R> {
         is Left -> failure(a)
         is Right -> success(b)
     }
+
+    suspend fun process(
+        failure: suspend (L) -> Unit,
+        success: suspend (R) -> Unit
+    ): Unit = when (this) {
+        is Left -> failure(a)
+        is Right -> success(b)
+    }
 }

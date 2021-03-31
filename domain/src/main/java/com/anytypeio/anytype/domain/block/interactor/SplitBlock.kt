@@ -2,13 +2,13 @@ package com.anytypeio.anytype.domain.block.interactor
 
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.BlockSplitMode
-import com.anytypeio.anytype.domain.block.model.Command
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.BlockSplitMode
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.event.model.Payload
-import com.anytypeio.anytype.domain.ext.content
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.ext.content
 
 /**
  * Use-case for splitting the target block into two blocks based on cursor position.

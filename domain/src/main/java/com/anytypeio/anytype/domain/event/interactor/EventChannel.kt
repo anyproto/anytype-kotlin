@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.domain.event.interactor
 
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.event.model.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Event
 import kotlinx.coroutines.flow.Flow
 
 interface EventChannel {

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.page.modals.actions
 import androidx.core.os.bundleOf
 import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.Types
 
 object BlockActionToolbarFactory {
 
@@ -39,7 +40,57 @@ object BlockActionToolbarFactory {
         is BlockView.Title.Document -> TODO()
         is BlockView.Title.Profile -> TODO()
         is BlockView.Title.Archive -> TODO()
+        is BlockView.Relation.Placeholder -> newInstance(block, dimensions)
+        is BlockView.Relation.Related -> newInstance(block, dimensions)
     }
+
+    fun newInstance(
+        block: BlockView.Relation.Related,
+        dimensions: BlockDimensions
+    ) = when (block.getViewType()) {
+        Types.HOLDER_RELATION_DEFAULT -> RelationDefaultActionToolbar().apply {
+            arguments = bundleOf(
+                BlockActionToolbar.ARG_BLOCK to block,
+                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
+            )
+        }
+        Types.HOLDER_RELATION_STATUS -> RelationStatusActionToolbar().apply {
+            arguments = bundleOf(
+                BlockActionToolbar.ARG_BLOCK to block,
+                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
+            )
+        }
+        Types.HOLDER_RELATION_TAGS -> RelationTagActionToolbar().apply {
+            arguments = bundleOf(
+                BlockActionToolbar.ARG_BLOCK to block,
+                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
+            )
+        }
+        Types.HOLDER_RELATION_OBJECT -> RelationObjectActionToolbar().apply {
+            arguments = bundleOf(
+                BlockActionToolbar.ARG_BLOCK to block,
+                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
+            )
+        }
+        Types.HOLDER_RELATION_FILE -> RelationFileActionToolbar().apply {
+            arguments = bundleOf(
+                BlockActionToolbar.ARG_BLOCK to block,
+                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
+            )
+        }
+        else -> throw IllegalArgumentException("Wrong BlockView.Relation type :${block.getViewType()}")
+    }
+
+    fun newInstance(
+        block: BlockView.Relation.Placeholder,
+        dimensions: BlockDimensions
+    ): RelationPlaceholderActionToolbar =
+        RelationPlaceholderActionToolbar().apply {
+            arguments = bundleOf(
+                BlockActionToolbar.ARG_BLOCK to block,
+                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
+            )
+        }
 
     fun newInstance(block: BlockView.Page, dimensions: BlockDimensions): PageBlockActionToolbar =
         PageBlockActionToolbar().apply {

@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.page.editor
 
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Block.Content.Text.Mark
-import com.anytypeio.anytype.domain.ext.addMark
-import com.anytypeio.anytype.domain.ext.content
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
+import com.anytypeio.anytype.core_models.ext.addMark
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
 
 fun Block.updateText(update: TextUpdate): Block {

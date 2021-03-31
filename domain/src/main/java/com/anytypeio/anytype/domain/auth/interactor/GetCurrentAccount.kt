@@ -4,7 +4,7 @@ import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.event.model.Event
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 
 /** Use case for getting currently selected user account.

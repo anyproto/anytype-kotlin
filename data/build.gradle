@@ -2,6 +2,7 @@ apply plugin: 'kotlin'
 
 dependencies {
     implementation project(':domain')
+    implementation project(':core-models')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting

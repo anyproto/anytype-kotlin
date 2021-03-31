@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_utils.ext
 
 import android.content.Context
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 
 fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
@@ -56,5 +57,14 @@ inline fun <T> List<T>.replace(replacement: (T) -> T, target: (T) -> Boolean): L
 
 fun Context.toast(msg: CharSequence) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 fun Fragment.toast(msg: CharSequence) = requireActivity().toast(msg)
+fun Fragment.dismissInnerDialog(tag: String) {
+    val fragment = childFragmentManager.findFragmentByTag(tag)
+    (fragment as? DialogFragment)?.dismiss()
+}
 
 fun String.isEndLineClick(range: IntRange): Boolean = range.first == length && range.last == length
+
+inline fun <reified T> Fragment.withParent(action: T.() -> Unit) {
+    check(parentFragment is T) { "Parent is not ${T::class.java}. Please specify correct type" }
+    (parentFragment as T).action()
+}

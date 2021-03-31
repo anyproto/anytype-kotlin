@@ -1,7 +1,8 @@
 package com.anytypeio.anytype.presentation.desktop
 
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.ext.getChildrenIdsList
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardStateMachine.*
@@ -64,7 +65,9 @@ sealed class HomeDashboardStateMachine {
             val context: String,
             val blocks: List<Block>,
             val details: Block.Details,
-            val builder: UrlBuilder
+            val builder: UrlBuilder,
+            val objectTypes: List<ObjectType>,
+            val objectTypePerObject: Map<String, String>
         ) : Event()
 
         data class OnShowProfile(
@@ -139,7 +142,9 @@ sealed class HomeDashboardStateMachine {
 
                     val new = event.blocks.toDashboardViews(
                         details = event.details,
-                        builder = event.builder
+                        builder = event.builder,
+                        objectTypes = event.objectTypes,
+                        objectTypePerObject = event.objectTypePerObject
                     )
 
                     val childrenIdsList = event.blocks.getChildrenIdsList(

@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.domain.page.navigation
 
+import com.anytypeio.anytype.core_models.DocumentInfo
+import com.anytypeio.anytype.core_models.PageInfoWithLinks
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -16,10 +18,16 @@ class GetPageInfoWithLinks(private val repo: BlockRepository) :
                     pageInfoWithLinks = it.copy(
                         links = it.links.copy(
                             outbound = it.links.outbound.filterNot { doc ->
-                                doc.fields.isArchived == true || doc.type == DocumentInfo.Type.SET || doc.type == DocumentInfo.Type.ARCHIVE
+                                doc.fields.isArchived == true
+                                    || doc.type == DocumentInfo.Type.SET
+                                    || doc.type == DocumentInfo.Type.ARCHIVE
+                                    || doc.type == DocumentInfo.Type.OBJECT_TYPE
                             },
                             inbound = it.links.inbound.filterNot { doc ->
-                                doc.fields.isArchived == true || doc.type == DocumentInfo.Type.SET || doc.type == DocumentInfo.Type.ARCHIVE
+                                doc.fields.isArchived == true
+                                    || doc.type == DocumentInfo.Type.SET
+                                    || doc.type == DocumentInfo.Type.ARCHIVE
+                                    || doc.type == DocumentInfo.Type.OBJECT_TYPE
                             }
                         )
                     )

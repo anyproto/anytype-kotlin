@@ -5,12 +5,11 @@ import anytype.Rpc
 import anytype.model.Block
 import anytype.model.Range
 import com.anytypeio.anytype.common.MockDataFactory
-import com.anytypeio.anytype.data.auth.model.BlockEntity
-import com.anytypeio.anytype.data.auth.model.CommandEntity
-import com.anytypeio.anytype.data.auth.model.PositionEntity
+import com.anytypeio.anytype.core_models.BlockSplitMode
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.interactor.MiddlewareFactory
-import com.anytypeio.anytype.middleware.interactor.MiddlewareMapper
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
@@ -20,6 +19,12 @@ import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+typealias CBlock = com.anytypeio.anytype.core_models.Block
+typealias CFields = com.anytypeio.anytype.core_models.Block.Fields
+typealias CBlockFileType = com.anytypeio.anytype.core_models.Block.Content.File.Type
+typealias CBlockPrototypeText = com.anytypeio.anytype.core_models.Block.Prototype.Text
+typealias CBlockStyle = com.anytypeio.anytype.core_models.Block.Content.Text.Style
+
 class MiddlewareTest {
 
     @Mock
@@ -27,13 +32,12 @@ class MiddlewareTest {
 
     private lateinit var middleware: Middleware
 
-    private val mapper = MiddlewareMapper()
     private val factory = MiddlewareFactory()
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        middleware = Middleware(service, factory, mapper)
+        middleware = Middleware(service, factory)
     }
 
     @Test
@@ -60,11 +64,13 @@ class MiddlewareTest {
 
         // SETUP
 
-        val command = CommandEntity.CreateDocument(
+        val command = Command.CreateDocument(
             context = MockDataFactory.randomUuid(),
             target = MockDataFactory.randomUuid(),
-            position = PositionEntity.INNER,
-            emoji = null
+            position = Position.INNER,
+            emoji = null,
+            type = null,
+            layout = null
         )
 
         val response = Rpc.Block.CreatePage.Response(
@@ -108,11 +114,13 @@ class MiddlewareTest {
 
         val emoji = "🎒"
 
-        val command = CommandEntity.CreateDocument(
+        val command = Command.CreateDocument(
             context = MockDataFactory.randomUuid(),
             target = MockDataFactory.randomUuid(),
-            position = PositionEntity.INNER,
-            emoji = emoji
+            position = Position.INNER,
+            emoji = emoji,
+            type = null,
+            layout = null
         )
 
         val response = Rpc.Block.CreatePage.Response(
@@ -154,11 +162,11 @@ class MiddlewareTest {
 
         // SETUP
 
-        val command = CommandEntity.Replace(
+        val command = Command.Replace(
             context = MockDataFactory.randomUuid(),
             target = MockDataFactory.randomUuid(),
-            prototype = BlockEntity.Prototype.Text(
-                style = BlockEntity.Content.Text.Style.NUMBERED
+            prototype = CBlockPrototypeText(
+                style = CBlockStyle.NUMBERED
             )
         )
 
@@ -203,7 +211,7 @@ class MiddlewareTest {
 
         // SETUP
 
-        val command = CommandEntity.SetDocumentEmojiIcon(
+        val command = Command.SetDocumentEmojiIcon(
             context = MockDataFactory.randomUuid(),
             target = MockDataFactory.randomUuid(),
             emoji = MockDataFactory.randomString()
@@ -248,7 +256,7 @@ class MiddlewareTest {
 
         // SETUP
 
-        val command = CommandEntity.SetDocumentImageIcon(
+        val command = Command.SetDocumentImageIcon(
             context = MockDataFactory.randomUuid(),
             hash = MockDataFactory.randomUuid()
         )
@@ -287,7 +295,7 @@ class MiddlewareTest {
 
         // SETUP
 
-        val command = CommandEntity.UpdateTitle(
+        val command = Command.UpdateTitle(
             context = MockDataFactory.randomUuid(),
             title = MockDataFactory.randomString()
         )
@@ -322,9 +330,9 @@ class MiddlewareTest {
 
         // SETUP
 
-        val command = CommandEntity.UpdateStyle(
+        val command = Command.UpdateStyle(
             context = MockDataFactory.randomString(),
-            style = BlockEntity.Content.Text.Style.CHECKBOX,
+            style = CBlockStyle.CHECKBOX,
             targets = listOf(
                 MockDataFactory.randomString(),
                 MockDataFactory.randomString()
@@ -361,12 +369,12 @@ class MiddlewareTest {
 
         val context = MockDataFactory.randomUuid()
 
-        val command = CommandEntity.Move(
+        val command = Command.Move(
             contextId = context,
-            dropTargetContextId = context,
+            targetContextId = context,
             blockIds = listOf(MockDataFactory.randomUuid()),
-            dropTargetId = MockDataFactory.randomUuid(),
-            position = PositionEntity.TOP
+            targetId = MockDataFactory.randomUuid(),
+            position = Position.TOP
         )
 
         val position = Block.Position.Top
@@ -376,7 +384,7 @@ class MiddlewareTest {
             targetContextId = command.contextId,
             position = position,
             blockIds = command.blockIds,
-            dropTargetId = command.dropTargetId
+            dropTargetId = command.targetId
         )
 
         service.stub {
@@ -398,7 +406,7 @@ class MiddlewareTest {
 
         val context = MockDataFactory.randomUuid()
 
-        val command = CommandEntity.Paste(
+        val command = Command.Paste(
             context = context,
             focus = MockDataFactory.randomUuid(),
             selected = listOf(MockDataFactory.randomUuid(), MockDataFactory.randomUuid()),
@@ -438,12 +446,12 @@ class MiddlewareTest {
 
         val context = MockDataFactory.randomUuid()
 
-        val command = CommandEntity.Split(
+        val command = Command.Split(
             context = context,
             range = MockDataFactory.randomInt()..MockDataFactory.randomInt(),
-            style = BlockEntity.Content.Text.Style.CHECKBOX,
+            style = CBlockStyle.CHECKBOX,
             target = MockDataFactory.randomUuid(),
-            mode = BlockEntity.Content.Text.SplitMode.BOTTOM
+            mode = BlockSplitMode.BOTTOM
         )
 
         val request = Rpc.Block.Split.Request(
@@ -473,9 +481,9 @@ class MiddlewareTest {
 
         val path = MockDataFactory.randomString()
 
-        val command = CommandEntity.UploadFile(
+        val command = Command.UploadFile(
             path = path,
-            type = BlockEntity.Content.File.Type.IMAGE
+            type = CBlockFileType.IMAGE
         )
 
         val request = Rpc.UploadFile.Request(
@@ -502,9 +510,9 @@ class MiddlewareTest {
 
         val path = MockDataFactory.randomString()
 
-        val command = CommandEntity.UploadFile(
+        val command = Command.UploadFile(
             path = path,
-            type = BlockEntity.Content.File.Type.FILE
+            type = CBlockFileType.FILE
         )
 
         val request = Rpc.UploadFile.Request(
@@ -531,9 +539,9 @@ class MiddlewareTest {
 
         val path = MockDataFactory.randomString()
 
-        val command = CommandEntity.UploadFile(
+        val command = Command.UploadFile(
             path = path,
-            type = BlockEntity.Content.File.Type.VIDEO
+            type = CBlockFileType.VIDEO
         )
 
         val request = Rpc.UploadFile.Request(
@@ -563,12 +571,12 @@ class MiddlewareTest {
         val block1 = MockDataFactory.randomUuid()
         val block2 = MockDataFactory.randomUuid()
 
-        val command = CommandEntity.SetFields(
+        val command = Command.SetFields(
             context = ctx,
             fields = listOf(
                 Pair(
                     block1,
-                    BlockEntity.Fields(
+                    CFields(
                         map = mutableMapOf(
                             "lang" to "kotlin"
                         )
@@ -576,7 +584,7 @@ class MiddlewareTest {
                 ),
                 Pair(
                     block2,
-                    BlockEntity.Fields(
+                    CFields(
                         map = mutableMapOf(
                             "lang" to "python"
                         )

@@ -1,8 +1,9 @@
 package com.anytypeio.anytype.data.auth.repo.config
 
-import com.anytypeio.anytype.data.auth.model.ConfigEntity
+import com.anytypeio.anytype.core_models.Config
+
 
 interface Configurator {
-    fun configure(): ConfigEntity
+    fun configure(): Config
     fun release()
 }

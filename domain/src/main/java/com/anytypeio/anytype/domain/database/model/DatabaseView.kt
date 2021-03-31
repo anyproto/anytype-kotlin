@@ -2,16 +2,14 @@ package com.anytypeio.anytype.domain.database.model
 
 import java.io.Serializable
 
+@Deprecated("Legacy")
 enum class ViewType : Serializable { GRID, BOARD, GALLERY, LIST }
-enum class SortType { ASC, DESC }
+@Deprecated("Legacy")
 enum class FilterTypeCondition { NONE, AND, OR }
+@Deprecated("Legacy")
 enum class FilterTypeEquality { EQUAL, NOT_EQUAL, IN, NOT_IN, GREATER, LESSER, LIKE, NOT_LIKE }
 
-data class Sort(
-    val detailId: String,
-    val type: SortType
-)
-
+@Deprecated("Legacy")
 data class Filter(
     val detailId: String,
     val condition: FilterTypeCondition,
@@ -19,19 +17,21 @@ data class Filter(
     val value: Any
 )
 
+@Deprecated("Legacy")
 data class Group(
     val details: List<Detail>
 )
 
+@Deprecated("Legacy")
 data class Display(
     val id: String,
     val name: String,
     val type: ViewType,
-    val sorts: List<Sort> = emptyList(),
     val filters: List<Filter> = emptyList(),
     val groups: List<Group> = emptyList()
 )
 
+@Deprecated("Legacy")
 data class ContentDatabaseView(
     val databaseId: String,
     val details: List<Detail>,
@@ -39,4 +39,5 @@ data class ContentDatabaseView(
     val data: List<HashMap<String, Any>>
 )
 
+@Deprecated("Legacy")
 data class DatabaseView(val content: ContentDatabaseView)

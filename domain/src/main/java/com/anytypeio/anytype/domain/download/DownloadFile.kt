@@ -2,7 +2,7 @@ package com.anytypeio.anytype.domain.download
 
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.download.DownloadFile.Params
 import kotlin.coroutines.CoroutineContext
 

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:background="@drawable/rectangle_default_page_logo_background"
+        android:transitionName="@string/logo_transition"
+        android:id="@+id/documentIconContainer"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="32dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp">
+
+        <ImageView
+            android:id="@+id/imageIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_set_big"/>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/title"
+        android:fontFamily="@font/graphik_semibold"
+        style="@style/BlockTitleContentStyle"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="@string/new_set"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_regular"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:textColor="#ACA996"
+        android:textSize="15sp"
+        android:text="@string/choose_a_object_type_for_this_set" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/createNewContainer"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="1dp"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/pageGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="0dp" />
+
+        <ImageView
+            android:id="@+id/linkEmoji"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_plus"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/pageGuideline"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </ImageView>
+
+        <TextView
+            android:id="@+id/pageTitle"
+            style="@style/BlockPageContentStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/linkEmoji"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/create_new_object_type"
+            tools:text="Partnership terms" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

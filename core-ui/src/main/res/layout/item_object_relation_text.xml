@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:id="@+id/textInputField"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@null"
+        android:textCursorDrawable="@drawable/cursor"
+        android:fontFamily="@font/inter_regular"
+        android:imeOptions="actionDone"
+        android:gravity="start|center_vertical"
+        android:hint="@string/dv_cell_description_hint"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnAction"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginEnd="@dimen/dp_20"
+        tools:text="Anytype is a next generation software that breaks down barriers between applications, gives back privacy and data ownership to users."
+        tools:visibility="visible" />
+
+    <FrameLayout
+        android:id="@+id/btnAction"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/circle_cell_action"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textInputField"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/ivActionIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            tools:src="@drawable/ic_cell_relation_go_to_link" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

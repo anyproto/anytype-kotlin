@@ -3,7 +3,7 @@ package com.anytypeio.anytype.domain.auth
 import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.domain.common.CoroutineTestRule
+import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking

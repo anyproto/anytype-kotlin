@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.domain.dashboard.model
 
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 
 data class HomeDashboard(
     val id: String,

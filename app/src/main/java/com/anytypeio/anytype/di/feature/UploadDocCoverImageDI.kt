@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.presentation.page.cover.UploadDocCoverImageViewModel
-import com.anytypeio.anytype.presentation.util.Bridge
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.page.cover.UploadCoverImageFragment
 import dagger.Module
 import dagger.Provides
@@ -31,7 +31,7 @@ object UploadDocCoverImageModule {
     @PerModal
     fun provideViewModelFactory(
         setDocCoverImage: SetDocCoverImage,
-        payloadDispatcher: Bridge<Payload>,
+        payloadDispatcher: Dispatcher<Payload>,
     ): UploadDocCoverImageViewModel.Factory = UploadDocCoverImageViewModel.Factory(
         setDocCoverImage = setDocCoverImage,
         payloadDispatcher = payloadDispatcher

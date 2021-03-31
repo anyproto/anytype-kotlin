@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
 import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingType

@@ -30,11 +30,12 @@ import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
-import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.UpdateTitle
@@ -71,6 +72,7 @@ class Orchestrator(
     private val paste: Paste,
     private val undo: Undo,
     private val redo: Redo,
+    private val setRelationKey: SetRelationKey,
     val memory: Editor.Memory,
     val stores: Editor.Storage,
     val proxies: Editor.Proxer,
@@ -716,6 +718,18 @@ class Orchestrator(
                             defaultPayloadWithEvent(Pair(payload, event))
                         },
                         failure = defaultOnError
+                    )
+                }
+                is Intent.Document.SetRelationKey -> {
+                    setRelationKey(
+                        params = SetRelationKey.Params(
+                            contextId = intent.context,
+                            blockId = intent.blockId,
+                            key = intent.key
+                        )
+                    ).process(
+                        failure = defaultOnError,
+                        success = { payload -> defaultPayload(payload) }
                     )
                 }
             }

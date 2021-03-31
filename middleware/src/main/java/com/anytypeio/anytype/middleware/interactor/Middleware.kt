@@ -4,12 +4,17 @@ import anytype.Rpc
 import anytype.Rpc.BlockList
 import anytype.Rpc.BlockList.Set.Fields.Request.BlockField
 import anytype.model.Block
-import anytype.model.PageInfo
-import anytype.model.PageInfoWithLinks
+import anytype.model.ObjectInfo
+import anytype.model.ObjectInfoWithLinks
 import anytype.model.Range
-import com.anytypeio.anytype.data.auth.model.*
+import anytype.relation.ObjectType
+import anytype.relation.Relation
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.const.Constants
+import com.anytypeio.anytype.middleware.mappers.toCoreModels
+import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
+import com.anytypeio.anytype.middleware.mappers.toPayload
 import com.anytypeio.anytype.middleware.model.CreateAccountResponse
 import com.anytypeio.anytype.middleware.model.CreateWalletResponse
 import com.anytypeio.anytype.middleware.model.SelectAccountResponse
@@ -19,17 +24,18 @@ import java.util.*
 
 class Middleware(
     private val service: MiddlewareService,
-    private val factory: MiddlewareFactory,
-    private val mapper: MiddlewareMapper
+    private val factory: MiddlewareFactory
 ) {
     private val iconEmojiKey = "iconEmoji"
     private val iconImageKey = "iconImage"
     private val coverIdKey = "coverId"
     private val coverTypeKey = "coverType"
     private val nameKey = "name"
+    private val typeKey = "type"
+    private val layoutKey = "layout"
 
     @Throws(Exception::class)
-    fun getConfig(): ConfigEntity {
+    fun getConfig(): Config {
 
         val request = Rpc.Config.Get.Request()
 
@@ -39,10 +45,10 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return ConfigEntity(
-            response.homeBlockId,
-            response.profileBlockId,
-            response.gatewayUrl
+        return Config(
+            home = response.homeBlockId,
+            profile = response.profileBlockId,
+            gateway = response.gatewayUrl
         )
     }
 
@@ -153,7 +159,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun openDashboard(contextId: String, id: String): PayloadEntity {
+    fun openDashboard(contextId: String, id: String): Payload {
         val request: Rpc.Block.Open.Request = Rpc.Block.Open.Request(
             contextId = contextId,
             blockId = id
@@ -162,17 +168,17 @@ class Middleware(
         val response = service.blockOpen(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun openBlock(id: String): PayloadEntity {
+    fun openBlock(id: String): Payload {
         val request = Rpc.Block.Open.Request(blockId = id)
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockOpen(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
@@ -215,7 +221,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun updateDocumentTitle(command: CommandEntity.UpdateTitle) {
+    fun updateDocumentTitle(command: Command.UpdateTitle) {
 
         val detail = Rpc.Block.Set.Details.Detail(
             key = nameKey,
@@ -262,7 +268,7 @@ class Middleware(
         context: String,
         target: String,
         isChecked: Boolean
-    ): PayloadEntity {
+    ): Payload {
         val request = Rpc.Block.Set.Text.Checked.Request(
             contextId = context,
             blockId = target,
@@ -272,13 +278,13 @@ class Middleware(
         val response = service.blockSetTextChecked(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun updateTextStyle(command: CommandEntity.UpdateStyle): PayloadEntity {
+    fun updateTextStyle(command: Command.UpdateStyle): Payload {
 
-        val style = mapper.toMiddleware(command.style)
+        val style = command.style.toMiddlewareModel()
 
         val request: BlockList.Set.Text.Style.Request = BlockList.Set.Text.Style.Request(
             style = style,
@@ -292,11 +298,11 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun updateTextColor(command: CommandEntity.UpdateTextColor): PayloadEntity {
+    fun updateTextColor(command: Command.UpdateTextColor): Payload {
         val request = Rpc.Block.Set.Text.Color.Request(
             contextId = command.context,
             color = command.color,
@@ -306,11 +312,11 @@ class Middleware(
         val response = service.blockSetTextColor(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun updateBackgroundColor(command: CommandEntity.UpdateBackgroundColor): PayloadEntity {
+    fun updateBackgroundColor(command: Command.UpdateBackgroundColor): Payload {
         val request = BlockList.Set.BackgroundColor.Request(
             contextId = command.context,
             blockIds = command.targets,
@@ -320,13 +326,13 @@ class Middleware(
         val response = service.blockListSetBackgroundColor(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun updateAlignment(command: CommandEntity.UpdateAlignment): PayloadEntity {
+    fun updateAlignment(command: Command.UpdateAlignment): Payload {
 
-        val align: Block.Align = mapper.toMiddleware(command.alignment)
+        val align: Block.Align = command.alignment.toMiddlewareModel()
 
         val request = BlockList.Set.Align.Request(
             contextId = command.context,
@@ -340,11 +346,11 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun uploadBlock(command: CommandEntity.UploadBlock): PayloadEntity {
+    fun uploadBlock(command: Command.UploadBlock): Payload {
         val request = Rpc.Block.Upload.Request(
             filePath = command.filePath,
             url = command.url,
@@ -355,31 +361,31 @@ class Middleware(
         val response = service.blockUpload(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
     fun createBlock(
         contextId: String,
         targetId: String,
-        position: PositionEntity,
-        prototype: BlockEntity.Prototype
-    ): Pair<String, PayloadEntity> {
+        position: Position,
+        prototype: com.anytypeio.anytype.core_models.Block.Prototype
+    ): Pair<String, Payload> {
         val request = Rpc.Block.Create.Request(
             contextId = contextId,
             targetId = targetId,
-            position = mapper.toMiddleware(position),
+            position = position.toMiddlewareModel(),
             block = factory.create(prototype)
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockCreate(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return Pair(response.blockId, mapper.toPayload(response.event))
+        return Pair(response.blockId, response.event.toPayload())
     }
 
     @Throws(Exception::class)
-    fun replace(command: CommandEntity.Replace): Pair<String, PayloadEntity> {
+    fun replace(command: Command.Replace): Pair<String, Payload> {
 
         val model: Block = factory.create(command.prototype)
 
@@ -396,19 +402,19 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return Pair(response.blockId, mapper.toPayload(response.event))
+        return Pair(response.blockId, response.event.toPayload())
     }
 
     @Throws(Exception::class)
-    fun createDocument(command: CommandEntity.CreateDocument): Triple<String, String, PayloadEntity> {
+    fun createDocument(command: Command.CreateDocument): Triple<String, String, Payload> {
 
-        val details = if (command.emoji != null) {
-            mapOf(iconEmojiKey to command.emoji)
-        } else {
-            mapOf()
-        }
+        val details: MutableMap<String, Any> = mutableMapOf()
 
-        val position: Block.Position = mapper.toMiddleware(command.position)
+        command.emoji?.let { details[iconEmojiKey] = it }
+        command.type?.let { details[typeKey] = it }
+        command.layout?.let { details[layoutKey] = it.toMiddlewareModel().value.toDouble() }
+
+        val position: Block.Position = command.position.toMiddlewareModel()
 
         val request = Rpc.Block.CreatePage.Request(
             contextId = command.context,
@@ -426,17 +432,17 @@ class Middleware(
         return Triple(
             response.blockId,
             response.targetId,
-            mapper.toPayload(response.event)
+            response.event.toPayload()
         )
     }
 
     @Throws(Exception::class)
-    fun createPage(command: CommandEntity.CreatePage): String {
+    fun createPage(command: Command.CreateNewDocument): String {
 
         val details: MutableMap<String, Any> = mutableMapOf()
 
         command.emoji?.let { details[iconEmojiKey] = it }
-        command.name?.let { details[nameKey] = it }
+        command.name.let { details[nameKey] = it }
 
         val request = Rpc.Page.Create.Request(details = details.toMap())
 
@@ -450,16 +456,16 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun move(command: CommandEntity.Move): PayloadEntity {
+    fun move(command: Command.Move): Payload {
 
-        val position: Block.Position = mapper.toMiddleware(command.position)
+        val position: Block.Position = command.position.toMiddlewareModel()
 
         val request: BlockList.Move.Request = BlockList.Move.Request(
             contextId = command.contextId,
-            targetContextId = command.dropTargetContextId,
+            targetContextId = command.targetContextId,
             position = position,
             blockIds = command.blockIds,
-            dropTargetId = command.dropTargetId
+            dropTargetId = command.targetId
         )
 
         if (BuildConfig.DEBUG) logRequest(request)
@@ -468,11 +474,11 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun duplicate(command: CommandEntity.Duplicate): Pair<String, PayloadEntity> {
+    fun duplicate(command: Command.Duplicate): Pair<String, Payload> {
         val request = BlockList.Duplicate.Request(
             contextId = command.context,
             targetId = command.original,
@@ -483,11 +489,11 @@ class Middleware(
         val response = service.blockListDuplicate(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return Pair(response.blockIds.first(), mapper.toPayload(response.event))
+        return Pair(response.blockIds.first(), response.event.toPayload())
     }
 
     @Throws(Exception::class)
-    fun unlink(command: CommandEntity.Unlink): PayloadEntity {
+    fun unlink(command: Command.Unlink): Payload {
         val request = Rpc.Block.Unlink.Request(
             contextId = command.context,
             blockIds = command.targets
@@ -496,11 +502,11 @@ class Middleware(
         val response = service.blockUnlink(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun merge(command: CommandEntity.Merge): PayloadEntity {
+    fun merge(command: Command.Merge): Payload {
         val request = Rpc.Block.Merge.Request(
             contextId = command.context,
             firstBlockId = command.pair.first,
@@ -510,20 +516,20 @@ class Middleware(
         val response = service.blockMerge(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun split(command: CommandEntity.Split): Pair<String, PayloadEntity> {
+    fun split(command: Command.Split): Pair<String, Payload> {
 
-        val style = mapper.toMiddleware(command.style)
+        val style = command.style.toMiddlewareModel()
 
         val range = Range(
             from = command.range.first,
             to = command.range.last
         )
 
-        val mode = mapper.toMiddleware(command.mode)
+        val mode = command.mode.toMiddlewareModel()
 
         val request: Rpc.Block.Split.Request = Rpc.Block.Split.Request(
             contextId = command.context,
@@ -539,11 +545,11 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return Pair(response.blockId, mapper.toPayload(response.event))
+        return Pair(response.blockId, response.event.toPayload())
     }
 
     @Throws(Exception::class)
-    fun setDocumentEmojiIcon(command: CommandEntity.SetDocumentEmojiIcon): PayloadEntity {
+    fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload {
 
         val emojiDetail = Rpc.Block.Set.Details.Detail(
             key = iconEmojiKey,
@@ -566,11 +572,11 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun setDocumentImageIcon(command: CommandEntity.SetDocumentImageIcon): PayloadEntity {
+    fun setDocumentImageIcon(command: Command.SetDocumentImageIcon): Payload {
 
         val imageDetail = Rpc.Block.Set.Details.Detail(
             key = iconImageKey,
@@ -592,14 +598,14 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
     fun setDocumentCoverColor(
         ctx: String,
         color: String
-    ): PayloadEntity {
+    ): Payload {
         val coverIdDetail = Rpc.Block.Set.Details.Detail(
             key = coverIdKey,
             value = color
@@ -615,14 +621,14 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockSetDetails(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
     fun setDocumentCoverGradient(
         ctx: String,
         gradient: String
-    ): PayloadEntity {
+    ): Payload {
         val coverIdDetail = Rpc.Block.Set.Details.Detail(
             key = coverIdKey,
             value = gradient
@@ -638,14 +644,14 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockSetDetails(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
     fun setDocumentCoverImage(
         ctx: String,
         hash: String
-    ): PayloadEntity {
+    ): Payload {
         val coverIdDetail = Rpc.Block.Set.Details.Detail(
             key = coverIdKey,
             value = hash
@@ -661,11 +667,11 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockSetDetails(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun removeDocumentCover(ctx: String): PayloadEntity {
+    fun removeDocumentCover(ctx: String): Payload {
         val coverIdDetail = Rpc.Block.Set.Details.Detail(
             key = coverIdKey,
             value = null
@@ -681,11 +687,11 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockSetDetails(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun setupBookmark(command: CommandEntity.SetupBookmark): PayloadEntity {
+    fun setupBookmark(command: Command.SetupBookmark): Payload {
         val request: Rpc.Block.Bookmark.Fetch.Request = Rpc.Block.Bookmark.Fetch.Request(
             contextId = command.context,
             blockId = command.target,
@@ -695,31 +701,31 @@ class Middleware(
         val response = service.blockBookmarkFetch(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun undo(command: CommandEntity.Undo): PayloadEntity {
+    fun undo(command: Command.Undo): Payload {
         val request = Rpc.Block.Undo.Request(contextId = command.context)
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockUndo(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun redo(command: CommandEntity.Redo): PayloadEntity {
+    fun redo(command: Command.Redo): Payload {
         val request = Rpc.Block.Redo.Request(contextId = command.context)
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockRedo(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun archiveDocument(command: CommandEntity.ArchiveDocument) {
+    fun archiveDocument(command: Command.ArchiveDocument) {
         val request: BlockList.Set.Page.IsArchived.Request = BlockList.Set.Page.IsArchived.Request(
             contextId = command.context,
             blockIds = command.target,
@@ -731,7 +737,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun turnIntoDocument(command: CommandEntity.TurnIntoDocument): List<String> {
+    fun turnIntoDocument(command: Command.TurnIntoDocument): List<String> {
         val request = BlockList.ConvertChildrenToPages.Request(
             contextId = command.context,
             blockIds = command.targets
@@ -744,14 +750,14 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun paste(command: CommandEntity.Paste): Response.Clipboard.Paste {
+    fun paste(command: Command.Paste): Response.Clipboard.Paste {
 
         val range = Range(
             from = command.range.first,
             to = command.range.last
         )
 
-        val blocks: List<Block> = mapper.toMiddleware(command.blocks)
+        val blocks: List<Block> = command.blocks.map { it.toMiddlewareModel() }
 
         val request: Rpc.Block.Paste.Request = Rpc.Block.Paste.Request(
             contextId = command.context,
@@ -773,12 +779,12 @@ class Middleware(
             response.caretPosition,
             response.isSameBlockCaret,
             response.blockIds,
-            mapper.toPayload(response.event)
+            response.event.toPayload()
         )
     }
 
     @Throws(Exception::class)
-    fun copy(command: CommandEntity.Copy): Response.Clipboard.Copy {
+    fun copy(command: Command.Copy): Response.Clipboard.Copy {
 
         val range: Range? = command.range?.let {
             Range(
@@ -787,7 +793,7 @@ class Middleware(
             )
         }
 
-        val blocks: List<Block> = mapper.toMiddleware(command.blocks)
+        val blocks: List<Block> = command.blocks.map { it.toMiddlewareModel() }
 
         val request = Rpc.Block.Copy.Request(
             contextId = command.context,
@@ -804,19 +810,14 @@ class Middleware(
         return Response.Clipboard.Copy(
             response.textSlot,
             response.htmlSlot,
-            mapper.toEntity(response.anySlot)
+            response.anySlot.toCoreModels()
         )
     }
 
     @Throws(Exception::class)
-    fun uploadFile(command: CommandEntity.UploadFile): Response.Media.Upload {
+    fun uploadFile(command: Command.UploadFile): Response.Media.Upload {
 
-        val type = when (command.type) {
-            BlockEntity.Content.File.Type.FILE -> Block.Content.File.Type.File
-            BlockEntity.Content.File.Type.IMAGE -> Block.Content.File.Type.Image
-            BlockEntity.Content.File.Type.VIDEO -> Block.Content.File.Type.Video
-            BlockEntity.Content.File.Type.NONE -> Block.Content.File.Type.None
-        }
+        val type = command.type.toMiddlewareModel()
 
         val request = Rpc.UploadFile.Request(
             localPath = command.path,
@@ -843,28 +844,29 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks {
-        val request = Rpc.Navigation.GetPageInfoWithLinks.Request(
-            pageId = pageId
+    fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks {
+        val request = Rpc.Navigation.GetObjectInfoWithLinks.Request(
+            objectId = pageId
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.pageInfoWithLinks(request)
+        val response = service.objectInfoWithLinks(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        val info = response.page
+        val info = response.object_
 
         checkNotNull(info) { "Empty result" }
 
         return info
     }
 
-    fun getListPages(): List<PageInfo> {
-        val request = Rpc.Navigation.ListPages.Request()
+    @Throws(Exception::class)
+    fun listObjects(): List<ObjectInfo> {
+        val request = Rpc.Navigation.ListObjects.Request()
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.listPages(request)
+        val response = service.listObjects(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return response.pages
+        return response.objects
     }
 
     @Throws(Exception::class)
@@ -873,13 +875,13 @@ class Middleware(
         targetId: String,
         blockId: String,
         replace: Boolean,
-        positionEntity: PositionEntity
-    ): PayloadEntity {
+        positionCore: Position
+    ): Payload {
 
         val position: Block.Position = if (replace) {
             Block.Position.Replace
         } else {
-            mapper.toMiddleware(positionEntity)
+            positionCore.toMiddlewareModel()
         }
 
         val link = Block.Content.Link(targetBlockId = blockId)
@@ -899,15 +901,12 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun updateDividerStyle(command: CommandEntity.UpdateDivider): PayloadEntity {
-        val style = when (command.style) {
-            BlockEntity.Content.Divider.Style.LINE -> Block.Content.Div.Style.Line
-            BlockEntity.Content.Divider.Style.DOTS -> Block.Content.Div.Style.Dots
-        }
+    fun updateDividerStyle(command: Command.UpdateDivider): Payload {
+        val style = command.style.toMiddlewareModel()
 
         val request: BlockList.Set.Div.Style.Request = BlockList.Set.Div.Style.Request(
             contextId = command.context,
@@ -921,11 +920,11 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun setFields(command: CommandEntity.SetFields): PayloadEntity {
+    fun setFields(command: Command.SetFields): Payload {
 
         val fields: MutableList<BlockField> = ArrayList()
 
@@ -949,23 +948,351 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun getObjectTypes(): List<ObjectType> {
+        val request = Rpc.ObjectType.List.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectTypeList(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.objectTypes
+    }
+
+    @Throws(Exception::class)
+    fun objectTypeCreate(prototype: com.anytypeio.anytype.core_models.ObjectType.Prototype): ObjectType {
+
+        val layout = prototype.layout.toMiddlewareModel()
+
+        val objectType = ObjectType(
+            name = prototype.name,
+            iconEmoji = prototype.emoji,
+            layout = layout
+        )
+
+        val request = Rpc.ObjectType.Create.Request(
+            objectType = objectType
+        )
+
+        if (BuildConfig.DEBUG) logRequest(request)
+
+        val response = service.objectTypeCreate(request)
+
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        val result = response.objectType
+
+        checkNotNull(result) { "Empty result" }
+
+        return result
+    }
+
+    @Throws(Exception::class)
+    fun createSet(
+        contextId: String,
+        targetId: String?,
+        position: Position,
+        objectType: String?
+    ): Response.Set.Create {
+
+        val request = Rpc.Block.CreateSet.Request(
+            contextId = contextId,
+            targetId = targetId.orEmpty(),
+            objectTypeUrl = objectType.orEmpty(),
+            position = position.toMiddlewareModel()
+        )
+
+        if (BuildConfig.DEBUG) logRequest(request)
+
+        val response = service.blockCreateSet(request)
+
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return Response.Set.Create(
+            blockId = response.blockId,
+            targetId = response.targetId,
+            payload = response.event.toPayload()
+        )
+    }
+
+    @Throws(Exception::class)
+    fun setActiveDataViewViewer(
+        contextId: String,
+        blockId: String,
+        viewId: String,
+        offset: Int,
+        limit: Int
+    ): Payload {
+        val request = Rpc.Block.Dataview.ViewSetActive.Request(
+            contextId = contextId,
+            blockId = blockId,
+            viewId = viewId,
+            offset = offset,
+            limit = limit
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewActiveSet(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun addDataViewRelation(
+        context: String,
+        target: String,
+        name: String,
+        format: com.anytypeio.anytype.core_models.Relation.Format
+    ): Payload {
+
+        val relation = Relation(
+            name = name,
+            format = format.toMiddlewareModel()
+        )
+
+        val request = Rpc.Block.Dataview.RelationAdd.Request(
+            contextId = context,
+            blockId = target,
+            relation = relation
+        )
+
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRelationAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun updateDataViewViewer(
+        context: String,
+        target: String,
+        viewer: DVViewer
+    ): Payload {
+        val request = Rpc.Block.Dataview.ViewUpdate.Request(
+            contextId = context,
+            blockId = target,
+            viewId = viewer.id,
+            view = viewer.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewViewUpdate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun duplicateDataViewViewer(
+        context: String,
+        target: String,
+        viewer: DVViewer
+    ): Payload {
+        val request = Rpc.Block.Dataview.ViewCreate.Request(
+            contextId = context,
+            blockId = target,
+            view = viewer.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewViewCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun createDataViewRecord(context: String, target: String): Map<String, Any?> {
+        val request = Rpc.Block.Dataview.RecordCreate.Request(
+            contextId = context,
+            blockId = target
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRecordCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.record?.toMap() ?: emptyMap()
+    }
+
+    @Throws(Exception::class)
+    fun updateDataViewRecord(
+        context: String,
+        target: String,
+        record: String,
+        values: Map<String, Any?>
+    ) {
+        val request = Rpc.Block.Dataview.RecordUpdate.Request(
+            contextId = context,
+            blockId = target,
+            recordId = record,
+            record = values
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRecordUpdate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun addDataViewViewer(
+        ctx: String,
+        target: String,
+        name: String,
+        type: DVViewerType
+    ): Payload {
+        val request = Rpc.Block.Dataview.ViewCreate.Request(
+            contextId = ctx,
+            blockId = target,
+            view = Block.Content.Dataview.View(
+                name = name,
+                type = type.toMiddlewareModel()
+            )
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewViewCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun removeDataViewViewer(
+        ctx: String,
+        dataview: String,
+        viewer: String
+    ): Payload {
+        val request = Rpc.Block.Dataview.ViewDelete.Request(
+            contextId = ctx,
+            blockId = dataview,
+            viewId = viewer
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewViewDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun searchObjects(
+        sorts: List<DVSort>,
+        filters: List<DVFilter>,
+        fulltext: String,
+        offset: Int,
+        limit: Int
+    ): List<Map<String, Any?>> {
+        val request = Rpc.Object.Search.Request(
+            sorts = sorts.map { it.toMiddlewareModel() },
+            filters = filters.map { it.toMiddlewareModel() },
+            fullText = fulltext,
+            offset = offset,
+            limit = limit
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectSearch(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.records.map { it?.toMap() ?: emptyMap() }
+    }
+
+    @Throws(Exception::class)
+    fun relationListAvailable(ctx: Id): List<Relation> {
+        val request = Rpc.Object.RelationListAvailable.Request(
+            contextId = ctx
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.relationListAvailable(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.relations
+    }
+
+    fun setRelationKey(command: Command.SetRelationKey): Payload {
+        val request = Rpc.Block.Relation.SetKey.Request(
+            contextId = command.contextId,
+            blockId = command.blockId,
+            key = command.key
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.relationSetKey(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun debugSync(): String {
+        val request = Rpc.Debug.Sync.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugSync(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.toString()
+    }
+
+    fun addRecordRelationOption(
+        ctx: Id,
+        dataview: Id,
+        relation: Id,
+        record: Id,
+        name: String,
+        color: String
+    ): Pair<Payload, Id?> {
+        val request = Rpc.Block.Dataview.RecordRelationOptionAdd.Request(
+            contextId = ctx,
+            blockId = dataview,
+            relationKey = relation,
+            recordId = record,
+            option = Relation.Option(text = name, color = color)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRecordRelationOptionAdd(request)
+        val option = response.option?.id
+        if (BuildConfig.DEBUG) logResponse(response)
+        return Pair(response.event.toPayload(), option)
+    }
+
+    fun addObjectRelationOption(
+        ctx: Id,
+        relation: Id,
+        name: Id,
+        color: String
+    ) : Pair<Payload, Id?> {
+        val request = Rpc.Object.RelationOptionAdd.Request(
+            contextId = ctx,
+            relationKey = relation,
+            option = Relation.Option(text = name, color = color)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectRelationOptionAdd(request)
+        val option = response.option?.id
+        if (BuildConfig.DEBUG) logResponse(response)
+        return Pair(response.event.toPayload(), option)
     }
 
     fun blockListTurnInto(
         context: String,
         targets: List<String>,
-        style: BlockEntity.Content.Text.Style
-    ): PayloadEntity {
+        style: CBTextStyle
+    ): Payload {
         val request = BlockList.TurnInto.Request(
             contextId = context,
             blockIds = targets,
-            style = mapper.toMiddleware(style)
+            style = style.toMiddlewareModel()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockListTurnInto(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return mapper.toPayload(response.event)
+        return response.event.toPayload()
+    }
+
+    fun updateDetail(
+        ctx: Id,
+        key: String,
+        value: Any?
+    ): Payload {
+        val detail = Rpc.Block.Set.Details.Detail(
+            key = key,
+            value = value
+        )
+        val request = Rpc.Block.Set.Details.Request(
+            contextId = ctx,
+            details = listOf(detail)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockSetDetails(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
     }
 
     private fun logRequest(any: Any) {

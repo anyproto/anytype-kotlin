@@ -1,9 +1,8 @@
 package com.anytypeio.anytype.presentation.mapper
 
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.page.navigation.DocumentInfo
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 import com.anytypeio.anytype.presentation.navigation.PageLinkView
 import com.anytypeio.anytype.presentation.page.editor.Markup
@@ -11,6 +10,9 @@ import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.sets.buildGridRow
+import com.anytypeio.anytype.presentation.sets.model.*
+import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import timber.log.Timber
 
@@ -117,9 +119,10 @@ fun Block.Content.File.toFileView(
 }
 
 fun Block.Align.toView(): Alignment = when (this) {
-    Block.Align.AlignLeft -> Alignment.START
     Block.Align.AlignCenter -> Alignment.CENTER
+    Block.Align.AlignLeft -> Alignment.START
     Block.Align.AlignRight -> Alignment.END
+    else -> TODO()
 }
 
 fun Block.Content.Text.marks(
@@ -263,7 +266,9 @@ fun List<Block.Content.Text.Mark>.filterByRange(textLength: Int): List<Block.Con
 
 fun List<Block>.toDashboardViews(
     details: Block.Details = Block.Details(),
-    builder: UrlBuilder
+    builder: UrlBuilder,
+    objectTypes: List<ObjectType> = emptyList(),
+    objectTypePerObject: Map<String, String> = emptyMap()
 ): List<DashboardView> = this.mapNotNull { block ->
     when (val content = block.content) {
         is Block.Content.Smart -> {
@@ -282,10 +287,34 @@ fun List<Block>.toDashboardViews(
             }
         }
         is Block.Content.Link -> {
-            when (content.type) {
-                Block.Content.Link.Type.PAGE -> content.toPageView(block.id, details, builder)
-                Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(block.id, details)
-                else -> null
+            val type = objectTypePerObject[content.target]
+            if (type != null) {
+                val value = objectTypes.find { it.url == type }
+                if (value != null) {
+                    when (value.layout) {
+                        ObjectType.Layout.PAGE -> content.toPageView(block.id, details, builder)
+                        ObjectType.Layout.SET -> content.toSetView(block.id, details)
+                        else -> null
+                    }
+                } else {
+                    when (content.type) {
+                        Block.Content.Link.Type.PAGE -> content.toPageView(
+                            block.id,
+                            details,
+                            builder
+                        )
+                        Block.Content.Link.Type.DATA_VIEW -> content.toSetView(block.id, details)
+                        Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(block.id, details)
+                        else -> null
+                    }
+                }
+            } else {
+                when (content.type) {
+                    Block.Content.Link.Type.PAGE -> content.toPageView(block.id, details, builder)
+                    Block.Content.Link.Type.DATA_VIEW -> content.toSetView(block.id, details)
+                    Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(block.id, details)
+                    else -> null
+                }
             }
         }
         else -> null
@@ -320,6 +349,21 @@ fun Block.Content.Link.toPageView(
         },
         isArchived = details.details[target]?.isArchived ?: false,
         isLoading = !details.details.containsKey(target)
+    )
+}
+
+fun Block.Content.Link.toSetView(
+    id: String,
+    details: Block.Details,
+): DashboardView.ObjectSet {
+    return DashboardView.ObjectSet(
+        id = id,
+        target = target,
+        title = details.details[target]?.name,
+        emoji = details.details[target]?.iconEmoji?.let { name ->
+            if (name.isNotEmpty()) name else null
+        },
+        isArchived = details.details[target]?.isArchived ?: false
     )
 }
 
@@ -405,4 +449,189 @@ fun Markup.Mark.mark(): Block.Content.Text.Mark = when (type) {
         type = Block.Content.Text.Mark.Type.MENTION,
         param = param
     )
+}
+
+fun Block.Content.DataView.Sort.Type.toView(): Viewer.SortType = when (this) {
+    Block.Content.DataView.Sort.Type.ASC -> Viewer.SortType.ASC
+    Block.Content.DataView.Sort.Type.DESC -> Viewer.SortType.DESC
+}
+
+fun DVFilterOperator.toView(): Viewer.FilterOperator = when (this) {
+    Block.Content.DataView.Filter.Operator.AND -> Viewer.FilterOperator.And
+    Block.Content.DataView.Filter.Operator.OR -> Viewer.FilterOperator.Or
+}
+
+fun DVFilterCondition.toTextView(): Viewer.Filter.Condition.Text = when (this) {
+    DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Text.Equal()
+    DVFilterCondition.NOT_EQUAL -> Viewer.Filter.Condition.Text.NotEqual()
+    DVFilterCondition.LIKE -> Viewer.Filter.Condition.Text.Like()
+    DVFilterCondition.NOT_LIKE -> Viewer.Filter.Condition.Text.NotLike()
+    DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Text.Empty()
+    DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Text.NotEmpty()
+    else ->  throw IllegalStateException("Unexpected filter condition $this for Text relations")
+}
+
+fun DVFilterCondition.toNumberView(): Viewer.Filter.Condition.Number = when (this) {
+    DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Number.Equal()
+    DVFilterCondition.NOT_EQUAL -> Viewer.Filter.Condition.Number.NotEqual()
+    DVFilterCondition.GREATER -> Viewer.Filter.Condition.Number.Greater()
+    DVFilterCondition.LESS -> Viewer.Filter.Condition.Number.Less()
+    DVFilterCondition.GREATER_OR_EQUAL -> Viewer.Filter.Condition.Number.GreaterOrEqual()
+    DVFilterCondition.LESS_OR_EQUAL -> Viewer.Filter.Condition.Number.LessOrEqual()
+    else ->  throw IllegalStateException("Unexpected filter condition $this for Number or Date relations")
+}
+
+fun DVFilterCondition.toSelectedView(): Viewer.Filter.Condition.Selected = when (this) {
+    DVFilterCondition.IN -> Viewer.Filter.Condition.Selected.In()
+    DVFilterCondition.ALL_IN -> Viewer.Filter.Condition.Selected.AllIn()
+    DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Selected.Equal()
+    DVFilterCondition.NOT_IN -> Viewer.Filter.Condition.Selected.NotIn()
+    DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Selected.Empty()
+    DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Selected.NotEmpty()
+    else ->  throw IllegalStateException("Unexpected filter condition $this for Selected relations")
+}
+
+fun DVFilterCondition.toCheckboxView(): Viewer.Filter.Condition.Checkbox = when (this) {
+    DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Checkbox.Equal()
+    DVFilterCondition.NOT_EQUAL -> Viewer.Filter.Condition.Checkbox.NotEqual()
+    else ->  throw IllegalStateException("Unexpected filter condition $this for Checkbox relations")
+}
+
+fun SortingExpression.toDomain(): DVSort = DVSort(
+    relationKey = key,
+    type = when (type) {
+        Viewer.SortType.ASC -> Block.Content.DataView.Sort.Type.ASC
+        Viewer.SortType.DESC -> Block.Content.DataView.Sort.Type.DESC
+    }
+)
+
+fun FilterExpression.toDomain(): DVFilter = DVFilter(
+    relationKey = key,
+    operator = operator.toDomain(),
+    condition = condition.toDomain(),
+    value = when (value) {
+        is FilterValue.Number -> value.value
+        is FilterValue.Status -> value.value
+        is FilterValue.Tag -> value.value
+        is FilterValue.Text -> value.value
+        is FilterValue.Url -> value.value
+        is FilterValue.Email -> value.value
+        is FilterValue.Phone -> value.value
+        is FilterValue.Date -> value.value
+        is FilterValue.TextShort -> value.value
+        is FilterValue.Check -> value.value
+        is FilterValue.Object -> value.value
+        null -> null
+    }
+)
+
+fun Viewer.FilterOperator.toDomain(): DVFilterOperator = when (this) {
+    Viewer.FilterOperator.And -> DVFilterOperator.AND
+    Viewer.FilterOperator.Or -> DVFilterOperator.OR
+}
+
+fun Viewer.Filter.Condition.toDomain(): DVFilterCondition = when (this) {
+    is Viewer.Filter.Condition.Checkbox.Equal -> DVFilterCondition.EQUAL
+    is Viewer.Filter.Condition.Checkbox.NotEqual -> DVFilterCondition.NOT_EQUAL
+    is Viewer.Filter.Condition.Number.Equal -> DVFilterCondition.EQUAL
+    is Viewer.Filter.Condition.Number.Greater -> DVFilterCondition.GREATER
+    is Viewer.Filter.Condition.Number.GreaterOrEqual -> DVFilterCondition.GREATER_OR_EQUAL
+    is Viewer.Filter.Condition.Number.Less -> DVFilterCondition.LESS
+    is Viewer.Filter.Condition.Number.LessOrEqual -> DVFilterCondition.LESS_OR_EQUAL
+    is Viewer.Filter.Condition.Number.NotEqual -> DVFilterCondition.NOT_EQUAL
+    is Viewer.Filter.Condition.Selected.AllIn -> DVFilterCondition.ALL_IN
+    is Viewer.Filter.Condition.Selected.Empty -> DVFilterCondition.EMPTY
+    is Viewer.Filter.Condition.Selected.Equal -> DVFilterCondition.EQUAL
+    is Viewer.Filter.Condition.Selected.In -> DVFilterCondition.IN
+    is Viewer.Filter.Condition.Selected.NotEmpty -> DVFilterCondition.NOT_EMPTY
+    is Viewer.Filter.Condition.Selected.NotIn -> DVFilterCondition.NOT_IN
+    is Viewer.Filter.Condition.Text.Empty -> DVFilterCondition.EMPTY
+    is Viewer.Filter.Condition.Text.Equal -> DVFilterCondition.EQUAL
+    is Viewer.Filter.Condition.Text.Like -> DVFilterCondition.LIKE
+    is Viewer.Filter.Condition.Text.NotEmpty -> DVFilterCondition.NOT_EMPTY
+    is Viewer.Filter.Condition.Text.NotEqual -> DVFilterCondition.NOT_EQUAL
+    is Viewer.Filter.Condition.Text.NotLike -> DVFilterCondition.NOT_LIKE
+}
+
+fun List<Map<String, Any?>>.filterRecordsBy(filterBy: String): List<Map<String, Any?>> =
+    filter { it.containsKey(filterBy) }
+
+fun List<Map<String, Any?>>.toGridRecordRows(
+    columns: List<ColumnView>,
+    relations: List<Relation>,
+    details: Map<Id, Block.Fields>,
+    builder: UrlBuilder
+): List<Viewer.GridView.Row> {
+    val rows = mutableListOf<Viewer.GridView.Row>()
+    forEach { record ->
+        val row = columns.buildGridRow(record, relations, details, builder)
+        rows.add(row)
+    }
+    return rows
+}
+
+// TODO maybe rename toViewerHeaders
+fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
+    relations: List<Relation>,
+    filterBy: List<String>
+): List<ColumnView> {
+    val columns = mutableListOf<ColumnView>()
+    this.filter { it.key !in filterBy }
+        .forEach { viewerRelation ->
+            relations
+                .firstOrNull { it.key == viewerRelation.key }
+                ?.let { relation ->
+                    columns.add(
+                        ColumnView(
+                            key = relation.key,
+                            text = relation.name,
+                            format = relation.format.toView(),
+                            width = viewerRelation.width ?: 0,
+                            isVisible = viewerRelation.isVisible,
+                            isHidden = relation.isHidden,
+                            isReadOnly = relation.isReadOnly
+                        )
+                    )
+                }
+        }
+    return columns
+}
+
+fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelations(
+    relations: List<Relation>
+): ArrayList<SimpleRelationView> {
+    val result = arrayListOf<SimpleRelationView>()
+    this.forEach { viewerRelation ->
+        relations
+            .firstOrNull { it.key == viewerRelation.key }
+            ?.let { relation ->
+                result.add(
+                    SimpleRelationView(
+                        key = relation.key,
+                        title = relation.name,
+                        format = relation.format.toView(),
+                        isVisible = viewerRelation.isVisible,
+                        isHidden = relation.isHidden
+                    )
+                )
+            }
+    }
+    return result
+}
+
+fun Relation.Format.toView() = when (this) {
+    Relation.Format.SHORT_TEXT -> ColumnView.Format.SHORT_TEXT
+    Relation.Format.LONG_TEXT -> ColumnView.Format.LONG_TEXT
+    Relation.Format.NUMBER -> ColumnView.Format.NUMBER
+    Relation.Format.STATUS -> ColumnView.Format.STATUS
+    Relation.Format.DATE -> ColumnView.Format.DATE
+    Relation.Format.FILE -> ColumnView.Format.FILE
+    Relation.Format.CHECKBOX -> ColumnView.Format.CHECKBOX
+    Relation.Format.URL -> ColumnView.Format.URL
+    Relation.Format.EMAIL -> ColumnView.Format.EMAIL
+    Relation.Format.PHONE -> ColumnView.Format.PHONE
+    Relation.Format.EMOJI -> ColumnView.Format.EMOJI
+    Relation.Format.OBJECT -> ColumnView.Format.OBJECT
+    Relation.Format.TAG -> ColumnView.Format.TAG
+    Relation.Format.RELATIONS -> ColumnView.Format.RELATIONS
 }

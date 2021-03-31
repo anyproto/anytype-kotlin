@@ -2,22 +2,22 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.tools.Counter
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
-import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.event.model.Event
-import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
@@ -31,7 +31,7 @@ import com.anytypeio.anytype.presentation.page.editor.pattern.DefaultPatternMatc
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.util.Bridge
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
@@ -48,7 +48,7 @@ open class EditorPresentationTestSetup {
     lateinit var openPage: OpenPage
 
     @Mock
-    lateinit var closePage: ClosePage
+    lateinit var closePage: CloseBlock
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
@@ -102,6 +102,9 @@ open class EditorPresentationTestSetup {
     lateinit var createPage: CreatePage
 
     @Mock
+    lateinit var createObject: CreateObject
+
+    @Mock
     lateinit var updateAlignment: UpdateAlignment
 
     @Mock
@@ -135,6 +138,9 @@ open class EditorPresentationTestSetup {
     lateinit var createDocument: CreateDocument
 
     @Mock
+    lateinit var setRelationKey: SetRelationKey
+
+    @Mock
     lateinit var setDocCoverImage: SetDocCoverImage
 
     @Mock
@@ -165,9 +171,14 @@ open class EditorPresentationTestSetup {
     lateinit var gateway: Gateway
 
     @Mock
+    lateinit var repo: BlockRepository
+
+    @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
 
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
+
+    private lateinit var updateDetail: UpdateDetail
 
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): PageViewModel {
 
@@ -176,6 +187,7 @@ open class EditorPresentationTestSetup {
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()
         )
+        updateDetail = UpdateDetail(repo)
 
         return PageViewModel(
             getListPages = getListPages,
@@ -186,6 +198,7 @@ open class EditorPresentationTestSetup {
             interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMark,
             removeLinkMark = removeLinkMark,
+            createObject = createObject,
             reducer = DocumentExternalEventReducer(),
             urlBuilder = urlBuilder,
             renderer = DefaultBlockViewRenderer(
@@ -232,17 +245,21 @@ open class EditorPresentationTestSetup {
                 turnIntoDocument = turnIntoDocument,
                 analytics = analytics,
                 updateFields = updateFields,
+                setRelationKey = setRelationKey,
                 turnIntoStyle = turnIntoStyle
             ),
-            bridge = Bridge(),
+            dispatcher = Dispatcher.Default(),
             removeDocCover = removeDocCover,
-            setDocCoverImage = setDocCoverImage
+            setDocCoverImage = setDocCoverImage,
+            detailModificationManager = InternalDetailModificationManager(storage.details),
+            updateDetail = updateDetail
         )
     }
 
     fun stubOpenDocument(
         document: List<Block> = emptyList(),
-        details: Block.Details = Block.Details()
+        details: Block.Details = Block.Details(),
+        relations: List<Relation> = emptyList()
     ) {
         openPage.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
@@ -254,6 +271,7 @@ open class EditorPresentationTestSetup {
                                 context = root,
                                 root = root,
                                 details = details,
+                                relations = relations,
                                 blocks = document
                             )
                         )

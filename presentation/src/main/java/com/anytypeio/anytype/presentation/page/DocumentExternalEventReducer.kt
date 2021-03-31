@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.page
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.ext.replace
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.event.model.Event
-import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.presentation.common.StateReducer
 import timber.log.Timber
 
@@ -32,21 +32,29 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
         is Event.Command.DeleteBlock -> state.filter { !event.targets.contains(it.id) }
         is Event.Command.GranularChange -> state.replace(
             replacement = { block ->
-                val content = block.content
-                if (content is Block.Content.Text)
-                    block.copy(
-                        content = content.copy(
-                            style = event.style ?: content.style,
-                            color = event.color ?: content.color,
-                            backgroundColor = event.backgroundColor ?: content.backgroundColor,
-                            text = event.text ?: content.text,
-                            marks = event.marks ?: content.marks,
-                            isChecked = event.checked ?: content.isChecked,
-                            align = event.alignment ?: content.align
+                when (val content = block.content) {
+                    is Block.Content.RelationBlock -> {
+                        block.copy(
+                            content = content.copy(
+                                background = event.backgroundColor ?: content.background
+                            )
                         )
-                    )
-                else
-                    block.copy()
+                    }
+                    is Block.Content.Text -> {
+                        block.copy(
+                            content = content.copy(
+                                style = event.style ?: content.style,
+                                color = event.color ?: content.color,
+                                backgroundColor = event.backgroundColor ?: content.backgroundColor,
+                                text = event.text ?: content.text,
+                                marks = event.marks ?: content.marks,
+                                isChecked = event.checked ?: content.isChecked,
+                                align = event.alignment ?: content.align
+                            )
+                        )
+                    }
+                    else -> block.copy()
+                }
             },
             target = { block -> block.id == event.id }
         )
@@ -103,6 +111,17 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
                 block.copy(
                     content = content.copy(
                         style = event.style
+                    )
+                )
+            },
+            target = { block -> block.id == event.id }
+        )
+        is Event.Command.BlockEvent.SetRelation -> state.replace(
+            replacement = { block ->
+                val content = block.content<Block.Content.RelationBlock>()
+                block.copy(
+                    content = content.copy(
+                        key = event.key
                     )
                 )
             },

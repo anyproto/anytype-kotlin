@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.auth.model
 
 import com.anytypeio.anytype.core_utils.ui.ViewType
-import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.core_models.Url
 
 sealed class SelectAccountView : ViewType {
 

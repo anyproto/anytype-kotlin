@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.common
+package com.anytypeio.anytype.core_models
 
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom

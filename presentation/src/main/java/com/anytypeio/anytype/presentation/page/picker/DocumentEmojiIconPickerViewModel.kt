@@ -2,15 +2,16 @@ package com.anytypeio.anytype.presentation.page.picker
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.emojifier.suggest.model.EmojiSuggest
+import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.page.editor.Proxy
-import com.anytypeio.anytype.presentation.util.Bridge
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -21,7 +22,8 @@ class DocumentEmojiIconPickerViewModel(
     private val setEmojiIcon: SetDocumentEmojiIcon,
     private val provider: EmojiProvider,
     private val suggester: EmojiSuggester,
-    private val bridge: Bridge<Payload>
+    private val dispatcher: Dispatcher<Payload>,
+    private val details: DetailModificationManager
 ) : ViewModel() {
 
     /**
@@ -128,9 +130,9 @@ class DocumentEmojiIconPickerViewModel(
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while setting emoji") },
-                success = {
-                    bridge.send(it)
-                    state.apply { value = ViewState.Exit }
+                success = { payload ->
+                    if (payload.events.isNotEmpty()) dispatcher.send(payload)
+                    details.setEmojiIcon(unicode = unicode, target = target).also { state.value = ViewState.Exit }
                 }
             )
         }

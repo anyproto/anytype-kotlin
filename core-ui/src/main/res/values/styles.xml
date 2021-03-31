@@ -361,4 +361,246 @@
         <item name="colorAccent">#ACA996</item>
     </style>
 
+    <style name="GridCellDateTextStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+
+    <style name="RelationObjectTextStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+
+    <style name="ViewerModalItemStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">15sp</item>
+        <item name="fontFamily">@font/inter_medium</item>
+    </style>
+
+    <style name="ViewerModalTitleStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">17sp</item>
+        <item name="fontFamily">@font/inter_bold</item>
+    </style>
+
+    <style name="ViewerBaseListItemStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">15sp</item>
+        <item name="fontFamily">@font/inter_medium</item>
+    </style>
+
+    <style name="ViewerModalChipStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">15sp</item>
+        <item name="textStartPadding">8dp</item>
+        <item name="textEndPadding">8dp</item>
+        <item name="chipStartPadding">8dp</item>
+        <item name="chipEndPadding">8dp</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipStrokeColor">#DFDDD0</item>
+        <item name="chipBackgroundColor">@color/white</item>
+        <item name="iconStartPadding">0dp</item>
+        <item name="iconEndPadding">0dp</item>
+        <item name="shapeAppearanceSmallComponent">@style/ViewerModalChipShapeAppearance</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+    </style>
+    
+    <style name="ViewerModalChipShapeAppearance"
+        parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerSize">8dp</item>
+        <item name="cornerFamily">cut</item>
+    </style>
+
+    <style name="TextAppearance.App.Body2" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="fontFamily">@font/graphik_medium</item>
+        <item name="android:fontFamily">@font/graphik_medium</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="ViewerTagChipStyle" parent="Widget.MaterialComponents.Chip.Entry">
+        <item name="android:textColor">@color/default_tag_text_color</item>
+        <item name="android:textSize">13sp</item>
+        <item name="textStartPadding">5dp</item>
+        <item name="textEndPadding">5dp</item>
+        <item name="chipStartPadding">0dp</item>
+        <item name="chipEndPadding">0dp</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="closeIconVisible">false</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="chipIconVisible">false</item>
+        <item name="chipStrokeColor">@color/default_tag_background</item>
+        <item name="chipBackgroundColor">@color/default_tag_background</item>
+        <item name="iconStartPadding">0dp</item>
+        <item name="iconEndPadding">0dp</item>
+        <item name="shapeAppearanceSmallComponent">@style/ViewerTagChipShapeAppearance</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+    </style>
+
+    <style name="ViewerTagChipShapeAppearance" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerSize">3dp</item>
+        <item name="cornerFamily">cut</item>
+    </style>
+
+    <style name="DataViewCustomizePanelTextStyle">
+        <item name="android:textColor">#6C6A5F</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="DefaultCellInteractionTextButtonStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#ACA996</item>
+        <item name="android:textSize">17sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
+
+    <style name="ViewerModalStateButtonsStyle">
+        <item name="android:textColor">#ACA996</item>
+        <item name="android:textSize">17sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
+
+    <style name="DefaultOrangeActionButtonStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">17sp</item>
+        <item name="fontFamily">@font/inter_medium</item>
+    </style>
+
+    <style name="ViewerFilterTitleStyle">
+        <item name="android:textColor">#2C2B27</item>
+        <item name="android:textSize">15sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="layout_goneMarginEnd">20dp</item>
+    </style>
+
+    <style name="ViewerFilterConditionStyle">
+        <item name="android:textColor">#6C6A5F</item>
+        <item name="android:textSize">15sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
+
+    <style name="ViewerFilterTextValueStyle">
+        <item name="android:textColor">#6C6A5F</item>
+        <item name="android:textSize">15sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="ViewerSortTitleStyle">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+    </style>
+
+    <style name="ViewerSortSubtitleStyle">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textColor">#6C6A5F</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="ViewerFilterTagChipStyle" parent="Widget.MaterialComponents.Chip.Entry">
+        <item name="android:textSize">15sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="textStartPadding">5dp</item>
+        <item name="textEndPadding">5dp</item>
+        <item name="chipStartPadding">0dp</item>
+        <item name="chipEndPadding">0dp</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="closeIconVisible">false</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="chipIconVisible">false</item>
+        <item name="chipBackgroundColor">@color/default_filter_tag_background_color</item>
+        <item name="iconStartPadding">0dp</item>
+        <item name="iconEndPadding">0dp</item>
+        <item name="shapeAppearanceSmallComponent">@style/ViewerFilterTagChipShapeAppearance</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+    </style>
+
+    <style name="ViewerFilterTagChipShapeAppearance" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerSize">5dp</item>
+        <item name="cornerFamily">cut</item>
+    </style>
+
+    <style name="DefaultDataViewTagTextViewStyle">
+        <item name="android:background">@drawable/rect_relation_tag</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
+        <item name="singleLine">true</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="DefaultDataViewStatusTextViewStyle">
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
+        <item name="singleLine">true</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="TagTextStyle">
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="DefaultDataViewDateCellTextViewStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">17sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
+
+    <style name="DVFilterRemoveIcon">
+        <item name="android:paddingTop">@dimen/dp_12</item>
+        <item name="android:paddingEnd">@dimen/dp_12</item>
+        <item name="android:paddingBottom">@dimen/dp_12</item>
+        <item name="android:paddingStart">@dimen/dp_20</item>
+        <item name="srcCompat">@drawable/ic_remove_red</item>
+        <item name="android:contentDescription">@string/content_description_filter_remove</item>
+    </style>
+
+    <style name="DVFilterFormatIcon">
+        <item name="layout_goneMarginStart">20dp</item>
+        <item name="android:contentDescription">@string/content_description_filter_format</item>
+    </style>
+
+    <style name="RelationViewTitleStyle">
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingEnd">8dp</item>
+    </style>
+
+    <style name="SelectedRelationCircleBadgeStyle">
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:layout_gravity">center_vertical|end</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/checkbox_selected_relation_selector</item>
+    </style>
+
 </resources>

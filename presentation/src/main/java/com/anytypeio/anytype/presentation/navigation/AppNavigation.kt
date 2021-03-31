@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.navigation
 
-import com.anytypeio.anytype.domain.block.model.Position
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 
 interface AppNavigation {
@@ -18,9 +18,11 @@ interface AppNavigation {
     fun chooseAccount()
     fun workspace()
     fun openProfile()
-    fun openArchive(target: String)
 
+    fun openArchive(target: String)
+    fun openObjectSet(target: String)
     fun openDocument(id: String, editorSettings: EditorSettings?)
+
     fun launchDocument(id: String)
 
     fun startDesktopFromSplash()
@@ -43,6 +45,7 @@ interface AppNavigation {
     fun openPageSearch()
     fun exitToDesktopAndOpenPage(pageId: String)
     fun exitToInvitationCodeScreen()
+    fun openCreateSetScreen(ctx: Id)
 
     sealed class Command {
 
@@ -102,7 +105,11 @@ interface AppNavigation {
 
         data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
         object OpenPageSearch : Command()
+
         data class OpenArchive(val target: String) : Command()
+        data class OpenObjectSet(val target: String) : Command()
+
+        data class OpenCreateSetScreen(val ctx: Id) : Command()
     }
 
     interface Provider {

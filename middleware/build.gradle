@@ -25,6 +25,8 @@ android {
 
 dependencies {
 
+    implementation project(':core-models')
+
     def props = new Properties()
     project.rootProject.file('configuration.properties').withDataInputStream { props.load(it) }
     def libraryPath = project.rootProject.file(props.getProperty('middleware.path'))

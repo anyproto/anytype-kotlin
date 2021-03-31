@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.desktop
 
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Url
 
 sealed class DashboardView {
 
@@ -32,6 +32,15 @@ sealed class DashboardView {
         val target: Id,
         val title: String,
         override val isArchived: Boolean = false,
+        override val isLoading: Boolean = false
+    ) : DashboardView()
+
+    data class ObjectSet(
+        override val id: Id,
+        val target: Id,
+        val title: String? = null,
+        val emoji: String? = null,
+        override val isArchived: Boolean,
         override val isLoading: Boolean = false
     ) : DashboardView()
 }

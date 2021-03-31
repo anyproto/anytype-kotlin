@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp">
+
+    <FrameLayout
+        android:background="@drawable/rectangle_default_page_logo_background"
+        android:transitionName="@string/logo_transition"
+        android:id="@+id/documentIconContainer"
+        android:layout_marginTop="32dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp">
+
+        <ImageView
+            android:id="@+id/emojiIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center" />
+
+        <ImageView
+            android:id="@+id/imageIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+        android:hint="@string/hint_title"
+        android:id="@+id/title"
+        android:imeOptions="actionDone"
+        android:maxLines="1"
+        android:inputType="text"
+        android:singleLine="true"
+        style="@style/BlockTitleContentStyle"
+        tools:text="Title" />
+
+</LinearLayout>

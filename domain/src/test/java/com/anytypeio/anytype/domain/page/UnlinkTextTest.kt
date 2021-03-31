@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.domain.page
 
-import com.anytypeio.anytype.domain.common.CoroutineTestRule
+import com.anytypeio.anytype.core_models.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert

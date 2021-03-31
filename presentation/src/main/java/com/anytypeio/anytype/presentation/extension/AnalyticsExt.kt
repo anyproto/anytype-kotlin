@@ -4,7 +4,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_STYLE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_TYPE
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 
 fun Block.Prototype.getAnalyticsEvent(
     eventName: String,
@@ -37,6 +37,9 @@ fun Block.Prototype.getAnalyticsEvent(
         }
         is Block.Prototype.Link -> {
             Props(mapOf(PROP_TYPE to "link"))
+        }
+        is Block.Prototype.Relation -> {
+            Props(mapOf(PROP_TYPE to "relation"))
         }
         Block.Prototype.DividerLine -> {
             Props(

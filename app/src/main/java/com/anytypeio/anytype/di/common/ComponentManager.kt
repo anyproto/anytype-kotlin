@@ -1,8 +1,12 @@
 package com.anytypeio.anytype.di.common
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.feature.*
+import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
+import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
+import com.anytypeio.anytype.di.feature.sets.PickConditionModule
+import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
 import com.anytypeio.anytype.di.main.MainComponent
-import com.anytypeio.anytype.domain.common.Id
 
 class ComponentManager(private val main: MainComponent) {
 
@@ -134,15 +138,17 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val documentIconActionMenuComponent = Component {
-        main
+    val documentIconActionMenuComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
             .documentActionMenuComponentBuilder()
             .documentIconActionMenuModule(DocumentIconActionMenuModule())
             .build()
     }
 
-    val documentEmojiIconPickerComponent = Component {
-        main
+    val documentEmojiIconPickerComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
             .documentEmojiIconPickerComponentBuilder()
             .documentIconActionMenuModule(DocumentEmojiIconPickerModule())
             .build()
@@ -177,6 +183,278 @@ class ComponentManager(private val main: MainComponent) {
     val pageSearchComponent = Component {
         main.pageSearchComponentBuilder()
             .pageSearchModule(PageSearchModule)
+            .build()
+    }
+
+    val createSetComponent = Component {
+        main.createSetComponentBuilder()
+            .module(CreateSetModule)
+            .build()
+    }
+
+    val createObjectTypeComponent = Component {
+        main.createObjectTypeComponentBuilder()
+            .module(CreateObjectTypeModule)
+            .build()
+    }
+
+    val objectSetComponent = ComponentMap {
+        main.objectSetComponentBuilder()
+            .module(ObjectSetModule)
+            .build()
+    }
+
+    val documentRelationComponent = DependentComponentMap { id ->
+        pageComponent
+            .get(id)
+            .documentRelationSubComponent()
+            .module(DocumentRelationModule)
+            .build()
+    }
+
+    val viewerSortByComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .viewerSortBySubComponent()
+            .module(ViewerSortByModule)
+            .build()
+    }
+
+    val createDataViewRelationComponent = Component {
+        main.createDataViewRelationBuilder()
+            .module(CreateDataViewRelationModule)
+            .build()
+    }
+
+    val editGridCellComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .editCellsComponent()
+            .module(EditGridCellModule)
+            .build()
+    }
+
+    val editRelationCellComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .editRelationCellComponent()
+            .module(EditGridCellModule)
+            .build()
+    }
+
+    val objectSetObjectRelationDataValueComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .editCellDateComponent()
+            .module(EditGridCellDateModule)
+            .build()
+    }
+
+    val objectObjectRelationDateValueComponet = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .editRelationDateComponent()
+            .module(EditGridCellDateModule)
+            .build()
+    }
+
+    val documentAddNewBlockComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .documentAddNewBlockComponentBuilder()
+            .documentAddNewBlockModule(DocumentAddNewBlockModule)
+            .build()
+    }
+
+    val viewerFilterComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .viewerFilterBySubComponent()
+            .module(ViewerFilterModule)
+            .build()
+    }
+
+    val viewerCustomizeComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .viewerCustomizeSubComponent()
+            .module(ViewerCustomizeModule)
+            .build()
+    }
+
+    val objectSetRecordComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .objectSetRecordComponent()
+            .module(ObjectSetRecordModule)
+            .build()
+    }
+
+    val createDataViewViewerComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .createDataViewViewerSubComponent()
+            .module(CreateDataViewViewerModule)
+            .build()
+    }
+
+    val editDataViewViewerComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .editDataViewViewerComponent()
+            .module(EditDataViewViewerModule)
+            .build()
+    }
+
+    val objectSetObjectRelationValueComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .objectRelationValueComponent()
+            .module(ObjectRelationValueModule)
+            .build()
+    }
+
+    val addObjectSetObjectRelationValueComponent = DependentComponentMap { ctx ->
+        objectSetObjectRelationValueComponent
+            .get(ctx)
+            .addObjectRelationValueComponent()
+            .module(AddObjectRelationValueModule)
+            .build()
+    }
+
+    val objectObjectRelationValueComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .editDocRelationComponent()
+            .module(ObjectRelationValueModule)
+            .build()
+    }
+
+    val addObjectObjectRelationValueComponent = DependentComponentMap { ctx ->
+        objectObjectRelationValueComponent
+            .get(ctx)
+            .addObjectRelationValueComponent()
+            .module(AddObjectRelationValueModule)
+            .build()
+    }
+
+    val addObjectSetObjectRelationObjectValueComponent = DependentComponentMap { ctx ->
+        objectSetObjectRelationValueComponent
+            .get(ctx)
+            .addObjectRelationObjectValueComponent()
+            .module(AddObjectRelationObjectValueModule)
+            .build()
+    }
+
+    val addObjectRelationObjectValueComponent = DependentComponentMap { ctx ->
+        objectObjectRelationValueComponent
+            .get(ctx)
+            .addObjectRelationObjectValueComponent()
+            .module(AddObjectRelationObjectValueModule)
+            .build()
+    }
+
+    val relationFileValueComponent = DependentComponentMap { ctx ->
+        objectObjectRelationValueComponent
+            .get(ctx)
+            .addRelationFileValueAddComponent()
+            .module(RelationFileValueAddModule)
+            .build()
+    }
+
+    val relationFileValueDVComponent = DependentComponentMap { ctx ->
+        objectSetObjectRelationValueComponent
+            .get(ctx)
+            .addRelationFileValueAddComponent()
+            .module(RelationFileValueAddModule)
+            .build()
+    }
+
+    val manageViewerComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .manageViewerComponent()
+            .module(ManageViewerModule)
+            .build()
+    }
+
+    val viewerRelationsComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .viewerRelationsComponent()
+            .module(ViewerRelationsModule)
+            .build()
+    }
+
+    val dataviewViewerActionComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .dataviewViewerActionComponent()
+            .module(DataViewViewerActionModule)
+            .build()
+    }
+
+    val selectSortRelationComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .selectSortRelationComponent()
+            .module(SelectSortRelationModule)
+            .build()
+    }
+
+    val selectFilterRelationComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .selectFilterRelationComponent()
+            .module(SelectFilterRelationModule)
+            .build()
+    }
+
+    val createFilterComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .createFilterComponent()
+            .module(CreateFilterModule)
+            .build()
+    }
+
+    val pickFilterConditionComponentCreate = DependentComponentMap { ctx ->
+        createFilterComponent
+            .get(ctx)
+            .createPickConditionComponent()
+            .module(PickConditionModule)
+            .build()
+    }
+
+    val pickFilterConditionComponentModify = DependentComponentMap { ctx ->
+        modifyFilterComponent
+            .get(ctx)
+            .createPickConditionComponent()
+            .module(PickConditionModule)
+            .build()
+    }
+
+    val modifyFilterComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .modifyFilterComponent()
+            .module(ModifyFilterModule)
+            .build()
+    }
+
+    val viewerSortComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .viewerSortComponent()
+            .module(ViewerSortModule)
+            .build()
+    }
+
+    val modifyViewerSortComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .modifyViewerSortComponent()
+            .module(ModifyViewerSortModule)
             .build()
     }
 

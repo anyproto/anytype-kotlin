@@ -15,7 +15,8 @@ ext {
     androidx_core_ktx_version = '1.5.0-alpha02'
     androidx_test_core_version = '1.2.0'
     androidx_core_testing_version = '2.1.0'
-    androidx_security_crypto_version = '1.0.0-rc03'
+    //There is a bug in versions rc02-rc04 https://issuetracker.google.com/issues/158234058#comment48
+    androidx_security_crypto_version = '1.0.0-rc01'
     appcompat_version = '1.2.0'
     constraintLayout_version = '2.0.4'
     recyclerview_version = '1.2.0-alpha06'
@@ -71,7 +72,7 @@ ext {
     // Logging, Analytics & Crash reporting
 
     timber_version = '4.7.1'
-    crashlytics_version = '17.0.0'
+    crashlytics_version = '17.3.1'
     firebase_core_version = '17.0.1'
 
     // Protobuf
@@ -86,7 +87,8 @@ ext {
 
     // Analytics
 
-    amplitude_version = '2.28.2'
+    amplitude_version = '2.30.0'
+    okhttp_version = '4.2.2'
 
     mainApplication = [
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
@@ -185,6 +187,7 @@ ext {
     ]
 
     analytics = [
-            amplitude:       "com.amplitude:android-sdk:$amplitude_version"
+            amplitude:       "com.amplitude:android-sdk:$amplitude_version",
+            okhttp:          "com.squareup.okhttp3:okhttp:$okhttp_version"
     ]
 }

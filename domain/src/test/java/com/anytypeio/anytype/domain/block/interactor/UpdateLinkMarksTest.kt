@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.domain.block.interactor
 
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Before

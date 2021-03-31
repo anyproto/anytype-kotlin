@@ -3,8 +3,8 @@ package com.anytypeio.anytype.presentation.page.editor
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Position
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule

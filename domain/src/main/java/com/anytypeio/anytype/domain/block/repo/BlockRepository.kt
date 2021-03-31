@@ -1,19 +1,11 @@
 package com.anytypeio.anytype.domain.block.repo
 
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.Result
-import com.anytypeio.anytype.domain.block.model.Command
-import com.anytypeio.anytype.domain.block.model.Position
-import com.anytypeio.anytype.domain.clipboard.Copy
-import com.anytypeio.anytype.domain.clipboard.Paste
-import com.anytypeio.anytype.domain.common.Hash
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.common.TextStyle
-import com.anytypeio.anytype.domain.config.Config
-import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
-import com.anytypeio.anytype.domain.page.navigation.DocumentInfo
-import com.anytypeio.anytype.domain.page.navigation.PageInfoWithLinks
+
 
 interface BlockRepository {
 
@@ -67,13 +59,15 @@ interface BlockRepository {
 
     suspend fun updateDocumentTitle(command: Command.UpdateTitle)
     suspend fun updateText(command: Command.UpdateText)
-    suspend fun updateTextStyle(command: Command.UpdateStyle) : Payload
+    suspend fun updateTextStyle(command: Command.UpdateStyle): Payload
 
     suspend fun updateTextColor(command: Command.UpdateTextColor): Payload
     suspend fun updateBackgroundColor(command: Command.UpdateBackgroundColor): Payload
 
     suspend fun updateCheckbox(command: Command.UpdateCheckbox): Payload
-    suspend fun updateAlignment(command: Command.UpdateAlignment) : Payload
+    suspend fun updateAlignment(command: Command.UpdateAlignment): Payload
+
+    suspend fun setRelationKey(command: Command.SetRelationKey): Payload
 
     suspend fun getConfig(): Config
 
@@ -81,7 +75,10 @@ interface BlockRepository {
     suspend fun createPage(parentId: String, emoji: String? = null): Id
 
     suspend fun openPage(id: String): Result<Payload>
-    suspend fun openProfile(id: String) : Payload
+
+    suspend fun openProfile(id: String): Payload
+
+    suspend fun openObjectSet(id: Id): Payload
 
     suspend fun closePage(id: String)
     suspend fun openDashboard(contextId: String, id: String): Payload
@@ -104,8 +101,8 @@ interface BlockRepository {
     suspend fun undo(command: Command.Undo): Undo.Result
     suspend fun redo(command: Command.Redo): Redo.Result
 
-    suspend fun copy(command: Command.Copy): Copy.Response
-    suspend fun paste(command: Command.Paste): Paste.Response
+    suspend fun copy(command: Command.Copy): Response.Clipboard.Copy
+    suspend fun paste(command: Command.Paste): Response.Clipboard.Paste
 
     suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks
     suspend fun getListPages(): List<DocumentInfo>
@@ -122,9 +119,103 @@ interface BlockRepository {
 
     suspend fun setFields(command: Command.SetFields): Payload
 
+    suspend fun getTemplates(): List<Template>
+
+    suspend fun createTemplate(prototype: ObjectType.Prototype): Template
+
+    suspend fun createSet(
+        context: Id,
+        target: Id? = null,
+        position: Position = Position.BOTTOM,
+        objectType: String? = null
+    ): CreateObjectSet.Response
+
+    suspend fun setActiveDataViewViewer(
+        context: Id,
+        block: Id,
+        view: Id,
+        offset: Int,
+        limit: Int
+    ): Payload
+
+    suspend fun addDataViewRelation(
+        context: Id,
+        target: Id,
+        name: String,
+        format: Relation.Format
+    ): Payload
+
+    suspend fun updateDataViewViewer(
+        context: Id,
+        target: Id,
+        viewer: DVViewer
+    ): Payload
+
+    suspend fun duplicateDataViewViewer(
+        context: Id,
+        target: Id,
+        viewer: DVViewer
+    ): Payload
+
+    suspend fun createDataViewRecord(context: Id, target: Id): DVRecord
+
+    suspend fun updateDataViewRecord(
+        context: Id,
+        target: Id,
+        record: Id,
+        values: Map<String, Any?>
+    )
+
+    suspend fun addDataViewViewer(
+        ctx: String,
+        target: String,
+        name: String,
+        type: DVViewerType
+    ): Payload
+
+    suspend fun removeDataViewViewer(
+        ctx: Id,
+        dataview: Id,
+        viewer: Id
+    ): Payload
+
+    suspend fun addDataViewRelationOption(
+        ctx: Id,
+        dataview: Id,
+        relation: Id,
+        record: Id,
+        name: String,
+        color: String
+    ): Pair<Payload, Id?>
+
+    suspend fun addObjectRelationOption(
+        ctx: Id,
+        relation: Id,
+        name: Id,
+        color: String
+    ): Pair<Payload, Id?>
+
+    suspend fun searchObjects(
+        sorts: List<DVSort>,
+        filters: List<DVFilter>,
+        fulltext: String,
+        offset: Int,
+        limit: Int
+    ): List<Map<String, Any?>>
+
+    suspend fun relationListAvailable(ctx: Id): List<Relation>
+
+    suspend fun debugSync(): String
+
     suspend fun turnInto(
         context: Id,
         targets: List<Id>,
-        style: TextStyle
+        style: Block.Content.Text.Style
+    ): Payload
+
+    suspend fun updateDetail(
+        ctx: Id,
+        key: String,
+        value: Any?
     ): Payload
 }

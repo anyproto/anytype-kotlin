@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.page
 
 import MockDataFactory
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.event.model.Event
-import com.anytypeio.anytype.domain.ext.content
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.page.editor.ViewState
 import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType

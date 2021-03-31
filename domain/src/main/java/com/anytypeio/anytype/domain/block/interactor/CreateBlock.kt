@@ -3,12 +3,12 @@ package com.anytypeio.anytype.domain.block.interactor
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock.Params
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Command
-import com.anytypeio.anytype.domain.block.model.Position
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 
 /**
  * Use-case for creating a block.

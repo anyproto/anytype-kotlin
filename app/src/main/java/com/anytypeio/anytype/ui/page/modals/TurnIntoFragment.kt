@@ -8,10 +8,10 @@ import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.anytypeio.anytype.core_ui.features.page.modal.AddBlockOrTurnIntoAdapter
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
-import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -47,7 +47,8 @@ class TurnIntoFragment : BaseBottomSheetFragment() {
                 excludedCategories = excludedCategories,
                 excludedTypes = excludedTypes
             ),
-            onUiBlockClicked = { type -> dispatchAndExit(type) }
+            onUiBlockClicked = { type -> dispatchAndExit(type) },
+            onObjectClicked = { /*TODO Turn into objects will be implemented later */ }
         )
     }
 

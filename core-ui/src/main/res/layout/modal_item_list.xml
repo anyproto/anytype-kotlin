@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/list"
-        style="@style/ModalRowTestStyle"
+        style="@style/ViewerModalItemStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/modal_text_from_button_margin"

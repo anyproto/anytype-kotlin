@@ -109,10 +109,10 @@ interface MiddlewareService {
     fun uploadFile(request: UploadFile.Request): UploadFile.Response
 
     @Throws(Exception::class)
-    fun pageInfoWithLinks(request: Navigation.GetPageInfoWithLinks.Request): Navigation.GetPageInfoWithLinks.Response
+    fun objectInfoWithLinks(request: Navigation.GetObjectInfoWithLinks.Request): Navigation.GetObjectInfoWithLinks.Response
 
     @Throws(Exception::class)
-    fun listPages(request: Navigation.ListPages.Request): Navigation.ListPages.Response
+    fun listObjects(request: Navigation.ListObjects.Request): Navigation.ListObjects.Response
 
     @Throws(Exception::class)
     fun pageCreate(request: Page.Create.Request): Page.Create.Response
@@ -122,6 +122,54 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun blockListSetFields(request: BlockList.Set.Fields.Request): BlockList.Set.Fields.Response
+
+    @Throws(Exception::class)
+    fun objectTypeList(request: ObjectType.List.Request): ObjectType.List.Response
+
+    @Throws(Exception::class)
+    fun objectTypeCreate(request: ObjectType.Create.Request): ObjectType.Create.Response
+
+    @Throws(Exception::class)
+    fun blockCreateSet(request: Block.CreateSet.Request): Block.CreateSet.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewActiveSet(request: Block.Dataview.ViewSetActive.Request): Block.Dataview.ViewSetActive.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewRelationAdd(request: Block.Dataview.RelationAdd.Request): Block.Dataview.RelationAdd.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewViewUpdate(request: Block.Dataview.ViewUpdate.Request): Block.Dataview.ViewUpdate.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewViewDelete(request: Block.Dataview.ViewDelete.Request): Block.Dataview.ViewDelete.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewRecordCreate(request: Block.Dataview.RecordCreate.Request): Block.Dataview.RecordCreate.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewRecordUpdate(request: Block.Dataview.RecordUpdate.Request): Block.Dataview.RecordUpdate.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewViewCreate(request: Block.Dataview.ViewCreate.Request): Block.Dataview.ViewCreate.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewRecordRelationOptionAdd(request: Block.Dataview.RecordRelationOptionAdd.Request): Block.Dataview.RecordRelationOptionAdd.Response
+
+    @Throws(Exception::class)
+    fun objectRelationOptionAdd(request: Object.RelationOptionAdd.Request): Object.RelationOptionAdd.Response
+
+    @Throws(Exception::class)
+    fun objectSearch(request: Object.Search.Request): Object.Search.Response
+
+    @Throws(Exception::class)
+    fun relationListAvailable(request: Object.RelationListAvailable.Request): Object.RelationListAvailable.Response
+
+    @Throws(Exception::class)
+    fun debugSync(request: Debug.Sync.Request) : Debug.Sync.Response
+
+    @Throws(Exception::class)
+    fun relationSetKey(request: Block.Relation.SetKey.Request) : Block.Relation.SetKey.Response
 
     @Throws(Exception::class)
     fun blockListTurnInto(request: BlockList.TurnInto.Request): BlockList.TurnInto.Response

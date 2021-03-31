@@ -3,12 +3,29 @@
     <declare-styleable name="AvatarWidget">
         <attr name="text_size" format="dimension" />
     </declare-styleable>
+    <declare-styleable name="ObjectIconWidget">
+
+        <attr name="emojiSize" format="dimension"/>
+        <attr name="imageSize" format="dimension"/>
+        <attr name="checkboxSize" format="dimension"/>
+        <attr name="hasEmojiCircleBackground" format="boolean" />
+        <attr name="hasEmojiRoundedBackground" format="boolean" />
+        <attr name="initialTextSize" format="dimension" />
+
+    </declare-styleable>
+    <declare-styleable name="ObjectIconTextWidget">
+        <attr name="nameTextSize" format="dimension"/>
+        <attr name="nameTextColor" format="color"/>
+    </declare-styleable>
+    <declare-styleable name="IconWidget">
+        <attr name="emoji_size" format="dimension" />
+    </declare-styleable>
     <declare-styleable name="ToolbarSectionWidget">
         <attr name="active_background_color" format="color" />
     </declare-styleable>
     <declare-styleable name="ColorCircleWidget">
-        <attr name="innerColor" format="color"/>
-        <attr name="innerStrokeColor" format="color"/>
+        <attr name="innerColor" format="color" />
+        <attr name="innerStrokeColor" format="color" />
         <attr name="innerRadius" format="dimension" />
         <attr name="outerStrokeWidth" format="dimension" />
         <attr name="outerStrokeColor" format="color"/>

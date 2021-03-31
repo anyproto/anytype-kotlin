@@ -11,12 +11,15 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.BlockSplitMode
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Numbered
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Command
-import com.anytypeio.anytype.domain.event.model.Event
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestPageFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
@@ -122,7 +125,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
         onView(withRecyclerView(R.id.recycler).atPositionOnView(6, R.id.bulletedListContent))
             .check(matches(withText(BLOCK_BULLET.content.asText().text)))
 
-        R.id.recycler.scrollTo<BlockViewHolder.Numbered>(7)
+        R.id.recycler.scrollTo<Numbered>(7)
 
         onView(withRecyclerView(R.id.recycler).atPositionOnView(7, R.id.numberedListContent))
             .check(matches(withText(BLOCK_NUMBERED_1.content.asText().text)))
@@ -130,12 +133,12 @@ class EditorIntegrationTesting : EditorTestSetup() {
         onView(withRecyclerView(R.id.recycler).atPositionOnView(7, R.id.number))
             .check(matches(withText("1.")))
 
-        R.id.recycler.scrollTo<BlockViewHolder.Toggle>(8)
+        R.id.recycler.scrollTo<Toggle>(8)
 
         onView(withRecyclerView(R.id.recycler).atPositionOnView(8, R.id.toggleContent))
             .check(matches(withText(BLOCK_TOGGLE.content.asText().text)))
 
-        R.id.recycler.scrollTo<BlockViewHolder.Checkbox>(9)
+        R.id.recycler.scrollTo<Checkbox>(9)
 
         onView(withRecyclerView(R.id.recycler).atPositionOnView(9, R.id.checkboxContent))
             .check(matches(withText(BLOCK_CHECKBOX.content.asText().text)))
@@ -300,8 +303,9 @@ class EditorIntegrationTesting : EditorTestSetup() {
         val command = Command.Split(
             context = root,
             target = paragraph.id,
-            index = 3,
-            style = Block.Content.Text.Style.P
+            style = Block.Content.Text.Style.P,
+            mode = BlockSplitMode.BOTTOM,
+            range = 3..3
         )
 
         stubSplitBlocks(

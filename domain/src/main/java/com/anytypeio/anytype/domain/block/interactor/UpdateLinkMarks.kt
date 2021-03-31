@@ -2,8 +2,8 @@ package com.anytypeio.anytype.domain.block.interactor
 
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.ext.rangeIntersection
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ext.rangeIntersection
 
 /**
  * Adds new link mark to the list of marks and

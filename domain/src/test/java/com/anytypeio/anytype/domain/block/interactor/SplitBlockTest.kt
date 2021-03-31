@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.domain.block.interactor
 
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.BlockSplitMode
-import com.anytypeio.anytype.domain.block.model.Command
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.BlockSplitMode
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.CoroutineTestRule
-import com.anytypeio.anytype.domain.common.MockDataFactory
+import com.anytypeio.anytype.core_models.CoroutineTestRule
+import com.anytypeio.anytype.core_models.MockDataFactory
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi

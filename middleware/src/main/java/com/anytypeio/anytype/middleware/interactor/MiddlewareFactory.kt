@@ -1,40 +1,46 @@
 package com.anytypeio.anytype.middleware.interactor
 
-import anytype.model.Block
-import com.anytypeio.anytype.data.auth.model.BlockEntity
-import com.anytypeio.anytype.middleware.converters.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.middleware.mappers.*
 
 class MiddlewareFactory {
 
-    fun create(prototype: BlockEntity.Prototype): Block {
+    fun create(prototype: Block.Prototype): MBlock {
         return when (prototype) {
-            is BlockEntity.Prototype.Bookmark -> {
-                Block(bookmark = Bookmark())
+            is Block.Prototype.Bookmark -> {
+                val bookmark = MBBookmark()
+                MBlock(bookmark = bookmark)
             }
-            is BlockEntity.Prototype.Text -> {
-                val text = Block.Content.Text(style = prototype.style.toMiddleware())
-                Block(text = text)
+            is Block.Prototype.Text -> {
+                val text = MBText(style = prototype.style.toMiddlewareModel())
+                MBlock(text = text)
             }
-            is BlockEntity.Prototype.DividerLine -> {
-                val divider = Block.Content.Div(style = Block.Content.Div.Style.Line)
-                Block(div = divider)
+            is Block.Prototype.DividerLine -> {
+                val divider = MBDiv(style = MBDivStyle.Line)
+                MBlock(div = divider)
             }
-            is BlockEntity.Prototype.DividerDots -> {
-                val divider = Block.Content.Div(style = Block.Content.Div.Style.Dots)
-                Block(div = divider)
+            is Block.Prototype.DividerDots -> {
+                val divider = MBDiv(style = MBDivStyle.Dots)
+                MBlock(div = divider)
             }
-            is BlockEntity.Prototype.File -> {
-                val file = File(
-                    state = prototype.state.state(),
-                    type = prototype.type.type()
+            is Block.Prototype.File -> {
+                val file = MBFile(
+                    state = prototype.state.toMiddlewareModel(),
+                    type = prototype.type.toMiddlewareModel()
                 )
-                Block(file_ = file)
+                MBlock(file_ = file)
             }
-            is BlockEntity.Prototype.Link -> {
-                val link = Block.Content.Link(
+            is Block.Prototype.Link -> {
+                val link = MBLink(
                     targetBlockId = prototype.target
                 )
-                Block(link = link)
+                MBlock(link = link)
+            }
+            is Block.Prototype.Relation -> {
+                val relation = MBRelation(
+                    key = prototype.key
+                )
+                MBlock(relation = relation)
             }
             else -> throw IllegalStateException("Unexpected prototype: $prototype")
         }

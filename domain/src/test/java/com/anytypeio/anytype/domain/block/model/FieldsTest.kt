@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.block.model
+package com.anytypeio.anytype.core_models
 
 import org.junit.Test
 import kotlin.test.assertNull

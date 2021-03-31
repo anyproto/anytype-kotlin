@@ -1,13 +1,9 @@
 package com.anytypeio.anytype.domain.page
 
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Command
-import com.anytypeio.anytype.domain.block.model.Position
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.Id
-import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 
 /**
@@ -25,7 +21,9 @@ class CreateDocument(
                 context = params.context,
                 target = params.target,
                 position = params.position,
-                emoji = documentEmojiProvider.random()
+                emoji = documentEmojiProvider.random(),
+                type = null,
+                layout = null
             )
         ).let { (id, target, payload) ->
             Either.Right(

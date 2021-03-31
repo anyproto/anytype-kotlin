@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.page.cover
 
-import com.anytypeio.anytype.domain.common.Hash
-import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.core_models.Hash
+import com.anytypeio.anytype.core_models.Url
 
 sealed class DocCoverGalleryView {
     sealed class Section : DocCoverGalleryView() {

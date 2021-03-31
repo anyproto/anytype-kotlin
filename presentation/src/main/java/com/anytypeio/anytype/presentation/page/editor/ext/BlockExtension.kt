@@ -32,5 +32,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.DividerLine -> copy(isSelected = newSelection)
     is BlockView.DividerDots -> copy(isSelected = newSelection)
     is BlockView.Code -> copy(isSelected = newSelection)
+    is BlockView.Relation.Related -> copy(isSelected = newSelection)
+    is BlockView.Relation.Placeholder -> copy(isSelected = newSelection)
     else -> this
 }

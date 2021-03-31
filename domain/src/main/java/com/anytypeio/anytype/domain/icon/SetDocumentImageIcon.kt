@@ -1,14 +1,15 @@
 package com.anytypeio.anytype.domain.icon
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Hash
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.event.model.Payload
 
 class SetDocumentImageIcon(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, SetDocumentImageIcon.Params>() {
+) : BaseUseCase<Pair<Payload, Hash>, SetDocumentImageIcon.Params>() {
 
     override suspend fun run(params: Params) = safe {
         val hash = repo.uploadFile(
@@ -17,12 +18,13 @@ class SetDocumentImageIcon(
                 type = Block.Content.File.Type.IMAGE
             )
         )
-        repo.setDocumentImageIcon(
+        val payload = repo.setDocumentImageIcon(
             command = Command.SetDocumentImageIcon(
                 hash = hash,
                 context = params.context
             )
         )
+        Pair(payload, hash)
     }
 
     /**

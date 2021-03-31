@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.page.editor.listener
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
@@ -47,4 +48,9 @@ sealed class ListenerType {
     data class Mention(val target: String) : ListenerType()
 
     data class DividerClick(val target: String) : ListenerType()
+
+    sealed class Relation : ListenerType() {
+        data class Placeholder(val target: Id) : Relation()
+        data class Related(val value: BlockView.Relation) : Relation()
+    }
 }

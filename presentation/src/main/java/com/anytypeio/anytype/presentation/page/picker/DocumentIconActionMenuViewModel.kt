@@ -1,15 +1,16 @@
 package com.anytypeio.anytype.presentation.page.picker
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
-import com.anytypeio.anytype.domain.event.model.Payload
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.presentation.common.StateReducer
+import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuViewModel.Contract.*
 import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuViewModel.ViewState
-import com.anytypeio.anytype.presentation.util.Bridge
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
@@ -18,7 +19,8 @@ import kotlinx.coroutines.launch
 class DocumentIconActionMenuViewModel(
     private val setEmojiIcon: SetDocumentEmojiIcon,
     private val setImageIcon: SetDocumentImageIcon,
-    private val bridge: Bridge<Payload>
+    private val dispatcher: Dispatcher<Payload>,
+    private val details: DetailModificationManager
 ) : ViewStateViewModel<ViewState>(), StateReducer<State, Event> {
 
     private val events = ConflatedBroadcastChannel<Event>()
@@ -53,7 +55,8 @@ class DocumentIconActionMenuViewModel(
                         )
                     ).proceed(
                         success = {
-                            bridge.send(it)
+                            dispatcher.send(it)
+                            details.setEmojiIcon(target = action.target, unicode = action.unicode)
                             events.send(Event.OnCompleted)
                         },
                         failure = { events.send(Event.Failure(it)) }
@@ -65,8 +68,9 @@ class DocumentIconActionMenuViewModel(
                             context = action.context
                         )
                     ).proceed(
-                        success = {
-                            bridge.send(it)
+                        success = { payload ->
+                            dispatcher.send(payload)
+                            details.removeIcon(action.target)
                             events.send(Event.OnCompleted)
                         },
                         failure = { events.send(Event.Failure(it)) }
@@ -78,8 +82,9 @@ class DocumentIconActionMenuViewModel(
                         )
                     ).proceed(
                         failure = { events.send(Event.Failure(it)) },
-                        success = {
-                            bridge.send(it)
+                        success = { (payload, hash) ->
+                            dispatcher.send(payload)
+                            details.setImageIcon(target = action.context, hash = hash)
                             events.send(Event.OnCompleted)
                         }
                     )

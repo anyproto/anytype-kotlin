@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.page.editor.model
 
 import android.os.Parcelable
 import com.anytypeio.anytype.core_utils.ui.ViewType
-import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.presentation.page.cover.CoverColor
 import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_ARCHIVE_TITLE
@@ -31,12 +31,19 @@ import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PICTURE_PLACEHOLDER
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PICTURE_UPLOAD
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PROFILE_TITLE
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_DEFAULT
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_FILE
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_OBJECT
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_PLACEHOLDER
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_STATUS
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_TAGS
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_TITLE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_TOGGLE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_VIDEO
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_VIDEO_ERROR
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_VIDEO_UPLOAD
+import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 
@@ -837,6 +844,35 @@ sealed class BlockView : ViewType, Parcelable {
         override val indent: Int = 0
     ) : BlockView(), Selectable, Indentable {
         override fun getViewType() = HOLDER_DIVIDER_DOTS
+    }
+
+
+    sealed class Relation : BlockView(), Selectable, Indentable {
+        @Parcelize
+        data class Placeholder(
+            override val id: String,
+            override val indent: Int = 0,
+            override val isSelected: Boolean = false
+        ) : Relation() {
+            override fun getViewType(): Int = HOLDER_RELATION_PLACEHOLDER
+        }
+
+        @Parcelize
+        data class Related(
+            override val id: String,
+            override val indent: Int = 0,
+            override val isSelected: Boolean = false,
+            val background: String? = null,
+            val view: @RawValue DocumentRelationView
+        ) : Relation() {
+            override fun getViewType(): Int = when (view) {
+                is DocumentRelationView.Default -> HOLDER_RELATION_DEFAULT
+                is DocumentRelationView.Status -> HOLDER_RELATION_STATUS
+                is DocumentRelationView.Tags -> HOLDER_RELATION_TAGS
+                is DocumentRelationView.Object -> HOLDER_RELATION_OBJECT
+                is DocumentRelationView.File -> HOLDER_RELATION_FILE
+            }
+        }
     }
 
     enum class Mode { READ, EDIT }

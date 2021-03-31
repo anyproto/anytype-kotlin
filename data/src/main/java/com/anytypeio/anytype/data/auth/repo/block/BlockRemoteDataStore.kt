@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.data.auth.repo.block
 
-import com.anytypeio.anytype.data.auth.model.*
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.*
 
 class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
@@ -18,148 +17,150 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun createPage(parentId: String, emoji: String?): String =
         remote.createPage(parentId, emoji)
-    override suspend fun openPage(id: String): PayloadEntity = remote.openPage(id)
-    override suspend fun openProfile(id: String): PayloadEntity = remote.openProfile(id)
+
+    override suspend fun openPage(id: String): Payload = remote.openPage(id)
+    override suspend fun openProfile(id: String): Payload = remote.openProfile(id)
+    override suspend fun openObjectSet(id: String): Payload = remote.openObjectSet(id)
 
     override suspend fun closePage(id: String) {
         remote.closePage(id)
     }
 
-    override suspend fun updateDocumentTitle(command: CommandEntity.UpdateTitle) {
+    override suspend fun updateDocumentTitle(command: Command.UpdateTitle) {
         remote.updateDocumentTitle(command)
     }
 
-    override suspend fun updateText(command: CommandEntity.UpdateText) {
+    override suspend fun updateText(command: Command.UpdateText) {
         remote.updateText(command)
     }
 
     override suspend fun updateTextStyle(
-        command: CommandEntity.UpdateStyle
-    ) : PayloadEntity = remote.updateTextStyle(command)
+        command: Command.UpdateStyle
+    ): Payload = remote.updateTextStyle(command)
 
     override suspend fun updateTextColor(
-        command: CommandEntity.UpdateTextColor
-    ): PayloadEntity = remote.updateTextColor(command)
+        command: Command.UpdateTextColor
+    ): Payload = remote.updateTextColor(command)
 
     override suspend fun updateBackroundColor(
-        command: CommandEntity.UpdateBackgroundColor
-    ): PayloadEntity = remote.updateBackgroundColor(command)
+        command: Command.UpdateBackgroundColor
+    ): Payload = remote.updateBackgroundColor(command)
 
     override suspend fun updateCheckbox(
-        command: CommandEntity.UpdateCheckbox
-    ): PayloadEntity = remote.updateCheckbox(command)
+        command: Command.UpdateCheckbox
+    ): Payload = remote.updateCheckbox(command)
 
     override suspend fun updateAlignment(
-        command: CommandEntity.UpdateAlignment
-    ) : PayloadEntity = remote.updateAlignment(command)
+        command: Command.UpdateAlignment
+    ): Payload = remote.updateAlignment(command)
 
     override suspend fun uploadBlock(
-        command: CommandEntity.UploadBlock
-    ): PayloadEntity = remote.uploadBlock(command)
+        command: Command.UploadBlock
+    ): Payload = remote.uploadBlock(command)
 
     override suspend fun create(
-        command: CommandEntity.Create
-    ): Pair<String, PayloadEntity> = remote.create(command)
+        command: Command.Create
+    ): Pair<String, Payload> = remote.create(command)
 
     override suspend fun createDocument(
-        command: CommandEntity.CreateDocument
-    ): Triple<String, String, PayloadEntity> = remote.createDocument(command)
+        command: Command.CreateDocument
+    ): Triple<String, String, Payload> = remote.createDocument(command)
 
     override suspend fun createNewDocument(
-        command: CommandEntity.CreatePage
+        command: Command.CreateNewDocument
     ): String = remote.createPage(command)
 
-    override suspend fun move(command: CommandEntity.Move): PayloadEntity {
+    override suspend fun move(command: Command.Move): Payload {
         return remote.move(command)
     }
 
     override suspend fun duplicate(
-        command: CommandEntity.Duplicate
-    ): Pair<String, PayloadEntity> = remote.duplicate(command)
+        command: Command.Duplicate
+    ): Pair<String, Payload> = remote.duplicate(command)
 
     override suspend fun unlink(
-        command: CommandEntity.Unlink
-    ): PayloadEntity = remote.unlink(command)
+        command: Command.Unlink
+    ): Payload = remote.unlink(command)
 
     override suspend fun merge(
-        command: CommandEntity.Merge
-    ): PayloadEntity = remote.merge(command)
+        command: Command.Merge
+    ): Payload = remote.merge(command)
 
     override suspend fun split(
-        command: CommandEntity.Split
-    ): Pair<String, PayloadEntity> = remote.split(command)
+        command: Command.Split
+    ): Pair<String, Payload> = remote.split(command)
 
     override suspend fun setDocumentEmojiIcon(
-        command: CommandEntity.SetDocumentEmojiIcon
-    ): PayloadEntity = remote.setDocumentEmojiIcon(command)
+        command: Command.SetDocumentEmojiIcon
+    ): Payload = remote.setDocumentEmojiIcon(command)
 
     override suspend fun setDocumentImageIcon(
-        command: CommandEntity.SetDocumentImageIcon
-    ): PayloadEntity = remote.setDocumentImageIcon(command)
+        command: Command.SetDocumentImageIcon
+    ): Payload = remote.setDocumentImageIcon(command)
 
     override suspend fun setDocumentCoverColor(
         ctx: String,
         color: String
-    ): PayloadEntity = remote.setDocumentCoverColor(ctx = ctx, color = color)
+    ): Payload = remote.setDocumentCoverColor(ctx = ctx, color = color)
 
     override suspend fun setDocumentCoverGradient(
         ctx: String,
         gradient: String
-    ): PayloadEntity = remote.setDocumentCoverGradient(ctx = ctx, gradient = gradient)
+    ): Payload = remote.setDocumentCoverGradient(ctx = ctx, gradient = gradient)
 
     override suspend fun setDocumentCoverImage(
         ctx: String,
         hash: String
-    ): PayloadEntity = remote.setDocumentCoverImage(ctx = ctx, hash = hash)
+    ): Payload = remote.setDocumentCoverImage(ctx = ctx, hash = hash)
 
     override suspend fun removeDocumentCover(
         ctx: String
-    ): PayloadEntity = remote.removeDocumentCover(ctx)
+    ): Payload = remote.removeDocumentCover(ctx)
 
     override suspend fun setupBookmark(
-        command: CommandEntity.SetupBookmark
-    ): PayloadEntity = remote.setupBookmark(command)
+        command: Command.SetupBookmark
+    ): Payload = remote.setupBookmark(command)
 
-    override suspend fun undo(command: CommandEntity.Undo) = remote.undo(command)
+    override suspend fun undo(command: Command.Undo) = remote.undo(command)
 
-    override suspend fun redo(command: CommandEntity.Redo) = remote.redo(command)
+    override suspend fun redo(command: Command.Redo) = remote.redo(command)
 
     override suspend fun archiveDocument(
-        command: CommandEntity.ArchiveDocument
+        command: Command.ArchiveDocument
     ) = remote.archiveDocument(command)
 
     override suspend fun turnIntoDocument(
-        command: CommandEntity.TurnIntoDocument
+        command: Command.TurnIntoDocument
     ): List<Id> = remote.turnIntoDocument(command)
 
     override suspend fun replace(
-        command: CommandEntity.Replace
-    ): Pair<Id, PayloadEntity> = remote.replace(command)
+        command: Command.Replace
+    ): Pair<Id, Payload> = remote.replace(command)
 
     override suspend fun paste(
-        command: CommandEntity.Paste
+        command: Command.Paste
     ): Response.Clipboard.Paste = remote.paste(command)
 
     override suspend fun copy(
-        command: CommandEntity.Copy
+        command: Command.Copy
     ): Response.Clipboard.Copy = remote.copy(command)
 
     override suspend fun uploadFile(
-        command: CommandEntity.UploadFile
+        command: Command.UploadFile
     ): String = remote.uploadFile(command)
 
-    override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinksEntity =
+    override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks =
         remote.getPageInfoWithLinks(pageId)
 
-    override suspend fun getListPages(): List<DocumentInfoEntity> = remote.getListPages()
+    override suspend fun getListPages(): List<DocumentInfo> = remote.getListPages()
 
     override suspend fun linkToObject(
         context: String,
         target: String,
         block: String,
         replace: Boolean,
-        position: PositionEntity
-    ): PayloadEntity = remote.linkToObject(
+        position: Position
+    ): Payload = remote.linkToObject(
         context = context,
         target = target,
         block = block,
@@ -167,21 +168,183 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         position = position
     )
 
+    override suspend fun setRelationKey(command: Command.SetRelationKey): Payload =
+        remote.setRelationKey(command)
+
     override suspend fun updateDivider(
-        command: CommandEntity.UpdateDivider
-    ): PayloadEntity = remote.updateDivider(command)
+        command: Command.UpdateDivider
+    ): Payload = remote.updateDivider(command)
 
     override suspend fun setFields(
-        command: CommandEntity.SetFields
-    ): PayloadEntity = remote.setFields(command)
+        command: Command.SetFields
+    ): Payload = remote.setFields(command)
+
+    override suspend fun getTemplates(): List<ObjectType> = remote.getTemplates()
+    override suspend fun createTemplate(
+        prototype: ObjectType.Prototype
+    ): ObjectType = remote.createTemplate(prototype)
+
+    override suspend fun createSet(
+        contextId: String,
+        targetId: String?,
+        position: Position,
+        objectType: String?
+    ): Response.Set.Create = remote.createSet(
+        contextId = contextId,
+        targetId = targetId,
+        objectType = objectType,
+        position = position
+    )
+
+    override suspend fun setActiveDataViewViewer(
+        context: Id,
+        block: Id,
+        view: Id,
+        offset: Int,
+        limit: Int
+    ): Payload = remote.setActiveDataViewViewer(
+        context = context,
+        block = block,
+        view = view,
+        offset = offset,
+        limit = limit
+    )
+
+    override suspend fun addDataViewRelation(
+        context: Id,
+        target: Id,
+        name: String,
+        format: Relation.Format
+    ): Payload = remote.addDataViewRelation(
+        context = context,
+        target = target,
+        name = name,
+        format = format
+    )
+
+    override suspend fun updateDataViewViewer(
+        context: Id,
+        target: Id,
+        viewer: DVViewer
+    ): Payload = remote.updateDataViewViewer(
+        context = context,
+        target = target,
+        viewer = viewer
+    )
+
+    override suspend fun duplicateDataViewViewer(
+        context: String,
+        target: String,
+        viewer: DVViewer
+    ): Payload = remote.duplicateDataViewViewer(
+        context = context,
+        target = target,
+        viewer = viewer
+    )
+
+    override suspend fun createDataViewRecord(
+        context: String,
+        target: String
+    ): Map<String, Any?> = remote.createDataViewRecord(context = context, target = target)
+
+    override suspend fun updateDataViewRecord(
+        context: Id,
+        target: Id,
+        record: Id,
+        values: Map<String, Any?>
+    ) = remote.updateDataViewRecord(
+        context = context,
+        target = target,
+        record = record,
+        values = values
+    )
+
+    override suspend fun addDataViewViewer(
+        ctx: String,
+        target: String,
+        name: String,
+        type: DVViewerType
+    ): Payload = remote.addDataViewViewer(
+        ctx = ctx,
+        target = target,
+        name = name,
+        type = type
+    )
+
+    override suspend fun removeDataViewViewer(
+        ctx: Id,
+        dataview: Id,
+        viewer: Id
+    ): Payload = remote.removeDataViewViewer(
+        ctx = ctx,
+        dataview = dataview,
+        viewer = viewer
+    )
+
+    override suspend fun addDataViewRelationOption(
+        ctx: Id,
+        dataview: Id,
+        relation: Id,
+        record: Id,
+        name: String,
+        color: String
+    ): Pair<Payload, Id?> = remote.addDataViewRelationOption(
+        ctx = ctx,
+        dataview = dataview,
+        relation = relation,
+        record = record,
+        name = name,
+        color = color
+    )
+
+    override suspend fun addObjectRelationOption(
+        ctx: Id,
+        relation: Id,
+        name: Id,
+        color: String
+    ): Pair<Payload, Id?> = remote.addObjectRelationOption(
+        ctx = ctx,
+        relation = relation,
+        name = name,
+        color = color
+    )
+
+    override suspend fun searchObjects(
+        sorts: List<DVSort>,
+        filters: List<DVFilter>,
+        fulltext: String,
+        offset: Int,
+        limit: Int
+    ): List<Map<String, Any?>> = remote.searchObjects(
+        sorts = sorts,
+        filters = filters,
+        fulltext = fulltext,
+        offset = offset,
+        limit = limit
+    )
+
+    override suspend fun relationListAvailable(ctx: Id): List<Relation> =
+        remote.relationListAvailable(ctx)
+
+    override suspend fun debugSync(): String = remote.debugSync()
 
     override suspend fun turnInto(
         context: String,
         targets: List<String>,
-        style: BlockEntity.Content.Text.Style
-    ): PayloadEntity = remote.turnInto(
+        style: Block.Content.Text.Style
+    ): Payload = remote.turnInto(
         context = context,
         targets = targets,
         style = style
+    )
+
+    override suspend fun updateDetail(
+        ctx: Id,
+        key: String,
+        value: Any?
+    ): Payload = remote.updateDetail(
+        ctx = ctx,
+        key = key,
+        value = value
     )
 }

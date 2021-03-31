@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.data.auth.repo.clipboard
 
-import com.anytypeio.anytype.data.auth.mapper.toDomain
-import com.anytypeio.anytype.data.auth.mapper.toEntity
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.clipboard.Clip
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 
@@ -12,7 +10,7 @@ class ClipboardDataRepository(
 
     override suspend fun put(text: String, html: String?, blocks: List<Block>) {
         factory.storage.persist(
-            blocks = blocks.map { it.toEntity() }
+            blocks = blocks
         )
         factory.system.put(
             text = text,
@@ -21,7 +19,7 @@ class ClipboardDataRepository(
     }
 
     override suspend fun blocks(): List<Block> {
-        return factory.storage.fetch().map { it.toDomain() }
+        return factory.storage.fetch()
     }
 
     override suspend fun clip(): Clip? = factory.system.clip()

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Point
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
@@ -24,6 +25,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -168,6 +171,22 @@ fun EditText.multilineIme(action: Int, inputType: Int) {
     maxLines = Integer.MAX_VALUE
 }
 
+fun EditText.enable() {
+    inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
+    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
+    setHorizontallyScrolling(false)
+    maxLines = Integer.MAX_VALUE
+    setTextIsSelectable(true)
+}
+
+fun EditText.disable() {
+    inputType = InputType.TYPE_NULL
+    setRawInputType(InputType.TYPE_NULL)
+    maxLines = Integer.MAX_VALUE
+    setHorizontallyScrolling(false)
+    setTextIsSelectable(false)
+}
+
 fun TextView.getCursorOffsetY(): Int? =
     (parent as? ViewGroup)?.let { parentView ->
         val start = selectionStart
@@ -207,4 +226,9 @@ fun Activity.screen(): Point {
     val p = Point()
     display.getSize(p)
     return p
+}
+
+fun Drawable.setDrawableColor(color: Int) {
+    this.colorFilter = BlendModeColorFilterCompat
+        .createBlendModeColorFilterCompat(color, BlendModeCompat.SRC_ATOP)
 }

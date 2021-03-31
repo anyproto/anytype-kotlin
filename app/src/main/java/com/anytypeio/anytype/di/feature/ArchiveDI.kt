@@ -4,7 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.page.ArchiveDocument
-import com.anytypeio.anytype.domain.page.ClosePage
+import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.presentation.page.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.page.archive.ArchiveViewModelFactory
@@ -42,7 +42,7 @@ object ArchiveModule {
     @Provides
     fun provideArchiveViewModelFactory(
         openPage: OpenPage,
-        closePage: ClosePage,
+        closePage: CloseBlock,
         archiveDocument: ArchiveDocument,
         interceptEvents: InterceptEvents,
         renderer: DefaultBlockViewRenderer,

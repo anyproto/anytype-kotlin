@@ -5,8 +5,8 @@ import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.domain.block.model.Position
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import com.anytypeio.anytype.ui.archive.ArchiveFragment
@@ -16,6 +16,8 @@ import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.navigation.PageNavigationFragment
 import com.anytypeio.anytype.ui.page.PageFragment
+import com.anytypeio.anytype.ui.sets.CreateObjectSetFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 
 class Navigator : AppNavigation {
 
@@ -197,6 +199,20 @@ class Navigator : AppNavigation {
         navController?.navigate(
             R.id.archiveFragment,
             bundleOf(ArchiveFragment.ID_KEY to target)
+        )
+    }
+
+    override fun openObjectSet(target: String) {
+        navController?.navigate(
+            R.id.objectSetScreen,
+            bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to target)
+        )
+    }
+
+    override fun openCreateSetScreen(ctx: Id) {
+        navController?.navigate(
+            R.id.from_desktop_to_create_sets,
+            bundleOf(CreateObjectSetFragment.CONTEXT_ID_KEY to ctx)
         )
     }
 

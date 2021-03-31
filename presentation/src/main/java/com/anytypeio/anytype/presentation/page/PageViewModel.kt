@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.OBJECT_CREATE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_CREATE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_MENTION_CREATE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_ACTION_MENU
@@ -23,27 +24,23 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_STYLE
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block.Content
+import com.anytypeio.anytype.core_models.Block.Prototype
+import com.anytypeio.anytype.core_models.ext.*
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Block.Content
-import com.anytypeio.anytype.domain.block.model.Block.Prototype
-import com.anytypeio.anytype.domain.block.model.Position
-import com.anytypeio.anytype.domain.common.Document
-import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.event.model.Event
-import com.anytypeio.anytype.domain.event.model.Payload
-import com.anytypeio.anytype.domain.ext.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
@@ -62,7 +59,9 @@ import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeCategori
 import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForDotsDivider
 import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForLineDivider
 import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForText
+import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludedCategoriesForText
 import com.anytypeio.anytype.presentation.page.editor.*
+import com.anytypeio.anytype.presentation.page.editor.Command
 import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.page.editor.ext.*
@@ -86,7 +85,7 @@ import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.search.search
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.util.Bridge
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -97,9 +96,10 @@ import java.util.regex.Pattern
 
 class PageViewModel(
     private val openPage: OpenPage,
-    private val closePage: ClosePage,
+    private val closePage: CloseBlock,
     private val createPage: CreatePage,
     private val createDocument: CreateDocument,
+    private val createObject: CreateObject,
     private val createNewDocument: CreateNewDocument,
     private val archiveDocument: ArchiveDocument,
     private val interceptEvents: InterceptEvents,
@@ -114,7 +114,9 @@ class PageViewModel(
     private val orchestrator: Orchestrator,
     private val getListPages: GetListPages,
     private val analytics: Analytics,
-    private val bridge: Bridge<Payload>
+    private val dispatcher: Dispatcher<Payload>,
+    private val detailModificationManager: DetailModificationManager,
+    private val updateDetail: UpdateDetail
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -195,11 +197,16 @@ class PageViewModel(
         startProcessingFocusChanges()
         startProcessingTitleChanges()
         startProcessingControlPanelViewState()
+        startProcessingInternalDetailModifications()
         startObservingPayload()
         startObservingErrors()
         processRendering()
         processMarkupChanges()
         viewModelScope.launch { orchestrator.start() }
+    }
+
+    private fun startProcessingInternalDetailModifications() {
+        detailModificationManager.modifications.onEach { refresh() }.launchIn(viewModelScope)
     }
 
     private fun startProcessingFocusChanges() {
@@ -237,6 +244,7 @@ class PageViewModel(
                 .proxies
                 .payloads
                 .stream()
+                .filter { it.events.isNotEmpty() }
                 .map { payload -> processEvents(payload.events) }
                 .collect { viewModelScope.launch { refresh() } }
         }
@@ -261,9 +269,14 @@ class PageViewModel(
         events.forEach { event ->
             if (event is Event.Command.ShowBlock) {
                 orchestrator.stores.details.update(event.details)
+                orchestrator.stores.relations.update(event.relations)
+                orchestrator.stores.objectTypes.update(event.objectTypes)
             }
-            if (event is Event.Command.UpdateDetails) {
-                orchestrator.stores.details.add(event.target, event.details)
+            if (event is Event.Command.Details) {
+                orchestrator.stores.details.apply { update(current().process(event)) }
+            }
+            if (event is Event.Command.ObjectRelations) {
+                orchestrator.stores.relations.apply { update(current().process(event)) }
             }
             blocks = reduce(blocks, event)
         }
@@ -422,7 +435,8 @@ class PageViewModel(
                     anchor = context,
                     focus = focus,
                     root = models.first { it.id == context },
-                    details = details
+                    details = details,
+                    relations = orchestrator.stores.relations.current()
                 )
             }
             .catch { emit(emptyList()) }
@@ -522,7 +536,7 @@ class PageViewModel(
         }
 
         jobs += viewModelScope.launch {
-            bridge
+            dispatcher
                 .flow()
                 .filter { it.context == context }
                 .collect { orchestrator.proxies.payloads.send(it) }
@@ -681,7 +695,7 @@ class PageViewModel(
             Session.OPEN -> {
                 viewModelScope.launch {
                     closePage(
-                        ClosePage.Params(context)
+                        CloseBlock.Params(context)
                     ).proceed(
                         success = { navigation.postValue(EventWrapper(AppNavigation.Command.Exit)) },
                         failure = { Timber.e(it, "Error while closing document: $context") }
@@ -718,7 +732,7 @@ class PageViewModel(
 
     private fun exitDashboard() {
         viewModelScope.launch {
-            closePage(ClosePage.Params(context)).proceed(
+            closePage(CloseBlock.Params(context)).proceed(
                 success = { navigateToDesktop() },
                 failure = { Timber.e(it, "Error while closing this page: $context") }
             )
@@ -1305,6 +1319,18 @@ class PageViewModel(
         }
     }
 
+    fun onSetRelationKeyClicked(blockId: Id, key: Id) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Document.SetRelationKey(
+                    context = context,
+                    blockId = blockId,
+                    key = key
+                )
+            )
+        }
+    }
+
     fun onActionMenuItemClicked(id: String, action: ActionItemType) {
         when (action) {
             ActionItemType.AddBelow -> {
@@ -1320,7 +1346,10 @@ class PageViewModel(
                 val excludedCategories = mutableListOf<String>()
                 val target = blocks.first { it.id == id }
                 when (val content = target.content) {
-                    is Content.Text -> excludedTypes.addAll(excludeTypesForText())
+                    is Content.Text -> {
+                        excludedCategories.addAll(excludedCategoriesForText())
+                        excludedTypes.addAll(excludeTypesForText())
+                    }
                     is Content.Divider -> {
                         excludedCategories.addAll(excludeCategoriesForDivider())
                         when (content.style) {
@@ -1514,6 +1543,10 @@ class PageViewModel(
         viewModelScope.launch { controlPanelInteractor.onEvent(ControlPanelMachine.Event.SearchToolbar.OnEnterSearchMode) }
     }
 
+    fun onDocRelationsClicked() {
+        dispatch(Command.OpenObjectRelationScreen.List(ctx = context, target = null))
+    }
+
     fun onSearchToolbarEvent(event: SearchInDocEvent) {
         if (mode != EditorMode.SEARCH) return
         when (event) {
@@ -1653,6 +1686,33 @@ class PageViewModel(
                 )
             )
         )
+    }
+
+    fun onAddRelationBlockClicked() {
+        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val content = focused.content
+        val replace = content is Content.Text && content.text.isEmpty()
+
+        viewModelScope.launch {
+            if (replace) {
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Replace(
+                        context = context,
+                        target = focused.id,
+                        prototype = Prototype.Relation(key = "")
+                    )
+                )
+            } else {
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Create(
+                        context = context,
+                        target = focused.id,
+                        position = Position.BOTTOM,
+                        prototype = Prototype.Relation(key = "")
+                    )
+                )
+            }
+        }
     }
 
     fun onTogglePlaceholderClicked(target: Id) {
@@ -1826,7 +1886,7 @@ class PageViewModel(
     }
 
     fun onAddBlockToolbarClicked() {
-        dispatch(Command.OpenAddBlockPanel)
+        dispatch(Command.OpenAddBlockPanel(ctx = context))
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.BTN_ADD_BLOCK_MENU
@@ -2023,7 +2083,9 @@ class PageViewModel(
                     add(UiBlock.LINE_DIVIDER.name)
                     add(UiBlock.THREE_DOTS.name)
                     add(UiBlock.LINK_TO_OBJECT.name)
+                    add(UiBlock.RELATION.name)
                 }
+                excludedCategories.add(UiBlock.Category.RELATION.name)
                 dispatch(Command.OpenMultiSelectTurnIntoPanel(excludedCategories, excludedTypes))
             }
             hasDividerBlocks -> {
@@ -2031,6 +2093,7 @@ class PageViewModel(
                     add(UiBlock.Category.TEXT.name)
                     add(UiBlock.Category.LIST.name)
                     add(UiBlock.Category.OBJECT.name)
+                    add(UiBlock.Category.RELATION.name)
                 }
                 excludedTypes.add(UiBlock.CODE.name)
                 dispatch(Command.OpenMultiSelectTurnIntoPanel(excludedCategories, excludedTypes))
@@ -2263,6 +2326,9 @@ class PageViewModel(
                 is Content.Layout -> {
                     addNewBlockAtTheEnd()
                 }
+                is Content.RelationBlock -> {
+                    addNewBlockAtTheEnd()
+                }
                 else -> {
                     Timber.d("Outside-click has been ignored.")
                 }
@@ -2311,6 +2377,61 @@ class PageViewModel(
     private fun onMentionClicked(target: String) {
         proceedWithClearingFocus()
         proceedWithOpeningPage(target = target)
+    }
+
+    fun onAddNewObjectClicked(type: String, layout: ObjectType.Layout) {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
+
+        val position: Position
+
+        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
+
+        var target = focused.id
+
+        if (focused.id == context) {
+            if (focused.children.isEmpty())
+                position = Position.INNER
+            else {
+                position = Position.TOP
+                target = focused.children.first()
+            }
+        } else {
+            position = Position.BOTTOM
+        }
+
+        val params = CreateObject.Params(
+            context = context,
+            position = position,
+            target = target,
+            type = type,
+            layout = layout
+        )
+
+        val startTime = System.currentTimeMillis()
+
+        viewModelScope.launch {
+            createObject(
+                params = params
+            ).proceed(
+                failure = { Timber.e(it, "Error while creating new object with params: $params") },
+                success = { result ->
+                    val middleTime = System.currentTimeMillis()
+                    analytics.registerEvent(
+                        EventAnalytics.Anytype(
+                            name = OBJECT_CREATE,
+                            props = Props(mapOf(PROP_STYLE to Content.Page.Style.EMPTY)),
+                            duration = EventAnalytics.Duration(
+                                start = startTime,
+                                middleware = middleTime,
+                                render = middleTime
+                            )
+                        )
+                    )
+                    orchestrator.proxies.payloads.send(result.payload)
+                    proceedWithOpeningPage(result.target)
+                }
+            )
+        }
     }
 
     fun onAddNewPageClicked() {
@@ -2409,7 +2530,13 @@ class PageViewModel(
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while setting doc cover image") },
-                success = { orchestrator.proxies.payloads.send(it) }
+                success = {
+                    orchestrator.proxies.payloads.send(it)
+                    detailModificationManager.setDocCoverImage(
+                        target = context,
+                        hash = hash
+                    )
+                }
             )
         }
     }
@@ -2422,7 +2549,10 @@ class PageViewModel(
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while removing doc cover") },
-                success = { orchestrator.proxies.payloads.send(it) }
+                success = {
+                    orchestrator.proxies.payloads.send(it)
+                    detailModificationManager.removeDocCover(context)
+                }
             )
         }
     }
@@ -2895,6 +3025,55 @@ class PageViewModel(
                 else -> Unit
             }
         }
+        is ListenerType.Relation.Placeholder -> {
+            when (mode) {
+                EditorMode.EDITING -> dispatch(Command.OpenObjectRelationScreen.Add(ctx = context, target = clicked.target))
+                else -> onBlockMultiSelectClicked(clicked.target)
+            }
+        }
+        is ListenerType.Relation.Related -> {
+            when (mode) {
+                EditorMode.EDITING -> {
+                    val relation = (clicked.value as BlockView.Relation.Related).view.relationId
+                    val format = orchestrator.stores.relations.current().first { it.key == relation }.format
+                    when (format) {
+                        Relation.Format.SHORT_TEXT,
+                        Relation.Format.LONG_TEXT,
+                        Relation.Format.URL,
+                        Relation.Format.PHONE,
+                        Relation.Format.NUMBER,
+                        Relation.Format.EMAIL -> {
+                            dispatch(
+                                Command.OpenObjectRelationScreen.Value.Text(
+                                    ctx = context,
+                                    target = context,
+                                    relation = relation
+                                )
+                            )
+                        }
+                        Relation.Format.DATE -> {
+                            dispatch(
+                                Command.OpenObjectRelationScreen.Value.Date(
+                                    ctx = context,
+                                    target = context,
+                                    relation = relation
+                                )
+                            )
+                        }
+                        else -> {
+                            dispatch(
+                                Command.OpenObjectRelationScreen.Value.Default(
+                                    ctx = context,
+                                    target = context,
+                                    relation = relation
+                                )
+                            )
+                        }
+                    }
+                }
+                else -> onBlockMultiSelectClicked(clicked.value.id)
+            }
+        }
     }
 
     fun onPlusButtonPressed() {
@@ -3201,6 +3380,25 @@ class PageViewModel(
                         )
                     )
                 )
+            )
+        }
+    }
+
+    fun onRelationTextValueChanged(
+        ctx: Id,
+        value: Any?,
+        relationId: Id
+    ) {
+        viewModelScope.launch {
+            updateDetail(
+                UpdateDetail.Params(
+                    ctx = ctx,
+                    key = relationId,
+                    value = value
+                )
+            ).process(
+                success = { dispatcher.send(it) },
+                failure = { Timber.e(it, "Error while updating relation values") }
             )
         }
     }

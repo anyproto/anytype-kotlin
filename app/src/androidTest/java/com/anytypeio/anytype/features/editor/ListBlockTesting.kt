@@ -9,15 +9,15 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Position
-import com.anytypeio.anytype.domain.event.model.Event
-import com.anytypeio.anytype.domain.event.model.Payload
-import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestPageFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
@@ -146,6 +146,7 @@ class ListBlockTesting : EditorTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(document)
         stubUpdateText()
         stubCreateBlocks(params, new, events)
@@ -155,7 +156,7 @@ class ListBlockTesting : EditorTestSetup() {
         // TESTING
 
         val target = Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, view)
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, view)
         )
 
         target.apply {
@@ -177,13 +178,13 @@ class ListBlockTesting : EditorTestSetup() {
         verifyBlocking(createBlock, times(1)) { invoke(params) }
 
         Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, view)
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, view)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText(a.content<Block.Content.Text>().text)))
         }
 
         Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, view)
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, view)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
@@ -192,7 +193,7 @@ class ListBlockTesting : EditorTestSetup() {
         // Check cursor position at block B
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(2)
+            val item = fragment.recycler.getChildAt(1)
             item.findViewById<TextInputWidget>(view).apply {
                 assertEquals(
                     expected = 0,

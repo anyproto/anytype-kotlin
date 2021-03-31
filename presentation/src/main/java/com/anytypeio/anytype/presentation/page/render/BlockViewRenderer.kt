@@ -1,7 +1,8 @@
 package com.anytypeio.anytype.presentation.page.render
 
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.page.EditorMode
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
@@ -24,6 +25,7 @@ interface BlockViewRenderer {
         focus: Editor.Focus,
         anchor: Id,
         indent: Int,
-        details: Block.Details = Block.Details(emptyMap())
+        details: Block.Details = Block.Details(emptyMap()),
+        relations: List<Relation>
     ): List<BlockView>
 }

@@ -3,13 +3,17 @@ package anytype.model;
 option go_package = "pkg/lib/pb/model";
 
 import "google/protobuf/struct.proto";
+import "relation.proto";
 
-message PageInfo {
+message ObjectInfo {
     string id = 1;
-    google.protobuf.Struct details = 2;
-    string snippet = 3;
+    repeated string objectTypeUrls = 2;
+    google.protobuf.Struct details = 3;
+    anytype.relation.Relations relations = 4;
+
+    string snippet = 5;
     bool hasInboundLinks = 6;
-    Type pageType = 7;
+    Type objectType = 7;
 
     enum Type {
         Page = 0;
@@ -18,37 +22,40 @@ message PageInfo {
         Archive = 3;
 
         Set = 5;
+        File = 6;
+        ObjectType = 7;
+        Relation = 8;
     }
 }
 
-message PageDetails {
+message ObjectDetails {
     google.protobuf.Struct details = 1;
 }
 
-message PageLinks {
+message ObjectLinks {
     repeated string inboundIDs = 1;
     repeated string outboundIDs = 2;
 }
 
-message PageLinksInfo {
-    repeated PageInfo inbound = 1;
-    repeated PageInfo outbound = 2;
+message ObjectLinksInfo {
+    repeated ObjectInfo inbound = 1;
+    repeated ObjectInfo outbound = 2;
 }
 
-message PageInfoWithLinks {
+message ObjectInfoWithLinks {
     string id = 1;
-    PageInfo info = 2;
-    PageLinksInfo links = 3;
+    ObjectInfo info = 2;
+    ObjectLinksInfo links = 3;
 }
 
-message PageInfoWithOutboundLinks {
+message ObjectInfoWithOutboundLinks {
     string id = 1;
-    PageInfo info = 2;
-    repeated PageInfo outboundLinks = 3;
+    ObjectInfo info = 2;
+    repeated ObjectInfo outboundLinks = 3;
 }
 
-message PageInfoWithOutboundLinksIDs {
+message ObjectInfoWithOutboundLinksIDs {
     string id = 1;
-    PageInfo info = 2;
+    ObjectInfo info = 2;
     repeated string outboundLinks = 3;
 }

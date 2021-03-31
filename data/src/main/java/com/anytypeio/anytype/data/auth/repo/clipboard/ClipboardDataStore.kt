@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.data.auth.repo.clipboard
 
-import com.anytypeio.anytype.data.auth.model.BlockEntity
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.data.auth.model.ClipEntity
 
 interface ClipboardDataStore {
@@ -9,8 +9,8 @@ interface ClipboardDataStore {
      * @see ClipEntity
      */
     interface Storage {
-        fun persist(blocks: List<BlockEntity>)
-        fun fetch() : List<BlockEntity>
+        fun persist(blocks: List<Block>)
+        fun fetch() : List<Block>
     }
 
     /**

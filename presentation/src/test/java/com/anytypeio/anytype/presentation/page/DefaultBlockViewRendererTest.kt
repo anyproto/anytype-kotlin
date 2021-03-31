@@ -2,12 +2,13 @@ package com.anytypeio.anytype.presentation.page
 
 import MockDataFactory
 import com.anytypeio.anytype.core_utils.tools.Counter
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.editor.Editor
-import com.anytypeio.anytype.domain.ext.asMap
-import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
@@ -41,7 +42,8 @@ class DefaultBlockViewRendererTest {
             anchor = anchor,
             focus = focus,
             indent = indent,
-            details = details
+            details = details,
+            relations = emptyList()
         )
     }
 

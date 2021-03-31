@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.profile
 
-import com.anytypeio.anytype.domain.common.Url
+import com.anytypeio.anytype.core_models.Url
 
 data class ProfileView(
     val name: String,

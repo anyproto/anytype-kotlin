@@ -1,6 +1,5 @@
 <resources>
 
-    <string name="app_name">Anytype</string>
     <string name="amplitude_api_key">d4a910f56d6b05f2b9bd47041bd2fcda</string>
     <string name="amplitude_api_key_debug">92d74f374fc93f8cff7eb82176a3574d</string>
 
@@ -144,6 +143,52 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="telegram_web">http://www.telegram.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
     <string name="fetching_your_account">Fetching your account…</string>
     <string name="search_on_page">Search on page</string>
+    <string name="object_view_type">Object view type</string>
+    <string name="object_type_name">Object type name</string>
+    <string name="name">Name</string>
+    <string name="hint_type_name_for_new_relation">Name for new relation</string>
+    <string name="dv_create_new_object">New</string>
+    <string name="content_description_plus_button">Plus button</string>
+    <string name="content_description_customize_view_button">Customize-view button</string>
+    <string name="content_description_image_icon">Image icon</string>
+    <string name="content_description_emoji_icon">Emoji icon</string>
+    <string name="sort_by">Sort by</string>
+    <string name="hint_tap_to_type">Tap to type</string>
+    <string name="viewer_gallery">Gallery</string>
+    <string name="viewer_kanban">Kanban</string>
+    <string name="viewer_table">Grid</string>
+    <string name="viewer_list">List</string>
+    <string name="filter_text_enter_button">Enter</string>
+    <string name="filter_text_cancel_button">Cancel</string>
+    <string name="filter_text_value_hint">Enter text</string>
+    <string name="filter_number_value_hint">Enter a numeric value</string>
+    <string name="view_name">View name</string>
+    <string name="delete">Delete</string>
+    <string name="view_relations">View relations</string>
+    <string name="edit">Edit</string>
+    <string name="views">Views</string>
+    <string name="create">Create</string>
+    <string name="new_view">New view</string>
+    <string name="coming_soon">Coming soon</string>
+    <string name="edit_relations_title">Relations</string>
+    <string name="edit_view">Edit view</string>
+    <string name="relation_open_edit">Open to edit</string>
+    <string name="content_description_delete_button">Delete button</string>
+    <string name="content_description_duplicate_button">Duplicate button</string>
+    <string name="content_description_edit_view_button">Edit-view button</string>
+    <string name="content_description_open_to_edit_view_button">Open to edit relation button</string>
+    <string name="content_description_remove_from_set_button">Remove relation from this set</string>
+    <string name="remove_from_set">Remove from this set</string>
+    <string name="reset">Reset</string>
+    <string name="search_a_relation">Search a relation</string>
+    <string name="content_description_check_icon">Check icon</string>
+    <string name="filter_condition_is">Is</string>
+    <string name="search_options">Choose options</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="exact_day">Exact day</string>
+    <string name="reorder">Reorder</string>
     <string name="choose_an_image">Choose an image</string>
     <string name="optimal_dimensions_in_width_1080_pixels">Optimal dimensions in width 1080 pixels</string>
     <string name="cover_size">Cover size</string>
@@ -151,5 +196,10 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="tab_gallery">Gallery</string>
 
     <string name="remove">Remove</string>
+    <string name="choose_options">Choose options</string>
+    <string name="btn_apply_new_object">Add to list</string>
+    <string name="btn_add">Add</string>
+    <string name="btn_upload_gallery">Upload from Gallery</string>
+    <string name="btn_upload_storage">Upload from Enternal storage</string>
 
 </resources>

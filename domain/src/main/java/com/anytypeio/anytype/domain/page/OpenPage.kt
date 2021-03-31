@@ -3,7 +3,7 @@ package com.anytypeio.anytype.domain.page
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.core_models.Payload
 
 open class OpenPage(
     private val repo: BlockRepository

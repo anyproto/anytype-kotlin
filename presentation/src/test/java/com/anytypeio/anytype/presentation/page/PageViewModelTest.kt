@@ -3,24 +3,23 @@ package com.anytypeio.anytype.presentation.page
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.tools.Counter
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Position
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
-import com.anytypeio.anytype.domain.common.Id
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.event.model.Event
-import com.anytypeio.anytype.domain.event.model.Payload
-import com.anytypeio.anytype.domain.ext.content
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
@@ -30,6 +29,7 @@ import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.page.editor.*
+import com.anytypeio.anytype.presentation.page.editor.Command
 import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
@@ -43,8 +43,8 @@ import com.anytypeio.anytype.presentation.page.editor.styling.StylingType
 import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.util.Bridge
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.*
@@ -78,7 +78,7 @@ open class PageViewModelTest {
     lateinit var openPage: OpenPage
 
     @Mock
-    lateinit var closePage: ClosePage
+    lateinit var closePage: CloseBlock
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
@@ -114,6 +114,9 @@ open class PageViewModelTest {
     lateinit var updateLinkMark: UpdateLinkMarks
 
     @Mock
+    lateinit var setRelationKey: SetRelationKey
+
+    @Mock
     lateinit var removeLinkMark: RemoveLinkMark
 
     @Mock
@@ -127,6 +130,9 @@ open class PageViewModelTest {
 
     @Mock
     lateinit var createPage: CreatePage
+
+    @Mock
+    lateinit var createObject: CreateObject
 
     @Mock
     lateinit var updateAlignment: UpdateAlignment
@@ -196,6 +202,11 @@ open class PageViewModelTest {
 
     @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
+
+    @Mock
+    lateinit var repo: BlockRepository
+
+    private lateinit var updateDetail: UpdateDetail
 
     lateinit var vm: PageViewModel
 
@@ -1448,7 +1459,7 @@ open class PageViewModelTest {
         val result = commands.value()
 
         assertEquals(
-            expected = Command.OpenAddBlockPanel,
+            expected = Command.OpenAddBlockPanel(ctx = root),
             actual = result.peekContent()
         )
     }
@@ -2640,6 +2651,62 @@ open class PageViewModelTest {
     }
 
     @Test
+    fun `should create a new object block after currently focused block`() {
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    map = mapOf("icon" to "")
+                ),
+                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                children = listOf(title.id, paragraph.id)
+            ),
+            title,
+            paragraph
+        )
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowBlock(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+        stubObserveEvents(flow)
+        stubOpenPage()
+        buildViewModel()
+        vm.onStart(root)
+        coroutineTestRule.advanceTime(100)
+        // TESTING
+        vm.onBlockFocusChanged(
+            id = title.id,
+            hasFocus = true
+        )
+        vm.onAddBlockToolbarClicked()
+        vm.onAddNewObjectClicked(type = "_idea", layout = ObjectType.Layout.TODO)
+        runBlockingTest {
+            verify(createObject, times(1)).invoke(
+                params = eq(
+                    CreateObject.Params(
+                        context = root,
+                        target = title.id,
+                        position = Position.BOTTOM,
+                        type = "_idea",
+                        layout = ObjectType.Layout.TODO
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
     fun `should create a new bookmark block after currently focused block`() {
 
         val root = MockDataFactory.randomUuid()
@@ -3073,7 +3140,7 @@ open class PageViewModelTest {
 
             verify(closePage, times(1)).invoke(
                 params = eq(
-                    ClosePage.Params(
+                    CloseBlock.Params(
                         id = root
                     )
                 )
@@ -3850,12 +3917,14 @@ open class PageViewModelTest {
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()
         )
+        updateDetail = UpdateDetail(repo)
 
         vm = PageViewModel(
             getListPages = getListPages,
             openPage = openPage,
             closePage = closePage,
             createPage = createPage,
+            createObject = createObject,
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMark,
@@ -3906,11 +3975,14 @@ open class PageViewModelTest {
                 turnIntoDocument = turnIntoDocument,
                 analytics = analytics,
                 updateFields = updateFields,
+                setRelationKey = setRelationKey,
                 turnIntoStyle = turnIntoStyle
             ),
-            bridge = Bridge(),
+            dispatcher = Dispatcher.Default(),
             setDocCoverImage = setDocCoverImage,
-            removeDocCover = removeDocCover
+            removeDocCover = removeDocCover,
+            detailModificationManager = InternalDetailModificationManager(storage.details),
+            updateDetail = updateDetail
         )
     }
 

@@ -23,6 +23,35 @@ android {
         }
     }
 
+    flavorDimensions 'default'
+    productFlavors {
+        stable {
+            dimension 'default'
+        }
+        experimental{
+            dimension 'default'
+        }
+    }
+
+    sourceSets {
+        stable {
+            java {
+                srcDirs 'src/stable/java'
+            }
+            res {
+                srcDirs 'src/stable/res'
+            }
+        }
+        experimental {
+            java {
+                srcDirs 'src/experimental/java'
+            }
+            res {
+                srcDirs 'src/experimental/res'
+            }
+        }
+    }
+
     testOptions {
         unitTests {
             includeAndroidResources = true

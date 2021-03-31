@@ -3,17 +3,31 @@ package com.anytypeio.anytype.core_ui.features.page.modal
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.ViewType
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.page.picker.AddBlockView
+import com.anytypeio.anytype.presentation.page.picker.AddBlockView.Companion.VIEW_HOLDER_ADD_BLOCK_HEADER
+import com.anytypeio.anytype.presentation.page.picker.AddBlockView.Companion.VIEW_HOLDER_ITEM
+import com.anytypeio.anytype.presentation.page.picker.AddBlockView.Companion.VIEW_HOLDER_OBJECT_TYPES
+import com.anytypeio.anytype.presentation.page.picker.AddBlockView.Companion.VIEW_HOLDER_SECTION
+import com.anytypeio.anytype.presentation.page.picker.AddBlockView.Companion.VIEW_HOLDER_TURN_INTO_HEADER
 import kotlinx.android.synthetic.main.item_add_block_or_turn_into_item.view.*
+import kotlinx.android.synthetic.main.item_add_block_or_turn_into_object_type.view.*
 import kotlinx.android.synthetic.main.item_add_block_or_turn_into_section.view.*
 
 class AddBlockOrTurnIntoAdapter(
-    private val views: List<AddBlockOrTurnIntoView>,
-    private val onUiBlockClicked: (UiBlock) -> Unit
+    private var views: List<AddBlockView> = emptyList(),
+    private val onUiBlockClicked: (UiBlock) -> Unit,
+    private val onObjectClicked: (AddBlockView.ObjectView) -> Unit
 ) : RecyclerView.Adapter<AddBlockOrTurnIntoAdapter.ViewHolder>() {
+
+    fun update(views: List<AddBlockView>) {
+        val diff = DiffUtil.calculateDiff(AddBlockDiffUtil(old = this.views, new = views))
+        this.views = views
+        diff.dispatchUpdatesTo(this)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -47,6 +61,17 @@ class AddBlockOrTurnIntoAdapter(
                     false
                 )
             )
+            VIEW_HOLDER_OBJECT_TYPES -> ViewHolder.ObjectType(
+                view = inflater.inflate(
+                    R.layout.item_add_block_or_turn_into_object_type,
+                    parent,
+                    false
+                )
+            ).apply {
+                itemView.setOnClickListener {
+                    onObjectClicked(views[bindingAdapterPosition] as AddBlockView.ObjectView)
+                }
+            }
             else -> throw IllegalStateException("Unexpected type: $viewType")
         }
     }
@@ -57,11 +82,14 @@ class AddBlockOrTurnIntoAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.Section -> holder.bind(
-                section = views[position] as AddBlockOrTurnIntoView.Section
+                section = views[position] as AddBlockView.Section
             )
             is ViewHolder.Item -> holder.bind(
-                item = views[position] as AddBlockOrTurnIntoView.Item,
+                item = views[position] as AddBlockView.Item,
                 onUiBlockClicked = onUiBlockClicked
+            )
+            is ViewHolder.ObjectType -> holder.bind(
+                item = views[position] as AddBlockView.ObjectView
             )
         }
     }
@@ -84,11 +112,12 @@ class AddBlockOrTurnIntoAdapter(
 
             private val title = itemView.section
 
-            fun bind(section: AddBlockOrTurnIntoView.Section) {
+            fun bind(section: AddBlockView.Section) {
                 when (section.category) {
                     UiBlock.Category.TEXT -> title.setText(R.string.toolbar_section_text)
                     UiBlock.Category.LIST -> title.setText(R.string.toolbar_section_list)
                     UiBlock.Category.OBJECT -> title.setText(R.string.toolbar_section_objects)
+                    UiBlock.Category.RELATION -> title.setText(R.string.toolbar_section_relation)
                     UiBlock.Category.OTHER -> title.setText(R.string.toolbar_section_other)
                 }
             }
@@ -101,7 +130,7 @@ class AddBlockOrTurnIntoAdapter(
             private val subtitle = itemView.subtitle
 
             fun bind(
-                item: AddBlockOrTurnIntoView.Item,
+                item: AddBlockView.Item,
                 onUiBlockClicked: (UiBlock) -> Unit
             ) {
                 when (item.type) {
@@ -195,86 +224,73 @@ class AddBlockOrTurnIntoAdapter(
                         title.setText(R.string.option_other_code)
                         subtitle.setText(R.string.add_block_or_turn_into_subtitle_code)
                     }
+                    UiBlock.RELATION -> {
+                        icon.setBackgroundResource(R.drawable.ic_add_block_or_turn_into_relation)
+                        title.setText(R.string.option_relation_relation)
+                        subtitle.setText(R.string.add_block_or_turn_into_subtitle_relation)
+                    }
                 }
 
                 itemView.setOnClickListener { onUiBlockClicked(item.type) }
             }
         }
-    }
 
-    sealed class AddBlockOrTurnIntoView : ViewType {
-        object AddBlockHeader : AddBlockOrTurnIntoView() {
-            override fun getViewType(): Int = VIEW_HOLDER_ADD_BLOCK_HEADER
-        }
-
-        object TurnIntoHeader : AddBlockOrTurnIntoView() {
-            override fun getViewType(): Int = VIEW_HOLDER_TURN_INTO_HEADER
-        }
-
-        data class Section(val category: UiBlock.Category) : AddBlockOrTurnIntoView() {
-            override fun getViewType(): Int = VIEW_HOLDER_SECTION
-        }
-
-        data class Item(val type: UiBlock) : AddBlockOrTurnIntoView() {
-            override fun getViewType(): Int = VIEW_HOLDER_ITEM
+        class ObjectType(view: View) : ViewHolder(view) {
+            fun bind(
+                item: AddBlockView.ObjectView
+            ) {
+                itemView.tvTitle.text = item.name
+                itemView.tvSubtitle.text = item.description
+                itemView.iconWidget.setIcon(
+                    emoji = item.emoji,
+                    image = null,
+                    name = item.name
+                )
+            }
         }
     }
 
     companion object {
-        const val VIEW_HOLDER_SECTION = 0
-        const val VIEW_HOLDER_ITEM = 1
-        const val VIEW_HOLDER_ADD_BLOCK_HEADER = 2
-        const val VIEW_HOLDER_TURN_INTO_HEADER = 3
-
-        fun addBlockAdapterData(): List<AddBlockOrTurnIntoView> = listOf(
-            AddBlockOrTurnIntoView.AddBlockHeader
-        ) + items()
 
         fun turnIntoAdapterData(
             excludedTypes: List<UiBlock> = emptyList(),
             excludedCategories: List<UiBlock.Category> = emptyList()
-        ): List<AddBlockOrTurnIntoView> {
+        ): List<AddBlockView> {
 
             val aggregated = UiBlock.values().groupBy { it.category() }
 
-            return mutableListOf<AddBlockOrTurnIntoView>().apply {
-                add(AddBlockOrTurnIntoView.TurnIntoHeader)
+            return mutableListOf<AddBlockView>().apply {
+                add(AddBlockView.TurnIntoHeader)
                 aggregated.forEach { (category, types) ->
                     if (!excludedCategories.contains(category)) {
-                        add(AddBlockOrTurnIntoView.Section(category = category))
+                        add(AddBlockView.Section(category = category))
                         types.forEach { type ->
                             if (!excludedTypes.contains(type)) {
-                                add(AddBlockOrTurnIntoView.Item(type = type))
+                                add(AddBlockView.Item(type = type))
                             }
                         }
                     }
                 }
             }
         }
-
-        fun items(): List<AddBlockOrTurnIntoView> = listOf(
-            AddBlockOrTurnIntoView.Section(category = UiBlock.Category.TEXT),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.TEXT),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.HEADER_ONE),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.HEADER_TWO),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.HEADER_THREE),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.HIGHLIGHTED),
-            AddBlockOrTurnIntoView.Section(category = UiBlock.Category.LIST),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.CHECKBOX),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.BULLETED),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.NUMBERED),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.TOGGLE),
-            AddBlockOrTurnIntoView.Section(category = UiBlock.Category.OBJECT),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.PAGE),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.FILE),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.IMAGE),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.VIDEO),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.BOOKMARK),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.LINK_TO_OBJECT),
-            AddBlockOrTurnIntoView.Section(category = UiBlock.Category.OTHER),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.LINE_DIVIDER),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.THREE_DOTS),
-            AddBlockOrTurnIntoView.Item(type = UiBlock.CODE)
-        )
     }
+}
+
+class AddBlockDiffUtil(
+    private val old: List<AddBlockView>,
+    private val new: List<AddBlockView>
+) : DiffUtil.Callback() {
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val oldItem = old[oldItemPosition]
+        val newItem = new[newItemPosition]
+        return oldItem.getViewType() == newItem.getViewType()
+    }
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return false
+    }
+
+    override fun getOldListSize(): Int = old.size
+    override fun getNewListSize(): Int = new.size
 }

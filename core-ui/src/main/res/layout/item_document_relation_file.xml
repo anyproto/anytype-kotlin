@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingTop="@dimen/relation_view_padding_top"
+    android:paddingBottom="@dimen/relation_view_padding_bottom">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <TextView
+        android:id="@+id/tvRelationTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        style="@style/RelationViewTitleStyle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Description of something"
+        tools:visibility="visible" />
+
+    <com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
+        android:id="@+id/file0"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline3"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
+        android:id="@+id/file1"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/file0"
+        app:layout_constraintStart_toEndOf="@+id/file0"
+        app:layout_constraintTop_toTopOf="@+id/file0"
+        tools:visibility="visible" />
+
+    <com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
+        android:id="@+id/file2"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/file0"
+        app:layout_constraintStart_toEndOf="@+id/file1"
+        app:layout_constraintTop_toTopOf="@+id/file0"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

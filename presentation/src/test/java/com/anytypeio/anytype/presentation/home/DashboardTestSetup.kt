@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.home
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.domain.auth.interactor.GetCurrentAccount
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.base.Either
@@ -12,8 +12,8 @@ import com.anytypeio.anytype.domain.config.*
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.event.model.Event
-import com.anytypeio.anytype.domain.event.model.Payload
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardEventConverter

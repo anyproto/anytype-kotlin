@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.presentation.page.editor
 
-import com.anytypeio.anytype.domain.block.model.Block
-import com.anytypeio.anytype.domain.block.model.Position
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Id
 
 sealed class Intent {
 
@@ -34,6 +34,12 @@ sealed class Intent {
         class TurnIntoDocument(
             val context: Id,
             val targets: List<Id>
+        ) : Document()
+
+        class SetRelationKey(
+            val context: Id,
+            val blockId: Id,
+            val key: Id
         ) : Document()
     }
 

@@ -34,6 +34,7 @@
     <color name="orange">#FFBB2C</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#2C2B27</color>
+    <color name="gray">#ACA996</color>
     <color name="grey_50">#ACA996</color>
     <color name="emoji_color">#FFFFFF</color>
     <color name="checkbox_state_checked">@color/grey_50</color>
@@ -60,6 +61,7 @@
     <color name="kanban_second">#BDBDBD</color>
 
     <color name="divider">#ACA996</color>
+    <color name="viewer_divider">#DFDDD0</color>
 
     <color name="markup_keyboard_bg">#F3F2EC</color>
 
@@ -109,5 +111,14 @@
 
     <color name="default_style_color_circle_outer_stroke_color">#FFB522</color>
     <color name="default_style_color_circle_inner_stroke_color">#DFDDD0</color>
+    <color name="viewer_filter_add_stroke_color">#DFDDD0</color>
+    <color name="default_tag_text_color">#E89D00</color>
+    <color name="default_tag_background">#FEF3C5</color>
+
+    <color name="dark_amber">#E89D00</color>
+
+    <color name="default_filter_tag_background_color">#F3F2EC</color>
+    <color name="default_filter_tag_text_color">#6C6A5F</color>
+    <color name="default_filter_status_text_color">@color/black</color>
 
 </resources>

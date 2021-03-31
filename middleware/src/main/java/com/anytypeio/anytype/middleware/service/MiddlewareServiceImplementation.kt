@@ -407,26 +407,24 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
-    override fun pageInfoWithLinks(request: Navigation.GetPageInfoWithLinks.Request): Navigation.GetPageInfoWithLinks.Response {
-        val encoded = Service.navigationGetPageInfoWithLinks(
-            Navigation.GetPageInfoWithLinks.Request.ADAPTER.encode(request)
+    override fun objectInfoWithLinks(request: Navigation.GetObjectInfoWithLinks.Request): Navigation.GetObjectInfoWithLinks.Response {
+        val encoded = Service.navigationGetObjectInfoWithLinks(
+            Navigation.GetObjectInfoWithLinks.Request.ADAPTER.encode(request)
         )
-        val response = Navigation.GetPageInfoWithLinks.Response.ADAPTER.decode(encoded)
+        val response = Navigation.GetObjectInfoWithLinks.Response.ADAPTER.decode(encoded)
         val error = response.error
-        if (error != null && error.code != Navigation.GetPageInfoWithLinks.Response.Error.Code.NULL) {
+        if (error != null && error.code != Navigation.GetObjectInfoWithLinks.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response
         }
     }
 
-    override fun listPages(request: Navigation.ListPages.Request): Navigation.ListPages.Response {
-        val encoded = Service.navigationListPages(
-            Navigation.ListPages.Request.ADAPTER.encode(request)
-        )
-        val response = Navigation.ListPages.Response.ADAPTER.decode(encoded)
+    override fun listObjects(request: Navigation.ListObjects.Request): Navigation.ListObjects.Response {
+        val encoded = Service.navigationListObjects(Navigation.ListObjects.Request.ADAPTER.encode(request))
+        val response = Navigation.ListObjects.Response.ADAPTER.decode(encoded)
         val error = response.error
-        if (error != null && error.code != Navigation.ListPages.Response.Error.Code.NULL) {
+        if (error != null && error.code != Navigation.ListObjects.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response
@@ -462,6 +460,205 @@ class MiddlewareServiceImplementation : MiddlewareService {
         val response = BlockList.Set.Fields.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != BlockList.Set.Fields.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectTypeList(request: ObjectType.List.Request): ObjectType.List.Response {
+        val encoded = Service.objectTypeList(ObjectType.List.Request.ADAPTER.encode(request))
+        val response = ObjectType.List.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != ObjectType.List.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectTypeCreate(request: ObjectType.Create.Request): ObjectType.Create.Response {
+        val encoded = Service.objectTypeCreate(ObjectType.Create.Request.ADAPTER.encode(request))
+        val response = ObjectType.Create.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != ObjectType.Create.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockCreateSet(request: Block.CreateSet.Request): Block.CreateSet.Response {
+        val encoded = Service.blockCreateSet(Block.CreateSet.Request.ADAPTER.encode(request))
+        val response = Block.CreateSet.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.CreateSet.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewActiveSet(request: Block.Dataview.ViewSetActive.Request): Block.Dataview.ViewSetActive.Response {
+        val encoded = Service.blockDataviewViewSetActive(
+            Block.Dataview.ViewSetActive.Request.ADAPTER.encode(request)
+        )
+        val response = Block.Dataview.ViewSetActive.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Dataview.ViewSetActive.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewRelationAdd(request: Block.Dataview.RelationAdd.Request): Block.Dataview.RelationAdd.Response {
+        val encoded = Service.blockDataviewRelationAdd(
+            Block.Dataview.RelationAdd.Request.ADAPTER.encode(request)
+        )
+        val response = Block.Dataview.RelationAdd.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Dataview.RelationAdd.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewRecordCreate(request: Block.Dataview.RecordCreate.Request): Block.Dataview.RecordCreate.Response {
+        val encoded = Service.blockDataviewRecordCreate(
+            Block.Dataview.RecordCreate.Request.ADAPTER.encode(request)
+        )
+        val response = Block.Dataview.RecordCreate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Dataview.RecordCreate.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewViewUpdate(request: Block.Dataview.ViewUpdate.Request): Block.Dataview.ViewUpdate.Response {
+        val encoded = Service.blockDataviewViewUpdate(
+            Block.Dataview.ViewUpdate.Request.ADAPTER.encode(request)
+        )
+        val response = Block.Dataview.ViewUpdate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Dataview.ViewUpdate.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewViewDelete(request: Block.Dataview.ViewDelete.Request): Block.Dataview.ViewDelete.Response {
+        val encoded = Service.blockDataviewViewDelete(
+            Block.Dataview.ViewDelete.Request.ADAPTER.encode(request)
+        )
+        val response = Block.Dataview.ViewDelete.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Dataview.ViewDelete.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewRecordUpdate(request: Block.Dataview.RecordUpdate.Request): Block.Dataview.RecordUpdate.Response {
+        val encoded = Service.blockDataviewRecordUpdate(
+            Block.Dataview.RecordUpdate.Request.ADAPTER.encode(request)
+        )
+        val response = Block.Dataview.RecordUpdate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Dataview.RecordUpdate.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewViewCreate(request: Block.Dataview.ViewCreate.Request): Block.Dataview.ViewCreate.Response {
+        val encoded = Service.blockDataviewViewCreate(
+            Block.Dataview.ViewCreate.Request.ADAPTER.encode(request)
+        )
+        val response = Block.Dataview.ViewCreate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Dataview.ViewCreate.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewRecordRelationOptionAdd(
+        request: Block.Dataview.RecordRelationOptionAdd.Request
+    ): Block.Dataview.RecordRelationOptionAdd.Response {
+        val encoded = Service.blockDataviewRecordRelationOptionAdd(
+            Block.Dataview.RecordRelationOptionAdd.Request.ADAPTER.encode(request)
+        )
+        val response = Block.Dataview.RecordRelationOptionAdd.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Dataview.RecordRelationOptionAdd.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectRelationOptionAdd(request: Object.RelationOptionAdd.Request): Object.RelationOptionAdd.Response {
+        val encoded = Service.objectRelationOptionAdd(
+            Object.RelationOptionAdd.Request.ADAPTER.encode(request)
+        )
+        val response = Object.RelationOptionAdd.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Object.RelationOptionAdd.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectSearch(request: Object.Search.Request): Object.Search.Response {
+        val encoded = Service.objectSearch(Object.Search.Request.ADAPTER.encode(request))
+        val response = Object.Search.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Object.Search.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun relationListAvailable(request: Object.RelationListAvailable.Request): Object.RelationListAvailable.Response {
+        val encoded = Service.objectRelationListAvailable(
+            Object.RelationListAvailable.Request.ADAPTER.encode(request)
+        )
+        val response = Object.RelationListAvailable.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Object.RelationListAvailable.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun debugSync(request: Debug.Sync.Request): Debug.Sync.Response {
+        val encoded = Service.debugSync(Debug.Sync.Request.ADAPTER.encode(request))
+        val response = Debug.Sync.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Debug.Sync.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun relationSetKey(request: Block.Relation.SetKey.Request): Block.Relation.SetKey.Response {
+        val encoded =
+            Service.blockRelationSetKey(Block.Relation.SetKey.Request.ADAPTER.encode(request))
+        val response = Block.Relation.SetKey.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Relation.SetKey.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

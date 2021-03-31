@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.data.auth.status
 
 import com.anytypeio.anytype.data.auth.model.SyncStatusEntity
-import com.anytypeio.anytype.domain.common.Id
+import com.anytypeio.anytype.core_models.Id
 import kotlinx.coroutines.flow.Flow
 
 interface ThreadStatusRemoteChannel {

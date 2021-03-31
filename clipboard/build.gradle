@@ -50,6 +50,7 @@ dependencies {
     def unitTestDependencies = rootProject.ext.unitTesting
 
     implementation project(':data')
+    implementation project(':core-models')
 
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutinesAndroid

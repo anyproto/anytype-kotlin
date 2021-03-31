@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.extension
 
-import com.anytypeio.anytype.domain.block.model.Block
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 
@@ -27,7 +27,7 @@ fun List<DashboardView>.updateDetails(
     details: Block.Fields,
     builder: UrlBuilder
 ): List<DashboardView> {
-    return this.mapNotNull { view ->
+    return mapNotNull { view ->
         when (view) {
             is DashboardView.Profile -> {
                 if (view.id == target) {
@@ -60,6 +60,22 @@ fun List<DashboardView>.updateDetails(
                         },
                         isArchived = details.isArchived ?: false,
                         isLoading = false
+                    )
+                } else {
+                    view
+                }
+            }
+            is DashboardView.ObjectSet -> {
+                if (view.target == target) {
+                    view.copy(
+                        title = details.name,
+                        emoji = details.iconEmoji?.let { name ->
+                            if (name.isNotEmpty())
+                                name
+                            else
+                                null
+                        },
+                        isArchived = details.isArchived ?: false
                     )
                 } else {
                     view

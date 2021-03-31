@@ -10,7 +10,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:background="@drawable/rect_dv_cell_tag_item"
         android:visibility="gone"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="@dimen/dp_12"
@@ -18,7 +17,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="S"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        style="@style/GridCellTagStyle" />
 
     <TextView
         android:id="@+id/tag1"
@@ -31,7 +31,8 @@
         app:layout_constraintStart_toEndOf="@+id/tag0"
         app:layout_constraintTop_toTopOf="@+id/tag0"
         tools:text="A"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        style="@style/GridCellTagStyle"/>
 
     <TextView
         android:id="@+id/tag2"
@@ -44,7 +45,8 @@
         app:layout_constraintStart_toEndOf="@+id/tag1"
         app:layout_constraintTop_toTopOf="@+id/tag0"
         tools:text="T"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        style="@style/GridCellTagStyle"/>
 
     <TextView
         android:id="@+id/tag3"
@@ -57,7 +59,8 @@
         app:layout_constraintStart_toEndOf="@+id/tag2"
         app:layout_constraintTop_toTopOf="@+id/tag0"
         tools:text="D"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        style="@style/GridCellTagStyle"/>
 
     <TextView
         android:id="@+id/tag4"
@@ -70,6 +73,7 @@
         app:layout_constraintStart_toEndOf="@+id/tag3"
         app:layout_constraintTop_toTopOf="@+id/tag0"
         tools:text="Z"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        style="@style/GridCellTagStyle"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

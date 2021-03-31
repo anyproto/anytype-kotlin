@@ -603,4 +603,11 @@
         <item name="android:background">@drawable/checkbox_selected_relation_selector</item>
     </style>
 
+    <style name="GridCellTagStyle">
+        <item name="android:background">@drawable/rect_dv_cell_tag_item</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
 </resources>

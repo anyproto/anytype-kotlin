@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.sets.model.*
 import java.sql.Date
 import java.text.SimpleDateFormat
@@ -18,7 +19,7 @@ fun List<ColumnView>.buildGridRow(
     builder: UrlBuilder
 ): Viewer.GridView.Row {
 
-    val type = record[ObjectSetConfig.TYPE_KEY] as String
+    val type = record.type
     val name = record[ObjectSetConfig.NAME_KEY] as String?
     val emoji = record[ObjectSetConfig.EMOJI_KEY] as String?
     val image = record[ObjectSetConfig.IMAGE_KEY] as String?

@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.presentation.relations
 
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.ext.typeOf
+
 object ObjectSetConfig {
     /**
      * Object name key
@@ -35,3 +38,10 @@ object ObjectSetConfig {
 
     const val FILE_MIME_KEY = "fileMimeType"
 }
+
+val Map<String, Any?>.type: String
+    get() = when (val value = get(ObjectSetConfig.TYPE_KEY)) {
+        is String -> value
+        is List<*> -> value.typeOf<Id>().first()
+        else -> throw IllegalStateException("Unexpected value format: $value")
+    }

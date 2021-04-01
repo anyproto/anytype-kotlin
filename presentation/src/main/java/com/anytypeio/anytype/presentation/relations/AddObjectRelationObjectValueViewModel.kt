@@ -139,7 +139,7 @@ class AddObjectRelationObjectValueViewModel(
                 success = {
                     _views.value = it.mapNotNull { record ->
                         val id = record[ObjectSetConfig.ID_KEY] as String
-                        val type = record[ObjectSetConfig.TYPE_KEY] as? String
+                        val type = record.type
                         val name = record[ObjectSetConfig.NAME_KEY] as String?
                         val emoji = record[ObjectSetConfig.EMOJI_KEY] as String?
                         val image = record[ObjectSetConfig.IMAGE_KEY] as String?

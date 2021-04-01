@@ -147,13 +147,13 @@ fun List<Map<String, Any?>>.toCreateFilterObjectView(
 ): List<CreateFilterView.Object> =
     this.map { record ->
         val id = record[ObjectSetConfig.ID_KEY] as String
-        val type = record[ObjectSetConfig.TYPE_KEY] as? String
+        val type = record.type
         val name = record[ObjectSetConfig.NAME_KEY] as String?
         val emoji = record[ObjectSetConfig.EMOJI_KEY] as String?
         val image = record[ObjectSetConfig.IMAGE_KEY] as String?
         CreateFilterView.Object(
             id = id,
-            type = type?.substringAfterLast(delimiter = "/", missingDelimiterValue = "") ?: "",
+            type = type.substringAfterLast(delimiter = "/", missingDelimiterValue = ""),
             name = name.orEmpty(),
             image = if (image.isNullOrBlank()) null else urlBuilder.thumbnail(image),
             emoji = emoji,

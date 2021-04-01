@@ -612,7 +612,7 @@ open class PageFragment :
     }
 
     override fun onDestroy() {
-        pickiT.deleteTemporaryFile()
+        pickiT.deleteTemporaryFile(requireContext())
         super.onDestroy()
     }
 

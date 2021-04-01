@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
@@ -78,11 +79,26 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
         }
         backButton.setOnClickListener { vm.onBackButtonPressed() }
         tvqrcode.setOnClickListener {
-            IntentIntegrator.forSupportFragment(this).initiateScan()
+            showAlert()
         }
         ivqrcode.setOnClickListener {
-            IntentIntegrator.forSupportFragment(this).initiateScan()
+            showAlert()
         }
+    }
+
+    private fun showAlert() {
+        AlertDialog.Builder(requireContext())
+            .setMessage(R.string.alert_qr_camera)
+            .setPositiveButton(R.string.alert_qr_camera_ok) { dialog, _ ->
+                startCamera()
+                dialog.dismiss()
+            }
+            .setCancelable(true)
+            .show()
+    }
+
+    private fun startCamera() {
+        IntentIntegrator.forSupportFragment(this).initiateScan()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

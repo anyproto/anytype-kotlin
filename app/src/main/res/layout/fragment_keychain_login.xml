@@ -41,8 +41,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="24dp"
-                android:visibility="gone"
                 android:contentDescription="@string/content_description_qr_image"
+                android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/title"
                 app:srcCompat="@drawable/ic_qr_code" />
@@ -129,7 +129,7 @@
                 android:paddingBottom="8dp"
                 android:text="@string/or_scan_qr_code"
                 android:textSize="17sp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/ivqrcode"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ivqrcode"

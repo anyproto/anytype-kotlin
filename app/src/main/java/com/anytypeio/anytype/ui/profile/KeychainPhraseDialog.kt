@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.profile
 
+import android.graphics.BlurMaskFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -37,6 +38,22 @@ class KeychainPhraseDialog : BottomSheetDialogFragment(), Observer<ViewState<Str
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.dialog_keychain_phrase, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        keychain.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        val radius = keychain.textSize / 3
+        val filter = BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL)
+        keychain.paint.maskFilter = filter
+        keychain.setOnClickListener {
+            if (keychain.layerType == View.LAYER_TYPE_SOFTWARE) {
+                keychain.setLayerType(View.LAYER_TYPE_NONE, null)
+                keychain.paint.maskFilter = null
+                keychain.isFocusable = true
+                keychain.setTextIsSelectable(true)
+            }
+        }
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

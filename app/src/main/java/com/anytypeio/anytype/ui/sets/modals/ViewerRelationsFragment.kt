@@ -70,7 +70,6 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
                     isShowInLastItem = false
                 )
             )
-            dndItemTouchHelper.attachToRecyclerView(this)
         }
         with(lifecycleScope) {
             subscribe(editBtn.clicks()) { vm.onEditButtonClicked() }
@@ -94,6 +93,9 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
     private fun render(state: ViewerRelationsViewModel.ScreenState) {
         when (state) {
             ViewerRelationsViewModel.ScreenState.LIST -> {
+                recycler.apply {
+                    dndItemTouchHelper.attachToRecyclerView(null)
+                }
                 iconAdd.visible()
                 editBtn.visible()
                 doneBtn.invisible()
@@ -102,6 +104,9 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
                 }
             }
             ViewerRelationsViewModel.ScreenState.EDIT -> {
+                recycler.apply {
+                    dndItemTouchHelper.attachToRecyclerView(this)
+                }
                 iconAdd.invisible()
                 doneBtn.visible()
                 editBtn.invisible()

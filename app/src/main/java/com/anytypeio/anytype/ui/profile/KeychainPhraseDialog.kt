@@ -41,17 +41,14 @@ class KeychainPhraseDialog : BottomSheetDialogFragment(), Observer<ViewState<Str
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        keychain.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        val radius = keychain.textSize / 3
-        val filter = BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL)
-        keychain.paint.maskFilter = filter
+        setBlur()
         keychain.setOnClickListener {
             if (keychain.layerType == View.LAYER_TYPE_SOFTWARE) {
-                keychain.setLayerType(View.LAYER_TYPE_NONE, null)
-                keychain.paint.maskFilter = null
-                keychain.isFocusable = true
-                keychain.setTextIsSelectable(true)
+                removeBlur()
             }
+        }
+        root.setOnClickListener {
+            setBlur()
         }
     }
 
@@ -72,6 +69,20 @@ class KeychainPhraseDialog : BottomSheetDialogFragment(), Observer<ViewState<Str
                 // TODO
             }
         }
+    }
+
+    private fun setBlur() = with(keychain) {
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        val radius = textSize / 3
+        val filter = BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL)
+        paint.maskFilter = filter
+    }
+
+    private fun removeBlur() = with(keychain) {
+        setLayerType(View.LAYER_TYPE_NONE, null)
+        paint.maskFilter = null
+        isFocusable = true
+        setTextIsSelectable(true)
     }
 
     private fun injectDependencies() {

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -19,8 +20,10 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.EditGridCellAction
 import com.anytypeio.anytype.presentation.sets.ObjectRelationTextValueView
 import com.anytypeio.anytype.presentation.sets.ObjectRelationTextValueViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_object_relation_text_value.*
 import javax.inject.Inject
+import com.google.android.material.R.id.design_bottom_sheet as BOTTOM_SHEET_ID
 
 open class ObjectRelationTextValueFragment : BaseBottomSheetFragment() {
 
@@ -64,17 +67,12 @@ open class ObjectRelationTextValueFragment : BaseBottomSheetFragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = relationValueAdapter
         }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        with(lifecycleScope) {
-            subscribe(vm.views) { relationValueAdapter.update(it) }
-            subscribe(vm.title) { tvRelationHeader.text = it }
-        }
+        onHideKeyboardWhenBottomSheetHidden()
     }
 
     override fun onStart() {
+        jobs += lifecycleScope.subscribe(vm.views) { relationValueAdapter.update(it) }
+        jobs += lifecycleScope.subscribe(vm.title) { tvRelationHeader.text = it }
         super.onStart()
         vm.onStart(relationId = relationId, recordId = objectId)
     }
@@ -84,7 +82,8 @@ open class ObjectRelationTextValueFragment : BaseBottomSheetFragment() {
             is EditGridCellAction.Url -> {
                 try {
                     Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(action.url)
+                        val url = action.url.normalizeUrl()
+                        data = Uri.parse(url)
                     }.let {
                         startActivity(it)
                     }
@@ -144,6 +143,23 @@ open class ObjectRelationTextValueFragment : BaseBottomSheetFragment() {
             )
         }
         dismiss()
+    }
+
+    private fun onHideKeyboardWhenBottomSheetHidden() {
+        dialog?.findViewById<FrameLayout>(BOTTOM_SHEET_ID)?.let { sheet ->
+            BottomSheetBehavior.from(sheet).apply {
+                state = BottomSheetBehavior.STATE_EXPANDED
+                isHideable = true
+                addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                        if (slideOffset == -1F) {
+                            bottomSheet.hideKeyboard()
+                        }
+                    }
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {}
+                })
+            }
+        }
     }
 
     override fun injectDependencies() {

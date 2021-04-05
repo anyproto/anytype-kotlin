@@ -13,8 +13,12 @@ class ObjectRelationTextHolder(view: View) : ObjectRelationBaseHolder(view) {
 
     fun bind(view: ObjectRelationTextValueView.Text) = with(itemView) {
         textInputField.setText(view.value)
+        if (view.value.isNullOrEmpty()) {
+            textInputField.requestFocus()
+        }
         textInputField.setHint(R.string.dv_cell_description_hint)
-        textInputField.inputType = InputType.TYPE_CLASS_TEXT
+        textInputField.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
+        textInputField.isSingleLine = false
         btnAction.gone()
     }
 }
@@ -24,6 +28,9 @@ class ObjectRelationPhoneHolder(view: View) : ObjectRelationBaseHolder(view) {
     fun bind(view: ObjectRelationTextValueView.Phone, actionClick: (EditGridCellAction) -> Unit) =
         with(itemView) {
             textInputField.setText(view.value)
+            if (view.value.isNullOrEmpty()) {
+                textInputField.requestFocus()
+            }
             textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_CLASS_PHONE
             btnAction.visible()
@@ -39,6 +46,9 @@ class ObjectRelationEmailHolder(view: View) : ObjectRelationBaseHolder(view) {
     fun bind(view: ObjectRelationTextValueView.Email, actionClick: (EditGridCellAction) -> Unit) =
         with(itemView) {
             textInputField.setText(view.value)
+            if (view.value.isNullOrEmpty()) {
+                textInputField.requestFocus()
+            }
             textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             btnAction.visible()
@@ -54,6 +64,9 @@ class ObjectRelationUrlHolder(view: View) : ObjectRelationBaseHolder(view) {
     fun bind(view: ObjectRelationTextValueView.Url, actionClick: (EditGridCellAction) -> Unit) =
         with(itemView) {
             textInputField.setText(view.value)
+            if (view.value.isNullOrEmpty()) {
+                textInputField.requestFocus()
+            }
             textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_TEXT_VARIATION_URI
             btnAction.visible()
@@ -68,8 +81,11 @@ class ObjectRelationNumberHolder(view: View) : ObjectRelationBaseHolder(view) {
 
     fun bind(view: ObjectRelationTextValueView.Number) = with(itemView) {
         textInputField.setText(view.value)
+        if (view.value.isNullOrEmpty()) {
+            textInputField.requestFocus()
+        }
         textInputField.setHint(R.string.dv_cell_number_hint)
-        textInputField.inputType = InputType.TYPE_CLASS_NUMBER
+        textInputField.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         btnAction.gone()
     }
 }

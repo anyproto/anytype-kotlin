@@ -232,3 +232,6 @@ fun Drawable.setDrawableColor(color: Int) {
     this.colorFilter = BlendModeColorFilterCompat
         .createBlendModeColorFilterCompat(color, BlendModeCompat.SRC_ATOP)
 }
+
+fun String.normalizeUrl(): String =
+    if (!startsWith("http://") && !startsWith("https://")) "https://$this" else this

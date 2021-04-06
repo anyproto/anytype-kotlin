@@ -393,7 +393,7 @@ class AddRelationStatusValueTest {
     }
 
     @Test
-    fun statusesShouldBeInTheListWhenTypingToCreateNewOption() {
+    fun matchedStatusesShouldBeInTheListWhenTypingToCreateNewOption() {
 
         // SETUP
 
@@ -411,7 +411,7 @@ class AddRelationStatusValueTest {
 
         val option3 = Relation.Option(
             id = MockDataFactory.randomUuid(),
-            text = "Development",
+            text = "In Development",
             color = ThemeColor.values().random().title
         )
 
@@ -479,16 +479,17 @@ class AddRelationStatusValueTest {
 
         // Typing name for a new option
 
-        R.id.filterInput.type("Backlog")
+        val textToType = "In"
+
+        R.id.filterInput.type(textToType)
 
         // Checking that not only create-option view button, but also tags are visible
 
         R.id.recycler.rVMatcher().apply {
-            onItemView(0, R.id.tvCreateOptionValue).checkHasText("Create option \"Backlog\"")
+            onItemView(0, R.id.tvCreateOptionValue).checkHasText("Create option \"$textToType\"")
             onItemView(1, R.id.tvStatusName).checkHasText(option1.text)
-            onItemView(2, R.id.tvStatusName).checkHasText(option2.text)
-            onItemView(3, R.id.tvStatusName).checkHasText(option3.text)
-            checkIsRecyclerSize(4)
+            onItemView(2, R.id.tvStatusName).checkHasText(option3.text)
+            checkIsRecyclerSize(3)
         }
     }
 

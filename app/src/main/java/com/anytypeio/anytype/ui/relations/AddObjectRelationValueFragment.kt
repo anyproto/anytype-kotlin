@@ -83,7 +83,7 @@ abstract class AddObjectRelationValueFragment : BaseBottomSheetFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         with(lifecycleScope) {
-            subscribe(vm.views) { editCellTagAdapter.update(it) }
+            subscribe(vm.ui) { editCellTagAdapter.update(it) }
             subscribe(vm.counter) { tvSelectionCounter.text = it.toString() }
             subscribe(vm.isAddButtonVisible) { isVisible ->
                 if (!isVisible) btnAddContainer.gone() else btnAddContainer.visible()

@@ -38,10 +38,41 @@ abstract class AddObjectRelationValueViewModel(
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
+
+    private val query = MutableStateFlow("")
+
+    protected val views = MutableStateFlow(listOf<ObjectRelationValueView>())
+
+    val ui = MutableStateFlow(listOf<ObjectRelationValueView>())
     val isAddButtonVisible = MutableStateFlow(true)
     val counter = MutableStateFlow(0)
     val isDimissed = MutableStateFlow(false)
-    val views = MutableStateFlow(listOf<ObjectRelationValueView>())
+
+    init {
+        viewModelScope.launch {
+            views.combine(query) { all, query ->
+                if (query.isEmpty())
+                    all
+                else
+                    mutableListOf<ObjectRelationValueView>().apply {
+                        add(ObjectRelationValueView.Create(query))
+                        addAll(
+                            all.filter { view ->
+                                when(view) {
+                                    is ObjectRelationValueView.Status -> {
+                                        view.name.contains(query, true)
+                                    }
+                                    is ObjectRelationValueView.Tag -> {
+                                        view.name.contains(query, true)
+                                    }
+                                    else -> true
+                                }
+                            }
+                        )
+                    }
+            }.collect { ui.value = it }
+        }
+    }
 
     fun onStart(target: Id, relationId: Id) {
         val s1 = relations.subscribe(relationId)
@@ -169,11 +200,7 @@ abstract class AddObjectRelationValueViewModel(
         views.value = result
     }
 
-    fun onFilterInputChanged(input: String) {
-        views.value = views.value.filterNot { it is ObjectRelationValueView.Create }.toMutableList().apply {
-            if (input.isNotEmpty()) add(0, ObjectRelationValueView.Create(input))
-        }
-    }
+    fun onFilterInputChanged(input: String) { query.value = input }
 
     fun onTagClicked(tag: ObjectRelationValueView.Tag) {
         views.value = views.value.map { view ->

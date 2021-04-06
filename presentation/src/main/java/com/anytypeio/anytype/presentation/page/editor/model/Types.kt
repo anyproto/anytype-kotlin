@@ -46,6 +46,7 @@ object Types {
     const val HOLDER_RELATION_TAGS = 42
     const val HOLDER_RELATION_OBJECT = 43
     const val HOLDER_RELATION_FILE = 44
+    const val HOLDER_RELATION_CHECKBOX = 45
 
     const val FOCUS_TIMEOUT_MILLIS = 16L
     const val KEYBOARD_SHOW_DELAY = 16L

@@ -85,6 +85,7 @@ import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.page.search.search
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -3035,8 +3036,7 @@ class PageViewModel(
             when (mode) {
                 EditorMode.EDITING -> {
                     val relation = (clicked.value as BlockView.Relation.Related).view.relationId
-                    val format = orchestrator.stores.relations.current().first { it.key == relation }.format
-                    when (format) {
+                    when (orchestrator.stores.relations.current().first { it.key == relation }.format) {
                         Relation.Format.SHORT_TEXT,
                         Relation.Format.LONG_TEXT,
                         Relation.Format.URL,
@@ -3050,6 +3050,9 @@ class PageViewModel(
                                     relation = relation
                                 )
                             )
+                        }
+                        Relation.Format.CHECKBOX -> {
+                            proceedWithTogglingBlockRelationCheckbox(clicked.value, relation)
                         }
                         Relation.Format.DATE -> {
                             dispatch(
@@ -3073,6 +3076,25 @@ class PageViewModel(
                 }
                 else -> onBlockMultiSelectClicked(clicked.value.id)
             }
+        }
+    }
+
+    private fun proceedWithTogglingBlockRelationCheckbox(
+        value: BlockView.Relation.Related,
+        relation: Id
+    ) {
+        viewModelScope.launch {
+            val view = value.view as DocumentRelationView.Checkbox
+            updateDetail(
+                UpdateDetail.Params(
+                    ctx = context,
+                    key = relation,
+                    value = !view.isChecked
+                )
+            ).process(
+                success = { dispatcher.send(it) },
+                failure = { Timber.e(it, "Error while updating relation values") }
+            )
         }
     }
 

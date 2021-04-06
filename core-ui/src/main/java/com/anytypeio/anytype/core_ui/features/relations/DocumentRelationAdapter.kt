@@ -25,6 +25,13 @@ class DocumentRelationAdapter(
                     }
                 }
             }
+            R.layout.item_document_relation_checkbox -> {
+                ViewHolder.Checkbox(view = inflater.inflate(viewType, parent, false)).apply {
+                    itemView.setOnClickListener {
+                        onRelationClicked(items[bindingAdapterPosition])
+                    }
+                }
+            }
             R.layout.item_document_relation_object -> {
                 ViewHolder.Object(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
@@ -59,6 +66,12 @@ class DocumentRelationAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
+            is ViewHolder.Default -> {
+                holder.bind(items[position])
+            }
+            is ViewHolder.Checkbox -> {
+                holder.bind(items[position] as DocumentRelationView.Checkbox)
+            }
             is ViewHolder.Status -> {
                 holder.bind(items[position] as DocumentRelationView.Status)
             }
@@ -71,9 +84,6 @@ class DocumentRelationAdapter(
             is ViewHolder.File -> {
                 holder.bind(items[position] as DocumentRelationView.File)
             }
-            is ViewHolder.Default -> {
-                holder.bind(items[position])
-            }
             else -> { Timber.d("Skipping binding for: $holder") }
         }
     }
@@ -83,6 +93,7 @@ class DocumentRelationAdapter(
     override fun getItemViewType(position: Int): Int = when (items[position]) {
         is DocumentRelationView.Object -> R.layout.item_document_relation_object
         is DocumentRelationView.Status -> R.layout.item_document_relation_status
+        is DocumentRelationView.Checkbox -> R.layout.item_document_relation_checkbox
         is DocumentRelationView.Tags -> R.layout.item_document_relation_tag
         is DocumentRelationView.File -> R.layout.item_document_relation_file
         else -> R.layout.item_document_relation_default

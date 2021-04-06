@@ -240,8 +240,7 @@ class ObjectSetViewModel(
         val state = reducer.state.value
         val block = state.dataview
         val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == session.currentViewerId }?.id
-            ?: dv.viewers.first().id
+        val viewer = dv.viewers.find { it.id == session.currentViewerId }?.id ?: dv.viewers.first().id
 
         when (cell) {
             is CellView.Description, is CellView.Number, is CellView.Email,
@@ -273,6 +272,29 @@ class ObjectSetViewModel(
                         viewer = viewer
                     )
                 )
+            }
+            is CellView.Checkbox -> {
+                val records = reducer.state.value.viewerDb[viewer] ?: return
+                val record = records.records.find { it[ObjectSetConfig.ID_KEY] == cell.id }
+                if (record != null) {
+                    val updated = record.toMutableMap()
+                    updated[cell.key] = !cell.isChecked
+                    viewModelScope.launch {
+                        updateDataViewRecord(
+                            UpdateDataViewRecord.Params(
+                                context = context,
+                                record = cell.id,
+                                target = block.id,
+                                values = updated
+                            )
+                        ).process(
+                            failure = { Timber.e(it, "Error while updating data view record") },
+                            success = { Timber.d("Data view record updated successfully") }
+                        )
+                    }
+                } else {
+                    Timber.e("Couldn't found record for this checkobx")
+                }
             }
             else -> toast("Not implemented")
         }

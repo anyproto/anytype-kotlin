@@ -64,13 +64,12 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
-import com.anytypeio.anytype.core_utils.ext.PopupExtensions
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.typeOf
-import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_CHECKBOX
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_DEFAULT
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_FILE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_OBJECT
@@ -456,6 +455,15 @@ class BlockAdapter(
                 RelationViewHolder.File(
                     view = inflater.inflate(
                         R.layout.item_block_relation_file,
+                        parent,
+                        false
+                    )
+                ).setup(this)
+            }
+            HOLDER_RELATION_CHECKBOX -> {
+                RelationViewHolder.Checkbox(
+                    view = inflater.inflate(
+                        R.layout.item_block_relation_checkbox,
                         parent,
                         false
                     )
@@ -1067,6 +1075,14 @@ class BlockAdapter(
             is RelationViewHolder.File -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view as DocumentRelationView.File)
+                holder.indentize(item = item)
+                holder.setBackgroundColor(item.background)
+                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
+                container.isSelected = item.isSelected
+            }
+            is RelationViewHolder.Checkbox -> {
+                val item = (blocks[position] as BlockView.Relation.Related)
+                holder.bind(item = item.view as DocumentRelationView.Checkbox)
                 holder.indentize(item = item)
                 holder.setBackgroundColor(item.background)
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)

@@ -98,6 +98,13 @@ sealed class CellView : Parcelable {
     ) : CellView(), Parcelable
 
     @Parcelize
+    data class Checkbox(
+        override val id: String,
+        override val key: String,
+        val isChecked: Boolean
+    ): CellView(), Parcelable
+
+    @Parcelize
     data class File(
         override val id: String,
         override val key: String,

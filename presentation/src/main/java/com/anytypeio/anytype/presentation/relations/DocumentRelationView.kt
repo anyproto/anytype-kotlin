@@ -21,6 +21,14 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         override val value: String? = null
     ) : DocumentRelationView()
 
+    data class Checkbox(
+        override val relationId: Id,
+        override val name: String,
+        val isChecked: Boolean
+    ): DocumentRelationView() {
+        override val value: String? = null
+    }
+
     data class Status(
         override val relationId: Id,
         override val name: String,

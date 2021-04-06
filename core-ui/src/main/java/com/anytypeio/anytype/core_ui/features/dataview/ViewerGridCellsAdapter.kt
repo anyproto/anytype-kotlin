@@ -105,6 +105,19 @@ class ViewerGridCellsAdapter(
                     }
                 }
             }
+            HOLDER_CHECKBOX -> {
+                DVGridCellCheckboxHolder(
+                    view = inflater.inflate(
+                        R.layout.item_viewer_grid_cell_checkbox,
+                        parent,
+                        false
+                    )
+                ).apply {
+                    itemView.setOnClickListener {
+                        onCellClicked(cells[bindingAdapterPosition])
+                    }
+                }
+            }
             HOLDER_TAG -> {
                 DVGridCellTagHolder(
                     view = inflater.inflate(R.layout.item_viewer_grid_cell_tag, parent, false)
@@ -171,6 +184,7 @@ class ViewerGridCellsAdapter(
             is DVGridCellStatusHolder -> holder.bind(cells[position] as CellView.Status)
             is DVGridCellObjectHolder -> holder.bind(cells[position] as CellView.Object)
             is DVGridCellFileHolder -> holder.bind(cells[position] as CellView.File)
+            is DVGridCellCheckboxHolder -> holder.bind(cells[position] as CellView.Checkbox)
         }
     }
 
@@ -185,6 +199,7 @@ class ViewerGridCellsAdapter(
         is CellView.Status -> HOLDER_STATUS
         is CellView.Object -> HOLDER_OBJECT
         is CellView.File -> HOLDER_FILE
+        is CellView.Checkbox -> HOLDER_CHECKBOX
         else -> throw IllegalStateException("Unexpected view type: ${cells[position]}")
     }
 
@@ -199,5 +214,6 @@ class ViewerGridCellsAdapter(
         const val HOLDER_STATUS = 8
         const val HOLDER_OBJECT = 9
         const val HOLDER_FILE = 10
+        const val HOLDER_CHECKBOX = 11
     }
 }

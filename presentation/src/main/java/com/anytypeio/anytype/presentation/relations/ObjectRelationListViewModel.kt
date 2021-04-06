@@ -97,6 +97,9 @@ class ObjectRelationListViewModel(
                         )
                     )
                 }
+                Relation.Format.CHECKBOX -> {
+                    proceedWithTogglingRelationCheckboxValue(view, ctx)
+                }
                 Relation.Format.DATE -> {
                     commands.emit(
                         Command.EditDateRelationValue(
@@ -118,8 +121,23 @@ class ObjectRelationListViewModel(
                         )
                     )
                 }
-                else -> TODO()
             }
+        }
+    }
+
+    private fun proceedWithTogglingRelationCheckboxValue(view: DocumentRelationView, ctx: Id) {
+        viewModelScope.launch {
+            check(view is DocumentRelationView.Checkbox)
+            updateDetail(
+                UpdateDetail.Params(
+                    ctx = ctx,
+                    key = view.relationId,
+                    value = !view.isChecked
+                )
+            ).process(
+                success = { dispatcher.send(it) },
+                failure = { Timber.e(it, "Error while updating checkbox relation") }
+            )
         }
     }
 

@@ -82,6 +82,13 @@ fun Relation.view(
                 tags = tags
             )
         }
+        relation.format == Relation.Format.CHECKBOX -> {
+            DocumentRelationView.Checkbox(
+                relationId = relation.key,
+                name = relation.name,
+                isChecked = values[relation.key] as? Boolean ?: false
+            )
+        }
         else -> {
             DocumentRelationView.Default(
                 relationId = relation.key,

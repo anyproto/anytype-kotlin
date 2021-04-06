@@ -81,13 +81,13 @@ fun List<ColumnView>.buildGridRow(
                     )
                 }
                 ColumnView.Format.CHECKBOX -> {
-                    CellView.Description(
+                    CellView.Checkbox(
                         id = record[ObjectSetConfig.ID_KEY] as String,
                         key = column.key,
-                        text = if (record.containsKey(column.key)) {
-                            record[column.key].toString()
+                        isChecked = if (record.containsKey(column.key)) {
+                            (record[column.key] as? Boolean) ?: false
                         } else {
-                            EMPTY_VALUE
+                            false
                         }
                     )
                 }

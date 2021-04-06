@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.relations
 
 import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
@@ -57,6 +58,19 @@ sealed class RelationViewHolder(view: View) : BlockViewHolder(view), BlockViewHo
         fun bind(item: DocumentRelationView) = with(itemView) {
             findViewById<TextView>(R.id.tvRelationTitle).text = item.name
             findViewById<TextView>(R.id.tvRelationValue).text = item.value
+        }
+
+        override fun indentize(item: BlockView.Indentable) {
+            val title = itemView.findViewById<TextView>(R.id.tvRelationTitle)
+            val indent = dimen(R.dimen.indent) * item.indent
+            title.updatePadding(left = indent)
+        }
+    }
+
+    class Checkbox(view: View) : RelationViewHolder(view) {
+        fun bind(item: DocumentRelationView.Checkbox) = with(itemView) {
+            findViewById<TextView>(R.id.tvRelationTitle).text = item.name
+            findViewById<ImageView>(R.id.ivRelationCheckbox).isSelected = item.isChecked
         }
 
         override fun indentize(item: BlockView.Indentable) {

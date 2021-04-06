@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.presentation.page.editor.model
 
 import android.os.Parcelable
-import com.anytypeio.anytype.core_utils.ui.ViewType
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_utils.ui.ViewType
 import com.anytypeio.anytype.presentation.page.cover.CoverColor
 import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_ARCHIVE_TITLE
@@ -31,6 +31,7 @@ import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PICTURE_PLACEHOLDER
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PICTURE_UPLOAD
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PROFILE_TITLE
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_CHECKBOX
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_DEFAULT
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_FILE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_OBJECT
@@ -867,6 +868,7 @@ sealed class BlockView : ViewType, Parcelable {
         ) : Relation() {
             override fun getViewType(): Int = when (view) {
                 is DocumentRelationView.Default -> HOLDER_RELATION_DEFAULT
+                is DocumentRelationView.Checkbox -> HOLDER_RELATION_CHECKBOX
                 is DocumentRelationView.Status -> HOLDER_RELATION_STATUS
                 is DocumentRelationView.Tags -> HOLDER_RELATION_TAGS
                 is DocumentRelationView.Object -> HOLDER_RELATION_OBJECT

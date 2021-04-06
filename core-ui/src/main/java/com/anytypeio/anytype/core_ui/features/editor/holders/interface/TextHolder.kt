@@ -48,10 +48,12 @@ interface TextHolder {
 
     fun setTextColor(color: String) {
         val value = ThemeColor.values().find { value -> value.title == color }
-        if (value != null)
+        if (value != null) {
             content.setTextColor(value.text)
-        else
-            Timber.e("Could not find value for text color: $color")
+        } else {
+            Timber.e("Could not find value for text color: $color, setting default text color")
+            content.setTextColor(ThemeColor.DEFAULT.text)
+        }
     }
 
     fun setTextColor(color: Int) {

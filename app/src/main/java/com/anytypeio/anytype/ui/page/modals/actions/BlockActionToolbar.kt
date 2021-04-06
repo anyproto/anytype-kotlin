@@ -180,11 +180,15 @@ abstract class BlockActionToolbar : Fragment() {
     }
 
     private fun setBlockTextColor(content: TextView, color: String) {
-        content.setTextColor(
-            ThemeColor.values().first { value ->
-                value.title == color
-            }.text
-        )
+        if (color.isNotEmpty()) {
+            content.setTextColor(
+                ThemeColor.values().first { value ->
+                    value.title == color
+                }.text
+            )
+        } else {
+            content.setTextColor(ThemeColor.DEFAULT.text)
+        }
     }
 
     private fun setBlockBackgroundColor(root: View, color: String? = null) {

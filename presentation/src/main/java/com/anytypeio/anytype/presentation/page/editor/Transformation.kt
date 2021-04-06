@@ -40,13 +40,7 @@ fun Block.markup(
         param = param
     )
 
-    val marks = content.marks.addMark(new).filter { mark ->
-        if (mark.type == Mark.Type.BACKGROUND_COLOR || mark.type == Mark.Type.TEXT_COLOR) {
-            mark.param != ThemeColor.DEFAULT.title
-        } else {
-            true
-        }
-    }
+    val marks = content.marks.addMark(new)
 
     return copy(content = content.copy(marks = marks))
 }

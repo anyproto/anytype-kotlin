@@ -63,7 +63,7 @@ abstract class ObjectRelationValueFragment : BaseBottomSheetFragment(),
             onCreateOptionClicked = {},
             onTagClicked = {},
             onStatusClicked = {},
-            onRemoveStatusClicked = {},
+            onRemoveStatusClicked = { status -> onRemoveStatusClicked(status) },
             onRemoveTagClicked = { tag -> onRemoveTagClicked(tag) },
             onObjectClicked = {},
             onRemoveObjectClicked = { obj -> onRemoveObjectClicked(obj) },
@@ -141,6 +141,7 @@ abstract class ObjectRelationValueFragment : BaseBottomSheetFragment(),
     abstract fun observeCommands(command: ObjectRelationValueViewModel.ObjectRelationValueCommand)
     abstract fun onItemDropped()
     abstract fun onRemoveTagClicked(tag: ObjectRelationValueViewModel.ObjectRelationValueView.Tag)
+    abstract fun onRemoveStatusClicked(status: ObjectRelationValueViewModel.ObjectRelationValueView.Status)
     abstract fun onRemoveObjectClicked(objectId: Id)
     abstract fun onRemoveFileClicked(fileId: Id)
 
@@ -166,6 +167,17 @@ open class ObjectSetObjectRelationValueFragment : ObjectRelationValueFragment() 
             target = target,
             relation = relation,
             tag = tag.id,
+            viewer = viewer
+        )
+    }
+
+    override fun onRemoveStatusClicked(status: ObjectRelationValueViewModel.ObjectRelationValueView.Status) {
+        vm.onRemoveStatusFromDataViewRecordClicked(
+            ctx = ctx,
+            dataview = dataview,
+            target = target,
+            relation = relation,
+            status = status.id,
             viewer = viewer
         )
     }
@@ -315,6 +327,15 @@ class ObjectObjectRelationValueFragment : ObjectRelationValueFragment() {
             target = target,
             relation = relation,
             tag = tag.id
+        )
+    }
+
+    override fun onRemoveStatusClicked(status: ObjectRelationValueViewModel.ObjectRelationValueView.Status) {
+        vm.onRemoveStatusFromObjectClicked(
+            ctx = ctx,
+            target = target,
+            relation = relation,
+            status = status.id
         )
     }
 

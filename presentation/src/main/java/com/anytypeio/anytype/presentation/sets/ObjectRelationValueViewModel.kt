@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.dataview.interactor.RemoveStatusFromDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -178,6 +179,7 @@ abstract class ObjectRelationValueViewModel(
             when (v) {
                 is ObjectRelationValueView.Object -> v.copy(removeable = isEditing.value)
                 is ObjectRelationValueView.Tag -> v.copy(removeable = isEditing.value)
+                is ObjectRelationValueView.Status -> v.copy(removeable = isEditing.value)
                 is ObjectRelationValueView.File -> v.copy(removeable = isEditing.value)
                 else -> v
             }
@@ -284,6 +286,7 @@ class ObjectSetObjectRelationValueViewModel(
     private val details: ObjectDetailProvider,
     private val types: ObjectTypeProvider,
     private val removeTagFromDataViewRecord: RemoveTagFromDataViewRecord,
+    private val removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
     private val updateDataViewRecord: UpdateDataViewRecord,
     private val dispatcher: Dispatcher<Payload>,
     private val urlBuilder: UrlBuilder
@@ -318,6 +321,33 @@ class ObjectSetObjectRelationValueViewModel(
             ).process(
                 failure = { Timber.e(it, "Error while removing tag") },
                 success = { Timber.d("Successfully removed tag") }
+            )
+        }
+    }
+
+    fun onRemoveStatusFromDataViewRecordClicked(
+        ctx: Id,
+        dataview: Id,
+        target: Id,
+        relation: Id,
+        viewer: Id,
+        status: Id
+    ) {
+        viewModelScope.launch {
+            val record = values.get(target)
+            removeStatusFromDataViewRecord(
+                RemoveStatusFromDataViewRecord.Params(
+                    ctx = ctx,
+                    status = status,
+                    record = record,
+                    dataview = dataview,
+                    relation = relation,
+                    viewer = viewer,
+                    target = target
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while removing status") },
+                success = { Timber.d("Successfully removed status") }
             )
         }
     }
@@ -427,6 +457,7 @@ class ObjectSetObjectRelationValueViewModel(
         private val types: ObjectTypeProvider,
         private val updateDataViewRecord: UpdateDataViewRecord,
         private val removeTagFromRecord: RemoveTagFromDataViewRecord,
+        private val removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
         private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -437,6 +468,7 @@ class ObjectSetObjectRelationValueViewModel(
             types = types,
             dispatcher = dispatcher,
             removeTagFromDataViewRecord = removeTagFromRecord,
+            removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,
             urlBuilder = urlBuilder,
             updateDataViewRecord = updateDataViewRecord
         ) as T
@@ -531,6 +563,28 @@ class ObjectObjectRelationValueViewModel(
         viewModelScope.launch {
             val obj = values.get(target)
             val remaining = obj[relation].filterIdsById(tag)
+            updateDetail(
+                UpdateDetail.Params(
+                    ctx = ctx,
+                    key = relation,
+                    value = remaining
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while removing tag from object") },
+                success = { dispatcher.send(it) }
+            )
+        }
+    }
+
+    fun onRemoveStatusFromObjectClicked(
+        ctx: Id,
+        target: Id,
+        relation: Id,
+        status: Id
+    ) {
+        viewModelScope.launch {
+            val obj = values.get(target)
+            val remaining = obj[relation].filterIdsById(status)
             updateDetail(
                 UpdateDetail.Params(
                     ctx = ctx,

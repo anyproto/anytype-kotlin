@@ -14,10 +14,7 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
-import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
@@ -59,6 +56,7 @@ class DisplayRelationStatusValueTest {
 
     private lateinit var addRelationOption: AddDataViewRelationOption
     private lateinit var removeTagFromDataViewRecord: RemoveTagFromDataViewRecord
+    private lateinit var removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord
     private lateinit var addTagToDataViewRecord: AddTagToDataViewRecord
     private lateinit var updateDataViewRecord: UpdateDataViewRecord
     private lateinit var updateDetail: UpdateDetail
@@ -81,6 +79,7 @@ class DisplayRelationStatusValueTest {
         addTagToDataViewRecord = AddTagToDataViewRecord(repo)
         updateDataViewRecord = UpdateDataViewRecord(repo)
         removeTagFromDataViewRecord = RemoveTagFromDataViewRecord(repo)
+        removeStatusFromDataViewRecord = RemoveStatusFromDataViewRecord(repo)
         updateDetail = UpdateDetail(repo)
         urlBuilder = UrlBuilder(gateway)
         TestObjectSetObjectRelationValueFragment.testVmFactory = ObjectSetObjectRelationValueViewModel.Factory(
@@ -93,6 +92,7 @@ class DisplayRelationStatusValueTest {
                 override fun provide(): List<ObjectType> = state.value.objectTypes
             },
             removeTagFromRecord = removeTagFromDataViewRecord,
+            removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
             updateDataViewRecord = updateDataViewRecord

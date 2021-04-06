@@ -10,11 +10,9 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.tools.SupportDragAndDropBehavior
-import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.DragAndDropViewHolder
 import com.anytypeio.anytype.presentation.sets.ObjectRelationValueViewModel.ObjectRelationValueView
-import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_edit_cell_file.view.*
 import kotlinx.android.synthetic.main.item_edit_cell_object.view.*
 import kotlinx.android.synthetic.main.item_edit_cell_object.view.tvTitle
@@ -201,13 +199,11 @@ class ObjectRelationValueAdapter(
                 tvStatusName.setColor(item.color)
                 if (!item.removeable) {
                     btnRemoveStatus.gone()
-                    btnDragAndDropStatus.gone()
                     tvStatusName.updateLayoutParams<FrameLayout.LayoutParams> {
                         marginStart = 0
                     }
                 } else {
                     btnRemoveStatus.visible()
-                    btnDragAndDropStatus.visible()
                     tvStatusName.updateLayoutParams<FrameLayout.LayoutParams> {
                         marginStart = itemView.context.dimen(R.dimen.edit_tag_list_text_margin_start).toInt()
                     }

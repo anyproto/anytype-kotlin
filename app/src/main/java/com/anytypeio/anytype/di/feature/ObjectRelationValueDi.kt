@@ -4,10 +4,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
-import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -77,6 +74,13 @@ object ObjectRelationValueModule {
     fun provideRemoveTagFromDataViewRecordUseCase(
         repo: BlockRepository
     ): RemoveTagFromDataViewRecord = RemoveTagFromDataViewRecord(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideRemoveStatusFromDataViewRecordUseCase(
+        repo: BlockRepository
+    ): RemoveStatusFromDataViewRecord = RemoveStatusFromDataViewRecord(repo = repo)
 }
 
 @Module
@@ -90,6 +94,7 @@ object ObjectSetObjectRelationValueModule {
         details: ObjectDetailProvider,
         types: ObjectTypeProvider,
         removeTagFromDataViewRecord: RemoveTagFromDataViewRecord,
+        removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,
         updateDataViewRecord: UpdateDataViewRecord
@@ -99,6 +104,7 @@ object ObjectSetObjectRelationValueModule {
         details = details,
         types = types,
         removeTagFromRecord = removeTagFromDataViewRecord,
+        removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,
         urlBuilder = urlBuilder,
         dispatcher = dispatcher,
         updateDataViewRecord = updateDataViewRecord

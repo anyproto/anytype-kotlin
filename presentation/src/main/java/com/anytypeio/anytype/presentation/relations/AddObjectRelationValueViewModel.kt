@@ -47,6 +47,7 @@ abstract class AddObjectRelationValueViewModel(
     val isAddButtonVisible = MutableStateFlow(true)
     val counter = MutableStateFlow(0)
     val isDimissed = MutableStateFlow(false)
+    val isMultiple = MutableStateFlow(true)
 
     init {
         viewModelScope.launch {
@@ -82,6 +83,7 @@ abstract class AddObjectRelationValueViewModel(
                 buildViews(relation, record, relationId).also {
                     if (relation.format == Relation.Format.STATUS) {
                         isAddButtonVisible.value = false
+                        isMultiple.value = false
                     }
                 }
             }.collect()

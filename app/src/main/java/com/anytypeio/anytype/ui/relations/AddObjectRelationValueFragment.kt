@@ -93,6 +93,12 @@ abstract class AddObjectRelationValueFragment : BaseBottomSheetFragment() {
                     proceedWithExiting()
                 }
             }
+            subscribe(vm.isMultiple) { isMultiple ->
+                if (isMultiple)
+                    filterInput.setHint(R.string.choose_options)
+                else
+                    filterInput.setHint(R.string.choose_option)
+            }
         }
     }
 

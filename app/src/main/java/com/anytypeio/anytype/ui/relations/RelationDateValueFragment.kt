@@ -14,17 +14,17 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.DateValueCommand
 import com.anytypeio.anytype.presentation.sets.DateValueView
-import com.anytypeio.anytype.presentation.sets.ObjectRelationDateValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment
-import kotlinx.android.synthetic.main.fragment_object_relation_date_value.*
+import kotlinx.android.synthetic.main.fragment_relation_date_value.*
 import javax.inject.Inject
 
-open class ObjectRelationDateValueFragment : BaseBottomSheetFragment(),
+open class RelationDateValueFragment : BaseBottomSheetFragment(),
     DatePickerFragment.DatePickerReceiver {
 
     @Inject
-    lateinit var factory: ObjectRelationDateValueViewModel.Factory
-    val vm: ObjectRelationDateValueViewModel by viewModels { factory }
+    lateinit var factory: RelationDateValueViewModel.Factory
+    val vm: RelationDateValueViewModel by viewModels { factory }
 
     private val ctx get() = argString(CONTEXT_ID)
     private val objectId get() = argString(OBJECT_ID)
@@ -35,7 +35,7 @@ open class ObjectRelationDateValueFragment : BaseBottomSheetFragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_object_relation_date_value, container, false)
+    ): View = inflater.inflate(R.layout.fragment_relation_date_value, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -95,8 +95,8 @@ open class ObjectRelationDateValueFragment : BaseBottomSheetFragment(),
     }
 
     private fun dispatchResultAndDismiss(timeInSeconds: Double?) {
-        withParent<EditObjectRelationDateValueReceiver> {
-            onRelationDateValueChanged(
+        withParent<DateValueEditReceiver> {
+            onDateValueChanged(
                 ctx = ctx,
                 objectId = objectId,
                 relationId = relationId,
@@ -137,7 +137,7 @@ open class ObjectRelationDateValueFragment : BaseBottomSheetFragment(),
             relationId: Id,
             objectId: Id,
             flow: Int = FLOW_DEFAULT
-        ) = ObjectRelationDateValueFragment().apply {
+        ) = RelationDateValueFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 RELATION_ID to relationId,
@@ -155,8 +155,8 @@ open class ObjectRelationDateValueFragment : BaseBottomSheetFragment(),
         const val FLOW_DATAVIEW = 1
     }
 
-    interface EditObjectRelationDateValueReceiver {
-        fun onRelationDateValueChanged(
+    interface DateValueEditReceiver {
+        fun onDateValueChanged(
             ctx: Id,
             timeInSeconds: Number?,
             objectId: Id,

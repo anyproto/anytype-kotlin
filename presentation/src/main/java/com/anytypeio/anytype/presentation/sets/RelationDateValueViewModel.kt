@@ -15,7 +15,7 @@ import java.util.*
 
 const val TIME_FORMAT_DEFAULT = "dd MMMM yyyy"
 
-class ObjectRelationDateValueViewModel(
+class RelationDateValueViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider
 ) : ViewModel() {
@@ -126,7 +126,7 @@ class ObjectRelationDateValueViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return ObjectRelationDateValueViewModel(relations, values) as T
+            return RelationDateValueViewModel(relations, values) as T
         }
     }
 }

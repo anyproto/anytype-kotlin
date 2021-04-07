@@ -16,10 +16,10 @@ import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.ObjectRelationTextValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
-import com.anytypeio.anytype.ui.relations.ObjectRelationTextValueFragment
+import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,7 +48,7 @@ class DisplayObjectRelationTextValueTest {
     @Before
     fun before() {
         MockitoAnnotations.initMocks(this)
-        TestObjectRelationTextValueFragment.testVmFactory = ObjectRelationTextValueViewModel.Factory(
+        TestRelationTextValueFragment.testVmFactory = RelationTextValueViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
             values = DataViewObjectValueProvider(state, session)
         )
@@ -108,10 +108,10 @@ class DisplayObjectRelationTextValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationTextValueFragment.CONTEXT_ID to root,
-                ObjectRelationTextValueFragment.RELATION_ID to relation.key,
-                ObjectRelationTextValueFragment.OBJECT_ID to target,
-                ObjectRelationTextValueFragment.FLOW_KEY to ObjectRelationTextValueFragment.FLOW_DATAVIEW
+                RelationTextValueFragment.CONTEXT_ID to root,
+                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.OBJECT_ID to target,
+                RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -186,10 +186,10 @@ class DisplayObjectRelationTextValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationTextValueFragment.CONTEXT_ID to root,
-                ObjectRelationTextValueFragment.RELATION_ID to relation.key,
-                ObjectRelationTextValueFragment.OBJECT_ID to target,
-                ObjectRelationTextValueFragment.FLOW_KEY to ObjectRelationTextValueFragment.FLOW_DATAVIEW
+                RelationTextValueFragment.CONTEXT_ID to root,
+                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.OBJECT_ID to target,
+                RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -264,10 +264,10 @@ class DisplayObjectRelationTextValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationTextValueFragment.CONTEXT_ID to root,
-                ObjectRelationTextValueFragment.RELATION_ID to relation.key,
-                ObjectRelationTextValueFragment.OBJECT_ID to target,
-                ObjectRelationTextValueFragment.FLOW_KEY to ObjectRelationTextValueFragment.FLOW_DATAVIEW
+                RelationTextValueFragment.CONTEXT_ID to root,
+                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.OBJECT_ID to target,
+                RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -340,10 +340,10 @@ class DisplayObjectRelationTextValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationTextValueFragment.CONTEXT_ID to root,
-                ObjectRelationTextValueFragment.RELATION_ID to relation.key,
-                ObjectRelationTextValueFragment.OBJECT_ID to target,
-                ObjectRelationTextValueFragment.FLOW_KEY to ObjectRelationTextValueFragment.FLOW_DATAVIEW
+                RelationTextValueFragment.CONTEXT_ID to root,
+                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.OBJECT_ID to target,
+                RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -416,10 +416,10 @@ class DisplayObjectRelationTextValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationTextValueFragment.CONTEXT_ID to root,
-                ObjectRelationTextValueFragment.RELATION_ID to relation.key,
-                ObjectRelationTextValueFragment.OBJECT_ID to target,
-                ObjectRelationTextValueFragment.FLOW_KEY to ObjectRelationTextValueFragment.FLOW_DATAVIEW
+                RelationTextValueFragment.CONTEXT_ID to root,
+                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.OBJECT_ID to target,
+                RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -438,8 +438,8 @@ class DisplayObjectRelationTextValueTest {
         }
     }
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestObjectRelationTextValueFragment> {
-        return launchFragmentInContainer<TestObjectRelationTextValueFragment>(
+    private fun launchFragment(args: Bundle): FragmentScenario<TestRelationTextValueFragment> {
+        return launchFragmentInContainer<TestRelationTextValueFragment>(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

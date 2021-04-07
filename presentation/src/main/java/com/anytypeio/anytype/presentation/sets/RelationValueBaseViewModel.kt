@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-abstract class ObjectRelationValueViewModel(
+abstract class RelationValueBaseViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val details: ObjectDetailProvider,
@@ -38,7 +38,7 @@ abstract class ObjectRelationValueViewModel(
     val isDimissed = MutableStateFlow(false)
     val isFilterVisible = MutableStateFlow(false)
     val name = MutableStateFlow("")
-    val views = MutableStateFlow(listOf<ObjectRelationValueView>())
+    val views = MutableStateFlow(listOf<RelationValueView>())
     val commands = MutableSharedFlow<ObjectRelationValueCommand>(replay = 0)
 
     fun onStart(objectId: Id, relationId: Id) {
@@ -61,9 +61,9 @@ abstract class ObjectRelationValueViewModel(
     private fun initDataViewUIState(relation: Relation, record: Map<String, Any?>, relationId: Id) {
         val options = relation.selections
 
-        val result = mutableListOf<ObjectRelationValueView>()
+        val result = mutableListOf<RelationValueView>()
 
-        val items = mutableListOf<ObjectRelationValueView>()
+        val items = mutableListOf<RelationValueView>()
 
         val optionKeys = record[relationId] as? List<*> ?: emptyList<String>()
 
@@ -74,7 +74,7 @@ abstract class ObjectRelationValueViewModel(
                 optionKeys.forEach { key ->
                     val option = options.first { it.id == key }
                     items.add(
-                        ObjectRelationValueView.Tag(
+                        RelationValueView.Tag(
                             id = option.id,
                             name = option.text,
                             color = option.color.ifEmpty { null },
@@ -88,7 +88,7 @@ abstract class ObjectRelationValueViewModel(
                 optionKeys.forEach { key ->
                     val option = options.first { it.id == key }
                     items.add(
-                        ObjectRelationValueView.Status(
+                        RelationValueView.Status(
                             id = option.id,
                             name = option.text,
                             color = option.color.ifEmpty { null },
@@ -105,7 +105,7 @@ abstract class ObjectRelationValueViewModel(
                         val detail = details.provide()[id]
                         val objectType = types.provide().find { it.url == detail?.type }
                         items.add(
-                            ObjectRelationValueView.Object(
+                            RelationValueView.Object(
                                 id = id,
                                 name = detail?.name.orEmpty(),
                                 type = objectType?.name,
@@ -122,7 +122,7 @@ abstract class ObjectRelationValueViewModel(
                     val detail = details.provide()[value]
                     val objectType = types.provide().find { it.url == detail?.type }
                     items.add(
-                        ObjectRelationValueView.Object(
+                        RelationValueView.Object(
                             id = value,
                             name = detail?.name.orEmpty(),
                             type = objectType?.name,
@@ -143,7 +143,7 @@ abstract class ObjectRelationValueViewModel(
                 value.typeOf<Id>().forEach { id ->
                     val detail = details.provide()[id]
                     items.add(
-                        ObjectRelationValueView.File(
+                        RelationValueView.File(
                             id = id,
                             name = detail?.name.orEmpty(),
                             mime = detail?.fileMimeType.orEmpty(),
@@ -159,7 +159,7 @@ abstract class ObjectRelationValueViewModel(
         result.addAll(items)
 
         if (result.isEmpty()) {
-            result.add(ObjectRelationValueView.Empty)
+            result.add(RelationValueView.Empty)
         }
 
         views.value = result
@@ -168,8 +168,8 @@ abstract class ObjectRelationValueViewModel(
 
     fun onFilterInputChanged(input: String) {
         views.value =
-            views.value.filterNot { it is ObjectRelationValueView.Create }.toMutableList().apply {
-                if (input.isNotEmpty()) add(0, ObjectRelationValueView.Create(input))
+            views.value.filterNot { it is RelationValueView.Create }.toMutableList().apply {
+                if (input.isNotEmpty()) add(0, RelationValueView.Create(input))
             }
     }
 
@@ -177,10 +177,10 @@ abstract class ObjectRelationValueViewModel(
         isEditing.value = !isEditing.value
         views.value = views.value.map { v ->
             when (v) {
-                is ObjectRelationValueView.Object -> v.copy(removeable = isEditing.value)
-                is ObjectRelationValueView.Tag -> v.copy(removeable = isEditing.value)
-                is ObjectRelationValueView.Status -> v.copy(removeable = isEditing.value)
-                is ObjectRelationValueView.File -> v.copy(removeable = isEditing.value)
+                is RelationValueView.Object -> v.copy(removeable = isEditing.value)
+                is RelationValueView.Tag -> v.copy(removeable = isEditing.value)
+                is RelationValueView.Status -> v.copy(removeable = isEditing.value)
+                is RelationValueView.File -> v.copy(removeable = isEditing.value)
                 else -> v
             }
         }
@@ -230,15 +230,15 @@ abstract class ObjectRelationValueViewModel(
         object ShowAddFileScreen : ObjectRelationValueCommand()
     }
 
-    sealed class ObjectRelationValueView {
+    sealed class RelationValueView {
 
         interface Selectable {
             val isSelected: Boolean?
         }
 
-        object Empty : ObjectRelationValueView()
+        object Empty : RelationValueView()
 
-        data class Create(val name: String) : ObjectRelationValueView()
+        data class Create(val name: String) : RelationValueView()
 
         data class Tag(
             val id: Id,
@@ -246,14 +246,14 @@ abstract class ObjectRelationValueViewModel(
             val color: String? = null,
             val removeable: Boolean = false,
             override val isSelected: Boolean? = null
-        ) : ObjectRelationValueView(), Selectable
+        ) : RelationValueView(), Selectable
 
         data class Status(
             val id: Id,
             val name: String,
             val removeable: Boolean = false,
             val color: String? = null
-        ) : ObjectRelationValueView()
+        ) : RelationValueView()
 
         data class Object(
             val id: Id,
@@ -265,7 +265,7 @@ abstract class ObjectRelationValueViewModel(
             val layout: ObjectType.Layout?,
             override val isSelected: Boolean? = null,
             val selectedNumber: String? = null
-        ) : ObjectRelationValueView(), Selectable
+        ) : RelationValueView(), Selectable
 
         data class File(
             val id: Id,
@@ -276,11 +276,11 @@ abstract class ObjectRelationValueViewModel(
             val image: Url?,
             override val isSelected: Boolean? = null,
             val selectedNumber: String? = null
-        ) : ObjectRelationValueView(), Selectable
+        ) : RelationValueView(), Selectable
     }
 }
 
-class ObjectSetObjectRelationValueViewModel(
+class RelationValueDVViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val details: ObjectDetailProvider,
@@ -290,7 +290,7 @@ class ObjectSetObjectRelationValueViewModel(
     private val updateDataViewRecord: UpdateDataViewRecord,
     private val dispatcher: Dispatcher<Payload>,
     private val urlBuilder: UrlBuilder
-) : ObjectRelationValueViewModel(
+) : RelationValueBaseViewModel(
     relations = relations,
     values = values,
     details = details,
@@ -461,7 +461,7 @@ class ObjectSetObjectRelationValueViewModel(
         private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T = ObjectSetObjectRelationValueViewModel(
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T = RelationValueDVViewModel(
             relations = relations,
             values = values,
             details = details,
@@ -475,7 +475,7 @@ class ObjectSetObjectRelationValueViewModel(
     }
 }
 
-class ObjectObjectRelationValueViewModel(
+class RelationValueViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val details: ObjectDetailProvider,
@@ -483,7 +483,7 @@ class ObjectObjectRelationValueViewModel(
     private val updateDetail: UpdateDetail,
     private val dispatcher: Dispatcher<Payload>,
     private val urlBuilder: UrlBuilder
-) : ObjectRelationValueViewModel(
+) : RelationValueBaseViewModel(
     relations = relations,
     values = values,
     details = details,
@@ -630,7 +630,7 @@ class ObjectObjectRelationValueViewModel(
         private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T = ObjectObjectRelationValueViewModel(
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T = RelationValueViewModel(
             relations = relations,
             values = values,
             details = details,

@@ -36,13 +36,13 @@ import com.anytypeio.anytype.presentation.sets.model.FilterExpression
 import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import com.anytypeio.anytype.ui.database.modals.ObjectSetObjectRelationValueFragment
+import com.anytypeio.anytype.ui.database.modals.RelationValueDVFragment
 import com.anytypeio.anytype.ui.relations.CreateDataViewRelationFragment
 import com.anytypeio.anytype.ui.relations.CreateDataViewRelationFragment.OnAddDataViewRelationRequestReceiver
-import com.anytypeio.anytype.ui.relations.ObjectRelationDateValueFragment
-import com.anytypeio.anytype.ui.relations.ObjectRelationDateValueFragment.EditObjectRelationDateValueReceiver
-import com.anytypeio.anytype.ui.relations.ObjectRelationTextValueFragment
-import com.anytypeio.anytype.ui.relations.ObjectRelationTextValueFragment.EditObjectRelationTextValueReceiver
+import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
+import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
+import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
+import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
 import com.anytypeio.anytype.ui.sets.modals.*
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import kotlinx.android.synthetic.main.fragment_object_set.*
@@ -52,8 +52,8 @@ import javax.inject.Inject
 open class ObjectSetFragment :
     NavigationFragment(R.layout.fragment_object_set),
     OnAddDataViewRelationRequestReceiver,
-    EditObjectRelationTextValueReceiver,
-    EditObjectRelationDateValueReceiver{
+    TextValueEditReceiver,
+    DateValueEditReceiver{
 
     private val bottomPanelTranslationDelta: Float
         get() = (bottomPanel.height + bottomPanel.marginBottom).toFloat()
@@ -210,25 +210,25 @@ open class ObjectSetFragment :
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditGridTextCell -> {
-                val fr = ObjectRelationTextValueFragment.new(
+                val fr = RelationTextValueFragment.new(
                     ctx = ctx,
                     relationId = command.relationId,
                     objectId = command.recordId,
-                    flow = ObjectRelationTextValueFragment.FLOW_DATAVIEW
+                    flow = RelationTextValueFragment.FLOW_DATAVIEW
                 )
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditGridDateCell -> {
-                val fr = ObjectRelationDateValueFragment.new(
+                val fr = RelationDateValueFragment.new(
                     ctx = ctx,
                     relationId = command.relationId,
                     objectId = command.objectId,
-                    flow = ObjectRelationDateValueFragment.FLOW_DATAVIEW
+                    flow = RelationDateValueFragment.FLOW_DATAVIEW
                 )
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditRelationCell -> {
-                val fr = ObjectSetObjectRelationValueFragment.new(
+                val fr = RelationValueDVFragment.new(
                     ctx = command.ctx,
                     target = command.target,
                     dataview = command.dataview,
@@ -389,7 +389,7 @@ open class ObjectSetFragment :
         vm.onUpdateViewerFilters(filters)
     }
 
-    override fun onRelationTextValueChanged(
+    override fun onTextValueChanged(
         ctx: String,
         text: String,
         objectId: String,
@@ -401,7 +401,7 @@ open class ObjectSetFragment :
         relationKey = relationId
     )
 
-    override fun onRelationTextNumberValueChanged(
+    override fun onNumberValueChanged(
         ctx: Id,
         number: Number,
         objectId: Id,
@@ -413,7 +413,7 @@ open class ObjectSetFragment :
         relationKey = relationId
     )
 
-    override fun onRelationDateValueChanged(
+    override fun onDateValueChanged(
         ctx: Id,
         timeInSeconds: Number?,
         objectId: Id,

@@ -5,16 +5,16 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.relations.holders.ObjectRelationObjectHolder
-import com.anytypeio.anytype.presentation.sets.ObjectRelationValueViewModel.ObjectRelationValueView
+import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
 
 class RelationObjectValueAdapter(
     private val onObjectClick: (String) -> Unit
 ) :
     RecyclerView.Adapter<ObjectRelationObjectHolder>() {
 
-    private var views = emptyList<ObjectRelationValueView.Object>()
+    private var views = emptyList<RelationValueView.Object>()
 
-    fun update(update: List<ObjectRelationValueView.Object>) {
+    fun update(update: List<RelationValueView.Object>) {
         views = update
         notifyDataSetChanged()
     }

@@ -19,7 +19,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvid
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.ObjectRelationValueViewModel.ObjectRelationValueView
+import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,9 +41,9 @@ abstract class AddObjectRelationValueViewModel(
 
     private val query = MutableStateFlow("")
 
-    protected val views = MutableStateFlow(listOf<ObjectRelationValueView>())
+    protected val views = MutableStateFlow(listOf<RelationValueView>())
 
-    val ui = MutableStateFlow(listOf<ObjectRelationValueView>())
+    val ui = MutableStateFlow(listOf<RelationValueView>())
     val isAddButtonVisible = MutableStateFlow(true)
     val counter = MutableStateFlow(0)
     val isDimissed = MutableStateFlow(false)
@@ -55,15 +55,15 @@ abstract class AddObjectRelationValueViewModel(
                 if (query.isEmpty())
                     all
                 else
-                    mutableListOf<ObjectRelationValueView>().apply {
-                        add(ObjectRelationValueView.Create(query))
+                    mutableListOf<RelationValueView>().apply {
+                        add(RelationValueView.Create(query))
                         addAll(
                             all.filter { view ->
                                 when(view) {
-                                    is ObjectRelationValueView.Status -> {
+                                    is RelationValueView.Status -> {
                                         view.name.contains(query, true)
                                     }
-                                    is ObjectRelationValueView.Tag -> {
+                                    is RelationValueView.Tag -> {
                                         view.name.contains(query, true)
                                     }
                                     else -> true
@@ -100,9 +100,9 @@ abstract class AddObjectRelationValueViewModel(
     private fun buildViews(relation: Relation, record: Map<String, Any?>, relationId: Id) {
         val options = relation.selections
 
-        val result = mutableListOf<ObjectRelationValueView>()
+        val result = mutableListOf<RelationValueView>()
 
-        val items = mutableListOf<ObjectRelationValueView>()
+        val items = mutableListOf<RelationValueView>()
 
         when (relation.format) {
             Relation.Format.TAG -> {
@@ -111,7 +111,7 @@ abstract class AddObjectRelationValueViewModel(
                 options.forEach { option ->
                     if (!keys.contains(option.id)) {
                         items.add(
-                            ObjectRelationValueView.Tag(
+                            RelationValueView.Tag(
                                 id = option.id,
                                 name = option.text,
                                 color = option.color.ifEmpty { null },
@@ -127,7 +127,7 @@ abstract class AddObjectRelationValueViewModel(
                 options.forEach { option ->
                     if (!keys.contains(option.id)) {
                         items.add(
-                            ObjectRelationValueView.Status(
+                            RelationValueView.Status(
                                 id = option.id,
                                 name = option.text,
                                 color = option.color.ifEmpty { null },
@@ -143,7 +143,7 @@ abstract class AddObjectRelationValueViewModel(
                         val detail = details.provide()[id]
                         val objectType = types.provide().find { it.url == detail?.type }
                         items.add(
-                            ObjectRelationValueView.Object(
+                            RelationValueView.Object(
                                 id = id,
                                 name = detail?.name.orEmpty(),
                                 type = objectType?.name,
@@ -160,7 +160,7 @@ abstract class AddObjectRelationValueViewModel(
                     val detail = details.provide()[value]
                     val objectType = types.provide().find { it.url == detail?.type }
                     items.add(
-                        ObjectRelationValueView.Object(
+                        RelationValueView.Object(
                             id = value,
                             name = detail?.name.orEmpty(),
                             type = objectType?.name,
@@ -180,7 +180,7 @@ abstract class AddObjectRelationValueViewModel(
                 value.typeOf<Id>().forEach { id ->
                     val detail = details.provide()[id]
                     items.add(
-                        ObjectRelationValueView.File(
+                        RelationValueView.File(
                             id = id,
                             name = detail?.name.orEmpty(),
                             mime = detail?.fileMimeType.orEmpty(),
@@ -196,7 +196,7 @@ abstract class AddObjectRelationValueViewModel(
         result.addAll(items)
 
         if (result.isEmpty()) {
-            result.add(ObjectRelationValueView.Empty)
+            result.add(RelationValueView.Empty)
         }
 
         views.value = result
@@ -204,9 +204,9 @@ abstract class AddObjectRelationValueViewModel(
 
     fun onFilterInputChanged(input: String) { query.value = input }
 
-    fun onTagClicked(tag: ObjectRelationValueView.Tag) {
+    fun onTagClicked(tag: RelationValueView.Tag) {
         views.value = views.value.map { view ->
-            if (view is ObjectRelationValueView.Tag && view.id == tag.id) {
+            if (view is RelationValueView.Tag && view.id == tag.id) {
                 view.copy(
                     isSelected = if (view.isSelected != null)
                         !view.isSelected
@@ -217,12 +217,12 @@ abstract class AddObjectRelationValueViewModel(
                 view
             }
         }.also { result ->
-            counter.value = result.count { it is ObjectRelationValueView.Selectable && it.isSelected == true }
+            counter.value = result.count { it is RelationValueView.Selectable && it.isSelected == true }
         }
     }
 }
 
-class AddObjectSetObjectRelationValueViewModel(
+class RelationOptionValueDVAddViewModel(
     details: ObjectDetailProvider,
     types: ObjectTypeProvider,
     urlBuilder: UrlBuilder,
@@ -298,7 +298,7 @@ class AddObjectSetObjectRelationValueViewModel(
         viewer: Id,
         relation: Id,
         obj: Id,
-        status: ObjectRelationValueView.Status
+        status: RelationValueView.Status
     ) {
         proceedWithAddingStatusToDataViewRecord(ctx, dataview, viewer, relation, obj, status.id)
     }
@@ -337,7 +337,7 @@ class AddObjectSetObjectRelationValueViewModel(
         viewer: Id
     ) {
         val tags = views.value.mapNotNull { view ->
-            if (view is ObjectRelationValueView.Tag && view.isSelected == true)
+            if (view is RelationValueView.Tag && view.isSelected == true)
                 view.id
             else
                 null
@@ -392,7 +392,7 @@ class AddObjectSetObjectRelationValueViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return AddObjectSetObjectRelationValueViewModel(
+            return RelationOptionValueDVAddViewModel(
                 details = details,
                 values = values,
                 relations = relations,
@@ -407,7 +407,7 @@ class AddObjectSetObjectRelationValueViewModel(
     }
 }
 
-class AddObjectObjectRelationValueViewModel(
+class RelationOptionValueAddViewModel(
     details: ObjectDetailProvider,
     types: ObjectTypeProvider,
     urlBuilder: UrlBuilder,
@@ -427,7 +427,7 @@ class AddObjectObjectRelationValueViewModel(
     fun onAddObjectStatusClicked(
         ctx: Id,
         relation: Id,
-        status: ObjectRelationValueView.Status
+        status: RelationValueView.Status
     ) = proceedWithAddingStatusToObject(
         ctx = ctx,
         relation = relation,
@@ -459,7 +459,7 @@ class AddObjectObjectRelationValueViewModel(
         relation: Id
     ) {
         val tags = views.value.mapNotNull { view ->
-            if (view is ObjectRelationValueView.Tag && view.isSelected == true)
+            if (view is RelationValueView.Tag && view.isSelected == true)
                 view.id
             else
                 null
@@ -558,7 +558,7 @@ class AddObjectObjectRelationValueViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return AddObjectObjectRelationValueViewModel(
+            return RelationOptionValueAddViewModel(
                 details = details,
                 values = values,
                 relations = relations,

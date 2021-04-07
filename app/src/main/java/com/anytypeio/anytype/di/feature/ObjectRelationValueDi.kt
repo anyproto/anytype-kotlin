@@ -10,11 +10,11 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvid
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.ObjectObjectRelationValueViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectSetObjectRelationValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.database.modals.ObjectObjectRelationValueFragment
-import com.anytypeio.anytype.ui.database.modals.ObjectSetObjectRelationValueFragment
+import com.anytypeio.anytype.ui.database.modals.RelationValueFragment
+import com.anytypeio.anytype.ui.database.modals.RelationValueDVFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -28,7 +28,7 @@ interface ObjectSetObjectRelationValueSubComponent {
         fun build(): ObjectSetObjectRelationValueSubComponent
     }
 
-    fun inject(fragment: ObjectSetObjectRelationValueFragment)
+    fun inject(fragment: RelationValueDVFragment)
 
     fun addObjectRelationValueComponent(): AddObjectRelationValueSubComponent.Builder
     fun addObjectRelationObjectValueComponent(): AddObjectRelationObjectValueSubComponent.Builder
@@ -44,7 +44,7 @@ interface ObjectObjectRelationValueSubComponent {
         fun build(): ObjectObjectRelationValueSubComponent
     }
 
-    fun inject(fragment: ObjectObjectRelationValueFragment)
+    fun inject(fragment: RelationValueFragment)
 
     fun addObjectRelationValueComponent(): AddObjectRelationValueSubComponent.Builder
     fun addObjectRelationObjectValueComponent(): AddObjectRelationObjectValueSubComponent.Builder
@@ -98,7 +98,7 @@ object ObjectSetObjectRelationValueModule {
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,
         updateDataViewRecord: UpdateDataViewRecord
-    ): ObjectSetObjectRelationValueViewModel.Factory = ObjectSetObjectRelationValueViewModel.Factory(
+    ): RelationValueDVViewModel.Factory = RelationValueDVViewModel.Factory(
         relations = relations,
         values = values,
         details = details,
@@ -124,7 +124,7 @@ object ObjectObjectRelationValueModule {
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,
         updateDetail: UpdateDetail,
-    ): ObjectObjectRelationValueViewModel.Factory = ObjectObjectRelationValueViewModel.Factory(
+    ): RelationValueViewModel.Factory = RelationValueViewModel.Factory(
         relations = relations,
         values = values,
         details = details,

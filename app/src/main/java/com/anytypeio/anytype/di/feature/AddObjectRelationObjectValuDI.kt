@@ -4,10 +4,10 @@ import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.relations.AddObjectRelationObjectValueViewModel
+import com.anytypeio.anytype.presentation.relations.RelationObjectValueAddViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.ui.relations.AddObjectRelationObjectValueFragment
+import com.anytypeio.anytype.ui.relations.RelationObjectValueAddFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -22,7 +22,7 @@ interface AddObjectRelationObjectValueSubComponent {
         fun build(): AddObjectRelationObjectValueSubComponent
     }
 
-    fun inject(fragment: AddObjectRelationObjectValueFragment)
+    fun inject(fragment: RelationObjectValueAddFragment)
 }
 
 @Module
@@ -36,8 +36,8 @@ object AddObjectRelationObjectValueModule {
         values: ObjectValueProvider,
         searchObjects: SearchObjects,
         urlBuilder: UrlBuilder
-    ): AddObjectRelationObjectValueViewModel.Factory =
-        AddObjectRelationObjectValueViewModel.Factory(
+    ): RelationObjectValueAddViewModel.Factory =
+        RelationObjectValueAddViewModel.Factory(
             relations, values, searchObjects, urlBuilder
         )
 

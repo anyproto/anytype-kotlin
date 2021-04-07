@@ -3,10 +3,10 @@ package com.anytypeio.anytype.di.feature;
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.ObjectRelationDateValueViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectRelationTextValueViewModel
-import com.anytypeio.anytype.ui.relations.ObjectRelationDateValueFragment
-import com.anytypeio.anytype.ui.relations.ObjectRelationTextValueFragment
+import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
+import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
+import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -21,7 +21,7 @@ interface EditGridCellSubComponent {
         fun build(): EditGridCellSubComponent
     }
 
-    fun inject(fragment: ObjectRelationTextValueFragment)
+    fun inject(fragment: RelationTextValueFragment)
 }
 
 @Module
@@ -32,7 +32,7 @@ object EditGridCellModule {
     fun provideEditGridCellViewModelFactory(
         relations: ObjectRelationProvider,
         values: ObjectValueProvider
-    ) = ObjectRelationTextValueViewModel.Factory(relations, values)
+    ) = RelationTextValueViewModel.Factory(relations, values)
 }
 
 @Subcomponent(modules = [EditGridCellDateModule::class])
@@ -45,7 +45,7 @@ interface EditGridCellDateSubComponent {
         fun build(): EditGridCellDateSubComponent
     }
 
-    fun inject(fragment: ObjectRelationDateValueFragment)
+    fun inject(fragment: RelationDateValueFragment)
 }
 
 @Module
@@ -57,5 +57,5 @@ object EditGridCellDateModule {
     fun provideEditGridCellViewModelFactory(
         relations: ObjectRelationProvider,
         values: ObjectValueProvider
-    ) = ObjectRelationDateValueViewModel.Factory(relations, values)
+    ) = RelationDateValueViewModel.Factory(relations, values)
 }

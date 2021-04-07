@@ -24,10 +24,10 @@ import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValu
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
-import com.anytypeio.anytype.presentation.sets.ObjectSetObjectRelationValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.database.modals.ObjectRelationValueFragment
+import com.anytypeio.anytype.ui.database.modals.RelationValueBaseFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.utils.WithTextColor
@@ -83,7 +83,7 @@ class DisplayRelationTagValueTest {
         updateDataViewRecord = UpdateDataViewRecord(repo)
         updateDetail = UpdateDetail(repo)
         urlBuilder = UrlBuilder(gateway)
-        TestObjectSetObjectRelationValueFragment.testVmFactory = ObjectSetObjectRelationValueViewModel.Factory(
+        TestRelationValueDVFragment.testVmFactory = RelationValueDVViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
             values = DataViewObjectValueProvider(state, session),
             details = object: ObjectDetailProvider {
@@ -153,9 +153,9 @@ class DisplayRelationTagValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationValueFragment.CTX_KEY to root,
-                ObjectRelationValueFragment.RELATION_KEY to relation,
-                ObjectRelationValueFragment.TARGET_KEY to target
+                RelationValueBaseFragment.CTX_KEY to root,
+                RelationValueBaseFragment.RELATION_KEY to relation,
+                RelationValueBaseFragment.TARGET_KEY to target
             )
         )
 
@@ -226,9 +226,9 @@ class DisplayRelationTagValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationValueFragment.CTX_KEY to root,
-                ObjectRelationValueFragment.RELATION_KEY to relation,
-                ObjectRelationValueFragment.TARGET_KEY to target
+                RelationValueBaseFragment.CTX_KEY to root,
+                RelationValueBaseFragment.RELATION_KEY to relation,
+                RelationValueBaseFragment.TARGET_KEY to target
             )
         )
 
@@ -319,9 +319,9 @@ class DisplayRelationTagValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationValueFragment.CTX_KEY to root,
-                ObjectRelationValueFragment.RELATION_KEY to relationKey,
-                ObjectRelationValueFragment.TARGET_KEY to target
+                RelationValueBaseFragment.CTX_KEY to root,
+                RelationValueBaseFragment.RELATION_KEY to relationKey,
+                RelationValueBaseFragment.TARGET_KEY to target
             )
         )
 
@@ -407,9 +407,9 @@ class DisplayRelationTagValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationValueFragment.CTX_KEY to root,
-                ObjectRelationValueFragment.RELATION_KEY to relationKey,
-                ObjectRelationValueFragment.TARGET_KEY to target
+                RelationValueBaseFragment.CTX_KEY to root,
+                RelationValueBaseFragment.RELATION_KEY to relationKey,
+                RelationValueBaseFragment.TARGET_KEY to target
             )
         )
 
@@ -496,9 +496,9 @@ class DisplayRelationTagValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationValueFragment.CTX_KEY to root,
-                ObjectRelationValueFragment.RELATION_KEY to relationKey,
-                ObjectRelationValueFragment.TARGET_KEY to target
+                RelationValueBaseFragment.CTX_KEY to root,
+                RelationValueBaseFragment.RELATION_KEY to relationKey,
+                RelationValueBaseFragment.TARGET_KEY to target
             )
         )
 
@@ -509,8 +509,8 @@ class DisplayRelationTagValueTest {
         }
     }
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestObjectSetObjectRelationValueFragment> {
-        return launchFragmentInContainer<TestObjectSetObjectRelationValueFragment>(
+    private fun launchFragment(args: Bundle): FragmentScenario<TestRelationValueDVFragment> {
+        return launchFragmentInContainer<TestRelationValueDVFragment>(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

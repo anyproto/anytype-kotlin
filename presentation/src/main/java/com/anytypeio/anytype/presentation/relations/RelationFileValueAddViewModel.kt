@@ -9,7 +9,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.ObjectRelationValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -22,13 +22,13 @@ class RelationFileValueAddViewModel(
 ) : ViewModel() {
 
     private val _views =
-        MutableStateFlow<List<ObjectRelationValueViewModel.ObjectRelationValueView.File>>(listOf())
+        MutableStateFlow<List<RelationValueBaseViewModel.RelationValueView.File>>(listOf())
     private val _filter = MutableStateFlow("")
     private var _selected = MutableStateFlow<List<Id>>(listOf())
-    private val _viewsFiltered = MutableStateFlow(AddFileValueView())
+    private val _viewsFiltered = MutableStateFlow(FileValueAddView())
 
-    val commands = MutableSharedFlow<AddFileValueCommand>(0)
-    val viewsFiltered: StateFlow<AddFileValueView> = _viewsFiltered
+    val commands = MutableSharedFlow<FileValueAddCommand>(0)
+    val viewsFiltered: StateFlow<FileValueAddView> = _viewsFiltered
 
     fun onStart(relationId: Id, objectId: String) {
         processingViewsSelectionsAndFilter()
@@ -79,7 +79,7 @@ class RelationFileValueAddViewModel(
                     }
             }.collect { files ->
                 val size = files.filter { it.isSelected == true }.size
-                _viewsFiltered.value = AddFileValueView(
+                _viewsFiltered.value = FileValueAddView(
                     files = files,
                     count = size.toString()
                 )
@@ -89,7 +89,7 @@ class RelationFileValueAddViewModel(
 
     fun onActionButtonClicked() {
         viewModelScope.launch {
-            commands.emit(AddFileValueCommand.DispatchResult(ids = _selected.value))
+            commands.emit(FileValueAddCommand.DispatchResult(ids = _selected.value))
         }
     }
 
@@ -145,7 +145,7 @@ class RelationFileValueAddViewModel(
                         val ext = record[ObjectSetConfig.FILE_EXT_KEY] as String?
                         val mime = record[ObjectSetConfig.FILE_MIME_KEY] as String?
                         if (id !in ids) {
-                            ObjectRelationValueViewModel.ObjectRelationValueView.File(
+                            RelationValueBaseViewModel.RelationValueView.File(
                                 id = id,
                                 ext = ext.orEmpty(),
                                 mime = mime.orEmpty(),
@@ -181,11 +181,11 @@ class RelationFileValueAddViewModel(
 
 }
 
-data class AddFileValueView(
-    val files: List<ObjectRelationValueViewModel.ObjectRelationValueView.File> = emptyList(),
+data class FileValueAddView(
+    val files: List<RelationValueBaseViewModel.RelationValueView.File> = emptyList(),
     val count: String? = null
 )
 
-sealed class AddFileValueCommand {
-    data class DispatchResult(val ids: List<Id>) : AddFileValueCommand()
+sealed class FileValueAddCommand {
+    data class DispatchResult(val ids: List<Id>) : FileValueAddCommand()
 }

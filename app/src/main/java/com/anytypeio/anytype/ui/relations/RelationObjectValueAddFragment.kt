@@ -18,17 +18,17 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.relations.AddObjectRelationObjectValueViewModel
-import com.anytypeio.anytype.presentation.relations.AddObjectValueCommand
-import com.anytypeio.anytype.presentation.relations.AddObjectValueView
+import com.anytypeio.anytype.presentation.relations.RelationObjectValueAddViewModel
+import com.anytypeio.anytype.presentation.relations.ObjectValueAddCommand
+import com.anytypeio.anytype.presentation.relations.ObjectValueAddView
 import kotlinx.android.synthetic.main.fragment_relation_value_object_add.*
 import javax.inject.Inject
 
-class AddObjectRelationObjectValueFragment : BaseBottomSheetFragment() {
+class RelationObjectValueAddFragment : BaseBottomSheetFragment() {
 
     @Inject
-    lateinit var factory: AddObjectRelationObjectValueViewModel.Factory
-    val vm: AddObjectRelationObjectValueViewModel by viewModels { factory }
+    lateinit var factory: RelationObjectValueAddViewModel.Factory
+    val vm: RelationObjectValueAddViewModel by viewModels { factory }
 
     private val ctx get() = argString(CONTEXT_ID)
     private val objectId get() = argString(OBJECT_ID)
@@ -68,22 +68,22 @@ class AddObjectRelationObjectValueFragment : BaseBottomSheetFragment() {
         vm.onStart(objectId = objectId, relationId = relationId)
     }
 
-    private fun observeState(state: AddObjectValueView) {
+    private fun observeState(state: ObjectValueAddView) {
         adapter.update(state.objects)
         tvObjectsCount.text = state.count
     }
 
-    private fun observeCommands(command: AddObjectValueCommand) {
+    private fun observeCommands(command: ObjectValueAddCommand) {
         when (command) {
-            is AddObjectValueCommand.DispatchResult -> {
+            is ObjectValueAddCommand.DispatchResult -> {
                 dispatchResultAndDismiss(command.ids)
             }
         }
     }
 
     private fun dispatchResultAndDismiss(ids: List<Id>) {
-        withParent<AddObjectRelationObjectValueReceiver> {
-            onRelationObjectValueChanged(
+        withParent<ObjectValueAddReceiver> {
+            onObjectValueChanged(
                 ctx = ctx,
                 objectId = objectId,
                 relationId = relationId,
@@ -120,7 +120,7 @@ class AddObjectRelationObjectValueFragment : BaseBottomSheetFragment() {
             objectId: Id,
             relationId: Id,
             flow: Int = FLOW_DEFAULT
-        ) = AddObjectRelationObjectValueFragment().apply {
+        ) = RelationObjectValueAddFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 OBJECT_ID to objectId,
@@ -137,8 +137,8 @@ class AddObjectRelationObjectValueFragment : BaseBottomSheetFragment() {
         const val FLOW_DATAVIEW = 1
     }
 
-    interface AddObjectRelationObjectValueReceiver {
-        fun onRelationObjectValueChanged(
+    interface ObjectValueAddReceiver {
+        fun onObjectValueChanged(
             ctx: Id,
             objectId: Id,
             relationId: Id,

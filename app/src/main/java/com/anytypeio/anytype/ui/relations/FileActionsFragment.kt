@@ -10,7 +10,7 @@ import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
 import kotlinx.android.synthetic.main.fragment_relation_file_value_action.*
 
-class RelationFileValueActionsFragment : BaseDialogFragment() {
+class FileActionsFragment : BaseDialogFragment() {
 
     override fun injectDependencies() {}
     override fun releaseDependencies() {}
@@ -24,15 +24,15 @@ class RelationFileValueActionsFragment : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         btnAdd.setOnClickListener {
-            withParent<RelationFileValueActionReceiver> { onFileValueActionAdd() }
+            withParent<FileActionReceiver> { onFileValueActionAdd() }
             dismiss()
         }
         btnUploadFromGallery.setOnClickListener {
-            withParent<RelationFileValueActionReceiver> { onFileValueActionUploadFromGallery() }
+            withParent<FileActionReceiver> { onFileValueActionUploadFromGallery() }
             dismiss()
         }
         btnUploadFromStorage.setOnClickListener {
-            withParent<RelationFileValueActionReceiver> { onFileValueActionUploadFromStorage() }
+            withParent<FileActionReceiver> { onFileValueActionUploadFromStorage() }
             dismiss()
         }
     }
@@ -51,7 +51,7 @@ class RelationFileValueActionsFragment : BaseDialogFragment() {
         }
     }
 
-    interface RelationFileValueActionReceiver {
+    interface FileActionReceiver {
         fun onFileValueActionAdd()
         fun onFileValueActionUploadFromGallery()
         fun onFileValueActionUploadFromStorage()

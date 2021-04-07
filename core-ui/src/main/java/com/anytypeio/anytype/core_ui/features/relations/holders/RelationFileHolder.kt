@@ -4,12 +4,12 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.sets.ObjectRelationValueViewModel.ObjectRelationValueView
+import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
 import kotlinx.android.synthetic.main.item_edit_cell_file.view.*
 
 class RelationFileHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    fun bind(item: ObjectRelationValueView.File) = with(itemView) {
+    fun bind(item: RelationValueView.File) = with(itemView) {
         tvTitle.text = "${item.name}.${item.ext}"
         iconMime.setImageResource(item.mime.getMimeIcon())
         fileSelectionIndex.visible()

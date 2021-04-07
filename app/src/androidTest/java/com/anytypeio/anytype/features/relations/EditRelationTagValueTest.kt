@@ -21,10 +21,10 @@ import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValu
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
-import com.anytypeio.anytype.presentation.sets.ObjectSetObjectRelationValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.database.modals.ObjectRelationValueFragment
+import com.anytypeio.anytype.ui.database.modals.RelationValueBaseFragment
 import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import com.nhaarman.mockitokotlin2.times
@@ -78,7 +78,7 @@ class EditRelationTagValueTest {
         updateDataViewRecord = UpdateDataViewRecord(repo)
         updateDetail = UpdateDetail(repo)
         urlBuilder = UrlBuilder(gateway)
-        TestObjectSetObjectRelationValueFragment.testVmFactory = ObjectSetObjectRelationValueViewModel.Factory(
+        TestRelationValueDVFragment.testVmFactory = RelationValueDVViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
             values = DataViewObjectValueProvider(state, session),
             details = object : ObjectDetailProvider {
@@ -175,9 +175,9 @@ class EditRelationTagValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationValueFragment.CTX_KEY to ctx,
-                ObjectRelationValueFragment.RELATION_KEY to relationKey,
-                ObjectRelationValueFragment.TARGET_KEY to target
+                RelationValueBaseFragment.CTX_KEY to ctx,
+                RelationValueBaseFragment.RELATION_KEY to relationKey,
+                RelationValueBaseFragment.TARGET_KEY to target
             )
         )
 
@@ -292,11 +292,11 @@ class EditRelationTagValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationValueFragment.CTX_KEY to ctx,
-                ObjectRelationValueFragment.DATAVIEW_KEY to dv.id,
-                ObjectRelationValueFragment.VIEWER_KEY to viewer.id,
-                ObjectRelationValueFragment.RELATION_KEY to relationKey,
-                ObjectRelationValueFragment.TARGET_KEY to target
+                RelationValueBaseFragment.CTX_KEY to ctx,
+                RelationValueBaseFragment.DATAVIEW_KEY to dv.id,
+                RelationValueBaseFragment.VIEWER_KEY to viewer.id,
+                RelationValueBaseFragment.RELATION_KEY to relationKey,
+                RelationValueBaseFragment.TARGET_KEY to target
             )
         )
 
@@ -319,8 +319,8 @@ class EditRelationTagValueTest {
         }
     }
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestObjectSetObjectRelationValueFragment> {
-        return launchFragmentInContainer<TestObjectSetObjectRelationValueFragment>(
+    private fun launchFragment(args: Bundle): FragmentScenario<TestRelationValueDVFragment> {
+        return launchFragmentInContainer<TestRelationValueDVFragment>(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

@@ -9,25 +9,25 @@ import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.ObjectRelationValueViewModel.ObjectRelationValueView
+import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class AddObjectRelationObjectValueViewModel(
+class RelationObjectValueAddViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder
 ) : ViewModel() {
 
-    private val _views = MutableStateFlow<List<ObjectRelationValueView.Object>>(listOf())
+    private val _views = MutableStateFlow<List<RelationValueView.Object>>(listOf())
     private val _filter = MutableStateFlow("")
     private var _selected = MutableStateFlow<List<Id>>(listOf())
-    private val _viewsFiltered = MutableStateFlow(AddObjectValueView())
+    private val _viewsFiltered = MutableStateFlow(ObjectValueAddView())
 
-    val commands = MutableSharedFlow<AddObjectValueCommand>(0)
-    val viewsFiltered: StateFlow<AddObjectValueView> = _viewsFiltered
+    val commands = MutableSharedFlow<ObjectValueAddCommand>(0)
+    val viewsFiltered: StateFlow<ObjectValueAddView> = _viewsFiltered
 
     fun onStart(relationId: Id, objectId: String) {
         processingViewsSelectionsAndFilter()
@@ -78,7 +78,7 @@ class AddObjectRelationObjectValueViewModel(
                     }
             }.collect { objects ->
                 val size = objects.filter { it.isSelected == true }.size
-                _viewsFiltered.value = AddObjectValueView(
+                _viewsFiltered.value = ObjectValueAddView(
                     objects = objects,
                     count = size.toString()
                 )
@@ -88,7 +88,7 @@ class AddObjectRelationObjectValueViewModel(
 
     fun onActionButtonClicked() {
         viewModelScope.launch {
-            commands.emit(AddObjectValueCommand.DispatchResult(ids = _selected.value))
+            commands.emit(ObjectValueAddCommand.DispatchResult(ids = _selected.value))
         }
     }
 
@@ -145,7 +145,7 @@ class AddObjectRelationObjectValueViewModel(
                         val image = record[ObjectSetConfig.IMAGE_KEY] as String?
                         val layout = record[ObjectSetConfig.LAYOUT_KEY] as? ObjectType.Layout
                         if (id !in ids) {
-                            ObjectRelationValueView.Object(
+                            RelationValueView.Object(
                                 id = id,
                                 type = type?.substringAfterLast(
                                     delimiter = "/",
@@ -175,7 +175,7 @@ class AddObjectRelationObjectValueViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return AddObjectRelationObjectValueViewModel(
+            return RelationObjectValueAddViewModel(
                 relations = relations,
                 values = values,
                 searchObjects = searchObjects,
@@ -185,11 +185,11 @@ class AddObjectRelationObjectValueViewModel(
     }
 }
 
-data class AddObjectValueView(
-    val objects: List<ObjectRelationValueView.Object> = emptyList(),
+data class ObjectValueAddView(
+    val objects: List<RelationValueView.Object> = emptyList(),
     val count: String? = null
 )
 
-sealed class AddObjectValueCommand {
-    data class DispatchResult(val ids: List<Id>) : AddObjectValueCommand()
+sealed class ObjectValueAddCommand {
+    data class DispatchResult(val ids: List<Id>) : ObjectValueAddCommand()
 }

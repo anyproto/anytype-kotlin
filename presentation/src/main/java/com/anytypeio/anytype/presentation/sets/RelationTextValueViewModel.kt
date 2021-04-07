@@ -8,12 +8,12 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class ObjectRelationTextValueViewModel(
+class RelationTextValueViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider
 ) : ViewModel() {
 
-    val views = MutableStateFlow<List<ObjectRelationTextValueView>>(emptyList())
+    val views = MutableStateFlow<List<RelationTextValueView>>(emptyList())
     val title = MutableStateFlow("")
 
     fun onStart(relationId: Id, recordId: String) {
@@ -22,9 +22,9 @@ class ObjectRelationTextValueViewModel(
         title.value = relation.name
         views.value = listOf(
             when (relation.format) {
-                Relation.Format.SHORT_TEXT -> ObjectRelationTextValueView.Text(value = values[relationId] as? String)
-                Relation.Format.LONG_TEXT -> ObjectRelationTextValueView.Text(value = values[relationId] as? String)
-                Relation.Format.NUMBER -> ObjectRelationTextValueView.Number(
+                Relation.Format.SHORT_TEXT -> RelationTextValueView.Text(value = values[relationId] as? String)
+                Relation.Format.LONG_TEXT -> RelationTextValueView.Text(value = values[relationId] as? String)
+                Relation.Format.NUMBER -> RelationTextValueView.Number(
                     value = values[relationId]?.let { value ->
                         when (value) {
                             is String -> value.toIntOrNull().toString()
@@ -33,9 +33,9 @@ class ObjectRelationTextValueViewModel(
                         }
                     }
                 )
-                Relation.Format.URL -> ObjectRelationTextValueView.Url(value = values[relationId] as? String)
-                Relation.Format.EMAIL -> ObjectRelationTextValueView.Email(value = values[relationId] as? String)
-                Relation.Format.PHONE -> ObjectRelationTextValueView.Phone(value = values[relationId] as? String)
+                Relation.Format.URL -> RelationTextValueView.Url(value = values[relationId] as? String)
+                Relation.Format.EMAIL -> RelationTextValueView.Email(value = values[relationId] as? String)
+                Relation.Format.PHONE -> RelationTextValueView.Phone(value = values[relationId] as? String)
                 else -> throw  IllegalArgumentException("Wrong format:${relation.format}")
             }
         )
@@ -47,17 +47,17 @@ class ObjectRelationTextValueViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return ObjectRelationTextValueViewModel(relations, values) as T
+            return RelationTextValueViewModel(relations, values) as T
         }
     }
 }
 
-sealed class ObjectRelationTextValueView {
-    data class Text(val value: String?) : ObjectRelationTextValueView()
-    data class Phone(val value: String?) : ObjectRelationTextValueView()
-    data class Url(val value: String?) : ObjectRelationTextValueView()
-    data class Email(val value: String?) : ObjectRelationTextValueView()
-    data class Number(val value: String?) : ObjectRelationTextValueView()
+sealed class RelationTextValueView {
+    data class Text(val value: String?) : RelationTextValueView()
+    data class Phone(val value: String?) : RelationTextValueView()
+    data class Url(val value: String?) : RelationTextValueView()
+    data class Email(val value: String?) : RelationTextValueView()
+    data class Number(val value: String?) : RelationTextValueView()
 }
 
 sealed class EditGridCellAction {

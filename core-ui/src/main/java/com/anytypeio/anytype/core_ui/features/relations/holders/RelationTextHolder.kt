@@ -6,12 +6,12 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.sets.EditGridCellAction
-import com.anytypeio.anytype.presentation.sets.ObjectRelationTextValueView
+import com.anytypeio.anytype.presentation.sets.RelationTextValueView
 import kotlinx.android.synthetic.main.item_object_relation_text.view.*
 
-class ObjectRelationTextHolder(view: View) : ObjectRelationBaseHolder(view) {
+class RelationTextHolder(view: View) : RelationBaseHolder(view) {
 
-    fun bind(view: ObjectRelationTextValueView.Text) = with(itemView) {
+    fun bind(view: RelationTextValueView.Text) = with(itemView) {
         textInputField.setText(view.value)
         if (view.value.isNullOrEmpty()) {
             textInputField.requestFocus()
@@ -23,9 +23,9 @@ class ObjectRelationTextHolder(view: View) : ObjectRelationBaseHolder(view) {
     }
 }
 
-class ObjectRelationPhoneHolder(view: View) : ObjectRelationBaseHolder(view) {
+class RelationPhoneHolder(view: View) : RelationBaseHolder(view) {
 
-    fun bind(view: ObjectRelationTextValueView.Phone, actionClick: (EditGridCellAction) -> Unit) =
+    fun bind(view: RelationTextValueView.Phone, actionClick: (EditGridCellAction) -> Unit) =
         with(itemView) {
             textInputField.setText(view.value)
             if (view.value.isNullOrEmpty()) {
@@ -41,9 +41,9 @@ class ObjectRelationPhoneHolder(view: View) : ObjectRelationBaseHolder(view) {
         }
 }
 
-class ObjectRelationEmailHolder(view: View) : ObjectRelationBaseHolder(view) {
+class RelationEmailHolder(view: View) : RelationBaseHolder(view) {
 
-    fun bind(view: ObjectRelationTextValueView.Email, actionClick: (EditGridCellAction) -> Unit) =
+    fun bind(view: RelationTextValueView.Email, actionClick: (EditGridCellAction) -> Unit) =
         with(itemView) {
             textInputField.setText(view.value)
             if (view.value.isNullOrEmpty()) {
@@ -59,9 +59,9 @@ class ObjectRelationEmailHolder(view: View) : ObjectRelationBaseHolder(view) {
         }
 }
 
-class ObjectRelationUrlHolder(view: View) : ObjectRelationBaseHolder(view) {
+class RelationUrlHolder(view: View) : RelationBaseHolder(view) {
 
-    fun bind(view: ObjectRelationTextValueView.Url, actionClick: (EditGridCellAction) -> Unit) =
+    fun bind(view: RelationTextValueView.Url, actionClick: (EditGridCellAction) -> Unit) =
         with(itemView) {
             textInputField.setText(view.value)
             if (view.value.isNullOrEmpty()) {
@@ -77,9 +77,9 @@ class ObjectRelationUrlHolder(view: View) : ObjectRelationBaseHolder(view) {
         }
 }
 
-class ObjectRelationNumberHolder(view: View) : ObjectRelationBaseHolder(view) {
+class RelationNumberHolder(view: View) : RelationBaseHolder(view) {
 
-    fun bind(view: ObjectRelationTextValueView.Number) = with(itemView) {
+    fun bind(view: RelationTextValueView.Number) = with(itemView) {
         textInputField.setText(view.value)
         if (view.value.isNullOrEmpty()) {
             textInputField.requestFocus()

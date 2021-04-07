@@ -5,16 +5,16 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.relations.holders.RelationFileHolder
-import com.anytypeio.anytype.presentation.sets.ObjectRelationValueViewModel.ObjectRelationValueView
+import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
 
 class RelationFileValueAdapter(
     private val onFileClick: (String) -> Unit
 ) :
     RecyclerView.Adapter<RelationFileHolder>() {
 
-    private var views = emptyList<ObjectRelationValueView.File>()
+    private var views = emptyList<RelationValueView.File>()
 
-    fun update(update: List<ObjectRelationValueView.File>) {
+    fun update(update: List<RelationValueView.File>) {
         views = update
         notifyDataSetChanged()
     }

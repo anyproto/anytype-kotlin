@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.features.relations
 
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
-import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
+import com.anytypeio.anytype.ui.relations.RelationListFragment
 
-class TestObjectRelationListFragment : ObjectRelationListFragment() {
+class TestRelationListFragment : RelationListFragment() {
     override fun injectDependencies() {
         factory = testVmFactory
     }

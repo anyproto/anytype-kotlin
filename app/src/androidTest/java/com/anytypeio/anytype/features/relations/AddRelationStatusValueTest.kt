@@ -19,7 +19,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
-import com.anytypeio.anytype.presentation.relations.AddObjectSetObjectRelationValueViewModel
+import com.anytypeio.anytype.presentation.relations.RelationOptionValueDVAddViewModel
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
@@ -28,7 +28,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.relations.AddObjectRelationValueFragment
+import com.anytypeio.anytype.ui.relations.RelationOptionValueBaseAddFragment
 import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import com.nhaarman.mockitokotlin2.*
@@ -81,7 +81,7 @@ class AddRelationStatusValueTest {
         removeTagFromDataViewRecord = RemoveTagFromDataViewRecord(repo)
         updateDetail = UpdateDetail(repo)
         urlBuilder = UrlBuilder(gateway)
-        TestAddObjectSetObjectRelationValueFragment.testVmFactory = AddObjectSetObjectRelationValueViewModel.Factory(
+        TestRelationOptionValueDVAddFragment.testVmFactory = RelationOptionValueDVAddViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
             values = DataViewObjectValueProvider(state, session),
             details = object : ObjectDetailProvider {
@@ -175,11 +175,11 @@ class AddRelationStatusValueTest {
 
         launchFragment(
             bundleOf(
-                AddObjectRelationValueFragment.CTX_KEY to ctx,
-                AddObjectRelationValueFragment.RELATION_KEY to relation.key,
-                AddObjectRelationValueFragment.DATAVIEW_KEY to dv.id,
-                AddObjectRelationValueFragment.VIEWER_KEY to viewer.id,
-                AddObjectRelationValueFragment.TARGET_KEY to obj
+                RelationOptionValueBaseAddFragment.CTX_KEY to ctx,
+                RelationOptionValueBaseAddFragment.RELATION_KEY to relation.key,
+                RelationOptionValueBaseAddFragment.DATAVIEW_KEY to dv.id,
+                RelationOptionValueBaseAddFragment.VIEWER_KEY to viewer.id,
+                RelationOptionValueBaseAddFragment.TARGET_KEY to obj
             )
         )
 
@@ -286,11 +286,11 @@ class AddRelationStatusValueTest {
 
         launchFragment(
             bundleOf(
-                AddObjectRelationValueFragment.CTX_KEY to ctx,
-                AddObjectRelationValueFragment.RELATION_KEY to relation.key,
-                AddObjectRelationValueFragment.DATAVIEW_KEY to dv.id,
-                AddObjectRelationValueFragment.VIEWER_KEY to viewer.id,
-                AddObjectRelationValueFragment.TARGET_KEY to obj
+                RelationOptionValueBaseAddFragment.CTX_KEY to ctx,
+                RelationOptionValueBaseAddFragment.RELATION_KEY to relation.key,
+                RelationOptionValueBaseAddFragment.DATAVIEW_KEY to dv.id,
+                RelationOptionValueBaseAddFragment.VIEWER_KEY to viewer.id,
+                RelationOptionValueBaseAddFragment.TARGET_KEY to obj
             )
         )
 
@@ -377,11 +377,11 @@ class AddRelationStatusValueTest {
 
         launchFragment(
             bundleOf(
-                AddObjectRelationValueFragment.CTX_KEY to ctx,
-                AddObjectRelationValueFragment.RELATION_KEY to relation.key,
-                AddObjectRelationValueFragment.DATAVIEW_KEY to dv.id,
-                AddObjectRelationValueFragment.VIEWER_KEY to viewer.id,
-                AddObjectRelationValueFragment.TARGET_KEY to target
+                RelationOptionValueBaseAddFragment.CTX_KEY to ctx,
+                RelationOptionValueBaseAddFragment.RELATION_KEY to relation.key,
+                RelationOptionValueBaseAddFragment.DATAVIEW_KEY to dv.id,
+                RelationOptionValueBaseAddFragment.VIEWER_KEY to viewer.id,
+                RelationOptionValueBaseAddFragment.TARGET_KEY to target
             )
         )
 
@@ -469,11 +469,11 @@ class AddRelationStatusValueTest {
 
         launchFragment(
             bundleOf(
-                AddObjectRelationValueFragment.CTX_KEY to ctx,
-                AddObjectRelationValueFragment.RELATION_KEY to relation.key,
-                AddObjectRelationValueFragment.DATAVIEW_KEY to dv.id,
-                AddObjectRelationValueFragment.VIEWER_KEY to viewer.id,
-                AddObjectRelationValueFragment.TARGET_KEY to target
+                RelationOptionValueBaseAddFragment.CTX_KEY to ctx,
+                RelationOptionValueBaseAddFragment.RELATION_KEY to relation.key,
+                RelationOptionValueBaseAddFragment.DATAVIEW_KEY to dv.id,
+                RelationOptionValueBaseAddFragment.VIEWER_KEY to viewer.id,
+                RelationOptionValueBaseAddFragment.TARGET_KEY to target
             )
         )
 
@@ -570,11 +570,11 @@ class AddRelationStatusValueTest {
 
         launchFragment(
             bundleOf(
-                AddObjectRelationValueFragment.CTX_KEY to ctx,
-                AddObjectRelationValueFragment.RELATION_KEY to relation.key,
-                AddObjectRelationValueFragment.DATAVIEW_KEY to dv.id,
-                AddObjectRelationValueFragment.VIEWER_KEY to viewer.id,
-                AddObjectRelationValueFragment.TARGET_KEY to target
+                RelationOptionValueBaseAddFragment.CTX_KEY to ctx,
+                RelationOptionValueBaseAddFragment.RELATION_KEY to relation.key,
+                RelationOptionValueBaseAddFragment.DATAVIEW_KEY to dv.id,
+                RelationOptionValueBaseAddFragment.VIEWER_KEY to viewer.id,
+                RelationOptionValueBaseAddFragment.TARGET_KEY to target
             )
         )
 
@@ -598,8 +598,8 @@ class AddRelationStatusValueTest {
         }
     }
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestAddObjectSetObjectRelationValueFragment> {
-        return launchFragmentInContainer<TestAddObjectSetObjectRelationValueFragment>(
+    private fun launchFragment(args: Bundle): FragmentScenario<TestRelationOptionValueDVAddFragment> {
+        return launchFragmentInContainer<TestRelationOptionValueDVAddFragment>(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

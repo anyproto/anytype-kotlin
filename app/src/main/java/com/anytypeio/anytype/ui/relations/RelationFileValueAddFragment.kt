@@ -18,8 +18,8 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.relations.AddFileValueCommand
-import com.anytypeio.anytype.presentation.relations.AddFileValueView
+import com.anytypeio.anytype.presentation.relations.FileValueAddCommand
+import com.anytypeio.anytype.presentation.relations.FileValueAddView
 import com.anytypeio.anytype.presentation.relations.RelationFileValueAddViewModel
 import kotlinx.android.synthetic.main.fragment_relation_value_file_add.*
 import javax.inject.Inject
@@ -68,22 +68,22 @@ class RelationFileValueAddFragment : BaseBottomSheetFragment() {
         vm.onStart(objectId = objectId, relationId = relationId)
     }
 
-    private fun observeState(state: AddFileValueView) {
+    private fun observeState(state: FileValueAddView) {
         adapter.update(state.files)
         tvFilesCount.text = state.count
     }
 
-    private fun observeCommands(command: AddFileValueCommand) {
+    private fun observeCommands(command: FileValueAddCommand) {
         when (command) {
-            is AddFileValueCommand.DispatchResult -> {
+            is FileValueAddCommand.DispatchResult -> {
                 dispatchResultAndDismiss(command.ids)
             }
         }
     }
 
     private fun dispatchResultAndDismiss(ids: List<Id>) {
-        withParent<AddRelationFileValueReceiver> {
-            onRelationFileValueChanged(
+        withParent<FileValueAddReceiver> {
+            onFileValueChanged(
                 ctx = ctx,
                 objectId = objectId,
                 relationId = relationId,
@@ -137,8 +137,8 @@ class RelationFileValueAddFragment : BaseBottomSheetFragment() {
         const val FLOW_DATAVIEW = 1
     }
 
-    interface AddRelationFileValueReceiver {
-        fun onRelationFileValueChanged(
+    interface FileValueAddReceiver {
+        fun onFileValueChanged(
             ctx: Id,
             objectId: Id,
             relationId: Id,

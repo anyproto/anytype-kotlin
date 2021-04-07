@@ -13,24 +13,24 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.features.relations.ObjectRelationTextValueAdapter
+import com.anytypeio.anytype.core_ui.features.relations.RelationTextValueAdapter
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.EditGridCellAction
-import com.anytypeio.anytype.presentation.sets.ObjectRelationTextValueView
-import com.anytypeio.anytype.presentation.sets.ObjectRelationTextValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationTextValueView
+import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.fragment_object_relation_text_value.*
+import kotlinx.android.synthetic.main.fragment_relation_text_value.*
 import javax.inject.Inject
 import com.google.android.material.R.id.design_bottom_sheet as BOTTOM_SHEET_ID
 
-open class ObjectRelationTextValueFragment : BaseBottomSheetFragment() {
+open class RelationTextValueFragment : BaseBottomSheetFragment() {
 
     @Inject
-    lateinit var factory: ObjectRelationTextValueViewModel.Factory
+    lateinit var factory: RelationTextValueViewModel.Factory
 
-    private val vm: ObjectRelationTextValueViewModel by viewModels { factory }
+    private val vm: RelationTextValueViewModel by viewModels { factory }
 
     private val ctx get() = arg<String>(CONTEXT_ID)
     private val relationId get() = arg<String>(RELATION_ID)
@@ -38,11 +38,11 @@ open class ObjectRelationTextValueFragment : BaseBottomSheetFragment() {
     private val flow get() = arg<Int>(FLOW_KEY)
 
     private val relationValueAdapter by lazy {
-        ObjectRelationTextValueAdapter(
+        RelationTextValueAdapter(
             items = emptyList(),
             actionClick = { handleActions(it) },
             onEditCompleted = { view, txt ->
-                if (view is ObjectRelationTextValueView.Number) {
+                if (view is RelationTextValueView.Number) {
                     try {
                         dispatchNumberResultAndExit(txt.toDouble())
                     } catch (e: NumberFormatException) {
@@ -59,7 +59,7 @@ open class ObjectRelationTextValueFragment : BaseBottomSheetFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_object_relation_text_value, container, false)
+    ): View = inflater.inflate(R.layout.fragment_relation_text_value, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -121,8 +121,8 @@ open class ObjectRelationTextValueFragment : BaseBottomSheetFragment() {
 
     private fun dispatchTextResultAndExit(txt: String) {
         recycler.hideKeyboard()
-        withParent<EditObjectRelationTextValueReceiver> {
-            onRelationTextValueChanged(
+        withParent<TextValueEditReceiver> {
+            onTextValueChanged(
                 ctx = ctx,
                 relationId = relationId,
                 objectId = objectId,
@@ -134,8 +134,8 @@ open class ObjectRelationTextValueFragment : BaseBottomSheetFragment() {
 
     private fun dispatchNumberResultAndExit(number: Number) {
         recycler.hideKeyboard()
-        withParent<EditObjectRelationTextValueReceiver> {
-            onRelationTextNumberValueChanged(
+        withParent<TextValueEditReceiver> {
+            onNumberValueChanged(
                 ctx = ctx,
                 relationId = relationId,
                 objectId = objectId,
@@ -185,7 +185,7 @@ open class ObjectRelationTextValueFragment : BaseBottomSheetFragment() {
             relationId: Id,
             objectId: Id,
             flow: Int = FLOW_DEFAULT
-        ) = ObjectRelationTextValueFragment().apply {
+        ) = RelationTextValueFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 RELATION_ID to relationId,
@@ -203,14 +203,15 @@ open class ObjectRelationTextValueFragment : BaseBottomSheetFragment() {
         const val FLOW_DATAVIEW = 1
     }
 
-    interface EditObjectRelationTextValueReceiver {
-        fun onRelationTextValueChanged(
+    interface TextValueEditReceiver {
+        fun onTextValueChanged(
             ctx: Id,
             text: String,
             objectId: Id,
             relationId: Id
         )
-        fun onRelationTextNumberValueChanged(
+
+        fun onNumberValueChanged(
             ctx: Id,
             number: Number,
             objectId: Id,

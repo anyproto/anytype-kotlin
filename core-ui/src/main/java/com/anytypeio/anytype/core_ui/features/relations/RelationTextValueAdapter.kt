@@ -7,48 +7,48 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.relations.holders.*
 import com.anytypeio.anytype.core_utils.text.ActionDoneListener
 import com.anytypeio.anytype.presentation.sets.EditGridCellAction
-import com.anytypeio.anytype.presentation.sets.ObjectRelationTextValueView
+import com.anytypeio.anytype.presentation.sets.RelationTextValueView
 import kotlinx.android.synthetic.main.item_object_relation_text.view.*
 
-class ObjectRelationTextValueAdapter(
-    private var items: List<ObjectRelationTextValueView>,
+class RelationTextValueAdapter(
+    private var items: List<RelationTextValueView>,
     private val actionClick: (EditGridCellAction) -> Unit,
-    private val onEditCompleted: (ObjectRelationTextValueView, String) -> Unit
-) : RecyclerView.Adapter<ObjectRelationBaseHolder>() {
+    private val onEditCompleted: (RelationTextValueView, String) -> Unit
+) : RecyclerView.Adapter<RelationBaseHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ObjectRelationBaseHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RelationBaseHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.item_object_relation_text, parent, false)
         return when (viewType) {
-            TYPE_TEXT -> ObjectRelationTextHolder(view).apply {
+            TYPE_TEXT -> RelationTextHolder(view).apply {
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
             }
-            TYPE_URL -> ObjectRelationUrlHolder(view).apply {
+            TYPE_URL -> RelationUrlHolder(view).apply {
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
             }
-            TYPE_PHONE -> ObjectRelationPhoneHolder(view).apply {
+            TYPE_PHONE -> RelationPhoneHolder(view).apply {
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
             }
-            TYPE_EMAIL -> ObjectRelationEmailHolder(view).apply {
+            TYPE_EMAIL -> RelationEmailHolder(view).apply {
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
             }
-            TYPE_NUMBER -> ObjectRelationNumberHolder(view).apply {
+            TYPE_NUMBER -> RelationNumberHolder(view).apply {
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
@@ -59,37 +59,37 @@ class ObjectRelationTextValueAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: ObjectRelationBaseHolder, position: Int) {
+    override fun onBindViewHolder(holder: RelationBaseHolder, position: Int) {
         when (holder) {
-            is ObjectRelationTextHolder -> holder.bind(items[position] as ObjectRelationTextValueView.Text)
-            is ObjectRelationPhoneHolder -> holder.bind(
-                items[position] as ObjectRelationTextValueView.Phone,
+            is RelationTextHolder -> holder.bind(items[position] as RelationTextValueView.Text)
+            is RelationPhoneHolder -> holder.bind(
+                items[position] as RelationTextValueView.Phone,
                 actionClick
             )
-            is ObjectRelationEmailHolder -> holder.bind(
-                items[position] as ObjectRelationTextValueView.Email,
+            is RelationEmailHolder -> holder.bind(
+                items[position] as RelationTextValueView.Email,
                 actionClick
             )
-            is ObjectRelationUrlHolder -> holder.bind(
-                items[position] as ObjectRelationTextValueView.Url,
+            is RelationUrlHolder -> holder.bind(
+                items[position] as RelationTextValueView.Url,
                 actionClick
             )
-            is ObjectRelationNumberHolder -> holder.bind(items[position] as ObjectRelationTextValueView.Number)
+            is RelationNumberHolder -> holder.bind(items[position] as RelationTextValueView.Number)
         }
     }
 
     override fun getItemCount(): Int = items.size
 
     override fun getItemViewType(position: Int): Int = when (items[position]) {
-        is ObjectRelationTextValueView.Text -> TYPE_TEXT
-        is ObjectRelationTextValueView.Email -> TYPE_EMAIL
-        is ObjectRelationTextValueView.Number -> TYPE_NUMBER
-        is ObjectRelationTextValueView.Phone -> TYPE_PHONE
-        is ObjectRelationTextValueView.Url -> TYPE_URL
+        is RelationTextValueView.Text -> TYPE_TEXT
+        is RelationTextValueView.Email -> TYPE_EMAIL
+        is RelationTextValueView.Number -> TYPE_NUMBER
+        is RelationTextValueView.Phone -> TYPE_PHONE
+        is RelationTextValueView.Url -> TYPE_URL
         else -> throw IllegalArgumentException("Wrong relation type:${items[position]}")
     }
 
-    fun update(update: List<ObjectRelationTextValueView>) {
+    fun update(update: List<RelationTextValueView>) {
         items = update
         notifyDataSetChanged()
     }

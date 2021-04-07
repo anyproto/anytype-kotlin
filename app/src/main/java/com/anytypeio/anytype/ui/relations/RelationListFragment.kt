@@ -16,21 +16,21 @@ import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModel
-import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModel.Command
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
-import com.anytypeio.anytype.ui.database.modals.ObjectObjectRelationValueFragment
+import com.anytypeio.anytype.ui.database.modals.RelationValueFragment
 import com.anytypeio.anytype.ui.page.OnFragmentInteractionListener
-import kotlinx.android.synthetic.main.fragment_object_relation_list.*
+import kotlinx.android.synthetic.main.fragment_relation_list.*
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
-open class ObjectRelationListFragment : BaseBottomSheetFragment(),
-    ObjectRelationTextValueFragment.EditObjectRelationTextValueReceiver,
-    ObjectRelationDateValueFragment.EditObjectRelationDateValueReceiver {
+open class RelationListFragment : BaseBottomSheetFragment(),
+    RelationTextValueFragment.TextValueEditReceiver,
+    RelationDateValueFragment.DateValueEditReceiver {
 
-    private val vm by viewModels<ObjectRelationListViewModel> { factory }
+    private val vm by viewModels<RelationListViewModel> { factory }
 
     @Inject
     lateinit var factory: ObjectRelationListViewModelFactory
@@ -62,7 +62,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_object_relation_list, container, false)
+    ): View = inflater.inflate(R.layout.fragment_relation_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -89,7 +89,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment(),
                         views
                     } else {
                         views.filter { model ->
-                            if (model is ObjectRelationListViewModel.Model.Item) {
+                            if (model is RelationListViewModel.Model.Item) {
                                 model.view.name.contains(query, true)
                             } else {
                                 true
@@ -109,7 +109,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment(),
     private fun execute(command: Command) {
         when (command) {
             is Command.EditTextRelationValue -> {
-                val fr = ObjectRelationTextValueFragment.new(
+                val fr = RelationTextValueFragment.new(
                     ctx = ctx,
                     relationId = command.relation,
                     objectId = command.target
@@ -117,7 +117,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment(),
                 fr.show(childFragmentManager, null)
             }
             is Command.EditDateRelationValue -> {
-                val fr = ObjectRelationDateValueFragment.new(
+                val fr = RelationDateValueFragment.new(
                     ctx = ctx,
                     relationId = command.relation,
                     objectId = command.target
@@ -125,7 +125,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment(),
                 fr.show(childFragmentManager, null)
             }
             is Command.EditRelationValue -> {
-                val fr = ObjectObjectRelationValueFragment.new(
+                val fr = RelationValueFragment.new(
                     ctx = ctx,
                     relation = command.relation,
                     target = command.target
@@ -158,7 +158,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment(),
         vm.onStop()
     }
 
-    override fun onRelationTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {
+    override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
             value = text,
@@ -167,7 +167,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment(),
         )
     }
 
-    override fun onRelationTextNumberValueChanged(ctx: Id, number: Number, objectId: Id, relationId: Id) {
+    override fun onNumberValueChanged(ctx: Id, number: Number, objectId: Id, relationId: Id) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
             value = number,
@@ -176,7 +176,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment(),
         )
     }
 
-    override fun onRelationDateValueChanged(
+    override fun onDateValueChanged(
         ctx: Id,
         timeInSeconds: Number?,
         objectId: Id,
@@ -199,7 +199,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment(),
     }
 
     companion object {
-        fun new(ctx: String, target: String?, mode: Int) = ObjectRelationListFragment().apply {
+        fun new(ctx: String, target: String?, mode: Int) = RelationListFragment().apply {
             arguments = bundleOf(
                 ARG_CTX to ctx,
                 ARG_TARGET to target,

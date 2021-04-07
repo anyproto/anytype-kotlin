@@ -9,15 +9,15 @@ import com.anytypeio.anytype.domain.dataview.interactor.AddStatusToDataViewRecor
 import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
-import com.anytypeio.anytype.presentation.relations.AddObjectObjectRelationValueViewModel
-import com.anytypeio.anytype.presentation.relations.AddObjectSetObjectRelationValueViewModel
+import com.anytypeio.anytype.presentation.relations.RelationOptionValueAddViewModel
+import com.anytypeio.anytype.presentation.relations.RelationOptionValueDVAddViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.relations.AddObjectObjectRelationValueFragment
-import com.anytypeio.anytype.ui.relations.AddObjectSetObjectRelationValueFragment
+import com.anytypeio.anytype.ui.relations.RelationOptionValueAddFragment
+import com.anytypeio.anytype.ui.relations.RelationOptionValueDVAddFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -31,8 +31,8 @@ interface AddObjectRelationValueSubComponent {
         fun build(): AddObjectRelationValueSubComponent
     }
 
-    fun inject(fragment: AddObjectSetObjectRelationValueFragment)
-    fun inject(fragment: AddObjectObjectRelationValueFragment)
+    fun inject(fragment: RelationOptionValueDVAddFragment)
+    fun inject(fragment: RelationOptionValueAddFragment)
 }
 
 @Module
@@ -51,7 +51,7 @@ object AddObjectRelationValueModule {
         addTagToDataViewRecord: AddTagToDataViewRecord,
         addStatusToDataViewRecord: AddStatusToDataViewRecord,
         urlBuilder: UrlBuilder
-    ): AddObjectSetObjectRelationValueViewModel.Factory = AddObjectSetObjectRelationValueViewModel.Factory(
+    ): RelationOptionValueDVAddViewModel.Factory = RelationOptionValueDVAddViewModel.Factory(
         relations = relations,
         values = values,
         details = details,
@@ -75,7 +75,7 @@ object AddObjectRelationValueModule {
         addObjectRelationOption: AddObjectRelationOption,
         updateDetail: UpdateDetail,
         urlBuilder: UrlBuilder
-    ): AddObjectObjectRelationValueViewModel.Factory = AddObjectObjectRelationValueViewModel.Factory(
+    ): RelationOptionValueAddViewModel.Factory = RelationOptionValueAddViewModel.Factory(
         relations = relations,
         values = values,
         details = details,

@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.tools.SupportDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.DragAndDropViewHolder
-import com.anytypeio.anytype.presentation.sets.ObjectRelationValueViewModel.ObjectRelationValueView
+import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
 import kotlinx.android.synthetic.main.item_edit_cell_file.view.*
 import kotlinx.android.synthetic.main.item_edit_cell_object.view.*
 import kotlinx.android.synthetic.main.item_edit_cell_object.view.tvTitle
@@ -20,20 +20,20 @@ import kotlinx.android.synthetic.main.item_edit_cell_option_create.view.*
 import kotlinx.android.synthetic.main.item_edit_cell_status.view.*
 import kotlinx.android.synthetic.main.item_edit_cell_tag.view.*
 
-class ObjectRelationValueAdapter(
-    private val onTagClicked: (ObjectRelationValueView.Tag) -> Unit,
-    private val onStatusClicked: (ObjectRelationValueView.Status) -> Unit,
-    private val onRemoveTagClicked: (ObjectRelationValueView.Tag) -> Unit,
-    private val onRemoveStatusClicked: (ObjectRelationValueView.Status) -> Unit,
+class RelationValueAdapter(
+    private val onTagClicked: (RelationValueView.Tag) -> Unit,
+    private val onStatusClicked: (RelationValueView.Status) -> Unit,
+    private val onRemoveTagClicked: (RelationValueView.Tag) -> Unit,
+    private val onRemoveStatusClicked: (RelationValueView.Status) -> Unit,
     private val onCreateOptionClicked: (String) -> Unit,
-    private val onObjectClicked: (ObjectRelationValueView.Object) -> Unit,
+    private val onObjectClicked: (RelationValueView.Object) -> Unit,
     private val onRemoveObjectClicked: (Id) -> Unit,
-    private val onFileClicked: (ObjectRelationValueView.File) -> Unit,
+    private val onFileClicked: (RelationValueView.File) -> Unit,
     private val onRemoveFileClicked: (Id) -> Unit,
 
-) : RecyclerView.Adapter<ObjectRelationValueAdapter.ViewHolder>(), SupportDragAndDropBehavior {
+    ) : RecyclerView.Adapter<RelationValueAdapter.ViewHolder>(), SupportDragAndDropBehavior {
 
-    private var views = emptyList<ObjectRelationValueView>()
+    private var views = emptyList<RelationValueView>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -47,7 +47,7 @@ class ObjectRelationValueAdapter(
             R.layout.item_edit_cell_option_create -> {
                 ViewHolder.Create(inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
-                        val item = views[bindingAdapterPosition] as ObjectRelationValueView.Create
+                        val item = views[bindingAdapterPosition] as RelationValueView.Create
                         onCreateOptionClicked(item.name)
                     }
                 }
@@ -55,11 +55,11 @@ class ObjectRelationValueAdapter(
             R.layout.item_edit_cell_tag -> {
                 ViewHolder.Tag(inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
-                        val item = views[bindingAdapterPosition] as ObjectRelationValueView.Tag
+                        val item = views[bindingAdapterPosition] as RelationValueView.Tag
                         if (!item.removeable) onTagClicked(item)
                     }
                     itemView.btnRemoveTag.setOnClickListener {
-                        val item = views[bindingAdapterPosition] as ObjectRelationValueView.Tag
+                        val item = views[bindingAdapterPosition] as RelationValueView.Tag
                         onRemoveTagClicked(item)
                     }
                 }
@@ -67,11 +67,11 @@ class ObjectRelationValueAdapter(
             R.layout.item_edit_cell_status -> {
                 ViewHolder.Status(inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
-                        val item = views[bindingAdapterPosition] as ObjectRelationValueView.Status
+                        val item = views[bindingAdapterPosition] as RelationValueView.Status
                         if (!item.removeable) onStatusClicked(item)
                     }
                     itemView.btnRemoveStatus.setOnClickListener {
-                        val item = views[bindingAdapterPosition] as ObjectRelationValueView.Status
+                        val item = views[bindingAdapterPosition] as RelationValueView.Status
                         onRemoveStatusClicked(item)
                     }
                 }
@@ -79,11 +79,11 @@ class ObjectRelationValueAdapter(
             R.layout.item_edit_cell_object -> {
                 ViewHolder.Object(inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
-                        val item = views[bindingAdapterPosition] as ObjectRelationValueView.Object
+                        val item = views[bindingAdapterPosition] as RelationValueView.Object
                         if (!item.removeable) onObjectClicked(item)
                     }
                     itemView.btnRemoveObject.setOnClickListener {
-                        val item = views[bindingAdapterPosition] as ObjectRelationValueView.Object
+                        val item = views[bindingAdapterPosition] as RelationValueView.Object
                         onRemoveObjectClicked(item.id)
                     }
                 }
@@ -91,11 +91,11 @@ class ObjectRelationValueAdapter(
             R.layout.item_edit_cell_file -> {
                 ViewHolder.File(inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
-                        val item = views[bindingAdapterPosition] as ObjectRelationValueView.File
+                        val item = views[bindingAdapterPosition] as RelationValueView.File
                         if (!item.removeable) onFileClicked(item)
                     }
                     itemView.btnRemoveFile.setOnClickListener {
-                        val item = views[bindingAdapterPosition] as ObjectRelationValueView.File
+                        val item = views[bindingAdapterPosition] as RelationValueView.File
                         onRemoveFileClicked(item.id)
                     }
                 }
@@ -108,33 +108,33 @@ class ObjectRelationValueAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.Tag -> {
-                holder.bind(views[position] as ObjectRelationValueView.Tag)
+                holder.bind(views[position] as RelationValueView.Tag)
             }
             is ViewHolder.Status -> {
-                holder.bind(views[position] as ObjectRelationValueView.Status)
+                holder.bind(views[position] as RelationValueView.Status)
             }
             is ViewHolder.Object -> {
-                holder.bind(views[position] as ObjectRelationValueView.Object)
+                holder.bind(views[position] as RelationValueView.Object)
             }
             is ViewHolder.Create -> {
-                holder.bind(views[position] as ObjectRelationValueView.Create)
+                holder.bind(views[position] as RelationValueView.Create)
             }
             is ViewHolder.File -> {
-                holder.bind(views[position] as ObjectRelationValueView.File)
+                holder.bind(views[position] as RelationValueView.File)
             }
         }
     }
 
     override fun getItemViewType(position: Int): Int = when (views[position]) {
-        is ObjectRelationValueView.Empty -> R.layout.item_edit_cell_tag_or_status_empty
-        is ObjectRelationValueView.Create -> R.layout.item_edit_cell_option_create
-        is ObjectRelationValueView.Tag -> R.layout.item_edit_cell_tag
-        is ObjectRelationValueView.Status -> R.layout.item_edit_cell_status
-        is ObjectRelationValueView.Object -> R.layout.item_edit_cell_object
-        is ObjectRelationValueView.File -> R.layout.item_edit_cell_file
+        is RelationValueView.Empty -> R.layout.item_edit_cell_tag_or_status_empty
+        is RelationValueView.Create -> R.layout.item_edit_cell_option_create
+        is RelationValueView.Tag -> R.layout.item_edit_cell_tag
+        is RelationValueView.Status -> R.layout.item_edit_cell_status
+        is RelationValueView.Object -> R.layout.item_edit_cell_object
+        is RelationValueView.File -> R.layout.item_edit_cell_file
     }
 
-    fun update(update: List<ObjectRelationValueView>) {
+    fun update(update: List<RelationValueView>) {
         views = update
         notifyDataSetChanged()
     }
@@ -151,10 +151,10 @@ class ObjectRelationValueAdapter(
     fun order() : List<Id> {
         return views.mapNotNull { view ->
             when(view) {
-                is ObjectRelationValueView.Status -> view.id
-                is ObjectRelationValueView.Tag -> view.id
-                is ObjectRelationValueView.Object -> view.id
-                is ObjectRelationValueView.File -> view.id
+                is RelationValueView.Status -> view.id
+                is RelationValueView.Tag -> view.id
+                is RelationValueView.Object -> view.id
+                is RelationValueView.File -> view.id
                 else -> null
             }
         }
@@ -165,13 +165,13 @@ class ObjectRelationValueAdapter(
         class Empty(view: View) : ViewHolder(view)
 
         class Create(view: View) : ViewHolder(view) {
-            fun bind(item: ObjectRelationValueView.Create) {
+            fun bind(item: RelationValueView.Create) {
                 itemView.tvCreateOptionValue.text = itemView.context.getString(R.string.create_option, item.name)
             }
         }
 
         class Tag(view: View) : ViewHolder(view), DragAndDropViewHolder {
-            fun bind(item: ObjectRelationValueView.Tag): Unit = with(itemView) {
+            fun bind(item: RelationValueView.Tag): Unit = with(itemView) {
                 tvTagName.setup(item.name, item.color)
                 if (!item.removeable) {
                     btnRemoveTag.gone()
@@ -194,7 +194,7 @@ class ObjectRelationValueAdapter(
         }
 
         class Status(view: View) : ViewHolder(view) {
-            fun bind(item: ObjectRelationValueView.Status) = with(itemView) {
+            fun bind(item: RelationValueView.Status) = with(itemView) {
                 tvStatusName.text = item.name
                 tvStatusName.setColor(item.color)
                 if (!item.removeable) {
@@ -212,7 +212,7 @@ class ObjectRelationValueAdapter(
         }
 
         class Object(view: View) : ViewHolder(view), DragAndDropViewHolder {
-            fun bind(item: ObjectRelationValueView.Object) = with(itemView) {
+            fun bind(item: RelationValueView.Object) = with(itemView) {
                 tvTitle.text = item.name
                 if (item.type != null) {
                     tvSubtitle.text = item.type
@@ -235,7 +235,7 @@ class ObjectRelationValueAdapter(
         }
 
         class File(view: View) : ViewHolder(view), DragAndDropViewHolder {
-            fun bind(item: ObjectRelationValueView.File) = with(itemView) {
+            fun bind(item: RelationValueView.File) = with(itemView) {
                 tvTitle.text = "${item.name}.${item.ext}"
                 iconMime.setImageResource(item.mime.getMimeIcon())
                 if (!item.removeable) {

@@ -10,7 +10,7 @@ import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
+import com.anytypeio.anytype.ui.relations.RelationListFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -25,7 +25,7 @@ interface DocumentRelationSubComponent {
         fun build(): DocumentRelationSubComponent
     }
 
-    fun inject(fragment: ObjectRelationListFragment)
+    fun inject(fragment: RelationListFragment)
 }
 
 @Module

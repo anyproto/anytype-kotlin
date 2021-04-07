@@ -79,7 +79,7 @@ import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import com.anytypeio.anytype.ui.database.modals.ObjectObjectRelationValueFragment
+import com.anytypeio.anytype.ui.database.modals.RelationValueFragment
 import com.anytypeio.anytype.ui.page.cover.DocCoverAction
 import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment
 import com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment
@@ -89,9 +89,9 @@ import com.anytypeio.anytype.ui.page.modals.actions.DocumentIconActionMenuFragme
 import com.anytypeio.anytype.ui.page.modals.actions.ProfileIconActionMenuFragment
 import com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet
 import com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet.DocumentMenuActionReceiver
-import com.anytypeio.anytype.ui.relations.ObjectRelationDateValueFragment
-import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
-import com.anytypeio.anytype.ui.relations.ObjectRelationTextValueFragment
+import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
+import com.anytypeio.anytype.ui.relations.RelationListFragment
+import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
@@ -116,8 +116,8 @@ open class PageFragment :
     AddBlockFragment.AddBlockActionReceiver,
     TurnIntoActionReceiver,
     SelectProgrammingLanguageReceiver,
-    ObjectRelationTextValueFragment.EditObjectRelationTextValueReceiver,
-    ObjectRelationDateValueFragment.EditObjectRelationDateValueReceiver,
+    RelationTextValueFragment.TextValueEditReceiver,
+    RelationDateValueFragment.DateValueEditReceiver,
     DocumentMenuActionReceiver,
     ClipboardInterceptor,
     DocCoverAction,
@@ -807,27 +807,27 @@ open class PageFragment :
                 }
                 is Command.OpenObjectRelationScreen.Add -> {
                     hideKeyboard()
-                    ObjectRelationListFragment
+                    RelationListFragment
                         .new(
                             ctx = command.ctx,
                             target = command.target,
-                            mode = ObjectRelationListFragment.MODE_ADD
+                            mode = RelationListFragment.MODE_ADD
                         )
                         .show(childFragmentManager, null)
                 }
                 is Command.OpenObjectRelationScreen.List -> {
                     hideKeyboard()
-                    ObjectRelationListFragment
+                    RelationListFragment
                         .new(
                             ctx = command.ctx,
                             target = command.target,
-                            mode = ObjectRelationListFragment.MODE_LIST
+                            mode = RelationListFragment.MODE_LIST
                         )
                         .show(childFragmentManager, null)
                 }
                 is Command.OpenObjectRelationScreen.Value.Default -> {
                     hideKeyboard()
-                    val fr = ObjectObjectRelationValueFragment.new(
+                    val fr = RelationValueFragment.new(
                         ctx = command.ctx,
                         target = command.target,
                         relation = command.relation
@@ -836,7 +836,7 @@ open class PageFragment :
                 }
                 is Command.OpenObjectRelationScreen.Value.Text -> {
                     hideKeyboard()
-                    val fr = ObjectRelationTextValueFragment.new(
+                    val fr = RelationTextValueFragment.new(
                         ctx = command.ctx,
                         objectId = command.target,
                         relationId = command.relation
@@ -845,7 +845,7 @@ open class PageFragment :
                 }
                 is Command.OpenObjectRelationScreen.Value.Date -> {
                     hideKeyboard()
-                    val fr = ObjectRelationDateValueFragment.new(
+                    val fr = RelationDateValueFragment.new(
                         ctx = command.ctx,
                         objectId = command.target,
                         relationId = command.relation
@@ -1341,7 +1341,7 @@ open class PageFragment :
         vm.onDismissBlockActionMenu(childFragmentManager.backStackEntryCount > 0)
     }
 
-    override fun onRelationTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {
+    override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
             value = text,
@@ -1349,7 +1349,7 @@ open class PageFragment :
         )
     }
 
-    override fun onRelationTextNumberValueChanged(ctx: Id, number: Number, objectId: Id, relationId: Id) {
+    override fun onNumberValueChanged(ctx: Id, number: Number, objectId: Id, relationId: Id) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
             value = number,
@@ -1357,7 +1357,7 @@ open class PageFragment :
         )
     }
 
-    override fun onRelationDateValueChanged(
+    override fun onDateValueChanged(
         ctx: Id,
         timeInSeconds: Number?,
         objectId: Id,

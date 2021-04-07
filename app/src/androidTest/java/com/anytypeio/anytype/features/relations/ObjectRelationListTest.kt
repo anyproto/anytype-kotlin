@@ -27,7 +27,7 @@ import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.sets.MONTH_DAY_AND_YEAR
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
+import com.anytypeio.anytype.ui.relations.RelationListFragment
 import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.runBlocking
@@ -76,7 +76,7 @@ class ObjectRelationListTest {
         urlBuilder = UrlBuilder(gateway)
         objectRelationList = ObjectRelationList(repo)
         updateDetail = UpdateDetail(repo)
-        TestObjectRelationListFragment.testVmFactory = ObjectRelationListViewModelFactory(
+        TestRelationListFragment.testVmFactory = ObjectRelationListViewModelFactory(
             stores = storage,
             urlBuilder = urlBuilder,
             objectRelationList = objectRelationList,
@@ -112,8 +112,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            ObjectRelationListFragment.ARG_CTX to ctx,
-            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
+            RelationListFragment.ARG_CTX to ctx,
+            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -156,8 +156,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            ObjectRelationListFragment.ARG_CTX to ctx,
-            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
+            RelationListFragment.ARG_CTX to ctx,
+            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -199,8 +199,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            ObjectRelationListFragment.ARG_CTX to ctx,
-            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
+            RelationListFragment.ARG_CTX to ctx,
+            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -258,8 +258,8 @@ class ObjectRelationListTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationListFragment.ARG_CTX to ctx,
-                ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
+                RelationListFragment.ARG_CTX to ctx,
+                RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
             )
         )
 
@@ -331,8 +331,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            ObjectRelationListFragment.ARG_CTX to ctx,
-            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
+            RelationListFragment.ARG_CTX to ctx,
+            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -395,8 +395,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            ObjectRelationListFragment.ARG_CTX to ctx,
-            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
+            RelationListFragment.ARG_CTX to ctx,
+            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -469,8 +469,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            ObjectRelationListFragment.ARG_CTX to ctx,
-            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
+            RelationListFragment.ARG_CTX to ctx,
+            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -549,8 +549,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            ObjectRelationListFragment.ARG_CTX to ctx,
-            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
+            RelationListFragment.ARG_CTX to ctx,
+            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -616,8 +616,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            ObjectRelationListFragment.ARG_CTX to ctx,
-            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
+            RelationListFragment.ARG_CTX to ctx,
+            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -631,7 +631,7 @@ class ObjectRelationListTest {
         }
     }
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestObjectRelationListFragment> {
+    private fun launchFragment(args: Bundle): FragmentScenario<TestRelationListFragment> {
         return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme

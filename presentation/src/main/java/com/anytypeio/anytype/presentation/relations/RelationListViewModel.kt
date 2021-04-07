@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class ObjectRelationListViewModel(
+class RelationListViewModel(
     private val stores: Editor.Storage,
     private val urlBuilder: UrlBuilder,
     private val objectRelationList: ObjectRelationList,

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.features.sets.ObjectRelationValueAdapter
+import com.anytypeio.anytype.core_ui.features.sets.RelationValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_ui.tools.DefaultDragAndDropBehavior
@@ -22,18 +22,18 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.DragAndDropViewHolder
 import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.sets.ObjectObjectRelationValueViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectRelationValueViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectSetObjectRelationValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
+import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.ui.relations.*
-import kotlinx.android.synthetic.main.object_relation_value_fragment.*
+import kotlinx.android.synthetic.main.fragment_relation_value.*
 import javax.inject.Inject
 
-abstract class ObjectRelationValueFragment : BaseBottomSheetFragment(),
+abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     OnStartDragListener,
-    AddObjectRelationObjectValueFragment.AddObjectRelationObjectValueReceiver,
-    RelationFileValueActionsFragment.RelationFileValueActionReceiver,
-    RelationFileValueAddFragment.AddRelationFileValueReceiver
+    RelationObjectValueAddFragment.ObjectValueAddReceiver,
+    FileActionsFragment.FileActionReceiver,
+    RelationFileValueAddFragment.FileValueAddReceiver
 {
 
     protected val ctx get() = argString(CTX_KEY)
@@ -42,7 +42,7 @@ abstract class ObjectRelationValueFragment : BaseBottomSheetFragment(),
     protected val dataview get() = argString(DATAVIEW_KEY)
     protected val viewer get() = argString(VIEWER_KEY)
 
-    abstract val vm: ObjectRelationValueViewModel
+    abstract val vm: RelationValueBaseViewModel
 
     private val dndItemTouchHelper: ItemTouchHelper by lazy { ItemTouchHelper(dndBehavior) }
 
@@ -59,7 +59,7 @@ abstract class ObjectRelationValueFragment : BaseBottomSheetFragment(),
     }
 
     protected val editCellTagAdapter by lazy {
-        ObjectRelationValueAdapter(
+        RelationValueAdapter(
             onCreateOptionClicked = {},
             onTagClicked = {},
             onStatusClicked = {},
@@ -76,7 +76,7 @@ abstract class ObjectRelationValueFragment : BaseBottomSheetFragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.object_relation_value_fragment, container, false)
+    ): View = inflater.inflate(R.layout.fragment_relation_value, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -138,10 +138,10 @@ abstract class ObjectRelationValueFragment : BaseBottomSheetFragment(),
         }
     }
 
-    abstract fun observeCommands(command: ObjectRelationValueViewModel.ObjectRelationValueCommand)
+    abstract fun observeCommands(command: RelationValueBaseViewModel.ObjectRelationValueCommand)
     abstract fun onItemDropped()
-    abstract fun onRemoveTagClicked(tag: ObjectRelationValueViewModel.ObjectRelationValueView.Tag)
-    abstract fun onRemoveStatusClicked(status: ObjectRelationValueViewModel.ObjectRelationValueView.Status)
+    abstract fun onRemoveTagClicked(tag: RelationValueBaseViewModel.RelationValueView.Tag)
+    abstract fun onRemoveStatusClicked(status: RelationValueBaseViewModel.RelationValueView.Status)
     abstract fun onRemoveObjectClicked(objectId: Id)
     abstract fun onRemoveFileClicked(fileId: Id)
 
@@ -154,13 +154,13 @@ abstract class ObjectRelationValueFragment : BaseBottomSheetFragment(),
     }
 }
 
-open class ObjectSetObjectRelationValueFragment : ObjectRelationValueFragment() {
+open class RelationValueDVFragment : RelationValueBaseFragment() {
 
     @Inject
-    lateinit var factory: ObjectSetObjectRelationValueViewModel.Factory
-    override val vm: ObjectSetObjectRelationValueViewModel by viewModels { factory }
+    lateinit var factory: RelationValueDVViewModel.Factory
+    override val vm: RelationValueDVViewModel by viewModels { factory }
 
-    override fun onRemoveTagClicked(tag: ObjectRelationValueViewModel.ObjectRelationValueView.Tag) {
+    override fun onRemoveTagClicked(tag: RelationValueBaseViewModel.RelationValueView.Tag) {
         vm.onRemoveTagFromDataViewRecordClicked(
             ctx = ctx,
             dataview = dataview,
@@ -171,7 +171,7 @@ open class ObjectSetObjectRelationValueFragment : ObjectRelationValueFragment() 
         )
     }
 
-    override fun onRemoveStatusClicked(status: ObjectRelationValueViewModel.ObjectRelationValueView.Status) {
+    override fun onRemoveStatusClicked(status: RelationValueBaseViewModel.RelationValueView.Status) {
         vm.onRemoveStatusFromDataViewRecordClicked(
             ctx = ctx,
             dataview = dataview,
@@ -212,7 +212,7 @@ open class ObjectSetObjectRelationValueFragment : ObjectRelationValueFragment() 
         )
     }
 
-    override fun onRelationObjectValueChanged(
+    override fun onObjectValueChanged(
         ctx: Id,
         objectId: Id,
         relationId: Id,
@@ -227,7 +227,7 @@ open class ObjectSetObjectRelationValueFragment : ObjectRelationValueFragment() 
         )
     }
 
-    override fun onRelationFileValueChanged(ctx: Id, objectId: Id, relationId: Id, ids: List<Id>) {
+    override fun onFileValueChanged(ctx: Id, objectId: Id, relationId: Id, ids: List<Id>) {
         vm.onAddObjectsOrFilesValueToRecord(
             ctx = ctx,
             dataview = dataview,
@@ -237,11 +237,11 @@ open class ObjectSetObjectRelationValueFragment : ObjectRelationValueFragment() 
         )
     }
 
-    override fun observeCommands(command: ObjectRelationValueViewModel.ObjectRelationValueCommand) {
+    override fun observeCommands(command: RelationValueBaseViewModel.ObjectRelationValueCommand) {
         when (command) {
-            ObjectRelationValueViewModel.ObjectRelationValueCommand.ShowAddObjectScreen -> {
-                val fragmentFlow = AddObjectRelationObjectValueFragment.FLOW_DATAVIEW
-                val fr = AddObjectRelationObjectValueFragment.new(
+            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddObjectScreen -> {
+                val fragmentFlow = RelationObjectValueAddFragment.FLOW_DATAVIEW
+                val fr = RelationObjectValueAddFragment.new(
                     ctx = ctx,
                     relationId = relation,
                     objectId = target,
@@ -249,8 +249,8 @@ open class ObjectSetObjectRelationValueFragment : ObjectRelationValueFragment() 
                 )
                 fr.show(childFragmentManager, null)
             }
-            ObjectRelationValueViewModel.ObjectRelationValueCommand.ShowAddStatusOrTagScreen -> {
-                val fr = AddObjectSetObjectRelationValueFragment.new(
+            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddStatusOrTagScreen -> {
+                val fr = RelationOptionValueDVAddFragment.new(
                     ctx = ctx,
                     target = target,
                     relation = relation,
@@ -259,7 +259,7 @@ open class ObjectSetObjectRelationValueFragment : ObjectRelationValueFragment() 
                 )
                 fr.show(childFragmentManager, null)
             }
-            ObjectRelationValueViewModel.ObjectRelationValueCommand.ShowAddFileScreen -> {
+            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddFileScreen -> {
                 val fr = RelationFileValueAddFragment.new(
                     ctx = ctx,
                     relationId = relation,
@@ -268,8 +268,8 @@ open class ObjectSetObjectRelationValueFragment : ObjectRelationValueFragment() 
                 )
                 fr.show(childFragmentManager, null)
             }
-            ObjectRelationValueViewModel.ObjectRelationValueCommand.ShowFileValueActionScreen -> {
-                RelationFileValueActionsFragment().show(childFragmentManager, null)
+            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileValueActionScreen -> {
+                FileActionsFragment().show(childFragmentManager, null)
             }
         }
     }
@@ -303,7 +303,7 @@ open class ObjectSetObjectRelationValueFragment : ObjectRelationValueFragment() 
             relation: Id,
             dataview: Id,
             viewer: Id
-        ) = ObjectSetObjectRelationValueFragment().apply {
+        ) = RelationValueDVFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to target,
@@ -315,13 +315,13 @@ open class ObjectSetObjectRelationValueFragment : ObjectRelationValueFragment() 
     }
 }
 
-class ObjectObjectRelationValueFragment : ObjectRelationValueFragment() {
+class RelationValueFragment : RelationValueBaseFragment() {
 
     @Inject
-    lateinit var factory: ObjectObjectRelationValueViewModel.Factory
-    override val vm: ObjectObjectRelationValueViewModel by viewModels { factory }
+    lateinit var factory: RelationValueViewModel.Factory
+    override val vm: RelationValueViewModel by viewModels { factory }
 
-    override fun onRemoveTagClicked(tag: ObjectRelationValueViewModel.ObjectRelationValueView.Tag) {
+    override fun onRemoveTagClicked(tag: RelationValueBaseViewModel.RelationValueView.Tag) {
         vm.onRemoveTagFromObjectClicked(
             ctx = ctx,
             target = target,
@@ -330,7 +330,7 @@ class ObjectObjectRelationValueFragment : ObjectRelationValueFragment() {
         )
     }
 
-    override fun onRemoveStatusClicked(status: ObjectRelationValueViewModel.ObjectRelationValueView.Status) {
+    override fun onRemoveStatusClicked(status: RelationValueBaseViewModel.RelationValueView.Status) {
         vm.onRemoveStatusFromObjectClicked(
             ctx = ctx,
             target = target,
@@ -365,7 +365,7 @@ class ObjectObjectRelationValueFragment : ObjectRelationValueFragment() {
         )
     }
 
-    override fun onRelationObjectValueChanged(
+    override fun onObjectValueChanged(
         ctx: Id,
         objectId: Id,
         relationId: Id,
@@ -379,7 +379,7 @@ class ObjectObjectRelationValueFragment : ObjectRelationValueFragment() {
         )
     }
 
-    override fun onRelationFileValueChanged(ctx: Id, objectId: Id, relationId: Id, ids: List<Id>) {
+    override fun onFileValueChanged(ctx: Id, objectId: Id, relationId: Id, ids: List<Id>) {
         vm.onAddObjectsOrFilesValueToObject(
             ctx = ctx,
             target = target,
@@ -388,25 +388,25 @@ class ObjectObjectRelationValueFragment : ObjectRelationValueFragment() {
         )
     }
 
-    override fun observeCommands(command: ObjectRelationValueViewModel.ObjectRelationValueCommand) {
+    override fun observeCommands(command: RelationValueBaseViewModel.ObjectRelationValueCommand) {
         when (command) {
-            ObjectRelationValueViewModel.ObjectRelationValueCommand.ShowAddObjectScreen -> {
-                val fr = AddObjectRelationObjectValueFragment.new(
+            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddObjectScreen -> {
+                val fr = RelationObjectValueAddFragment.new(
                     ctx = ctx,
                     relationId = relation,
                     objectId = target
                 )
                 fr.show(childFragmentManager, null)
             }
-            ObjectRelationValueViewModel.ObjectRelationValueCommand.ShowAddStatusOrTagScreen -> {
-                val fr = AddObjectObjectRelationValueFragment.new(
+            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddStatusOrTagScreen -> {
+                val fr = RelationOptionValueAddFragment.new(
                     ctx = ctx,
                     objectId = target,
                     relationId = relation
                 )
                 fr.show(childFragmentManager, null)
             }
-            ObjectRelationValueViewModel.ObjectRelationValueCommand.ShowAddFileScreen -> {
+            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddFileScreen -> {
                 val fr = RelationFileValueAddFragment.new(
                     ctx = ctx,
                     relationId = relation,
@@ -415,8 +415,8 @@ class ObjectObjectRelationValueFragment : ObjectRelationValueFragment() {
                 )
                 fr.show(childFragmentManager, null)
             }
-            ObjectRelationValueViewModel.ObjectRelationValueCommand.ShowFileValueActionScreen -> {
-                RelationFileValueActionsFragment().show(childFragmentManager, null)
+            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileValueActionScreen -> {
+                FileActionsFragment().show(childFragmentManager, null)
             }
         }
     }
@@ -448,7 +448,7 @@ class ObjectObjectRelationValueFragment : ObjectRelationValueFragment() {
             ctx: Id,
             target: Id,
             relation: Id
-        ) = ObjectObjectRelationValueFragment().apply {
+        ) = RelationValueFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to target,

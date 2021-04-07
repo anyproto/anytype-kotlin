@@ -5,7 +5,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -18,11 +17,11 @@ import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.ObjectRelationDateValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.TIME_FORMAT_DEFAULT
-import com.anytypeio.anytype.ui.relations.ObjectRelationDateValueFragment
+import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,8 +51,8 @@ class ObjectRelationDateValueTest {
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        TestObjectRelationDateValueFragment.testVmFactory =
-            ObjectRelationDateValueViewModel.Factory(
+        TestRelationDateValueFragment.testVmFactory =
+            RelationDateValueViewModel.Factory(
                 relations = DataViewObjectRelationProvider(state),
                 values = DataViewObjectValueProvider(state, session)
             )
@@ -113,10 +112,10 @@ class ObjectRelationDateValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationDateValueFragment.CONTEXT_ID to root,
-                ObjectRelationDateValueFragment.RELATION_ID to relation.key,
-                ObjectRelationDateValueFragment.OBJECT_ID to target,
-                ObjectRelationDateValueFragment.FLOW_KEY to ObjectRelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.CONTEXT_ID to root,
+                RelationDateValueFragment.RELATION_ID to relation.key,
+                RelationDateValueFragment.OBJECT_ID to target,
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -181,10 +180,10 @@ class ObjectRelationDateValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationDateValueFragment.CONTEXT_ID to root,
-                ObjectRelationDateValueFragment.RELATION_ID to relation.key,
-                ObjectRelationDateValueFragment.OBJECT_ID to target,
-                ObjectRelationDateValueFragment.FLOW_KEY to ObjectRelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.CONTEXT_ID to root,
+                RelationDateValueFragment.RELATION_ID to relation.key,
+                RelationDateValueFragment.OBJECT_ID to target,
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -250,10 +249,10 @@ class ObjectRelationDateValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationDateValueFragment.CONTEXT_ID to root,
-                ObjectRelationDateValueFragment.RELATION_ID to relation.key,
-                ObjectRelationDateValueFragment.OBJECT_ID to target,
-                ObjectRelationDateValueFragment.FLOW_KEY to ObjectRelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.CONTEXT_ID to root,
+                RelationDateValueFragment.RELATION_ID to relation.key,
+                RelationDateValueFragment.OBJECT_ID to target,
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -319,10 +318,10 @@ class ObjectRelationDateValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationDateValueFragment.CONTEXT_ID to root,
-                ObjectRelationDateValueFragment.RELATION_ID to relation.key,
-                ObjectRelationDateValueFragment.OBJECT_ID to target,
-                ObjectRelationDateValueFragment.FLOW_KEY to ObjectRelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.CONTEXT_ID to root,
+                RelationDateValueFragment.RELATION_ID to relation.key,
+                RelationDateValueFragment.OBJECT_ID to target,
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -388,10 +387,10 @@ class ObjectRelationDateValueTest {
 
         launchFragment(
             bundleOf(
-                ObjectRelationDateValueFragment.CONTEXT_ID to root,
-                ObjectRelationDateValueFragment.RELATION_ID to relation.key,
-                ObjectRelationDateValueFragment.OBJECT_ID to target,
-                ObjectRelationDateValueFragment.FLOW_KEY to ObjectRelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.CONTEXT_ID to root,
+                RelationDateValueFragment.RELATION_ID to relation.key,
+                RelationDateValueFragment.OBJECT_ID to target,
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -458,10 +457,10 @@ class ObjectRelationDateValueTest {
 
         val fragment = launchFragment(
             bundleOf(
-                ObjectRelationDateValueFragment.CONTEXT_ID to root,
-                ObjectRelationDateValueFragment.RELATION_ID to relation.key,
-                ObjectRelationDateValueFragment.OBJECT_ID to target,
-                ObjectRelationDateValueFragment.FLOW_KEY to ObjectRelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.CONTEXT_ID to root,
+                RelationDateValueFragment.RELATION_ID to relation.key,
+                RelationDateValueFragment.OBJECT_ID to target,
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -541,10 +540,10 @@ class ObjectRelationDateValueTest {
 
         val fragment = launchFragment(
             bundleOf(
-                ObjectRelationDateValueFragment.CONTEXT_ID to root,
-                ObjectRelationDateValueFragment.RELATION_ID to relation.key,
-                ObjectRelationDateValueFragment.OBJECT_ID to target,
-                ObjectRelationDateValueFragment.FLOW_KEY to ObjectRelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.CONTEXT_ID to root,
+                RelationDateValueFragment.RELATION_ID to relation.key,
+                RelationDateValueFragment.OBJECT_ID to target,
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
             )
         )
 
@@ -581,8 +580,8 @@ class ObjectRelationDateValueTest {
     }
 
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestObjectRelationDateValueFragment> {
-        return launchFragmentInContainer<TestObjectRelationDateValueFragment>(
+    private fun launchFragment(args: Bundle): FragmentScenario<TestRelationDateValueFragment> {
+        return launchFragmentInContainer<TestRelationDateValueFragment>(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

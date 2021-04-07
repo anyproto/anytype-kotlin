@@ -19,15 +19,23 @@ class GetPageInfoWithLinks(private val repo: BlockRepository) :
                         links = it.links.copy(
                             outbound = it.links.outbound.filterNot { doc ->
                                 doc.fields.isArchived == true
-                                    || doc.type == DocumentInfo.Type.SET
-                                    || doc.type == DocumentInfo.Type.ARCHIVE
-                                    || doc.type == DocumentInfo.Type.OBJECT_TYPE
+                                        || doc.type == DocumentInfo.Type.SET
+                                        || doc.type == DocumentInfo.Type.ARCHIVE
+                                        || doc.type == DocumentInfo.Type.OBJECT_TYPE
+                                        || doc.type == DocumentInfo.Type.RELATION
+                                        || doc.type == DocumentInfo.Type.FILE
+                                        //    TODO Filter by profile object Anytype, maybe will change in future
+                                        || doc.id == GetListPages.ANYTYPE_PROFILE_ID
                             },
                             inbound = it.links.inbound.filterNot { doc ->
                                 doc.fields.isArchived == true
-                                    || doc.type == DocumentInfo.Type.SET
-                                    || doc.type == DocumentInfo.Type.ARCHIVE
-                                    || doc.type == DocumentInfo.Type.OBJECT_TYPE
+                                        || doc.type == DocumentInfo.Type.SET
+                                        || doc.type == DocumentInfo.Type.ARCHIVE
+                                        || doc.type == DocumentInfo.Type.OBJECT_TYPE
+                                        || doc.type == DocumentInfo.Type.RELATION
+                                        || doc.type == DocumentInfo.Type.FILE
+                                        //    TODO Filter by profile object Anytype, maybe will change in future
+                                        || doc.id == GetListPages.ANYTYPE_PROFILE_ID
                             }
                         )
                     )

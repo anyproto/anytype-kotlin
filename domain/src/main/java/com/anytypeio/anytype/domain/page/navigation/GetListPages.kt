@@ -12,10 +12,12 @@ open class GetListPages(private val repo: BlockRepository) :
         val documents = repo.getListPages()
         val pages = documents.filterNot { document ->
             document.fields.isArchived == true
-                || document.type == DocumentInfo.Type.SET
-                || document.type == DocumentInfo.Type.HOME
-                || document.type == DocumentInfo.Type.RELATION
-                || document.type == DocumentInfo.Type.OBJECT_TYPE
+                    || document.type == DocumentInfo.Type.SET
+                    || document.type == DocumentInfo.Type.HOME
+                    || document.type == DocumentInfo.Type.RELATION
+                    || document.type == DocumentInfo.Type.OBJECT_TYPE
+//    TODO Filter by profile object Anytype, maybe will change in future
+                    || document.id == ANYTYPE_PROFILE_ID
         }
         Response(pages)
     }
@@ -23,4 +25,8 @@ open class GetListPages(private val repo: BlockRepository) :
     data class Response(
         val listPages: List<DocumentInfo>
     )
+
+    companion object {
+        const val ANYTYPE_PROFILE_ID = "_anytype_profile"
+    }
 }

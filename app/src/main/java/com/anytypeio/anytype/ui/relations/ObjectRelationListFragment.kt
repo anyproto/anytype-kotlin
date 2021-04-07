@@ -40,13 +40,22 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment(),
     private val mode: Int get() = argInt(ARG_MODE)
 
     private val docRelationAdapter by lazy {
-        DocumentRelationAdapter(emptyList()) {
-            vm.onRelationClicked(
-                ctx = ctx,
-                target = target,
-                view = it
-            )
-        }
+        DocumentRelationAdapter(
+            items = emptyList(),
+            onRelationClicked = {
+                vm.onRelationClicked(
+                    ctx = ctx,
+                    target = target,
+                    view = it.view
+                )
+            },
+            onCheckboxClicked = {
+                vm.onCheckboxClicked(
+                    ctx = ctx,
+                    view = it.view
+                )
+            }
+        )
     }
 
     override fun onCreateView(
@@ -79,7 +88,13 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment(),
                     if (views.isEmpty()) {
                         views
                     } else {
-                        views.filter { it.name.contains(query, true) }
+                        views.filter { model ->
+                            if (model is ObjectRelationListViewModel.Model.Item) {
+                                model.view.name.contains(query, true)
+                            } else {
+                                true
+                            }
+                        }
                     }
                 }
                 subscribe(views) { docRelationAdapter.update(it) }

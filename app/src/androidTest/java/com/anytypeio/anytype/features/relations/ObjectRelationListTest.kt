@@ -92,7 +92,7 @@ class ObjectRelationListTest {
     }
 
     @Test
-    fun shouldDisplayOneRelationWithoutValue() {
+    fun shouldDisplayOneRelationWithoutValueInsideOtherRelationsSection() {
 
         // SETUP
 
@@ -119,14 +119,15 @@ class ObjectRelationListTest {
         // TESTING
 
         with(R.id.recycler.rVMatcher()) {
-            onItemView(0, R.id.tvRelationTitle).checkHasText(name)
-            onItemView(0, R.id.tvRelationValue).checkHasText("")
-            checkIsRecyclerSize(1)
+            onItemView(0, R.id.tvSectionName).checkHasText(R.string.other_relations)
+            onItemView(1, R.id.tvRelationTitle).checkHasText(name)
+            onItemView(1, R.id.tvRelationValue).checkHasText("")
+            checkIsRecyclerSize(2)
         }
     }
 
     @Test
-    fun shouldDisplayOnlyFirstRelationBecauseSecondIsHidden() {
+    fun shouldDisplayOnlyFirstRelationBecauseSecondIsHiddenInsideOtherRelationsSection() {
 
         // SETUP
 
@@ -162,14 +163,15 @@ class ObjectRelationListTest {
         // TESTING
 
         with(R.id.recycler.rVMatcher()) {
-            onItemView(0, R.id.tvRelationTitle).checkHasText(name2)
-            onItemView(0, R.id.tvRelationValue).checkHasText("")
-            checkIsRecyclerSize(1)
+            onItemView(0, R.id.tvSectionName).checkHasText(R.string.other_relations)
+            onItemView(1, R.id.tvRelationTitle).checkHasText(name2)
+            onItemView(1, R.id.tvRelationValue).checkHasText("")
+            checkIsRecyclerSize(2)
         }
     }
 
     @Test
-    fun shouldDisplayTwoRelationsWithoutValue() {
+    fun shouldDisplayTwoRelationsWithoutValueInsideOtherRelationsSection() {
 
         // SETUP
 
@@ -204,16 +206,17 @@ class ObjectRelationListTest {
         // TESTING
 
         with(R.id.recycler.rVMatcher()) {
-            onItemView(0, R.id.tvRelationTitle).checkHasText(name1)
-            onItemView(0, R.id.tvRelationValue).checkHasText("")
-            onItemView(1, R.id.tvRelationTitle).checkHasText(name2)
+            onItemView(0, R.id.tvSectionName).checkHasText(R.string.other_relations)
+            onItemView(1, R.id.tvRelationTitle).checkHasText(name1)
             onItemView(1, R.id.tvRelationValue).checkHasText("")
-            checkIsRecyclerSize(2)
+            onItemView(2, R.id.tvRelationTitle).checkHasText(name2)
+            onItemView(2, R.id.tvRelationValue).checkHasText("")
+            checkIsRecyclerSize(3)
         }
     }
 
     @Test
-    fun shouldDisplayTwoRelationsWithValues() {
+    fun shouldDisplayTwoRelationsWithValuesInsideOtherRelationsSection() {
 
         // SETUP
 
@@ -263,16 +266,17 @@ class ObjectRelationListTest {
         // TESTING
 
         with(R.id.recycler.rVMatcher()) {
-            onItemView(0, R.id.tvRelationTitle).checkHasText(name1)
-            onItemView(0, R.id.tvRelationValue).checkHasText(value1)
-            onItemView(1, R.id.tvRelationTitle).checkHasText(name2)
-            onItemView(1, R.id.tvRelationValue).checkHasText(value2)
-            checkIsRecyclerSize(2)
+            onItemView(0, R.id.tvSectionName).checkHasText(R.string.other_relations)
+            onItemView(1, R.id.tvRelationTitle).checkHasText(name1)
+            onItemView(1, R.id.tvRelationValue).checkHasText(value1)
+            onItemView(2, R.id.tvRelationTitle).checkHasText(name2)
+            onItemView(2, R.id.tvRelationValue).checkHasText(value2)
+            checkIsRecyclerSize(3)
         }
     }
 
     @Test
-    fun shouldDisplayTwoObjectRelationsWithNameAndAvatarInitials() {
+    fun shouldDisplayTwoObjectRelationsWithNameAndAvatarInitialsInsideOtherRelationsSection() {
 
         // SETUP
 
@@ -334,16 +338,17 @@ class ObjectRelationListTest {
         // TESTING
 
         with(R.id.recycler.rVMatcher()) {
-            onItemView(0, R.id.tvRelationTitle).checkHasText(name1)
-            onItemView(0, R.id.obj0).check(matches(hasDescendant(withText(username1))))
-            onItemView(1, R.id.tvRelationTitle).checkHasText(name2)
-            onItemView(1, R.id.obj0).check(matches(hasDescendant(withText(username2))))
-            checkIsRecyclerSize(2)
+            onItemView(0, R.id.tvSectionName).checkHasText(R.string.other_relations)
+            onItemView(1, R.id.tvRelationTitle).checkHasText(name1)
+            onItemView(1, R.id.obj0).check(matches(hasDescendant(withText(username1))))
+            onItemView(2, R.id.tvRelationTitle).checkHasText(name2)
+            onItemView(2, R.id.obj0).check(matches(hasDescendant(withText(username2))))
+            checkIsRecyclerSize(3)
         }
     }
 
     @Test
-    fun shouldDisplayTwoDateRelations() {
+    fun shouldDisplayTwoDateRelationsInsideOtherRelationsSection() {
 
         // SETUP
 
@@ -397,16 +402,17 @@ class ObjectRelationListTest {
         // TESTING
 
         with(R.id.recycler.rVMatcher()) {
-            onItemView(0, R.id.tvRelationTitle).checkHasText(name1)
-            onItemView(0, R.id.tvRelationValue).checkHasText(date1Screen)
-            onItemView(1, R.id.tvRelationTitle).checkHasText(name2)
-            onItemView(1, R.id.tvRelationValue).checkHasText(date2Screen)
-            checkIsRecyclerSize(2)
+            onItemView(0, R.id.tvSectionName).checkHasText(R.string.other_relations)
+            onItemView(1, R.id.tvRelationTitle).checkHasText(name1)
+            onItemView(1, R.id.tvRelationValue).checkHasText(date1Screen)
+            onItemView(2, R.id.tvRelationTitle).checkHasText(name2)
+            onItemView(2, R.id.tvRelationValue).checkHasText(date2Screen)
+            checkIsRecyclerSize(3)
         }
     }
 
     @Test
-    fun shouldDisplayTwoStatusRelations() {
+    fun shouldDisplayTwoStatusRelationsInsideOtherRelationsSection() {
 
         // SETUP
 
@@ -470,18 +476,19 @@ class ObjectRelationListTest {
         // TESTING
 
         with(R.id.recycler.rVMatcher()) {
-            onItemView(0, R.id.tvRelationTitle).checkHasText(name1)
-            onItemView(0, R.id.tvRelationValue).checkHasText(option1.text)
-            onItemView(0, R.id.tvRelationValue).checkHasTextColor(color1.text)
-            onItemView(1, R.id.tvRelationTitle).checkHasText(name2)
-            onItemView(1, R.id.tvRelationValue).checkHasText(option2.text)
-            onItemView(1, R.id.tvRelationValue).checkHasTextColor(color2.text)
-            checkIsRecyclerSize(2)
+            onItemView(0, R.id.tvSectionName).checkHasText(R.string.other_relations)
+            onItemView(1, R.id.tvRelationTitle).checkHasText(name1)
+            onItemView(1, R.id.tvRelationValue).checkHasText(option1.text)
+            onItemView(1, R.id.tvRelationValue).checkHasTextColor(color1.text)
+            onItemView(2, R.id.tvRelationTitle).checkHasText(name2)
+            onItemView(2, R.id.tvRelationValue).checkHasText(option2.text)
+            onItemView(2, R.id.tvRelationValue).checkHasTextColor(color2.text)
+            checkIsRecyclerSize(3)
         }
     }
 
     @Test
-    fun shouldDisplayFourTagRelations() {
+    fun shouldDisplayFourTagRelationsInsideOtherRelationsSection() {
 
         // SETUP
 
@@ -549,17 +556,18 @@ class ObjectRelationListTest {
         // TESTING
 
         with(R.id.recycler.rVMatcher()) {
-            onItemView(0, R.id.tvRelationTitle).checkHasText(name)
-            onItemView(0, R.id.tag0).check(matches((withText(option1.text))))
-            onItemView(0, R.id.tag1).check(matches((withText(option2.text))))
-            onItemView(0, R.id.tag2).check(matches((withText(option3.text))))
-            onItemView(0, R.id.tag3).check(matches((withText(option4.text))))
-            checkIsRecyclerSize(1)
+            onItemView(0, R.id.tvSectionName).checkHasText(R.string.other_relations)
+            onItemView(1, R.id.tvRelationTitle).checkHasText(name)
+            onItemView(1, R.id.tag0).check(matches((withText(option1.text))))
+            onItemView(1, R.id.tag1).check(matches((withText(option2.text))))
+            onItemView(1, R.id.tag2).check(matches((withText(option3.text))))
+            onItemView(1, R.id.tag3).check(matches((withText(option4.text))))
+            checkIsRecyclerSize(2)
         }
     }
 
     @Test
-    fun shouldDisplayTwoFileRelations() {
+    fun shouldDisplayTwoFileRelationsInsideOtherRelationsSection() {
 
         // SETUP
 
@@ -615,15 +623,16 @@ class ObjectRelationListTest {
         // TESTING
 
         with(R.id.recycler.rVMatcher()) {
-            onItemView(0, R.id.tvRelationTitle).checkHasText(name)
-            onItemView(0, R.id.file0).check(matches(hasDescendant(withText("Document"))))
-            onItemView(0, R.id.file1).check(matches(hasDescendant(withText("Image"))))
-            checkIsRecyclerSize(1)
+            onItemView(0, R.id.tvSectionName).checkHasText(R.string.other_relations)
+            onItemView(1, R.id.tvRelationTitle).checkHasText(name)
+            onItemView(1, R.id.file0).check(matches(hasDescendant(withText("Document"))))
+            onItemView(1, R.id.file1).check(matches(hasDescendant(withText("Image"))))
+            checkIsRecyclerSize(2)
         }
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestObjectRelationListFragment> {
-        return launchFragmentInContainer<TestObjectRelationListFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

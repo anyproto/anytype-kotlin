@@ -25,6 +25,12 @@ import timber.log.Timber
 
 sealed class RelationViewHolder(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder {
 
+    fun setIsFeatured(isFeatured: Boolean) {
+        itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
+            isSelected = isFeatured
+        }
+    }
+
     fun setBackgroundColor(color: String? = null) {
         Timber.d("Setting background color: $color")
         if (color != null) {

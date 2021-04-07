@@ -12,18 +12,21 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
     abstract val relationId: Id
     abstract val name: String
     abstract val value: String?
+    abstract val isFeatured: Boolean
 
     override val identifier: String get() = relationId
 
     data class Default(
         override val relationId: Id,
         override val name: String,
-        override val value: String? = null
+        override val value: String? = null,
+        override val isFeatured: Boolean = false
     ) : DocumentRelationView()
 
     data class Checkbox(
         override val relationId: Id,
         override val name: String,
+        override val isFeatured: Boolean = false,
         val isChecked: Boolean
     ): DocumentRelationView() {
         override val value: String? = null
@@ -33,6 +36,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         override val relationId: Id,
         override val name: String,
         override val value: String? = null,
+        override val isFeatured: Boolean = false,
         val status: List<StatusView>,
     ) : DocumentRelationView()
 
@@ -40,13 +44,15 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         override val relationId: Id,
         override val name: String,
         override val value: String? = null,
-        val tags: List<TagView>
+        override val isFeatured: Boolean = false,
+        val tags: List<TagView>,
     ) : DocumentRelationView()
 
     data class Object(
         override val relationId: Id,
         override val name: String,
         override val value: String? = null,
+        override val isFeatured: Boolean = false,
         val objects: List<ObjectView>
     ) : DocumentRelationView()
 
@@ -54,6 +60,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         override val relationId: Id,
         override val name: String,
         override val value: String? = null,
+        override val isFeatured: Boolean = false,
         val files: List<FileView>
     ) : DocumentRelationView()
 }

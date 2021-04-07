@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.relations
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.sets.*
@@ -11,13 +12,22 @@ import java.util.*
 fun List<Relation>.views(
     details: Block.Details,
     values: Map<String, Any?>,
-    urlBuilder: UrlBuilder
-): List<DocumentRelationView> = mapNotNull { relation -> relation.view(details, values, urlBuilder) }
+    urlBuilder: UrlBuilder,
+    featured: List<Id> = emptyList()
+): List<DocumentRelationView> = mapNotNull { relation ->
+    relation.view(
+        details = details,
+        values = values,
+        urlBuilder = urlBuilder,
+        isFeatured = featured.contains(relation.key)
+    )
+}
 
 fun Relation.view(
     details: Block.Details,
     values: Map<String, Any?>,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    isFeatured: Boolean = false
 ) : DocumentRelationView? {
     val relation = this
     return when {
@@ -31,7 +41,8 @@ fun Relation.view(
             DocumentRelationView.Object(
                 relationId = relation.key,
                 name = relation.name,
-                objects = objects
+                objects = objects,
+                isFeatured = isFeatured
             )
         }
         relation.format == Relation.Format.FILE -> {
@@ -42,7 +53,8 @@ fun Relation.view(
             DocumentRelationView.File(
                 relationId = relation.key,
                 name = relation.name,
-                files = files
+                files = files,
+                isFeatured = isFeatured
             )
         }
         relation.format == Relation.Format.DATE -> {
@@ -57,7 +69,8 @@ fun Relation.view(
                     format.format(date)
                 } else {
                     null
-                }
+                },
+                isFeatured = isFeatured
             )
         }
         relation.format == Relation.Format.STATUS -> {
@@ -68,7 +81,8 @@ fun Relation.view(
             DocumentRelationView.Status(
                 relationId = relation.key,
                 name = relation.name,
-                status = status
+                status = status,
+                isFeatured = isFeatured
             )
         }
         relation.format == Relation.Format.TAG -> {
@@ -79,21 +93,24 @@ fun Relation.view(
             DocumentRelationView.Tags(
                 relationId = relation.key,
                 name = relation.name,
-                tags = tags
+                tags = tags,
+                isFeatured = isFeatured
             )
         }
         relation.format == Relation.Format.CHECKBOX -> {
             DocumentRelationView.Checkbox(
                 relationId = relation.key,
                 name = relation.name,
-                isChecked = values[relation.key] as? Boolean ?: false
+                isChecked = values[relation.key] as? Boolean ?: false,
+                isFeatured = isFeatured
             )
         }
         else -> {
             DocumentRelationView.Default(
                 relationId = relation.key,
                 name = relation.name,
-                value = values[relation.key] as? String
+                value = values[relation.key] as? String,
+                isFeatured = isFeatured
             )
         }
     }

@@ -25,6 +25,7 @@ data class Block(
 
         private val default = map.withDefault { null }
 
+        val featuredRelations: List<String>? by default
         val name: String? by default
         val iconEmoji: String? by default
         val coverId: String? by default
@@ -40,6 +41,7 @@ data class Block(
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"
             const val TYPE_KEY = "type"
+            const val FEATURED_RELATIONS_KEY = "featuredRelations"
             const val IS_ARCHIVED_KEY = "isArchived"
         }
     }

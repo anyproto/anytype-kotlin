@@ -2,9 +2,11 @@ package com.anytypeio.anytype.presentation.relations
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -12,10 +14,7 @@ import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -32,14 +31,29 @@ class ObjectRelationListViewModel(
 
     private val isInAddMode = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(replay = 0)
-    val views = MutableStateFlow<List<DocumentRelationView>>(emptyList())
+    val views = MutableStateFlow<List<Model>>(emptyList())
 
     fun onStartListMode(ctx: Id) {
         isInAddMode.value = false
         jobs += viewModelScope.launch {
             stores.relations.stream().combine(stores.details.stream()) { relations, details ->
-                val values = details.details[ctx]?.map ?: emptyMap()
-                relations.views(details, values, urlBuilder)
+                val detail = details.details[ctx]
+                val values = detail?.map ?: emptyMap()
+                val featured = detail?.featuredRelations ?: emptyList()
+                relations.views(details, values, urlBuilder, featured).map { Model.Item(it) }
+            }.map { views ->
+                val result = mutableListOf<Model>().apply {
+                    val (isFeatured, other) = views.partition { it.view.isFeatured }
+                    if (isFeatured.isNotEmpty()) {
+                        add(Model.Section.Featured)
+                        addAll(isFeatured)
+                    }
+                    if (other.isNotEmpty()) {
+                        add(Model.Section.Other)
+                        addAll(other)
+                    }
+                }
+                result
             }.collect { views.value = it }
         }
     }
@@ -61,6 +75,26 @@ class ObjectRelationListViewModel(
             onRelationClickedAddMode(target = target, view = view)
         } else {
             onRelationClickedListMode(ctx = ctx, view = view)
+        }
+    }
+
+    fun onCheckboxClicked(ctx: Id, view: DocumentRelationView) {
+        viewModelScope.launch {
+            val details = stores.details.current().details[ctx]
+            val current = details?.featuredRelations ?: emptyList()
+            updateDetail(
+                UpdateDetail.Params(
+                    ctx = ctx,
+                    key = Block.Fields.FEATURED_RELATIONS_KEY,
+                    value = if (view.isFeatured)
+                        current.filter { it != view.relationId }
+                    else
+                        current + listOf(view.relationId)
+                )
+            ).process(
+                success = { dispatcher.send(it) },
+                failure = { Timber.e(it, "Error while updating featured relations") }
+            )
         }
     }
 
@@ -148,7 +182,7 @@ class ObjectRelationListViewModel(
                 success = { list: List<Relation> ->
                     val details = stores.details.current()
                     val values = details.details[ctx]?.map ?: emptyMap()
-                    views.value = list.views(details, values, urlBuilder)
+                    views.value = list.views(details, values, urlBuilder).map { Model.Item(it) }
                 }
             )
         }
@@ -178,6 +212,22 @@ class ObjectRelationListViewModel(
                 },
                 failure = { Timber.e(it, "Error while updating relation values") }
             )
+        }
+    }
+
+    sealed class Model : DefaultObjectDiffIdentifier {
+        sealed class Section : Model() {
+            object Featured : Section() {
+                override val identifier: String get() = "Section_Featured"
+            }
+
+            object Other : Section() {
+                override val identifier: String get() = "Section_Other"
+            }
+        }
+
+        data class Item(val view: DocumentRelationView) : Model() {
+            override val identifier: String get() = view.identifier
         }
     }
 

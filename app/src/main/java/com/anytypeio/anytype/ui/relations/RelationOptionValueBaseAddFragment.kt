@@ -1,23 +1,25 @@
 package com.anytypeio.anytype.ui.relations
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.sets.RelationValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_ui.reactive.focusChanges
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
 import com.anytypeio.anytype.presentation.relations.AddObjectRelationValueViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.add_object_relation_value_fragment.*
 
-abstract class RelationOptionValueBaseAddFragment : BaseBottomSheetFragment() {
+abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
+
+    val behavior get() = BottomSheetBehavior.from(sheet)
 
     val ctx get() = argString(CTX_KEY)
     val relation get() = argString(RELATION_KEY)
@@ -50,7 +52,9 @@ abstract class RelationOptionValueBaseAddFragment : BaseBottomSheetFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.add_object_relation_value_fragment, container, false)
+    ): View? = inflater.inflate(R.layout.add_object_relation_value_fragment, container, false).apply {
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,10 +68,30 @@ abstract class RelationOptionValueBaseAddFragment : BaseBottomSheetFragment() {
             )
         }
         with(lifecycleScope) {
-            subscribe(btnAdd.clicks()) {
-                onAddButtonClicked()
-            }
+            subscribe(view.clicks()) { dismiss() }
+            subscribe(btnAdd.clicks()) { onAddButtonClicked() }
             subscribe(filterInput.textChanges()) { vm.onFilterInputChanged(it.toString()) }
+            subscribe(filterInput.focusChanges()) { hasFocus ->
+                if (hasFocus) behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+
+        behavior.apply {
+            skipCollapsed = true
+            addBottomSheetCallback(
+                object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_HIDDEN) dismiss()
+                    }
+
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                        if (slideOffset < 0)
+                            btnAddContainer.gone()
+                        else
+                            btnAddContainer.visible()
+                    }
+                }
+            )
         }
     }
 
@@ -103,6 +127,7 @@ abstract class RelationOptionValueBaseAddFragment : BaseBottomSheetFragment() {
 
     override fun onStart() {
         super.onStart()
+        setupAppearance()
         vm.onStart(
             target = target,
             relationId = relation
@@ -112,6 +137,15 @@ abstract class RelationOptionValueBaseAddFragment : BaseBottomSheetFragment() {
     override fun onStop() {
         super.onStop()
         vm.onStop()
+    }
+
+    private fun setupAppearance() {
+        dialog?.window?.apply {
+            setGravity(Gravity.BOTTOM)
+            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            setBackgroundDrawableResource(android.R.color.transparent)
+            setWindowAnimations(R.style.DefaultBottomDialogAnimation)
+        }
     }
 
     companion object {

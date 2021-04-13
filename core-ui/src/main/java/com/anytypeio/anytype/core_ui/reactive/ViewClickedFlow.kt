@@ -42,6 +42,15 @@ fun EditText.textChanges(): Flow<CharSequence> = callbackFlow<CharSequence> {
 
 @CheckResult
 @OptIn(ExperimentalCoroutinesApi::class)
+fun EditText.focusChanges(): Flow<Boolean> = callbackFlow<Boolean> {
+    checkMainThread()
+    val listener = View.OnFocusChangeListener { _, hasFocus -> safeOffer(hasFocus) }
+    onFocusChangeListener = listener
+    awaitClose { onFocusChangeListener = null }
+}.conflate()
+
+@CheckResult
+@OptIn(ExperimentalCoroutinesApi::class)
 fun View.touches(handled: (MotionEvent) -> Boolean = { true }): Flow<MotionEvent> = callbackFlow<MotionEvent> {
     checkMainThread()
     val listener = View.OnTouchListener { _, event ->

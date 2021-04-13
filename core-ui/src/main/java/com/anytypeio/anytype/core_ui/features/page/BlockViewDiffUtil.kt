@@ -48,6 +48,20 @@ class BlockViewDiffUtil(
             }
         }
 
+        if (newBlock is BlockView.Title.Todo && oldBlock is BlockView.Title.Todo) {
+            if (newBlock.text != oldBlock.text)
+                changes.add(TEXT_CHANGED)
+            if (newBlock.coverColor != oldBlock.coverColor
+                || newBlock.coverGradient != oldBlock.coverGradient
+                || newBlock.coverImage != oldBlock.coverImage
+            ) {
+                changes.add(COVER_CHANGED)
+            }
+            if (newBlock.isChecked != oldBlock.isChecked) {
+                changes.add(TITLE_CHECKBOX_CHANGED)
+            }
+        }
+
         if (newBlock is BlockView.Title.Profile && oldBlock is BlockView.Title.Profile) {
             if (newBlock.text != oldBlock.text)
                 changes.add(TEXT_CHANGED)
@@ -155,6 +169,7 @@ class BlockViewDiffUtil(
         val isTitleIconChanged: Boolean get() = changes.contains(TITLE_ICON_CHANGED)
         val isSearchHighlightChanged: Boolean get() = changes.contains(SEARCH_HIGHLIGHT_CHANGED)
         val isAlignmentChanged: Boolean get() = changes.contains(ALIGNMENT_CHANGED)
+        val isTitleCheckboxChanged: Boolean get() = changes.contains(TITLE_CHECKBOX_CHANGED)
 
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)
@@ -183,5 +198,6 @@ class BlockViewDiffUtil(
         const val SEARCH_HIGHLIGHT_CHANGED = 14
         const val LOADING_STATE_CHANGED = 15
         const val COVER_CHANGED = 16
+        const val TITLE_CHECKBOX_CHANGED = 17
     }
 }

@@ -76,6 +76,7 @@ import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATIO
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_PLACEHOLDER
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_TAGS
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_TODO_TITLE
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import timber.log.Timber
 
@@ -94,6 +95,7 @@ class BlockAdapter(
     private val onTitleTextInputClicked: () -> Unit,
     private val onSelectionChanged: (String, IntRange) -> Unit,
     private val onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit,
+    private val onTitleCheckboxClicked: (BlockView.Title.Todo) -> Unit = {},
     private val onFocusChanged: (String, Boolean) -> Unit,
     private val onEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
@@ -145,6 +147,23 @@ class BlockAdapter(
                         false
                     )
                 )
+            }
+            HOLDER_TODO_TITLE -> {
+                Title.Todo(
+                    view = inflater.inflate(
+                        R.layout.item_block_title_todo,
+                        parent,
+                        false
+                    )
+                ).apply {
+                    checkbox.setOnClickListener {
+                        val view = views[bindingAdapterPosition]
+                        check(view is BlockView.Title.Todo)
+                        view.isChecked = !view.isChecked
+                        checkbox.isSelected = view.isChecked
+                        onTitleCheckboxClicked(view)
+                    }
+                }
             }
             HOLDER_HEADER_ONE -> {
                 HeaderOne(
@@ -531,6 +550,12 @@ class BlockAdapter(
                             item = blocks[position] as BlockView.Title.Profile
                         )
                     }
+                    is Title.Todo -> {
+                        holder.processPayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.Title.Todo
+                        )
+                    }
                     is Numbered -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -855,6 +880,36 @@ class BlockAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Document,
+                        onTitleTextChanged = onTitleBlockTextChanged,
+                        onFocusChanged = onFocusChanged,
+                        onPageIconClicked = onPageIconClicked,
+                        onCoverClicked = onCoverClicked
+                    )
+                    enableEnterKeyDetector(
+                        onSplitLineEnterClicked = { range ->
+                            holder.content.text?.let { editable ->
+                                onSplitLineEnterClicked(
+                                    blocks[holder.adapterPosition].id,
+                                    editable,
+                                    range
+                                )
+                            }
+                        }
+                    )
+                    setTextInputClickListener {
+                        if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
+                            content.context.imm()
+                                .showSoftInput(content, InputMethodManager.SHOW_FORCED)
+                        }
+                        onTitleTextInputClicked()
+                    }
+                    holder.content.clipboardInterceptor = clipboardInterceptor
+                }
+            }
+            is Title.Todo -> {
+                holder.apply {
+                    bind(
+                        item = blocks[position] as BlockView.Title.Todo,
                         onTitleTextChanged = onTitleBlockTextChanged,
                         onFocusChanged = onFocusChanged,
                         onPageIconClicked = onPageIconClicked,

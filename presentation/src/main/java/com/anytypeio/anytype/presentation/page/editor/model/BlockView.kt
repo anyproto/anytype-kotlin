@@ -39,6 +39,7 @@ import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATIO
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_TAGS
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_TITLE
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_TODO_TITLE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_TOGGLE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_VIDEO
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_VIDEO_ERROR
@@ -422,10 +423,11 @@ sealed class BlockView : ViewType, Parcelable {
         abstract var coverGradient: String?
 
         /**
-         * UI-model for a title block.
+         * UI-model for a basic-layout title block.
          * @property id block's id
          * @property text text content (i.e. title text)
          */
+        @Deprecated("Rename to Basic")
         @Parcelize
         data class Document(
             override val id: String,
@@ -444,7 +446,7 @@ sealed class BlockView : ViewType, Parcelable {
         }
 
         /**
-         * UI-model for a profile title block.
+         * UI-model for a profile-layout title block.
          * @property id block's id
          * @property text text content (i.e. title text)
          * @property image image as a page's logo (if present)
@@ -463,6 +465,28 @@ sealed class BlockView : ViewType, Parcelable {
             override val searchFields: @RawValue List<Searchable.Field> = emptyList()
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_PROFILE_TITLE
+        }
+
+        /**
+         * UI-model for a todo-layout title block.
+         * @property id block's id
+         * @property text text content (i.e. title text)
+         */
+        @Parcelize
+        data class Todo(
+            override val id: String,
+            override var isFocused: Boolean = false,
+            override var text: String? = null,
+            override val image: String? = null,
+            override var coverColor: CoverColor? = null,
+            override var coverImage: Url? = null,
+            override var coverGradient: String? = null,
+            override val mode: Mode = Mode.EDIT,
+            override val cursor: Int? = null,
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            var isChecked: Boolean = false,
+        ) : Title(), Searchable {
+            override fun getViewType() = HOLDER_TODO_TITLE
         }
 
         /**

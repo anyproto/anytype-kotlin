@@ -26,11 +26,12 @@ import com.anytypeio.anytype.presentation.page.cover.CoverGradient
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlinx.android.synthetic.main.item_block_title.view.*
 import kotlinx.android.synthetic.main.item_block_title.view.documentIconContainer
+import kotlinx.android.synthetic.main.item_block_title.view.emojiIcon
 import kotlinx.android.synthetic.main.item_block_title.view.imageIcon
 import kotlinx.android.synthetic.main.item_block_title.view.title
 import kotlinx.android.synthetic.main.item_block_title_profile.view.*
+import kotlinx.android.synthetic.main.item_block_title_todo.view.*
 import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
@@ -392,6 +393,63 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     }
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)
+                    }
+                }
+            }
+        }
+    }
+
+    class Todo(view: View) : Title(view) {
+
+        override val icon: FrameLayout = itemView.documentIconContainer
+        override val image: ImageView = itemView.imageIcon
+
+        val checkbox = itemView.todoTitleCheckbox
+
+        override val root: View = itemView
+        override val content: TextInputWidget = itemView.title
+
+        init {
+            content.setSpannableFactory(DefaultSpannableFactory())
+        }
+
+        fun bind(
+            item: BlockView.Title.Todo,
+            onTitleTextChanged: (BlockView.Title) -> Unit,
+            onFocusChanged: (String, Boolean) -> Unit,
+            onPageIconClicked: () -> Unit,
+            onCoverClicked: () -> Unit
+        ) {
+            super.bind(
+                item = item,
+                onTitleTextChanged = {
+                    item.text = it.toString()
+                    onTitleTextChanged(item)
+                },
+                onFocusChanged = onFocusChanged,
+                onCoverClicked = onCoverClicked
+            )
+            checkbox.isSelected = item.isChecked
+            applySearchHighlights(item)
+            if (item.mode == BlockView.Mode.EDIT) {
+                icon.setOnClickListener { onPageIconClicked() }
+            }
+        }
+
+        override fun setImage(item: BlockView.Title) {}
+
+        override fun processPayloads(
+            payloads: List<BlockViewDiffUtil.Payload>,
+            item: BlockView.Title
+        ) {
+            super.processPayloads(payloads, item)
+            if (item is BlockView.Title.Todo) {
+                payloads.forEach { payload ->
+                    if (payload.isSearchHighlightChanged) {
+                        applySearchHighlights(item)
+                    }
+                    if (payload.isTitleCheckboxChanged) {
+                        checkbox.isSelected = item.isChecked
                     }
                 }
             }

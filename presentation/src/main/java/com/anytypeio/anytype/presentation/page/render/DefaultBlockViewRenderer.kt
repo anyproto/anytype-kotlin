@@ -1,10 +1,7 @@
 package com.anytypeio.anytype.presentation.page.render
 
-import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.Block.Content
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.cover.CoverType
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
@@ -663,9 +660,8 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         details: Block.Details
     ): BlockView.Title {
-        val cursor: Int?
 
-        cursor = if (focus.id == block.id) {
+        val cursor: Int? = if (focus.id == block.id) {
             focus.cursor?.let { crs ->
                 when (crs) {
                     is Cursor.Start -> 0
@@ -709,46 +705,76 @@ class DefaultBlockViewRenderer(
             else -> Timber.d("Missing cover type: $type")
         }
 
-        return when (rootContent.type) {
-            Content.Smart.Type.PAGE -> BlockView.Title.Document(
-                mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
-                id = block.id,
-                text = content.text,
-                emoji = details.details[root.id]?.iconEmoji?.let { name ->
-                    if (name.isNotEmpty())
-                        name
-                    else
-                        null
-                },
-                image = details.details[root.id]?.iconImage?.let { name ->
-                    if (name.isNotEmpty())
-                        urlBuilder.thumbnail(name)
-                    else
-                        null
-                },
-                isFocused = block.id == focus.id,
-                cursor = cursor,
-                coverColor = coverColor,
-                coverImage = coverImage,
-                coverGradient = coverGradient,
-            )
-            Content.Smart.Type.PROFILE -> BlockView.Title.Profile(
-                mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
-                id = block.id,
-                text = content.text,
-                image = details.details[root.id]?.iconImage?.let { name ->
-                    if (name.isNotEmpty())
-                        urlBuilder.thumbnail(name)
-                    else
-                        null
-                },
-                isFocused = block.id == focus.id,
-                cursor = cursor,
-                coverColor = coverColor,
-                coverImage = coverImage,
-                coverGradient = coverGradient
-            )
-            else -> throw IllegalStateException("Unexpected root block content: ${root.content}")
+        val layoutCode = details.details[root.id]?.layout?.toInt()
+
+        var layout = Layout.values().find { it.code == layoutCode }
+
+        if (layout == null) {
+            // Retrieving layout based on smart block type:
+            layout = if (rootContent.type == Content.Smart.Type.PROFILE)
+                Layout.PROFILE
+            else {
+                // Falling back to default layout if layout is not defined
+                Layout.BASIC
+            }
+        }
+
+        return when(layout) {
+            Layout.BASIC -> {
+                BlockView.Title.Document(
+                    mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                    id = block.id,
+                    text = content.text,
+                    emoji = details.details[root.id]?.iconEmoji?.let { name ->
+                        if (name.isNotEmpty())
+                            name
+                        else
+                            null
+                    },
+                    image = details.details[root.id]?.iconImage?.let { name ->
+                        if (name.isNotEmpty())
+                            urlBuilder.thumbnail(name)
+                        else
+                            null
+                    },
+                    isFocused = block.id == focus.id,
+                    cursor = cursor,
+                    coverColor = coverColor,
+                    coverImage = coverImage,
+                    coverGradient = coverGradient,
+                )
+            }
+            Layout.TODO -> {
+                BlockView.Title.Todo(
+                    mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                    id = block.id,
+                    text = content.text,
+                    isFocused = block.id == focus.id,
+                    cursor = cursor,
+                    coverColor = coverColor,
+                    coverImage = coverImage,
+                    coverGradient = coverGradient,
+                    isChecked = content.isChecked == true
+                )
+            }
+            Layout.PROFILE -> {
+                BlockView.Title.Profile(
+                    mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                    id = block.id,
+                    text = content.text,
+                    image = details.details[root.id]?.iconImage?.let { name ->
+                        if (name.isNotEmpty())
+                            urlBuilder.thumbnail(name)
+                        else
+                            null
+                    },
+                    isFocused = block.id == focus.id,
+                    cursor = cursor,
+                    coverColor = coverColor,
+                    coverImage = coverImage,
+                    coverGradient = coverGradient
+                )
+            }
         }
     }
 

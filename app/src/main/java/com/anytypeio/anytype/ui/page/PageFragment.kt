@@ -183,6 +183,7 @@ open class PageFragment :
             onTitleBlockTextChanged = vm::onTitleBlockTextChanged,
             onSelectionChanged = vm::onSelectionChanged,
             onCheckboxClicked = vm::onCheckboxClicked,
+            onTitleCheckboxClicked = vm::onTitleCheckboxClicked,
             onFocusChanged = vm::onBlockFocusChanged,
             onSplitLineEnterClicked = { id, editable, range ->
                 vm.onEnterKeyClicked(

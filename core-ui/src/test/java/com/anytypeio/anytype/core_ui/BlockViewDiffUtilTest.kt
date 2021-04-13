@@ -890,4 +890,41 @@ class BlockViewDiffUtilTest {
             actual = payload
         )
     }
+
+    @Test
+    fun `should detect checkbox change for todo-layout title block`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val text = MockDataFactory.randomString()
+
+        val oldBlock = BlockView.Title.Todo(
+            id = id,
+            text = text,
+            isChecked = true
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            isChecked = false
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.TITLE_CHECKBOX_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
 }

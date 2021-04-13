@@ -40,6 +40,7 @@ object BlockActionToolbarFactory {
         is BlockView.Title.Document -> TODO()
         is BlockView.Title.Profile -> TODO()
         is BlockView.Title.Archive -> TODO()
+        is BlockView.Title.Todo -> TODO()
         is BlockView.Relation.Placeholder -> newInstance(block, dimensions)
         is BlockView.Relation.Related -> newInstance(block, dimensions)
     }

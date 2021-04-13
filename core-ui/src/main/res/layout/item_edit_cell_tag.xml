@@ -16,9 +16,12 @@
     <com.anytypeio.anytype.core_ui.widgets.text.TagWidget
         android:id="@+id/tvTagName"
         style="@style/TagTextStyle"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
+        android:layout_marginEnd="32dp"
         tools:layout_marginStart="36dp"
         tools:text="Tag" />
 

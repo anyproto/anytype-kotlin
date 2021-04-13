@@ -256,7 +256,7 @@ class RelationOptionValueDVAddViewModel(
                     dataview = dataview,
                     record = target,
                     name = name,
-                    color = ThemeColor.values().random().title
+                    color = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random().title
                 )
             ).proceed(
                 success = { (payload, option) ->
@@ -513,7 +513,7 @@ class RelationOptionValueAddViewModel(
                     ctx = ctx,
                     relation = relation,
                     name = name,
-                    color = ThemeColor.values().random().title
+                    color = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random().title
                 )
             ).proceed(
                 success = { (payload, option) ->

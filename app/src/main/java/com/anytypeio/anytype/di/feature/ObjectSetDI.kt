@@ -55,8 +55,8 @@ interface ObjectSetSubComponent {
     fun modifyFilterComponent(): ModifyFilterSubComponent.Builder
     fun viewerSortComponent(): ViewerSortSubComponent.Builder
     fun modifyViewerSortComponent(): ModifyViewerSortSubComponent.Builder
-    fun editCellsComponent(): EditGridCellSubComponent.Builder
-    fun editCellDateComponent(): EditGridCellDateSubComponent.Builder
+    fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
+    fun relationDateValueComponent(): RelationDataValueSubComponent.Builder
 }
 
 @Module

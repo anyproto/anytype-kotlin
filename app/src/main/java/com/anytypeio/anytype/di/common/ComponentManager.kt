@@ -226,27 +226,27 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val editGridCellComponent = DependentComponentMap { ctx ->
+    val relationTextValueDVComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)
-            .editCellsComponent()
-            .module(EditGridCellModule)
+            .relationTextValueComponent()
+            .module(RelationTextValueModule)
             .build()
     }
 
-    val editRelationCellComponent = DependentComponentMap { ctx ->
+    val relationTextValueComponent = DependentComponentMap { ctx ->
         pageComponent
             .get(ctx)
-            .editRelationCellComponent()
-            .module(EditGridCellModule)
+            .relationTextValueComponent()
+            .module(RelationTextValueModule)
             .build()
     }
 
     val objectSetObjectRelationDataValueComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)
-            .editCellDateComponent()
-            .module(EditGridCellDateModule)
+            .relationDateValueComponent()
+            .module(RelationDateValueModule)
             .build()
     }
 
@@ -254,7 +254,7 @@ class ComponentManager(private val main: MainComponent) {
         pageComponent
             .get(ctx)
             .editRelationDateComponent()
-            .module(EditGridCellDateModule)
+            .module(RelationDateValueModule)
             .build()
     }
 

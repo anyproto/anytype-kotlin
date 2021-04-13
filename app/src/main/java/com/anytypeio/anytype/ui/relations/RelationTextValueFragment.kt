@@ -164,17 +164,17 @@ open class RelationTextValueFragment : BaseBottomSheetFragment() {
 
     override fun injectDependencies() {
         if (flow == FLOW_DATAVIEW) {
-            componentManager().editGridCellComponent.get(ctx).inject(this)
+            componentManager().relationTextValueDVComponent.get(ctx).inject(this)
         } else {
-            componentManager().editRelationCellComponent.get(ctx).inject(this)
+            componentManager().relationTextValueComponent.get(ctx).inject(this)
         }
     }
 
     override fun releaseDependencies() {
         if (flow == FLOW_DATAVIEW) {
-            componentManager().editGridCellComponent.release(ctx)
+            componentManager().relationTextValueDVComponent.release(ctx)
         } else {
-            componentManager().editRelationCellComponent.get(ctx).inject(this)
+            componentManager().relationTextValueComponent.release(ctx)
         }
     }
 

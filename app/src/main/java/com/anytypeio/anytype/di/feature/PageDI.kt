@@ -66,9 +66,9 @@ interface PageSubComponent {
     fun documentActionMenuComponentBuilder(): DocumentActionMenuSubComponent.Builder
 
     fun documentRelationSubComponent(): DocumentRelationSubComponent.Builder
-    fun editRelationCellComponent(): EditGridCellSubComponent.Builder
+    fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
     fun editDocRelationComponent() : ObjectObjectRelationValueSubComponent.Builder
-    fun editRelationDateComponent(): EditGridCellDateSubComponent.Builder
+    fun editRelationDateComponent(): RelationDataValueSubComponent.Builder
 
     fun docCoverGalleryComponentBuilder(): SelectDocCoverSubComponent.Builder
     fun uploadDocCoverImageComponentBuilder(): UploadDocCoverImageSubComponent.Builder

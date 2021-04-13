@@ -11,45 +11,45 @@ import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
-@Subcomponent(modules = [EditGridCellModule::class])
+@Subcomponent(modules = [RelationTextValueModule::class])
 @PerModal
-interface EditGridCellSubComponent {
+interface RelationTextValueSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: EditGridCellModule): Builder
-        fun build(): EditGridCellSubComponent
+        fun module(module: RelationTextValueModule): Builder
+        fun build(): RelationTextValueSubComponent
     }
 
     fun inject(fragment: RelationTextValueFragment)
 }
 
 @Module
-object EditGridCellModule {
+object RelationTextValueModule {
     @JvmStatic
     @Provides
     @PerModal
-    fun provideEditGridCellViewModelFactory(
+    fun provideRelationTextValueViewModelFactory(
         relations: ObjectRelationProvider,
         values: ObjectValueProvider
     ) = RelationTextValueViewModel.Factory(relations, values)
 }
 
-@Subcomponent(modules = [EditGridCellDateModule::class])
+@Subcomponent(modules = [RelationDateValueModule::class])
 @PerModal
-interface EditGridCellDateSubComponent {
+interface RelationDataValueSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: EditGridCellDateModule): Builder
-        fun build(): EditGridCellDateSubComponent
+        fun module(module: RelationDateValueModule): Builder
+        fun build(): RelationDataValueSubComponent
     }
 
     fun inject(fragment: RelationDateValueFragment)
 }
 
 @Module
-object EditGridCellDateModule {
+object RelationDateValueModule {
 
     @JvmStatic
     @Provides

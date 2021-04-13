@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvid
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
+import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -103,7 +104,8 @@ abstract class RelationValueBaseViewModel(
                 if (value is List<*>) {
                     value.typeOf<Id>().forEach { id ->
                         val detail = details.provide()[id]
-                        val objectType = types.provide().find { it.url == detail?.type }
+                        val type = detail?.map?.type
+                        val objectType = types.provide().find { it.url == type }
                         items.add(
                             RelationValueView.Object(
                                 id = id,

@@ -114,3 +114,13 @@ class WithTextColorRes(private val expectedColorRes: Int) : BoundedMatcher<View,
         description.appendValue(expectedColorRes)
     }
 }
+
+class TextLineCountMatcher(private val lines : Int): TypeSafeMatcher<View>() {
+    override fun describeTo(description: Description?) {
+        description?.appendText("isTextInLines")
+    }
+
+    override fun matchesSafely(item: View?): Boolean {
+        return (item as TextView).lineCount == lines
+    }
+}

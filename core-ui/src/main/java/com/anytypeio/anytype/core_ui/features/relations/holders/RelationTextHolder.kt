@@ -23,6 +23,20 @@ class RelationTextHolder(view: View) : RelationBaseHolder(view) {
     }
 }
 
+class RelationTextShortHolder(view: View) : RelationBaseHolder(view) {
+
+    fun bind(view: RelationTextValueView.TextShort) = with(itemView) {
+        textInputField.setText(view.value)
+        if (view.value.isNullOrEmpty()) {
+            textInputField.requestFocus()
+        }
+        textInputField.setHint(R.string.dv_cell_description_hint)
+        textInputField.inputType = InputType.TYPE_CLASS_TEXT
+        textInputField.isSingleLine = true
+        btnAction.gone()
+    }
+}
+
 class RelationPhoneHolder(view: View) : RelationBaseHolder(view) {
 
     fun bind(view: RelationTextValueView.Phone, actionClick: (EditGridCellAction) -> Unit) =

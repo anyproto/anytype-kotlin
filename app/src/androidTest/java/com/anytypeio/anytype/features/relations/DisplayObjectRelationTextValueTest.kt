@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.features.relations
 
 import android.os.Bundle
+import android.text.InputType
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
@@ -16,11 +17,12 @@ import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
+import com.anytypeio.anytype.utils.TextLineCountMatcher
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.hamcrest.CoreMatchers.not
@@ -435,6 +437,85 @@ class DisplayObjectRelationTextValueTest {
 
         onView(withId(R.id.btnAction)).apply {
             check(matches(isDisplayed()))
+        }
+    }
+
+    @Test
+    fun shouldDisplayShortText() {
+
+        // SETUP
+
+        val relationText = "Short text"
+        val valueText =
+            "Anytype is a next generation software that breaks down barriers between applications, gives back privacy and data ownership to users."
+
+        val target = MockDataFactory.randomUuid()
+
+        val viewer = Block.Content.DataView.Viewer(
+            id = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            filters = emptyList(),
+            sorts = emptyList(),
+            viewerRelations = emptyList(),
+            type = Block.Content.DataView.Viewer.Type.GRID
+        )
+
+        val relation = Relation(
+            key = MockDataFactory.randomUuid(),
+            name = relationText,
+            format = Relation.Format.SHORT_TEXT,
+            source = Relation.Source.values().random()
+        )
+
+        val record: Map<String, Any?> = mapOf(
+            ObjectSetConfig.ID_KEY to target,
+            relation.key to valueText
+        )
+
+        state.value = ObjectSet(
+            blocks = listOf(
+                Block(
+                    id = MockDataFactory.randomUuid(),
+                    children = emptyList(),
+                    fields = Block.Fields.empty(),
+                    content = Block.Content.DataView(
+                        relations = listOf(relation),
+                        viewers = listOf(viewer),
+                        source = MockDataFactory.randomUuid()
+                    )
+                )
+            ),
+            viewerDb = mapOf(
+                viewer.id to ObjectSet.ViewerData(
+                    records = listOf(record),
+                    total = 1
+                )
+            )
+        )
+
+        launchFragment(
+            bundleOf(
+                RelationTextValueFragment.CONTEXT_ID to root,
+                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.OBJECT_ID to target,
+                RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
+            )
+        )
+
+        // TESTING
+
+        onView(withId(R.id.textInputField)).apply {
+            check(matches(withText(valueText)))
+            check(matches(withInputType(InputType.TYPE_CLASS_TEXT)))
+            check(matches(TextLineCountMatcher(1)))
+        }
+
+        onView(withId(R.id.tvRelationHeader)).apply {
+            check(matches(withText(relationText)))
+        }
+
+        onView(withId(R.id.btnAction)).apply {
+            check(matches(not(isDisplayed())))
         }
     }
 

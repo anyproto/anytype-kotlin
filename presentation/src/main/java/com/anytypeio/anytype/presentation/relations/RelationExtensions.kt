@@ -105,6 +105,14 @@ fun Relation.view(
                 isFeatured = isFeatured
             )
         }
+        relation.format == Relation.Format.NUMBER -> {
+            DocumentRelationView.Default(
+                relationId = relation.key,
+                name = relation.name,
+                value = (values[relation.key] as? Double).toString(),
+                isFeatured = isFeatured
+            )
+        }
         else -> {
             DocumentRelationView.Default(
                 relationId = relation.key,

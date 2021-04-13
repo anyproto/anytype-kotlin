@@ -27,6 +27,13 @@ class RelationTextValueAdapter(
                     }
                 )
             }
+            TYPE_TEXT_SHORT -> RelationTextShortHolder(view).apply {
+                itemView.textInputField.setOnEditorActionListener(
+                    ActionDoneListener { txt ->
+                        onEditCompleted(items[bindingAdapterPosition], txt)
+                    }
+                )
+            }
             TYPE_URL -> RelationUrlHolder(view).apply {
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
@@ -61,7 +68,12 @@ class RelationTextValueAdapter(
 
     override fun onBindViewHolder(holder: RelationBaseHolder, position: Int) {
         when (holder) {
-            is RelationTextHolder -> holder.bind(items[position] as RelationTextValueView.Text)
+            is RelationTextHolder -> holder.bind(
+                items[position] as RelationTextValueView.Text
+            )
+            is RelationTextShortHolder -> holder.bind(
+                items[position] as RelationTextValueView.TextShort
+            )
             is RelationPhoneHolder -> holder.bind(
                 items[position] as RelationTextValueView.Phone,
                 actionClick
@@ -74,7 +86,9 @@ class RelationTextValueAdapter(
                 items[position] as RelationTextValueView.Url,
                 actionClick
             )
-            is RelationNumberHolder -> holder.bind(items[position] as RelationTextValueView.Number)
+            is RelationNumberHolder -> holder.bind(
+                items[position] as RelationTextValueView.Number
+            )
         }
     }
 
@@ -82,6 +96,7 @@ class RelationTextValueAdapter(
 
     override fun getItemViewType(position: Int): Int = when (items[position]) {
         is RelationTextValueView.Text -> TYPE_TEXT
+        is RelationTextValueView.TextShort -> TYPE_TEXT_SHORT
         is RelationTextValueView.Email -> TYPE_EMAIL
         is RelationTextValueView.Number -> TYPE_NUMBER
         is RelationTextValueView.Phone -> TYPE_PHONE
@@ -100,5 +115,6 @@ class RelationTextValueAdapter(
         const val TYPE_EMAIL = 3
         const val TYPE_URL = 4
         const val TYPE_NUMBER = 5
+        const val TYPE_TEXT_SHORT = 6
     }
 }

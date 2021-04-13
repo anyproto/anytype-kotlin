@@ -22,20 +22,32 @@ class RelationTextValueViewModel(
         title.value = relation.name
         views.value = listOf(
             when (relation.format) {
-                Relation.Format.SHORT_TEXT -> RelationTextValueView.Text(value = values[relationId] as? String)
-                Relation.Format.LONG_TEXT -> RelationTextValueView.Text(value = values[relationId] as? String)
-                Relation.Format.NUMBER -> RelationTextValueView.Number(
-                    value = values[relationId]?.let { value ->
-                        when (value) {
-                            is String -> value.toIntOrNull().toString()
-                            is Number -> value.toInt().toString()
-                            else -> null
+                Relation.Format.SHORT_TEXT -> {
+                    RelationTextValueView.TextShort(value = values[relationId] as? String)
+                }
+                Relation.Format.LONG_TEXT -> {
+                    RelationTextValueView.Text(value = values[relationId] as? String)
+                }
+                Relation.Format.NUMBER -> {
+                    RelationTextValueView.Number(
+                        value = values[relationId]?.let { value ->
+                            when (value) {
+                                is String -> value.toIntOrNull().toString()
+                                is Number -> value.toInt().toString()
+                                else -> null
+                            }
                         }
-                    }
-                )
-                Relation.Format.URL -> RelationTextValueView.Url(value = values[relationId] as? String)
-                Relation.Format.EMAIL -> RelationTextValueView.Email(value = values[relationId] as? String)
-                Relation.Format.PHONE -> RelationTextValueView.Phone(value = values[relationId] as? String)
+                    )
+                }
+                Relation.Format.URL -> {
+                    RelationTextValueView.Url(value = values[relationId] as? String)
+                }
+                Relation.Format.EMAIL -> {
+                    RelationTextValueView.Email(value = values[relationId] as? String)
+                }
+                Relation.Format.PHONE -> {
+                    RelationTextValueView.Phone(value = values[relationId] as? String)
+                }
                 else -> throw  IllegalArgumentException("Wrong format:${relation.format}")
             }
         )
@@ -54,6 +66,7 @@ class RelationTextValueViewModel(
 
 sealed class RelationTextValueView {
     data class Text(val value: String?) : RelationTextValueView()
+    data class TextShort(val value: String?) : RelationTextValueView()
     data class Phone(val value: String?) : RelationTextValueView()
     data class Url(val value: String?) : RelationTextValueView()
     data class Email(val value: String?) : RelationTextValueView()

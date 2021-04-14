@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.relations
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
@@ -10,6 +9,7 @@ import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -25,7 +25,7 @@ class RelationListViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val updateDetail: UpdateDetail,
     private val detailModificationManager: DetailModificationManager
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
 
@@ -82,19 +82,27 @@ class RelationListViewModel(
         viewModelScope.launch {
             val details = stores.details.current().details[ctx]
             val current = details?.featuredRelations ?: emptyList()
-            updateDetail(
-                UpdateDetail.Params(
-                    ctx = ctx,
-                    key = Block.Fields.FEATURED_RELATIONS_KEY,
-                    value = if (view.isFeatured)
-                        current.filter { it != view.relationId }
-                    else
-                        current + listOf(view.relationId)
+            val new =  if (view.isFeatured)
+                current.filter { it != view.relationId }
+            else
+                current + listOf(view.relationId)
+            if (new.size <= MAX_FEATURED_RELATION_COUNT) {
+                updateDetail(
+                    UpdateDetail.Params(
+                        ctx = ctx,
+                        key = Block.Fields.FEATURED_RELATIONS_KEY,
+                        value = if (view.isFeatured)
+                            current.filter { it != view.relationId }
+                        else
+                            current + listOf(view.relationId)
+                    )
+                ).process(
+                    success = { dispatcher.send(it) },
+                    failure = { Timber.e(it, "Error while updating featured relations") }
                 )
-            ).process(
-                success = { dispatcher.send(it) },
-                failure = { Timber.e(it, "Error while updating featured relations") }
-            )
+            } else {
+                _toasts.emit(MAX_FEATURED_RELATION_COUNT_ERROR)
+            }
         }
     }
 
@@ -254,5 +262,10 @@ class RelationListViewModel(
             val blockId: Id,
             val key: Id
         ) : Command()
+    }
+
+    companion object {
+        const val MAX_FEATURED_RELATION_COUNT = 5
+        const val MAX_FEATURED_RELATION_COUNT_ERROR = "Currently you cannot create more than $MAX_FEATURED_RELATION_COUNT featured relations"
     }
 }

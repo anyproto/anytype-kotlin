@@ -37,7 +37,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
-                style = Block.Content.Text.Style.values().random()
+                style = Block.Content.Text.Style.values().filter { it != Block.Content.Text.Style.DESCRIPTION }.random()
             ),
             children = emptyList()
         )
@@ -53,6 +53,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(page)
 
         val vm = buildViewModel()

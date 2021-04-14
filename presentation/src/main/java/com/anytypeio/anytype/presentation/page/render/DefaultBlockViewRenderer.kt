@@ -280,6 +280,16 @@ class DefaultBlockViewRenderer(
                                 )
                             }
                         }
+                        Content.Text.Style.DESCRIPTION -> {
+                            counter.reset()
+                            result.add(
+                                description(
+                                    block = block,
+                                    content = content,
+                                    mode = mode
+                                )
+                            )
+                        }
                         Content.Text.Style.CHECKBOX -> {
                             counter.reset()
                             result.add(
@@ -369,6 +379,27 @@ class DefaultBlockViewRenderer(
                         )
                     )
                 }
+                is Content.FeaturedRelations -> {
+                    counter.reset()
+                    val featured = featured(
+                        ctx = root.id,
+                        block = block,
+                        relations = relations,
+                        details = details,
+                        urlBuilder = urlBuilder
+                    )
+                    if (featured.relations.isNotEmpty()) {
+                        result.add(
+                            featured(
+                                ctx = root.id,
+                                block = block,
+                                relations = relations,
+                                details = details,
+                                urlBuilder = urlBuilder
+                            )
+                        )
+                    }
+                }
             }
         }
 
@@ -393,6 +424,16 @@ class DefaultBlockViewRenderer(
         indent = indent,
         alignment = content.align?.toView(),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null
+    )
+
+    private fun description(
+        block: Block,
+        content: Content.Text,
+        mode: EditorMode,
+    ): BlockView.Description = BlockView.Description(
+        id = block.id,
+        description = content.text.ifEmpty { null },
+        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
     )
 
     private fun headerThree(
@@ -844,7 +885,7 @@ class DefaultBlockViewRenderer(
     private fun setCursor(
         focus: Focus,
         content: Content.Text
-    ) : Int? = focus.cursor?.let { cursor ->
+    ): Int? = focus.cursor?.let { cursor ->
         when (cursor) {
             is Cursor.Start -> 0
             is Cursor.End -> content.text.length
@@ -860,7 +901,7 @@ class DefaultBlockViewRenderer(
         details: Block.Details,
         relations: List<Relation>,
         urlBuilder: UrlBuilder
-    ) : BlockView.Relation {
+    ): BlockView.Relation {
         if (content.key.isNullOrEmpty()) {
             return BlockView.Relation.Placeholder(
                 id = block.id,
@@ -881,5 +922,26 @@ class DefaultBlockViewRenderer(
                 background = content.background
             )
         }
+    }
+
+    private fun featured(
+        ctx: Id,
+        block: Block,
+        details: Block.Details,
+        relations: List<Relation>,
+        urlBuilder: UrlBuilder
+    ): BlockView.FeaturedRelation {
+        val featured = details.details[ctx]?.featuredRelations ?: emptyList()
+        return BlockView.FeaturedRelation(
+            id = block.id,
+            relations = featured.mapNotNull { id ->
+                val relation = relations.first { it.key == id }
+                relation.view(
+                    details = details,
+                    values = details.details[ctx]?.map ?: emptyMap(),
+                    urlBuilder = urlBuilder
+                )
+            }
+        )
     }
 }

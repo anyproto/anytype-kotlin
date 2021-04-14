@@ -178,6 +178,7 @@ fun Block.Content.Text.getBlockStyle(style: Block.Content.Text.Style) = when (st
             enabledAlignment = emptyList()
         )
     }
+    Block.Content.Text.Style.DESCRIPTION -> throw IllegalStateException("Description block does not support styling")
 }
 
 fun Block.Content.Text.getMarkupStyle(style: Block.Content.Text.Style) = when (style) {
@@ -264,5 +265,6 @@ fun Block.Content.Text.getMarkupStyle(style: Block.Content.Text.Style) = when (s
             enabledAlignment = emptyList()
         )
     }
+    Block.Content.Text.Style.DESCRIPTION -> throw IllegalStateException("Description block does not support styling")
 }
 

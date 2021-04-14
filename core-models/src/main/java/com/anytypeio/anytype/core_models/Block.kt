@@ -137,7 +137,7 @@ data class Block(
             }
 
             enum class Style {
-                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE, CHECKBOX
+                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE, CHECKBOX, DESCRIPTION
             }
         }
 
@@ -210,6 +210,8 @@ data class Block(
         data class Divider(val style: Style) : Content() {
             enum class Style { LINE, DOTS }
         }
+
+        object FeaturedRelations : Content()
 
         data class RelationBlock(val key: Id?, val background: String? = null) : Content()
 

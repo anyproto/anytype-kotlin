@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.Bookma
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
+import com.anytypeio.anytype.core_ui.features.editor.holders.relations.FeaturedRelationListViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.*
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.FileUpload
@@ -64,11 +65,14 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
+import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_DESCRIPTION
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_FEATURED_RELATION
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_CHECKBOX
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_DEFAULT
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_FILE
@@ -78,6 +82,7 @@ import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATIO
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_TAGS
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_TODO_TITLE
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import kotlinx.android.synthetic.main.item_block_description.view.*
 import timber.log.Timber
 
 /**
@@ -89,6 +94,7 @@ import timber.log.Timber
  */
 class BlockAdapter(
     private var blocks: List<BlockView>,
+    private val onDescriptionChanged: (BlockView.Description) -> Unit = {},
     private val onTextBlockTextChanged: (BlockView.Text) -> Unit,
     private val onTextChanged: (String, Editable) -> Unit,
     private val onTitleBlockTextChanged: (BlockView.Title) -> Unit,
@@ -243,6 +249,24 @@ class BlockAdapter(
                     ),
                     onContextMenuStyleClick = onContextMenuStyleClick
                 )
+            }
+            HOLDER_DESCRIPTION -> {
+                Description(
+                    view = inflater.inflate(
+                        R.layout.item_block_description,
+                        parent,
+                        false
+                    )
+                ).apply {
+                    itemView.tvBlockDescription.addTextChangedListener(
+                        DefaultTextWatcher { editable ->
+                            val view = views[bindingAdapterPosition]
+                            check(view is BlockView.Description)
+                            view.description = editable.toString()
+                            onDescriptionChanged(view)
+                        }
+                    )
+                }
             }
             HOLDER_FILE -> {
                 File(
@@ -488,6 +512,15 @@ class BlockAdapter(
                     )
                 ).setup(this)
             }
+            HOLDER_FEATURED_RELATION -> {
+                FeaturedRelationListViewHolder(
+                    view = inflater.inflate(
+                        R.layout.item_block_featured_relations,
+                        parent,
+                        false
+                    )
+                )
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -730,6 +763,7 @@ class BlockAdapter(
                     is DividerDots -> onBindViewHolder(holder, position)
                     is RelationViewHolder.Placeholder -> onBindViewHolder(holder, position)
                     is RelationViewHolder -> onBindViewHolder(holder, position)
+                    is Description -> onBindViewHolder(holder, position)
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
                 }
             }
@@ -976,6 +1010,9 @@ class BlockAdapter(
                     onTextInputClicked = onTextInputClicked
                 )
             }
+            is Description -> {
+                holder.bind(blocks[position] as BlockView.Description)
+            }
             is File -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Media.File,
@@ -1142,6 +1179,9 @@ class BlockAdapter(
                 holder.setBackgroundColor(item.background)
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
+            }
+            is FeaturedRelationListViewHolder -> {
+                holder.bind(blocks[position] as BlockView.FeaturedRelation)
             }
         }
 

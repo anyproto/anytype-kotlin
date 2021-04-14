@@ -110,6 +110,14 @@ fun List<MBlock>.toCoreModels(
                 content = block.toCoreModelsRelationBlock()
             )
         }
+        block.featuredRelations != null -> {
+            Block(
+                id = block.id,
+                fields = block.toCoreModelsFields(),
+                children = block.childrenIds,
+                content = Block.Content.FeaturedRelations
+            )
+        }
         else -> {
             Timber.d("Ignoring content type: $block")
             null
@@ -287,6 +295,7 @@ fun MBTextStyle.toCoreModels(): Block.Content.Text.Style = when (this) {
     MBTextStyle.Numbered -> Block.Content.Text.Style.NUMBERED
     MBTextStyle.Toggle -> Block.Content.Text.Style.TOGGLE
     MBTextStyle.Marked -> Block.Content.Text.Style.BULLET
+    MBTextStyle.Description -> Block.Content.Text.Style.DESCRIPTION
 }
 
 fun MBMarkType.toCoreModels(): Block.Content.Text.Mark.Type = when (this) {

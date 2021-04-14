@@ -180,6 +180,7 @@ open class PageFragment :
                 )
             },
             onTextBlockTextChanged = vm::onTextBlockTextChanged,
+            onDescriptionChanged = vm::onDescriptionBlockTextChanged,
             onTitleBlockTextChanged = vm::onTitleBlockTextChanged,
             onSelectionChanged = vm::onSelectionChanged,
             onCheckboxClicked = vm::onCheckboxClicked,

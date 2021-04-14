@@ -521,6 +521,43 @@ class BlockViewDiffUtilTest {
     }
 
     @Test
+    fun `should detect read-write mode changes in description`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val text = MockDataFactory.randomString()
+
+        val oldBlock = BlockView.Description(
+            id = id,
+            description = text,
+            mode = BlockView.Mode.EDIT
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            mode = BlockView.Mode.READ
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.READ_WRITE_MODE_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
     fun `should detect selection changes in paragraph`() {
 
         val index = 0

@@ -16,9 +16,9 @@ import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
-import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.ui.database.modals.RelationValueFragment
 import com.anytypeio.anytype.ui.page.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.fragment_relation_list.*
@@ -103,6 +103,7 @@ open class RelationListFragment : BaseBottomSheetFragment(),
                 subscribe(vm.views) { docRelationAdapter.update(it) }
             }
             subscribe(vm.commands) { command -> execute(command) }
+            subscribe(vm.toasts) { toast(it) }
         }
     }
 

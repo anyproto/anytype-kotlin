@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/default_document_item_padding_start"
+    android:paddingEnd="@dimen/default_document_item_padding_end">
+
+    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+        android:id="@+id/tvBlockDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:hint="@string/hint_add_description"
+        tools:text="@string/default_text_placeholder"
+        style="@style/ObjectDescriptionTextStyle" />
+
+</FrameLayout>

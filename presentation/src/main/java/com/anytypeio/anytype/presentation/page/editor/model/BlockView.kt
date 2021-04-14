@@ -12,8 +12,10 @@ import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_BOOKMAR
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_BULLET
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_CODE_SNIPPET
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_DESCRIPTION
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_DIVIDER_DOTS
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_DIVIDER_LINE
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_FEATURED_RELATION
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_FILE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_FILE_ERROR
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_FILE_PLACEHOLDER
@@ -412,6 +414,15 @@ sealed class BlockView : ViewType, Parcelable {
             override fun getViewType() = HOLDER_TOGGLE
             override val body: String get() = text
         }
+    }
+
+    @Parcelize
+    data class Description(
+        override val id: String,
+        override val mode: Mode = Mode.EDIT,
+        var description: String?,
+    ): BlockView(), Permission {
+        override fun getViewType(): Int = HOLDER_DESCRIPTION
     }
 
     sealed class Title : BlockView(), Focusable, Cursor, Permission {
@@ -871,6 +882,13 @@ sealed class BlockView : ViewType, Parcelable {
         override fun getViewType() = HOLDER_DIVIDER_DOTS
     }
 
+    @Parcelize
+    data class FeaturedRelation(
+        override val id: String,
+        val relations: @RawValue List<DocumentRelationView>
+    ): BlockView() {
+        override fun getViewType(): Int = HOLDER_FEATURED_RELATION
+    }
 
     sealed class Relation : BlockView(), Selectable, Indentable {
         @Parcelize

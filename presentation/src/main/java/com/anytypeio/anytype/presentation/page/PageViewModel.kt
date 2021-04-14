@@ -769,6 +769,17 @@ class PageViewModel(
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
     }
 
+    fun onDescriptionBlockTextChanged(view: BlockView.Description) {
+        val new = views.map { if (it.id == view.id) view else it }
+        val update = TextUpdate.Default(
+            target = view.id,
+            text = view.description ?: EMPTY_TEXT,
+            markup = emptyList()
+        )
+        viewModelScope.launch { orchestrator.stores.views.update(new) }
+        viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+    }
+
     fun onTextBlockTextChanged(view: BlockView.Text) {
 
         Timber.d("Text block's text changed: $view")

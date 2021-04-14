@@ -49,6 +49,9 @@ object Types {
     const val HOLDER_RELATION_FILE = 44
     const val HOLDER_RELATION_CHECKBOX = 45
 
+    const val HOLDER_DESCRIPTION = 46
+    const val HOLDER_FEATURED_RELATION = 47
+
     const val FOCUS_TIMEOUT_MILLIS = 16L
     const val KEYBOARD_SHOW_DELAY = 16L
 }

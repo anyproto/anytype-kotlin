@@ -43,6 +43,8 @@ object BlockActionToolbarFactory {
         is BlockView.Title.Todo -> TODO()
         is BlockView.Relation.Placeholder -> newInstance(block, dimensions)
         is BlockView.Relation.Related -> newInstance(block, dimensions)
+        is BlockView.Description -> TODO()
+        is BlockView.FeaturedRelation -> TODO()
     }
 
     fun newInstance(

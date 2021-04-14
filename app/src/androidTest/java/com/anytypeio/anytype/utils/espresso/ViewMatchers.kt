@@ -50,6 +50,24 @@ class WithChildViewCount(private val expectedCount: Int) : BoundedMatcher<View, 
     }
 }
 
+class HasViewGroupChildViewWithText(private val pos: Int, val text: String) : BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
+
+    private var actual: String? = null
+
+    override fun matchesSafely(item: ViewGroup): Boolean {
+        val child = item.getChildAt(pos)
+        checkNotNull(child) { throw IllegalStateException("No view child at position: $pos") }
+        check(child is TextView) { throw IllegalStateException("Child view is not text view at position: $pos, but: ${child::class.java.canonicalName}") }
+        actual = child.text.toString()
+        return actual == text
+    }
+    override fun describeTo(description: Description) {
+        if (actual != null) {
+            description.appendText("Should have text [$text] at position: $pos but was: $actual");
+        }
+    }
+}
+
 class HasChildViewWithText(private val pos: Int, val text: String, val target: Int) : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
 
     private var actual: String? = null

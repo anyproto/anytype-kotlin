@@ -41,7 +41,6 @@ import com.anytypeio.anytype.utils.scrollTo
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.android.synthetic.main.fragment_page.*
-import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before
 import org.junit.Rule
@@ -99,6 +98,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
         ) + blocks
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(document)
 
         launchFragment(args)
@@ -107,40 +107,40 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         onView(withId(R.id.recycler)).check(matches(isDisplayed()))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.headerOne))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.headerOne))
             .check(matches(withText(BLOCK_H1.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, R.id.headerTwo))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.headerTwo))
             .check(matches(withText(BLOCK_H2.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(3, R.id.headerThree))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, R.id.headerThree))
             .check(matches(withText(BLOCK_H3.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(4, R.id.textContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(3, R.id.textContent))
             .check(matches(withText(BLOCK_PARAGRAPH.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(5, R.id.highlightContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(4, R.id.highlightContent))
             .check(matches(withText(BLOCK_HIGHLIGHT.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(6, R.id.bulletedListContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(5, R.id.bulletedListContent))
             .check(matches(withText(BLOCK_BULLET.content.asText().text)))
-
-        R.id.recycler.scrollTo<Numbered>(7)
-
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(7, R.id.numberedListContent))
+//
+        R.id.recycler.scrollTo<Numbered>(5)
+//
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(6, R.id.numberedListContent))
             .check(matches(withText(BLOCK_NUMBERED_1.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(7, R.id.number))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(6, R.id.number))
             .check(matches(withText("1.")))
 
-        R.id.recycler.scrollTo<Toggle>(8)
+        R.id.recycler.scrollTo<Toggle>(7)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(8, R.id.toggleContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(7, R.id.toggleContent))
             .check(matches(withText(BLOCK_TOGGLE.content.asText().text)))
 
-        R.id.recycler.scrollTo<Checkbox>(9)
+        R.id.recycler.scrollTo<Checkbox>(8)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(9, R.id.checkboxContent))
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(8, R.id.checkboxContent))
             .check(matches(withText(BLOCK_CHECKBOX.content.asText().text)))
     }
 
@@ -166,6 +166,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(document)
 
         updateText.stub {
@@ -178,7 +179,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         val text = " Add new text at the end"
 
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent))
+        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent))
 
         target.apply {
             perform(click())
@@ -213,13 +214,14 @@ class EditorIntegrationTesting : EditorTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(document)
 
         launchFragment(args)
 
         // TESTING
 
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent))
+        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent))
 
         // Focusing
 
@@ -230,7 +232,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // Unfocusing
 
-        onView(allOf(withId(R.id.unfocus), isDisplayed())).perform(click())
+        onView(withId(R.id.hideKeyboardButton)).perform(click())
 
         onView(withId(R.id.toolbar)).check(matches(not(isDisplayed())))
         target.check(matches(not(hasFocus())))
@@ -273,7 +275,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Foo",
+                text = "Bar",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
             )
@@ -283,12 +285,12 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Event.Command.GranularChange(
                 context = root,
                 id = paragraph.id,
-                text = "Bar"
+                text = "Foo"
             ),
             Event.Command.UpdateStructure(
                 context = root,
                 id = root,
-                children = listOf(new.id, paragraph.id)
+                children = listOf(paragraph.id, new.id)
             ),
             Event.Command.AddBlock(
                 context = root,
@@ -297,6 +299,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(document)
         stubUpdateText()
 
@@ -318,9 +321,13 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // TESTING
 
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent))
+        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent))
 
         target.check(matches(withText(text)))
+
+        target.perform(click())
+
+        Thread.sleep(100)
 
         // Set cursor programmatically
 
@@ -337,10 +344,12 @@ class EditorIntegrationTesting : EditorTestSetup() {
         verifyBlocking(updateText, times(1)) { invoke(any()) }
         verifyBlocking(repo, times(1)) { split(command) }
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)).apply {
+        Thread.sleep(100)
+
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent)).apply {
             check(matches(withText("Foo")))
         }
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, R.id.textContent)).apply {
+        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)).apply {
             check(matches(withText("Bar")))
             check(matches(hasFocus()))
         }
@@ -348,7 +357,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(2)
+            val item = fragment.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(R.id.textContent)
             assertEquals(
                 expected = 0,
@@ -362,7 +371,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // Release pending coroutines
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION * 2)
     }
 
     /*

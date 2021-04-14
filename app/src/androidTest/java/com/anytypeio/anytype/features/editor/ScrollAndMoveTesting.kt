@@ -36,6 +36,26 @@ class ScrollAndMoveTesting : EditorTestSetup() {
 
     val args = bundleOf(PageFragment.ID_KEY to root)
 
+    private val title = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Text(
+            style = Block.Content.Text.Style.TITLE,
+            text = "Scroll-and-move UI testing",
+            marks = emptyList()
+        ),
+        children = emptyList(),
+        fields = Block.Fields.empty()
+    )
+
+    private val header = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Layout(
+            type = Block.Content.Layout.Type.HEADER
+        ),
+        fields = Block.Fields.empty(),
+        children = listOf(title.id)
+    )
+
     @Before
     override fun setup() {
         super.setup()
@@ -46,8 +66,6 @@ class ScrollAndMoveTesting : EditorTestSetup() {
     fun shouldEnterScrollAndMoveMode() {
 
         // SETUP
-
-        val title = "Scroll-and-move UI testing"
 
         val a = Block(
             id = MockDataFactory.randomUuid(),
@@ -77,21 +95,15 @@ class ScrollAndMoveTesting : EditorTestSetup() {
             content = Block.Content.Smart(
                 type = Block.Content.Smart.Type.PAGE
             ),
-            children = listOf(a.id, b.id)
+            children = listOf(header.id, a.id, b.id)
         )
 
-        val document = listOf(page, a, b)
+        val document = listOf(page, header, title, a, b)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(
-            document = document,
-            details = Block.Details(
-                mapOf(
-                    root to Block.Fields(
-                        mapOf("name" to title)
-                    )
-                )
-            )
+            document = document
         )
 
         launchFragment(args)
@@ -102,13 +114,13 @@ class ScrollAndMoveTesting : EditorTestSetup() {
             perform(click())
         }
 
-        Thread.sleep(1000)
+        Thread.sleep(100)
 
-        onView(withId(R.id.structure)).apply {
+        onView(withId(R.id.multiSelectModeButton)).apply {
             perform(click())
         }
 
-        Thread.sleep(3000)
+        Thread.sleep(100)
 
         // Release pending coroutines
 
@@ -118,7 +130,7 @@ class ScrollAndMoveTesting : EditorTestSetup() {
     // STUBBING & SETUP
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestPageFragment> {
-        return launchFragmentInContainer<TestPageFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

@@ -94,6 +94,13 @@ fun ViewInteraction.checkHasChildViewWithText(
     return check(matches(HasChildViewWithText(pos, text, target)))
 }
 
+fun ViewInteraction.checkHasViewGroupChildWithText(
+    pos: Int,
+    text: String
+) : ViewInteraction {
+    return check(matches(HasViewGroupChildViewWithText(pos, text)))
+}
+
 fun RecyclerViewMatcher.onItem(pos: Int): ViewInteraction {
     return onView(atPosition(pos))
 }

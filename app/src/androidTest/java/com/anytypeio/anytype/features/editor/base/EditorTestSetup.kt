@@ -361,4 +361,17 @@ open class EditorTestSetup {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
         }
     }
+
+    fun stubUpdateTextStyle(
+        events: List<Event> = emptyList()
+    ) {
+        updateTextStyle.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = events
+                )
+            )
+        }
+    }
 }

@@ -23,8 +23,8 @@ import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValu
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
-import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.database.modals.RelationValueBaseFragment
 import com.anytypeio.anytype.utils.*
@@ -433,6 +433,26 @@ class DisplayRelationObjectValueTest {
 
         // SETUP
 
+        val objectType1 = ObjectType(
+            url = MockDataFactory.randomUuid(),
+            name = "Writer",
+            relations = emptyList(),
+            emoji = "",
+            layout = ObjectType.Layout.PROFILE,
+            description = "",
+            isHidden = false
+        )
+
+        val objectType2 = ObjectType(
+            url = MockDataFactory.randomUuid(),
+            name = "Writer",
+            relations = emptyList(),
+            emoji = "",
+            layout = ObjectType.Layout.PROFILE,
+            description = "",
+            isHidden = false
+        )
+
         val relationName = "Cast"
         val object1Name = "Charlie Chaplin"
         val object1Id = MockDataFactory.randomUuid()
@@ -486,12 +506,14 @@ class DisplayRelationObjectValueTest {
                 object1Id to Block.Fields(
                     mapOf(
                         Block.Fields.NAME_KEY to object1Name,
+                        ObjectSetConfig.TYPE_KEY to objectType1.url,
                         "iconEmoji" to "👤"
                     )
                 ),
                 object2Id to Block.Fields(
                     mapOf(
                         Block.Fields.NAME_KEY to object2Name,
+                        ObjectSetConfig.TYPE_KEY to objectType2.url,
                         "iconEmoji" to "👤"
                     )
                 )

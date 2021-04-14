@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
+import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestPageFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
@@ -103,7 +104,7 @@ class CreateBlockTesting : EditorTestSetup() {
 
     @Test
     fun createNewParagraphByPressingEnterInsideEmptyToggle() {
-        createNewParagraphByPressingEnterInsideAnyEmptyTextBlockExceptLists(
+        shouldReplaceParagraphByPressingEnterInsideAnyEmptyTextBlockExceptLists(
             targetStyle = Block.Content.Text.Style.TOGGLE,
             targetViewId = R.id.toggleContent
         )
@@ -202,6 +203,8 @@ class CreateBlockTesting : EditorTestSetup() {
             check(ViewAssertions.matches(ViewMatchers.withText("")))
         }
 
+        Thread.sleep(100)
+
         Espresso.onView(
             TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)
         ).apply {
@@ -213,6 +216,116 @@ class CreateBlockTesting : EditorTestSetup() {
 
         scenario.onFragment { fragment ->
             val item = fragment.recycler.getChildAt(1)
+            item.findViewById<TextInputWidget>(R.id.textContent).apply {
+                assertEquals(
+                    expected = 0,
+                    actual = selectionStart
+                )
+                assertEquals(
+                    expected = 0,
+                    actual = selectionEnd
+                )
+            }
+        }
+
+        // Release pending coroutines
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+
+    private fun shouldReplaceParagraphByPressingEnterInsideAnyEmptyTextBlockExceptLists(
+        targetStyle: Block.Content.Text.Style,
+        targetViewId: Int
+    ) {
+
+        // SETUP
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "",
+                marks = emptyList(),
+                style = targetStyle
+            )
+        )
+
+        val new = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(a.id)
+        )
+
+        val document = listOf(page, a)
+
+        val events = listOf(
+            Event.Command.GranularChange(
+                context = root,
+                id = a.id,
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val params = UpdateTextStyle.Params(
+            context = root,
+            targets = listOf(a.id),
+            style = Block.Content.Text.Style.P
+        )
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubOpenDocument(document)
+        stubUpdateText()
+        stubUpdateTextStyle(events = events)
+
+        val scenario = launchFragment(args)
+
+        // TESTING
+
+        val target = Espresso.onView(
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, targetViewId)
+        )
+
+        target.apply {
+            perform(ViewActions.click())
+        }
+
+        // Press ENTER on empty text block A
+
+        target.perform(ViewActions.pressImeActionButton())
+
+        // Check results
+
+        verifyBlocking(updateTextStyle, times(1)) { invoke(params) }
+
+        Thread.sleep(100)
+
+        Espresso.onView(
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent)
+        ).apply {
+            check(ViewAssertions.matches(ViewMatchers.withText("")))
+            check(ViewAssertions.matches(ViewMatchers.hasFocus()))
+        }
+
+        // Check cursor position at block B
+
+        scenario.onFragment { fragment ->
+            val item = fragment.recycler.getChildAt(0)
             item.findViewById<TextInputWidget>(R.id.textContent).apply {
                 assertEquals(
                     expected = 0,
@@ -250,7 +363,7 @@ class CreateBlockTesting : EditorTestSetup() {
 
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestPageFragment> {
-        return launchFragmentInContainer<TestPageFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

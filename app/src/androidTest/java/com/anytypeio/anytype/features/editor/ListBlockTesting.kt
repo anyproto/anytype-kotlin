@@ -9,10 +9,7 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.domain.base.Either
@@ -136,20 +133,23 @@ class ListBlockTesting : EditorTestSetup() {
             )
         )
 
-        val params = CreateBlock.Params(
+        val command = Command.Split(
             context = root,
-            position = Position.BOTTOM,
             target = a.id,
-            prototype = Block.Prototype.Text(
-                style = style
-            )
+            range = text.length..text.length,
+            style = style,
+            mode = BlockSplitMode.BOTTOM
         )
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenDocument(document)
         stubUpdateText()
-        stubCreateBlocks(params, new, events)
+        stubSplitBlocks(
+            command = command,
+            new = new.id,
+            events = events
+        )
 
         val scenario = launchFragment(args)
 
@@ -163,6 +163,8 @@ class ListBlockTesting : EditorTestSetup() {
             perform(ViewActions.click())
         }
 
+        Thread.sleep(100)
+
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
@@ -175,7 +177,9 @@ class ListBlockTesting : EditorTestSetup() {
 
         // Check results
 
-        verifyBlocking(createBlock, times(1)) { invoke(params) }
+        verifyBlocking(repo, times(1)) { split(command) }
+
+        Thread.sleep(100)
 
         Espresso.onView(
             TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, view)
@@ -222,7 +226,7 @@ class ListBlockTesting : EditorTestSetup() {
 
     @Test
     fun shouldReplaceBulletByParagraphIfItsTextIsEmptyOnEnterPress() {
-        shouldCreateListItemWithSameStyleByPressingEnterAtEndOfListItem(
+        shouldReplaceListItemByParagraphIfItsTextIsEmptyOnEnterPress(
             style = Block.Content.Text.Style.BULLET,
             view = R.id.bulletedListContent
         )
@@ -230,7 +234,7 @@ class ListBlockTesting : EditorTestSetup() {
 
     @Test
     fun shouldReplaceNumberedByParagraphIfItsTextIsEmptyOnEnterPress() {
-        shouldCreateListItemWithSameStyleByPressingEnterAtEndOfListItem(
+        shouldReplaceListItemByParagraphIfItsTextIsEmptyOnEnterPress(
             style = Block.Content.Text.Style.NUMBERED,
             view = R.id.numberedListContent
         )
@@ -238,7 +242,7 @@ class ListBlockTesting : EditorTestSetup() {
 
     @Test
     fun shouldReplaceCheckboxByParagraphIfItsTextIsEmptyOnEnterPress() {
-        shouldCreateListItemWithSameStyleByPressingEnterAtEndOfListItem(
+        shouldReplaceListItemByParagraphIfItsTextIsEmptyOnEnterPress(
             style = Block.Content.Text.Style.CHECKBOX,
             view = R.id.checkboxContent
         )
@@ -284,7 +288,7 @@ class ListBlockTesting : EditorTestSetup() {
             children = listOf(a.id, b.id)
         )
 
-        val document = listOf(page, a)
+        val document = listOf(page, a, b)
 
         val events = listOf(
             Event.Command.GranularChange(
@@ -301,6 +305,7 @@ class ListBlockTesting : EditorTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(document)
         stubUpdateText()
         stubUpdateTextStyle(params, events)
@@ -310,7 +315,7 @@ class ListBlockTesting : EditorTestSetup() {
         // TESTING
 
         val target = Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, view)
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, view)
         )
 
         target.apply {
@@ -323,16 +328,18 @@ class ListBlockTesting : EditorTestSetup() {
 
         // Check results
 
+        Thread.sleep(100)
+
         verifyBlocking(updateTextStyle, times(1)) { invoke(params) }
 
         Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, view)
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, view)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText(a.content<Block.Content.Text>().text)))
         }
 
         Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(2, view)
+            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("")))
             check(ViewAssertions.matches(ViewMatchers.hasFocus()))
@@ -340,8 +347,10 @@ class ListBlockTesting : EditorTestSetup() {
 
         // Check cursor position at block B
 
+        Thread.sleep(100)
+
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(2)
+            val item = fragment.recycler.getChildAt(1)
             item.findViewById<TextInputWidget>(R.id.textContent).apply {
                 assertEquals(
                     expected = 0,

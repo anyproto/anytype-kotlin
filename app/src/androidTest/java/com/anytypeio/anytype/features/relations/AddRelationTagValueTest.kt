@@ -19,8 +19,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
-import com.anytypeio.anytype.presentation.relations.RelationOptionValueDVAddViewModel
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.relations.RelationOptionValueDVAddViewModel
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
@@ -193,7 +193,11 @@ class AddRelationTagValueTest {
 
         // Pressing button, in order to trigger request.
 
+        Thread.sleep(100)
+
         btn.performClick()
+
+        Thread.sleep(100)
 
         // Verifying that the request is made.
 
@@ -480,7 +484,7 @@ class AddRelationTagValueTest {
 
         // TESTING
 
-        launchFragment(
+        val scenario = launchFragment(
             bundleOf(
                 RelationOptionValueBaseAddFragment.CTX_KEY to ctx,
                 RelationOptionValueBaseAddFragment.RELATION_KEY to relation.key,

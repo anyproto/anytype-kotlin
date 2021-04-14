@@ -87,7 +87,7 @@ class SplitBlockTesting : EditorTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Foo",
+                text = "Bar",
                 marks = emptyList(),
                 style = style
             )
@@ -97,12 +97,12 @@ class SplitBlockTesting : EditorTestSetup() {
             Event.Command.GranularChange(
                 context = root,
                 id = block.id,
-                text = "Bar"
+                text = "Foo"
             ),
             Event.Command.UpdateStructure(
                 context = root,
                 id = root,
-                children = listOf(new.id, block.id)
+                children = listOf(block.id, new.id)
             ),
             Event.Command.AddBlock(
                 context = root,
@@ -146,7 +146,7 @@ class SplitBlockTesting : EditorTestSetup() {
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
-        Thread.sleep(500)
+        Thread.sleep(100)
 
         // Set cursor programmatically
 
@@ -154,11 +154,13 @@ class SplitBlockTesting : EditorTestSetup() {
             fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
-        Thread.sleep(500)
+        Thread.sleep(100)
 
         // Press ENTER
 
         target.perform(ViewActions.pressImeActionButton())
+
+        Thread.sleep(100)
 
         // Check results
 
@@ -170,6 +172,8 @@ class SplitBlockTesting : EditorTestSetup() {
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
+
+        Thread.sleep(100)
 
         onView(
             withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
@@ -236,7 +240,7 @@ class SplitBlockTesting : EditorTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Foo",
+                text = "Bar",
                 marks = emptyList(),
                 style = style
             )
@@ -246,12 +250,12 @@ class SplitBlockTesting : EditorTestSetup() {
             Event.Command.GranularChange(
                 context = root,
                 id = block.id,
-                text = "Bar"
+                text = "Foo"
             ),
             Event.Command.UpdateStructure(
                 context = root,
                 id = root,
-                children = listOf(new.id, block.id)
+                children = listOf(block.id, new.id)
             ),
             Event.Command.AddBlock(
                 context = root,
@@ -295,19 +299,19 @@ class SplitBlockTesting : EditorTestSetup() {
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
-        Thread.sleep(500)
-
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
             fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
-        Thread.sleep(500)
+        Thread.sleep(100)
 
         // Press ENTER
 
         target.perform(ViewActions.pressImeActionButton())
+
+        Thread.sleep(100)
 
         // Check results
 
@@ -319,6 +323,8 @@ class SplitBlockTesting : EditorTestSetup() {
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
+
+        Thread.sleep(100)
 
         onView(
             withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
@@ -385,7 +391,7 @@ class SplitBlockTesting : EditorTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Foo",
+                text = "Bar",
                 marks = emptyList(),
                 style = style
             )
@@ -395,12 +401,12 @@ class SplitBlockTesting : EditorTestSetup() {
             Event.Command.GranularChange(
                 context = root,
                 id = block.id,
-                text = "Bar"
+                text = "Foo"
             ),
             Event.Command.UpdateStructure(
                 context = root,
                 id = root,
-                children = listOf(new.id, block.id)
+                children = listOf(block.id, new.id)
             ),
             Event.Command.AddBlock(
                 context = root,
@@ -444,19 +450,19 @@ class SplitBlockTesting : EditorTestSetup() {
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
-        Thread.sleep(500)
-
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
             fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
-        Thread.sleep(500)
+        Thread.sleep(100)
 
         // Press ENTER
 
         target.perform(ViewActions.pressImeActionButton())
+
+        Thread.sleep(100)
 
         // Check results
 
@@ -468,6 +474,8 @@ class SplitBlockTesting : EditorTestSetup() {
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
+
+        Thread.sleep(100)
 
         onView(
             withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
@@ -534,7 +542,7 @@ class SplitBlockTesting : EditorTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Foo",
+                text = "Bar",
                 marks = emptyList(),
                 style = style
             )
@@ -544,12 +552,12 @@ class SplitBlockTesting : EditorTestSetup() {
             Event.Command.GranularChange(
                 context = root,
                 id = block.id,
-                text = "Bar"
+                text = "Foo"
             ),
             Event.Command.UpdateStructure(
                 context = root,
                 id = root,
-                children = listOf(new.id, block.id)
+                children = listOf(block.id, new.id)
             ),
             Event.Command.AddBlock(
                 context = root,
@@ -591,8 +599,6 @@ class SplitBlockTesting : EditorTestSetup() {
             perform(ViewActions.typeText(text))
         }
 
-        Thread.sleep(500)
-
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
         // Set cursor programmatically
@@ -601,9 +607,13 @@ class SplitBlockTesting : EditorTestSetup() {
             fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
+        Thread.sleep(100)
+
         // Press ENTER
 
         target.perform(ViewActions.pressImeActionButton())
+
+        Thread.sleep(100)
 
         // Check results
 
@@ -615,6 +625,8 @@ class SplitBlockTesting : EditorTestSetup() {
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
+
+        Thread.sleep(100)
 
         onView(
             withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
@@ -681,7 +693,7 @@ class SplitBlockTesting : EditorTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Foo",
+                text = "Bar",
                 marks = emptyList(),
                 style = style
             )
@@ -691,12 +703,12 @@ class SplitBlockTesting : EditorTestSetup() {
             Event.Command.GranularChange(
                 context = root,
                 id = block.id,
-                text = "Bar"
+                text = "Foo"
             ),
             Event.Command.UpdateStructure(
                 context = root,
                 id = root,
-                children = listOf(new.id, block.id)
+                children = listOf(block.id, new.id)
             ),
             Event.Command.AddBlock(
                 context = root,
@@ -738,7 +750,7 @@ class SplitBlockTesting : EditorTestSetup() {
             perform(ViewActions.typeText(text))
         }
 
-        Thread.sleep(500)
+        Thread.sleep(100)
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
@@ -748,9 +760,13 @@ class SplitBlockTesting : EditorTestSetup() {
             fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
+        Thread.sleep(100)
+
         // Press ENTER
 
         target.perform(ViewActions.pressImeActionButton())
+
+        Thread.sleep(100)
 
         // Check results
 
@@ -762,6 +778,8 @@ class SplitBlockTesting : EditorTestSetup() {
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
+
+        Thread.sleep(100)
 
         onView(
             withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
@@ -828,7 +846,7 @@ class SplitBlockTesting : EditorTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Foo",
+                text = "Bar",
                 marks = emptyList(),
                 style = style
             )
@@ -838,12 +856,12 @@ class SplitBlockTesting : EditorTestSetup() {
             Event.Command.GranularChange(
                 context = root,
                 id = block.id,
-                text = "Bar"
+                text = "Foo"
             ),
             Event.Command.UpdateStructure(
                 context = root,
                 id = root,
-                children = listOf(new.id, block.id)
+                children = listOf(block.id, new.id)
             ),
             Event.Command.AddBlock(
                 context = root,
@@ -877,7 +895,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // TESTING
 
         val target = onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
+            withRecyclerView(R.id.recycler).atPositionOnView(0, targetViewId)
         )
 
         target.apply {
@@ -885,7 +903,7 @@ class SplitBlockTesting : EditorTestSetup() {
             perform(ViewActions.typeText(text))
         }
 
-        Thread.sleep(500)
+        Thread.sleep(100)
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
@@ -895,9 +913,13 @@ class SplitBlockTesting : EditorTestSetup() {
             fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
+        Thread.sleep(100)
+
         // Press ENTER
 
         target.perform(ViewActions.pressImeActionButton())
+
+        Thread.sleep(100)
 
         // Check results
 
@@ -909,6 +931,8 @@ class SplitBlockTesting : EditorTestSetup() {
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
+
+        Thread.sleep(100)
 
         onView(
             withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
@@ -975,7 +999,7 @@ class SplitBlockTesting : EditorTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Foo",
+                text = "Bar",
                 marks = emptyList(),
                 style = style
             )
@@ -985,12 +1009,12 @@ class SplitBlockTesting : EditorTestSetup() {
             Event.Command.GranularChange(
                 context = root,
                 id = block.id,
-                text = "Bar"
+                text = "Foo"
             ),
             Event.Command.UpdateStructure(
                 context = root,
                 id = root,
-                children = listOf(new.id, block.id)
+                children = listOf(block.id, new.id)
             ),
             Event.Command.AddBlock(
                 context = root,
@@ -1034,15 +1058,21 @@ class SplitBlockTesting : EditorTestSetup() {
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
+        Thread.sleep(100)
+
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
             fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
+        Thread.sleep(100)
+
         // Press ENTER
 
         target.perform(ViewActions.pressImeActionButton())
+
+        Thread.sleep(100)
 
         // Check results
 
@@ -1054,6 +1084,8 @@ class SplitBlockTesting : EditorTestSetup() {
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
+
+        Thread.sleep(100)
 
         onView(
             withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
@@ -1120,7 +1152,7 @@ class SplitBlockTesting : EditorTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Foo",
+                text = "Bar",
                 marks = emptyList(),
                 style = style
             )
@@ -1130,12 +1162,12 @@ class SplitBlockTesting : EditorTestSetup() {
             Event.Command.GranularChange(
                 context = root,
                 id = block.id,
-                text = "Bar"
+                text = "Foo"
             ),
             Event.Command.UpdateStructure(
                 context = root,
                 id = root,
-                children = listOf(new.id, block.id)
+                children = listOf(block.id, new.id)
             ),
             Event.Command.AddBlock(
                 context = root,
@@ -1179,15 +1211,21 @@ class SplitBlockTesting : EditorTestSetup() {
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
+        Thread.sleep(100)
+
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
             fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
+        Thread.sleep(100)
+
         // Press ENTER
 
         target.perform(ViewActions.pressImeActionButton())
+
+        Thread.sleep(100)
 
         // Check results
 
@@ -1199,6 +1237,8 @@ class SplitBlockTesting : EditorTestSetup() {
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
+
+        Thread.sleep(100)
 
         onView(
             withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
@@ -1265,7 +1305,7 @@ class SplitBlockTesting : EditorTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Foo",
+                text = "Bar",
                 marks = emptyList(),
                 style = style
             )
@@ -1275,12 +1315,12 @@ class SplitBlockTesting : EditorTestSetup() {
             Event.Command.GranularChange(
                 context = root,
                 id = block.id,
-                text = "Bar"
+                text = "Foo"
             ),
             Event.Command.UpdateStructure(
                 context = root,
                 id = root,
-                children = listOf(new.id, block.id)
+                children = listOf(block.id, new.id)
             ),
             Event.Command.AddBlock(
                 context = root,
@@ -1324,15 +1364,21 @@ class SplitBlockTesting : EditorTestSetup() {
 
         target.check(ViewAssertions.matches(ViewMatchers.withText(text)))
 
+        Thread.sleep(100)
+
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
             fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
+        Thread.sleep(100)
+
         // Press ENTER
 
         target.perform(ViewActions.pressImeActionButton())
+
+        Thread.sleep(100)
 
         // Check results
 
@@ -1344,6 +1390,8 @@ class SplitBlockTesting : EditorTestSetup() {
         ).apply {
             check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
         }
+
+        Thread.sleep(100)
 
         onView(
             withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)

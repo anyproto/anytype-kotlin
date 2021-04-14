@@ -15,9 +15,8 @@ import com.anytypeio.anytype.features.editor.base.TestPageFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.ui.page.PageFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
-import com.anytypeio.anytype.utils.checkHasText
-import com.anytypeio.anytype.utils.onItemView
-import com.anytypeio.anytype.utils.rVMatcher
+import com.anytypeio.anytype.utils.checkHasViewGroupChildWithText
+import com.anytypeio.anytype.utils.matchView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -117,8 +116,8 @@ class FeaturedRelationTesting : EditorTestSetup() {
                         relation5.key to value5,
                         "featuredRelations" to listOf(
                             relation1.key,
-                            relation2.key,
-                            relation3.key
+                            relation4.key,
+                            relation5.key
                         )
                     )
                 )
@@ -166,10 +165,10 @@ class FeaturedRelationTesting : EditorTestSetup() {
 
         launchFragment(args)
 
-        R.id.rvFeaturedRelations.rVMatcher().apply {
-            onItemView(0, R.id.tvFeaturedRelationValue).checkHasText(value1)
-            onItemView(1, R.id.tvFeaturedRelationValue).checkHasText(value2)
-            onItemView(2, R.id.tvFeaturedRelationValue).checkHasText(value3)
+        R.id.featuredRelationRoot.matchView().apply {
+            checkHasViewGroupChildWithText(1, value1)
+            checkHasViewGroupChildWithText(3, value4)
+            checkHasViewGroupChildWithText(5, value5)
         }
     }
 

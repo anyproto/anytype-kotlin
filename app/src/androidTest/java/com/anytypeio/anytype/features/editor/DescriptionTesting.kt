@@ -88,8 +88,8 @@ class DescriptionTesting : EditorTestSetup() {
         val document = listOf(page, header, title, description)
 
         stubInterceptEvents()
-        stubOpenDocument(document)
         stubInterceptThreadStatus()
+        stubOpenDocument(document)
 
         launchFragment(args)
 

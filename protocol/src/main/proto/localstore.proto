@@ -59,3 +59,13 @@ message ObjectInfoWithOutboundLinksIDs {
     ObjectInfo info = 2;
     repeated string outboundLinks = 3;
 }
+
+message ObjectStoreChecksums {
+    string bundledObjectTypes = 1;
+    string bundledRelations = 2;
+    string bundledLayouts = 3;
+    int32 objectsForceReindexCounter = 4; // increased in order to trigger all objects reindex
+    int32 filesForceReindexCounter = 5; // increased in order to fully reindex all objects
+    int32 idxRebuildCounter = 6; // increased in order to remove indexes and reindex everything. Automatically triggers objects and files reindex(one time only)
+    int32 fulltextRebuild = 7; // increased in order to perform fulltext indexing for all type of objects (useful when we change fulltext config)
+}

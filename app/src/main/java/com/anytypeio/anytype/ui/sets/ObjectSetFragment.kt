@@ -64,7 +64,7 @@ open class ObjectSetFragment :
 
     private val swipeListener = object : OnSwipeListener() {
         override fun onSwipe(direction: Direction?): Boolean {
-            if (direction == Direction.DOWN) hideBottomPanel()
+            if (direction == Direction.DOWN) vm.onHideViewerCustomizeSwiped()
             return true
         }
     }
@@ -130,9 +130,7 @@ open class ObjectSetFragment :
                 }
             }
             subscribe(objectSetIcon.clicks()) { vm.onIconClicked() }
-            subscribe(customizeViewButton.clicks()) {
-                showBottomPanel()
-            }
+            subscribe(customizeViewButton.clicks()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(icBack.clicks()) { vm.onBackButtonPressed() }
             subscribe(tvCurrentViewerName.clicks()) { vm.onExpandViewerMenuClicked() }
             subscribe(bottomPanel.findViewById<FrameLayout>(R.id.btnFilter).clicks()) {
@@ -173,6 +171,9 @@ open class ObjectSetFragment :
         super.onActivityCreated(savedInstanceState)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         lifecycleScope.subscribe(vm.toasts.stream()) { toast(it) }
+        lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
+            if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
+        }
     }
 
     private fun observeGrid(viewer: Viewer) {

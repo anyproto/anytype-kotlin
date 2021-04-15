@@ -69,6 +69,8 @@ class ObjectSetViewModel(
     private val _header = MutableStateFlow<BlockView.Title.Document?>(null)
     val header: StateFlow<BlockView.Title.Document?> = _header
 
+    val isCustomizeViewPanelVisible = MutableStateFlow(false)
+
     private lateinit var context: Id
 
     init {
@@ -437,6 +439,14 @@ class ObjectSetViewModel(
                 }
             )
         }
+    }
+
+    fun onViewerCustomizeButtonClicked() {
+        isCustomizeViewPanelVisible.value = !isCustomizeViewPanelVisible.value
+    }
+
+    fun onHideViewerCustomizeSwiped() {
+        isCustomizeViewPanelVisible.value = false
     }
 
     fun onViewerCustomizeClicked() {

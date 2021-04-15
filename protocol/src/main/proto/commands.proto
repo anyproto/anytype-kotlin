@@ -3,10 +3,10 @@ package anytype;
 option go_package = "pb";
 
 import "models.proto";
-import "events.proto";
 import "localstore.proto";
 import "relation.proto";
 
+import "events.proto";
 import "google/protobuf/struct.proto";
 
 /*

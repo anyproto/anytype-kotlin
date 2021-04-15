@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.1.8 (WIP)
+
+### Middleware ⚙
+
+* Updated middleware protocol to `0.15.0-rc19`
+
 ## Version 0.1.7
 
 ### Middleware ⚙

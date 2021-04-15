@@ -21,6 +21,26 @@ class EditorFocusTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
+    private val title = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Text(
+            style = Block.Content.Text.Style.TITLE,
+            text = "Relation Block UI Testing",
+            marks = emptyList()
+        ),
+        children = emptyList(),
+        fields = Block.Fields.empty()
+    )
+
+    private val header = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Layout(
+            type = Block.Content.Layout.Type.HEADER
+        ),
+        fields = Block.Fields.empty(),
+        children = listOf(title.id)
+    )
+
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
@@ -47,8 +67,10 @@ class EditorFocusTest : EditorPresentationTestSetup() {
                 id = root,
                 fields = Block.Fields(emptyMap()),
                 content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
-                children = listOf(block.id)
+                children = listOf(header.id, block.id)
             ),
+            header,
+            title,
             block
         )
 
@@ -111,11 +133,13 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
+                content = Block.Content.Smart(
+                    type = Block.Content.Smart.Type.PAGE
                 ),
-                children = listOf(block.id)
+                children = listOf(header.id, block.id)
             ),
+            header,
+            title,
             block
         )
 

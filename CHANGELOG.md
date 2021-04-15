@@ -4,7 +4,7 @@
 
 ### Middleware ⚙
 
-* Updated middleware protocol to `0.15.0-rc19`
+* Updated middleware protocol to `0.15.0-rc21`
 
 ## Version 0.1.7
 

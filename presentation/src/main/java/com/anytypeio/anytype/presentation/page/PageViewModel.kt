@@ -2095,7 +2095,9 @@ class PageViewModel(
 
     private fun onSelectAllClicked(state: ViewState.Success) =
         state.blocks.map { block ->
-            if (block.id != blocks.titleId()) select(block.id)
+            if (block is BlockView.Selectable) {
+                select(block.id)
+            }
             block.updateSelection(newSelection = true)
         }.let {
             onMultiSelectModeBlockClicked()

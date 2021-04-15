@@ -9,14 +9,13 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.domain.relations.Relations
+import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestPageFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.ui.page.PageFragment
-import com.anytypeio.anytype.utils.CoroutinesTestRule
-import com.anytypeio.anytype.utils.checkHasText
-import com.anytypeio.anytype.utils.onItemView
-import com.anytypeio.anytype.utils.rVMatcher
+import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -52,7 +51,7 @@ class DescriptionTesting : EditorTestSetup() {
     }
 
     @Test
-    fun shouldRenderDescriptionAfterTitle() {
+    fun shouldNotRenderDescriptionAfterTitleBecauseDescriptionIsNotFeatured() {
 
         // SETUP
 
@@ -99,9 +98,77 @@ class DescriptionTesting : EditorTestSetup() {
             onItemView(0, R.id.title).checkHasText(
                 title.content<Block.Content.Text>().text
             )
+            checkIsRecyclerSize(1)
+        }
+    }
+
+    @Test
+    fun shouldRenderDescriptionAfterTitleBecauseDescriptionIsFeatured() {
+
+        // SETUP
+
+        val description = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = "A lighthouse is a tower, building, or another type of structure designed to emit light from a system of lamps and lenses and to serve as a navigational aid for maritime pilots at sea or on inland waterways.",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.DESCRIPTION
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id, description.id)
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id)
+        )
+
+        val document = listOf(page, header, title, description)
+
+        val details = Block.Details(
+            mapOf(
+                root to Block.Fields(
+                    mapOf(
+                        "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
+                        "featuredRelations" to listOf(Relations.DESCRIPTION),
+                        "description" to description.content<Block.Content.Text>().text
+                    )
+                )
+            )
+        )
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubOpenDocument(
+            document = document,
+            details = details
+        )
+
+        launchFragment(args)
+
+        // TESTING
+
+        R.id.recycler.rVMatcher().apply {
+            onItemView(0, R.id.title).checkHasText(
+                title.content<Block.Content.Text>().text
+            )
             onItemView(1, R.id.tvBlockDescription).checkHasText(
                 description.content<Block.Content.Text>().text
             )
+            checkIsRecyclerSize(2)
         }
     }
 

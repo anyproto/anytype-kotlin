@@ -2,11 +2,11 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
+import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
@@ -60,7 +60,9 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             content = Block.Content.Text(
                 text = "",
                 marks = emptyList(),
-                style = Block.Content.Text.Style.values().random()
+                style = Block.Content.Text.Style.values().filter { style ->
+                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION
+                }.random()
             )
         )
 
@@ -187,7 +189,9 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             content = Block.Content.Text(
                 text = "",
                 marks = emptyList(),
-                style = Block.Content.Text.Style.values().random()
+                style = Block.Content.Text.Style.values().filter { style ->
+                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION
+                }.random()
             )
         )
 

@@ -42,6 +42,7 @@ data class Block(
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"
             const val TYPE_KEY = "type"
+            const val DESCRIPTION_KEY = "description"
             const val FEATURED_RELATIONS_KEY = "featuredRelations"
             const val IS_ARCHIVED_KEY = "isArchived"
         }

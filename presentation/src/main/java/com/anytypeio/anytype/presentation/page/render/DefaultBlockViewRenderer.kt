@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.EditorMode
+import com.anytypeio.anytype.domain.relations.Relations
 import com.anytypeio.anytype.presentation.mapper.*
 import com.anytypeio.anytype.presentation.page.cover.CoverColor
 import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
@@ -281,14 +282,18 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.DESCRIPTION -> {
-                            counter.reset()
-                            result.add(
-                                description(
-                                    block = block,
-                                    content = content,
-                                    mode = mode
+                            val detail = details.details.getOrDefault(root.id, Block.Fields.empty())
+                            val featured = detail.featuredRelations ?: emptyList()
+                            if (featured.contains(Relations.DESCRIPTION)) {
+                                counter.reset()
+                                result.add(
+                                    description(
+                                        block = block,
+                                        content = content,
+                                        mode = mode
+                                    )
                                 )
-                            )
+                            }
                         }
                         Content.Text.Style.CHECKBOX -> {
                             counter.reset()
@@ -935,12 +940,16 @@ class DefaultBlockViewRenderer(
         return BlockView.FeaturedRelation(
             id = block.id,
             relations = featured.mapNotNull { id ->
-                val relation = relations.first { it.key == id }
-                relation.view(
-                    details = details,
-                    values = details.details[ctx]?.map ?: emptyMap(),
-                    urlBuilder = urlBuilder
-                )
+                if (id != Relations.DESCRIPTION) {
+                    val relation = relations.first { it.key == id }
+                    relation.view(
+                        details = details,
+                        values = details.details[ctx]?.map ?: emptyMap(),
+                        urlBuilder = urlBuilder
+                    )
+                } else {
+                    null
+                }
             }
         )
     }

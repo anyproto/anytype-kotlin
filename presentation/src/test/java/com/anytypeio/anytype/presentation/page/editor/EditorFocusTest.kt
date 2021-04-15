@@ -91,7 +91,9 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         // SETUP
 
         val style = Block.Content.Text.Style.values()
-                .filter { it != Block.Content.Text.Style.TITLE || it != Block.Content.Text.Style.DESCRIPTION }
+                .filter { style ->
+                    style != Block.Content.Text.Style.TITLE || style != Block.Content.Text.Style.DESCRIPTION
+                }
                 .random()
 
         val block = Block(

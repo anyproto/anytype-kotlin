@@ -14,10 +14,11 @@
         android:layout_marginTop="6dp"
         android:background="@drawable/dragger" />
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginTop="6dp">
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/btnEditOrDone"
@@ -26,27 +27,38 @@
             android:layout_height="match_parent"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:text="Edit" />
+            android:text="@string/edit" />
 
         <TextView
             android:id="@+id/tvTagOrStatusRelationHeader"
             style="@style/DefaultCellRelationHeaderStyle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
             android:gravity="center"
             tools:text="Role" />
 
-        <ImageView
+        <FrameLayout
             android:id="@+id/btnAddValue"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginEnd="16dp"
-            android:src="@drawable/ic_dv_modal_plus" />
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
-    </FrameLayout>
+            <ImageView
+                android:contentDescription="@string/content_description_plus_button"
+                android:id="@+id/btnAddValueIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_dv_modal_plus" />
+
+        </FrameLayout>
+
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/filterInputContainer"
@@ -107,9 +119,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
-        tools:listitem="@layout/item_edit_cell_tag"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="16dp" />
+        android:layout_margin="16dp"
+        tools:listitem="@layout/item_edit_cell_tag" />
 
 </LinearLayout>

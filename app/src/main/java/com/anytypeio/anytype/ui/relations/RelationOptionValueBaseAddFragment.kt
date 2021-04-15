@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.relations
 
 import android.os.Bundle
 import android.view.*
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -85,10 +86,12 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
                     }
 
                     override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                        if (slideOffset < 0)
-                            btnAddContainer.gone()
-                        else
-                            btnAddContainer.visible()
+                        if (vm.isMultiple.value) {
+                            if (slideOffset < 0)
+                                btnAddContainer.gone()
+                            else
+                                btnAddContainer.visible()
+                        }
                     }
                 }
             )
@@ -109,10 +112,18 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
                 }
             }
             subscribe(vm.isMultiple) { isMultiple ->
-                if (isMultiple)
+                if (isMultiple) {
+                    recycler.updatePadding(
+                        bottom = dimen(R.dimen.multiple_option_value_bottom_list_margin)
+                    )
                     filterInput.setHint(R.string.choose_options)
-                else
+                }
+                else {
+                    recycler.updatePadding(
+                        bottom = dimen(R.dimen.single_option_value_bottom_list_margin)
+                    )
                     filterInput.setHint(R.string.choose_option)
+                }
             }
         }
     }

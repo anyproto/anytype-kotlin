@@ -111,14 +111,7 @@ class RelationObjectValueAddViewModel(
     }
 
     private fun proceedWithSearchObjects(ids: List<String>, relation: Relation) {
-        val filters = arrayListOf(
-            DVFilter(
-                relationKey = ObjectSetConfig.TYPE_KEY,
-                operator = DVFilterOperator.AND,
-                condition = DVFilterCondition.IN,
-                value = relation.objectTypes
-            )
-        )
+        val filters = relation.searchObjectsFilter()
         val sorts = arrayListOf(
             DVSort(
                 relationKey = ObjectSetConfig.NAME_KEY,

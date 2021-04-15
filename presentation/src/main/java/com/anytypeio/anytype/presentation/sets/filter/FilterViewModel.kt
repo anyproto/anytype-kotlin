@@ -173,7 +173,7 @@ open class FilterViewModel(
         }
         Relation.Format.OBJECT -> {
             val ids = filter?.value as? List<*>
-            proceedWithSearchObjects(ids)
+            proceedWithSearchObjects(ids, relation)
         }
         else -> {
             filterValueListState.value = emptyList()
@@ -181,15 +181,8 @@ open class FilterViewModel(
         }
     }
 
-    private fun proceedWithSearchObjects(ids: List<*>? = null) {
-        val filters = arrayListOf(
-            DVFilter(
-                relationKey = "isHidden",
-                operator = DVFilterOperator.AND,
-                condition = DVFilterCondition.NOT_EQUAL,
-                value = true
-            )
-        )
+    private fun proceedWithSearchObjects(ids: List<*>? = null, relation: Relation) {
+        val filters = relation.searchObjectsFilter()
         val sorts = arrayListOf(
             DVSort(
                 relationKey = ObjectSetConfig.NAME_KEY,

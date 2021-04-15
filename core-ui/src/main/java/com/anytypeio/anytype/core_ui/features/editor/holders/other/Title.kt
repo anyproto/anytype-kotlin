@@ -339,7 +339,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             onProfileIconClicked: () -> Unit,
             onCoverClicked: () -> Unit
         ) {
-            Timber.d("Binding profile title view: $item")
             super.bind(
                 item = item,
                 onFocusChanged = onFocusChanged,

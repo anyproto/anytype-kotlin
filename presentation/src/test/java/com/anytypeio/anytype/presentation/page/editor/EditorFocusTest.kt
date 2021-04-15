@@ -90,8 +90,8 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val style =
-            Block.Content.Text.Style.values().filter { it != Block.Content.Text.Style.TITLE }
+        val style = Block.Content.Text.Style.values()
+                .filter { it != Block.Content.Text.Style.TITLE || it != Block.Content.Text.Style.DESCRIPTION }
                 .random()
 
         val block = Block(
@@ -118,6 +118,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(page)
 
         val vm = buildViewModel()

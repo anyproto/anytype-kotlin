@@ -1,5 +1,9 @@
 package com.anytypeio.anytype.features.editor.base
 
+import android.os.Bundle
+import androidx.fragment.app.testing.FragmentScenario
+import androidx.fragment.app.testing.launchFragmentInContainer
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.tools.Counter
@@ -373,5 +377,12 @@ open class EditorTestSetup {
                 )
             )
         }
+    }
+
+    fun launch(args: Bundle): FragmentScenario<TestPageFragment> {
+        return launchFragmentInContainer(
+            fragmentArgs = args,
+            themeResId = R.style.AppTheme
+        )
     }
 }

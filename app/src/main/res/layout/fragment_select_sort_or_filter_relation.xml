@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/rect_bottom_sheet"
     android:transitionName="checkoutTransition"
     android:orientation="vertical">
 
@@ -53,6 +54,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchRelationRecycler"
+        tools:listitem="@layout/item_search_relation"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="20dp"

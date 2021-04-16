@@ -1,10 +1,24 @@
 # Change log for Android @Anytype app.
 
-## Version 0.1.8 (WIP)
+## Version 0.1.8
+
+### New features & enhancements 🚀
+
+* You can leave your mnemonics on your desktop and login with a QR code (#1380)
+* Fixed behavior when choosing default text/background color for a text range has no effect on the text block style (#1387)
+
+### Design & UX 🔳
+
+* Title in the Page menu should be one-lined or ellipsized at the end (#1415)
+
+### Fixes & tech 🚒
+
+* Adding files from device's recent files menu will no longer crash Anytype (#1381)
+* App supports two build variants: stable and experimental  (#1391)
 
 ### Middleware ⚙
 
-* Updated middleware protocol to `0.15.0-rc21`
+* Updated middleware protocol to `0.15.0`
 
 ## Version 0.1.7
 

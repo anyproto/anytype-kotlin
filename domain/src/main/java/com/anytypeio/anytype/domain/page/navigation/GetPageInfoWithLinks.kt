@@ -24,6 +24,7 @@ class GetPageInfoWithLinks(private val repo: BlockRepository) :
                                         || doc.type == DocumentInfo.Type.OBJECT_TYPE
                                         || doc.type == DocumentInfo.Type.RELATION
                                         || doc.type == DocumentInfo.Type.FILE
+                                        || doc.type == DocumentInfo.Type.PROFILE_PAGE
                                         //    TODO Filter by profile object Anytype, maybe will change in future
                                         || doc.id == GetListPages.ANYTYPE_PROFILE_ID
                             },
@@ -34,6 +35,7 @@ class GetPageInfoWithLinks(private val repo: BlockRepository) :
                                         || doc.type == DocumentInfo.Type.OBJECT_TYPE
                                         || doc.type == DocumentInfo.Type.RELATION
                                         || doc.type == DocumentInfo.Type.FILE
+                                        || doc.type == DocumentInfo.Type.PROFILE_PAGE
                                         //    TODO Filter by profile object Anytype, maybe will change in future
                                         || doc.id == GetListPages.ANYTYPE_PROFILE_ID
                             }

@@ -100,18 +100,21 @@
 
             <TextView
                 android:id="@+id/loadBookmarkPictureError"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:alpha="0.5"
                 android:fontFamily="monospace"
+                android:gravity="center"
                 android:padding="8dp"
                 android:text="@string/error_while_loading_picture"
                 android:textColor="@color/black"
-                android:textSize="12sp"
+                android:textSize="8sp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/bookmarkImage"
                 app:layout_constraintStart_toStartOf="@+id/bookmarkImage"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

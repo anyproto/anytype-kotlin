@@ -160,7 +160,6 @@ dependencies {
     implementation databaseDependencies.room
 
     implementation applicationDependencies.crashlytics
-    implementation applicationDependencies.firebaseCore
 
     implementation devDependencies.stetho
     implementation applicationDependencies.exoPlayer

@@ -73,8 +73,7 @@ ext {
     // Logging, Analytics & Crash reporting
 
     timber_version = '4.7.1'
-    crashlytics_version = '17.3.1'
-    firebase_core_version = '17.0.1'
+    crashlytics_version = '17.4.1'
 
     // Protobuf
 
@@ -133,7 +132,6 @@ ext {
             urlcleaner:                 "com.shekhargulati.urlcleaner:urlcleaner:$urlcleaner_version",
             kotlinxSerializationJson:   "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_json_version",
             crashlytics:                "com.google.firebase:firebase-crashlytics:$crashlytics_version",
-            firebaseCore:               "com.google.firebase:firebase-core:$firebase_core_version",
             shimmerLayout:              "com.facebook.shimmer:shimmer:$shimmer_layout_version",
             androidxSecurityCrypto:     "androidx.security:security-crypto:$androidx_security_crypto_version"
     ]

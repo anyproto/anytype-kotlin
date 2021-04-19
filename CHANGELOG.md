@@ -1,5 +1,15 @@
 # Change log for Android @Anytype app.
 
+## Version 0.1.9
+
+### Fixes & tech 🚒
+
+* Fix Firebase crashlytics core dependencies (#1419)
+
+### Middleware ⚙
+
+* Updated middleware protocol to `0.15.1` (#1420)
+
 ## Version 0.1.8
 
 ### New features & enhancements 🚀

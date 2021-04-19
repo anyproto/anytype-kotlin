@@ -88,9 +88,9 @@ fun ObjectSet.render(
     )
 }
 
-fun ObjectSet.title(ctx: Id): BlockView.Title.Document {
+fun ObjectSet.title(ctx: Id): BlockView.Title.Basic {
     val title = blocks.title()
-    return BlockView.Title.Document(
+    return BlockView.Title.Basic(
         id = title.id,
         text = title.content<Block.Content.Text>().text,
         emoji = details[ctx]?.iconEmoji,

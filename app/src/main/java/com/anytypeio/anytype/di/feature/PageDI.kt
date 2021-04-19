@@ -74,6 +74,8 @@ interface PageSubComponent {
     fun uploadDocCoverImageComponentBuilder(): UploadDocCoverImageSubComponent.Builder
 
     fun documentAddNewBlockComponentBuilder(): DocumentAddNewBlockSubComponent.Builder
+
+    fun objectLayoutComponent() : ObjectLayoutSubComponent.Builder
 }
 
 

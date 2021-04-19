@@ -131,7 +131,7 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
         viewStateTestObserver.assertValue(
             ViewState.Success(
                 listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         id = title.id,
                         text = title.content<TXT>().text,
                         mode = BlockView.Mode.READ,
@@ -236,7 +236,7 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
         viewStateTestObserver.assertValue(
             ViewState.Success(
                 listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         id = title.id,
                         text = title.content<TXT>().text,
                         mode = BlockView.Mode.EDIT,
@@ -343,7 +343,7 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
         viewStateTestObserver.assertValue(
             ViewState.Success(
                 listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         id = title.id,
                         text = title.content<TXT>().text,
                         mode = BlockView.Mode.EDIT,

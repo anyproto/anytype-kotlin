@@ -417,7 +417,7 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock = BlockView.Title.Document(
+        val oldBlock = BlockView.Title.Basic(
             id = id,
             text = text,
             isFocused = false
@@ -491,7 +491,7 @@ class BlockViewDiffUtilTest {
 
         val text = MockDataFactory.randomString()
 
-        val oldBlock = BlockView.Title.Document(
+        val oldBlock = BlockView.Title.Basic(
             id = id,
             text = text,
             mode = BlockView.Mode.EDIT,
@@ -753,7 +753,7 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock = BlockView.Title.Document(
+        val oldBlock = BlockView.Title.Basic(
             id = id,
             text = MockDataFactory.randomString(),
             cursor = null,
@@ -789,7 +789,7 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock = BlockView.Title.Document(
+        val oldBlock = BlockView.Title.Basic(
             id = id,
             text = MockDataFactory.randomString(),
             image = MockDataFactory.randomUuid()

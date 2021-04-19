@@ -913,7 +913,7 @@ class BlockAdapter(
             is Title.Document -> {
                 holder.apply {
                     bind(
-                        item = blocks[position] as BlockView.Title.Document,
+                        item = blocks[position] as BlockView.Title.Basic,
                         onTitleTextChanged = onTitleBlockTextChanged,
                         onFocusChanged = onFocusChanged,
                         onPageIconClicked = onPageIconClicked,

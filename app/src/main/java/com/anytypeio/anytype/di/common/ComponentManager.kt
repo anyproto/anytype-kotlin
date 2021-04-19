@@ -154,6 +154,14 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val objectLayoutComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .objectLayoutComponent()
+            .module(ObjectLayoutModule)
+            .build()
+    }
+
     val createBookmarkSubComponent = Component {
         main
             .createBookmarkBuilder()

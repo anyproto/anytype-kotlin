@@ -2,12 +2,12 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
-import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
-import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
+import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
+import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE
 import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
@@ -152,7 +152,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             assertValue(
                 ViewState.Success(
                     blocks = listOf(
-                        BlockView.Title.Document(
+                        BlockView.Title.Basic(
                             id = title.id,
                             isFocused = false,
                             text = title.content<TXT>().text,
@@ -186,7 +186,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             assertValue(
                 ViewState.Success(
                     blocks = listOf(
-                        BlockView.Title.Document(
+                        BlockView.Title.Basic(
                             id = title.id,
                             isFocused = false,
                             text = title.content<TXT>().text,
@@ -250,7 +250,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             assertValue(
                 ViewState.Success(
                     blocks = listOf(
-                        BlockView.Title.Document(
+                        BlockView.Title.Basic(
                             id = title.id,
                             isFocused = false,
                             text = title.content<TXT>().text,
@@ -526,7 +526,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             id = ttl.id,
             isFocused = false,
             text = ttl.content<TXT>().text,
@@ -741,7 +741,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
 
-        val titleView = BlockView.Title.Document(
+        val titleView = BlockView.Title.Basic(
             id = title.id,
             isFocused = false,
             text = title.content<TXT>().text,
@@ -1123,7 +1123,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         id = title.id,
                         text = title.content<TXT>().text,
                         mode = BlockView.Mode.EDIT,

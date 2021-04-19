@@ -91,14 +91,14 @@ class BlockReadModeTest : PageViewModelTest() {
         }
     )
 
-    private val titleEditModeView = BlockView.Title.Document(
+    private val titleEditModeView = BlockView.Title.Basic(
         id = title.id,
         text = title.content<TXT>().text,
         isFocused = false,
         mode = BlockView.Mode.EDIT
     )
 
-    private val titleReadModeView = BlockView.Title.Document(
+    private val titleReadModeView = BlockView.Title.Basic(
         id = title.id,
         text = title.content<TXT>().text,
         isFocused = false,

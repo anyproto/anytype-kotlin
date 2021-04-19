@@ -37,7 +37,7 @@ object BlockActionToolbarFactory {
         is BlockView.MediaPlaceholder.Picture -> newInstance(block, dimensions)
         is BlockView.Error.Picture -> newInstance(block, dimensions)
         is BlockView.Upload.Picture -> newInstance(block, dimensions)
-        is BlockView.Title.Document -> TODO()
+        is BlockView.Title.Basic -> TODO()
         is BlockView.Title.Profile -> TODO()
         is BlockView.Title.Archive -> TODO()
         is BlockView.Title.Todo -> TODO()

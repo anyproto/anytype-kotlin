@@ -66,8 +66,8 @@ class ObjectSetViewModel(
     private val _viewerGrid = MutableStateFlow(Viewer.GridView.empty())
     val viewerGrid = _viewerGrid
 
-    private val _header = MutableStateFlow<BlockView.Title.Document?>(null)
-    val header: StateFlow<BlockView.Title.Document?> = _header
+    private val _header = MutableStateFlow<BlockView.Title.Basic?>(null)
+    val header: StateFlow<BlockView.Title.Basic?> = _header
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
 

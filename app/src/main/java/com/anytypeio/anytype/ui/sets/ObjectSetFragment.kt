@@ -188,7 +188,7 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun observeHeader(title: BlockView.Title.Document) {
+    private fun observeHeader(title: BlockView.Title.Basic) {
         checkMainThread()
         this.title.setText(title.text)
         this.titleSmall.text = title.text

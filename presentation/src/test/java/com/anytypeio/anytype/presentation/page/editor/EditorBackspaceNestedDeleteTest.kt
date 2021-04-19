@@ -130,7 +130,7 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         id = title.id,
                         isFocused = false,
                         text = title.content<Block.Content.Text>().text
@@ -259,7 +259,7 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         id = title.id,
                         isFocused = false,
                         text = title.content<Block.Content.Text>().text
@@ -335,7 +335,9 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
-                style = Block.Content.Text.Style.values().random()
+                style = Block.Content.Text.Style.values().filter { style ->
+                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION
+                }.random()
             )
         )
 
@@ -403,7 +405,7 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         id = title.id,
                         isFocused = false,
                         text = title.content<Block.Content.Text>().text
@@ -484,7 +486,9 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
-                style = Block.Content.Text.Style.values().random()
+                style = Block.Content.Text.Style.values().filter { style ->
+                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION
+                }.random()
             )
         )
 
@@ -552,7 +556,7 @@ class EditorBackspaceNestedDeleteTest : EditorPresentationTestSetup() {
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         id = title.id,
                         isFocused = false,
                         text = title.content<Block.Content.Text>().text

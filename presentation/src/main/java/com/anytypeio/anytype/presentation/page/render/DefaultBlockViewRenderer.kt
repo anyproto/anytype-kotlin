@@ -767,7 +767,7 @@ class DefaultBlockViewRenderer(
 
         return when(layout) {
             Layout.BASIC -> {
-                BlockView.Title.Document(
+                BlockView.Title.Basic(
                     mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
                     id = block.id,
                     text = content.text,

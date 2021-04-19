@@ -308,7 +308,7 @@ open class PageViewModelTest {
 
         val expected = ViewState.Success(
             blocks = listOf(
-                BlockView.Title.Document(
+                BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
                     text = title.content<TXT>().text
@@ -529,7 +529,7 @@ open class PageViewModelTest {
         val expected =
             ViewState.Success(
                 listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         isFocused = false,
                         id = title.id,
                         text = title.content<TXT>().text
@@ -669,7 +669,7 @@ open class PageViewModelTest {
 
         val beforeUpdate = ViewState.Success(
             listOf(
-                BlockView.Title.Document(
+                BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
                     text = title.content<TXT>().text
@@ -788,7 +788,7 @@ open class PageViewModelTest {
 
         val firstTimeExpected = ViewState.Success(
             listOf(
-                BlockView.Title.Document(
+                BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
                     text = title.content<TXT>().text
@@ -828,7 +828,7 @@ open class PageViewModelTest {
 
         val secondTimeExpected = ViewState.Success(
             listOf(
-                BlockView.Title.Document(
+                BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
                     text = title.content<TXT>().text
@@ -940,7 +940,7 @@ open class PageViewModelTest {
 
         val firstTimeExpected = ViewState.Success(
             listOf(
-                BlockView.Title.Document(
+                BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
                     text = title.content<TXT>().text
@@ -994,7 +994,7 @@ open class PageViewModelTest {
 
         val secondTimeExpected = ViewState.Success(
             listOf(
-                BlockView.Title.Document(
+                BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
                     text = title.content<TXT>().text
@@ -1180,7 +1180,7 @@ open class PageViewModelTest {
 
         val state = ViewState.Success(
             listOf(
-                BlockView.Title.Document(
+                BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
                     text = title.content<TXT>().text
@@ -1548,7 +1548,7 @@ open class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         isFocused = false,
                         id = title.id,
                         text = title.content<TXT>().text
@@ -1567,7 +1567,7 @@ open class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         isFocused = false,
                         id = title.id,
                         text = title.content<TXT>().text
@@ -1779,7 +1779,7 @@ open class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         isFocused = false,
                         id = title.id,
                         text = title.content<TXT>().text
@@ -1810,7 +1810,7 @@ open class PageViewModelTest {
         testObserver.assertValue(
             ViewState.Success(
                 blocks = listOf(
-                    BlockView.Title.Document(
+                    BlockView.Title.Basic(
                         isFocused = true,
                         id = title.id,
                         text = title.content<TXT>().text,
@@ -3543,7 +3543,7 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val titleView = BlockView.Title.Document(
+        val titleView = BlockView.Title.Basic(
             id = title.id,
             text = title.content<TXT>().text,
             isFocused = false
@@ -3717,7 +3717,7 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val titleView = BlockView.Title.Document(
+        val titleView = BlockView.Title.Basic(
             id = title.id,
             text = title.content<TXT>().text,
             isFocused = false
@@ -4059,7 +4059,7 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val titleView = BlockView.Title.Document(
+        val titleView = BlockView.Title.Basic(
             id = title.id,
             text = title.content<TXT>().text,
             isFocused = false
@@ -4176,7 +4176,7 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val titleView = BlockView.Title.Document(
+        val titleView = BlockView.Title.Basic(
             id = title.id,
             text = title.content<TXT>().text,
             isFocused = false
@@ -4299,7 +4299,7 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val titleView = BlockView.Title.Document(
+        val titleView = BlockView.Title.Basic(
             id = title.id,
             text = title.content<TXT>().text,
             isFocused = false
@@ -4442,7 +4442,7 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val titleView = BlockView.Title.Document(
+        val titleView = BlockView.Title.Basic(
             id = title.id,
             text = title.content<TXT>().text,
             isFocused = false
@@ -4585,7 +4585,7 @@ open class PageViewModelTest {
 
         val testObserver = vm.state.test()
 
-        val titleView = BlockView.Title.Document(
+        val titleView = BlockView.Title.Basic(
             id = title.id,
             text = title.content<TXT>().text,
             isFocused = false

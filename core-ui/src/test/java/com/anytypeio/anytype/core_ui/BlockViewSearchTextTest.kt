@@ -17,7 +17,7 @@ class BlockViewSearchTextTest {
             target = IntRange.EMPTY
         )
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             id = MockDataFactory.randomString(),
             text = MockDataFactory.randomString(),
             searchFields = listOf(field)
@@ -410,7 +410,7 @@ class BlockViewSearchTextTest {
             target = IntRange.EMPTY
         )
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             id = MockDataFactory.randomString(),
             text = MockDataFactory.randomString(),
             searchFields = listOf(titleField)
@@ -491,7 +491,7 @@ class BlockViewSearchTextTest {
             target = 5..6
         )
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             id = MockDataFactory.randomString(),
             text = MockDataFactory.randomString(),
             searchFields = listOf(titleField)
@@ -553,7 +553,7 @@ class BlockViewSearchTextTest {
             target = 5..6
         )
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             id = MockDataFactory.randomString(),
             text = MockDataFactory.randomString(),
             searchFields = listOf(titleField)
@@ -627,7 +627,7 @@ class BlockViewSearchTextTest {
     @Test
     fun `should select previous search result in third paragraph`() {
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             id = "title",
             text = MockDataFactory.randomString(),
             searchFields = listOf(

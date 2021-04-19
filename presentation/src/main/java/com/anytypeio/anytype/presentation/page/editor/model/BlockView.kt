@@ -438,9 +438,8 @@ sealed class BlockView : ViewType, Parcelable {
          * @property id block's id
          * @property text text content (i.e. title text)
          */
-        @Deprecated("Rename to Basic")
         @Parcelize
-        data class Document(
+        data class Basic(
             override val id: String,
             override var isFocused: Boolean = false,
             override var text: String? = null,

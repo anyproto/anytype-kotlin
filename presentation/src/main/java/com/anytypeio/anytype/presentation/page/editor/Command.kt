@@ -81,6 +81,7 @@ sealed class Command {
     ) : Command()
 
     data class OpenCoverGallery(val ctx: String) : Command()
+    data class OpenObjectLayout(val ctx: String) : Command()
 
     object AlertDialog : Command()
 

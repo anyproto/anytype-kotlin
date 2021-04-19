@@ -35,7 +35,7 @@ class BlockViewDiffUtil(
 
         val changes = mutableListOf<Int>()
 
-        if (newBlock is BlockView.Title.Document && oldBlock is BlockView.Title.Document) {
+        if (newBlock is BlockView.Title.Basic && oldBlock is BlockView.Title.Basic) {
             if (newBlock.text != oldBlock.text)
                 changes.add(TEXT_CHANGED)
             if (newBlock.emoji != oldBlock.emoji || newBlock.image != oldBlock.image)

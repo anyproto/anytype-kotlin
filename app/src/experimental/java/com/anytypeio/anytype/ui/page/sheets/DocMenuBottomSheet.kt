@@ -59,6 +59,13 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             }
             .launchIn(lifecycleScope)
 
+        setLayoutContainer
+            .clicks()
+            .onEach {
+                withParent<DocumentMenuActionReceiver> { onLayoutClicked() }.also { dismiss() }
+            }
+            .launchIn(lifecycleScope)
+
         relationContainer
             .clicks()
             .onEach {
@@ -155,5 +162,6 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         fun onSearchOnPageClicked()
         fun onDocRelationsClicked()
         fun onAddCoverClicked()
+        fun onLayoutClicked()
     }
 }

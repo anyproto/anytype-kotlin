@@ -103,7 +103,7 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
 
         val before = ViewState.Success(
             blocks = listOf(
-                BlockView.Title.Document(
+                BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
                     isFocused = false
@@ -119,7 +119,7 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
 
         val after = ViewState.Success(
             blocks = listOf(
-                BlockView.Title.Document(
+                BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
                     isFocused = false

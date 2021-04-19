@@ -1,12 +1,11 @@
 package com.anytypeio.anytype.presentation.page
 
 import MockDataFactory
-import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -162,7 +161,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title.Document(
+            BlockView.Title.Basic(
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
@@ -283,7 +282,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title.Document(
+            BlockView.Title.Basic(
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
@@ -387,7 +386,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title.Document(
+            BlockView.Title.Basic(
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
@@ -471,7 +470,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title.Document(
+            BlockView.Title.Basic(
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
@@ -661,7 +660,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title.Document(
+            BlockView.Title.Basic(
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
@@ -846,7 +845,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title.Document(
+            BlockView.Title.Basic(
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
@@ -977,7 +976,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title.Document(
+            BlockView.Title.Basic(
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
@@ -1105,7 +1104,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title.Document(
+            BlockView.Title.Basic(
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
@@ -1245,7 +1244,7 @@ class DefaultBlockViewRendererTest {
         }
 
         val expected = listOf(
-            BlockView.Title.Document(
+            BlockView.Title.Basic(
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,

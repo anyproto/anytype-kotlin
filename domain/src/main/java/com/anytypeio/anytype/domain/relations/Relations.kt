@@ -5,4 +5,5 @@ package com.anytypeio.anytype.domain.relations
  */
 object Relations {
     const val DESCRIPTION = "description"
+    const val LAYOUT = "layout"
 }

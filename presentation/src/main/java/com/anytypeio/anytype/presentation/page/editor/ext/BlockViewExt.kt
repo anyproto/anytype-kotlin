@@ -17,7 +17,7 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
         is BlockView.Text.Header.Two -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Text.Header.Three -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Text.Toggle -> view.copy(mode = BlockView.Mode.READ)
-        is BlockView.Title.Document -> view.copy(mode = BlockView.Mode.READ)
+        is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Code -> view.copy(mode = BlockView.Mode.READ)
@@ -51,7 +51,7 @@ fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
         is BlockView.Text.Header.Two -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Text.Header.Three -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Text.Toggle -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Title.Document -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Code -> view.copy(mode = BlockView.Mode.EDIT)
@@ -85,7 +85,7 @@ fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
         is BlockView.Text.Header.Two -> view.copy(searchFields = emptyList())
         is BlockView.Text.Header.Three -> view.copy(searchFields = emptyList())
         is BlockView.Text.Highlight -> view.copy(searchFields = emptyList())
-        is BlockView.Title.Document -> view.copy(searchFields = emptyList())
+        is BlockView.Title.Basic -> view.copy(searchFields = emptyList())
         is BlockView.Title.Profile -> view.copy(searchFields = emptyList())
         is BlockView.Media.Bookmark -> view.copy(searchFields = emptyList())
         is BlockView.Media.File -> view.copy(searchFields = emptyList())
@@ -135,7 +135,7 @@ fun List<BlockView>.highlight(
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
             view.copy(searchFields = highlighter(fields))
         }
-        is BlockView.Title.Document -> {
+        is BlockView.Title.Basic -> {
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
             view.copy(searchFields = highlighter(fields))
         }
@@ -179,7 +179,7 @@ fun BlockView.setHighlight(
     is BlockView.Text.Header.Two -> copy(searchFields = highlights)
     is BlockView.Text.Header.Three -> copy(searchFields = highlights)
     is BlockView.Text.Highlight -> copy(searchFields = highlights)
-    is BlockView.Title.Document -> copy(searchFields = highlights)
+    is BlockView.Title.Basic -> copy(searchFields = highlights)
     is BlockView.Title.Profile -> copy(searchFields = highlights)
     is BlockView.Media.Bookmark -> copy(searchFields = highlights)
     is BlockView.Media.File -> copy(searchFields = highlights)

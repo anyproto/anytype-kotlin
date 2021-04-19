@@ -2559,6 +2559,10 @@ class PageViewModel(
         dispatch(Command.OpenCoverGallery(context))
     }
 
+    fun onLayoutClicked() {
+        dispatch(Command.OpenObjectLayout(context))
+    }
+
     fun onDocCoverImagePicked(path: String) {
         viewModelScope.launch {
             setDocCoverImage(

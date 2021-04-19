@@ -110,7 +110,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
             assertValue(
                 ViewState.Success(
                     blocks = listOf(
-                        BlockView.Title.Document(
+                        BlockView.Title.Basic(
                             id = title.id,
                             isFocused = false,
                             text = title.content<TXT>().text,

@@ -407,7 +407,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = false,
@@ -558,7 +558,7 @@ class BlockAdapterTest {
     @Test
     fun `should create title view holder`() {
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = MockDataFactory.randomBoolean()
@@ -585,7 +585,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = MockDataFactory.randomBoolean()
@@ -620,7 +620,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = MockDataFactory.randomBoolean()
@@ -673,7 +673,7 @@ class BlockAdapterTest {
 
         val events = mutableListOf<Pair<String, Boolean>>()
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = false
@@ -722,7 +722,7 @@ class BlockAdapterTest {
 
         val events = mutableListOf<Pair<String, String>>()
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = MockDataFactory.randomBoolean()
@@ -1401,7 +1401,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = false
@@ -1452,7 +1452,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = true
@@ -1505,7 +1505,7 @@ class BlockAdapterTest {
 
         val events = mutableListOf<BlockView.Title>()
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             isFocused = true
@@ -1782,7 +1782,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
@@ -1823,7 +1823,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
@@ -1862,7 +1862,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val title = BlockView.Title.Document(
+        val title = BlockView.Title.Basic(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,

@@ -227,7 +227,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         fun bind(
-            item: BlockView.Title.Document,
+            item: BlockView.Title.Basic,
             onTitleTextChanged: (BlockView.Title) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onPageIconClicked: () -> Unit,
@@ -254,7 +254,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             item: BlockView.Title
         ) {
             super.processPayloads(payloads, item)
-            if (item is BlockView.Title.Document) {
+            if (item is BlockView.Title.Basic) {
                 payloads.forEach { payload ->
                     if (payload.isTitleIconChanged) {
                         setEmoji(item)
@@ -267,7 +267,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             }
         }
 
-        private fun setEmoji(item: BlockView.Title.Document) {
+        private fun setEmoji(item: BlockView.Title.Basic) {
             try {
                 if (item.emoji != null) {
                     try {
@@ -301,7 +301,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         fun bind(
-            item: BlockView.Title.Document
+            item: BlockView.Title.Basic
         ) {
             super.bind(
                 item = item,

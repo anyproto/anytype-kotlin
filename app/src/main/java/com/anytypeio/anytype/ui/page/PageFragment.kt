@@ -83,6 +83,7 @@ import com.anytypeio.anytype.ui.database.modals.RelationValueFragment
 import com.anytypeio.anytype.ui.page.cover.DocCoverAction
 import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment
 import com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment
+import com.anytypeio.anytype.ui.page.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.page.modals.*
 import com.anytypeio.anytype.ui.page.modals.actions.BlockActionToolbarFactory
 import com.anytypeio.anytype.ui.page.modals.actions.DocumentIconActionMenuFragment
@@ -783,6 +784,10 @@ open class PageFragment :
                     val fr = DocCoverSliderFragment.new(command.ctx)
                     fr.show(childFragmentManager, null)
                 }
+                is Command.OpenObjectLayout -> {
+                    val fr = ObjectLayoutFragment.new(command.ctx)
+                    fr.show(childFragmentManager, null)
+                }
                 is Command.OpenFullScreenImage -> {
                     val screen = FullScreenPictureFragment.new(command.target, command.url).apply {
                         enterTransition = Fade()
@@ -901,10 +906,10 @@ open class PageFragment :
 
     private fun resetDocumentTitle(state: ViewState.Success) {
         state.blocks.firstOrNull { view ->
-            view is BlockView.Title.Document || view is BlockView.Title.Profile
+            view is BlockView.Title.Basic || view is BlockView.Title.Profile
         }?.let { view ->
             when (view) {
-                is BlockView.Title.Document -> resetTopToolbarTitle(
+                is BlockView.Title.Basic -> resetTopToolbarTitle(
                     view.text,
                     view.emoji,
                     view.image
@@ -1324,6 +1329,10 @@ open class PageFragment :
 
     override fun onAddCoverClicked() {
         vm.onAddCoverClicked()
+    }
+
+    override fun onLayoutClicked() {
+        vm.onLayoutClicked()
     }
 
     override fun onImagePicked(path: String) {

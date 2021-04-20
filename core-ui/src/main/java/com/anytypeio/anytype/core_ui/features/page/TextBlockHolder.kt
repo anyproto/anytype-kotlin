@@ -10,9 +10,7 @@ import com.anytypeio.anytype.core_ui.extensions.preserveSelection
 import com.anytypeio.anytype.core_ui.extensions.range
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.menu.EditorContextMenu
-import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
-import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
-import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
+import com.anytypeio.anytype.core_ui.tools.*
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.removeSpans
@@ -22,6 +20,7 @@ import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.editor.model.Checkable
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import timber.log.Timber
 
 /**
@@ -211,6 +210,25 @@ interface TextBlockHolder : TextHolder {
                     is MentionTextWatcher.MentionTextWatcherState.Text -> {
                         onMentionEvent.invoke(MentionEvent.MentionSuggestText(state.text))
                     }
+                }
+            }
+        )
+    }
+
+    fun setupSlashWatcher(
+        onSlashEvent: (SlashEvent) -> Unit
+    ) {
+        content.addTextChangedListener(
+            SlashTextWatcher { state ->
+                when (state) {
+                    is SlashTextWatcherState.Start -> onSlashEvent(
+                        SlashEvent.Start(
+                            slashStart = state.start,
+                            cursorCoordinate = content.cursorYBottomCoordinate()
+                        )
+                    )
+                    SlashTextWatcherState.Stop -> onSlashEvent(SlashEvent.Stop)
+                    is SlashTextWatcherState.Filter -> onSlashEvent(SlashEvent.Filter(state.text))
                 }
             }
         )

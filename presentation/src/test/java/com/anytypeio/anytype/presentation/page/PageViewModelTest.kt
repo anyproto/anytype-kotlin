@@ -4780,7 +4780,8 @@ open class PageViewModelTest {
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(
                     isVisible = false
                 ),
-                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
             )
         )
 
@@ -4841,7 +4842,8 @@ open class PageViewModelTest {
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(
                     isVisible = false
                 ),
-                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
             )
         )
     }
@@ -5005,7 +5007,8 @@ open class PageViewModelTest {
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(
                     isVisible = false
                 ),
-                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
             )
         )
     }
@@ -5092,7 +5095,8 @@ open class PageViewModelTest {
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(
                     isVisible = false
                 ),
-                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
             )
         )
     }

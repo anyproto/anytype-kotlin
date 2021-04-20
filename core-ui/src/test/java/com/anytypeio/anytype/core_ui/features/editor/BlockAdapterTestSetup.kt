@@ -50,7 +50,8 @@ open class BlockAdapterTestSetup {
             clipboardInterceptor = clipboardInterceptor,
             onMentionEvent = {},
             onBackPressedCallback = { false },
-            onCoverClicked = {}
+            onCoverClicked = {},
+            onSlashEvent = {}
         )
     }
 }

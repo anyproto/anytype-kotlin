@@ -139,7 +139,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         cursorCoordinate = null,
                         mentionFilter = null,
                         mentionFrom = null
-                    )
+                    ),
+                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
                 )
             )
         }
@@ -239,7 +240,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         cursorCoordinate = null,
                         mentionFilter = null,
                         mentionFrom = null
-                    )
+                    ),
+                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
                 )
             )
         }
@@ -357,7 +359,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         cursorCoordinate = null,
                         mentionFilter = null,
                         mentionFrom = null
-                    )
+                    ),
+                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
                 )
             )
         }
@@ -407,7 +410,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         cursorCoordinate = null,
                         mentionFilter = null,
                         mentionFrom = null
-                    )
+                    ),
+                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
                 )
             )
         }

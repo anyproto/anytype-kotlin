@@ -163,7 +163,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         )
 
         val value1 = "Anytype"
-        val value2 = "2021"
+        val value2 = 2021.0
         val value3 = "+00000000000"
         val value4 = "https://anytype.io/"
         val value5 = "team@anytype.io"
@@ -259,7 +259,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             onItemView(2, R.id.tvRelationTitle).checkHasText(relation1.name)
             onItemView(2, R.id.tvRelationValue).checkHasText(value1)
             onItemView(3, R.id.tvRelationTitle).checkHasText(relation2.name)
-            onItemView(3, R.id.tvRelationValue).checkHasText(value2)
+            onItemView(3, R.id.tvRelationValue).checkHasText(value2.toString())
             onItemView(4, R.id.tvRelationTitle).checkHasText(relation3.name)
             onItemView(4, R.id.tvRelationValue).checkHasText(value3)
             onItemView(5, R.id.tvRelationTitle).checkHasText(relation4.name)
@@ -587,7 +587,8 @@ class RelationBlockUITesting : EditorTestSetup() {
             onItemView(0, R.id.title).checkHasText(title.content<Block.Content.Text>().text)
             onItemView(1, R.id.textContent).checkHasText(a.content<Block.Content.Text>().text)
             onItemView(2, R.id.tvRelationTitle).checkHasText(relation1.name)
-            onItemView(2, R.id.fileContainer).checkHasChildViewCount(2)
+            onItemView(2, R.id.file0).checkIsDisplayed()
+            onItemView(2, R.id.file1).checkIsDisplayed()
         }
     }
 

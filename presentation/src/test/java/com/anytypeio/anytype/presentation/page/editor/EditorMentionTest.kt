@@ -630,7 +630,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     mentionFilter = "Pag",
                     mentionFrom = from,
                     updateList = false
-                )
+                ),
+                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
             )
         )
 
@@ -650,7 +651,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(
                     isVisible = false
                 ),
-                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
             )
         )
     }

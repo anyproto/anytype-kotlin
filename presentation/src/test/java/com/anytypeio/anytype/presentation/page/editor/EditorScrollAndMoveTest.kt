@@ -125,7 +125,8 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                         cursorCoordinate = null,
                         mentionFilter = null,
                         mentionFrom = null
-                    )
+                    ),
+                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
                 )
             )
         }
@@ -221,7 +222,8 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                         cursorCoordinate = null,
                         mentionFilter = null,
                         mentionFrom = null
-                    )
+                    ),
+                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
                 )
             )
         }
@@ -298,7 +300,8 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                         cursorCoordinate = null,
                         mentionFilter = null,
                         mentionFrom = null
-                    )
+                    ),
+                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
                 )
             )
         }
@@ -413,7 +416,8 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                         cursorCoordinate = null,
                         mentionFilter = null,
                         mentionFrom = null
-                    )
+                    ),
+                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
                 )
             )
         }

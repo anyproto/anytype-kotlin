@@ -5,7 +5,7 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-class MentionFooterItemDecorator(private val screen: Point) : RecyclerView.ItemDecoration() {
+open class MentionFooterItemDecorator(private val screen: Point) : RecyclerView.ItemDecoration() {
 
     override fun getItemOffsets(
         outRect: Rect,
@@ -22,3 +22,5 @@ class MentionFooterItemDecorator(private val screen: Point) : RecyclerView.ItemD
         }
     }
 }
+
+class SlashWidgetFooterItemDecorator(private val screen: Point) : MentionFooterItemDecorator(screen)

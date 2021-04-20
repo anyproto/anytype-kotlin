@@ -78,6 +78,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = 333,
                 mentionFilter = "start",
                 mentionFrom = 10
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -132,6 +135,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = 333,
                 mentionFilter = "start",
                 mentionFrom = 10
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -186,6 +192,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = 333,
                 mentionFilter = "start",
                 mentionFrom = 10
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -240,6 +249,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = 333,
                 mentionFilter = "start",
                 mentionFrom = 10
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -292,6 +304,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -337,6 +352,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -382,6 +400,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -405,6 +426,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -446,6 +470,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -469,6 +496,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -547,6 +577,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -615,6 +648,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
         assertEquals(
@@ -684,6 +720,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
 
@@ -751,6 +790,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
+            ),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
             )
         )
         assertEquals(
@@ -804,7 +846,10 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                isVisible = false
+            )
         )
 
         runBlocking {
@@ -877,7 +922,8 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
         assertEquals(
             expected = expected,
@@ -940,7 +986,8 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
 
         val result = runBlocking {
@@ -1007,7 +1054,8 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
         assertEquals(
             expected = expected,
@@ -1070,7 +1118,8 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
 
         runBlocking {
@@ -1104,7 +1153,8 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
         assertEquals(
             expected = expected,
@@ -1169,7 +1219,8 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
 
 
@@ -1248,7 +1299,8 @@ class ControlPanelStateReducerTest {
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = false
                     ),
-                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
                 ),
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = IntRange(0, 7),
@@ -1310,7 +1362,8 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
         assertEquals(
             expected = expected,
@@ -1359,7 +1412,8 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
 
         assertEquals(
@@ -1389,7 +1443,8 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
 
         assertEquals(
@@ -1460,7 +1515,8 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
 
         assertEquals(
@@ -1490,7 +1546,8 @@ class ControlPanelStateReducerTest {
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset()
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
 
         assertEquals(

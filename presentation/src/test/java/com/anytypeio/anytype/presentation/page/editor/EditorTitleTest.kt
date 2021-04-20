@@ -155,7 +155,8 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                         isScrollAndMoveEnabled = false
                     ),
                     mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
-                    navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = false)
+                    navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = false),
+                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
                 )
             )
 

@@ -310,4 +310,66 @@
     <string name="other_relations">Other relations</string>
     <string name="hint_add_description">Add description</string>
 
+    <string name="slash_widget_main_style">Style</string>
+    <string name="slash_widget_main_media">Media</string>
+    <string name="slash_widget_main_objects">Objects</string>
+    <string name="slash_widget_main_relations">Relations</string>
+    <string name="slash_widget_main_other">Other</string>
+    <string name="slash_widget_main_actions">Actions</string>
+    <string name="slash_widget_main_alignment">Alignment</string>
+    <string name="slash_widget_main_color">Color</string>
+    <string name="slash_widget_main_background">Background</string>
+
+    <string name="slash_widget_style_text">Text</string>
+    <string name="slash_widget_style_text_subtitle">Just start writing with a plain text</string>
+    <string name="slash_widget_style_title">Title</string>
+    <string name="slash_widget_style_title_subtitle">Big section heading</string>
+    <string name="slash_widget_style_heading">Heading</string>
+    <string name="slash_widget_style_heading_subtitle">Just start writing with a plain text</string>
+    <string name="slash_widget_style_subheading">Subheading</string>
+    <string name="slash_widget_style_subheading_subtitle">Just start writing with a plain text</string>
+    <string name="slash_widget_style_highlighted">Highlighted</string>
+    <string name="slash_widget_style_highlighted_subtitle">Small section heading</string>
+    <string name="slash_widget_style_callout">Callout</string>
+    <string name="slash_widget_style_callout_subtitle">Small section heading</string>
+    <string name="slash_widget_style_checkbox">Checkbox</string>
+    <string name="slash_widget_style_checkbox_subtitle">Create and track task with to-do lsit</string>
+    <string name="slash_widget_style_bulleted">Bulleted</string>
+    <string name="slash_widget_style_bulleted_subtitle">Just start writing with a plain text</string>
+    <string name="slash_widget_style_numbered">Numbered list</string>
+    <string name="slash_widget_style_numbered_subtitle">List with numbering</string>
+    <string name="slash_widget_style_toggle">Toggle</string>
+    <string name="slash_widget_style_toggle_subtitle">Hide and show content inside</string>
+    <string name="slash_widget_style_bold">Bold</string>
+    <string name="slash_widget_style_italic">Italic</string>
+    <string name="slash_widget_style_breakthrough">Breakthrough</string>
+    <string name="slash_widget_style_code">Code</string>
+    <string name="slash_widget_style_link">Link</string>
+
+    <string name="slash_widget_media_file">File</string>
+    <string name="slash_widget_media_file_subtitle">Store file in original state</string>
+    <string name="slash_widget_media_picture">Picture</string>
+    <string name="slash_widget_media_picture_subtitle">Upload and enrich the page with image</string>
+    <string name="slash_widget_media_video">Video</string>
+    <string name="slash_widget_media_video_subtitle">Upload playable video</string>
+    <string name="slash_widget_media_bookmark">Bookmark</string>
+    <string name="slash_widget_media_bookmark_subtitle">Save your favorite link with summery</string>
+    <string name="slash_widget_media_code">Code snippet</string>
+    <string name="slash_widget_media_code_subtitle">Capture code snippet</string>
+    
+    <string name="slash_widget_other_line">Line divider</string>
+    <string name="slash_widget_other_dots">Dots divider</string>
+
+    <string name="slash_widget_actions_delete">Delete</string>
+    <string name="slash_widget_actions_duplicate">Duplicate</string>
+    <string name="slash_widget_actions_copy">Copy</string>
+    <string name="slash_widget_actions_paste">Paste</string>
+    <string name="slash_widget_actions_move">Move</string>
+    <string name="slash_widget_actions_moveto">Move to</string>
+    <string name="slash_widget_actions_clean_style">Clean style</string>
+
+    <string name="slash_widget_align_right">Right</string>
+    <string name="slash_widget_align_center">Center</string>
+    <string name="slash_widget_align_left">Left</string>
+
 </resources>

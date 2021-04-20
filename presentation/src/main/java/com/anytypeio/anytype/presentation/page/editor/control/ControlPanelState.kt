@@ -18,6 +18,7 @@ data class ControlPanelState(
     val stylingToolbar: Toolbar.Styling,
     val multiSelect: Toolbar.MultiSelect,
     val mentionToolbar: Toolbar.MentionToolbar,
+    val slashWidget: Toolbar.SlashWidget,
     val searchToolbar: Toolbar.SearchToolbar = Toolbar.SearchToolbar(isVisible = false)
 ) {
 
@@ -162,6 +163,26 @@ data class ControlPanelState(
         data class SearchToolbar(
             override val isVisible: Boolean
         ) : Toolbar()
+
+        data class SlashWidget(
+            override val isVisible: Boolean,
+            val from: Int? = null,
+            val filter: String? = null,
+            val cursorCoordinate: Int? = null,
+            val updateList: Boolean = false,
+            val items: List<String> = emptyList()
+        ): Toolbar() {
+            companion object {
+                fun reset(): SlashWidget = SlashWidget(
+                    isVisible = false,
+                    filter = null,
+                    from = null,
+                    cursorCoordinate = null,
+                    items = emptyList(),
+                    updateList = false
+                )
+            }
+        }
     }
 
     /**
@@ -207,7 +228,8 @@ data class ControlPanelState(
             ),
             searchToolbar = Toolbar.SearchToolbar(
                 isVisible = false
-            )
+            ),
+            slashWidget = Toolbar.SlashWidget.reset()
         )
     }
 }

@@ -80,6 +80,7 @@ import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATIO
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_PLACEHOLDER
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_TAGS
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_TODO_TITLE
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import kotlinx.android.synthetic.main.item_block_description.view.*
@@ -116,6 +117,7 @@ class BlockAdapter(
     private val onContextMenuStyleClick: (IntRange) -> Unit,
     private val clipboardInterceptor: ClipboardInterceptor,
     private val onMentionEvent: (MentionEvent) -> Unit,
+    private val onSlashEvent: (SlashEvent) -> Unit,
     private val onBackPressedCallback: () -> Boolean
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
@@ -780,6 +782,7 @@ class BlockAdapter(
                     onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
+                    onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

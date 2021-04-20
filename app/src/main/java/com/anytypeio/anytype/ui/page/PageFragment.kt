@@ -55,10 +55,7 @@ import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveSt
 import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetHighlighter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.layoutChanges
-import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
-import com.anytypeio.anytype.core_ui.tools.FirstItemInvisibilityDetector
-import com.anytypeio.anytype.core_ui.tools.MentionFooterItemDecorator
-import com.anytypeio.anytype.core_ui.tools.OutsideClickDetector
+import com.anytypeio.anytype.core_ui.tools.*
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
@@ -166,6 +163,10 @@ open class PageFragment :
         MentionFooterItemDecorator(screen = screen)
     }
 
+    private val footerSlashDecorator by lazy {
+        SlashWidgetFooterItemDecorator(screen = screen)
+    }
+
     private val vm by viewModels<PageViewModel> { factory }
 
     private lateinit var pickiT: PickiT
@@ -214,6 +215,7 @@ open class PageFragment :
             onClickListener = vm::onClickListener,
             clipboardInterceptor = this,
             onMentionEvent = vm::onMentionEvent,
+            onSlashEvent = vm::onSlashEvent,
             onBackPressedCallback = { vm.onBackPressedCallback() }
         )
     }
@@ -505,6 +507,12 @@ open class PageFragment :
             mentionClick = vm::onMentionSuggestClick,
             newPageClick = vm::onAddMentionNewPageClicked
         )
+
+        lifecycleScope.launch {
+            slashWidget.events.collect { item ->
+                vm.onSlashItemClicked(item)
+            }
+        }
 
         lifecycleScope.launch {
             styleToolbar.events.collect { event ->
@@ -1032,6 +1040,20 @@ open class PageFragment :
             }
         }
 
+        state.slashWidget.apply {
+            if (isVisible) {
+                if (!slashWidget.isVisible) {
+                    showSlashWidget(this)
+                }
+                filter?.let {
+                    slashWidget.filter(it)
+                }
+            } else {
+                slashWidget.gone()
+                recycler.removeItemDecoration(footerSlashDecorator)
+            }
+        }
+
         state.searchToolbar.apply {
             if (isVisible) {
                 searchToolbar.visible()
@@ -1063,6 +1085,43 @@ open class PageFragment :
                 setVisibility(R.id.mentionSuggesterToolbar, View.VISIBLE)
                 connect(
                     R.id.mentionSuggesterToolbar,
+                    ConstraintSet.BOTTOM,
+                    R.id.sheet,
+                    ConstraintSet.BOTTOM
+                )
+            }
+            val transitionSet = TransitionSet().apply {
+                addTransition(ChangeBounds())
+                duration = SHOW_MENTION_TRANSITION_DURATION
+                interpolator = LinearInterpolator()
+                ordering = TransitionSet.ORDERING_TOGETHER
+            }
+            TransitionManager.beginDelayedTransition(sheet, transitionSet)
+            set.applyTo(sheet)
+        }
+    }
+
+    private fun showSlashWidget(state: ControlPanelState.Toolbar.SlashWidget) {
+        state.cursorCoordinate?.let { cursorCoordinate ->
+            val parentBottom = calculateRectInWindow(recycler).bottom
+            val toolbarHeight = slashWidget.getWidgetMinHeight()
+            val minPosY = parentBottom - toolbarHeight
+
+            if (minPosY <= cursorCoordinate) {
+                val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoordinate)
+                recycler.addItemDecoration(footerSlashDecorator)
+                recycler.post {
+                    recycler.smoothScrollBy(0, scrollY)
+                }
+            }
+            slashWidget.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                height = toolbarHeight
+            }
+            val set = ConstraintSet().apply {
+                clone(sheet)
+                setVisibility(R.id.slashWidget, View.VISIBLE)
+                connect(
+                    R.id.slashWidget,
                     ConstraintSet.BOTTOM,
                     R.id.sheet,
                     ConstraintSet.BOTTOM

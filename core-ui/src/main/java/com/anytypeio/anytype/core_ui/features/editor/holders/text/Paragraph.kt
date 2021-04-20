@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import kotlinx.android.synthetic.main.item_block_text.view.*
 
 class Paragraph(
@@ -32,6 +33,7 @@ class Paragraph(
         onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
+        onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
@@ -56,6 +58,7 @@ class Paragraph(
         onBackPressedCallback = onBackPressedCallback
     ).also {
         setupMentionWatcher(onMentionEvent)
+        setupSlashWatcher(onSlashEvent)
     }
 
     override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {

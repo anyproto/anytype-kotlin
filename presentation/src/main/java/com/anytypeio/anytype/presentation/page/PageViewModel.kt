@@ -77,6 +77,8 @@ import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDes
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
 import com.anytypeio.anytype.presentation.page.editor.search.SearchInDocEvent
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
@@ -992,6 +994,7 @@ class PageViewModel(
                 }
                 Content.Smart.Type.PAGE -> {
                     val details = orchestrator.stores.details.current().details
+                    controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
                     dispatch(
                         command = Command.OpenDocumentMenu(
                             status = syncStatus.value ?: SyncStatus.UNKNOWN,
@@ -3195,6 +3198,7 @@ class PageViewModel(
     }
 
     fun onPageIconClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
         val details = orchestrator.stores.details.current()
         dispatch(
             Command.OpenDocumentIconActionMenu(
@@ -3220,6 +3224,7 @@ class PageViewModel(
     }
 
     fun onProfileIconClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
         val details = orchestrator.stores.details.current()
         dispatch(
             Command.OpenProfileIconActionMenu(
@@ -3269,6 +3274,33 @@ class PageViewModel(
             eventName = EventsDictionary.SCREEN_SEARCH
         )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
+    }
+
+    fun onSlashItemClicked(item: SlashItem) {
+
+    }
+
+    fun onSlashEvent(event: SlashEvent) {
+        when (event) {
+            is SlashEvent.Filter -> {
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.Slash.OnFilter(
+                        filter = event.filter.toString()
+                    )
+                )
+            }
+            is SlashEvent.Start -> {
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.Slash.OnStart(
+                        cursorCoordinate = event.cursorCoordinate,
+                        slashFrom = event.slashStart
+                    )
+                )
+            }
+            SlashEvent.Stop -> {
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+            }
+        }
     }
 
     fun onMentionEvent(mentionEvent: MentionEvent) {

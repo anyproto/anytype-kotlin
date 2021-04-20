@@ -183,9 +183,18 @@ sealed class ControlPanelMachine {
             object OnStop : Mentions()
         }
 
+        sealed class Slash : Event() {
+            data class OnStart(val cursorCoordinate: Int, val slashFrom: Int) : Slash()
+            data class OnFilter(val filter: String) : Slash()
+            object OnStop : Slash()
+        }
+
         sealed class OnRefresh : Event() {
             data class StyleToolbar(val target: Block?, val selection: IntRange?) : OnRefresh()
         }
+
+        object OnDocumentMenuClicked : Event()
+        object OnDocumentIconClicked : Event()
     }
 
     /**
@@ -272,14 +281,17 @@ sealed class ControlPanelMachine {
             is Event.OnTextInputClicked -> {
                 if (state.stylingToolbar.isVisible) {
                     state.copy(
-                        stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                        stylingToolbar = Toolbar.Styling.reset(),
                         mainToolbar = state.mainToolbar.copy(isVisible = true),
                         navigationToolbar = state.navigationToolbar.copy(
                             isVisible = false
-                        )
+                        ),
+                        slashWidget = Toolbar.SlashWidget.reset()
                     )
                 } else {
-                    state.copy()
+                    state.copy(
+                        slashWidget = Toolbar.SlashWidget.reset()
+                    )
                 }
             }
             is Event.OnBlockActionToolbarStyleClicked -> {
@@ -330,10 +342,14 @@ sealed class ControlPanelMachine {
             is Event.Mentions -> {
                 handleMentionEvent(event, state)
             }
+            is Event.Slash -> {
+                handleSlashEvent(event, state)
+            }
             is Event.OnFocusChanged -> {
                 when {
                     state.multiSelect.isVisible -> state.copy(
-                        mentionToolbar = Toolbar.MentionToolbar.reset()
+                        mentionToolbar = Toolbar.MentionToolbar.reset(),
+                        slashWidget = Toolbar.SlashWidget.reset()
                     )
                     !state.mainToolbar.isVisible -> state.copy(
                         mainToolbar = state.mainToolbar.copy(
@@ -341,6 +357,7 @@ sealed class ControlPanelMachine {
                         ),
                         stylingToolbar = Toolbar.Styling.reset(),
                         mentionToolbar = Toolbar.MentionToolbar.reset(),
+                        slashWidget = Toolbar.SlashWidget.reset(),
                         navigationToolbar = Toolbar.Navigation(
                             isVisible = false
                         )
@@ -350,10 +367,21 @@ sealed class ControlPanelMachine {
                             stylingToolbar = state.stylingToolbar.copy(
                                 isVisible = false
                             ),
-                            mentionToolbar = Toolbar.MentionToolbar.reset()
+                            mentionToolbar = Toolbar.MentionToolbar.reset(),
+                            slashWidget = Toolbar.SlashWidget.reset()
                         )
                     }
                 }
+            }
+            Event.OnDocumentMenuClicked -> {
+                state.copy(
+                    slashWidget = Toolbar.SlashWidget.reset()
+                )
+            }
+            Event.OnDocumentIconClicked -> {
+                state.copy(
+                    slashWidget = Toolbar.SlashWidget.reset()
+                )
             }
         }
 
@@ -565,6 +593,44 @@ sealed class ControlPanelMachine {
             )
         }
 
+        private fun handleSlashEvent(
+            event: Event.Slash,
+            state: ControlPanelState
+        ): ControlPanelState = when (event) {
+            is Event.Slash.OnStart -> {
+                state.copy(
+                    slashWidget = state.slashWidget.copy(
+                        isVisible = true,
+                        from = event.slashFrom,
+                        filter = "",
+                        cursorCoordinate = event.cursorCoordinate,
+                        updateList = false,
+                        items = emptyList()
+                    )
+                )
+            }
+            Event.Slash.OnStop -> {
+                state.copy(
+                    slashWidget = state.slashWidget.copy(
+                        isVisible = false,
+                        from = null,
+                        filter = null,
+                        cursorCoordinate = null,
+                        updateList = false,
+                        items = emptyList()
+                    )
+                )
+            }
+            is Event.Slash.OnFilter -> {
+                state.copy(
+                    slashWidget = state.slashWidget.copy(
+                        filter = event.filter,
+                        updateList = false
+                    )
+                )
+            }
+        }
+
         private fun handleMultiSelectEvent(
             event: Event.MultiSelect,
             state: ControlPanelState
@@ -625,7 +691,8 @@ sealed class ControlPanelMachine {
                         isVisible = false
                     ),
                     stylingToolbar = Toolbar.Styling.reset(),
-                    mentionToolbar = Toolbar.MentionToolbar.reset()
+                    mentionToolbar = Toolbar.MentionToolbar.reset(),
+                    slashWidget = Toolbar.SlashWidget.reset()
                 )
             }
             Event.ReadMode.OnExit -> state.copy()

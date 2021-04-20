@@ -4,8 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:layout_gravity="bottom"
+    android:background="@color/white"
     android:transitionName="checkoutTransition"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -54,7 +58,9 @@
             style="@style/FilterConditionTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:paddingStart="@dimen/dp_12"
+            android:paddingEnd="@dimen/dp_12"
+            android:paddingBottom="@dimen/dp_12"
             android:text="@string/filter_condition_is"
             app:drawableEndCompat="@drawable/ic_list_arrow"
             app:layout_constraintStart_toEndOf="@+id/ivRelationIcon"

@@ -8,7 +8,6 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.tools.BottomSheetSharedTransition
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
@@ -60,16 +59,9 @@ class CreateFilterFlowRootFragment : BaseBottomSheetFragment(), CreateFilterFlow
                 )
             }
         }
-
-        val currentFragmentRoot = childFragmentManager.fragments[0].requireView()
-
         childFragmentManager
             .beginTransaction()
-            .apply {
-                addSharedElement(currentFragmentRoot, currentFragmentRoot.transitionName)
-                setReorderingAllowed(true)
-                fr.sharedElementEnterTransition = BottomSheetSharedTransition()
-            }
+            .setCustomAnimations(R.anim.filter_slide_up, R.anim.fade_out)
             .replace(R.id.container, fr)
             .addToBackStack(fr.javaClass.name)
             .commit()

@@ -73,10 +73,6 @@ open class CreateFilterFromSelectedValueFragment :
         super.onActivityCreated(savedInstanceState)
         with(lifecycleScope) {
             subscribe(vm.relationState.filterNotNull()) {
-                if (it.format == ColumnView.Format.DATE) {
-                    searchBar.gone()
-                    tvOptionCount.gone()
-                }
                 tvRelationName.text = it.title
                 ivRelationIcon.setImageResource(it.format.relationIcon(true))
             }
@@ -86,13 +82,6 @@ open class CreateFilterFromSelectedValueFragment :
             }
             subscribe(vm.conditionState) {
                 tvFilterCondition.text = it?.condition?.title
-                if (it?.isFilterValueEnabled == true) {
-                    searchBar.visible()
-                    tvOptionCount.visible()
-                } else {
-                    searchBar.gone()
-                    tvOptionCount.gone()
-                }
             }
             val queries = searchRelationInput.textChanges()
                 .onStart { emit(searchRelationInput.text.toString()) }
@@ -112,7 +101,7 @@ open class CreateFilterFromSelectedValueFragment :
     private fun observeCommands(commands: FilterViewModel.Commands) {
         when (commands) {
             is FilterViewModel.Commands.OpenDatePicker -> {
-                DatePickerFragment.new(commands.timeInMillis)
+                DatePickerFragment.new(commands.timeInSeconds)
                     .show(childFragmentManager, null)
             }
             is FilterViewModel.Commands.OpenConditionPicker -> {
@@ -123,6 +112,11 @@ open class CreateFilterFromSelectedValueFragment :
                     index = commands.index
                 ).show(childFragmentManager, null)
             }
+            FilterViewModel.Commands.ShowCount -> tvOptionCount.visible()
+            FilterViewModel.Commands.HideCount -> tvOptionCount.gone()
+            FilterViewModel.Commands.ShowSearchbar -> searchBar.visible()
+            FilterViewModel.Commands.HideSearchbar -> searchBar.gone()
+            else -> {}
         }
     }
 

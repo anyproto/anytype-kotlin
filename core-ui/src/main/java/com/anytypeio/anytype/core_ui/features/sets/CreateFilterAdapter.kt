@@ -13,7 +13,9 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.DateDescription
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
+import kotlinx.android.synthetic.main.item_create_filter_checkbox.view.*
 import kotlinx.android.synthetic.main.item_create_filter_date.view.*
+import kotlinx.android.synthetic.main.item_create_filter_date.view.iconChecked
 import kotlinx.android.synthetic.main.item_create_filter_object.view.*
 import kotlinx.android.synthetic.main.item_create_filter_status.view.*
 import kotlinx.android.synthetic.main.item_create_filter_tag.view.*
@@ -68,6 +70,15 @@ class CreateFilterAdapter(
                     }
                 }
             }
+            R.layout.item_create_filter_checkbox -> {
+                ViewHolder.Checkbox(
+                    view = inflater.inflate(viewType, parent, false)
+                ).apply {
+                    itemView.setOnClickListener {
+                        onItemClicked(views[bindingAdapterPosition])
+                    }
+                }
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -80,6 +91,7 @@ class CreateFilterAdapter(
         is ViewHolder.Status -> holder.bind(views[position] as CreateFilterView.Status)
         is ViewHolder.Date -> holder.bind(views[position] as CreateFilterView.Date)
         is ViewHolder.Object -> holder.bind(views[position] as CreateFilterView.Object)
+        is ViewHolder.Checkbox -> holder.bind(views[position] as CreateFilterView.Checkbox)
     }
 
     override fun getItemCount(): Int = views.size
@@ -89,6 +101,7 @@ class CreateFilterAdapter(
         is CreateFilterView.Status -> R.layout.item_create_filter_status
         is CreateFilterView.Date -> R.layout.item_create_filter_date
         is CreateFilterView.Object -> R.layout.item_create_filter_object
+        is CreateFilterView.Checkbox -> R.layout.item_create_filter_checkbox
     }
 
     fun update(update: List<CreateFilterView>) {
@@ -153,6 +166,21 @@ class CreateFilterAdapter(
                     image = item.image,
                     name = item.name
                 )
+            }
+        }
+
+        class Checkbox(view: View): ViewHolder(view) {
+            fun bind(item: CreateFilterView.Checkbox) = with(itemView) {
+                tvCheckbox.text = if (item.isChecked) {
+                    context.getString(R.string.dv_filter_checkbox_checked)
+                } else {
+                    context.getString(R.string.dv_filter_checkbox_not_checked)
+                }
+                if (item.isSelected) {
+                    iconChecked.visible()
+                } else {
+                    iconChecked.invisible()
+                }
             }
         }
     }

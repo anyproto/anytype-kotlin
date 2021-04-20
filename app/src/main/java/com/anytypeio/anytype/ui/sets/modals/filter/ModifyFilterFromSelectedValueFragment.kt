@@ -89,13 +89,6 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
             subscribe(vm.isCompleted) { isCompleted -> if (isCompleted) dismiss() }
             subscribe(vm.conditionState) {
                 tvFilterCondition.text = it?.condition?.title
-                if (it?.isFilterValueEnabled == true) {
-                    searchBar.visible()
-                    tvOptionCount.visible()
-                } else {
-                    searchBar.gone()
-                    tvOptionCount.gone()
-                }
             }
             val queries = searchRelationInput.textChanges()
                 .onStart { emit(searchRelationInput.text.toString()) }
@@ -113,7 +106,7 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
     private fun observeCommands(commands: FilterViewModel.Commands) {
         when (commands) {
             is FilterViewModel.Commands.OpenDatePicker -> {
-                DatePickerFragment.new(commands.timeInMillis)
+                DatePickerFragment.new(commands.timeInSeconds)
                     .show(childFragmentManager, null)
             }
             is FilterViewModel.Commands.OpenConditionPicker -> {
@@ -125,6 +118,10 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
                 )
                     .show(childFragmentManager, null)
             }
+            FilterViewModel.Commands.ShowCount -> tvOptionCount.visible()
+            FilterViewModel.Commands.HideCount -> tvOptionCount.gone()
+            FilterViewModel.Commands.ShowSearchbar -> searchBar.visible()
+            FilterViewModel.Commands.HideSearchbar -> searchBar.gone()
         }
     }
 

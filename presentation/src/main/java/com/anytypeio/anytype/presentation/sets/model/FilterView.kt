@@ -143,6 +143,19 @@ sealed class FilterView : ViewType {
         ) : Expression(), ViewType {
             override fun getViewType(): Int = HOLDER_OBJECT
         }
+
+        data class Checkbox(
+            override val key: String,
+            override val title: String,
+            override val operator: Viewer.FilterOperator,
+            override val condition: Viewer.Filter.Condition.Checkbox,
+            override val filterValue: FilterValue.Check,
+            override val format: ColumnView.Format,
+            override val isValueRequired: Boolean,
+            override val isInEditMode: Boolean
+        ) : Expression(), ViewType {
+            override fun getViewType(): Int = HOLDER_CHECKBOX
+        }
     }
 
     object Add : FilterView(), ViewType {
@@ -161,5 +174,6 @@ sealed class FilterView : ViewType {
         const val HOLDER_TAG = 9
         const val HOLDER_OBJECT = 10
         const val HOLDER_ADD = 11
+        const val HOLDER_CHECKBOX = 12
     }
 }

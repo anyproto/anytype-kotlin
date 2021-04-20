@@ -50,4 +50,12 @@ sealed class CreateFilterView {
         override val text: String
             get() = name
     }
+
+    data class Checkbox(
+        val isChecked: Boolean,
+        override val isSelected: Boolean
+    ): CreateFilterView() {
+        override val text: String
+            get() = ""
+    }
 }

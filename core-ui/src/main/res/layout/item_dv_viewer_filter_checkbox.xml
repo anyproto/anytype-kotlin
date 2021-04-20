@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dv_viewer_filter_item_height">
+
+    <ImageView
+        android:id="@+id/iconFormat"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintStart_toEndOf="@+id/iconRemoveCheckbox"
+        style="@style/DVFilterFormatIcon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/ic_relation_checkbox_32" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        style="@style/ViewerFilterTitleStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintEnd_toStartOf="@+id/iconArrow"
+        app:layout_constraintStart_toEndOf="@+id/iconFormat"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Name" />
+
+    <TextView
+        android:id="@+id/tvCondition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        style="@style/ViewerFilterConditionStyle"
+        app:layout_constraintStart_toEndOf="@+id/iconFormat"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+        tools:text="Is" />
+
+    <TextView
+        android:id="@+id/tvValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="12dp"
+        app:layout_goneMarginEnd="@dimen/dp_20"
+        style="@style/ViewerFilterTextValueStyle"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCondition"
+        app:layout_constraintEnd_toStartOf="@+id/iconArrow"
+        app:layout_constraintStart_toEndOf="@+id/tvCondition"
+        app:layout_constraintTop_toTopOf="@+id/tvCondition"
+        tools:text="'checked'" />
+
+    <ImageView
+        android:id="@+id/iconArrow"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_arrow_forward_24" />
+
+    <ImageView
+        android:id="@+id/iconRemoveCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/DVFilterRemoveIcon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

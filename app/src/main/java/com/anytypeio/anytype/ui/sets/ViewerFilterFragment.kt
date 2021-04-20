@@ -26,7 +26,7 @@ import com.anytypeio.anytype.ui.sets.modals.filter.ModifyFilterFromSelectedValue
 import kotlinx.android.synthetic.main.fragment_filter.*
 import javax.inject.Inject
 
-class ViewerFilterFragment : BaseBottomSheetFragment() {
+open class ViewerFilterFragment : BaseBottomSheetFragment() {
 
     private val ctx get() = argString(CONTEXT_ID_KEY)
 

@@ -121,6 +121,19 @@ fun DVViewer.toViewRelation(relation: Relation): SimpleRelationView {
     }
 }
 
+fun Relation.toCreateFilterCheckboxView(isSelected: Boolean? = null): List<CreateFilterView.Checkbox> {
+    return listOf(
+        CreateFilterView.Checkbox(
+            isChecked = true,
+            isSelected = isSelected == true
+        ),
+        CreateFilterView.Checkbox(
+            isChecked = false,
+            isSelected = isSelected != true
+        )
+    )
+}
+
 fun Relation.toCreateFilterTagView(ids: List<*>? = null): List<CreateFilterView.Tag> =
     selections.map { option ->
         CreateFilterView.Tag(
@@ -333,6 +346,13 @@ fun Relation.toDate(value: Any?): Long =
         throw IllegalArgumentException("Relation format $format value should be Double, actual:$value")
     }
 
+fun Relation.toCheckbox(value: Any?): Boolean? =
+    if (value is Boolean?) {
+        value
+    } else {
+        throw IllegalArgumentException("Relation format $format value should be Boolean, actual:$value")
+    }
+
 fun Relation.toTags(value: Any?): List<TagView> =
     if (value is List<*>?) {
         val list = arrayListOf<TagView>()
@@ -518,6 +538,18 @@ fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+    Relation.Format.CHECKBOX -> {
+        FilterView.Expression.Checkbox(
+            key = relationKey,
+            title = relation.name,
+            operator = operator.toView(),
+            condition = condition.toCheckboxView(),
+            filterValue = FilterValue.Check(relation.toCheckbox(value)),
+            format = relation.format.toView(),
+            isValueRequired = condition.isValueRequired(),
+            isInEditMode = isInEditMode
+        )
+    }
     else -> throw UnsupportedOperationException("Unsupported relation format:${relation.format}")
 }
 
@@ -537,5 +569,6 @@ fun Relation.toFilterValue(
         Relation.Format.EMAIL -> FilterValue.Email(toText(value))
         Relation.Format.PHONE -> FilterValue.Phone(toText(value))
         Relation.Format.OBJECT -> FilterValue.Object(toObjects(value, details, urlBuilder))
+        Relation.Format.CHECKBOX -> FilterValue.Check(toCheckbox(value))
         else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
     }

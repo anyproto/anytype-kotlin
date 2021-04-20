@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.sets.filter.FilterClick
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_ADD
+import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_DATE
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_EMAIL
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_NUMBER
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_TEXT
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_TEXT_SHORT
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_URL
+import kotlinx.android.synthetic.main.item_dv_viewer_filter_checkbox.view.*
 import kotlinx.android.synthetic.main.item_dv_viewer_filter_date.view.*
 import kotlinx.android.synthetic.main.item_dv_viewer_filter_number.view.*
 import kotlinx.android.synthetic.main.item_dv_viewer_filter_object.view.*
@@ -112,6 +114,17 @@ class FilterByAdapter(
                     }
                 }
             }
+            HOLDER_CHECKBOX -> {
+                val views = inflater.inflate(R.layout.item_dv_viewer_filter_checkbox, parent, false)
+                FilterCheckboxViewHolder(views).apply {
+                    itemView.iconRemoveCheckbox.setOnClickListener {
+                        click(FilterClick.Remove(bindingAdapterPosition))
+                    }
+                    itemView.setOnClickListener {
+                        click(FilterClick.Value(bindingAdapterPosition))
+                    }
+                }
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -136,6 +149,9 @@ class FilterByAdapter(
             is FilterObjectViewHolder -> {
                 holder.bind(items[position] as FilterView.Expression.Object)
             }
+            is FilterCheckboxViewHolder -> {
+                holder.bind(items[position] as FilterView.Expression.Checkbox)
+            }
             is FilterAddViewHolder -> { }
         }
     }
@@ -153,6 +169,7 @@ class FilterByAdapter(
         is FilterView.Expression.Phone -> HOLDER_PHONE
         is FilterView.Expression.TextShort -> HOLDER_TEXT_SHORT
         is FilterView.Expression.Url -> HOLDER_URL
+        is FilterView.Expression.Checkbox -> HOLDER_CHECKBOX
         FilterView.Add -> HOLDER_ADD
     }
 }

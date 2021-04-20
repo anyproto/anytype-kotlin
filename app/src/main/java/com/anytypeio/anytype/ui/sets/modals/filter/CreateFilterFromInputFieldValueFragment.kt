@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.extensions.relationIcon
+import com.anytypeio.anytype.core_ui.extensions.setInputTypeBaseOnFormat
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
@@ -49,29 +50,6 @@ class CreateFilterFromInputFieldValueFragment :
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        with(lifecycleScope) {
-            subscribe(vm.relationState.filterNotNull()) {
-                tvRelationName.text = it.title
-                ivRelationIcon.setImageResource(it.format.relationIcon(true))
-            }
-            subscribe(vm.isCompleted) { isCompleted ->
-                if (isCompleted) withParent<CreateFilterFlow> { onFilterCreated() }
-            }
-            subscribe(vm.conditionState) {
-                tvFilterCondition.text = it?.condition?.title
-                if (it?.isFilterValueEnabled == true) {
-                    enterTextValueInputField.enable()
-                } else {
-                    enterTextValueInputField.text = null
-                    enterTextValueInputField.disable()
-                }
-            }
-            subscribe(vm.commands) { observeCommands(it) }
-        }
-    }
-
     private fun observeCommands(commands: FilterViewModel.Commands) {
         when (commands) {
             is FilterViewModel.Commands.OpenConditionPicker -> {
@@ -82,13 +60,38 @@ class CreateFilterFromInputFieldValueFragment :
                     index = commands.index
                 ).show(childFragmentManager, null)
             }
-            is FilterViewModel.Commands.OpenDatePicker -> {}
+            FilterViewModel.Commands.HideInput -> {
+                enterTextValueInputField.gone()
+            }
+            FilterViewModel.Commands.ShowInput -> {
+                enterTextValueInputField.visible()
+            }
+            else -> {
+            }
         }
     }
 
     override fun onStart() {
+        setupJobs()
         super.onStart()
         vm.onStart(relation, FILTER_INDEX_EMPTY)
+    }
+
+    private fun setupJobs() {
+        jobs += lifecycleScope.subscribe(vm.relationState.filterNotNull()) {
+            enterTextValueInputField.setInputTypeBaseOnFormat(it.format)
+            tvRelationName.text = it.title
+            ivRelationIcon.setImageResource(it.format.relationIcon(true))
+        }
+        jobs += lifecycleScope.subscribe(vm.isCompleted) {
+            if (it) withParent<CreateFilterFlow> { onFilterCreated() }
+        }
+        jobs += lifecycleScope.subscribe(vm.conditionState) {
+            tvFilterCondition.text = it?.condition?.title
+        }
+        jobs += lifecycleScope.subscribe(vm.commands) {
+            observeCommands(it)
+        }
     }
 
     override fun update(condition: Viewer.Filter.Condition) {

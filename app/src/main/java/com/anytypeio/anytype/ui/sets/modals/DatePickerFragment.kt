@@ -7,15 +7,16 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.argLong
 import com.anytypeio.anytype.core_utils.ext.timeInSeconds
 import com.anytypeio.anytype.core_utils.ext.withParent
 import kotlinx.android.synthetic.main.fragment_date_picker.*
+import timber.log.Timber
 import java.util.*
 
 class DatePickerFragment : DialogFragment() {
 
-    private val timeInSeconds get() = argOrNull<Long>(TIMESTAMP_KEY)
+    private val mTimeInSeconds get() = argLong(TIMESTAMP_KEY)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +45,11 @@ class DatePickerFragment : DialogFragment() {
 
     private fun initializePicker() {
         val calendar = Calendar.getInstance().apply {
-            time = timeInSeconds?.let { Date(it * 1000) } ?: Date(System.currentTimeMillis())
+            time = if (mTimeInSeconds > 0) {
+                Date(mTimeInSeconds * 1000)
+            } else {
+                Date(System.currentTimeMillis())
+            }
         }
         picker.init(
             calendar.get(Calendar.YEAR),

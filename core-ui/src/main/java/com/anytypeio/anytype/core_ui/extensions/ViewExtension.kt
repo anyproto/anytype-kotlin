@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.extensions
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.text.InputType
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -10,6 +11,7 @@ import android.widget.Toast
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
+import com.anytypeio.anytype.presentation.sets.model.ColumnView
 
 fun Context.toast(
     msg: CharSequence,
@@ -69,4 +71,29 @@ fun View.dimensions(): BlockDimensions {
         height = this.height,
         width = this.width
     )
+}
+
+fun EditText.setInputTypeBaseOnFormat(format: ColumnView.Format) = when (format) {
+    ColumnView.Format.SHORT_TEXT -> {
+        inputType = InputType.TYPE_CLASS_TEXT
+        isSingleLine = true
+    }
+    ColumnView.Format.LONG_TEXT -> {
+        inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
+        isSingleLine = false
+    }
+    ColumnView.Format.NUMBER -> {
+        inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+    }
+    ColumnView.Format.URL -> {
+        inputType = InputType.TYPE_TEXT_VARIATION_URI
+    }
+    ColumnView.Format.EMAIL -> {
+        inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+    }
+    ColumnView.Format.PHONE -> {
+        inputType = InputType.TYPE_CLASS_PHONE
+    }
+    else -> {
+    }
 }

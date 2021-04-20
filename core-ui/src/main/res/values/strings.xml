@@ -356,7 +356,7 @@
     <string name="slash_widget_media_bookmark_subtitle">Save your favorite link with summery</string>
     <string name="slash_widget_media_code">Code snippet</string>
     <string name="slash_widget_media_code_subtitle">Capture code snippet</string>
-    
+
     <string name="slash_widget_other_line">Line divider</string>
     <string name="slash_widget_other_dots">Dots divider</string>
 
@@ -371,5 +371,8 @@
     <string name="slash_widget_align_right">Right</string>
     <string name="slash_widget_align_center">Center</string>
     <string name="slash_widget_align_left">Left</string>
+
+    <string name="dv_filter_checkbox_checked">checked</string>
+    <string name="dv_filter_checkbox_not_checked">not checked</string>
 
 </resources>

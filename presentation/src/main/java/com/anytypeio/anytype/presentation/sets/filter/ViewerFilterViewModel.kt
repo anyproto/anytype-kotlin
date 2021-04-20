@@ -100,6 +100,8 @@ class ViewerFilterViewModel(
                 filterView.copy(isInEditMode = screenState.value == ScreenState.EDIT)
             is FilterView.Expression.Url ->
                 filterView.copy(isInEditMode = screenState.value == ScreenState.EDIT)
+            is FilterView.Expression.Checkbox ->
+                filterView.copy(isInEditMode = screenState.value == ScreenState.EDIT)
             FilterView.Add -> filterView
         }
 
@@ -167,6 +169,9 @@ class ViewerFilterViewModel(
             }
             is FilterView.Expression.Url -> {
                 emitCommand(Modal.UpdateInputValueFilter(filter.key, filterIndex))
+            }
+            is FilterView.Expression.Checkbox -> {
+                emitCommand(Modal.UpdateSelectValueFilter(filter.key, filterIndex))
             }
             FilterView.Add -> {
                 onAddNewFilterClicked()

@@ -43,6 +43,7 @@ open class FilterViewModel(
 
     private var filterIndex: Int? = null
     private var relationId: Id? = null
+    private var relation: Relation? = null
 
     val conditionState = MutableStateFlow<FilterConditionView?>(null)
     val relationState = MutableStateFlow<SimpleRelationView?>(null)
@@ -59,7 +60,7 @@ open class FilterViewModel(
             conditionState.collect { condition ->
                 setValueStates(
                     objectSet = objectSetState.value,
-                    condition = condition,
+                    condition = condition?.condition,
                     index = filterIndex
                 )
             }
@@ -77,12 +78,13 @@ open class FilterViewModel(
         val dv = block.content as DV
         val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
         val relation = dv.relations.first { it.key == relationId }
+        this.relation = relation
 
         setRelationState(viewer, relation)
         setConditionState(viewer, relation, filterIndex)
         setValueStates(
             objectSet = objectSetState.value,
-            condition = conditionState.value,
+            condition = conditionState.value?.condition,
             index = filterIndex
         )
     }
@@ -93,10 +95,55 @@ open class FilterViewModel(
 
     private fun setConditionState(viewer: DVViewer, relation: Relation, index: Int?) {
         getCondition(relation, viewer, index).let { condition ->
-            conditionState.value = FilterConditionView(
-                condition = condition,
-                isFilterValueEnabled = condition.hasValue()
-            )
+            conditionState.value = FilterConditionView(condition)
+            updateUi(relation.format, condition)
+        }
+    }
+
+    private fun updateUi(format: Relation.Format, condition: Viewer.Filter.Condition) {
+        when(format) {
+            Relation.Format.SHORT_TEXT,
+            Relation.Format.LONG_TEXT,
+            Relation.Format.URL,
+            Relation.Format.EMAIL,
+            Relation.Format.NUMBER,
+            Relation.Format.PHONE -> {
+                if (condition.hasValue()) {
+                    viewModelScope.launch { commands.emit(Commands.ShowInput) }
+                } else {
+                    viewModelScope.launch { commands.emit(Commands.HideInput) }
+                }
+            }
+            Relation.Format.STATUS -> {
+                if (condition.hasValue()) {
+                    viewModelScope.launch { commands.emit(Commands.ShowSearchbar) }
+                    viewModelScope.launch { commands.emit(Commands.HideCount) }
+                } else {
+                    viewModelScope.launch { commands.emit(Commands.HideSearchbar) }
+                    viewModelScope.launch { commands.emit(Commands.HideCount) }
+                }
+            }
+            Relation.Format.TAG,
+            Relation.Format.OBJECT,
+            Relation.Format.FILE -> {
+                if (condition.hasValue()) {
+                    viewModelScope.launch { commands.emit(Commands.ShowSearchbar) }
+                    viewModelScope.launch { commands.emit(Commands.ShowCount) }
+                } else {
+                    viewModelScope.launch { commands.emit(Commands.HideSearchbar) }
+                    viewModelScope.launch { commands.emit(Commands.HideCount) }
+                }
+            }
+            Relation.Format.DATE -> {
+                viewModelScope.launch { commands.emit(Commands.HideSearchbar) }
+                viewModelScope.launch { commands.emit(Commands.HideCount) }
+            }
+            Relation.Format.CHECKBOX -> {
+                viewModelScope.launch { commands.emit(Commands.HideCount) }
+                viewModelScope.launch { commands.emit(Commands.HideSearchbar) }
+            }
+            else -> {
+            }
         }
     }
 
@@ -116,10 +163,10 @@ open class FilterViewModel(
 
     private fun setValueStates(
         objectSet: ObjectSet,
-        condition: FilterConditionView?,
+        condition: Viewer.Filter.Condition?,
         index: Int?
     ) {
-        if (condition == null || !condition.isFilterValueEnabled) {
+        if (condition == null || !condition.hasValue()) {
             filterValueState.value = null
             filterValueListState.value = listOf()
             return
@@ -175,6 +222,10 @@ open class FilterViewModel(
             val ids = filter?.value as? List<*>
             proceedWithSearchObjects(ids, relation)
         }
+        Relation.Format.CHECKBOX -> {
+            filterValueListState.value =
+                relation.toCreateFilterCheckboxView(filter?.value as? Boolean)
+        }
         else -> {
             filterValueListState.value = emptyList()
             Timber.e("No need values list for format ${relation.format}")
@@ -221,10 +272,11 @@ open class FilterViewModel(
     }
 
     fun onConditionUpdate(condition: Viewer.Filter.Condition) {
-        conditionState.value = FilterConditionView(
-            condition = condition,
-            isFilterValueEnabled = condition.hasValue()
-        )
+        conditionState.value = FilterConditionView(condition)
+        val format = relation?.format
+        if (format != null) {
+            updateUi(condition = condition, format = format)
+        }
     }
 
     fun onFilterItemClicked(item: CreateFilterView) {
@@ -268,6 +320,19 @@ open class FilterViewModel(
                     optionCountState.value = it.count { view -> view.isSelected }
                 }
             }
+            is CreateFilterView.Checkbox -> {
+                filterValueListState.value = filterValueListState.value.map { view ->
+                    if (view is CreateFilterView.Checkbox ) {
+                        if (view.isChecked == item.isChecked) {
+                            view.copy(isSelected = true)
+                        } else {
+                            view.copy(isSelected = false)
+                        }
+                    } else {
+                        view
+                    }
+                }
+            }
         }
     }
 
@@ -279,19 +344,19 @@ open class FilterViewModel(
                 ctx = ctx,
                 filter = DVFilter(
                     relationKey = relation,
-                    value = input,
+                    value = if (condition.hasValue()) input else null,
                     condition = condition.toDomain()
                 )
             )
         }
     }
 
-    fun onExactDayPicked(timeInMillis: Long) {
+    fun onExactDayPicked(timeInSeconds: Long) {
         filterValueListState.value = filterValueListState.value.map { view ->
             if (view is CreateFilterView.Date) {
                 if (view.type == DateDescription.EXACT_DAY) {
                     view.copy(
-                        timeInMillis = timeInMillis,
+                        timeInMillis = timeInSeconds * 1000,
                         isSelected = true
                     )
                 } else {
@@ -364,6 +429,18 @@ open class FilterViewModel(
                             )
                         )
                     }
+                    ColumnView.Format.CHECKBOX -> {
+                        val checkboxes = filterValueListState.value.filterIsInstance<CreateFilterView.Checkbox>()
+                        val selected = checkboxes.first { it.isSelected }
+                        proceedWithCreatingFilter(
+                            ctx = ctx,
+                            filter = DVFilter(
+                                relationKey = relation,
+                                value = selected.isChecked,
+                                condition = condition.toDomain()
+                            )
+                        )
+                    }
                     else -> {
                         Timber.e("Wrong filter format $format")
                     }
@@ -391,7 +468,7 @@ open class FilterViewModel(
                 updatedFilter = DVFilter(
                     relationKey = relation,
                     condition = condition.toDomain(),
-                    value = input
+                    value = if (condition.hasValue()) input else null
                 )
             )
         }
@@ -545,7 +622,7 @@ open class FilterViewModel(
     }
 
     private suspend fun proceedWithDatePickerScreen(timeInMillis: Long) {
-        commands.emit(Commands.OpenDatePicker(timeInMillis = timeInMillis))
+        commands.emit(Commands.OpenDatePicker(timeInSeconds = timeInMillis / 1000))
     }
 
     private suspend fun proceedWithConditionPickerScreen(type: Viewer.Filter.Type, index: Int) {
@@ -595,7 +672,13 @@ open class FilterViewModel(
     }
 
     sealed class Commands {
-        data class OpenDatePicker(val timeInMillis: Long) : Commands()
+        object ShowInput: Commands()
+        object HideInput: Commands()
+        object ShowSearchbar: Commands()
+        object HideSearchbar: Commands()
+        object ShowCount: Commands()
+        object HideCount: Commands()
+        data class OpenDatePicker(val timeInSeconds: Long) : Commands()
         data class OpenConditionPicker(val type: Viewer.Filter.Type, val index: Int) : Commands()
     }
 }

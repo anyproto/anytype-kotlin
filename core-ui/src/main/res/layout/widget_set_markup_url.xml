@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <HorizontalScrollView
+        android:scrollbars="none"
+        android:id="@+id/container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp">
+
+        <EditText
+            android:id="@+id/setUrlMarkupTextInput"
+            style="@style/PasteUrlEditTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:hint="@string/paste_or_type_a_url" />
+
+    </HorizontalScrollView>
+
+    <FrameLayout
+        android:id="@+id/clearUrlButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_close_round" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/setMarkupDoneButton"
+        style="@style/DefaultOrangeTextButtonStyle"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingStart="8dp"
+        android:paddingEnd="16dp"
+        android:text="@string/done" />
+
+</merge>

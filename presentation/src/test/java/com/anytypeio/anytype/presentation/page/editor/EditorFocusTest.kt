@@ -181,11 +181,15 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         vm.onOutsideClicked()
 
         vm.state.test().apply {
-            assertValue { value ->
-                check(value is ViewState.Success)
-                val last = value.blocks.last()
-                check(last is Focusable)
-                last.isFocused
+            try {
+                assertValue { value ->
+                    check(value is ViewState.Success)
+                    val last = value.blocks.last()
+                    check(last is Focusable)
+                    last.isFocused
+                }
+            } catch (e: AssertionError) {
+                throw AssertionError("Test assertion failed for style: $style")
             }
         }
 

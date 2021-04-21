@@ -471,6 +471,12 @@
         <item name="fontFamily">@font/inter_medium</item>
     </style>
 
+    <style name="DefaultOrangeTextButtonStyle">
+        <item name="android:textColor">#F6A927</item>
+        <item name="android:textSize">17sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
+
     <style name="ViewerFilterTitleStyle">
         <item name="android:textColor">#2C2B27</item>
         <item name="android:textSize">15sp</item>
@@ -626,6 +632,17 @@
         <item name="android:textColor">@color/black</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="PasteUrlEditTextStyle">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorHint">#CCCABB</item>
+        <item name="android:background">@null</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
+        <item name="android:maxLines">1</item>
     </style>
 
 </resources>

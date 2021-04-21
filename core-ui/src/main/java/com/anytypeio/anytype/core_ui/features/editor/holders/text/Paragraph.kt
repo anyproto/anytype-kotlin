@@ -58,7 +58,7 @@ class Paragraph(
         onBackPressedCallback = onBackPressedCallback
     ).also {
         setupMentionWatcher(onMentionEvent)
-        setupSlashWatcher(onSlashEvent)
+        //setupSlashWatcher(onSlashEvent)
     }
 
     override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {

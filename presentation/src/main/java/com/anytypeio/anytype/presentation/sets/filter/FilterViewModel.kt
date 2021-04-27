@@ -322,7 +322,7 @@ open class FilterViewModel(
             }
             is CreateFilterView.Checkbox -> {
                 filterValueListState.value = filterValueListState.value.map { view ->
-                    if (view is CreateFilterView.Checkbox ) {
+                    if (view is CreateFilterView.Checkbox) {
                         if (view.isChecked == item.isChecked) {
                             view.copy(isSelected = true)
                         } else {
@@ -430,15 +430,13 @@ open class FilterViewModel(
                         )
                     }
                     ColumnView.Format.CHECKBOX -> {
-                        val checkboxes = filterValueListState.value.filterIsInstance<CreateFilterView.Checkbox>()
-                        val selected = checkboxes.first { it.isSelected }
+                        val filter = filterValueListState.value.checkboxFilter(
+                            relationKey = relation,
+                            condition = condition
+                        )
                         proceedWithCreatingFilter(
                             ctx = ctx,
-                            filter = DVFilter(
-                                relationKey = relation,
-                                value = selected.isChecked,
-                                condition = condition.toDomain()
-                            )
+                            filter = filter
                         )
                     }
                     else -> {
@@ -561,6 +559,19 @@ open class FilterViewModel(
                                 condition = condition.toDomain(),
                                 value = value
                             )
+                        )
+                    }
+                    ColumnView.Format.CHECKBOX -> {
+                        val filter = filterValueListState.value.checkboxFilter(
+                            relationKey = relation,
+                            condition = condition
+                        )
+                        proceedWithUpdatingFilter(
+                            ctx = ctx,
+                            target = block.id,
+                            idx = idx,
+                            viewer = viewer,
+                            updatedFilter = filter
                         )
                     }
                     else -> {

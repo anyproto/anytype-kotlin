@@ -66,6 +66,7 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
+import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
@@ -80,8 +81,8 @@ import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATIO
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_PLACEHOLDER
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_RELATION_TAGS
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_TODO_TITLE
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import kotlinx.android.synthetic.main.item_block_description.view.*
 import timber.log.Timber
@@ -127,7 +128,7 @@ class BlockAdapter(
 
         val inflater = LayoutInflater.from(parent.context)
 
-        return when (viewType) {
+        val holder = when (viewType) {
             HOLDER_PARAGRAPH -> {
                 Paragraph(
                     view = inflater.inflate(
@@ -525,6 +526,26 @@ class BlockAdapter(
             }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
+
+        if (holder is Text) {
+            holder.content.onFocusChangeListener = LockableFocusChangeListener { hasFocus ->
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val item = views[pos]
+                    if (item is BlockView.TextBlockProps) {
+                        item.isFocused = hasFocus
+                    }
+                    onFocusChanged(item.id, hasFocus)
+                    if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
+                        if (hasFocus) {
+                            holder.content.context.imm().showSoftInput(holder.content, InputMethodManager.SHOW_FORCED)
+                        }
+                    }
+                }
+            }
+        }
+
+        return holder
     }
 
     override fun getItemViewType(position: Int) = blocks[position].getViewType()
@@ -779,7 +800,6 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Text.Paragraph,
                     onTextBlockTextChanged = onTextBlockTextChanged,
                     onSelectionChanged = onSelectionChanged,
-                    onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
@@ -794,7 +814,6 @@ class BlockAdapter(
                 holder.bind(
                     block = blocks[position] as BlockView.Text.Header.One,
                     onTextBlockTextChanged = onTextBlockTextChanged,
-                    onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
@@ -809,7 +828,6 @@ class BlockAdapter(
                 holder.bind(
                     block = blocks[position] as BlockView.Text.Header.Two,
                     onTextBlockTextChanged = onTextBlockTextChanged,
-                    onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
@@ -824,7 +842,6 @@ class BlockAdapter(
                 holder.bind(
                     block = blocks[position] as BlockView.Text.Header.Three,
                     onTextBlockTextChanged = onTextBlockTextChanged,
-                    onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
@@ -841,7 +858,6 @@ class BlockAdapter(
                     onTextBlockTextChanged = onTextBlockTextChanged,
                     onCheckboxClicked = onCheckboxClicked,
                     onSelectionChanged = onSelectionChanged,
-                    onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
@@ -856,7 +872,6 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Text.Bulleted,
                     onTextBlockTextChanged = onTextBlockTextChanged,
                     onSelectionChanged = onSelectionChanged,
-                    onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
@@ -871,7 +886,6 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Text.Numbered,
                     onTextBlockTextChanged = onTextBlockTextChanged,
                     onSelectionChanged = onSelectionChanged,
-                    onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
@@ -885,7 +899,6 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Text.Toggle,
                     onTextBlockTextChanged = onTextBlockTextChanged,
-                    onFocusChanged = onFocusChanged,
                     onSelectionChanged = onSelectionChanged,
                     onTogglePlaceholderClicked = onTogglePlaceholderClicked,
                     onToggleClicked = onToggleClicked,
@@ -902,7 +915,6 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Text.Highlight,
                     onTextBlockTextChanged = onTextBlockTextChanged,
-                    onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSelectionChanged = onSelectionChanged,

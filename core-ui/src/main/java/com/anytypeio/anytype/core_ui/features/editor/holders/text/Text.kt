@@ -28,7 +28,6 @@ abstract class Text(
         clicked: (ListenerType) -> Unit,
         onTextChanged: (String, Editable) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
-        onFocusChanged: (String, Boolean) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
@@ -74,15 +73,6 @@ abstract class Text(
         }
 
         content.apply {
-            setOnFocusChangeListener { _, hasFocus ->
-                item.isFocused = hasFocus
-                onFocusChanged(item.id, hasFocus)
-                if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
-                    if (hasFocus) {
-                        imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)
-                    }
-                }
-            }
             setOnClickListener {
                 if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
                     content.context.imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)

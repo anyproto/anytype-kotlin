@@ -35,7 +35,6 @@ class Bulleted(
         item: BlockView.Text.Bulleted,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
-        onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
@@ -52,7 +51,6 @@ class Bulleted(
             }
             onTextBlockTextChanged(item)
         },
-        onFocusChanged = onFocusChanged,
         onSelectionChanged = onSelectionChanged,
         clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,

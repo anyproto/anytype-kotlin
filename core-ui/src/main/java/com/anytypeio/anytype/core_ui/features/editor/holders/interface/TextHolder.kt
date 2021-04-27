@@ -85,15 +85,18 @@ interface TextHolder {
     fun focus() {
         Timber.d("Requesting focus")
         content.apply {
+            // Sheduling a runnable that shows the keyboard in the next UI loop.
             post {
-                if (!hasFocus()) {
-                    if (requestFocus()) {
-                        context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
+                content.pauseFocusChangeListener {
+                    if (!hasFocus()) {
+                        if (requestFocus()) {
+                            context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
+                        } else {
+                            Timber.d("Couldn't gain focus")
+                        }
                     } else {
-                        Timber.d("Couldn't gain focus")
+                        Timber.d("Already had focus")
                     }
-                } else {
-                    Timber.d("Already had focus")
                 }
             }
         }

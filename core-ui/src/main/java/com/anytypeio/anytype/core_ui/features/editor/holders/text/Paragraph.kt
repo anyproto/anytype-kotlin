@@ -30,7 +30,6 @@ class Paragraph(
         item: BlockView.Text.Paragraph,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
-        onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit,
@@ -49,7 +48,6 @@ class Paragraph(
             onTextBlockTextChanged(item)
         },
         onSelectionChanged = onSelectionChanged,
-        onFocusChanged = onFocusChanged,
         clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,

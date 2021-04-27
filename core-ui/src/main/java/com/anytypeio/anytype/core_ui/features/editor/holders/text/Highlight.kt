@@ -32,7 +32,6 @@ class Highlight(
     fun bind(
         item: BlockView.Text.Highlight,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onFocusChanged: (String, Boolean) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
@@ -50,7 +49,6 @@ class Highlight(
             }
             onTextBlockTextChanged(item)
         },
-        onFocusChanged = onFocusChanged,
         onSelectionChanged = onSelectionChanged,
         clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,

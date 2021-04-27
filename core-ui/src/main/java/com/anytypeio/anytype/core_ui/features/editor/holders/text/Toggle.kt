@@ -36,7 +36,6 @@ class Toggle(
         item: BlockView.Text.Toggle,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
-        onFocusChanged: (String, Boolean) -> Unit,
         onToggleClicked: (String) -> Unit,
         onTogglePlaceholderClicked: (String) -> Unit,
         clicked: (ListenerType) -> Unit,
@@ -56,7 +55,6 @@ class Toggle(
             onTextBlockTextChanged(item)
         },
         onSelectionChanged = onSelectionChanged,
-        onFocusChanged = onFocusChanged,
         clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,

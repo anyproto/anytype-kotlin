@@ -36,7 +36,6 @@ class Numbered(
         item: BlockView.Text.Numbered,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
-        onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
@@ -54,7 +53,6 @@ class Numbered(
             onTextBlockTextChanged(item)
         },
         onSelectionChanged = onSelectionChanged,
-        onFocusChanged = onFocusChanged,
         clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,

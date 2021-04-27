@@ -22,7 +22,6 @@ abstract class Header(
     fun bind(
         block: BlockView.Text.Header,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onFocusChanged: (String, Boolean) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
@@ -41,7 +40,6 @@ abstract class Header(
             }
             onTextBlockTextChanged(block)
         },
-        onFocusChanged = onFocusChanged,
         clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,

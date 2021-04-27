@@ -16,6 +16,7 @@ import androidx.core.graphics.withTranslation
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
+import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
 import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightDrawer
@@ -127,6 +128,17 @@ class TextInputWidget : AppCompatEditText {
         lockTextWatchers()
         block()
         unlockTextWatchers()
+    }
+
+    fun pauseFocusChangeListener(block: () -> Unit) = synchronized(this) {
+        val listener = onFocusChangeListener
+        if (listener is LockableFocusChangeListener) {
+            listener.lock()
+        }
+        block()
+        if (listener is LockableFocusChangeListener) {
+            listener.unlock()
+        }
     }
 
     private fun lockTextWatchers() {

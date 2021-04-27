@@ -82,61 +82,6 @@ class BlockAdapterReadWriteModeTest : BlockAdapterTestSetup() {
     }
 
     @Test
-    fun `focus change listener should be enabled when switching from read to edit mode`() {
-
-        // Setup
-
-        val trigger = mutableListOf<Pair<String, Boolean>>()
-
-        val block = BlockView.Text.Paragraph(
-            mode = BlockView.Mode.READ,
-            text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid()
-        )
-
-        val views = listOf(block)
-
-        val updated = listOf(block.copy(mode = BlockView.Mode.EDIT))
-
-        val adapter = buildAdapter(
-            views = views,
-            onFocusChanged = { id, hasFocus -> trigger.add(Pair(id, hasFocus)) }
-        )
-
-        val recycler = RecyclerView(context).apply {
-            layoutManager = LinearLayoutManager(context)
-            this.adapter = adapter
-        }
-
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
-
-        check(holder is Paragraph)
-
-        // Testing
-
-        adapter.onBindViewHolder(holder, 0)
-
-        val payloads: MutableList<Any> = mutableListOf(
-            BlockViewDiffUtil.Payload(
-                changes = listOf(BlockViewDiffUtil.READ_WRITE_MODE_CHANGED)
-            )
-        )
-
-        adapter.updateWithDiffUtil(items = updated)
-
-        adapter.onBindViewHolder(holder, 0, payloads = payloads)
-
-        holder.content.requestFocus()
-
-        assertEquals(
-            expected = listOf(
-                Pair(block.id, true)
-            ),
-            actual = trigger
-        )
-    }
-
-    @Test
     fun `endline-enter press listener should be enabled when switching from read to edit mode`() {
 
         // Setup

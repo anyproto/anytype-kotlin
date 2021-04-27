@@ -52,6 +52,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         id = View.generateViewId()
                         text = relation.value
                         isSingleLine = true
+                        maxLines = 1
+                        ellipsize = TextUtils.TruncateAt.END
                         setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                     }
                     addView(view)
@@ -74,6 +76,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             id = View.generateViewId()
                             text = file.name
                             isSingleLine = true
+                            maxLines = 1
+                            ellipsize = TextUtils.TruncateAt.END
                             setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                         }
                         addView(view)
@@ -86,6 +90,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             id = View.generateViewId()
                             text = obj.name
                             isSingleLine = true
+                            maxLines = 1
+                            ellipsize = TextUtils.TruncateAt.END
                             setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                         }
                         addView(view)
@@ -99,6 +105,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             id = View.generateViewId()
                             text = status.status
                             isSingleLine = true
+                            maxLines = 1
+                            ellipsize = TextUtils.TruncateAt.END
                             setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                             if (color != null) {
                                 setTextColor(color.text)
@@ -115,6 +123,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             id = View.generateViewId()
                             text = tag.tag
                             isSingleLine = true
+                            maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
                             if (color != null) {
                                 setTextColor(color.text)

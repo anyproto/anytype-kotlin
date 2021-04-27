@@ -2,9 +2,9 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -204,9 +204,9 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val style =
-            Block.Content.Text.Style.values().filter { it != Block.Content.Text.Style.TITLE }
-                .random()
+        val style = Block.Content.Text.Style.values().filter { style ->
+            style != Block.Content.Text.Style.TITLE || style != Block.Content.Text.Style.DESCRIPTION
+        }.random()
 
         val pic = Block(
             id = MockDataFactory.randomUuid(),

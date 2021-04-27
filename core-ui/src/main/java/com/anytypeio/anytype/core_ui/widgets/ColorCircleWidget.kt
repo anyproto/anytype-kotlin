@@ -13,7 +13,7 @@ import kotlin.math.min
 
 class ColorCircleWidget : View {
 
-    private var innerColor: Int = 0
+    var innerColor: Int = 0
     private var innerStrokeColor: Int = 0
     private var innerRadius : Float = 0f
     private var outerStrokeWidth: Float = 0f

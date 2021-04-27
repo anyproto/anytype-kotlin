@@ -22,9 +22,9 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.DragAndDropViewHolder
 import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
+import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
 import com.anytypeio.anytype.ui.relations.*
 import kotlinx.android.synthetic.main.fragment_relation_value.*
 import javax.inject.Inject
@@ -120,9 +120,11 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
 
     private fun observeEditing(isEditing: Boolean) {
         if (isEditing) {
+            btnAddValue.invisible()
             btnEditOrDone.setText(R.string.done)
             dndItemTouchHelper.attachToRecyclerView(recycler)
         } else {
+            btnAddValue.visible()
             btnEditOrDone.setText(R.string.edit)
             dndItemTouchHelper.attachToRecyclerView(null)
         }

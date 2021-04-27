@@ -76,7 +76,6 @@ import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import com.anytypeio.anytype.ui.database.modals.RelationValueFragment
 import com.anytypeio.anytype.ui.page.cover.DocCoverAction
 import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment
 import com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment
@@ -90,6 +89,7 @@ import com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet.DocumentMenuActio
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
+import com.anytypeio.anytype.ui.relations.RelationValueFragment
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT

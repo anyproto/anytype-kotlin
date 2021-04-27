@@ -36,13 +36,13 @@ import com.anytypeio.anytype.presentation.sets.model.FilterExpression
 import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import com.anytypeio.anytype.ui.database.modals.RelationValueDVFragment
 import com.anytypeio.anytype.ui.relations.CreateDataViewRelationFragment
 import com.anytypeio.anytype.ui.relations.CreateDataViewRelationFragment.OnAddDataViewRelationRequestReceiver
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
+import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
 import com.anytypeio.anytype.ui.sets.modals.*
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import kotlinx.android.synthetic.main.fragment_object_set.*

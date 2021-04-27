@@ -10,11 +10,11 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvid
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
+import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.database.modals.RelationValueFragment
-import com.anytypeio.anytype.ui.database.modals.RelationValueDVFragment
+import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
+import com.anytypeio.anytype.ui.relations.RelationValueFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent

@@ -21,10 +21,10 @@ import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValu
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
-import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.database.modals.RelationValueBaseFragment
+import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import com.nhaarman.mockitokotlin2.times

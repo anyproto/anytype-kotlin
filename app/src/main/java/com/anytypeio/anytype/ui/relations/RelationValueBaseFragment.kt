@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.database.modals
+package com.anytypeio.anytype.ui.relations
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,7 +25,6 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
-import com.anytypeio.anytype.ui.relations.*
 import kotlinx.android.synthetic.main.fragment_relation_value.*
 import javax.inject.Inject
 

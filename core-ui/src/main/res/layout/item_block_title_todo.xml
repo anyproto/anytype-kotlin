@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <FrameLayout
+        android:minHeight="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -13,10 +14,11 @@
             android:id="@+id/cover"
             android:layout_width="match_parent"
             android:layout_height="176dp"
-            android:layout_marginBottom="32dp"
             android:adjustViewBounds="true"
             android:contentDescription="@string/content_description_document_cover"
             android:scaleType="fitXY"
+            tools:visibility="visible"
+            tools:background="@color/orange"
             android:visibility="gone" />
 
         <FrameLayout
@@ -26,7 +28,6 @@
             android:layout_height="64dp"
             android:layout_gravity="bottom"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="32dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/rectangle_default_page_logo_background"
             android:transitionName="@string/logo_transition">
@@ -49,6 +50,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:orientation="horizontal">
@@ -59,6 +61,8 @@
             android:layout_width="28dp"
             android:layout_height="28dp"/>
         <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+            android:paddingTop="0dp"
+            android:layout_marginTop="0dp"
             android:layout_marginStart="8dp"
             android:id="@+id/title"
             style="@style/BlockTitleContentStyle"

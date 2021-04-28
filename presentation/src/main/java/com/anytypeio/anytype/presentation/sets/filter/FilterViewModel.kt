@@ -344,7 +344,7 @@ open class FilterViewModel(
                 ctx = ctx,
                 filter = DVFilter(
                     relationKey = relation,
-                    value = if (condition.hasValue()) input else null,
+                    value = if (condition.hasValue()) input else "",
                     condition = condition.toDomain()
                 )
             )
@@ -466,7 +466,7 @@ open class FilterViewModel(
                 updatedFilter = DVFilter(
                     relationKey = relation,
                     condition = condition.toDomain(),
-                    value = if (condition.hasValue()) input else null
+                    value = if (condition.hasValue()) input else ""
                 )
             )
         }

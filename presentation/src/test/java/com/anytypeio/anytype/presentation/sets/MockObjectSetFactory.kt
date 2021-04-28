@@ -94,6 +94,7 @@ object MockObjectSetFactory {
 
     fun makeDefaultObjectSet(
         viewerId: String? = null,
+        dataViewId: String? = null,
         viewerRelations: List<Block.Content.DataView.Viewer.ViewerRelation>? = null,
         relations: List<Relation>? = null,
         sorts: List<Block.Content.DataView.Sort>? = null,
@@ -125,7 +126,7 @@ object MockObjectSetFactory {
         )
 
         val dataView = Block(
-            id = MockDataFactory.randomUuid(),
+            id = dataViewId ?: MockDataFactory.randomString(),
             content = Block.Content.DataView(
                 source = "source://1",
                 viewers = listOf(viewerGrid),

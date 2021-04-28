@@ -70,7 +70,7 @@ class FilterTextViewHolder(view: View) : FilterViewHolder(view) {
     }
 
     private fun getStringWithQuotes(value: String?): String =
-        itemView.context.getString(R.string.value_quotes, value)
+        if (value == null) "" else itemView.context.getString(R.string.value_quotes, value)
 
     private fun init(
         isInEditMode: Boolean,

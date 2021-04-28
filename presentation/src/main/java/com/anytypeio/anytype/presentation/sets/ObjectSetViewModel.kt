@@ -219,9 +219,40 @@ class ObjectSetViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while adding data view relation") },
-                success = defaultPayloadConsumer
+                success = { (key, payload) ->
+                    reducer.dispatch(payload.events).also {
+                        proceedWithAddingNewRelationToCurrentViewer(relation = key)
+                    }
+                }
             )
         }
+    }
+
+    private suspend fun proceedWithAddingNewRelationToCurrentViewer(relation: Id) {
+        val state = reducer.state.value
+        val block = state.dataview
+        val dv = block.content as DV
+        val viewer = dv.viewers.find {
+            it.id == session.currentViewerId
+        } ?: dv.viewers.first()
+
+        updateDataViewViewer(
+            UpdateDataViewViewer.Params(
+                context = context,
+                target = block.id,
+                viewer = viewer.copy(
+                    viewerRelations = viewer.viewerRelations + listOf(
+                        DVViewerRelation(
+                            key = relation,
+                            isVisible = true
+                        )
+                    )
+                )
+            )
+        ).process(
+            success = defaultPayloadConsumer,
+            failure = { Timber.e(it, "Error while updating data view's viewer") }
+        )
     }
 
     fun onTitleChanged(txt: String) {
@@ -242,7 +273,8 @@ class ObjectSetViewModel(
         val state = reducer.state.value
         val block = state.dataview
         val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == session.currentViewerId }?.id ?: dv.viewers.first().id
+        val viewer = dv.viewers.find { it.id == session.currentViewerId }?.id
+            ?: dv.viewers.first().id
 
         when (cell) {
             is CellView.Description, is CellView.Number, is CellView.Email,

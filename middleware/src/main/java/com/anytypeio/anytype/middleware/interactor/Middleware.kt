@@ -1045,7 +1045,7 @@ class Middleware(
         target: String,
         name: String,
         format: com.anytypeio.anytype.core_models.Relation.Format
-    ): Payload {
+    ): Pair<Id, Payload> {
 
         val relation = Relation(
             name = name,
@@ -1061,7 +1061,7 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockDataViewRelationAdd(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
+        return Pair(response.relationKey, response.event.toPayload())
     }
 
     @Throws(Exception::class)

@@ -1,15 +1,15 @@
 package com.anytypeio.anytype.domain.dataview.interactor
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelation.Params
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelation.Params
 
 class AddDataViewRelation(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, Params>() {
+) : BaseUseCase<Pair<Id, Payload>, Params>() {
 
     override suspend fun run(params: Params) = safe {
         repo.addDataViewRelation(

@@ -1,7 +1,10 @@
 package com.anytypeio.anytype.presentation.sets
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Event.Command
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.extension.updateFields
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -139,26 +142,6 @@ class ObjectSetReducer {
                                     relations = content.relations.toMutableList().apply {
                                         removeIf { it.key == event.key }
                                         add(event.relation)
-                                    },
-                                    viewers = content.viewers.map { viewer ->
-                                        val new = viewer.viewerRelations.toMutableList().apply {
-                                            removeIf { it.key == event.key }
-                                            add(
-                                                DVViewerRelation(
-                                                    key = event.key,
-                                                    isVisible = true
-                                                )
-                                            )
-                                        }
-                                        viewer.copy(viewerRelations = new.toSet().toList()).apply {
-                                            // May cause data races. Consider some other solution.
-                                            effects.add(
-                                                SideEffect.ViewerUpdate(
-                                                    target = block.id,
-                                                    viewer = this
-                                                )
-                                            )
-                                        }
                                     }
                                 )
                             )

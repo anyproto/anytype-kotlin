@@ -294,7 +294,7 @@ class BlockDataRepository(
         target: Id,
         name: String,
         format: Relation.Format
-    ): Payload = factory.remote.addDataViewRelation(
+    ): Pair<Id, Payload> = factory.remote.addDataViewRelation(
         context = context,
         target = target,
         name = name,

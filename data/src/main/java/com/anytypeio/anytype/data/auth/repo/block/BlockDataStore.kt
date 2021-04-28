@@ -88,7 +88,7 @@ interface BlockDataStore {
         target: Id,
         name: String,
         format: Relation.Format
-    ): Payload
+    ): Pair<Id, Payload>
 
     suspend fun updateDataViewViewer(
         context: Id,

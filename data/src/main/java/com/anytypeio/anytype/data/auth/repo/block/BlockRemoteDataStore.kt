@@ -215,7 +215,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         target: Id,
         name: String,
         format: Relation.Format
-    ): Payload = remote.addDataViewRelation(
+    ): Pair<Id, Payload> = remote.addDataViewRelation(
         context = context,
         target = target,
         name = name,

@@ -236,7 +236,7 @@ class BlockMiddleware(
         target: String,
         name: String,
         format: Relation.Format
-    ): Payload = middleware.addDataViewRelation(
+    ): Pair<Id, Payload> = middleware.addDataViewRelation(
         context = context,
         target = target,
         format = format,

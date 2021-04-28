@@ -16,11 +16,11 @@ import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
 import com.anytypeio.anytype.presentation.relations.AddObjectRelationValueViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.add_object_relation_value_fragment.*
+import kotlinx.android.synthetic.main.relation_option_value_add_fragment.*
 
 abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
 
-    val behavior get() = BottomSheetBehavior.from(sheet)
+    private val behavior get() = BottomSheetBehavior.from(sheet)
 
     val ctx get() = argString(CTX_KEY)
     val relation get() = argString(RELATION_KEY)
@@ -53,7 +53,7 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.add_object_relation_value_fragment, container, false).apply {
+    ): View? = inflater.inflate(R.layout.relation_option_value_add_fragment, container, false).apply {
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
@@ -117,8 +117,7 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
                         bottom = dimen(R.dimen.multiple_option_value_bottom_list_margin)
                     )
                     filterInput.setHint(R.string.choose_options)
-                }
-                else {
+                } else {
                     recycler.updatePadding(
                         bottom = dimen(R.dimen.single_option_value_bottom_list_margin)
                     )

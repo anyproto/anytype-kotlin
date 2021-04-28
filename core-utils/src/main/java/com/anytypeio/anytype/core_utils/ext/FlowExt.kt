@@ -1,12 +1,9 @@
 package com.anytypeio.anytype.core_utils.ext
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicReference
 
 fun <T> Flow<T>.throttleFist(windowDuration: Long): Flow<T> = flow {
@@ -97,4 +94,9 @@ fun <A, B, C : Any, R> Flow<A>.withLatestFrom(
             }
         }
     }
+}
+
+fun MutableList<Job>.cancel() {
+    forEach { it.cancel() }
+    clear()
 }

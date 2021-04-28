@@ -1,9 +1,7 @@
 package com.anytypeio.anytype.ui.relations
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -11,20 +9,21 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.RelationObjectValueAdapter
+import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.argString
-import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.withParent
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.relations.RelationObjectValueAddViewModel
 import com.anytypeio.anytype.presentation.relations.ObjectValueAddCommand
 import com.anytypeio.anytype.presentation.relations.ObjectValueAddView
-import kotlinx.android.synthetic.main.fragment_relation_value_object_add.*
+import com.anytypeio.anytype.presentation.relations.RelationObjectValueAddViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.fragment_relation_object_value_add.*
 import javax.inject.Inject
 
-class RelationObjectValueAddFragment : BaseBottomSheetFragment() {
+class RelationObjectValueAddFragment : BaseDialogFragment() {
+
+    private val behavior get() = BottomSheetBehavior.from(sheet)
 
     @Inject
     lateinit var factory: RelationObjectValueAddViewModel.Factory
@@ -41,22 +40,43 @@ class RelationObjectValueAddFragment : BaseBottomSheetFragment() {
         )
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setTransparentBackground()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_relation_value_object_add, container, false)
+    ): View = inflater.inflate(R.layout.fragment_relation_object_value_add, container, false).apply {
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        with(lifecycleScope) {
+            subscribe(view.clicks()) { dismiss() }
+        }
         rvObjects.layoutManager = LinearLayoutManager(requireContext())
         rvObjects.adapter = adapter
         btnBottomAction.setOnClickListener { vm.onActionButtonClicked() }
+        setupBottomSheet()
+    }
+
+    private fun setupBottomSheet() {
+        behavior.apply {
+            skipCollapsed = true
+            addBottomSheetCallback(
+                object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_HIDDEN) dismiss()
+                    }
+
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                        if (slideOffset < 0)
+                            btnAddContainer.gone()
+                        else
+                            btnAddContainer.visible()
+                    }
+                }
+            )
+        }
     }
 
     override fun onStart() {
@@ -65,6 +85,7 @@ class RelationObjectValueAddFragment : BaseBottomSheetFragment() {
         jobs += lifecycleScope.subscribe(searchRelationInput.textChanges())
         { vm.onFilterTextChanged(it.toString()) }
         super.onStart()
+        setupAppearance()
         vm.onStart(objectId = objectId, relationId = relationId)
     }
 
@@ -93,8 +114,13 @@ class RelationObjectValueAddFragment : BaseBottomSheetFragment() {
         dismiss()
     }
 
-    private fun setTransparentBackground() {
-        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+    private fun setupAppearance() {
+        dialog?.window?.apply {
+            setGravity(Gravity.BOTTOM)
+            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            setBackgroundDrawableResource(android.R.color.transparent)
+            setWindowAnimations(R.style.DefaultBottomDialogAnimation)
+        }
     }
 
     override fun injectDependencies() {

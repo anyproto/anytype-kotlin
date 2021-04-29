@@ -96,6 +96,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.regex.Pattern
+import com.anytypeio.anytype.presentation.page.Editor.Mode as EditorMode
 
 class PageViewModel(
     private val openPage: OpenPage,
@@ -141,7 +142,7 @@ class PageViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    private var mode = EditorMode.EDITING
+    private var mode : EditorMode = EditorMode.Edit
 
     private val controlPanelInteractor = Interactor(viewModelScope)
     val controlPanelViewState = MutableLiveData<ControlPanelState>()
@@ -1456,7 +1457,7 @@ class PageViewModel(
                 }
             }
             ActionItemType.SAM -> {
-                mode = EditorMode.SCROLL_AND_MOVE
+                mode = EditorMode.SAM
                 viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
                 viewModelScope.launch { refresh() }
                 proceedWithSAMQuickStartSelection(id)
@@ -1552,7 +1553,7 @@ class PageViewModel(
     }
 
     fun onEnterSearchModeClicked() {
-        mode = EditorMode.SEARCH
+        mode = EditorMode.Search
         viewModelScope.launch { orchestrator.stores.views.update(views.toReadMode()) }
         viewModelScope.launch { renderCommand.send(Unit) }
         viewModelScope.launch { controlPanelInteractor.onEvent(ControlPanelMachine.Event.SearchToolbar.OnEnterSearchMode) }
@@ -1563,7 +1564,7 @@ class PageViewModel(
     }
 
     fun onSearchToolbarEvent(event: SearchInDocEvent) {
-        if (mode != EditorMode.SEARCH) return
+        if (mode !is EditorMode.Search) return
         when (event) {
             is SearchInDocEvent.Query -> {
                 val query = event.query.trim()
@@ -1606,7 +1607,7 @@ class PageViewModel(
                 searchResultScrollPosition.value = pos
             }
             is SearchInDocEvent.Cancel -> {
-                mode = EditorMode.EDITING
+                mode = EditorMode.Edit
                 val update = views.clearSearchHighlights().toEditMode()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
@@ -1952,7 +1953,7 @@ class PageViewModel(
 
     fun onEnterMultiSelectModeClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter)
-        mode = EditorMode.MULTI_SELECT
+        mode = EditorMode.Select
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
         viewModelScope.launch {
             delay(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
@@ -1970,7 +1971,7 @@ class PageViewModel(
 
     fun onExitMultiSelectModeClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
-        mode = EditorMode.EDITING
+        mode = EditorMode.Edit
         clearSelections()
         viewModelScope.launch {
             delay(DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE)
@@ -1984,7 +1985,7 @@ class PageViewModel(
     }
 
     fun onEnterScrollAndMoveClicked() {
-        mode = EditorMode.SCROLL_AND_MOVE
+        mode = EditorMode.SAM
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnEnter)
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -1998,11 +1999,11 @@ class PageViewModel(
             eventName = EventsDictionary.BTN_SCROLL_MOVE_CANCEL
         )
         if (controlPanelViewState.value?.multiSelect?.isQuickScrollAndMoveMode == true) {
-            mode = EditorMode.EDITING
+            mode = EditorMode.Edit
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnExit)
             viewModelScope.launch { refresh() }
         } else {
-            mode = EditorMode.MULTI_SELECT
+            mode = EditorMode.Select
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnExit)
         }
     }
@@ -2015,7 +2016,7 @@ class PageViewModel(
     }
 
     private fun onEnterActionMode() {
-        mode = EditorMode.ACTION_MODE
+        mode = EditorMode.Action
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.ReadMode.OnEnter)
         viewModelScope.launch {
             refresh()
@@ -2023,7 +2024,7 @@ class PageViewModel(
     }
 
     private fun onExitActionMode() {
-        mode = EditorMode.EDITING
+        mode = EditorMode.Edit
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.ReadMode.OnExit)
         viewModelScope.launch { refresh() }
     }
@@ -2700,7 +2701,7 @@ class PageViewModel(
 
     fun onTextInputClicked(target: Id) {
         Timber.d("onTextInputClicked: $target")
-        if (mode == EditorMode.MULTI_SELECT) {
+        if (mode is EditorMode.Select) {
             onBlockMultiSelectClicked(target)
         } else {
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
@@ -2857,9 +2858,9 @@ class PageViewModel(
             clearSelections()
 
             mode = if (controlPanelViewState.value?.multiSelect?.isQuickScrollAndMoveMode == true) {
-                EditorMode.EDITING
+                EditorMode.Edit
             } else {
-                EditorMode.MULTI_SELECT
+                EditorMode.Select
             }
 
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
@@ -2891,9 +2892,9 @@ class PageViewModel(
             clearSelections()
 
             mode = if (controlPanelViewState.value?.multiSelect?.isQuickScrollAndMoveMode == true) {
-                EditorMode.EDITING
+                EditorMode.Edit
             } else {
-                EditorMode.MULTI_SELECT
+                EditorMode.Select
             }
 
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
@@ -2929,56 +2930,56 @@ class PageViewModel(
     fun onClickListener(clicked: ListenerType) = when (clicked) {
         is ListenerType.Bookmark.View -> {
             when (mode) {
-                EditorMode.EDITING -> onBookmarkClicked(clicked.item)
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.item.id)
+                EditorMode.Edit -> onBookmarkClicked(clicked.item)
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
                 else -> Unit
             }
         }
         is ListenerType.Bookmark.Placeholder -> {
             when (mode) {
-                EditorMode.EDITING -> onBookmarkPlaceholderClicked(clicked.target)
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> onBookmarkPlaceholderClicked(clicked.target)
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.Bookmark.Error -> {
             when (mode) {
-                EditorMode.EDITING -> onFailedBookmarkClicked(clicked.item)
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.item.id)
+                EditorMode.Edit -> onFailedBookmarkClicked(clicked.item)
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
                 else -> Unit
             }
         }
         is ListenerType.File.View -> {
             when (mode) {
-                EditorMode.EDITING -> onFileClicked(clicked.target)
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> onFileClicked(clicked.target)
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.File.Placeholder -> {
             when (mode) {
-                EditorMode.EDITING -> onAddLocalFileClicked(clicked.target)
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> onAddLocalFileClicked(clicked.target)
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.File.Error -> {
             when (mode) {
-                EditorMode.EDITING -> onAddLocalFileClicked(clicked.target)
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> onAddLocalFileClicked(clicked.target)
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.File.Upload -> {
             when (mode) {
-                EditorMode.EDITING -> Unit
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> Unit
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.Picture.View -> {
             when (mode) {
-                EditorMode.EDITING -> {
+                EditorMode.Edit -> {
                     val target = blocks.find { it.id == clicked.target }
                     if (target != null) {
                         val content = target.content
@@ -2993,76 +2994,76 @@ class PageViewModel(
                         Timber.e("Could not find target for picture")
                     }
                 }
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.Picture.Placeholder -> {
             when (mode) {
-                EditorMode.EDITING -> onAddLocalPictureClicked(clicked.target)
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> onAddLocalPictureClicked(clicked.target)
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.Picture.Error -> {
             when (mode) {
-                EditorMode.EDITING -> Unit
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> Unit
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.Picture.Upload -> {
             when (mode) {
-                EditorMode.EDITING -> Unit
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> Unit
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.Video.View -> {
             when (mode) {
-                EditorMode.EDITING -> Unit
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> Unit
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.Video.Placeholder -> {
             when (mode) {
-                EditorMode.EDITING -> onAddLocalVideoClicked(clicked.target)
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> onAddLocalVideoClicked(clicked.target)
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.Video.Error -> {
             when (mode) {
-                EditorMode.EDITING -> Unit
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> Unit
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.Video.Upload -> {
             when (mode) {
-                EditorMode.EDITING -> Unit
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> Unit
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.LongClick -> {
             when (mode) {
-                EditorMode.EDITING -> onBlockLongPressedClicked(clicked.target, clicked.dimensions)
-                EditorMode.MULTI_SELECT -> Unit
+                EditorMode.Edit -> onBlockLongPressedClicked(clicked.target, clicked.dimensions)
+                EditorMode.Select -> Unit
                 else -> Unit
             }
         }
         is ListenerType.Page -> {
             when (mode) {
-                EditorMode.EDITING -> onPageClicked(clicked.target)
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Edit -> onPageClicked(clicked.target)
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.Mention -> {
             when (mode) {
-                EditorMode.EDITING -> onMentionClicked(clicked.target)
+                EditorMode.Edit -> onMentionClicked(clicked.target)
                 else -> Unit
             }
         }
@@ -3074,25 +3075,25 @@ class PageViewModel(
         }
         is ListenerType.DividerClick -> {
             when (mode) {
-                EditorMode.MULTI_SELECT -> onBlockMultiSelectClicked(clicked.target)
+                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                 else -> Unit
             }
         }
         is ListenerType.Code.SelectLanguage -> {
             when (mode) {
-                EditorMode.EDITING -> dispatch(Command.Dialog.SelectLanguage(clicked.target))
+                EditorMode.Edit -> dispatch(Command.Dialog.SelectLanguage(clicked.target))
                 else -> Unit
             }
         }
         is ListenerType.Relation.Placeholder -> {
             when (mode) {
-                EditorMode.EDITING -> dispatch(Command.OpenObjectRelationScreen.Add(ctx = context, target = clicked.target))
+                EditorMode.Edit -> dispatch(Command.OpenObjectRelationScreen.Add(ctx = context, target = clicked.target))
                 else -> onBlockMultiSelectClicked(clicked.target)
             }
         }
         is ListenerType.Relation.Related -> {
             when (mode) {
-                EditorMode.EDITING -> {
+                EditorMode.Edit -> {
                     val relation = (clicked.value as BlockView.Relation.Related).view.relationId
                     when (orchestrator.stores.relations.current().first { it.key == relation }.format) {
                         Relation.Format.SHORT_TEXT,

@@ -7,7 +7,6 @@ import com.anytypeio.anytype.domain.cover.CoverType
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.page.EditorMode
 import com.anytypeio.anytype.domain.relations.Relations
 import com.anytypeio.anytype.presentation.mapper.*
 import com.anytypeio.anytype.presentation.page.cover.CoverColor
@@ -16,6 +15,7 @@ import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.relations.view
 import timber.log.Timber
+import com.anytypeio.anytype.presentation.page.Editor.Mode as EditorMode
 
 class DefaultBlockViewRenderer(
     private val counter: Counter,
@@ -419,7 +419,7 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details
     ): BlockView.Text.Paragraph = BlockView.Text.Paragraph(
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         marks = content.marks(details = details, urlBuilder = urlBuilder),
@@ -438,7 +438,7 @@ class DefaultBlockViewRenderer(
     ): BlockView.Description = BlockView.Description(
         id = block.id,
         description = content.text.ifEmpty { null },
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
     )
 
     private fun headerThree(
@@ -449,7 +449,7 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details
     ): BlockView.Text.Header.Three = BlockView.Text.Header.Three(
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         color = content.color,
@@ -469,7 +469,7 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details
     ): BlockView.Text.Header.Two = BlockView.Text.Header.Two(
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         color = content.color,
@@ -489,7 +489,7 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details
     ): BlockView.Text.Header.One = BlockView.Text.Header.One(
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         color = content.color,
@@ -509,7 +509,7 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details
     ): BlockView.Text.Checkbox = BlockView.Text.Checkbox(
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         marks = content.marks(details = details, urlBuilder = urlBuilder),
@@ -529,7 +529,7 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details
     ): BlockView.Text.Bulleted = BlockView.Text.Bulleted(
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         indent = indent,
@@ -547,7 +547,7 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         indent: Int
     ): BlockView.Code = BlockView.Code(
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         backgroundColor = content.backgroundColor,
@@ -565,7 +565,7 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details
     ): BlockView.Text.Highlight = BlockView.Text.Highlight(
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         isFocused = block.id == focus.id,
         text = content.text,
@@ -585,7 +585,7 @@ class DefaultBlockViewRenderer(
         isEmpty: Boolean,
         details: Block.Details
     ): BlockView.Text.Toggle = BlockView.Text.Toggle(
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         marks = content.marks(details = details, urlBuilder = urlBuilder),
@@ -607,7 +607,7 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details
     ): BlockView.Text.Numbered = BlockView.Text.Numbered(
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
         number = number,
@@ -634,20 +634,20 @@ class DefaultBlockViewRenderer(
                 imageUrl = content.image?.let { urlBuilder.image(it) },
                 faviconUrl = content.favicon?.let { urlBuilder.image(it) },
                 indent = indent,
-                mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
+                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
             )
         } else {
             BlockView.Error.Bookmark(
                 id = block.id,
                 url = url,
                 indent = indent,
-                mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
+                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
             )
         }
     } ?: BlockView.MediaPlaceholder.Bookmark(
         id = block.id,
         indent = indent,
-        mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
     )
 
     private fun divider(
@@ -675,25 +675,25 @@ class DefaultBlockViewRenderer(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
-            mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
         )
         Content.File.Type.FILE -> content.toFileView(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
-            mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
         )
         Content.File.Type.VIDEO -> content.toVideoView(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
-            mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
         )
         Content.File.Type.NONE -> content.toFileView(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
-            mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
         )
         else -> throw IllegalStateException("Unexpected file type: ${content.type}")
     }
@@ -768,7 +768,7 @@ class DefaultBlockViewRenderer(
         return when(layout) {
             Layout.BASIC -> {
                 BlockView.Title.Basic(
-                    mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                    mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
                     id = block.id,
                     text = content.text,
                     emoji = details.details[root.id]?.iconEmoji?.let { name ->
@@ -792,7 +792,7 @@ class DefaultBlockViewRenderer(
             }
             Layout.TODO -> {
                 BlockView.Title.Todo(
-                    mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                    mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
                     id = block.id,
                     text = content.text,
                     isFocused = block.id == focus.id,
@@ -805,7 +805,7 @@ class DefaultBlockViewRenderer(
             }
             Layout.PROFILE -> {
                 BlockView.Title.Profile(
-                    mode = if (mode == EditorMode.EDITING) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                    mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
                     id = block.id,
                     text = content.text,
                     image = details.details[root.id]?.iconImage?.let { name ->

@@ -9,6 +9,14 @@ import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 
 interface Editor {
 
+    sealed class Mode {
+        object Edit : Mode()
+        object Select : Mode()
+        object SAM : Mode()
+        object Action: Mode()
+        object Search : Mode()
+    }
+
     class Storage {
         val views: Store<List<BlockView>> = Store.Screen()
         val focus: Store<Focus> = Store.Focus()

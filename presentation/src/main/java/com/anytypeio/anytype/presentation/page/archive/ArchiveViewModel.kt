@@ -22,7 +22,6 @@ import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.page.ArchiveDocument
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.EditorMode
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
@@ -42,6 +41,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import com.anytypeio.anytype.presentation.page.Editor.Mode as EditorMode
 
 sealed class ArchiveViewState {
     object Loading : ArchiveViewState()
@@ -71,7 +71,7 @@ class ArchiveViewModel(
 
     private var eventSubscription: Job? = null
 
-    private var mode = EditorMode.MULTI_SELECT
+    private var mode = EditorMode.Select
 
     private val renderCommand = Proxy.Subject<Unit>()
     private val renderizePipeline = Proxy.Subject<Document>()

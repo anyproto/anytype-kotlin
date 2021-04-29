@@ -4,8 +4,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.editor.Editor
-import com.anytypeio.anytype.domain.page.EditorMode
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.Editor.Mode as EditorMode
 
 /**
  * Converts business tree-like data structures to flattened view data structures.
@@ -20,7 +20,7 @@ interface BlockViewRenderer {
      * @param indent current indent at this rendering node.
      */
     suspend fun Map<Id, List<Block>>.render(
-        mode: EditorMode = EditorMode.EDITING,
+        mode: EditorMode = EditorMode.Edit,
         root: Block,
         focus: Editor.Focus,
         anchor: Id,

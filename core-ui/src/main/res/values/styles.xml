@@ -645,4 +645,12 @@
         <item name="android:maxLines">1</item>
     </style>
 
+    <style name="StyleToolbarTextStyleStyle">
+        <item name="android:background">@drawable/ic_style_toolbar_text_style_background_selector</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>

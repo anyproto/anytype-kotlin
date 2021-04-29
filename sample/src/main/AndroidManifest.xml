@@ -19,14 +19,16 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name=".search.SearchOnPageActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+        <activity android:name=".StyleToolbarActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".search.SearchOnPageActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize">
         </activity>
         <activity android:name=".DisabledAnimationActivity" />
         <activity android:name=".ScrollAndMove" />

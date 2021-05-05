@@ -10,8 +10,10 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
@@ -55,7 +57,9 @@ import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveSt
 import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetHighlighter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.layoutChanges
+import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.tools.*
+import com.anytypeio.anytype.core_utils.OnSwipeListener
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
@@ -165,6 +169,17 @@ open class PageFragment :
 
     private val footerSlashDecorator by lazy {
         SlashWidgetFooterItemDecorator(screen = screen)
+    }
+
+    private val swipeListener = object : OnSwipeListener() {
+        override fun onSwipe(direction: Direction?): Boolean {
+            if (direction == Direction.DOWN) vm.onCloseBlockStyleToolbarClicked()
+            return true
+        }
+    }
+
+    private val swipeDetector by lazy {
+        GestureDetector(context, swipeListener)
     }
 
     private val vm by viewModels<PageViewModel> { factory }
@@ -502,6 +517,10 @@ open class PageFragment :
         topToolbar.redo.clicks().onEach {
             vm.onActionRedoClicked()
         }.launchIn(lifecycleScope)
+
+        lifecycleScope.subscribe(stylingToolbarNew.touches()) {
+            swipeDetector.onTouchEvent(it)
+        }
 
         mentionSuggesterToolbar.setupClicks(
             mentionClick = vm::onMentionSuggestClick,
@@ -1006,20 +1025,58 @@ open class PageFragment :
 
         state.stylingToolbar.apply {
             if (isVisible) {
-                styleToolbar.update(
-                    config = config!!,
-                    props = props
-                )
-                hideSoftInput()
                 lifecycleScope.launch {
-                    delay(300)
-                    mode?.let { styleToolbar.mode = it }
-                    styleToolbar.showWithAnimation()
-                    recycler.updatePadding(bottom = dimen(R.dimen.dp_203) + dimen(R.dimen.dp_16))
+                    hideSoftInput()
+                    delay(150L)
+                    val set = ConstraintSet().apply {
+                        clone(sheet)
+                        clear(
+                            R.id.stylingToolbarNew,
+                            ConstraintSet.TOP,
+                        )
+                        connect(
+                            R.id.stylingToolbarNew,
+                            ConstraintSet.BOTTOM,
+                            R.id.sheet,
+                            ConstraintSet.BOTTOM,
+                            dimen(R.dimen.dp_6)
+                        )
+                    }
+
+                    val transition = TransitionSet().apply {
+                        addTransition(ChangeBounds())
+                        duration = 150
+                        interpolator = AccelerateDecelerateInterpolator()
+                    }
+
+                    TransitionManager.beginDelayedTransition(sheet, transition)
+                    recycler.updatePadding(bottom = stylingToolbarNew.height + dimen(R.dimen.dp_10))
+                    set.applyTo(sheet)
                 }
             } else {
-                styleToolbar.hideWithAnimation()
-                recycler.updatePadding(bottom = dimen(R.dimen.default_toolbar_height))
+                val set = ConstraintSet().apply {
+                    clone(sheet)
+                    clear(
+                        R.id.stylingToolbarNew,
+                        ConstraintSet.BOTTOM,
+                    )
+                    connect(
+                        R.id.stylingToolbarNew,
+                        ConstraintSet.TOP,
+                        R.id.sheet,
+                        ConstraintSet.BOTTOM
+                    )
+                }
+
+                val transition = TransitionSet().apply {
+                    addTransition(ChangeBounds())
+                    duration = 150
+                    interpolator = AccelerateDecelerateInterpolator()
+                }
+
+                TransitionManager.beginDelayedTransition(sheet, transition)
+                set.applyTo(sheet)
+                recycler.updatePadding(bottom = dimen(R.dimen.editor_recycler_bottom_padding))
             }
         }
 

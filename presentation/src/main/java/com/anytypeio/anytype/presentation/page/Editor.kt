@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.page
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.presentation.page.editor.Proxy
@@ -15,6 +16,13 @@ interface Editor {
         object SAM : Mode()
         object Action: Mode()
         object Search : Mode()
+        sealed class Styling : Mode() {
+            data class Single(
+                val target: Id,
+                val cursor: Int
+            ) : Styling()
+            object Multi : Styling()
+        }
     }
 
     class Storage {

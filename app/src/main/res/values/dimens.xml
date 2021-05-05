@@ -22,7 +22,7 @@
     <dimen name="table_row_header_width">16dp</dimen>
 
     <dimen name="list_margin_start">20dp</dimen>
-    <dimen name="editor_recycler_bottom_padding">64dp</dimen>
+    <dimen name="editor_recycler_bottom_padding">48dp</dimen>
     <dimen name="avatar_height_big">96dp</dimen>
     <dimen name="avatar_width_big">96dp</dimen>
 

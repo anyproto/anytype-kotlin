@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.2.0
+
+### Middleware ⚙
+
+* Updated middleware protocol to `0.15.3` (#1448)
+
 ## Version 0.1.9
 
 ### Fixes & tech 🚒

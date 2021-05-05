@@ -158,6 +158,7 @@ message Event {
 
             repeated anytype.relation.ObjectType objectTypes = 5; // objectTypes contains ONLY to get layouts for the actual and all dependent objects. Relations are currently omitted // todo: switch to other pb model
             repeated anytype.relation.Relation relations = 7; // combined relations of object's type + extra relations. If object doesn't has some relation key in the details this means client should hide it and only suggest when adding existing one
+            anytype.model.Restrictions restrictions = 8; // object restrictions
         }
     }
     message Block {
@@ -724,24 +725,28 @@ message Event {
 }
 
 enum SmartBlockType {
-    Page = 0;
-    Home = 1; // have only Link simpleblocks
-    ProfilePage = 2; // just a usual page for now
-    Archive = 3; // have only Link simpleblocks
-    Breadcrumbs = 4; // have only Link simpleblocks
+    Breadcrumbs = 0;
 
-    Set = 5; // only have dataview simpleblock
-    ObjectType = 6; // have relations list
+    Page = 0x10;
+    ProfilePage = 0x11;
+    Home = 0x20;
+    Archive = 0x30;
+    Database = 0x40;
+    Set = 0x41; // only have dataview simpleblock
+    ObjectType = 0x60; // have relations list
 
-    File = 7;
+    File = 0x100;
 
-    Relation = 10;
+    Template = 0x120;
 
-    Template = 11;
+    MarketplaceType = 0x110;
+    MarketplaceRelation = 0x111;
+    MarketplaceTemplate = 0x112;
 
-    MarketplaceType = 8;
-    MarketplaceRelation = 9;
-    MarketplaceTemplate = 12;
+    BundledRelation = 0x200;
+    IndexedRelation = 0x201;
+    BundledObjectType = 0x202;
+    AnytypeProfile = 0x203;
 }
 
 message ResponseEvent {

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.extension
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterConditionType
 import com.anytypeio.anytype.core_models.Relation
@@ -137,6 +138,9 @@ private fun DVFilterCondition.toView(
         }
     }
     DVFilterCondition.NOT_ALL_IN -> {
+        throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+    }
+    DVFilterCondition.NONE -> {
         throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
     }
 }

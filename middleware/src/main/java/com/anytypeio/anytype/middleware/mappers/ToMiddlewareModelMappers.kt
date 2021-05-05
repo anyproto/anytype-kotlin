@@ -270,6 +270,7 @@ fun Block.Content.DataView.Filter.Condition.toMiddlewareModel(): MDVFilterCondit
     Block.Content.DataView.Filter.Condition.NOT_EMPTY -> MDVFilterCondition.NotEmpty
     Block.Content.DataView.Filter.Condition.ALL_IN -> MDVFilterCondition.AllIn
     Block.Content.DataView.Filter.Condition.NOT_ALL_IN -> MDVFilterCondition.NotAllIn
+    Block.Content.DataView.Filter.Condition.NONE -> MDVFilterCondition.None
 }
 
 fun Block.Content.DataView.DateFormat?.toMiddlewareModel(): MDVDateFormat = when (this) {

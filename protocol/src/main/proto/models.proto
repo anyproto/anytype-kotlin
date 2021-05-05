@@ -160,15 +160,15 @@ message Block {
                 Header1 = 1;
                 Header2 = 2;
                 Header3 = 3;
-                Header4 = 4;
+                Header4 = 4; // deprecated
                 Quote = 5;
                 Code = 6;
-                Title = 7;
+                Title = 7; // currently only only one block of this style can exists on a page
                 Checkbox = 8;
                 Marked = 9;
                 Numbered = 10;
                 Toggle = 11;
-                Description = 12;
+                Description = 12; // currently only only one block of this style can exists on a page
             }
         }
 
@@ -270,20 +270,21 @@ message Block {
                 }
 
                 enum Condition {
-                    Equal = 0;
-                    NotEqual = 1;
-                    Greater = 2;
-                    Less = 3;
-                    GreaterOrEqual = 4;
-                    LessOrEqual = 5;
-                    Like = 6;
-                    NotLike = 7;
-                    In = 8;
-                    NotIn = 9;
-                    Empty = 10;
-                    NotEmpty = 11;
-                    AllIn = 12;
-                    NotAllIn = 13;
+                    None = 0;
+                    Equal = 1;
+                    NotEqual = 2;
+                    Greater = 3;
+                    Less = 4;
+                    GreaterOrEqual = 5;
+                    LessOrEqual = 6;
+                    Like = 7;
+                    NotLike = 8;
+                    In = 9;
+                    NotIn = 10;
+                    Empty = 11;
+                    NotEmpty = 12;
+                    AllIn = 13;
+                    NotAllIn = 14;
                 }
             }
         }
@@ -344,3 +345,36 @@ message LinkPreview {
         Text = 3;
     }
 }
+
+message Restrictions {
+    repeated ObjectRestriction object = 1;
+    repeated DataviewRestrictions dataview = 2;
+
+    enum ObjectRestriction {
+        // restricts delete
+        Delete = 0;
+        // restricts work with relations
+        Relation = 1;
+        // restricts edit a header (title, description, etc.)
+        Header = 2;
+        // restricts create a new block
+        CreateBlock = 3;
+    }
+
+
+    message DataviewRestrictions {
+        string blockId = 1;
+        repeated DataviewRestriction restrictions = 2;
+    }
+
+    enum DataviewRestriction {
+        CreateView = 0;
+        Filters = 1;
+        CreateRelation = 2;
+        CreateObject = 3;
+        EditObject = 4;
+    }
+}
+
+
+

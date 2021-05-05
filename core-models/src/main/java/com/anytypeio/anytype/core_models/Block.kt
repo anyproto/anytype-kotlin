@@ -275,7 +275,7 @@ data class Block(
                 enum class Operator { AND, OR }
                 enum class Condition {
                     EQUAL, NOT_EQUAL, GREATER, LESS, GREATER_OR_EQUAL, LESS_OR_EQUAL,
-                    LIKE, NOT_LIKE, IN, NOT_IN, EMPTY, NOT_EMPTY, ALL_IN, NOT_ALL_IN
+                    LIKE, NOT_LIKE, IN, NOT_IN, EMPTY, NOT_EMPTY, ALL_IN, NOT_ALL_IN, NONE
                 }
                 enum class ConditionType { TEXT, NUMBER, SELECT, CHECKBOX }
             }

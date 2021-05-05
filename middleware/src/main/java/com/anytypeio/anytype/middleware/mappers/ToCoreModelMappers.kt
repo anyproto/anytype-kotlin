@@ -372,6 +372,7 @@ fun MDVFilterCondition.toCoreModels(): DVFilterCondition = when (this) {
     MDVFilterCondition.NotEmpty -> DVFilterCondition.NOT_EMPTY
     MDVFilterCondition.AllIn -> DVFilterCondition.ALL_IN
     MDVFilterCondition.NotAllIn -> DVFilterCondition.NOT_ALL_IN
+    MDVFilterCondition.None -> DVFilterCondition.NONE
 }
 
 fun MDVFilterOperator.toCoreModels(): DVFilterOperator = when (this) {

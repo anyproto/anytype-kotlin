@@ -145,7 +145,7 @@ class PageViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    private var mode : EditorMode = EditorMode.Edit
+    private var mode: EditorMode = EditorMode.Edit
 
     private val controlPanelInteractor = Interactor(viewModelScope)
     val controlPanelViewState = MutableLiveData<ControlPanelState>()
@@ -1253,11 +1253,6 @@ class PageViewModel(
         }
     }
 
-    fun onCloseBlockStyleToolbarClicked() {
-        val focused = !orchestrator.stores.focus.current().isEmpty
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnClose(focused))
-    }
-
     fun onToolbarTextColorAction(id: String, color: String?) {
         check(color != null)
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockTextColorSelected)
@@ -1905,6 +1900,16 @@ class PageViewModel(
     }
 
     private fun proceedWithStyleToolbarEvent() {
+        val target = orchestrator.stores.focus.current().id
+        mode = EditorMode.Styling.Single(
+            target = target,
+            cursor = orchestrator.stores.textSelection.current().selection?.first
+        )
+        viewModelScope.launch {
+            orchestrator.stores.views.update(views.singleStylingMode(target))
+            renderCommand.send(Unit)
+        }
+
         val textSelection = orchestrator.stores.textSelection.current()
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
@@ -1921,6 +1926,27 @@ class PageViewModel(
             analytics = analytics,
             eventName = POPUP_STYLE
         )
+    }
+
+    fun onCloseBlockStyleToolbarClicked() {
+        if (mode is EditorMode.Styling.Single) {
+            val target = (mode as EditorMode.Styling.Single).target
+            val cursor = (mode as EditorMode.Styling.Single).cursor
+            mode = EditorMode.Edit
+            viewModelScope.launch {
+                val focused = !orchestrator.stores.focus.current().isEmpty
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnClose(focused))
+                orchestrator.stores.views.update(
+                    views.exitSingleStylingMode(
+                        target = target,
+                        cursor = cursor
+                    )
+                )
+                renderCommand.send(Unit)
+            }
+        } else {
+            // TODO
+        }
     }
 
     fun onBlockToolbarBlockActionsClicked() {
@@ -2703,12 +2729,18 @@ class PageViewModel(
     }
 
     fun onTextInputClicked(target: Id) {
-        Timber.d("onTextInputClicked: $target")
-        if (mode is EditorMode.Select) {
-            onBlockMultiSelectClicked(target)
-        } else {
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
+        when (mode) {
+            is EditorMode.Select -> {
+                onBlockMultiSelectClicked(target)
+            }
+            is EditorMode.Styling.Single -> {
+                // do nothing
+            }
+            else -> {
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
+            }
         }
+
     }
 
     private fun onBlockMultiSelectClicked(target: Id) {

@@ -1,10 +1,225 @@
 package com.anytypeio.anytype.presentation.page.editor.ext
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_URL_KEY
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
+
+fun List<BlockView>.singleStylingMode(
+    target: Id
+): List<BlockView> = map { view ->
+    val isSelected = view.id == target
+    when (view) {
+        is BlockView.Text.Paragraph -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            cursor = null
+        )
+        is BlockView.Text.Checkbox -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            cursor = null
+        )
+        is BlockView.Text.Bulleted -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            cursor = null
+        )
+        is BlockView.Text.Numbered -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            cursor = null
+        )
+        is BlockView.Text.Highlight -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            cursor = null
+        )
+        is BlockView.Text.Header.One -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            cursor = null
+        )
+        is BlockView.Text.Header.Two -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            cursor = null
+        )
+        is BlockView.Text.Header.Three -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            cursor = null
+        )
+        is BlockView.Text.Toggle -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            cursor = null
+        )
+        is BlockView.Code -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Error.File -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Error.Video -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Error.Picture -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Error.Bookmark -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Upload.File -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Upload.Video -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Upload.Picture -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.MediaPlaceholder.File -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.MediaPlaceholder.Video -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.MediaPlaceholder.Bookmark -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.MediaPlaceholder.Picture -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Media.File -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Media.Video -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Media.Bookmark -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Media.Picture -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Title.Basic -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.Profile -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.Archive -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Description -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        else -> view.also { check(view !is BlockView.Permission) }
+    }
+}
+
+fun List<BlockView>.exitSingleStylingMode(
+    target: Id,
+    cursor: Int?
+): List<BlockView> = map { view ->
+    val isTarget = view.id == target
+    when (view) {
+        is BlockView.Text.Paragraph -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
+        is BlockView.Text.Checkbox -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
+        is BlockView.Text.Bulleted -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
+        is BlockView.Text.Numbered -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
+        is BlockView.Text.Highlight -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
+        is BlockView.Text.Header.One -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
+        is BlockView.Text.Header.Two -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
+        is BlockView.Text.Header.Three -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
+        is BlockView.Text.Toggle -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
+        is BlockView.Code -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Error.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Error.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Error.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Error.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Upload.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Upload.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Upload.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.MediaPlaceholder.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.MediaPlaceholder.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.MediaPlaceholder.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.MediaPlaceholder.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Media.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Media.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Media.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Media.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Description -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
+        else -> view.also { check(view !is BlockView.Permission) }
+    }
+}
 
 fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
     when (view) {
@@ -20,6 +235,7 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
         is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.READ)
+        is BlockView.Description -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Code -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Error.File -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Error.Video -> view.copy(mode = BlockView.Mode.READ)
@@ -42,34 +258,35 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
 
 fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
     when (view) {
-        is BlockView.Text.Paragraph -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Text.Checkbox -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Text.Bulleted -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Text.Numbered -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Text.Highlight -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Text.Header.One -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Text.Header.Two -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Text.Header.Three -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Text.Toggle -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Text.Paragraph -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Text.Checkbox -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Text.Bulleted -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Text.Numbered -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Text.Highlight -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Text.Header.One -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Text.Header.Two -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Text.Header.Three -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Text.Toggle -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Code -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Error.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Error.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Error.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Error.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Upload.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Upload.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Upload.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.MediaPlaceholder.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.MediaPlaceholder.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.MediaPlaceholder.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.MediaPlaceholder.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Media.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Media.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Media.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Media.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Description -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Code -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Error.File -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Error.Video -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Error.Picture -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Error.Bookmark -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Upload.File -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Upload.Video -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Upload.Picture -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.MediaPlaceholder.File -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.MediaPlaceholder.Video -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.MediaPlaceholder.Bookmark -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.MediaPlaceholder.Picture -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Media.File -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Media.Video -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Media.Bookmark -> view.copy(mode = BlockView.Mode.EDIT)
-        is BlockView.Media.Picture -> view.copy(mode = BlockView.Mode.EDIT)
         else -> view.also { check(view !is BlockView.Permission) }
     }
 }

@@ -19,7 +19,7 @@ interface Editor {
         sealed class Styling : Mode() {
             data class Single(
                 val target: Id,
-                val cursor: Int
+                val cursor: Int?
             ) : Styling()
             object Multi : Styling()
         }

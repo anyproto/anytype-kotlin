@@ -551,6 +551,10 @@ open class PageFragment :
             }
         }
 
+        stylingToolbarNew.setOnClickListener {
+            // TODO
+        }
+
         lifecycleScope.launch {
             searchToolbar.events().collect { vm.onSearchToolbarEvent(it) }
         }

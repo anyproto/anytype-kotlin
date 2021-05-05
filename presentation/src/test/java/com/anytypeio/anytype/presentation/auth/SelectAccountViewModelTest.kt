@@ -8,8 +8,6 @@ import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.presentation.auth.account.SelectAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
@@ -18,6 +16,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 
 class SelectAccountViewModelTest {
 
@@ -37,7 +37,7 @@ class SelectAccountViewModelTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     private fun buildViewModel(): SelectAccountViewModel {

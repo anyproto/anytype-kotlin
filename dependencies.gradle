@@ -53,12 +53,11 @@ ext {
     robolectric_version = '4.3.1'
     robolectric_latest_version = '4.5.1'
     junit_version = '4.12'
-    mockito_version = '1.4.0'
     kluent_version = '1.14'
     coroutine_testing_version = '1.4.3'
     live_data_testing_version = '1.1.0'
-    mockito_kotlin_version = '2.2.0'
-    mockito_android_version = '2.25.0'
+    mockito_kotlin_version = '3.2.0'
+    mockito_android_version = '3.9.0'
 
     // Acceptance Testing
     runner_version = '1.1.0'
@@ -142,8 +141,7 @@ ext {
             robolectric:        "org.robolectric:robolectric:$robolectric_version",
             robolectricLatest:  "org.robolectric:robolectric:$robolectric_latest_version",
             junit:              "junit:junit:$junit_version",
-            mockito:            "com.nhaarman:mockito-kotlin:$mockito_version",
-            mockitoKotlin:      "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockito_kotlin_version",
+            mockitoKotlin:      "org.mockito.kotlin:mockito-kotlin:$mockito_kotlin_version",
             kluent:             "org.amshove.kluent:kluent:$kluent_version",
             archCoreTesting:    "androidx.arch.core:core-testing:$androidx_core_testing_version",
             liveDataTesting:    "com.jraska.livedata:testing-ktx:$live_data_testing_version",
@@ -160,8 +158,7 @@ ext {
             espressoContrib:    "androidx.test.espresso:espresso-contrib:$espresso_version",
             espressoIntents:    "androidx.test.espresso:espresso-intents:$espresso_version",
             androidAnnotations: "androidx.annotation:annotation:$appcompat_version",
-            mockito:            "com.nhaarman:mockito-kotlin:$mockito_version",
-            mockitoKotlin:      "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockito_kotlin_version",
+            mockitoKotlin:      "org.mockito.kotlin:mockito-kotlin:$mockito_kotlin_version",
             mockitoAndroid:     "org.mockito:mockito-android:$mockito_android_version",
             disableAnimation:   "com.bartoszlipinski:disable-animations-rule:$disable_animation_version",
             fragmentTesting:    "androidx.fragment:fragment-testing:$fragment_version"

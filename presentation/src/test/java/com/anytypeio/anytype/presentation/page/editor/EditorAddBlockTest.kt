@@ -2,18 +2,18 @@ package com.anytypeio.anytype.presentation.page.editor
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
-import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.*
 
 class EditorAddBlockTest : EditorPresentationTestSetup() {
 
@@ -25,7 +25,7 @@ class EditorAddBlockTest : EditorPresentationTestSetup() {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     @Test

@@ -23,7 +23,6 @@ import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
-import com.nhaarman.mockitokotlin2.*
 import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before
@@ -31,6 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.*
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)

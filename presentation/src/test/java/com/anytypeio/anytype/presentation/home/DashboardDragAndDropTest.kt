@@ -1,23 +1,23 @@
 package com.anytypeio.anytype.presentation.home
 
 import MockDataFactory
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardStateMachine
 import com.anytypeio.anytype.presentation.mapper.toDashboardViews
 import com.jraska.livedata.test
-import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.*
 
 class DashboardDragAndDropTest : DashboardTestSetup() {
 

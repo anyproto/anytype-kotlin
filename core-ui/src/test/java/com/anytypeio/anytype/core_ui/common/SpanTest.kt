@@ -3,9 +3,9 @@ package com.anytypeio.anytype.core_ui.common
 import androidx.core.text.getSpans
 import com.anytypeio.anytype.core_utils.ext.hasSpan
 import com.anytypeio.anytype.presentation.page.editor.Markup
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.stub
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

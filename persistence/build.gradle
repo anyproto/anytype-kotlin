@@ -43,7 +43,7 @@ dependencies {
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
-    testImplementation unitTestDependencies.mockito
+    testImplementation unitTestDependencies.mockitoKotlin
     testImplementation unitTestDependencies.robolectric
     testImplementation unitTestDependencies.archCoreTesting
 }

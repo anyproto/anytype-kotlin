@@ -11,11 +11,11 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.interactor.MiddlewareFactory
 import com.anytypeio.anytype.middleware.service.MiddlewareService
-import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

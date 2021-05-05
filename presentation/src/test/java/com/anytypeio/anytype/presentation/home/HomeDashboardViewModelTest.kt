@@ -3,18 +3,21 @@ package com.anytypeio.anytype.presentation.home
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.domain.auth.interactor.GetProfile
-import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
-import com.anytypeio.anytype.domain.config.*
-import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
-import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
-import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
+import com.anytypeio.anytype.domain.auth.interactor.GetProfile
+import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.config.DebugSettings
+import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.GetConfig
+import com.anytypeio.anytype.domain.config.GetDebugSettings
+import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
+import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
+import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.desktop.DashboardView
@@ -24,7 +27,6 @@ import com.anytypeio.anytype.presentation.desktop.HomeDashboardViewModel
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
-import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
@@ -33,6 +35,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.*
 
 class HomeDashboardViewModelTest {
 

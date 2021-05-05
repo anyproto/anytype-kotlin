@@ -45,5 +45,4 @@ dependencies {
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.mockitoKotlin
-    testImplementation unitTestDependencies.mockito
 }

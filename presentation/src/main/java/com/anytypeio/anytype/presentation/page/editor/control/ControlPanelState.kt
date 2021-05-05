@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.page.editor.control
 import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashCommand
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
 
@@ -170,7 +172,8 @@ data class ControlPanelState(
             val filter: String? = null,
             val cursorCoordinate: Int? = null,
             val updateList: Boolean = false,
-            val items: List<String> = emptyList()
+            val items: List<String> = emptyList(),
+            val command: SlashCommand? = null
         ): Toolbar() {
             companion object {
                 fun reset(): SlashWidget = SlashWidget(
@@ -179,7 +182,8 @@ data class ControlPanelState(
                     from = null,
                     cursorCoordinate = null,
                     items = emptyList(),
-                    updateList = false
+                    updateList = false,
+                    command = null
                 )
             }
         }

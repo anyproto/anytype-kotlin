@@ -28,7 +28,8 @@ class SlashTextWatcher(
         proceedWithFilter(
             text = s,
             start = start,
-            count = count
+            count = count,
+            before = before
         )
     }
 
@@ -49,13 +50,17 @@ class SlashTextWatcher(
         }
     }
 
-    private fun proceedWithFilter(text: CharSequence, start: Int, count: Int) {
+    private fun proceedWithFilter(text: CharSequence, start: Int, count: Int, before: Int) {
         if (isSlashCharVisible()) {
             if (isStartPositionBeforeSlash(start = start, slashPos = slashCharPosition)) {
                 stopSlashWatcher()
             } else {
-                filter += text.subSequence(start, start + count)
-                Timber.d("Send Filter event:$filter")
+                filter = SlashHelper.getUpdatedFilter(
+                    filter = filter,
+                    replacement = text.subSequence(startIndex = start, endIndex = start + count),
+                    replacementStart = start - slashCharPosition,
+                    before = before
+                )
                 onSlashEvent(SlashTextWatcherState.Filter(filter))
             }
         }

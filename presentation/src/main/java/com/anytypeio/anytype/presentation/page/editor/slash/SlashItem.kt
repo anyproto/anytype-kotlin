@@ -1,309 +1,120 @@
 package com.anytypeio.anytype.presentation.page.editor.slash
 
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel
+
+sealed class SlashCommand {
+    data class FilterItems(val filter: String, val viewType: Int) : SlashCommand()
+    data class ShowMainItems(val items: List<SlashItem>) : SlashCommand()
+    data class ShowStyleItems(val items: List<SlashItem>) : SlashCommand()
+    data class ShowMediaItems(val items: List<SlashItem>): SlashCommand()
+    object ShowOtherItems : SlashCommand()
+    data class ShowRelations(val relations: List<RelationListViewModel.Model>): SlashCommand()
+    data class ShowObjectTypes(val items: List<SlashItem>): SlashCommand()
+}
+
 sealed class SlashItem {
 
-    interface Title {
-        val title: Int
+    //region SUB HEADER
+    sealed class Subheader: SlashItem(){
+        object Style: Subheader()
+        object StyleWithBack: Subheader()
+        object Media: Subheader()
+        object MediaWithBack: Subheader()
+        object ObjectType: Subheader()
     }
+    //endregion
 
-    interface Subtitle {
-        val subtitle: Int
+    //region MAIN
+    sealed class Main : SlashItem() {
+        object Style: Main()
+        object Media: Main()
+        object Objects: Main()
+        object Relations: Main()
+        object Other: Main()
+        object Actions: Main()
+        object Alignment: Main()
+        object Color: Main()
+        object Background: Main()
     }
+    //endregion
 
-    interface Icon {
-        val icon: Int
-    }
-
-    interface SlashCategory {
-        val category: Int
-    }
-
-    //---------- MAIN -----------------
-    sealed class Main : SlashItem(), Title, Icon {
-        data class Style(
-            override val title: Int,
-            override val icon: Int
-        ) : Main()
-
-        data class Media(
-            override val title: Int,
-            override val icon: Int
-        ) : Main()
-
-        data class Objects(
-            override val title: Int,
-            override val icon: Int
-        ) : Main()
-
-        data class Relations(
-            override val title: Int,
-            override val icon: Int
-        ) : Main()
-
-        data class Other(
-            override val title: Int,
-            override val icon: Int
-        ) : Main()
-
-        data class Actions(
-            override val title: Int,
-            override val icon: Int
-        ) : Main()
-
-        data class Alignment(
-            override val title: Int,
-            override val icon: Int
-        ) : Main()
-
-        data class Color(
-            override val title: Int,
-            override val icon: Int
-        ) : Main()
-
-        data class Background(
-            override val title: Int,
-            override val icon: Int
-        ) : Main()
-    }
-
-    //---------- STYLE -----------------
+    //region STYLE
     sealed class Style : SlashItem() {
 
-        sealed class Type : Style(), SlashCategory, Title, Subtitle, Icon {
-            data class Text(
-                override val title: Int,
-                override val subtitle: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Type()
-
-            data class Title(
-                override val title: Int,
-                override val subtitle: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Type()
-
-            data class Heading(
-                override val title: Int,
-                override val subtitle: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Type()
-
-            data class Subheading(
-                override val title: Int,
-                override val subtitle: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Type()
-
-            data class Highlighted(
-                override val title: Int,
-                override val subtitle: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Type()
-
-            data class Callout(
-                override val title: Int,
-                override val subtitle: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Type()
-
-            data class Checkbox(
-                override val title: Int,
-                override val subtitle: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Type()
-
-            data class Numbered(
-                override val title: Int,
-                override val subtitle: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Type()
-
-            data class Toggle(
-                override val title: Int,
-                override val subtitle: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Type()
-
-            data class Bulleted(
-                override val title: Int,
-                override val subtitle: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Type()
+        sealed class Type : Style() {
+            object Text: Type()
+            object Title: Type()
+            object Heading: Type()
+            object Subheading: Type()
+            object Highlighted: Type()
+            object Callout: Type()
+            object Checkbox: Type()
+            object Numbered: Type()
+            object Toggle: Type()
+            object Bulleted: Type()
         }
 
-        sealed class Markup : Style(), SlashCategory, Title, Icon {
-            data class Bold(
-                override val title: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Markup()
-
-            data class Italic(
-                override val title: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Markup()
-
-            data class Breakthrough(
-                override val title: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Markup()
-
-            data class Code(
-                override val title: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Markup()
-
-            data class Link(
-                override val title: Int,
-                override val icon: Int,
-                override val category: Int
-            ) : Markup()
+        sealed class Markup : Style() {
+            object Bold: Markup()
+            object Italic : Markup()
+            object Breakthrough: Markup()
+            object Code: Markup()
         }
     }
+    //endregion
 
-    //---------- MEDIA -----------------
-    sealed class Media : SlashItem(), SlashCategory, Title, Subtitle, Icon {
-        data class File(
-            override val title: Int,
-            override val subtitle: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Media()
-
-        data class Picture(
-            override val title: Int,
-            override val subtitle: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Media()
-
-        data class Video(
-            override val title: Int,
-            override val subtitle: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Media()
-
-        data class Bookmark(
-            override val title: Int,
-            override val subtitle: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Media()
-
-        data class Code(
-            override val title: Int,
-            override val subtitle: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Media()
+    //region MEDIA
+    sealed class Media : SlashItem() {
+        object File: Media()
+        object Picture: Media()
+        object Video: Media()
+        object Bookmark: Media()
+        object Code: Media()
     }
+    //endregion
 
-    //---------- OTHER -----------------
-    sealed class Other : SlashItem(), SlashCategory, Title, Icon {
-        data class Line(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Other()
+    //region OBJECT TYPE
+    data class ObjectType(
+        val url: Url,
+        val name: String,
+        val emoji: String,
+        val description: String?
+    ) : SlashItem()
+    //endregion
 
-        data class Dots(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Other()
+    //region RELATION
+    sealed class SlashRelation {
+        object New: SlashRelation()
+        data class Items(val relations: List<Relation>): SlashRelation()
     }
+    //endregion
 
-    //---------- ACTIONS -----------------
-    sealed class Actions : SlashItem(), SlashCategory, Title, Icon {
-        data class Delete(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Actions()
-
-        data class Duplicate(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Actions()
-
-        data class Copy(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Actions()
-
-        data class Paste(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Actions()
-
-        data class Move(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Actions()
-
-        data class MoveTo(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Actions()
-
-        data class CleanStyle(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Actions()
+    //region OTHER
+    sealed class Other : SlashItem() {
+        object Line: Other()
+        object Dots: Other()
     }
+    //endregion
 
-    //---------- ALIGNMENT -----------------
-    sealed class Alignment : SlashItem(), SlashCategory, Title, Icon {
-        data class Left(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Alignment()
-
-        data class Center(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Alignment()
-
-        data class Right(
-            override val title: Int,
-            override val icon: Int,
-            override val category: Int
-        ) : Alignment()
+    //region ACTIONS
+    sealed class Actions : SlashItem() {
+        object Delete: Actions()
+        object Duplicate: Actions()
+        object Copy: Actions()
+        object Paste: Actions()
+        object Move: Actions()
+        object MoveTo: Actions()
+        object CleanStyle: Actions()
     }
+    //endregion
 
-    companion object Category {
-        const val CATEGORY_MAIN = 1
-        const val CATEGORY_STYLE = 2
-        const val CATEGORY_MEDIA = 3
-        const val CATEGORY_OBJECT_TYPES = 4
-        const val CATEGORY_RELATIONS = 5
-        const val CATEGORY_OTHER = 6
-        const val CATEGORY_ACTIONS = 7
-        const val CATEGORY_ALIGNMENT = 8
-        const val CATEGORY_COLOR = 9
-        const val CATEGORY_BACKGROUND = 10
-        const val CATEGORY_HEADER = 11
+    //region ALIGNMENT
+    sealed class Alignment : SlashItem(){
+        object Left: Alignment()
+        object Center: Alignment()
+        object Right: Alignment()
     }
+    //endregion
 }

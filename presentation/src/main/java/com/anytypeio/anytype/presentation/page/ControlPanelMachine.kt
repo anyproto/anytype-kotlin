@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState.
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState.Toolbar
 import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashCommand
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.page.editor.styling.getStyleConfig
 import kotlinx.coroutines.CoroutineScope
@@ -184,8 +185,15 @@ sealed class ControlPanelMachine {
         }
 
         sealed class Slash : Event() {
-            data class OnStart(val cursorCoordinate: Int, val slashFrom: Int) : Slash()
-            data class OnFilter(val filter: String) : Slash()
+            data class OnStart(
+                val cursorCoordinate: Int,
+                val slashFrom: Int
+            ) : Slash()
+
+            data class Update(
+                val command: SlashCommand
+            ) : Slash()
+
             object OnStop : Slash()
         }
 
@@ -603,6 +611,7 @@ sealed class ControlPanelMachine {
                         isVisible = true,
                         from = event.slashFrom,
                         filter = "",
+                        command = null,
                         cursorCoordinate = event.cursorCoordinate,
                         updateList = false,
                         items = emptyList()
@@ -621,11 +630,10 @@ sealed class ControlPanelMachine {
                     )
                 )
             }
-            is Event.Slash.OnFilter -> {
+            is Event.Slash.Update -> {
                 state.copy(
                     slashWidget = state.slashWidget.copy(
-                        filter = event.filter,
-                        updateList = false
+                        command = event.command
                     )
                 )
             }

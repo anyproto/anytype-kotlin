@@ -51,8 +51,12 @@ class ObjectIconWidget @JvmOverloads constructor(
 
             val hasEmojiCircleBackground =
                 attrs.getBoolean(R.styleable.ObjectIconWidget_hasEmojiCircleBackground, false)
-            val hasEmojiRoundedBackground =
-                attrs.getBoolean(R.styleable.ObjectIconWidget_hasEmojiRoundedBackground, false)
+            val hasEmojiRounded12Background =
+                attrs.getBoolean(R.styleable.ObjectIconWidget_hasEmojiRounded12Background, false)
+            val hasEmojiRounded8Background =
+                attrs.getBoolean(R.styleable.ObjectIconWidget_hasEmojiRounded8Background, false)
+            val hasInitialRounded8Background =
+                attrs.getBoolean(R.styleable.ObjectIconWidget_hasInitialRounded8Background, false)
 
             ivEmoji.updateLayoutParams<LayoutParams> {
                 this.height = emojiSize
@@ -73,12 +77,20 @@ class ObjectIconWidget @JvmOverloads constructor(
                 emojiContainer.setBackgroundResource(R.drawable.circle_object_icon_emoji_background)
             }
 
-            if (hasEmojiRoundedBackground) {
+            if (hasEmojiRounded12Background) {
                 emojiContainer.setBackgroundResource(R.drawable.rectangle_object_icon_emoji_background)
             }
 
-            if (!hasEmojiCircleBackground && !hasEmojiRoundedBackground) {
+            if (hasEmojiRounded8Background) {
+                emojiContainer.setBackgroundResource(R.drawable.rectangle_object_icon_emoji_background_8)
+            }
+
+            if (!hasEmojiCircleBackground && !hasEmojiRounded12Background && !hasEmojiRounded8Background) {
                 emojiContainer.background = null
+            }
+
+            if (hasInitialRounded8Background) {
+                initialContainer.setBackgroundResource(R.drawable.rectangle_avatar_initial_background_8)
             }
 
             val initialTextSize =

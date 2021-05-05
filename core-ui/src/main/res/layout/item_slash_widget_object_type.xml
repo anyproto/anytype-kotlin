@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
         android:id="@+id/ivIcon"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:scaleType="center"
+        app:emojiSize="24dp"
+        app:hasEmojiRounded8Background="true"
+        app:hasInitialRounded8Background="true"
+        app:imageSize="40dp"
+        app:initialTextSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_slash_style_heading" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvTitle"
@@ -23,12 +24,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/tvSubtitle"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/ivIcon"
-        app:layout_constraintTop_toTopOf="@+id/ivIcon"
-        tools:text="Text" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="File" />
 
     <TextView
         android:id="@+id/tvSubtitle"
@@ -36,11 +36,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivIcon"
+        android:layout_marginBottom="8dp"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:ellipsize="end"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/ivIcon"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
         tools:text="Just start writing with a plain text" />
 
     <View

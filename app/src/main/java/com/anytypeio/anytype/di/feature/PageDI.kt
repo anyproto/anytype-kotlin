@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
@@ -129,7 +130,8 @@ object EditorSessionModule {
         analytics: Analytics,
         dispatcher: Dispatcher<Payload>,
         detailModificationManager: DetailModificationManager,
-        updateDetail: UpdateDetail
+        updateDetail: UpdateDetail,
+        getObjectTypes: GetObjectTypes
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -152,7 +154,8 @@ object EditorSessionModule {
         analytics = analytics,
         dispatcher = dispatcher,
         detailModificationManager = detailModificationManager,
-        updateDetail = updateDetail
+        updateDetail = updateDetail,
+        getObjectTypes = getObjectTypes
     )
 
     @JvmStatic
@@ -682,4 +685,11 @@ object EditorUseCaseModule {
     fun provideUpdateDetailUseCase(
         repository: BlockRepository
     ) : UpdateDetail = UpdateDetail(repository)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetObjectTypesUseCase(
+        repository: BlockRepository
+    ) : GetObjectTypes = GetObjectTypes(repository)
 }

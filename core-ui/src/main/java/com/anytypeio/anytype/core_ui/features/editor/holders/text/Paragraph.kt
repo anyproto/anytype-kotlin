@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 import android.text.Editable
 import android.view.View
 import androidx.core.view.updatePadding
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.page.SupportNesting
 import com.anytypeio.anytype.core_ui.features.page.marks
@@ -56,7 +57,7 @@ class Paragraph(
         onBackPressedCallback = onBackPressedCallback
     ).also {
         setupMentionWatcher(onMentionEvent)
-        //setupSlashWatcher(onSlashEvent)
+        setupSlashWatcher(onSlashEvent, item.getViewType())
     }
 
     override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {

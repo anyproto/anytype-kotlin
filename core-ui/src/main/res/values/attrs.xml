@@ -9,7 +9,9 @@
         <attr name="imageSize" format="dimension"/>
         <attr name="checkboxSize" format="dimension"/>
         <attr name="hasEmojiCircleBackground" format="boolean" />
-        <attr name="hasEmojiRoundedBackground" format="boolean" />
+        <attr name="hasEmojiRounded12Background" format="boolean" />
+        <attr name="hasEmojiRounded8Background" format="boolean" />
+        <attr name="hasInitialRounded8Background" format="boolean" />
         <attr name="initialTextSize" format="dimension" />
 
     </declare-styleable>

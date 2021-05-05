@@ -1,5 +1,6 @@
 package com.anytypeio.anytype
 
+import anytype.SmartBlockType
 import anytype.model.Block
 import com.anytypeio.anytype.common.MockDataFactory
 import com.anytypeio.anytype.core_models.Event
@@ -36,7 +37,8 @@ class MiddlewareEventChannelTest {
 
         val msg = anytype.Event.Object.Show(
             rootId = context,
-            blocks = emptyList()
+            blocks = emptyList(),
+            type = SmartBlockType.Page
         )
 
         val message = anytype.Event.Message(objectShow = msg)
@@ -100,7 +102,8 @@ class MiddlewareEventChannelTest {
 
         val msg = anytype.Event.Object.Show(
             rootId = context,
-            blocks = emptyList()
+            blocks = emptyList(),
+            type = SmartBlockType.Page
         )
 
         val message = anytype.Event.Message(objectShow = msg)

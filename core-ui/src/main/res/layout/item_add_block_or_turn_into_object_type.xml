@@ -13,7 +13,7 @@
         app:emojiSize="28dp"
         app:imageSize="@dimen/dp_48"
         app:initialTextSize="28sp"
-        app:hasEmojiRoundedBackground="true"
+        app:hasEmojiRounded12Background="true"
         android:layout_gravity="center_vertical"
         tools:background="@drawable/circle_solid_default" />
 

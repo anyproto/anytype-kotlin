@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.editor.Editor
@@ -77,8 +78,7 @@ import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDes
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
 import com.anytypeio.anytype.presentation.page.editor.search.SearchInDocEvent
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
+import com.anytypeio.anytype.presentation.page.editor.slash.*
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
@@ -88,6 +88,8 @@ import com.anytypeio.anytype.presentation.page.search.search
 import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel
+import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -120,7 +122,8 @@ class PageViewModel(
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<Payload>,
     private val detailModificationManager: DetailModificationManager,
-    private val updateDetail: UpdateDetail
+    private val updateDetail: UpdateDetail,
+    private val getObjectTypes: GetObjectTypes
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -3277,33 +3280,6 @@ class PageViewModel(
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }
 
-    fun onSlashItemClicked(item: SlashItem) {
-
-    }
-
-    fun onSlashEvent(event: SlashEvent) {
-        when (event) {
-            is SlashEvent.Filter -> {
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.Slash.OnFilter(
-                        filter = event.filter.toString()
-                    )
-                )
-            }
-            is SlashEvent.Start -> {
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.Slash.OnStart(
-                        cursorCoordinate = event.cursorCoordinate,
-                        slashFrom = event.slashStart
-                    )
-                )
-            }
-            SlashEvent.Stop -> {
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-            }
-        }
-    }
-
     fun onMentionEvent(mentionEvent: MentionEvent) {
         when (mentionEvent) {
             is MentionEvent.MentionSuggestText -> {
@@ -3569,4 +3545,158 @@ class PageViewModel(
     }
 
     enum class Session { IDLE, OPEN, ERROR }
+
+    //region SLASH WIDGET
+    fun onSlashItemClicked(item: SlashItem) {
+        when (item) {
+            is SlashItem.Main.Style -> {
+                val items = listOf(SlashItem.Subheader.StyleWithBack) + SlashExtensions.getSlashItems()
+                onSlashCommand(SlashCommand.ShowStyleItems(items))
+            }
+            is SlashItem.Main.Media -> {
+                val items = listOf(SlashItem.Subheader.MediaWithBack) + SlashExtensions.getMediaItems()
+                onSlashCommand(SlashCommand.ShowMediaItems(items))
+            }
+            is SlashItem.Main.Relations -> {
+                val relations = orchestrator.stores.relations.current()
+                val details = orchestrator.stores.details.current()
+                val detail = details.details[context]
+                val values = detail?.map ?: emptyMap()
+                val update = relations.views(
+                    details = details,
+                    values = values,
+                    urlBuilder = urlBuilder
+                ).map { RelationListViewModel.Model.Item(it) }
+                onSlashCommand(
+                    SlashCommand.ShowRelations(
+                        relations = listOf(RelationListViewModel.Model.Section.NoSection) + update
+                    )
+                )
+            }
+            is SlashItem.Main.Objects -> {
+                viewModelScope.launch {
+                    getObjectTypes.invoke(Unit).proceed(
+                        failure = {
+                            Timber.e(it, "Error while getting object types")
+                        },
+                        success = { objectTypes ->
+                            val items = listOf(SlashItem.Subheader.ObjectType) + objectTypes.toView()
+                            onSlashCommand(
+                                SlashCommand.ShowObjectTypes(items)
+                            )
+                        }
+                    )
+                }
+            }
+            is SlashItem.Style.Type -> {
+                onSlashStyleTypeItemClicked(item)
+            }
+            is SlashItem.Media -> {
+                onSlashMediaItemClicked(item)
+            }
+            is SlashItem.ObjectType -> {
+            }
+            else -> {
+                Timber.d("PRESSED ON SLAH ITEM : $item")
+            }
+        }
+    }
+
+    private fun onSlashMediaItemClicked(item: SlashItem.Media) {
+        when (item) {
+            SlashItem.Media.Bookmark -> {
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                onAddBookmarkBlockClicked()
+                proceedWithClearingFocus()
+            }
+            SlashItem.Media.Code -> {
+                onAddTextBlockClicked(style = Content.Text.Style.CODE_SNIPPET)
+            }
+            SlashItem.Media.File -> {
+                onAddFileBlockClicked(Content.File.Type.FILE)
+                proceedWithClearingFocus()
+            }
+            SlashItem.Media.Picture -> {
+                onAddFileBlockClicked(Content.File.Type.IMAGE)
+                proceedWithClearingFocus()
+            }
+            SlashItem.Media.Video -> {
+                onAddFileBlockClicked(Content.File.Type.VIDEO)
+                proceedWithClearingFocus()
+            }
+        }
+    }
+
+    private fun onSlashStyleTypeItemClicked(item: SlashItem.Style.Type) {
+        val target = _focus.value
+        if (target != null) {
+            viewModelScope.launch {
+                orchestrator.stores.focus.update(Editor.Focus(
+                    id = target,
+                    cursor = Editor.Cursor.End
+                ))
+            }
+            val uiBlock = item.convertToUiBlock()
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+            onTurnIntoBlockClicked(
+                target = target,
+                uiBlock = uiBlock
+            )
+        } else {
+            Timber.e("Error while style item clicked, target is null")
+        }
+    }
+
+    private fun onSlashCommand(command: SlashCommand) {
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.Slash.Update(
+                command = command
+            )
+        )
+    }
+
+    fun onSlashBackClicked() {
+        val items = SlashExtensions.getSlashMainItems()
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.Slash.Update(
+                command = SlashCommand.ShowMainItems(items)
+            )
+        )
+    }
+
+    fun onSlashEvent(event: SlashEvent) {
+        when (event) {
+            is SlashEvent.Filter -> {
+                if (event.filter.length == 1 && event.filter[0] == '/') {
+                    val items = SlashExtensions.getSlashMainItems()
+                    controlPanelInteractor.onEvent(
+                        ControlPanelMachine.Event.Slash.Update(
+                            command = SlashCommand.ShowMainItems(items)
+                        )
+                    )
+                } else {
+                    controlPanelInteractor.onEvent(
+                        ControlPanelMachine.Event.Slash.Update(
+                            command = SlashCommand.FilterItems(
+                                filter = event.filter.toString(),
+                                viewType = event.viewType
+                            )
+                        )
+                    )
+                }
+            }
+            is SlashEvent.Start -> {
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.Slash.OnStart(
+                        cursorCoordinate = event.cursorCoordinate,
+                        slashFrom = event.slashStart
+                    )
+                )
+            }
+            SlashEvent.Stop -> {
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+            }
+        }
+    }
+    //endregion
 }

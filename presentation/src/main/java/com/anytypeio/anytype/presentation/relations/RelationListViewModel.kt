@@ -199,7 +199,6 @@ class RelationListViewModel(
     fun onRelationTextValueChanged(
         ctx: Id,
         value: Any?,
-        objectId: Id,
         relationId: Id
     ) {
         viewModelScope.launch {
@@ -231,6 +230,10 @@ class RelationListViewModel(
 
             object Other : Section() {
                 override val identifier: String get() = "Section_Other"
+            }
+
+            object NoSection : Section() {
+                override val identifier: String get() = "No_Section"
             }
         }
 

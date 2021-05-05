@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
@@ -73,7 +74,7 @@ open class EditorTestSetup {
     lateinit var move: Move
     lateinit var setRelationKey: SetRelationKey
     lateinit var updateDetail: UpdateDetail
-
+    lateinit var getObjectTypes: GetObjectTypes
 
     @Mock
     lateinit var openPage: OpenPage
@@ -210,6 +211,7 @@ open class EditorTestSetup {
         removeDocCover = RemoveDocCover(repo)
         turnIntoStyle = TurnIntoStyle(repo)
         updateDetail = UpdateDetail(repo)
+        getObjectTypes = GetObjectTypes(repo)
 
         TestPageFragment.testViewModelFactory = PageViewModelFactory(
             openPage = openPage,
@@ -276,7 +278,8 @@ open class EditorTestSetup {
             setDocCoverImage = setDocCoverImage,
             removeDocCover = removeDocCover,
             detailModificationManager = InternalDetailModificationManager(stores.details),
-            updateDetail = updateDetail
+            updateDetail = updateDetail,
+            getObjectTypes = getObjectTypes
         )
     }
 
@@ -363,6 +366,12 @@ open class EditorTestSetup {
     fun stubUpdateText() {
         updateText.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+    }
+
+    fun stubGetObjectTypes(objectTypes: List<ObjectType>) {
+        repo.stub {
+            onBlocking { getTemplates() } doReturn objectTypes
         }
     }
 

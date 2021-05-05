@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
@@ -174,6 +175,9 @@ open class EditorPresentationTestSetup {
     lateinit var repo: BlockRepository
 
     @Mock
+    lateinit var getObjectTypes: GetObjectTypes
+
+    @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
 
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
@@ -252,7 +256,8 @@ open class EditorPresentationTestSetup {
             removeDocCover = removeDocCover,
             setDocCoverImage = setDocCoverImage,
             detailModificationManager = InternalDetailModificationManager(storage.details),
-            updateDetail = updateDetail
+            updateDetail = updateDetail,
+            getObjectTypes = getObjectTypes
         )
     }
 

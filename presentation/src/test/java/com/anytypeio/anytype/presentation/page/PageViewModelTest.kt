@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
@@ -202,6 +203,9 @@ open class PageViewModelTest {
 
     @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
+
+    @Mock
+    lateinit var getObjectTypes: GetObjectTypes
 
     @Mock
     lateinit var repo: BlockRepository
@@ -3982,7 +3986,8 @@ open class PageViewModelTest {
             setDocCoverImage = setDocCoverImage,
             removeDocCover = removeDocCover,
             detailModificationManager = InternalDetailModificationManager(storage.details),
-            updateDetail = updateDetail
+            updateDetail = updateDetail,
+            getObjectTypes = getObjectTypes
         )
     }
 

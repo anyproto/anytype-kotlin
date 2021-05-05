@@ -1,0 +1,603 @@
+package com.anytypeio.anytype.features.editor
+
+import android.os.Bundle
+import android.view.KeyEvent
+import androidx.core.os.bundleOf
+import androidx.fragment.app.testing.FragmentScenario
+import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
+import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_ui.features.page.slash.holders.MainMenuHolder
+import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
+import com.anytypeio.anytype.features.editor.base.EditorTestSetup
+import com.anytypeio.anytype.features.editor.base.TestPageFragment
+import com.anytypeio.anytype.mocking.MockDataFactory
+import com.anytypeio.anytype.presentation.page.PageViewModel
+import com.anytypeio.anytype.ui.page.PageFragment
+import com.anytypeio.anytype.utils.*
+import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+@LargeTest
+class SlashWidgetTesting : EditorTestSetup() {
+
+    @get:Rule
+    val animationsRule = DisableAnimationsRule()
+
+    @get:Rule
+    val coroutineTestRule = CoroutinesTestRule()
+
+    private val args = bundleOf(PageFragment.ID_KEY to root)
+
+    private val defaultDetails = Block.Details(
+        mapOf(
+            root to Block.Fields(
+                mapOf(
+                    "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
+                )
+            )
+        )
+    )
+
+    private val title = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Text(
+            style = Block.Content.Text.Style.TITLE,
+            text = "SlashTextWatcherTesting",
+            marks = emptyList()
+        ),
+        children = emptyList(),
+        fields = Block.Fields.empty()
+    )
+
+    private val header = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Layout(
+            type = Block.Content.Layout.Type.HEADER
+        ),
+        fields = Block.Fields.empty(),
+        children = listOf(title.id)
+    )
+
+    @Before
+    override fun setup() {
+        super.setup()
+    }
+
+
+    /**
+     * Slash widget, all cases (SH - some sub header, STYLE - all style + markup items)
+     * Tests:
+     * 1. empty block | show MAIN items, BACK invisible | +
+     * 2. not empty block | show MAIN items, BACK invisible | +
+     * 3. show MAIN items | click STYLE | show SH + STYLE items,  BACK visible | +
+     * 4. show MAIN items | click STYLE | show SH + STYLE items | BACK clicked | show MAIN items | +
+     * 5. show MAIN items | click MEDIA | show SH + MEDIA items,  BACK visible | +
+     * 6. show MAIN items | click MEDIA | BACK clicked | show MAIN items | +
+     * 7. show MAIN items | click RELATIONS | show SH + RELATIONS, BACK visible | +
+     * 8. show MAIN items | click OBJECTS | show SH + OBJECT TYPES, BACK visible | -
+     * 9. show MAIN items | click MEDIA | click FILE | no focus, slash widget is invisible, add file block | -
+     */
+
+    //region {Test 1}
+    @Test
+    fun testShouldShowMainItems() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id)
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        //TESTING
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(0, R.id.textMain).checkHasText(R.string.slash_widget_main_style)
+            onItemView(1, R.id.textMain).checkHasText(R.string.slash_widget_main_media)
+            onItemView(2, R.id.textMain).checkHasText(R.string.slash_widget_main_objects)
+
+            checkIsRecyclerSize(9)
+        }
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 2}
+    @Test
+    fun testShouldAlsoShowMainItems() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id)
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        //TESTING
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(0, R.id.textMain).checkHasText(R.string.slash_widget_main_style)
+            onItemView(1, R.id.textMain).checkHasText(R.string.slash_widget_main_media)
+            onItemView(2, R.id.textMain).checkHasText(R.string.slash_widget_main_objects)
+
+            checkIsRecyclerSize(9)
+        }
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 3}
+    @Test
+    fun testShouldShowStyleItems() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id)
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        //TESTING
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(0, R.id.textMain).performClick()
+
+            onItemView(0, R.id.subheader).checkHasText(R.string.slash_widget_main_style)
+            onItemView(1, R.id.tvTitle).checkHasText(R.string.slash_widget_style_text)
+            onItemView(2, R.id.tvTitle).checkHasText(R.string.slash_widget_style_title)
+            onItemView(3, R.id.tvTitle).checkHasText(R.string.slash_widget_style_heading)
+
+            checkIsRecyclerSize(15)
+        }
+
+        onView(withId(R.id.flBack)).checkIsDisplayed()
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 4}
+    @Test
+    fun testShouldNavigateFromStyleToMain() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id)
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(0, R.id.textMain).performClick()
+            onItemView(0, R.id.flBack).performClick()
+        }
+
+        //TESTING
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(0, R.id.textMain).checkHasText(R.string.slash_widget_main_style)
+            onItemView(1, R.id.textMain).checkHasText(R.string.slash_widget_main_media)
+            onItemView(2, R.id.textMain).checkHasText(R.string.slash_widget_main_objects)
+
+            checkIsRecyclerSize(9)
+        }
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 5}
+    @Test
+    fun testShouldShowMediaItems() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id)
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        //TESTING
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(1, R.id.textMain).performClick()
+
+            onItemView(0, R.id.subheader).checkHasText(R.string.slash_widget_main_media)
+            onItemView(1, R.id.tvTitle).checkHasText(R.string.slash_widget_media_file)
+            onItemView(2, R.id.tvTitle).checkHasText(R.string.slash_widget_media_picture)
+            onItemView(3, R.id.tvTitle).checkHasText(R.string.slash_widget_media_video)
+
+            checkIsRecyclerSize(6)
+        }
+
+        onView(withId(R.id.flBack)).checkIsDisplayed()
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 6}
+    @Test
+    fun testShouldNavigateFromMediaToMain() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id)
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(1, R.id.textMain).performClick()
+            onItemView(0, R.id.flBack).performClick()
+        }
+
+        //TESTING
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(0, R.id.textMain).checkHasText(R.string.slash_widget_main_style)
+            onItemView(1, R.id.textMain).checkHasText(R.string.slash_widget_main_media)
+            onItemView(2, R.id.textMain).checkHasText(R.string.slash_widget_main_objects)
+
+            checkIsRecyclerSize(9)
+        }
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 7}
+    @Test
+    fun testShouldShowRelations() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id)
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        val relation1 = Relation(
+            key = MockDataFactory.randomString(),
+            name = "Name",
+            format = Relation.Format.SHORT_TEXT,
+            source = Relation.Source.DETAILS
+        )
+
+        val relation2 = Relation(
+            key = MockDataFactory.randomString(),
+            name = "Number",
+            format = Relation.Format.NUMBER,
+            source = Relation.Source.DETAILS
+        )
+        val relation1Value = "Earth"
+        val relation2Value = 1619609201.0
+
+        val relations = listOf(relation1, relation2)
+
+        val details = Block.Details(
+            mapOf(
+                root to Block.Fields(
+                    mapOf(
+                        "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
+                        relation1.key to relation1Value,
+                        relation2.key to relation2Value
+                    )
+                )
+            )
+        )
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, details, relations)
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        //TESTING
+
+        onView(withId(R.id.rvSlash)).perform(RecyclerViewActions.scrollToPosition<MainMenuHolder>(3))
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(3, R.id.textMain).performClick()
+
+            onItemView(0, R.id.tvSectionName).checkHasText(R.string.slash_widget_main_relations)
+            onItemView(1, R.id.tvRelationTitle).checkHasText(relation1.name)
+            onItemView(1, R.id.tvRelationValue).checkHasText(relation1Value)
+            onItemView(2, R.id.tvRelationTitle).checkHasText(relation2.name)
+            onItemView(2, R.id.tvRelationValue).checkHasText(relation2Value.toString())
+
+            checkIsRecyclerSize(3)
+        }
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 8}
+    @Test
+    fun testShouldShowObjectTypes() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id)
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        val objectTypes = listOf(
+            ObjectType(
+                url = MockDataFactory.randomUuid(),
+                name = MockDataFactory.randomString(),
+                emoji = MockDataFactory.randomString(),
+                layout = ObjectType.Layout.PAGE,
+                relations = emptyList(),
+                description = MockDataFactory.randomString(),
+                isHidden = false
+            ),
+            ObjectType(
+                url = MockDataFactory.randomUuid(),
+                name = MockDataFactory.randomString(),
+                emoji = MockDataFactory.randomString(),
+                layout = ObjectType.Layout.PAGE,
+                relations = emptyList(),
+                description = MockDataFactory.randomString(),
+                isHidden = false
+            )
+        )
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+        stubGetObjectTypes(objectTypes)
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        //TESTING
+
+        onView(withId(R.id.rvSlash)).perform(RecyclerViewActions.scrollToPosition<MainMenuHolder>(2))
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(2, R.id.textMain).performClick()
+            onItemView(0, R.id.subheader).checkHasText(R.string.slash_widget_main_objects_subheader)
+            onItemView(0, R.id.flBack).checkIsDisplayed()
+        }
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+    }
+    //endregion
+
+    // STUBBING & SETUP
+
+    private fun launchFragment(args: Bundle): FragmentScenario<TestPageFragment> {
+        return launchFragmentInContainer(
+            fragmentArgs = args,
+            themeResId = R.style.AppTheme
+        )
+    }
+
+    /**
+     * Moves coroutines clock time.
+     */
+    private fun advance(millis: Long) {
+        coroutineTestRule.advanceTime(millis)
+    }
+}

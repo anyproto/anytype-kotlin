@@ -162,7 +162,6 @@ open class RelationListFragment : BaseBottomSheetFragment(),
         vm.onRelationTextValueChanged(
             ctx = ctx,
             value = text,
-            objectId = objectId,
             relationId = relationId
         )
     }
@@ -171,7 +170,6 @@ open class RelationListFragment : BaseBottomSheetFragment(),
         vm.onRelationTextValueChanged(
             ctx = ctx,
             value = number,
-            objectId = objectId,
             relationId = relationId
         )
     }
@@ -184,7 +182,6 @@ open class RelationListFragment : BaseBottomSheetFragment(),
     ) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
-            objectId = objectId,
             relationId = relationId,
             value = timeInSeconds
         )

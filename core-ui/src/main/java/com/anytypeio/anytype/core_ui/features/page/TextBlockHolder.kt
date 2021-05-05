@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.page
 import android.text.Editable
 import android.text.Spannable
 import android.widget.TextView
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_ui.common.*
 import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
@@ -216,7 +217,8 @@ interface TextBlockHolder : TextHolder {
     }
 
     fun setupSlashWatcher(
-        onSlashEvent: (SlashEvent) -> Unit
+        onSlashEvent: (SlashEvent) -> Unit,
+        viewType: Int
     ) {
         content.addTextChangedListener(
             SlashTextWatcher { state ->
@@ -228,7 +230,12 @@ interface TextBlockHolder : TextHolder {
                         )
                     )
                     SlashTextWatcherState.Stop -> onSlashEvent(SlashEvent.Stop)
-                    is SlashTextWatcherState.Filter -> onSlashEvent(SlashEvent.Filter(state.text))
+                    is SlashTextWatcherState.Filter -> onSlashEvent(
+                        SlashEvent.Filter(
+                            filter = state.text,
+                            viewType = viewType
+                        )
+                    )
                 }
             }
         )

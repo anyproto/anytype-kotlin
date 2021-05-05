@@ -41,7 +41,7 @@
         app:emojiSize="28dp"
         app:imageSize="@dimen/dp_48"
         app:initialTextSize="28sp"
-        app:hasEmojiRoundedBackground="true"
+        app:hasEmojiRounded12Background="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

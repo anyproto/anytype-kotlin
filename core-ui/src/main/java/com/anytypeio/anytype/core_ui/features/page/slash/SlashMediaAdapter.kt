@@ -4,13 +4,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.features.page.slash.holders.MainMenuHolder
-import com.anytypeio.anytype.core_ui.features.page.slash.holders.StyleMenuHolder
+import com.anytypeio.anytype.core_ui.features.page.slash.holders.MediaMenuHolder
+import com.anytypeio.anytype.core_ui.features.page.slash.holders.SubheaderMenuHolder
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
+import kotlinx.android.synthetic.main.item_slash_widget_subheader.view.*
 
-class SlashWidgetAdapter(
+class SlashMediaAdapter(
     private var items: List<SlashItem>,
-    private val clicks: (SlashItem) -> Unit
+    private val clicks: (SlashItem) -> Unit,
+    private val clickBack: () -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun update(items: List<SlashItem>) {
@@ -18,11 +20,19 @@ class SlashWidgetAdapter(
         notifyDataSetChanged()
     }
 
+    fun clear() {
+        val size = items.size
+        if (size > 0) {
+            items = listOf()
+            notifyItemRangeRemoved(0, size)
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            R.layout.item_slash_widget_main -> {
-                MainMenuHolder(
+            R.layout.item_slash_widget_style -> {
+                MediaMenuHolder(
                     view = inflater.inflate(viewType, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
@@ -30,12 +40,12 @@ class SlashWidgetAdapter(
                     }
                 }
             }
-            R.layout.item_slash_widget_style -> {
-                StyleMenuHolder(
+            R.layout.item_slash_widget_subheader -> {
+                SubheaderMenuHolder(
                     view = inflater.inflate(viewType, parent, false)
                 ).apply {
-                    itemView.setOnClickListener {
-                        clicks(items[bindingAdapterPosition])
+                    itemView.flBack.setOnClickListener {
+                        clickBack.invoke()
                     }
                 }
             }
@@ -45,24 +55,21 @@ class SlashWidgetAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is MainMenuHolder -> {
-                val item = items[position] as SlashItem.Main
+            is MediaMenuHolder -> {
+                val item = items[position] as SlashItem.Media
                 holder.bind(item)
             }
-            is StyleMenuHolder -> {
-                val item = items[position] as SlashItem.Style
+            is SubheaderMenuHolder -> {
+                val item = items[position] as SlashItem.Subheader
                 holder.bind(item)
             }
         }
     }
 
-    override fun getItemViewType(position: Int): Int = when (items[position]) {
-        is SlashItem.Main -> R.layout.item_slash_widget_main
-        is SlashItem.Style -> R.layout.item_slash_widget_style
-        is SlashItem.Actions -> R.layout.item_slash_widget_actions
-        is SlashItem.Alignment -> R.layout.item_slash_widget_alignment
-        is SlashItem.Media -> R.layout.item_slash_widget_media
-        is SlashItem.Other -> R.layout.item_slash_widget_other
+    override fun getItemViewType(position: Int): Int = when (val item = items[position]) {
+        is SlashItem.Media -> R.layout.item_slash_widget_style
+        is SlashItem.Subheader -> R.layout.item_slash_widget_subheader
+        else -> throw IllegalArgumentException("Wrong item type:$item")
     }
 
     override fun getItemCount(): Int = items.size

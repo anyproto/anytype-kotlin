@@ -528,8 +528,14 @@ open class PageFragment :
         )
 
         lifecycleScope.launch {
-            slashWidget.events.collect { item ->
+            slashWidget.clickEvents.collect { item ->
                 vm.onSlashItemClicked(item)
+            }
+        }
+
+        lifecycleScope.launch {
+            slashWidget.backEvent.collect {
+                vm.onSlashBackClicked()
             }
         }
 
@@ -1102,8 +1108,8 @@ open class PageFragment :
                 if (!slashWidget.isVisible) {
                     showSlashWidget(this)
                 }
-                filter?.let {
-                    slashWidget.filter(it)
+                command?.let {
+                    slashWidget.onCommand(it)
                 }
             } else {
                 slashWidget.gone()

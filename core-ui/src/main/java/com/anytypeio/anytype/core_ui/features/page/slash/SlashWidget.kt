@@ -65,12 +65,21 @@ class SlashWidget @JvmOverloads constructor(
         )
     }
 
+    private val otherAdapter by lazy {
+        SlashOtherAdapter(
+            items = listOf(),
+            clicks = { _clickEvents.offer(it) },
+            clickBack = { _backEvent.offer(true) }
+        )
+    }
+
     private val concatAdapter = ConcatAdapter(
         mainAdapter,
         styleAdapter,
         mediaAdapter,
         objectTypesAdapter,
-        relationsAdapter
+        relationsAdapter,
+        otherAdapter
     )
 
     init {
@@ -96,6 +105,7 @@ class SlashWidget @JvmOverloads constructor(
                 mediaAdapter.clear()
                 objectTypesAdapter.clear()
                 relationsAdapter.clear()
+                otherAdapter.clear()
             }
             is SlashCommand.ShowStyleItems -> {
                 styleAdapter.update(command.items)
@@ -105,6 +115,7 @@ class SlashWidget @JvmOverloads constructor(
                 mediaAdapter.clear()
                 objectTypesAdapter.clear()
                 relationsAdapter.clear()
+                otherAdapter.clear()
             }
             is SlashCommand.ShowMediaItems -> {
                 mediaAdapter.update(command.items)
@@ -114,6 +125,7 @@ class SlashWidget @JvmOverloads constructor(
                 styleAdapter.clear()
                 objectTypesAdapter.clear()
                 relationsAdapter.clear()
+                otherAdapter.clear()
             }
             is SlashCommand.ShowRelations -> {
                 relationsAdapter.update(command.relations)
@@ -123,6 +135,7 @@ class SlashWidget @JvmOverloads constructor(
                 styleAdapter.clear()
                 mediaAdapter.clear()
                 objectTypesAdapter.clear()
+                otherAdapter.clear()
             }
             is SlashCommand.ShowObjectTypes -> {
                 objectTypesAdapter.update(command.items)
@@ -132,8 +145,17 @@ class SlashWidget @JvmOverloads constructor(
                 styleAdapter.clear()
                 mediaAdapter.clear()
                 relationsAdapter.clear()
+                otherAdapter.clear()
             }
-            SlashCommand.ShowOtherItems -> TODO()
+            is SlashCommand.ShowOtherItems -> {
+                otherAdapter.update(command.items)
+
+                mainAdapter.clear()
+                styleAdapter.clear()
+                mediaAdapter.clear()
+                objectTypesAdapter.clear()
+                relationsAdapter.clear()
+            }
             is SlashCommand.FilterItems -> {
                 val filter = command.filter.removePrefix(SLASH_PREFIX)
                 val items = SlashHelper.filterSlashItems(

@@ -9,7 +9,7 @@ sealed class SlashCommand {
     data class ShowMainItems(val items: List<SlashItem>) : SlashCommand()
     data class ShowStyleItems(val items: List<SlashItem>) : SlashCommand()
     data class ShowMediaItems(val items: List<SlashItem>): SlashCommand()
-    object ShowOtherItems : SlashCommand()
+    data class ShowOtherItems(val items: List<SlashItem>) : SlashCommand()
     data class ShowRelations(val relations: List<RelationListViewModel.Model>): SlashCommand()
     data class ShowObjectTypes(val items: List<SlashItem>): SlashCommand()
 }
@@ -23,6 +23,8 @@ sealed class SlashItem {
         object Media: Subheader()
         object MediaWithBack: Subheader()
         object ObjectType: Subheader()
+        object Other: Subheader()
+        object OtherWithBack: Subheader()
     }
     //endregion
 

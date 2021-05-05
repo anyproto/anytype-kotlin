@@ -64,4 +64,9 @@ object SlashExtensions {
         SlashItem.Media.Bookmark,
         SlashItem.Media.Code
     )
+
+    fun getOtherItems() = listOf(
+        SlashItem.Other.Line,
+        SlashItem.Other.Dots
+    )
 }

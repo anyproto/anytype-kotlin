@@ -28,8 +28,17 @@ class SubheaderMenuHolder(view: View) : RecyclerView.ViewHolder(view) {
                 flBack.visible()
                 R.string.slash_widget_main_media
             }
-            SlashItem.Subheader.ObjectType -> R.string.slash_widget_main_objects_subheader
-
+            SlashItem.Subheader.ObjectType -> {
+                R.string.slash_widget_main_objects_subheader
+            }
+            SlashItem.Subheader.Other -> {
+                flBack.invisible()
+                R.string.slash_widget_main_other
+            }
+            SlashItem.Subheader.OtherWithBack -> {
+                flBack.visible()
+                R.string.slash_widget_main_other
+            }
         }
         subheader.setText(text)
     }

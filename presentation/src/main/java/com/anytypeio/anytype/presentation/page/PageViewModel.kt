@@ -2329,7 +2329,7 @@ class PageViewModel(
         }
     }
 
-    fun onAddDividerBlockClicked(style: Content.Divider.Style) {
+    private fun addDividerBlock(style: Content.Divider.Style) {
 
         val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
         val content = focused.content
@@ -2377,6 +2377,10 @@ class PageViewModel(
             }
         }
 
+    }
+
+    fun onAddDividerBlockClicked(style: Content.Divider.Style) {
+        addDividerBlock(style)
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
     }
 
@@ -3635,6 +3639,10 @@ class PageViewModel(
                     )
                 }
             }
+            is SlashItem.Main.Other -> {
+                val items = listOf(SlashItem.Subheader.OtherWithBack) + SlashExtensions.getOtherItems()
+                onSlashCommand(SlashCommand.ShowOtherItems(items))
+            }
             is SlashItem.Style.Type -> {
                 onSlashStyleTypeItemClicked(item)
             }
@@ -3642,6 +3650,16 @@ class PageViewModel(
                 onSlashMediaItemClicked(item)
             }
             is SlashItem.ObjectType -> {
+            }
+            is SlashItem.Other.Line -> {
+                proceedWithClearingFocus()
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                addDividerBlock(style = Content.Divider.Style.LINE)
+            }
+            is SlashItem.Other.Dots -> {
+                proceedWithClearingFocus()
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                addDividerBlock(style = Content.Divider.Style.DOTS)
             }
             else -> {
                 Timber.d("PRESSED ON SLAH ITEM : $item")

@@ -12,10 +12,10 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_ui.features.page.slash.holders.MainMenuHolder
+import com.anytypeio.anytype.core_ui.features.page.slash.holders.MediaMenuHolder
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestPageFragment
@@ -87,8 +87,12 @@ class SlashWidgetTesting : EditorTestSetup() {
      * 5. show MAIN items | click MEDIA | show SH + MEDIA items,  BACK visible | +
      * 6. show MAIN items | click MEDIA | BACK clicked | show MAIN items | +
      * 7. show MAIN items | click RELATIONS | show SH + RELATIONS, BACK visible | +
-     * 8. show MAIN items | click OBJECTS | show SH + OBJECT TYPES, BACK visible | -
-     * 9. show MAIN items | click MEDIA | click FILE | no focus, slash widget is invisible, add file block | -
+     * 8. show MAIN items | click OBJECTS | show SH + OBJECT TYPES, BACK visible | +
+     * 9. show MAIN items | click MEDIA | click FILE | no focus, slash widget is invisible, add file block | +
+     * 10.show MAIN items | click MEDIA | click PICTURE | no focus, slash widget is invisible, add picture block | +
+     * 11.show MAIN items | click MEDIA | click VIDEO | no focus, slash widget is invisible, add video block | +
+     * 12.show MAIN items | click MEDIA | click BOOKMARK | no focus, slash widget is invisible, add bookmark block | +
+     * 13.show MAIN items | click OTHERS | show SH + OTHERS items, BACK visible | +
      */
 
     //region {Test 1}
@@ -582,6 +586,452 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
+    }
+    //endregion
+
+    //region {Test 9}
+    @Test
+    fun shouldCreateFileBlockBelowSlash() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val paragraph2 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Second",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val file = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.File(
+                type = Block.Content.File.Type.FILE,
+                state = Block.Content.File.State.EMPTY
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id, paragraph2.id)
+        )
+
+        val document = listOf(page, header, title, paragraph, paragraph2)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+        stubCreateBlock(
+            params = CreateBlock.Params(
+                context = root,
+                target = paragraph.id,
+                position = Position.BOTTOM,
+                prototype = Block.Prototype.File(
+                    type = Block.Content.File.Type.FILE,
+                    state = Block.Content.File.State.EMPTY
+                )
+            ),
+            events = listOf(
+                Event.Command.UpdateStructure(
+                    context = root,
+                    id = root,
+                    children = listOf(header.id, paragraph.id, file.id, paragraph2.id)
+                ),
+                Event.Command.AddBlock(
+                    context = root,
+                    blocks = listOf(file)
+                )
+            )
+        )
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(1, R.id.textMain).performClick()
+            onItemView(1, R.id.tvTitle).performClick()
+        }
+
+        //TESTING
+
+        onView(withId(R.id.slashWidget)).checkIsNotDisplayed()
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 10}
+    @Test
+    fun shouldCreatePictureBlockBelowSlash() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val paragraph2 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Second",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val picture = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.File(
+                type = Block.Content.File.Type.IMAGE,
+                state = Block.Content.File.State.EMPTY
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id, paragraph2.id)
+        )
+
+        val document = listOf(page, header, title, paragraph, paragraph2)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+        stubCreateBlock(
+            params = CreateBlock.Params(
+                context = root,
+                target = paragraph.id,
+                position = Position.BOTTOM,
+                prototype = Block.Prototype.File(
+                    type = Block.Content.File.Type.IMAGE,
+                    state = Block.Content.File.State.EMPTY
+                )
+            ),
+            events = listOf(
+                Event.Command.UpdateStructure(
+                    context = root,
+                    id = root,
+                    children = listOf(header.id, paragraph.id, picture.id, paragraph2.id)
+                ),
+                Event.Command.AddBlock(
+                    context = root,
+                    blocks = listOf(picture)
+                )
+            )
+        )
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(1, R.id.textMain).performClick()
+        }
+
+        onView(withId(R.id.rvSlash)).perform(RecyclerViewActions.scrollToPosition<MediaMenuHolder>(2))
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(2, R.id.tvTitle).performClick()
+        }
+
+        //TESTING
+
+        onView(withId(R.id.slashWidget)).checkIsNotDisplayed()
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 11}
+    @Test
+    fun shouldCreateVideoBlockBelowSlash() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val paragraph2 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Second",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val video = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.File(
+                type = Block.Content.File.Type.VIDEO,
+                state = Block.Content.File.State.EMPTY
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id, paragraph2.id)
+        )
+
+        val document = listOf(page, header, title, paragraph, paragraph2)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+        stubCreateBlock(
+            params = CreateBlock.Params(
+                context = root,
+                target = paragraph.id,
+                position = Position.BOTTOM,
+                prototype = Block.Prototype.File(
+                    type = Block.Content.File.Type.VIDEO,
+                    state = Block.Content.File.State.EMPTY
+                )
+            ),
+            events = listOf(
+                Event.Command.UpdateStructure(
+                    context = root,
+                    id = root,
+                    children = listOf(header.id, paragraph.id, video.id, paragraph2.id)
+                ),
+                Event.Command.AddBlock(
+                    context = root,
+                    blocks = listOf(video)
+                )
+            )
+        )
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(1, R.id.textMain).performClick()
+        }
+
+        onView(withId(R.id.rvSlash)).perform(RecyclerViewActions.scrollToPosition<MediaMenuHolder>(3))
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(3, R.id.tvTitle).performClick()
+        }
+
+        //TESTING
+
+        onView(withId(R.id.slashWidget)).checkIsNotDisplayed()
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 12}
+    @Test
+    fun shouldCreateBookmarkBlockBelowSlash() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val paragraph2 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Second",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val bookmark = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Bookmark(
+                null, null, null, null, null
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id, paragraph2.id)
+        )
+
+        val document = listOf(page, header, title, paragraph, paragraph2)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+        stubCreateBlock(
+            params = CreateBlock.Params(
+                context = root,
+                target = paragraph.id,
+                position = Position.BOTTOM,
+                prototype = Block.Prototype.Bookmark
+            ),
+            events = listOf(
+                Event.Command.UpdateStructure(
+                    context = root,
+                    id = root,
+                    children = listOf(header.id, paragraph.id, bookmark.id, paragraph2.id)
+                ),
+                Event.Command.AddBlock(
+                    context = root,
+                    blocks = listOf(bookmark)
+                )
+            )
+        )
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(1, R.id.textMain).performClick()
+        }
+
+        onView(withId(R.id.rvSlash)).perform(RecyclerViewActions.scrollToPosition<MediaMenuHolder>(4))
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(4, R.id.tvTitle).performClick()
+        }
+
+        //TESTING
+
+        onView(withId(R.id.slashWidget)).checkIsNotDisplayed()
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 13}
+    @Test
+    fun shouldShowOtherItems() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(
+                type = Block.Content.Smart.Type.PAGE
+            ),
+            children = listOf(header.id, paragraph.id)
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_SLASH))
+        }
+
+        onView(withId(R.id.rvSlash))
+            .perform(RecyclerViewActions.scrollToPosition<MediaMenuHolder>(4))
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(4, R.id.textMain).performClick()
+        }
+
+        //TESTING
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(0, R.id.subheader).checkHasText(R.string.slash_widget_main_other)
+            onItemView(1, R.id.tvTitle).checkHasText(R.string.slash_widget_other_line)
+            onItemView(2, R.id.tvTitle).checkHasText(R.string.slash_widget_other_dots)
+        }
+
+        onView(withId(R.id.flBack)).checkIsDisplayed()
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 

@@ -107,7 +107,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         testFocusObserver.assertValue(PageViewModel.EMPTY_FOCUS_ID)
     }
 
-    @Test
+    //@Test
     fun `should update views on hide-keyboard event`() {
 
         // SETUP

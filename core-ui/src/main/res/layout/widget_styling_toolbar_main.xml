@@ -35,7 +35,7 @@
 
                 <TextView
                     android:textSize="28sp"
-                    android:fontFamily="@font/graphik_semibold"
+                    android:fontFamily="@font/inter_bold"
                     android:text="@string/title"
                     android:id="@+id/tvStyleTitle"
                     android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
 
                 <TextView
                     android:textSize="22sp"
-                    android:fontFamily="@font/graphik_semibold"
+                    android:fontFamily="@font/inter_bold"
                     android:text="@string/heading"
                     android:id="@+id/tvStyleHeading"
                     android:layout_width="wrap_content"

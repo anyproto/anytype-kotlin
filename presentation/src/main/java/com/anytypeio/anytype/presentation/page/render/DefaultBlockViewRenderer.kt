@@ -428,7 +428,12 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+        isSelected = if (mode is EditorMode.Styling.Single) {
+            mode.target == block.id
+        } else {
+            false
+        }
     )
 
     private fun description(
@@ -458,7 +463,12 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+        isSelected = if (mode is EditorMode.Styling.Single) {
+            mode.target == block.id
+        } else {
+            false
+        }
     )
 
     private fun headerTwo(
@@ -478,7 +488,12 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+        isSelected = if (mode is EditorMode.Styling.Single) {
+            mode.target == block.id
+        } else {
+            false
+        }
     )
 
     private fun headerOne(
@@ -498,7 +513,12 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         alignment = content.align?.toView(),
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+        isSelected = if (mode is EditorMode.Styling.Single) {
+            mode.target == block.id
+        } else {
+            false
+        }
     )
 
     private fun checkbox(
@@ -518,7 +538,12 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         isFocused = block.id == focus.id,
         indent = indent,
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+        isSelected = if (mode is EditorMode.Styling.Single) {
+            mode.target == block.id
+        } else {
+            false
+        }
     )
 
     private fun bulleted(
@@ -537,7 +562,12 @@ class DefaultBlockViewRenderer(
         isFocused = block.id == focus.id,
         color = content.color,
         backgroundColor = content.backgroundColor,
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+        isSelected = if (mode is EditorMode.Styling.Single) {
+            mode.target == block.id
+        } else {
+            false
+        }
     )
 
     private fun code(
@@ -554,7 +584,12 @@ class DefaultBlockViewRenderer(
         color = content.color,
         isFocused = block.id == focus.id,
         indent = indent,
-        lang = block.fields.lang
+        lang = block.fields.lang,
+        isSelected = if (mode is EditorMode.Styling.Single) {
+            mode.target == block.id
+        } else {
+            false
+        }
     )
 
     private fun highlight(
@@ -573,7 +608,12 @@ class DefaultBlockViewRenderer(
         indent = indent,
         color = content.color,
         backgroundColor = content.backgroundColor,
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+        isSelected = if (mode is EditorMode.Styling.Single) {
+            mode.target == block.id
+        } else {
+            false
+        }
     )
 
     private fun toggle(
@@ -595,7 +635,12 @@ class DefaultBlockViewRenderer(
         isFocused = block.id == focus.id,
         toggled = toggleStateHolder.isToggled(block.id),
         isEmpty = isEmpty,
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+        isSelected = if (mode is EditorMode.Styling.Single) {
+            mode.target == block.id
+        } else {
+            false
+        }
     )
 
     private fun numbered(
@@ -616,7 +661,12 @@ class DefaultBlockViewRenderer(
         backgroundColor = content.backgroundColor,
         indent = indent,
         marks = content.marks(details = details, urlBuilder = urlBuilder),
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null
+        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+        isSelected = if (mode is EditorMode.Styling.Single) {
+            mode.target == block.id
+        } else {
+            false
+        }
     )
 
     private fun bookmark(

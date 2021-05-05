@@ -2231,6 +2231,16 @@ class PageViewModel(
         dispatch(Command.PopBackStack)
     }
 
+    fun onUpdateSingleTextBlockStyle(uiBlock: UiBlock) {
+        (mode as? EditorMode.Styling.Single)?.let { eMode ->
+            proceedUpdateBlockStyle(
+                targets = listOf(eMode.target),
+                uiBlock = uiBlock,
+                errorAction = { _toasts.offer("Cannot convert block to $uiBlock") }
+            )
+        }
+    }
+
     private fun proceedUpdateBlockStyle(
         targets: List<String>,
         uiBlock: UiBlock,
@@ -3122,7 +3132,12 @@ class PageViewModel(
         }
         is ListenerType.Relation.Placeholder -> {
             when (mode) {
-                EditorMode.Edit -> dispatch(Command.OpenObjectRelationScreen.Add(ctx = context, target = clicked.target))
+                EditorMode.Edit -> dispatch(
+                    Command.OpenObjectRelationScreen.Add(
+                        ctx = context,
+                        target = clicked.target
+                    )
+                )
                 else -> onBlockMultiSelectClicked(clicked.target)
             }
         }
@@ -3663,10 +3678,12 @@ class PageViewModel(
         val target = _focus.value
         if (target != null) {
             viewModelScope.launch {
-                orchestrator.stores.focus.update(Editor.Focus(
-                    id = target,
-                    cursor = Editor.Cursor.End
-                ))
+                orchestrator.stores.focus.update(
+                    Editor.Focus(
+                        id = target,
+                        cursor = Editor.Cursor.End
+                    )
+                )
             }
             val uiBlock = item.convertToUiBlock()
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)

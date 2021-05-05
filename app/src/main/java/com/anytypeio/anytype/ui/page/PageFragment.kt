@@ -522,6 +522,10 @@ open class PageFragment :
             swipeDetector.onTouchEvent(it)
         }
 
+        lifecycleScope.subscribe(stylingToolbarNew.styles) {
+            vm.onUpdateSingleTextBlockStyle(it)
+        }
+
         mentionSuggesterToolbar.setupClicks(
             mentionClick = vm::onMentionSuggestClick,
             newPageClick = vm::onAddMentionNewPageClicked

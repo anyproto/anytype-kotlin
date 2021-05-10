@@ -54,10 +54,10 @@ data class ControlPanelState(
          * @property isVisible defines whether the toolbar is visible or not
          */
         data class Styling(
+            override val isVisible: Boolean,
             val target: Target? = null,
             val config: StyleConfig? = null,
             val props: Props? = null,
-            override val isVisible: Boolean,
             val mode: StylingMode? = null
         ) : Toolbar() {
 

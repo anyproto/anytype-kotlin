@@ -12,6 +12,10 @@ sealed class SlashCommand {
     data class ShowOtherItems(val items: List<SlashItem>) : SlashCommand()
     data class ShowRelations(val relations: List<RelationListViewModel.Model>): SlashCommand()
     data class ShowObjectTypes(val items: List<SlashItem>): SlashCommand()
+    data class ShowActionItems(val items: List<SlashItem>) : SlashCommand()
+    data class ShowAlignmentItems(val items: List<SlashItem>) : SlashCommand()
+    data class ShowColorItems(val items: List<SlashItem>) : SlashCommand()
+    data class ShowBackgroundItems(val items: List<SlashItem>) : SlashCommand()
 }
 
 sealed class SlashItem {
@@ -25,6 +29,14 @@ sealed class SlashItem {
         object ObjectType: Subheader()
         object Other: Subheader()
         object OtherWithBack: Subheader()
+        object Actions: Subheader()
+        object ActionsWithBack: Subheader()
+        object Alignment: Subheader()
+        object AlignmentWithBack: Subheader()
+        object Color: Subheader()
+        object ColorWithBack: Subheader()
+        object Background: Subheader()
+        object BackgroundWithBack: Subheader()
     }
     //endregion
 

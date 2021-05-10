@@ -52,4 +52,8 @@ class Paste(
         val focus: Id,
         val range: IntRange
     )
+
+    companion object {
+        val DEFAULT_RANGE = IntRange(0, 0)
+    }
 }

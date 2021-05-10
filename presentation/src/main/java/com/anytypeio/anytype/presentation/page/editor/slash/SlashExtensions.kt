@@ -40,7 +40,7 @@ object SlashExtensions {
         SlashItem.Main.Background,
     )
 
-    fun getSlashItems() = listOf(
+    fun getStyleItems() = listOf(
         SlashItem.Style.Type.Text,
         SlashItem.Style.Type.Title,
         SlashItem.Style.Type.Heading,
@@ -68,5 +68,21 @@ object SlashExtensions {
     fun getOtherItems() = listOf(
         SlashItem.Other.Line,
         SlashItem.Other.Dots
+    )
+
+    fun getActionItems() = listOf(
+        SlashItem.Actions.Delete,
+        SlashItem.Actions.Duplicate,
+        SlashItem.Actions.Copy,
+        SlashItem.Actions.Paste,
+        SlashItem.Actions.Move,
+        SlashItem.Actions.MoveTo,
+        SlashItem.Actions.CleanStyle
+    )
+
+    fun getAlignmentItems() = listOf(
+        SlashItem.Alignment.Left,
+        SlashItem.Alignment.Center,
+        SlashItem.Alignment.Right
     )
 }

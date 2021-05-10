@@ -39,6 +39,38 @@ class SubheaderMenuHolder(view: View) : RecyclerView.ViewHolder(view) {
                 flBack.visible()
                 R.string.slash_widget_main_other
             }
+            SlashItem.Subheader.Actions -> {
+                flBack.invisible()
+                R.string.slash_widget_main_actions
+            }
+            SlashItem.Subheader.ActionsWithBack -> {
+                flBack.visible()
+                R.string.slash_widget_main_actions
+            }
+            SlashItem.Subheader.Alignment -> {
+                flBack.invisible()
+                R.string.slash_widget_main_alignment
+            }
+            SlashItem.Subheader.AlignmentWithBack -> {
+                flBack.visible()
+                R.string.slash_widget_main_alignment
+            }
+            SlashItem.Subheader.Color -> {
+                flBack.invisible()
+                R.string.slash_widget_main_color
+            }
+            SlashItem.Subheader.ColorWithBack -> {
+                flBack.visible()
+                R.string.slash_widget_main_color
+            }
+            SlashItem.Subheader.Background -> {
+                flBack.invisible()
+                R.string.slash_widget_main_background
+            }
+            SlashItem.Subheader.BackgroundWithBack -> {
+                flBack.visible()
+                R.string.slash_widget_main_background
+            }
         }
         subheader.setText(text)
     }

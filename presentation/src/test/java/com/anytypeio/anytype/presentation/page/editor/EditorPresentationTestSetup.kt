@@ -184,6 +184,8 @@ open class EditorPresentationTestSetup {
 
     private lateinit var updateDetail: UpdateDetail
 
+    open lateinit var orchestrator: Orchestrator
+
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): PageViewModel {
 
         val storage = Editor.Storage()
@@ -192,6 +194,44 @@ open class EditorPresentationTestSetup {
             selections = SelectionStateHolder.Default()
         )
         updateDetail = UpdateDetail(repo)
+
+        orchestrator = Orchestrator(
+            createBlock = createBlock,
+            replaceBlock = replaceBlock,
+            updateTextColor = updateTextColor,
+            duplicateBlock = duplicateBlock,
+            downloadFile = downloadFile,
+            undo = undo,
+            redo = redo,
+            updateTitle = updateTitle,
+            updateText = updateText,
+            updateCheckbox = updateCheckbox,
+            updateTextStyle = updateTextStyle,
+            updateBackgroundColor = updateBackgroundColor,
+            mergeBlocks = mergeBlocks,
+            uploadBlock = uploadBlock,
+            splitBlock = splitBlock,
+            unlinkBlocks = unlinkBlocks,
+            updateDivider = updateDivider,
+            memory = memory,
+            stores = storage,
+            proxies = proxies,
+            textInteractor = Interactor.TextInteractor(
+                proxies = proxies,
+                stores = storage,
+                matcher = DefaultPatternMatcher()
+            ),
+            updateAlignment = updateAlignment,
+            setupBookmark = setupBookmark,
+            paste = paste,
+            copy = copy,
+            move = move,
+            turnIntoDocument = turnIntoDocument,
+            analytics = analytics,
+            updateFields = updateFields,
+            setRelationKey = setRelationKey,
+            turnIntoStyle = turnIntoStyle
+        )
 
         return PageViewModel(
             getListPages = getListPages,
@@ -215,43 +255,7 @@ open class EditorPresentationTestSetup {
             createDocument = createDocument,
             createNewDocument = createNewDocument,
             analytics = analytics,
-            orchestrator = Orchestrator(
-                createBlock = createBlock,
-                replaceBlock = replaceBlock,
-                updateTextColor = updateTextColor,
-                duplicateBlock = duplicateBlock,
-                downloadFile = downloadFile,
-                undo = undo,
-                redo = redo,
-                updateTitle = updateTitle,
-                updateText = updateText,
-                updateCheckbox = updateCheckbox,
-                updateTextStyle = updateTextStyle,
-                updateBackgroundColor = updateBackgroundColor,
-                mergeBlocks = mergeBlocks,
-                uploadBlock = uploadBlock,
-                splitBlock = splitBlock,
-                unlinkBlocks = unlinkBlocks,
-                updateDivider = updateDivider,
-                memory = memory,
-                stores = storage,
-                proxies = proxies,
-                textInteractor = Interactor.TextInteractor(
-                    proxies = proxies,
-                    stores = storage,
-                    matcher = DefaultPatternMatcher()
-                ),
-                updateAlignment = updateAlignment,
-                setupBookmark = setupBookmark,
-                paste = paste,
-                copy = copy,
-                move = move,
-                turnIntoDocument = turnIntoDocument,
-                analytics = analytics,
-                updateFields = updateFields,
-                setRelationKey = setRelationKey,
-                turnIntoStyle = turnIntoStyle
-            ),
+            orchestrator = orchestrator,
             dispatcher = Dispatcher.Default(),
             removeDocCover = removeDocCover,
             setDocCoverImage = setDocCoverImage,

@@ -37,6 +37,8 @@ import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
+import com.anytypeio.anytype.domain.clipboard.Copy
+import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.editor.Editor
@@ -1237,19 +1239,26 @@ class PageViewModel(
 
     private fun onBlockAlignmentActionClicked(alignment: Alignment) {
         controlPanelViewState.value?.stylingToolbar?.target?.id?.let { id ->
-            viewModelScope.launch {
-                orchestrator.proxies.intents.send(
-                    Intent.Text.Align(
-                        context = context,
-                        target = id,
-                        alignment = when (alignment) {
-                            Alignment.START -> Block.Align.AlignLeft
-                            Alignment.CENTER -> Block.Align.AlignCenter
-                            Alignment.END -> Block.Align.AlignRight
-                        }
-                    )
+            proceedWithAlignmentUpdate(
+                id = id,
+                alignment = when (alignment) {
+                    Alignment.START -> Block.Align.AlignLeft
+                    Alignment.CENTER -> Block.Align.AlignCenter
+                    Alignment.END -> Block.Align.AlignRight
+                }
+            )
+        }
+    }
+
+    private fun proceedWithAlignmentUpdate(id: String, alignment: Block.Align) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Text.Align(
+                    context = context,
+                    target = id,
+                    alignment = alignment
                 )
-            }
+            )
         }
     }
 
@@ -1405,30 +1414,7 @@ class PageViewModel(
             ActionItemType.MoveTo -> {
                 onExitActionMode()
                 dispatch(Command.PopBackStack)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.SCREEN_MOVE_TO
-                )
-
-                val excluded = mutableListOf<Id>()
-
-                val target = blocks.find { it.id == id }
-
-                if (target != null) {
-                    (target.content as? Content.Link)?.let { content ->
-                        excluded.add(content.target)
-                    }
-                }
-
-                navigate(
-                    EventWrapper(
-                        AppNavigation.Command.OpenMoveToScreen(
-                            context = context,
-                            targets = listOf(id),
-                            excluded = excluded
-                        )
-                    )
-                )
+                proceedWithMoveTo(id)
             }
             ActionItemType.Style -> {
                 val textSelection = orchestrator.stores.textSelection.current()
@@ -1473,6 +1459,33 @@ class PageViewModel(
             }
             else -> Timber.d("Action ignored: $action")
         }
+    }
+
+    private fun proceedWithMoveTo(id: String) {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_MOVE_TO
+        )
+
+        val excluded = mutableListOf<Id>()
+
+        val target = blocks.find { it.id == id }
+
+        if (target != null) {
+            (target.content as? Content.Link)?.let { content ->
+                excluded.add(content.target)
+            }
+        }
+
+        navigate(
+            EventWrapper(
+                AppNavigation.Command.OpenMoveToScreen(
+                    context = context,
+                    targets = listOf(id),
+                    excluded = excluded
+                )
+            )
+        )
     }
 
     private fun proceedWithUnlinking(target: String) {
@@ -2963,7 +2976,7 @@ class PageViewModel(
     }
 
     fun onCopy(
-        range: IntRange
+        range: IntRange?
     ) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
@@ -3599,9 +3612,18 @@ class PageViewModel(
 
     //region SLASH WIDGET
     fun onSlashItemClicked(item: SlashItem) {
+        val target = orchestrator.stores.focus.current()
+        if (!target.isEmpty) {
+            proceedWithSlashItem(item, target.id)
+        } else {
+            Timber.e("Slash Widget Error, target is empty")
+        }
+    }
+
+    private fun proceedWithSlashItem(item: SlashItem, targetId: Id) {
         when (item) {
             is SlashItem.Main.Style -> {
-                val items = listOf(SlashItem.Subheader.StyleWithBack) + SlashExtensions.getSlashItems()
+                val items = listOf(SlashItem.Subheader.StyleWithBack) + SlashExtensions.getStyleItems()
                 onSlashCommand(SlashCommand.ShowStyleItems(items))
             }
             is SlashItem.Main.Media -> {
@@ -3643,8 +3665,16 @@ class PageViewModel(
                 val items = listOf(SlashItem.Subheader.OtherWithBack) + SlashExtensions.getOtherItems()
                 onSlashCommand(SlashCommand.ShowOtherItems(items))
             }
+            is SlashItem.Main.Actions -> {
+                val items = listOf(SlashItem.Subheader.ActionsWithBack) + SlashExtensions.getActionItems()
+                onSlashCommand(SlashCommand.ShowActionItems(items))
+            }
+            is SlashItem.Main.Alignment -> {
+                val items = listOf(SlashItem.Subheader.AlignmentWithBack) + SlashExtensions.getAlignmentItems()
+                onSlashCommand(SlashCommand.ShowAlignmentItems(items))
+            }
             is SlashItem.Style.Type -> {
-                onSlashStyleTypeItemClicked(item)
+                onSlashStyleTypeItemClicked(item, targetId)
             }
             is SlashItem.Media -> {
                 onSlashMediaItemClicked(item)
@@ -3661,8 +3691,14 @@ class PageViewModel(
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 addDividerBlock(style = Content.Divider.Style.DOTS)
             }
+            is SlashItem.Actions -> {
+                onSlashActionItemClicked(item, targetId)
+            }
+            is SlashItem.Alignment -> {
+                onSlashAlignmentItemClicked(item, targetId)
+            }
             else -> {
-                Timber.d("PRESSED ON SLAH ITEM : $item")
+                Timber.d("PRESSED ON SLASH ITEM : $item")
             }
         }
     }
@@ -3692,26 +3728,82 @@ class PageViewModel(
         }
     }
 
-    private fun onSlashStyleTypeItemClicked(item: SlashItem.Style.Type) {
-        val target = _focus.value
-        if (target != null) {
-            viewModelScope.launch {
-                orchestrator.stores.focus.update(
-                    Editor.Focus(
-                        id = target,
-                        cursor = Editor.Cursor.End
-                    )
+    private fun onSlashStyleTypeItemClicked(item: SlashItem.Style.Type, targetId: Id) {
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(
+                Editor.Focus(
+                    id = targetId,
+                    cursor = Editor.Cursor.End
                 )
-            }
-            val uiBlock = item.convertToUiBlock()
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-            onTurnIntoBlockClicked(
-                target = target,
-                uiBlock = uiBlock
             )
-        } else {
-            Timber.e("Error while style item clicked, target is null")
         }
+        val uiBlock = item.convertToUiBlock()
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+        onTurnIntoBlockClicked(
+            target = targetId,
+            uiBlock = uiBlock
+        )
+    }
+
+    private fun onSlashActionItemClicked(item: SlashItem.Actions, targetId: Id) {
+        when (item) {
+            SlashItem.Actions.CleanStyle -> {
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                proceedWithClearStyle(targetId)
+            }
+            SlashItem.Actions.Copy -> {
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                onCopy(range = null)
+            }
+            SlashItem.Actions.Paste -> {
+                val range = orchestrator.stores.textSelection.current().selection ?: Paste.DEFAULT_RANGE
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                onPaste(range = range)
+            }
+            SlashItem.Actions.Delete -> {
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                proceedWithUnlinking(targetId)
+            }
+            SlashItem.Actions.Duplicate -> {
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                duplicateBlock(targetId)
+            }
+            SlashItem.Actions.Move -> {
+                mode = EditorMode.SAM
+                viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
+                viewModelScope.launch { refresh() }
+                proceedWithSAMQuickStartSelection(targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnQuickStart(1))
+            }
+            SlashItem.Actions.MoveTo -> {
+                onHideKeyboardClicked()
+                proceedWithMoveTo(targetId)
+            }
+        }
+    }
+
+    private fun proceedWithClearStyle(targetId: Id) {
+        val targetBlock = blocks.first { it.id == targetId }
+        proceedWithUpdatingText(
+            Intent.Text.UpdateText(
+                context = context,
+                target = targetId,
+                text = targetBlock.content.asText().text,
+                marks = emptyList()
+            )
+        )
+    }
+
+    private fun onSlashAlignmentItemClicked(item: SlashItem.Alignment, targetId: Id) {
+        val alignment = when (item) {
+            SlashItem.Alignment.Center -> Block.Align.AlignCenter
+            SlashItem.Alignment.Left -> Block.Align.AlignLeft
+            SlashItem.Alignment.Right -> Block.Align.AlignRight
+        }
+        proceedWithAlignmentUpdate(
+            id = targetId,
+            alignment = alignment
+        )
     }
 
     private fun onSlashCommand(command: SlashCommand) {

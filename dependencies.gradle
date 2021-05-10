@@ -54,6 +54,7 @@ ext {
     robolectric_latest_version = '4.5.1'
     junit_version = '4.12'
     kluent_version = '1.14'
+    timber_junit = '1.0.1'
     coroutine_testing_version = '1.4.3'
     live_data_testing_version = '1.1.0'
     mockito_kotlin_version = '3.2.0'
@@ -147,7 +148,8 @@ ext {
             liveDataTesting:    "com.jraska.livedata:testing-ktx:$live_data_testing_version",
             coroutineTesting:   "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_testing_version",
             assertj:            "com.squareup.assertj:assertj-android:1.0.0",
-            androidXTestCore:   "androidx.test:core:$androidx_test_core_version"
+            androidXTestCore:   "androidx.test:core:$androidx_test_core_version",
+            timberJUnit:        "net.lachlanmckee:timber-junit-rule:$timber_junit"
     ]
 
     acceptanceTesting = [

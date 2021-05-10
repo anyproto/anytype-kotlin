@@ -615,6 +615,12 @@ sealed class ControlPanelMachine {
                         cursorCoordinate = event.cursorCoordinate,
                         updateList = false,
                         items = emptyList()
+                    ),
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    navigationToolbar = state.navigationToolbar.copy(
+                        isVisible = false
                     )
                 )
             }
@@ -752,7 +758,8 @@ sealed class ControlPanelMachine {
                 ),
                 navigationToolbar = state.navigationToolbar.copy(
                     isVisible = false
-                )
+                ),
+                slashWidget = Toolbar.SlashWidget.reset()
             )
             is Event.SAM.OnApply -> {
                 if (state.multiSelect.isQuickScrollAndMoveMode) {

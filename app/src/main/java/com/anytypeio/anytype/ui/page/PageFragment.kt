@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
@@ -29,7 +28,6 @@ import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
@@ -137,6 +135,16 @@ open class PageFragment :
 
     private val scrollAndMoveTargetDescriptor: ScrollAndMoveTargetDescriptor by lazy {
         DefaultScrollAndMoveTargetDescriptor()
+    }
+
+    private val onHideStyleToolbarCallback = object: BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                vm.onCloseBlockStyleToolbarClicked()
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
     }
 
     private val scrollAndMoveTopMargin by lazy {
@@ -518,11 +526,11 @@ open class PageFragment :
             vm.onActionRedoClicked()
         }.launchIn(lifecycleScope)
 
-        lifecycleScope.subscribe(stylingToolbarNew.touches()) {
+        lifecycleScope.subscribe(stylingToolbar.touches()) {
             swipeDetector.onTouchEvent(it)
         }
 
-        lifecycleScope.subscribe(stylingToolbarNew.styles) {
+        lifecycleScope.subscribe(stylingToolbar.styles) {
             vm.onUpdateSingleTextBlockStyle(it)
         }
 
@@ -543,19 +551,7 @@ open class PageFragment :
             }
         }
 
-        lifecycleScope.launch {
-            styleToolbar.events.collect { event ->
-                vm.onStylingToolbarEvent(event)
-            }
-        }
-
-        lifecycleScope.launch {
-            styleToolbar.closeButtonClicks().collect {
-                vm.onCloseBlockStyleToolbarClicked()
-            }
-        }
-
-        stylingToolbarNew.setOnClickListener {
+        stylingToolbar.setOnClickListener {
             // TODO
         }
 
@@ -1042,55 +1038,16 @@ open class PageFragment :
                 lifecycleScope.launch {
                     hideSoftInput()
                     delay(150L)
-                    val set = ConstraintSet().apply {
-                        clone(sheet)
-                        clear(
-                            R.id.stylingToolbarNew,
-                            ConstraintSet.TOP,
-                        )
-                        connect(
-                            R.id.stylingToolbarNew,
-                            ConstraintSet.BOTTOM,
-                            R.id.sheet,
-                            ConstraintSet.BOTTOM,
-                            dimen(R.dimen.dp_6)
-                        )
+                    BottomSheetBehavior.from(stylingToolbar).apply {
+                        setState(BottomSheetBehavior.STATE_EXPANDED)
+                        addBottomSheetCallback(onHideStyleToolbarCallback)
                     }
-
-                    val transition = TransitionSet().apply {
-                        addTransition(ChangeBounds())
-                        duration = 150
-                        interpolator = AccelerateDecelerateInterpolator()
-                    }
-
-                    TransitionManager.beginDelayedTransition(sheet, transition)
-                    recycler.updatePadding(bottom = stylingToolbarNew.height + dimen(R.dimen.dp_10))
-                    set.applyTo(sheet)
                 }
             } else {
-                val set = ConstraintSet().apply {
-                    clone(sheet)
-                    clear(
-                        R.id.stylingToolbarNew,
-                        ConstraintSet.BOTTOM,
-                    )
-                    connect(
-                        R.id.stylingToolbarNew,
-                        ConstraintSet.TOP,
-                        R.id.sheet,
-                        ConstraintSet.BOTTOM
-                    )
+                BottomSheetBehavior.from(stylingToolbar).apply {
+                    removeBottomSheetCallback(onHideStyleToolbarCallback)
+                    setState(BottomSheetBehavior.STATE_HIDDEN)
                 }
-
-                val transition = TransitionSet().apply {
-                    addTransition(ChangeBounds())
-                    duration = 150
-                    interpolator = AccelerateDecelerateInterpolator()
-                }
-
-                TransitionManager.beginDelayedTransition(sheet, transition)
-                set.applyTo(sheet)
-                recycler.updatePadding(bottom = dimen(R.dimen.editor_recycler_bottom_padding))
             }
         }
 

@@ -116,6 +116,9 @@ abstract class Text(
         if (item is BlockView.Searchable) {
             applySearchHighlight(item)
         }
+        if (item is BlockView.SupportGhostEditorSelection) {
+            applyGhostEditorSelection(item)
+        }
         if (item is Checkable) {
             applyCheckedCheckboxColorSpan(item.isChecked)
         }

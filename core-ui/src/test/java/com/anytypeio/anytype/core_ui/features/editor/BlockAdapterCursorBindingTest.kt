@@ -16,6 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.util.*
 import kotlin.test.assertEquals
 
 @Config(sdk = [Build.VERSION_CODES.O])
@@ -358,6 +359,7 @@ class BlockAdapterCursorBindingTest {
         onTextChanged: (String, Editable) -> Unit = { _, _ -> }
     ): BlockAdapter {
         return BlockAdapter(
+            restore = LinkedList(),
             blocks = views,
             onNonEmptyBlockBackspaceClicked = { _, _ -> },
             onEmptyBlockBackspaceClicked = {},

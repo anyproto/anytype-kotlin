@@ -5,6 +5,7 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
+// TODO rename to DefaultFooterItemDecorator
 open class MentionFooterItemDecorator(private val screen: Point) : RecyclerView.ItemDecoration() {
 
     override fun getItemOffsets(
@@ -23,4 +24,5 @@ open class MentionFooterItemDecorator(private val screen: Point) : RecyclerView.
     }
 }
 
-class SlashWidgetFooterItemDecorator(private val screen: Point) : MentionFooterItemDecorator(screen)
+class MarkupColorToolbarFooterItemDecorator(screen: Point) : MentionFooterItemDecorator(screen)
+class SlashWidgetFooterItemDecorator(screen: Point) : MentionFooterItemDecorator(screen)

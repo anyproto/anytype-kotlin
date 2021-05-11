@@ -46,6 +46,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ext.getFirstLinkMarkupParam
 import com.anytypeio.anytype.core_models.ext.getSubstring
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
 import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.core_ui.features.page.BlockAdapter
@@ -57,6 +58,7 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.layoutChanges
 import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.tools.*
+import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.OnSwipeListener
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
@@ -67,15 +69,14 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.PageViewModelFactory
-import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
-import com.anytypeio.anytype.presentation.page.editor.Command
-import com.anytypeio.anytype.presentation.page.editor.ViewState
+import com.anytypeio.anytype.presentation.page.editor.*
 import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor
+import com.anytypeio.anytype.presentation.page.markup.MarkupColorView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.page.cover.DocCoverAction
@@ -175,6 +176,10 @@ open class PageFragment :
         MentionFooterItemDecorator(screen = screen)
     }
 
+    private val markupColorToolbarItemDecorator by lazy {
+        MarkupColorToolbarFooterItemDecorator(screen = screen)
+    }
+
     private val footerSlashDecorator by lazy {
         SlashWidgetFooterItemDecorator(screen = screen)
     }
@@ -196,6 +201,7 @@ open class PageFragment :
 
     private val pageAdapter by lazy {
         BlockAdapter(
+            restore = vm.restore,
             blocks = mutableListOf(),
             onTextChanged = { id, editable ->
                 vm.onTextChanged(
@@ -511,6 +517,49 @@ open class PageFragment :
             .onEach {
                 vm.onDocumentMenuClicked()
             }
+            .launchIn(lifecycleScope)
+
+        markupToolbar
+            .highlightClicks()
+            .onEach { vm.onMarkupHighlightToggleClicked() }
+            .launchIn(lifecycleScope)
+
+        markupToolbar
+            .colorClicks()
+            .onEach { vm.onMarkupColorToggleClicked() }
+            .launchIn(lifecycleScope)
+
+        markupToolbar
+            .linkClicks()
+            .onEach { vm.onMarkupUrlClicked() }
+            .launchIn(lifecycleScope)
+
+        markupToolbar
+            .markup()
+            .onEach { type -> vm.onStyleToolbarMarkupAction(type, null) }
+            .launchIn(lifecycleScope)
+
+        setMarkupUrlToolbar
+            .onApply()
+            .onEach { vm.onSetLink(it) }
+            .launchIn(lifecycleScope)
+
+        markupColorToolbar.onColorClickedListener = { color ->
+            if (color is MarkupColorView.Text) {
+                vm.onStyleToolbarMarkupAction(
+                    type = Markup.Type.TEXT_COLOR,
+                    param = color.code
+                )
+            } else {
+                vm.onStyleToolbarMarkupAction(
+                    type = Markup.Type.BACKGROUND_COLOR,
+                    param = color.code
+                )
+            }
+        }
+
+        blocker.clicks()
+            .onEach { vm.onBlockerClicked() }
             .launchIn(lifecycleScope)
 
         topToolbar.back.clicks().onEach {
@@ -1000,6 +1049,20 @@ open class PageFragment :
         else
             toolbar.invisible()
 
+        setMainMarkupToolbarState(state)
+
+        state.markupUrlToolbar.apply {
+            if (isVisible) {
+                setMarkupUrlToolbar.visible()
+                setMarkupUrlToolbar.takeFocus()
+                setMarkupUrlToolbar.bind(state.markupMainToolbar.style?.markupUrl)
+                blocker.visible()
+            } else {
+                setMarkupUrlToolbar.invisible()
+                blocker.invisible()
+            }
+        }
+
         state.multiSelect.apply {
             if (isVisible) {
                 select.visible()
@@ -1037,7 +1100,7 @@ open class PageFragment :
             if (isVisible) {
                 lifecycleScope.launch {
                     hideSoftInput()
-                    delay(150L)
+                    delay(DEFAULT_ANIM_DURATION)
                     BottomSheetBehavior.from(stylingToolbar).apply {
                         setState(BottomSheetBehavior.STATE_EXPANDED)
                         addBottomSheetCallback(onHideStyleToolbarCallback)
@@ -1090,6 +1153,84 @@ open class PageFragment :
                 searchToolbar.gone()
             }
         }
+    }
+
+    private fun setMainMarkupToolbarState(state: ControlPanelState) {
+        if (state.markupMainToolbar.isVisible) {
+            markupToolbar.setProps(
+                props = state.markupMainToolbar.style,
+                isBackgroundColorSelected = state.markupMainToolbar.isBackgroundColorSelected,
+                isTextColorSelected = state.markupMainToolbar.isTextColorSelected
+            )
+            markupToolbar.visible()
+
+            if (state.markupColorToolbar.isVisible) {
+                if (state.markupMainToolbar.isTextColorSelected) {
+                    markupColorToolbar.setTextColor(
+                        state.markupMainToolbar.style?.markupTextColor
+                            ?: state.markupMainToolbar.style?.blockTextColor
+                            ?: ThemeColor.DEFAULT.title
+                    )
+                }
+                if (state.markupMainToolbar.isBackgroundColorSelected) {
+                    markupColorToolbar.setBackgroundColor(
+                        state.markupMainToolbar.style?.markupHighlightColor
+                            ?: state.markupMainToolbar.style?.blockBackroundColor
+                            ?: ThemeColor.DEFAULT.title
+                    )
+                }
+                if (markupColorToolbar.translationY > 0) {
+                    recycler.addItemDecoration(markupColorToolbarItemDecorator)
+                }
+                showMarkupColorToolbarWithAnimation()
+            } else {
+                if (markupColorToolbar.translationY == 0f) {
+                    recycler.removeItemDecoration(markupColorToolbarItemDecorator)
+                    hideMarkupColorToolbarWithAnimation()
+                }
+            }
+
+        } else {
+            markupToolbar.invisible()
+            if (markupColorToolbar.translationY == 0f) {
+                //recycler.smoothScrollBy(0, -markupColorToolbar.height)
+                markupColorToolbar.translationY = dimen(R.dimen.dp_104).toFloat()
+            }
+        }
+    }
+
+    private fun showMarkupColorToolbarWithAnimation() {
+
+        val focus = recycler.findFocus()
+        check(focus is TextInputWidget)
+        val cursorCoord = focus.cursorYBottomCoordinate()
+
+        val parentBottom = calculateRectInWindow(recycler).bottom
+        val toolbarHeight = markupToolbar.height + markupColorToolbar.height
+
+        val minPosY = parentBottom - toolbarHeight
+
+        if (minPosY <= cursorCoord) {
+            val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoord)
+            Timber.d("New scroll y: $scrollY")
+            recycler.post {
+                recycler.smoothScrollBy(0, scrollY)
+            }
+        }
+
+        markupColorToolbar
+            .animate()
+            .translationY(0f)
+            .setDuration(DEFAULT_ANIM_DURATION)
+            .start()
+    }
+
+    private fun hideMarkupColorToolbarWithAnimation() {
+        markupColorToolbar
+            .animate()
+            .translationY(dimen(R.dimen.dp_104).toFloat())
+            .setDuration(DEFAULT_ANIM_DURATION)
+            .start()
     }
 
     private fun showMentionToolbar(state: ControlPanelState.Toolbar.MentionToolbar) {
@@ -1479,6 +1620,8 @@ open class PageFragment :
 
         const val FAB_SHOW_ANIMATION_START_DELAY = 250L
         const val FAB_SHOW_ANIMATION_DURATION = 100L
+
+        const val DEFAULT_ANIM_DURATION = 150L
 
         const val SHOW_MENTION_TRANSITION_DURATION = 150L
         const val SELECT_BUTTON_SHOW_ANIMATION_DURATION = 200L

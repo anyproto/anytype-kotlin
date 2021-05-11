@@ -618,7 +618,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     isVisible = false
                 ),
                 mainToolbar = ControlPanelState.Toolbar.Main(
-                    isVisible = true
+                    isVisible = false
                 ),
                 stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(

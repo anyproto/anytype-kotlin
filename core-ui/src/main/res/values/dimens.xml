@@ -88,6 +88,7 @@
     <dimen name="dp_48">48dp</dimen>
     <dimen name="dp_32">32dp</dimen>
     <dimen name="dp_20">20dp</dimen>
+    <dimen name="dp_104">104dp</dimen>
     <dimen name="dp_45">45dp</dimen>
     <dimen name="dp_203">203dp</dimen>
 

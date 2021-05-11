@@ -22,6 +22,17 @@ class ControlPanelStateReducerTest {
 
     private val reducer = ControlPanelMachine.Reducer()
 
+    val paragraph = Block(
+        id = MockDataFactory.randomUuid(),
+        children = emptyList(),
+        content = Block.Content.Text(
+            text = MockDataFactory.randomString(),
+            style = Block.Content.Text.Style.P,
+            marks = emptyList()
+        ),
+        fields = Block.Fields.empty()
+    )
+
     @Test
     fun `state should have visible block toolbar and focus from the event`() {
 
@@ -57,14 +68,12 @@ class ControlPanelStateReducerTest {
     @Test
     fun `state should hide mentions when cursor before mentions start and widget is visible`() {
 
-        val id = MockDataFactory.randomUuid()
-
         val given = ControlPanelState(
             navigationToolbar = ControlPanelState.Toolbar.Navigation(
                 isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = true
+                isVisible = false
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
@@ -86,7 +95,7 @@ class ControlPanelStateReducerTest {
 
         val event = ControlPanelMachine.Event.OnSelectionChanged(
             selection = IntRange(9, 9),
-            target = id
+            target = paragraph
         )
 
         val actual = runBlocking {
@@ -102,7 +111,10 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
-            )
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true
+            ),
         )
 
         assertEquals(
@@ -113,8 +125,6 @@ class ControlPanelStateReducerTest {
 
     @Test
     fun `state should not hide mentions when cursor after mention start`() {
-
-        val id = MockDataFactory.randomUuid()
 
         val given = ControlPanelState(
             navigationToolbar = ControlPanelState.Toolbar.Navigation(
@@ -143,7 +153,7 @@ class ControlPanelStateReducerTest {
 
         val event = ControlPanelMachine.Event.OnSelectionChanged(
             selection = IntRange(11, 11),
-            target = id
+            target = paragraph
         )
 
         val actual = runBlocking {
@@ -170,8 +180,6 @@ class ControlPanelStateReducerTest {
 
     @Test
     fun `state should hide mentions after focus changed`() {
-
-        val id = MockDataFactory.randomUuid()
 
         val given = ControlPanelState(
             navigationToolbar = ControlPanelState.Toolbar.Navigation(
@@ -235,7 +243,7 @@ class ControlPanelStateReducerTest {
                 isVisible = false
             ),
             mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = true
+                isVisible = false,
             ),
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
@@ -257,7 +265,16 @@ class ControlPanelStateReducerTest {
 
         val event = ControlPanelMachine.Event.OnSelectionChanged(
             selection = IntRange(8, 8),
-            target = id
+            target = Block(
+                id = id,
+                children = emptyList(),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    style = Block.Content.Text.Style.P,
+                    marks = emptyList()
+                ),
+                fields = Block.Fields.empty()
+            )
         )
 
         val actual = runBlocking {
@@ -273,6 +290,9 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true,
             )
         )
 
@@ -518,7 +538,6 @@ class ControlPanelStateReducerTest {
     @Test
     fun `should update style toolbar state with italic true after selection changed`() {
 
-        val id = MockDataFactory.randomUuid()
         val selectionFirst = IntRange(0, 2)
         val selectionSecond = IntRange(4, 6)
 
@@ -532,7 +551,7 @@ class ControlPanelStateReducerTest {
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
-                    id = id,
+                    id = paragraph.id,
                     text = "Foo Bar",
                     color = "yellow",
                     background = "red",
@@ -588,7 +607,7 @@ class ControlPanelStateReducerTest {
                 state = given,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = selectionSecond,
-                    target = id
+                    target = paragraph
                 )
             )
         }
@@ -603,7 +622,7 @@ class ControlPanelStateReducerTest {
             stylingToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
-                    id = id,
+                    id = paragraph.id,
                     text = "Foo Bar",
                     color = "yellow",
                     background = "red",
@@ -731,7 +750,7 @@ class ControlPanelStateReducerTest {
                 state = given,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = selectionSecond,
-                    target = id
+                    target = paragraph
                 )
             )
         }
@@ -857,7 +876,7 @@ class ControlPanelStateReducerTest {
                 state = given,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = IntRange(0, 3),
-                    target = id
+                    target = paragraph
                 )
             )
         }
@@ -970,7 +989,7 @@ class ControlPanelStateReducerTest {
                 state = ControlPanelState.init(),
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = IntRange(1, 1),
-                    target = id
+                    target = paragraph
                 )
             )
         }
@@ -1064,105 +1083,6 @@ class ControlPanelStateReducerTest {
     }
 
     @Test
-    fun `should close style toolbar when selection is zero`() {
-
-        val id = MockDataFactory.randomUuid()
-
-        val block = Block(
-            id = id,
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo Bar",
-                style = Block.Content.Text.Style.P,
-                marks = listOf(
-                    Block.Content.Text.Mark(
-                        range = 0..3,
-                        type = Block.Content.Text.Mark.Type.BOLD
-                    )
-                ),
-                color = "yellow",
-                backgroundColor = "red",
-                align = Block.Align.AlignLeft
-            ),
-            fields = Block.Fields.empty()
-        )
-
-        runBlocking {
-            reducer.reduce(
-                state = ControlPanelState.init(),
-                event = ControlPanelMachine.Event.OnFocusChanged(
-                    id = id,
-                    style = Block.Content.Text.Style.P
-                )
-            )
-        }
-
-        runBlocking {
-            reducer.reduce(
-                state = ControlPanelState.init(),
-                event = ControlPanelMachine.Event.OnSelectionChanged(
-                    selection = IntRange(0, 3),
-                    target = id
-                )
-            )
-        }
-
-        val given = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = true
-            ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
-        )
-
-        runBlocking {
-            reducer.reduce(
-                state = given,
-                event = ControlPanelMachine.Event.OnEditorContextMenuStyleClicked(
-                    selection = IntRange(0, 3),
-                    target = block
-                )
-            )
-        }
-
-        val result = runBlocking {
-            reducer.reduce(
-                state = given,
-                event = ControlPanelMachine.Event.OnSelectionChanged(
-                    selection = IntRange(0, 7),
-                    target = id
-                )
-            )
-        }
-
-        val expected = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = true
-            ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
-        )
-        assertEquals(
-            expected = expected,
-            actual = result
-        )
-    }
-
-    @Test
     fun `should update style toolbar when selection is changed and not zero or empty`() {
 
         val id = MockDataFactory.randomUuid()
@@ -1203,7 +1123,7 @@ class ControlPanelStateReducerTest {
                 state = ControlPanelState.init(),
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = IntRange(0, 3),
-                    target = id
+                    target = paragraph
                 )
             )
         }
@@ -1229,7 +1149,7 @@ class ControlPanelStateReducerTest {
                 state = given,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = IntRange(0, 3),
-                    target = id
+                    target = paragraph
                 )
             )
         }
@@ -1304,7 +1224,7 @@ class ControlPanelStateReducerTest {
                 ),
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = IntRange(0, 7),
-                    target = id
+                    target = paragraph
                 )
             )
         }
@@ -1426,7 +1346,7 @@ class ControlPanelStateReducerTest {
             reducer.reduce(
                 state = afterFocusStateResult,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
-                    target = id,
+                    target = paragraph,
                     selection = IntRange(6, 6)
                 )
             )
@@ -1529,7 +1449,7 @@ class ControlPanelStateReducerTest {
             reducer.reduce(
                 state = afterShowStyleToolbarStateResult,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
-                    target = id,
+                    target = paragraph,
                     selection = IntRange(1, 1)
                 )
             )

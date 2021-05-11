@@ -147,6 +147,10 @@ sealed class BlockView : ViewType, Parcelable {
         }
     }
 
+    interface SupportGhostEditorSelection {
+        val ghostEditorSelection: IntRange?
+    }
+
     interface TextBlockProps :
         Markup,
         Focusable,
@@ -159,7 +163,7 @@ sealed class BlockView : ViewType, Parcelable {
         val id: String
     }
 
-    sealed class Text : BlockView(), TextBlockProps, Searchable {
+    sealed class Text : BlockView(), TextBlockProps, Searchable, SupportGhostEditorSelection {
 
         // Dynamic properties (expected to be synchronised with framework widget)
 
@@ -196,7 +200,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val alignment: Alignment? = null,
             override val cursor: Int? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: @RawValue IntRange? = null
         ) : Text() {
             override fun getViewType() = HOLDER_PARAGRAPH
             override val body: String get() = text
@@ -224,7 +229,8 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override val cursor: Int? = null,
-                override val searchFields: @RawValue List<Searchable.Field> = emptyList()
+                override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+                override val ghostEditorSelection: @RawValue IntRange? = null
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_ONE
                 override val body: String get() = text
@@ -250,7 +256,8 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override val cursor: Int? = null,
-                override val searchFields: @RawValue List<Searchable.Field> = emptyList()
+                override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+                override val ghostEditorSelection: @RawValue IntRange? = null
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_TWO
                 override val body: String get() = text
@@ -276,7 +283,8 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override val cursor: Int? = null,
-                override val searchFields: @RawValue List<Searchable.Field> = emptyList()
+                override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+                override val ghostEditorSelection: @RawValue IntRange? = null
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_THREE
                 override val body: String get() = text
@@ -302,7 +310,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: @RawValue IntRange? = null
         ) : Text() {
             override fun getViewType() = HOLDER_HIGHLIGHT
             override val body: String get() = text
@@ -328,7 +337,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: @RawValue IntRange? = null
         ) : Text(), Checkable {
             override fun getViewType() = HOLDER_CHECKBOX
             override val body: String get() = text
@@ -354,7 +364,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: @RawValue IntRange? = null
         ) : Text() {
             override fun getViewType() = HOLDER_BULLET
             override val body: String get() = text
@@ -381,6 +392,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
             override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: @RawValue IntRange? = null,
             val number: Int
         ) : Text() {
             override fun getViewType() = HOLDER_NUMBERED
@@ -408,6 +420,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val cursor: Int? = null,
             override val alignment: Alignment? = null,
             override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: @RawValue IntRange? = null,
             val toggled: Boolean = false,
             val isEmpty: Boolean = false
         ) : Text() {

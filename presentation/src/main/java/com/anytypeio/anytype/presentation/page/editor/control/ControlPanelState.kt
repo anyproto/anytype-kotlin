@@ -4,9 +4,9 @@ import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashCommand
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
+import com.anytypeio.anytype.presentation.page.markup.MarkupStyleDescriptor
 
 /**
  * Control panels are UI-elements that allow user to interact with blocks on a page.
@@ -18,6 +18,9 @@ data class ControlPanelState(
     val navigationToolbar: Toolbar.Navigation,
     val mainToolbar: Toolbar.Main,
     val stylingToolbar: Toolbar.Styling,
+    val markupMainToolbar: Toolbar.MarkupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
+    val markupUrlToolbar: Toolbar.MarkupUrlToolbar = Toolbar.MarkupUrlToolbar(),
+    val markupColorToolbar: Toolbar.MarkupColorToolbar = Toolbar.MarkupColorToolbar(),
     val multiSelect: Toolbar.MultiSelect,
     val mentionToolbar: Toolbar.MentionToolbar,
     val slashWidget: Toolbar.SlashWidget,
@@ -50,6 +53,47 @@ data class ControlPanelState(
         ) : Toolbar()
 
         /**
+         * Main toolbar allowing user-interface for markup operations.
+         * @property isVisible defines whether the toolbar is visible or not
+         */
+        data class MarkupMainToolbar(
+            override val isVisible: Boolean,
+            val style: MarkupStyleDescriptor? = null,
+            val isTextColorSelected: Boolean = false,
+            val isBackgroundColorSelected: Boolean = false
+        ) : Toolbar() {
+            companion object {
+                fun reset() : MarkupMainToolbar = MarkupMainToolbar(
+                    isVisible = false,
+                    style = null,
+                    isTextColorSelected = false,
+                    isBackgroundColorSelected = false
+                )
+            }
+        }
+
+        /**
+         * Main toolbar allowing user-interface for markup operations.
+         * @property isVisible defines whether the toolbar is visible or not
+         */
+        data class MarkupColorToolbar(
+            override val isVisible: Boolean = false
+        ) : Toolbar()
+
+        /**
+         * TODO Markup toolbar allowing user-interface for markup operations.
+         * @property isVisible defines whether the toolbar is visible or not
+         */
+        data class MarkupUrlToolbar(
+            override val isVisible: Boolean = false,
+            val url: String? = null
+        ) : Toolbar() {
+            companion object {
+                fun reset() = MarkupUrlToolbar()
+            }
+        }
+
+        /**
          * Basic color toolbar state.
          * @property isVisible defines whether the toolbar is visible or not
          */
@@ -75,14 +119,14 @@ data class ControlPanelState(
              * Target's properties corresponding to current selection or styling mode.
              */
             data class Props(
-                val isBold: Boolean,
-                val isItalic: Boolean,
-                val isStrikethrough: Boolean,
-                val isCode: Boolean,
-                val isLinked: Boolean,
-                val color: String?,
-                val background: String?,
-                val alignment: Alignment?
+                val isBold: Boolean = false,
+                val isItalic: Boolean = false,
+                val isStrikethrough: Boolean = false,
+                val isCode: Boolean = false,
+                val isLinked: Boolean = false,
+                val color: String? = null,
+                val background: String? = null,
+                val alignment: Alignment? = null
             )
 
             /**
@@ -214,6 +258,11 @@ data class ControlPanelState(
             mainToolbar = Toolbar.Main(
                 isVisible = false
             ),
+            markupMainToolbar = Toolbar.MarkupMainToolbar(
+                isVisible = false
+            ),
+            markupUrlToolbar = Toolbar.MarkupUrlToolbar(),
+            markupColorToolbar = Toolbar.MarkupColorToolbar(),
             multiSelect = Toolbar.MultiSelect(
                 isVisible = false,
                 count = 0

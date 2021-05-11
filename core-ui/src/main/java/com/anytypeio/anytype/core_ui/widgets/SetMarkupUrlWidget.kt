@@ -4,9 +4,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import kotlinx.android.synthetic.main.widget_set_markup_url.view.*
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 class SetMarkupUrlWidget : LinearLayout {
 
@@ -20,7 +23,14 @@ class SetMarkupUrlWidget : LinearLayout {
         init()
     }
 
-    fun doneClicks() = setMarkupDoneButton.clicks()
+    fun onApply() = setMarkupDoneButton
+        .clicks()
+        .map { setUrlMarkupTextInput.text.toString() }
+        .onEach { setUrlMarkupTextInput.clearFocus() }
+
+    fun takeFocus() {
+        setUrlMarkupTextInput.requestFocus()
+    }
 
     fun init() {
         LayoutInflater.from(context).inflate(R.layout.widget_set_markup_url, this)
@@ -30,4 +40,8 @@ class SetMarkupUrlWidget : LinearLayout {
         }
     }
 
+    fun bind(url: String?) {
+        setUrlMarkupTextInput.setText(url, TextView.BufferType.EDITABLE)
+        if (url != null) setUrlMarkupTextInput.setSelection(url.length)
+    }
 }

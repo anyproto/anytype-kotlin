@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ext.overlap
 import com.anytypeio.anytype.core_models.misc.Overlap
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.extension.isInRange
+import com.anytypeio.anytype.presentation.extension.style
 import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.page.ControlPanelMachine.*
 import com.anytypeio.anytype.presentation.page.editor.Markup
@@ -67,7 +68,7 @@ sealed class ControlPanelMachine {
          * @property selection text selection (end index and start index are inclusive)
          */
         data class OnSelectionChanged(
-            val target: String,
+            val target: Block,
             val selection: IntRange
         ) : Event()
 
@@ -135,6 +136,14 @@ sealed class ControlPanelMachine {
             object OnExitSearchMode : SearchToolbar()
         }
 
+        sealed class MarkupToolbar : Event() {
+            object OnMarkupColorToggleClicked : MarkupToolbar()
+            object OnMarkupHighlightToggleClicked : MarkupToolbar()
+            object OnMarkupToolbarUrlClicked: MarkupToolbar()
+            object OnMarkupUrlSet: MarkupToolbar()
+            object OnBlockerClicked: MarkupToolbar()
+        }
+
         /**
          * Styling-toolbar-related events
          */
@@ -199,6 +208,7 @@ sealed class ControlPanelMachine {
 
         sealed class OnRefresh : Event() {
             data class StyleToolbar(val target: Block?, val selection: IntRange?) : OnRefresh()
+            data class Markup(val target: Block?, val selection: IntRange?) : OnRefresh()
         }
 
         object OnDocumentMenuClicked : Event()
@@ -232,15 +242,57 @@ sealed class ControlPanelMachine {
         override suspend fun reduce(state: ControlPanelState, event: Event) = when (event) {
             is Event.OnSelectionChanged -> {
                 when {
+                    state.mainToolbar.isVisible -> {
+                        if (event.selection.isEmpty() || event.selection.first == event.selection.last) {
+                            state.copy(
+                                markupMainToolbar = Toolbar.MarkupMainToolbar.reset()
+                            )
+                        } else {
+                            state.copy(
+                                mainToolbar = state.mainToolbar.copy(
+                                    isVisible = false
+                                ),
+                                markupMainToolbar = state.markupMainToolbar.copy(
+                                    isVisible = true,
+                                    style= event.target.style(event.selection)
+                                )
+                            )
+                        }
+                    }
+                    state.markupMainToolbar.isVisible -> {
+                        if (event.selection.isEmpty() || event.selection.first == event.selection.last) {
+                            state.copy(
+                                mainToolbar = state.mainToolbar.copy(
+                                    isVisible = true
+                                ),
+                                markupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
+                                markupColorToolbar = state.markupColorToolbar.copy(
+                                    isVisible = false
+                                )
+                            )
+                        } else {
+                            state.copy(
+                                markupMainToolbar = state.markupMainToolbar.copy(
+                                    style = event.target.style(event.selection)
+                                )
+                            )
+                        }
+                    }
                     state.stylingToolbar.isVisible -> {
                         handleOnSelectionChangedForStylingToolbar(event.selection, event, state)
                     }
-                    state.mentionToolbar.isVisible -> state.copy(
-                        mentionToolbar = handleOnSelectionChangedForMentionState(
+                    state.mentionToolbar.isVisible -> {
+                        val newMentionToolbarState = handleOnSelectionChangedForMentionState(
                             state = state.mentionToolbar,
                             start = event.selection.first
                         )
-                    )
+                        state.copy(
+                            mentionToolbar = newMentionToolbarState,
+                            mainToolbar = state.mainToolbar.copy(
+                                isVisible = !newMentionToolbarState.isVisible
+                            )
+                        )
+                    }
                     else -> {
                         state.copy(
                             mainToolbar = state.mainToolbar.copy(
@@ -255,6 +307,63 @@ sealed class ControlPanelMachine {
             }
             is Event.StylingToolbar -> {
                 handleStylingToolbarEvent(event, state)
+            }
+            is Event.MarkupToolbar.OnMarkupColorToggleClicked -> {
+                val isVisible = if (state.markupColorToolbar.isVisible) {
+                    state.markupMainToolbar.isBackgroundColorSelected
+                } else {
+                    true
+                }
+                state.copy(
+                    markupColorToolbar = state.markupColorToolbar.copy(
+                        isVisible = isVisible
+                    ),
+                    markupMainToolbar = state.markupMainToolbar.copy(
+                        isBackgroundColorSelected = false,
+                        isTextColorSelected = isVisible
+                    )
+                )
+            }
+            is Event.MarkupToolbar.OnMarkupHighlightToggleClicked -> {
+                val isVisible = if (state.markupColorToolbar.isVisible) {
+                    state.markupMainToolbar.isTextColorSelected
+                } else {
+                    true
+                }
+                state.copy(
+                    markupColorToolbar = state.markupColorToolbar.copy(
+                        isVisible = isVisible
+                    ),
+                    markupMainToolbar = state.markupMainToolbar.copy(
+                        isTextColorSelected = false,
+                        isBackgroundColorSelected = isVisible
+                    )
+                )
+            }
+            is Event.MarkupToolbar.OnMarkupToolbarUrlClicked -> {
+                state.copy(
+                    markupColorToolbar = state.markupColorToolbar.copy(
+                        isVisible = false
+                    ),
+                    markupMainToolbar = state.markupMainToolbar.copy(),
+                    markupUrlToolbar = state.markupUrlToolbar.copy(
+                        isVisible = true
+                    )
+                )
+            }
+            is Event.MarkupToolbar.OnMarkupUrlSet -> {
+                state.copy(
+                    markupUrlToolbar = state.markupUrlToolbar.copy(
+                        isVisible = false
+                    )
+                )
+            }
+            is Event.MarkupToolbar.OnBlockerClicked -> {
+                state.copy(
+                    markupUrlToolbar = state.markupUrlToolbar.copy(
+                        isVisible = false
+                    )
+                )
             }
             is Event.OnMarkupTextColorSelected -> state.copy()
             is Event.OnBlockTextColorSelected -> state.copy()
@@ -323,6 +432,17 @@ sealed class ControlPanelMachine {
             is Event.OnRefresh.StyleToolbar -> {
                 handleRefreshForMarkupLevelStyling(state, event)
             }
+            is Event.OnRefresh.Markup -> {
+                if (event.target != null && event.selection != null) {
+                    state.copy(
+                        markupMainToolbar = state.markupMainToolbar.copy(
+                            style = event.target.style(event.selection)
+                        )
+                    )
+                } else {
+                    state.copy()
+                }
+            }
             is Event.MultiSelect -> {
                 handleMultiSelectEvent(event, state)
             }
@@ -366,6 +486,7 @@ sealed class ControlPanelMachine {
                         stylingToolbar = Toolbar.Styling.reset(),
                         mentionToolbar = Toolbar.MentionToolbar.reset(),
                         slashWidget = Toolbar.SlashWidget.reset(),
+                        markupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
                         navigationToolbar = Toolbar.Navigation(
                             isVisible = false
                         )
@@ -565,7 +686,8 @@ sealed class ControlPanelMachine {
                     mentionFilter = "",
                     updateList = false,
                     mentionFrom = event.mentionFrom
-                )
+                ),
+                mainToolbar = Toolbar.Main(isVisible = false)
             )
             is Event.Mentions.OnStop -> state.copy(
                 mentionToolbar = state.mentionToolbar.copy(
@@ -575,7 +697,8 @@ sealed class ControlPanelMachine {
                     mentionFrom = null,
                     mentionFilter = null,
                     mentions = emptyList()
-                )
+                ),
+                mainToolbar = Toolbar.Main(isVisible = true)
             )
             is Event.Mentions.OnResult -> state.copy(
                 mentionToolbar = state.mentionToolbar.copy(

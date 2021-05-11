@@ -50,6 +50,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.test.*
 
@@ -3368,6 +3369,7 @@ class BlockAdapterTest {
         onTextChanged: (String, Editable) -> Unit = { _, _ -> }
     ): BlockAdapter {
         return BlockAdapter(
+            restore = LinkedList(),
             blocks = views,
             onNonEmptyBlockBackspaceClicked = { _, _ -> },
             onEmptyBlockBackspaceClicked = {},

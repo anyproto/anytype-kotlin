@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_ui.features.page.BlockAdapter
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import java.util.*
 
 open class BlockAdapterTestSetup {
 
@@ -29,6 +30,7 @@ open class BlockAdapterTestSetup {
         onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit = {}
     ): BlockAdapter {
         return BlockAdapter(
+            restore = LinkedList(),
             blocks = views,
             onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
             onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,

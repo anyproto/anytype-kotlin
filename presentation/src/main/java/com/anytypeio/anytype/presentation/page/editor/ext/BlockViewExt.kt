@@ -414,6 +414,21 @@ fun BlockView.setHighlight(
     else -> this.also { check(this !is BlockView.Searchable) }
 }
 
+fun BlockView.setGhostEditorSelection(
+    ghostEditorSelection: IntRange?
+): BlockView = when (this) {
+    is BlockView.Text.Paragraph -> copy(ghostEditorSelection = ghostEditorSelection)
+    is BlockView.Text.Numbered -> copy(ghostEditorSelection = ghostEditorSelection)
+    is BlockView.Text.Bulleted -> copy(ghostEditorSelection = ghostEditorSelection)
+    is BlockView.Text.Checkbox -> copy(ghostEditorSelection = ghostEditorSelection)
+    is BlockView.Text.Toggle -> copy(ghostEditorSelection = ghostEditorSelection)
+    is BlockView.Text.Header.One -> copy(ghostEditorSelection = ghostEditorSelection)
+    is BlockView.Text.Header.Two -> copy(ghostEditorSelection = ghostEditorSelection)
+    is BlockView.Text.Header.Three -> copy(ghostEditorSelection = ghostEditorSelection)
+    is BlockView.Text.Highlight -> copy(ghostEditorSelection = ghostEditorSelection)
+    else -> this.also { check(this !is BlockView.SupportGhostEditorSelection) }
+}
+
 fun List<BlockView>.nextSearchTarget(): List<BlockView> {
     val currentTargetView = find { view ->
         view is BlockView.Searchable && view.searchFields.any { it.isTargeted }

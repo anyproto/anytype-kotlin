@@ -83,6 +83,34 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MarkupColorToolbarWidget
+            android:id="@+id/markupColorToolbar"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:background="@color/white"
+            android:translationY="104dp"
+            app:layout_constraintBottom_toTopOf="@id/markupToolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MarkupToolbarWidget
+            android:id="@+id/markupToolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.widgets.SetMarkupUrlWidget
+            android:id="@+id/setMarkupUrlToolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <com.anytypeio.anytype.core_ui.widgets.toolbar.MultiSelectBottomToolbarWidget
             android:id="@+id/bottomMenu"
             android:layout_width="0dp"
@@ -122,6 +150,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:visibility="visible" />
+
+        <View
+            android:visibility="invisible"
+            android:id="@+id/blocker"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/setMarkupUrlToolbar"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

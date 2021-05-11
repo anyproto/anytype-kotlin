@@ -30,6 +30,7 @@ interface TextHolder {
     val content: TextInputWidget
 
     fun setCursor(item: BlockView.Cursor) {
+        Timber.d("Setting cursor: $item")
         item.cursor?.let {
             val length = content.text?.length ?: 0
             if (it in 0..length) {

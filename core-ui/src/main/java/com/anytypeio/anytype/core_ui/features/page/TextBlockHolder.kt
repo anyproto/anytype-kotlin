@@ -35,7 +35,7 @@ interface TextBlockHolder : TextHolder {
     ) {
         with(content) {
             setSpannableFactory(DefaultSpannableFactory())
-            setupSelectionActionMode(onContextMenuStyleClick)
+            //setupSelectionActionMode(onContextMenuStyleClick)
         }
     }
 
@@ -154,6 +154,18 @@ interface TextBlockHolder : TextHolder {
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
             }
+        }
+    }
+
+    fun applyGhostEditorSelection(item: BlockView.SupportGhostEditorSelection) {
+        content.editableText.removeSpans<GhostEditorSelectionSpan>()
+        item.ghostEditorSelection?.let { range ->
+            content.editableText.setSpan(
+                GhostEditorSelectionSpan(),
+                range.first,
+                range.last,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
         }
     }
 
@@ -277,6 +289,10 @@ interface TextBlockHolder : TextHolder {
 
         if (payload.isSearchHighlightChanged) {
             applySearchHighlight(item)
+        }
+
+        if (payload.isGhostEditorSelectionChanged) {
+            applyGhostEditorSelection(item)
         }
 
         if (payload.textColorChanged()) {

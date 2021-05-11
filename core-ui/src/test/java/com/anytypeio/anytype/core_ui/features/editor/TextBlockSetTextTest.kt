@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
+import com.anytypeio.anytype.core_ui.tools.CustomBetterLinkMovementMethod
 import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
-import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -140,7 +140,7 @@ class TextBlockSetTextTest : BlockAdapterTestSetup() {
         val testMM = holder.content.movementMethod
 
         assertEquals(
-            expected = BetterLinkMovementMethod::class.java,
+            expected = CustomBetterLinkMovementMethod::class.java,
             actual = testMM::class.java
         )
     }
@@ -175,7 +175,7 @@ class TextBlockSetTextTest : BlockAdapterTestSetup() {
         val testMM = holder.content.movementMethod
 
         assertEquals(
-            expected = BetterLinkMovementMethod::class.java,
+            expected = CustomBetterLinkMovementMethod::class.java,
             actual = testMM::class.java
         )
     }

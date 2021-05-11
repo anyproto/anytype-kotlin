@@ -46,4 +46,11 @@ interface Editor {
     class Memory(
         val selections: SelectionStateHolder
     )
+
+    sealed class Restore {
+        data class Selection(
+            val target: Id,
+            val range: IntRange,
+        ) : Restore()
+    }
 }

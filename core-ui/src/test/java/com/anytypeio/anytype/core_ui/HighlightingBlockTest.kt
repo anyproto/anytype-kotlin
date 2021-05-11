@@ -19,6 +19,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
@@ -95,6 +96,7 @@ class HighlightingBlockTest {
         onTextChanged: (String, Editable) -> Unit = { _, _ -> }
     ): BlockAdapter {
         return BlockAdapter(
+            restore = LinkedList(),
             blocks = views,
             onNonEmptyBlockBackspaceClicked = { _, _ -> },
             onEmptyBlockBackspaceClicked = {},

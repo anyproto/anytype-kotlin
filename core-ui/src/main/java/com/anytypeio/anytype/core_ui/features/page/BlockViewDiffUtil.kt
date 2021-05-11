@@ -137,6 +137,11 @@ class BlockViewDiffUtil(
                 changes.add(SEARCH_HIGHLIGHT_CHANGED)
         }
 
+        if (newBlock is BlockView.SupportGhostEditorSelection && oldBlock is BlockView.SupportGhostEditorSelection) {
+            if (newBlock.ghostEditorSelection != oldBlock.ghostEditorSelection)
+                changes.add(GHOST_EDITOR_SELECTION_CHANGED)
+        }
+
         if (newBlock is BlockView.Loadable && oldBlock is BlockView.Loadable) {
             if (newBlock.isLoading != oldBlock.isLoading)
                 changes.add(LOADING_STATE_CHANGED)
@@ -168,6 +173,7 @@ class BlockViewDiffUtil(
         val isSelectionChanged: Boolean get() = changes.contains(SELECTION_CHANGED)
         val isTitleIconChanged: Boolean get() = changes.contains(TITLE_ICON_CHANGED)
         val isSearchHighlightChanged: Boolean get() = changes.contains(SEARCH_HIGHLIGHT_CHANGED)
+        val isGhostEditorSelectionChanged: Boolean get() = changes.contains(GHOST_EDITOR_SELECTION_CHANGED)
         val isAlignmentChanged: Boolean get() = changes.contains(ALIGNMENT_CHANGED)
         val isTitleCheckboxChanged: Boolean get() = changes.contains(TITLE_CHECKBOX_CHANGED)
 
@@ -199,5 +205,6 @@ class BlockViewDiffUtil(
         const val LOADING_STATE_CHANGED = 15
         const val COVER_CHANGED = 16
         const val TITLE_CHECKBOX_CHANGED = 17
+        const val GHOST_EDITOR_SELECTION_CHANGED = 18
     }
 }

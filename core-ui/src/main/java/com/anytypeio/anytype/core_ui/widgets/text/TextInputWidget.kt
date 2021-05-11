@@ -13,16 +13,14 @@ import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
+import com.anytypeio.anytype.core_ui.tools.CustomBetterLinkMovementMethod
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
 import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightDrawer
 import com.anytypeio.anytype.core_utils.ext.multilineIme
-import com.anytypeio.anytype.core_utils.ext.toast
-import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import timber.log.Timber
 
 class TextInputWidget : AppCompatEditText {
@@ -223,12 +221,7 @@ class TextInputWidget : AppCompatEditText {
      *  Makes all links in the TextView object active.
      */
     private fun makeLinksActive() {
-        BetterLinkMovementMethod.linkify(Linkify.ALL, this)
-            .setOnLinkClickListener { _, url ->
-                if (BuildConfig.DEBUG) {
-                    context.toast("On link click $url")
-                }
-                false
-            }
+        Linkify.addLinks(this, Linkify.ALL)
+        movementMethod = CustomBetterLinkMovementMethod
     }
 }

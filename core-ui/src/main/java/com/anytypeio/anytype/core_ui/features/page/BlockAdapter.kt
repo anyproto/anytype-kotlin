@@ -69,6 +69,7 @@ import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
@@ -86,6 +87,7 @@ import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import kotlinx.android.synthetic.main.item_block_description.view.*
 import timber.log.Timber
+import java.util.*
 
 /**
  * Adapter for rendering list of blocks.
@@ -95,6 +97,7 @@ import timber.log.Timber
  * @see BlockViewDiffUtil
  */
 class BlockAdapter(
+    private var restore: Queue<Editor.Restore>,
     private var blocks: List<BlockView>,
     private val onDescriptionChanged: (BlockView.Description) -> Unit = {},
     private val onTextBlockTextChanged: (BlockView.Text) -> Unit,
@@ -788,6 +791,20 @@ class BlockAdapter(
                     is RelationViewHolder -> onBindViewHolder(holder, position)
                     is Description -> onBindViewHolder(holder, position)
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
+                }
+            }
+        }
+
+        if (restore.isNotEmpty()) {
+            val block = blocks[position]
+            val command = restore.poll()
+            if (command is Editor.Restore.Selection) {
+                if (block.id == command.target) {
+                    if (holder is TextHolder) {
+                        holder.content.post {
+                            holder.content.setSelection(command.range.first, command.range.last)
+                        }
+                    }
                 }
             }
         }

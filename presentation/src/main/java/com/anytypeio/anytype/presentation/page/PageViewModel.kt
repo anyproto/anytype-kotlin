@@ -57,6 +57,7 @@ import com.anytypeio.anytype.presentation.mapper.toMentionView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.page.ControlPanelMachine.Interactor
+import com.anytypeio.anytype.presentation.page.Editor.Restore
 import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeCategoriesForDivider
 import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForDotsDivider
 import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForLineDivider
@@ -98,6 +99,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.*
 import java.util.regex.Pattern
 import com.anytypeio.anytype.presentation.page.Editor.Mode as EditorMode
 
@@ -143,6 +145,9 @@ class PageViewModel(
     private val session = MutableStateFlow(Session.IDLE)
 
     private val views: List<BlockView> get() = orchestrator.stores.views.current()
+
+    val pending : Queue<Restore> = LinkedList()
+    val restore : Queue<Restore> = LinkedList()
 
     private val jobs = mutableListOf<Job>()
 
@@ -467,6 +472,14 @@ class PageViewModel(
                     )
                 }
             }
+            if (state.markupMainToolbar.isVisible) {
+                controlPanelInteractor.onEvent(
+                    event = ControlPanelMachine.Event.OnRefresh.Markup(
+                        target = document.find { block -> block.id == orchestrator.stores.focus.current().id },
+                        selection = orchestrator.stores.textSelection.current().selection
+                    )
+                )
+            }
         }
     }
 
@@ -605,37 +618,6 @@ class PageViewModel(
 
     fun onAddLinkPressed(blockId: String, link: String, range: IntRange) {
         applyLinkMarkup(blockId, link, range)
-    }
-
-    fun onUnlinkPressed(blockId: String, range: IntRange) {
-
-        val target = blocks.first { it.id == blockId }
-        val content = target.content<Content.Text>()
-        val marks = content.marks
-
-        viewModelScope.launch {
-            removeLinkMark(
-                params = RemoveLinkMark.Params(
-                    range = range,
-                    marks = marks
-                )
-            ).proceed(
-                failure = { Timber.e("Error update marks:${it.message}") },
-                success = {
-                    val newContent = content.copy(marks = it)
-                    val newBlock = target.copy(content = newContent)
-                    rerenderingBlocks(newBlock)
-                    proceedWithUpdatingText(
-                        intent = Intent.Text.UpdateText(
-                            context = context,
-                            text = newBlock.content.asText().text,
-                            target = target.id,
-                            marks = it
-                        )
-                    )
-                }
-            )
-        }
     }
 
     fun onSystemBackPressed(editorHasChildrenScreens: Boolean) {
@@ -810,10 +792,18 @@ class PageViewModel(
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {
+        Timber.d("onSelection changed: $id [$selection]")
         viewModelScope.launch {
             orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
         }
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnSelectionChanged(id, selection))
+        blocks.find { it.id == id }?.let { target ->
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.OnSelectionChanged(
+                    target = target,
+                    selection = selection
+                )
+            )
+        }
     }
 
     fun onBlockFocusChanged(id: String, hasFocus: Boolean) {
@@ -1129,7 +1119,11 @@ class PageViewModel(
 
     private fun updateFocus(id: Id) {
         Timber.d("Updating focus: $id")
-        viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.id(id)) }
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(
+                Editor.Focus.id(id)
+            )
+        }
     }
 
     private fun onBlockLongPressedClicked(target: String, dimensions: BlockDimensions) {
@@ -1225,7 +1219,7 @@ class PageViewModel(
         }
     }
 
-    private fun onStyleToolbarMarkupAction(type: Markup.Type, param: String? = null) {
+    fun onStyleToolbarMarkupAction(type: Markup.Type, param: String? = null) {
         viewModelScope.launch {
             markupActionPipeline.send(
                 MarkupAction(
@@ -2776,7 +2770,6 @@ class PageViewModel(
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
             }
         }
-
     }
 
     private fun onBlockMultiSelectClicked(target: Id) {
@@ -3639,7 +3632,7 @@ class PageViewModel(
                 val items = listOf(SlashItem.Subheader.MediaWithBack) + SlashExtensions.getMediaItems()
                 onSlashCommand(SlashCommand.ShowMediaItems(items))
             }
-            is SlashItem.Main.Relations -> {
+            is SlashItem.Main.Relations  -> {
                 val relations = orchestrator.stores.relations.current()
                 val details = orchestrator.stores.details.current()
                 val detail = details.details[context]
@@ -3915,5 +3908,122 @@ class PageViewModel(
             }
         }
     }
+    //endregion
+
+    //region MARKUP TOOLBAR
+
+    fun onMarkupUrlClicked() {
+
+        val target = orchestrator.stores.focus.current().id
+        val selection = orchestrator.stores.textSelection.current().selection!!
+
+        pending.add(
+            Restore.Selection(
+                target = target,
+                range = selection
+            )
+        )
+
+        val update = views.map { view ->
+            if (view.id == target) {
+                view.setGhostEditorSelection(selection)
+            } else {
+                view
+            }
+        }
+
+        viewModelScope.launch { orchestrator.stores.views.update(update) }
+        viewModelScope.launch { renderCommand.send(Unit) }
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.MarkupToolbar.OnMarkupToolbarUrlClicked
+        )
+    }
+
+    fun onSetLink(url: String) {
+        val range = orchestrator.stores.textSelection.current().selection
+        if (range != null) {
+            val target = orchestrator.stores.focus.current().id
+            restore.add(pending.poll())
+            if (url.isNotEmpty())
+                applyLinkMarkup(
+                    blockId = target,
+                    link = url,
+                    range = range.first..range.last.dec()
+                )
+            else
+                onUnlinkPressed(
+                    blockId = target,
+                    range = range.first..range.last.dec()
+                )
+            controlPanelInteractor.onEvent(
+                event = ControlPanelMachine.Event.MarkupToolbar.OnMarkupUrlSet
+            )
+        }
+    }
+
+    fun onBlockerClicked() {
+        val target = orchestrator.stores.focus.current().id
+        val update = views.map { view ->
+            if (view.id == target) {
+                view.setGhostEditorSelection(null).apply {
+                    if (this is Focusable) {
+                        isFocused = true
+                    }
+                }
+            } else {
+                view
+            }
+        }
+        restore.add(pending.poll())
+        viewModelScope.launch { orchestrator.stores.views.update(update) }
+        viewModelScope.launch { renderCommand.send(Unit) }
+        controlPanelInteractor.onEvent(
+            event = ControlPanelMachine.Event.MarkupToolbar.OnBlockerClicked
+        )
+    }
+
+    fun onUnlinkPressed(blockId: String, range: IntRange) {
+
+        val target = blocks.first { it.id == blockId }
+        val content = target.content<Content.Text>()
+        val marks = content.marks
+
+        viewModelScope.launch {
+            removeLinkMark(
+                params = RemoveLinkMark.Params(
+                    range = range,
+                    marks = marks
+                )
+            ).proceed(
+                failure = { Timber.e("Error update marks:${it.message}") },
+                success = {
+                    val newContent = content.copy(marks = it)
+                    val newBlock = target.copy(content = newContent)
+                    rerenderingBlocks(newBlock)
+                    proceedWithUpdatingText(
+                        intent = Intent.Text.UpdateText(
+                            context = context,
+                            text = newBlock.content.asText().text,
+                            target = target.id,
+                            marks = it
+                        )
+                    )
+                }
+            )
+        }
+    }
+
+    fun onMarkupColorToggleClicked() {
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.MarkupToolbar.OnMarkupColorToggleClicked
+        )
+    }
+
+    fun onMarkupHighlightToggleClicked() {
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.MarkupToolbar.OnMarkupHighlightToggleClicked
+        )
+    }
+
     //endregion
 }

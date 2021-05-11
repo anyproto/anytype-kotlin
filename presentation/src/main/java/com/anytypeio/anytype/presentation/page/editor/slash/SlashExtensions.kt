@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.page.editor.slash
 
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
 
 fun List<ObjectType>.toView(): List<SlashItem.ObjectType> = map { oType ->
@@ -85,4 +85,30 @@ object SlashExtensions {
         SlashItem.Alignment.Center,
         SlashItem.Alignment.Right
     )
+
+    fun getColorItems(code: String?): List<SlashItem.Color> =
+        ThemeColor.values().map { themeColor ->
+            val isSelected = if (themeColor.title == ThemeColor.DEFAULT.title && code == null) {
+                true
+            } else {
+                themeColor.title == code
+            }
+            SlashItem.Color.Text(
+                code = themeColor.title,
+                isSelected = isSelected
+            )
+        }
+
+    fun getBackgroundItems(code: String?): List<SlashItem.Color> =
+        ThemeColor.values().map { themeColor ->
+            val isSelected = if (themeColor.title == ThemeColor.DEFAULT.title && code == null) {
+                true
+            } else {
+                themeColor.title == code
+            }
+            SlashItem.Color.Background(
+                code = themeColor.title,
+                isSelected = isSelected
+            )
+        }
 }

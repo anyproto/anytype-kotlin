@@ -7,7 +7,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.features.page.slash.holders.SlashAlignmentAdapter
 import com.anytypeio.anytype.core_ui.tools.SlashHelper
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashCommand
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
@@ -90,6 +89,22 @@ class SlashWidget @JvmOverloads constructor(
         )
     }
 
+    private val colorAdapter by lazy {
+        SlashColorAdapter(
+            items = listOf(),
+            clicks = { _clickEvents.offer(it) },
+            clickBack = { _backEvent.offer(true) }
+        )
+    }
+
+    private val backgroundAdapter by lazy {
+        SlashColorAdapter(
+            items = listOf(),
+            clicks = { _clickEvents.offer(it) },
+            clickBack = { _backEvent.offer(true) }
+        )
+    }
+
     private val concatAdapter = ConcatAdapter(
         mainAdapter,
         styleAdapter,
@@ -98,7 +113,9 @@ class SlashWidget @JvmOverloads constructor(
         relationsAdapter,
         otherAdapter,
         actionsAdapter,
-        alignAdapter
+        alignAdapter,
+        colorAdapter,
+        backgroundAdapter
     )
 
     init {
@@ -127,6 +144,8 @@ class SlashWidget @JvmOverloads constructor(
                 otherAdapter.clear()
                 actionsAdapter.clear()
                 alignAdapter.clear()
+                colorAdapter.clear()
+                backgroundAdapter.clear()
             }
             is SlashCommand.ShowStyleItems -> {
                 styleAdapter.update(command.items)
@@ -139,6 +158,8 @@ class SlashWidget @JvmOverloads constructor(
                 otherAdapter.clear()
                 actionsAdapter.clear()
                 alignAdapter.clear()
+                colorAdapter.clear()
+                backgroundAdapter.clear()
             }
             is SlashCommand.ShowMediaItems -> {
                 mediaAdapter.update(command.items)
@@ -151,6 +172,8 @@ class SlashWidget @JvmOverloads constructor(
                 otherAdapter.clear()
                 actionsAdapter.clear()
                 alignAdapter.clear()
+                colorAdapter.clear()
+                backgroundAdapter.clear()
             }
             is SlashCommand.ShowRelations -> {
                 relationsAdapter.update(command.relations)
@@ -163,6 +186,8 @@ class SlashWidget @JvmOverloads constructor(
                 otherAdapter.clear()
                 actionsAdapter.clear()
                 alignAdapter.clear()
+                colorAdapter.clear()
+                backgroundAdapter.clear()
             }
             is SlashCommand.ShowObjectTypes -> {
                 objectTypesAdapter.update(command.items)
@@ -175,6 +200,8 @@ class SlashWidget @JvmOverloads constructor(
                 otherAdapter.clear()
                 actionsAdapter.clear()
                 alignAdapter.clear()
+                colorAdapter.clear()
+                backgroundAdapter.clear()
             }
             is SlashCommand.ShowOtherItems -> {
                 otherAdapter.update(command.items)
@@ -187,6 +214,8 @@ class SlashWidget @JvmOverloads constructor(
                 relationsAdapter.clear()
                 actionsAdapter.clear()
                 alignAdapter.clear()
+                colorAdapter.clear()
+                backgroundAdapter.clear()
             }
             is SlashCommand.ShowActionItems -> {
                 actionsAdapter.update(command.items)
@@ -199,6 +228,8 @@ class SlashWidget @JvmOverloads constructor(
                 relationsAdapter.clear()
                 otherAdapter.clear()
                 alignAdapter.clear()
+                colorAdapter.clear()
+                backgroundAdapter.clear()
             }
             is SlashCommand.ShowAlignmentItems -> {
                 alignAdapter.update(command.items)
@@ -211,6 +242,36 @@ class SlashWidget @JvmOverloads constructor(
                 relationsAdapter.clear()
                 otherAdapter.clear()
                 actionsAdapter.clear()
+                colorAdapter.clear()
+                backgroundAdapter.clear()
+            }
+            is SlashCommand.ShowColorItems -> {
+                colorAdapter.update(command.items)
+                rvSlash.smoothScrollToPosition(0)
+
+                mainAdapter.clear()
+                styleAdapter.clear()
+                mediaAdapter.clear()
+                objectTypesAdapter.clear()
+                relationsAdapter.clear()
+                otherAdapter.clear()
+                actionsAdapter.clear()
+                alignAdapter.clear()
+                backgroundAdapter.clear()
+            }
+            is SlashCommand.ShowBackgroundItems -> {
+                backgroundAdapter.update(command.items)
+                rvSlash.smoothScrollToPosition(0)
+
+                mainAdapter.clear()
+                styleAdapter.clear()
+                mediaAdapter.clear()
+                objectTypesAdapter.clear()
+                relationsAdapter.clear()
+                otherAdapter.clear()
+                actionsAdapter.clear()
+                alignAdapter.clear()
+                colorAdapter.clear()
             }
             is SlashCommand.FilterItems -> {
                 val filter = command.filter.removePrefix(SLASH_PREFIX)

@@ -1,9 +1,11 @@
-package com.anytypeio.anytype.core_ui.features.page.slash.holders
+package com.anytypeio.anytype.core_ui.features.page.slash
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.features.page.slash.holders.AlignMenuHolder
+import com.anytypeio.anytype.core_ui.features.page.slash.holders.SubheaderMenuHolder
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import kotlinx.android.synthetic.main.item_slash_widget_subheader.view.*
 

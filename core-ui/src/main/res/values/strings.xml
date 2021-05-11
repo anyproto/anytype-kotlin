@@ -374,6 +374,8 @@
     <string name="slash_widget_align_center">Center</string>
     <string name="slash_widget_align_left">Left</string>
 
+    <string name="slash_widget_background_item">%1$s background</string>
+
     <string name="dv_filter_checkbox_checked">checked</string>
     <string name="dv_filter_checkbox_not_checked">not checked</string>
     <string name="paste_or_type_a_url">Paste or type a URL</string>

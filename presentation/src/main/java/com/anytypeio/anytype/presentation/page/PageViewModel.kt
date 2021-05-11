@@ -37,7 +37,6 @@ import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
@@ -3683,6 +3682,21 @@ class PageViewModel(
                 val items = listOf(SlashItem.Subheader.AlignmentWithBack) + SlashExtensions.getAlignmentItems()
                 onSlashCommand(SlashCommand.ShowAlignmentItems(items))
             }
+            is SlashItem.Main.Color -> {
+                val block = blocks.first { it.id == targetId }
+                val items = listOf(SlashItem.Subheader.ColorWithBack) + SlashExtensions.getColorItems(
+                    code = block.content.asText().color
+                )
+                onSlashCommand(SlashCommand.ShowColorItems(items))
+            }
+            is SlashItem.Main.Background -> {
+                val block = blocks.first { it.id == targetId }
+                val items = listOf(SlashItem.Subheader.BackgroundWithBack) +
+                        SlashExtensions.getBackgroundItems(
+                    code = block.content.asText().backgroundColor
+                )
+                onSlashCommand(SlashCommand.ShowBackgroundItems(items))
+            }
             is SlashItem.Style.Type -> {
                 onSlashStyleTypeItemClicked(item, targetId)
             }
@@ -3707,9 +3721,43 @@ class PageViewModel(
             is SlashItem.Alignment -> {
                 onSlashAlignmentItemClicked(item, targetId)
             }
+            is SlashItem.Color -> {
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                onSlashItemColorClicked(item, targetId)
+            }
             else -> {
                 Timber.d("PRESSED ON SLASH ITEM : $item")
             }
+        }
+    }
+
+    private fun onSlashItemColorClicked(item: SlashItem.Color, targetId: Id) {
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(
+                Editor.Focus(
+                    id = targetId,
+                    cursor = Editor.Cursor.End
+                )
+            )
+        }
+        val intent = when (item) {
+            is SlashItem.Color.Background -> {
+                Intent.Text.UpdateBackgroundColor(
+                    context = context,
+                    targets = listOf(targetId),
+                    color = item.code
+                )
+            }
+            is SlashItem.Color.Text -> {
+                Intent.Text.UpdateColor(
+                    context = context,
+                    target = targetId,
+                    color = item.code
+                )
+            }
+        }
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(intent)
         }
     }
 

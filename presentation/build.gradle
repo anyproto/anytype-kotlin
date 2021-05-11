@@ -81,5 +81,6 @@ dependencies {
     testImplementation unitTestDependencies.liveDataTesting
     testImplementation unitTestDependencies.archCoreTesting
     testImplementation unitTestDependencies.androidXTestCore
+    testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.timberJUnit
 }

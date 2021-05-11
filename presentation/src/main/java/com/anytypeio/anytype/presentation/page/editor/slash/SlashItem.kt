@@ -125,10 +125,17 @@ sealed class SlashItem {
     //endregion
 
     //region ALIGNMENT
-    sealed class Alignment : SlashItem(){
-        object Left: Alignment()
-        object Center: Alignment()
-        object Right: Alignment()
+    sealed class Alignment : SlashItem() {
+        object Left : Alignment()
+        object Center : Alignment()
+        object Right : Alignment()
+    }
+    //endregion
+
+    //region TEXT COLOR & BACKGROUND
+    sealed class Color: SlashItem() {
+        data class Text(val code: String, val isSelected: Boolean) : Color()
+        data class Background(val code: String, val isSelected: Boolean) : Color()
     }
     //endregion
 }

@@ -416,4 +416,24 @@ open class EditorPresentationTestSetup {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
         }
     }
+
+    fun stubUpdateBackground() {
+        updateBackgroundColor.stub {
+            onBlocking {
+                invoke(any())
+            } doReturn Either.Right(
+                Payload(context = root, events = emptyList())
+            )
+        }
+    }
+
+    fun stubUpdateTextColor() {
+        updateTextColor.stub {
+            onBlocking {
+                invoke(any())
+            } doReturn Either.Right(
+                Payload(context = root, events = emptyList())
+            )
+        }
+    }
 }

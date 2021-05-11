@@ -15,46 +15,55 @@ fun List<BlockView>.singleStylingMode(
         is BlockView.Text.Paragraph -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected,
+            isFocused = false,
             cursor = null
         )
         is BlockView.Text.Checkbox -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected,
+            isFocused = false,
             cursor = null
         )
         is BlockView.Text.Bulleted -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected,
+            isFocused = false,
             cursor = null
         )
         is BlockView.Text.Numbered -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected,
+            isFocused = false,
             cursor = null
         )
         is BlockView.Text.Highlight -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected,
+            isFocused = false,
             cursor = null
         )
         is BlockView.Text.Header.One -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected,
+            isFocused = false,
             cursor = null
         )
         is BlockView.Text.Header.Two -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected,
+            isFocused = false,
             cursor = null
         )
         is BlockView.Text.Header.Three -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected,
+            isFocused = false,
             cursor = null
         )
         is BlockView.Text.Toggle -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected,
+            isFocused = false,
             cursor = null
         )
         is BlockView.Code -> view.copy(

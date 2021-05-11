@@ -1919,6 +1919,7 @@ class PageViewModel(
             cursor = orchestrator.stores.textSelection.current().selection?.first
         )
         viewModelScope.launch {
+            orchestrator.stores.focus.update(Editor.Focus.empty())
             orchestrator.stores.views.update(views.singleStylingMode(target))
             renderCommand.send(Unit)
         }
@@ -1947,6 +1948,15 @@ class PageViewModel(
             val cursor = (mode as EditorMode.Styling.Single).cursor
             mode = EditorMode.Edit
             viewModelScope.launch {
+                orchestrator.stores.focus.update(
+                    Editor.Focus(
+                        id = target,
+                        cursor = cursor?.let { c -> Editor.Cursor.Range(c..c) }
+                    )
+                )
+                orchestrator.stores.textSelection.update(
+                    Editor.TextSelection(target, cursor?.let { it..it })
+                )
                 val focused = !orchestrator.stores.focus.current().isEmpty
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnClose(focused))
                 orchestrator.stores.views.update(

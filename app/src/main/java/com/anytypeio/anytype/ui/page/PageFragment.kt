@@ -601,6 +601,14 @@ open class PageFragment :
             vm.onBlockStyleToolbarColorClicked()
         }
 
+        lifecycleScope.subscribe(styleToolbarColors.events) {
+            vm.onStylingToolbarEvent(it)
+        }
+
+        lifecycleScope.subscribe(styleToolbarOther.actions) {
+            vm.onStylingToolbarEvent(it)
+        }
+
         mentionSuggesterToolbar.setupClicks(
             mentionClick = vm::onMentionSuggestClick,
             newPageClick = vm::onAddMentionNewPageClicked

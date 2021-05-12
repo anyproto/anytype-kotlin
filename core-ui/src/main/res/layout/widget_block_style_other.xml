@@ -189,7 +189,7 @@
         style="@style/BlockStyleToolbarRightBlockStyle"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/setUrlButton"
+        app:layout_constraintEnd_toStartOf="@+id/setUrl"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/alignmentMiddle"
         app:layout_constraintTop_toBottomOf="@+id/strikethrough">
@@ -204,7 +204,7 @@
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/setUrlButton"
+        android:id="@+id/setUrl"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"

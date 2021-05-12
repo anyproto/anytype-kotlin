@@ -3645,62 +3645,54 @@ class PageViewModel(
     private fun proceedWithSlashItem(item: SlashItem, targetId: Id) {
         when (item) {
             is SlashItem.Main.Style -> {
-                val items = listOf(SlashItem.Subheader.StyleWithBack) + SlashExtensions.getStyleItems()
-                onSlashCommand(SlashCommand.ShowStyleItems(items))
-            }
-            is SlashItem.Main.Media -> {
-                val items = listOf(SlashItem.Subheader.MediaWithBack) + SlashExtensions.getMediaItems()
-                onSlashCommand(SlashCommand.ShowMediaItems(items))
-            }
-            is SlashItem.Main.Relations  -> {
-                val relations = orchestrator.stores.relations.current()
-                val details = orchestrator.stores.details.current()
-                val detail = details.details[context]
-                val values = detail?.map ?: emptyMap()
-                val update = relations.views(
-                    details = details,
-                    values = values,
-                    urlBuilder = urlBuilder
-                ).map { RelationListViewModel.Model.Item(it) }
+                val items =
+                    listOf(SlashItem.Subheader.StyleWithBack) + SlashExtensions.getStyleItems()
                 onSlashCommand(
-                    SlashCommand.ShowRelations(
-                        relations = listOf(RelationListViewModel.Model.Section.NoSection) + update
+                    SlashCommand.UpdateItems.empty().copy(
+                        styleItems = items
                     )
                 )
             }
-            is SlashItem.Main.Objects -> {
-                viewModelScope.launch {
-                    getObjectTypes.invoke(Unit).proceed(
-                        failure = {
-                            Timber.e(it, "Error while getting object types")
-                        },
-                        success = { objectTypes ->
-                            val items = listOf(SlashItem.Subheader.ObjectType) + objectTypes.toView()
-                            onSlashCommand(
-                                SlashCommand.ShowObjectTypes(items)
-                            )
-                        }
+            is SlashItem.Main.Media -> {
+                val items = listOf(SlashItem.Subheader.MediaWithBack) + SlashExtensions.getMediaItems()
+                onSlashCommand(
+                    SlashCommand.UpdateItems.empty().copy(
+                        mediaItems = items
                     )
-                }
+                )
+            }
+            is SlashItem.Main.Relations -> {
+                getRelations { proceedWithRelations(it) }
+            }
+            is SlashItem.Main.Objects -> {
+                getObjectTypes { proceedWithObjectTypes(it) }
             }
             is SlashItem.Main.Other -> {
                 val items = listOf(SlashItem.Subheader.OtherWithBack) + SlashExtensions.getOtherItems()
-                onSlashCommand(SlashCommand.ShowOtherItems(items))
+                onSlashCommand(SlashCommand.UpdateItems.empty().copy(
+                    otherItems = items
+                ))
             }
             is SlashItem.Main.Actions -> {
                 val items = listOf(SlashItem.Subheader.ActionsWithBack) + SlashExtensions.getActionItems()
-                onSlashCommand(SlashCommand.ShowActionItems(items))
+                onSlashCommand(SlashCommand.UpdateItems.empty().copy(
+                    actionsItems = items
+                ))
             }
             is SlashItem.Main.Alignment -> {
                 val items = listOf(SlashItem.Subheader.AlignmentWithBack) + SlashExtensions.getAlignmentItems()
-                onSlashCommand(SlashCommand.ShowAlignmentItems(items))
+                onSlashCommand(SlashCommand.UpdateItems.empty().copy(
+                    alignmentItems = items
+                ))
             }
             is SlashItem.Main.Color -> {
                 val block = blocks.first { it.id == targetId }
                 val items = listOf(SlashItem.Subheader.ColorWithBack) + SlashExtensions.getColorItems(
                     code = block.content.asText().color
                 )
-                onSlashCommand(SlashCommand.ShowColorItems(items))
+                onSlashCommand(SlashCommand.UpdateItems.empty().copy(
+                    colorItems = items
+                ))
             }
             is SlashItem.Main.Background -> {
                 val block = blocks.first { it.id == targetId }
@@ -3708,7 +3700,9 @@ class PageViewModel(
                         SlashExtensions.getBackgroundItems(
                     code = block.content.asText().backgroundColor
                 )
-                onSlashCommand(SlashCommand.ShowBackgroundItems(items))
+                onSlashCommand(SlashCommand.UpdateItems.empty().copy(
+                    backgroundItems = items
+                ))
             }
             is SlashItem.Style.Type -> {
                 onSlashStyleTypeItemClicked(item, targetId)
@@ -3738,10 +3732,54 @@ class PageViewModel(
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onSlashItemColorClicked(item, targetId)
             }
+            SlashItem.Back -> onSlashBackClicked()
             else -> {
                 Timber.d("PRESSED ON SLASH ITEM : $item")
             }
         }
+    }
+
+    private fun getObjectTypes(action: (List<ObjectType>) -> Unit) {
+        viewModelScope.launch {
+            getObjectTypes.invoke(Unit).proceed(
+                failure = {
+                    Timber.e(it, "Error while getting object types")
+                },
+                success = { objectTypes ->
+                    action.invoke(objectTypes)
+                }
+            )
+        }
+    }
+
+    private fun getRelations(action: (List<RelationListViewModel.Model>) -> Unit) {
+        val relations = orchestrator.stores.relations.current()
+        val details = orchestrator.stores.details.current()
+        val detail = details.details[context]
+        val values = detail?.map ?: emptyMap()
+        val update = relations.views(
+            details = details,
+            values = values,
+            urlBuilder = urlBuilder
+        )
+            .map { RelationListViewModel.Model.Item(it) }
+        action.invoke(update)
+    }
+
+    private fun proceedWithObjectTypes(objectTypes: List<ObjectType>) {
+        onSlashCommand(
+            SlashCommand.UpdateItems.empty().copy(
+                objectItems = SlashExtensions.getObjectTypeItems(objectTypes = objectTypes)
+            )
+        )
+    }
+
+    private fun proceedWithRelations(relations: List<RelationListViewModel.Model>) {
+        onSlashCommand(
+            SlashCommand.UpdateItems.empty().copy(
+                relationItems = SlashExtensions.getRelationItems(relations)
+            )
+        )
     }
 
     private fun onSlashItemColorClicked(item: SlashItem.Color, targetId: Id) {
@@ -3889,44 +3927,17 @@ class PageViewModel(
         val items = SlashExtensions.getSlashMainItems()
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.Slash.Update(
-                command = SlashCommand.ShowMainItems(items)
+                command = SlashCommand.UpdateItems.empty().copy(
+                    mainItems = items
+                )
             )
         )
     }
 
-    fun onSlashEvent(event: SlashEvent) {
-        when (event) {
-            is SlashEvent.Filter -> {
-                if (event.filter.length == 1 && event.filter[0] == '/') {
-                    val items = SlashExtensions.getSlashMainItems()
-                    controlPanelInteractor.onEvent(
-                        ControlPanelMachine.Event.Slash.Update(
-                            command = SlashCommand.ShowMainItems(items)
-                        )
-                    )
-                } else {
-                    controlPanelInteractor.onEvent(
-                        ControlPanelMachine.Event.Slash.Update(
-                            command = SlashCommand.FilterItems(
-                                filter = event.filter.toString(),
-                                viewType = event.viewType
-                            )
-                        )
-                    )
-                }
-            }
-            is SlashEvent.Start -> {
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.Slash.OnStart(
-                        cursorCoordinate = event.cursorCoordinate,
-                        slashFrom = event.slashStart
-                    )
-                )
-            }
-            SlashEvent.Stop -> {
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-            }
-        }
+    fun onSlashTextWatcherEvent(event: SlashEvent) {
+        controlPanelInteractor.onEvent(
+            event = SlashExtensions.getControlPanelMachineEvent(event)
+        )
     }
     //endregion
 

@@ -90,7 +90,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -125,7 +125,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         assertEquals(
             expected = expected,
-            actual = (command as SlashCommand.ShowColorItems).items
+            actual = (command as SlashCommand.UpdateItems).colorItems
         )
     }
 
@@ -177,7 +177,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -191,7 +191,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.ShowColorItems
+        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
 
         assertNotNull(command)
 
@@ -212,7 +212,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         assertEquals(
             expected = expected,
-            actual = command.items
+            actual = command.colorItems
         )
     }
 
@@ -264,7 +264,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -278,7 +278,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.ShowColorItems
+        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
 
         assertNotNull(command)
 
@@ -299,7 +299,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         assertEquals(
             expected = expected,
-            actual = command.items
+            actual = command.colorItems
         )
     }
 
@@ -320,7 +320,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -356,7 +356,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -392,7 +392,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -467,7 +467,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -481,7 +481,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.ShowBackgroundItems
+        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
 
         assertNotNull(command)
 
@@ -502,7 +502,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         assertEquals(
             expected = expected,
-            actual = command.items
+            actual = command.backgroundItems
         )
     }
 
@@ -554,7 +554,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -568,7 +568,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.ShowBackgroundItems
+        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
 
         assertNotNull(command)
 
@@ -589,7 +589,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         assertEquals(
             expected = expected,
-            actual = command.items
+            actual = command.backgroundItems
         )
     }
 
@@ -641,7 +641,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -655,7 +655,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.ShowBackgroundItems
+        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
 
         assertNotNull(command)
 
@@ -676,7 +676,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         assertEquals(
             expected = expected,
-            actual = command.items
+            actual = command.backgroundItems
         )
     }
 
@@ -697,7 +697,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -733,7 +733,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -769,7 +769,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0

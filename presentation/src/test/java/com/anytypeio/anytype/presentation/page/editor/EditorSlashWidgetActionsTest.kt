@@ -66,7 +66,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -101,7 +101,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -133,7 +133,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         vm.onStart(root)
 
         vm.apply {
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -170,7 +170,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -212,7 +212,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -249,7 +249,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -283,7 +283,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -322,7 +322,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -360,7 +360,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 selection = IntRange(3, 3)
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -401,7 +401,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -435,7 +435,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -477,7 +477,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -516,7 +516,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -567,7 +567,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -640,7 +640,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0

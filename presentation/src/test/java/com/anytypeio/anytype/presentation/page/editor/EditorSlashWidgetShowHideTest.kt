@@ -52,7 +52,7 @@ class EditorSlashWidgetShowHideTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
@@ -84,7 +84,7 @@ class EditorSlashWidgetShowHideTest : EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
-            onSlashEvent(
+            onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0

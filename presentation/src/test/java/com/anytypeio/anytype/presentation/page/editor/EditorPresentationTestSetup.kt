@@ -436,4 +436,14 @@ open class EditorPresentationTestSetup {
             )
         }
     }
+
+    fun stubGetObjectTypes(objectTypes: List<ObjectType>) {
+        getObjectTypes.stub {
+            onBlocking {
+                invoke(any())
+            } doReturn Either.Right(
+                objectTypes
+            )
+        }
+    }
 }

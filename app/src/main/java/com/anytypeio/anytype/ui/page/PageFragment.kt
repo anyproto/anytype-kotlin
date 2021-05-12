@@ -254,7 +254,7 @@ open class PageFragment :
             onClickListener = vm::onClickListener,
             clipboardInterceptor = this,
             onMentionEvent = vm::onMentionEvent,
-            onSlashEvent = vm::onSlashEvent,
+            onSlashEvent = vm::onSlashTextWatcherEvent,
             onBackPressedCallback = { vm.onBackPressedCallback() }
         )
     }
@@ -617,12 +617,6 @@ open class PageFragment :
         lifecycleScope.launch {
             slashWidget.clickEvents.collect { item ->
                 vm.onSlashItemClicked(item)
-            }
-        }
-
-        lifecycleScope.launch {
-            slashWidget.backEvent.collect {
-                vm.onSlashBackClicked()
             }
         }
 

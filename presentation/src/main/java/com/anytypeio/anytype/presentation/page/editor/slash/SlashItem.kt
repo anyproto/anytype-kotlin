@@ -5,17 +5,33 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 
 sealed class SlashCommand {
-    data class FilterItems(val filter: String, val viewType: Int) : SlashCommand()
-    data class ShowMainItems(val items: List<SlashItem>) : SlashCommand()
-    data class ShowStyleItems(val items: List<SlashItem>) : SlashCommand()
-    data class ShowMediaItems(val items: List<SlashItem>): SlashCommand()
-    data class ShowOtherItems(val items: List<SlashItem>) : SlashCommand()
-    data class ShowRelations(val relations: List<RelationListViewModel.Model>): SlashCommand()
-    data class ShowObjectTypes(val items: List<SlashItem>): SlashCommand()
-    data class ShowActionItems(val items: List<SlashItem>) : SlashCommand()
-    data class ShowAlignmentItems(val items: List<SlashItem>) : SlashCommand()
-    data class ShowColorItems(val items: List<SlashItem>) : SlashCommand()
-    data class ShowBackgroundItems(val items: List<SlashItem>) : SlashCommand()
+    data class UpdateItems(
+        val mainItems: List<SlashItem>,
+        val styleItems: List<SlashItem>,
+        val mediaItems: List<SlashItem>,
+        val objectItems: List<SlashItem>,
+        val relationItems: List<RelationListViewModel.Model>,
+        val otherItems: List<SlashItem>,
+        val actionsItems: List<SlashItem>,
+        val alignmentItems: List<SlashItem>,
+        val colorItems: List<SlashItem>,
+        val backgroundItems: List<SlashItem>
+    ) : SlashCommand() {
+        companion object {
+            fun empty() = UpdateItems(
+                mainItems = emptyList(),
+                styleItems = emptyList(),
+                mediaItems = emptyList(),
+                objectItems = emptyList(),
+                relationItems = emptyList(),
+                otherItems = emptyList(),
+                actionsItems = emptyList(),
+                alignmentItems = emptyList(),
+                colorItems = emptyList(),
+                backgroundItems = emptyList()
+            )
+        }
+    }
 }
 
 sealed class SlashItem {
@@ -27,6 +43,7 @@ sealed class SlashItem {
         object Media: Subheader()
         object MediaWithBack: Subheader()
         object ObjectType: Subheader()
+        object ObjectTypeWithBlack: Subheader()
         object Other: Subheader()
         object OtherWithBack: Subheader()
         object Actions: Subheader()
@@ -39,6 +56,8 @@ sealed class SlashItem {
         object BackgroundWithBack: Subheader()
     }
     //endregion
+
+    object Back: SlashItem()
 
     //region MAIN
     sealed class Main : SlashItem() {

@@ -13,8 +13,12 @@ class SlashMainAdapter(
 ) : RecyclerView.Adapter<MainMenuHolder>() {
 
     fun update(items: List<SlashItem>) {
-        this.items = items
-        notifyDataSetChanged()
+        if (items.isEmpty()) {
+            clear()
+        } else {
+            this.items = items
+            notifyDataSetChanged()
+        }
     }
 
     fun clear() {

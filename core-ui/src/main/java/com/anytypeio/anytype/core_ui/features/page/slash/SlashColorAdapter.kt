@@ -11,13 +11,16 @@ import kotlinx.android.synthetic.main.item_slash_widget_subheader.view.*
 
 class SlashColorAdapter(
     private var items: List<SlashItem>,
-    private val clicks: (SlashItem) -> Unit,
-    private val clickBack: () -> Unit
+    private val clicks: (SlashItem) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun update(items: List<SlashItem>) {
-        this.items = items
-        notifyDataSetChanged()
+        if (items.isEmpty()) {
+            clear()
+        } else {
+            this.items = items
+            notifyDataSetChanged()
+        }
     }
 
     fun clear() {
@@ -45,7 +48,7 @@ class SlashColorAdapter(
                     view = inflater.inflate(viewType, parent, false)
                 ).apply {
                     itemView.flBack.setOnClickListener {
-                        clickBack.invoke()
+                        clicks.invoke(SlashItem.Back)
                     }
                 }
             }

@@ -7,7 +7,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.tools.SlashHelper
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashCommand
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import kotlinx.android.synthetic.main.widget_editor_slash.view.*
@@ -23,10 +22,6 @@ class SlashWidget @JvmOverloads constructor(
     private val _clickEvents = Channel<SlashItem>()
     val clickEvents = _clickEvents.consumeAsFlow()
 
-    private val _backEvent = Channel<Boolean>()
-    val backEvent = _backEvent.consumeAsFlow()
-
-
     private val mainAdapter by lazy {
         SlashMainAdapter(
             items = listOf(),
@@ -37,24 +32,21 @@ class SlashWidget @JvmOverloads constructor(
     private val styleAdapter by lazy {
         SlashStyleAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) },
-            clickBack = { _backEvent.offer(true) }
+            clicks = { _clickEvents.offer(it) }
         )
     }
 
     private val mediaAdapter by lazy {
         SlashMediaAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) },
-            clickBack = { _backEvent.offer(true) }
+            clicks = { _clickEvents.offer(it) }
         )
     }
 
     private val objectTypesAdapter by lazy {
         SlashObjectTypesAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) },
-            clickBack = { _backEvent.offer(true) }
+            clicks = { _clickEvents.offer(it) }
         )
     }
 
@@ -68,40 +60,35 @@ class SlashWidget @JvmOverloads constructor(
     private val otherAdapter by lazy {
         SlashOtherAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) },
-            clickBack = { _backEvent.offer(true) }
+            clicks = { _clickEvents.offer(it) }
         )
     }
 
     private val actionsAdapter by lazy {
         SlashActionsAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) },
-            clickBack = { _backEvent.offer(true) }
+            clicks = { _clickEvents.offer(it) }
         )
     }
 
     private val alignAdapter by lazy {
         SlashAlignmentAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) },
-            clickBack = { _backEvent.offer(true) }
+            clicks = { _clickEvents.offer(it) }
         )
     }
 
     private val colorAdapter by lazy {
         SlashColorAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) },
-            clickBack = { _backEvent.offer(true) }
+            clicks = { _clickEvents.offer(it) }
         )
     }
 
     private val backgroundAdapter by lazy {
         SlashColorAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) },
-            clickBack = { _backEvent.offer(true) }
+            clicks = { _clickEvents.offer(it) }
         )
     }
 
@@ -133,153 +120,23 @@ class SlashWidget @JvmOverloads constructor(
 
     fun onCommand(command: SlashCommand) {
         when (command) {
-            is SlashCommand.ShowMainItems -> {
-                mainAdapter.update(command.items)
+            is SlashCommand.UpdateItems -> {
                 rvSlash.smoothScrollToPosition(0)
 
-                styleAdapter.clear()
-                mediaAdapter.clear()
-                objectTypesAdapter.clear()
-                relationsAdapter.clear()
-                otherAdapter.clear()
-                actionsAdapter.clear()
-                alignAdapter.clear()
-                colorAdapter.clear()
-                backgroundAdapter.clear()
-            }
-            is SlashCommand.ShowStyleItems -> {
-                styleAdapter.update(command.items)
-                rvSlash.smoothScrollToPosition(0)
-
-                mainAdapter.clear()
-                mediaAdapter.clear()
-                objectTypesAdapter.clear()
-                relationsAdapter.clear()
-                otherAdapter.clear()
-                actionsAdapter.clear()
-                alignAdapter.clear()
-                colorAdapter.clear()
-                backgroundAdapter.clear()
-            }
-            is SlashCommand.ShowMediaItems -> {
-                mediaAdapter.update(command.items)
-                rvSlash.smoothScrollToPosition(0)
-
-                mainAdapter.clear()
-                styleAdapter.clear()
-                objectTypesAdapter.clear()
-                relationsAdapter.clear()
-                otherAdapter.clear()
-                actionsAdapter.clear()
-                alignAdapter.clear()
-                colorAdapter.clear()
-                backgroundAdapter.clear()
-            }
-            is SlashCommand.ShowRelations -> {
-                relationsAdapter.update(command.relations)
-                rvSlash.smoothScrollToPosition(0)
-
-                mainAdapter.clear()
-                styleAdapter.clear()
-                mediaAdapter.clear()
-                objectTypesAdapter.clear()
-                otherAdapter.clear()
-                actionsAdapter.clear()
-                alignAdapter.clear()
-                colorAdapter.clear()
-                backgroundAdapter.clear()
-            }
-            is SlashCommand.ShowObjectTypes -> {
-                objectTypesAdapter.update(command.items)
-                rvSlash.smoothScrollToPosition(0)
-
-                mainAdapter.clear()
-                styleAdapter.clear()
-                mediaAdapter.clear()
-                relationsAdapter.clear()
-                otherAdapter.clear()
-                actionsAdapter.clear()
-                alignAdapter.clear()
-                colorAdapter.clear()
-                backgroundAdapter.clear()
-            }
-            is SlashCommand.ShowOtherItems -> {
-                otherAdapter.update(command.items)
-                rvSlash.smoothScrollToPosition(0)
-
-                mainAdapter.clear()
-                styleAdapter.clear()
-                mediaAdapter.clear()
-                objectTypesAdapter.clear()
-                relationsAdapter.clear()
-                actionsAdapter.clear()
-                alignAdapter.clear()
-                colorAdapter.clear()
-                backgroundAdapter.clear()
-            }
-            is SlashCommand.ShowActionItems -> {
-                actionsAdapter.update(command.items)
-                rvSlash.smoothScrollToPosition(0)
-
-                mainAdapter.clear()
-                styleAdapter.clear()
-                mediaAdapter.clear()
-                objectTypesAdapter.clear()
-                relationsAdapter.clear()
-                otherAdapter.clear()
-                alignAdapter.clear()
-                colorAdapter.clear()
-                backgroundAdapter.clear()
-            }
-            is SlashCommand.ShowAlignmentItems -> {
-                alignAdapter.update(command.items)
-                rvSlash.smoothScrollToPosition(0)
-
-                mainAdapter.clear()
-                styleAdapter.clear()
-                mediaAdapter.clear()
-                objectTypesAdapter.clear()
-                relationsAdapter.clear()
-                otherAdapter.clear()
-                actionsAdapter.clear()
-                colorAdapter.clear()
-                backgroundAdapter.clear()
-            }
-            is SlashCommand.ShowColorItems -> {
-                colorAdapter.update(command.items)
-                rvSlash.smoothScrollToPosition(0)
-
-                mainAdapter.clear()
-                styleAdapter.clear()
-                mediaAdapter.clear()
-                objectTypesAdapter.clear()
-                relationsAdapter.clear()
-                otherAdapter.clear()
-                actionsAdapter.clear()
-                alignAdapter.clear()
-                backgroundAdapter.clear()
-            }
-            is SlashCommand.ShowBackgroundItems -> {
-                backgroundAdapter.update(command.items)
-                rvSlash.smoothScrollToPosition(0)
-
-                mainAdapter.clear()
-                styleAdapter.clear()
-                mediaAdapter.clear()
-                objectTypesAdapter.clear()
-                relationsAdapter.clear()
-                otherAdapter.clear()
-                actionsAdapter.clear()
-                alignAdapter.clear()
-                colorAdapter.clear()
-            }
-            is SlashCommand.FilterItems -> {
-                val filter = command.filter.removePrefix(SLASH_PREFIX)
-                val items = SlashHelper.filterSlashItems(
-                    filter = filter,
-                    viewType = command.viewType
-                )
-                styleAdapter.update(items)
+                mainAdapter.update(command.mainItems)
+                styleAdapter.update(command.styleItems)
+                mediaAdapter.update(command.mediaItems)
+                objectTypesAdapter.update(command.objectItems)
+                if (command.relationItems.isEmpty()) {
+                    relationsAdapter.clear()
+                } else {
+                    relationsAdapter.update(command.relationItems)
+                }
+                otherAdapter.update(command.otherItems)
+                actionsAdapter.update(command.actionsItems)
+                alignAdapter.update(command.alignmentItems)
+                colorAdapter.update(command.colorItems)
+                backgroundAdapter.update(command.backgroundItems)
             }
         }
     }

@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.presentation.page.editor.slash
 
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.presentation.page.ControlPanelMachine
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel
+import timber.log.Timber
 
 fun List<ObjectType>.toView(): List<SlashItem.ObjectType> = map { oType ->
     SlashItem.ObjectType(
@@ -86,6 +89,30 @@ object SlashExtensions {
         SlashItem.Alignment.Right
     )
 
+    fun getObjectTypeItems(objectTypes: List<ObjectType>): List<SlashItem> =
+        listOf(SlashItem.Subheader.ObjectTypeWithBlack) + objectTypes.toView()
+
+    fun getRelationItems(relations: List<RelationListViewModel.Model>): List<RelationListViewModel.Model> =
+        listOf(RelationListViewModel.Model.Section.NoSection) + relations
+
+    fun getControlPanelMachineEvent(event: SlashEvent): ControlPanelMachine.Event =
+        when (event) {
+            is SlashEvent.Start -> {
+                ControlPanelMachine.Event.Slash.OnStart(
+                    cursorCoordinate = event.cursorCoordinate,
+                    slashFrom = event.slashStart
+                )
+            }
+            is SlashEvent.Filter -> {
+                ControlPanelMachine.Event.Slash.Update(
+                    command = onGetFilterUpdate(filter = event.filter)
+                )
+            }
+            SlashEvent.Stop -> {
+                ControlPanelMachine.Event.Slash.OnStop
+            }
+        }
+
     fun getColorItems(code: String?): List<SlashItem.Color> =
         ThemeColor.values().map { themeColor ->
             val isSelected = if (themeColor.title == ThemeColor.DEFAULT.title && code == null) {
@@ -111,4 +138,72 @@ object SlashExtensions {
                 isSelected = isSelected
             )
         }
+
+    //TODO in progress
+    fun onGetFilterUpdate(filter: CharSequence): SlashCommand.UpdateItems {
+        if (filter.isEmpty() || filter.first() != '/') {
+            return SlashCommand.UpdateItems.empty()
+        }
+        if (filter.length == 1 && filter.first() == '/') {
+            return SlashCommand.UpdateItems.empty().copy(
+                mainItems = getSlashMainItems()
+            )
+        }
+
+        throw RuntimeException("Not implemented")
+    }
+
+    //TODO in progress
+    fun filterSlashItems(filter: String): SlashCommand.UpdateItems {
+        var count = 0
+        val command = SlashCommand.UpdateItems(
+            mainItems = emptyList(),
+            styleItems = filterSlashItems(filter = filter, items = getStyleItems())
+                .also {
+                    if (it.isNotEmpty()) count++
+                },
+            mediaItems = filterSlashItems(filter = filter, items = getMediaItems())
+                .also {
+                    if (it.isNotEmpty()) count++
+                },
+            objectItems = emptyList(),
+            relationItems = emptyList(),
+            otherItems = filterSlashItems(filter = filter, items = getOtherItems()),
+            actionsItems = filterSlashItems(filter = filter, items = getActionItems()),
+            alignmentItems = filterSlashItems(filter = filter, items = getAlignmentItems()),
+            colorItems = filterSlashItems(filter = filter, items = getColorItems(code = null)),
+            backgroundItems = filterSlashItems(
+                filter = filter,
+                items = getBackgroundItems(code = null)
+            )
+        )
+        Timber.d("Count:$count")
+        return command
+    }
+
+    private fun filterSlashItems(filter: String, items: List<SlashItem>): List<SlashItem> {
+        val style = items
+            .filter {
+                it.javaClass.simpleName.contains(filter, ignoreCase = true)
+            }
+        return updateWithSubheader(items = style)
+    }
+
+    private fun updateWithSubheader(items: List<SlashItem>): List<SlashItem> {
+        return if (items.isNotEmpty()) {
+            when (items.first()) {
+                is SlashItem.Actions -> listOf(SlashItem.Subheader.Actions) + items
+                is SlashItem.Alignment -> listOf(SlashItem.Subheader.Alignment) + items
+                is SlashItem.Color.Background -> listOf(SlashItem.Subheader.Background) + items
+                is SlashItem.Color.Text -> listOf(SlashItem.Subheader.Color) + items
+                is SlashItem.Media -> listOf(SlashItem.Subheader.Media) + items
+                is SlashItem.ObjectType -> listOf(SlashItem.Subheader.ObjectType) + items
+                is SlashItem.Other -> listOf(SlashItem.Subheader.Other) + items
+                is SlashItem.Style -> listOf(SlashItem.Subheader.Style) + items
+                else -> items
+            }
+        } else {
+            items
+        }
+    }
 }

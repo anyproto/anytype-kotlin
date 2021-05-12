@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.page
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.ext.overlap
 import com.anytypeio.anytype.core_models.misc.Overlap
 import com.anytypeio.anytype.presentation.common.StateReducer
@@ -416,6 +417,11 @@ sealed class ControlPanelMachine {
             }
             is Event.OnBlockActionToolbarStyleClicked -> {
                 val target = target(event.target)
+                val style = event.target.let {
+                    val content = it.content
+                    check(content is Block.Content.Text)
+                    content.style
+                }
                 state.copy(
                     mainToolbar = state.mainToolbar.copy(
                         isVisible = false
@@ -424,6 +430,7 @@ sealed class ControlPanelMachine {
                         isVisible = true,
                         mode = getModeForSelection(event.selection),
                         target = target,
+                        style = style,
                         config = event.target.getStyleConfig(event.focused, event.selection),
                         props = getPropsForSelection(target, event.selection)
                     ),
@@ -521,41 +528,30 @@ sealed class ControlPanelMachine {
             state: ControlPanelState,
             event: Event.OnRefresh.StyleToolbar
         ): ControlPanelState {
-            return if (state.stylingToolbar.mode == StylingMode.MARKUP) {
-                if (event.target != null) {
-                    val target = target(event.target)
-                    event.selection?.let {
-                        val props = getMarkupLevelStylingProps(target, it)
-                        state.copy(
-                            stylingToolbar = state.stylingToolbar.copy(
-                                props = props,
-                                target = target
-                            )
+            val target = event.target?.let { target(it) }
+            val style = event.target?.let {
+                val content = it.content
+                check(content is Block.Content.Text)
+                content.style
+            } ?: TextStyle.P
+            return state.copy(
+                stylingToolbar = state.stylingToolbar.copy(
+                    target = target,
+                    props = target?.let {
+                        Toolbar.Styling.Props(
+                            isBold = it.isBold,
+                            isItalic = it.isItalic,
+                            isStrikethrough = it.isStrikethrough,
+                            isCode = it.isCode,
+                            isLinked = it.isLinked,
+                            color = it.color,
+                            background = it.background,
+                            alignment = it.alignment
                         )
-                    } ?: state.copy()
-                } else {
-                    state.copy()
-                }
-            } else {
-                val target = event.target?.let { target(it) }
-                state.copy(
-                    stylingToolbar = state.stylingToolbar.copy(
-                        target = target,
-                        props = target?.let {
-                            Toolbar.Styling.Props(
-                                isBold = it.isBold,
-                                isItalic = it.isItalic,
-                                isStrikethrough = it.isStrikethrough,
-                                isCode = it.isCode,
-                                isLinked = it.isLinked,
-                                color = it.color,
-                                background = it.background,
-                                alignment = it.alignment
-                            )
-                        }
-                    )
+                    },
+                    style = style
                 )
-            }
+            )
         }
 
         private fun getModeForSelection(selection: IntRange?): StylingMode {

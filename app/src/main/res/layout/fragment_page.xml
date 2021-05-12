@@ -199,7 +199,7 @@
 
     </FrameLayout>
 
-    <com.anytypeio.anytype.core_ui.widgets.StyleToolbarWidgetNew
+    <com.anytypeio.anytype.core_ui.widgets.StyleToolbarMainWidget
         android:id="@+id/stylingToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -210,7 +210,7 @@
         app:cardUseCompatPadding="true"
         app:layout_behavior="@string/bottom_sheet_behavior" />
 
-    <com.anytypeio.anytype.core_ui.widgets.toolbar.StyleToolbarOther
+    <com.anytypeio.anytype.core_ui.widgets.toolbar.StyleToolbarExtraWidget
         android:id="@+id/styleToolbarOther"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

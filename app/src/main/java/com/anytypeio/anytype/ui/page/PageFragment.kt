@@ -1125,6 +1125,7 @@ open class PageFragment :
                 lifecycleScope.launch {
                     hideSoftInput()
                     delay(DEFAULT_ANIM_DURATION)
+                    stylingToolbar.setSelectedStyle(style)
                     BottomSheetBehavior.from(stylingToolbar).apply {
                         setState(BottomSheetBehavior.STATE_EXPANDED)
                         addBottomSheetCallback(onHideBottomSheetCallback)
@@ -1140,6 +1141,7 @@ open class PageFragment :
 
         state.styleExtraToolbar.apply {
             if (isVisible) {
+                styleToolbarOther.setProperties(state.stylingToolbar.props)
                 lifecycleScope.launch {
                     BottomSheetBehavior.from(styleToolbarOther).apply {
                         setState(BottomSheetBehavior.STATE_EXPANDED)
@@ -1156,6 +1158,12 @@ open class PageFragment :
 
         state.styleColorToolbar.apply {
             if (isVisible) {
+                state.stylingToolbar.config?.let { config ->
+                    styleToolbarColors.update(
+                        config,
+                        state.stylingToolbar.props
+                    )
+                }
                 lifecycleScope.launch {
                     BottomSheetBehavior.from(styleToolbarColors).apply {
                         setState(BottomSheetBehavior.STATE_EXPANDED)

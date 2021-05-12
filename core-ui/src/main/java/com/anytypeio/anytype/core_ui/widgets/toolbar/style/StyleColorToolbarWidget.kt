@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
@@ -58,6 +57,4 @@ class StyleColorToolbarWidget @JvmOverloads constructor(
         blockStyleAdapter.updateConfig(config, props)
         blockStyleAdapter.notifyDataSetChanged()
     }
-
-    fun closeButtonClicks() = close.clicks()
 }

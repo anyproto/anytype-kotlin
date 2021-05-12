@@ -462,7 +462,7 @@ class PageViewModel(
 
     private fun refreshStyleToolbar(document: Document) {
         controlPanelViewState.value?.let { state ->
-            if (state.stylingToolbar.isVisible) {
+            if (state.stylingToolbar.isVisible || state.styleColorToolbar.isVisible || state.styleExtraToolbar.isVisible) {
                 state.stylingToolbar.target?.id?.let { targetId ->
                     controlPanelInteractor.onEvent(
                         event = ControlPanelMachine.Event.OnRefresh.StyleToolbar(

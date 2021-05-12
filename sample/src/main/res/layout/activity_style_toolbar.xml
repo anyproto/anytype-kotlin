@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".StyleToolbarActivity">
 
-    <com.anytypeio.anytype.core_ui.widgets.StyleToolbarWidgetNew
+    <com.anytypeio.anytype.core_ui.widgets.StyleToolbarMainWidget
         app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="16dp"
         android:id="@+id/toolbar"

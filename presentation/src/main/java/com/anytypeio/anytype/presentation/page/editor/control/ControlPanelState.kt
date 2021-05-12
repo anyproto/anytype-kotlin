@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.page.editor.control
 
+import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
@@ -104,7 +105,8 @@ data class ControlPanelState(
             val target: Target? = null,
             val config: StyleConfig? = null,
             val props: Props? = null,
-            val mode: StylingMode? = null
+            val mode: StylingMode? = null,
+            val style: TextStyle = TextStyle.P
         ) : Toolbar() {
 
             companion object {

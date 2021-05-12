@@ -109,7 +109,7 @@
 
     <color name="context_menu_selected_item">#ACA996</color>
 
-    <color name="default_style_color_circle_outer_stroke_color">#FFB522</color>
+    <color name="default_style_color_circle_outer_stroke_color">#E4E2D7</color>
     <color name="default_style_color_circle_inner_stroke_color">#DFDDD0</color>
     <color name="viewer_filter_add_stroke_color">#DFDDD0</color>
     <color name="default_tag_text_color">#E89D00</color>

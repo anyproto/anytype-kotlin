@@ -6,6 +6,7 @@ typealias Hash = String
 
 typealias Document = List<Block>
 
+typealias TextStyle = Block.Content.Text.Style
 typealias CBTextStyle = Block.Content.Text.Style
 
 typealias DV = Block.Content.DataView

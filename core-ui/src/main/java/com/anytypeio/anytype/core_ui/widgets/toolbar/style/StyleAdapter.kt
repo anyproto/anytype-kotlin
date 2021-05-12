@@ -18,6 +18,8 @@ class StyleAdapter(
     private val enabledAlignment: ArrayList<Alignment>,
     private val onStylingEvent: (StylingEvent) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    @Deprecated("Maybe legacy, maybe not.")
     fun updateConfig(config: StyleConfig, props: ControlPanelState.Toolbar.Styling.Props?) {
         visibleTypes.clear()
         visibleTypes.addAll(config.visibleTypes)
@@ -31,21 +33,14 @@ class StyleAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            StylingType.STYLE.ordinal -> StyleTextViewHolder(
-                view = inflater.inflate(
-                    R.layout.block_style_toolbar_style,
-                    parent,
-                    false
-                )
-            )
-            StylingType.TEXT_COLOR.ordinal -> StyleTextColorViewHolder(
+            HOLDER_TEXT_COLOR -> StyleTextColorViewHolder(
                 view = inflater.inflate(
                     R.layout.block_style_toolbar_color,
                     parent,
                     false
                 )
             )
-            StylingType.BACKGROUND.ordinal -> StyleBackgroundViewHolder(
+            HOLDER_BACKGROUND_COLOR -> StyleBackgroundViewHolder(
                 view = inflater.inflate(
                     R.layout.block_style_toolbar_background,
                     parent,
@@ -58,9 +53,6 @@ class StyleAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is StyleTextViewHolder -> {
-                holder.bind(onStylingEvent, enabledMarkup, enabledAlignment, props)
-            }
             is StyleTextColorViewHolder -> {
                 holder.bind(onStylingEvent, props?.color)
             }
@@ -70,6 +62,11 @@ class StyleAdapter(
         }
     }
 
-    override fun getItemCount(): Int = visibleTypes.size
-    override fun getItemViewType(position: Int): Int = visibleTypes[position].getViewType()
+    override fun getItemCount(): Int = 2
+    override fun getItemViewType(position: Int): Int = position
+
+    companion object {
+        const val HOLDER_TEXT_COLOR = 0
+        const val HOLDER_BACKGROUND_COLOR = 1
+    }
 }

@@ -76,7 +76,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
         android:layout_marginEnd="8dp"
         app:constraint_referenced_ids="textColorDefault,textColorGrey,textColorYellow,textColorOrange,textColorRed,textColorPink,textColorPurple,textColorBlue,textColorIce,textColorTeal,textColorGreen"
         app:flow_horizontalGap="0dp"

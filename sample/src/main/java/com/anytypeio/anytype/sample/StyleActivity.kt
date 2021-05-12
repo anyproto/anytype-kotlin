@@ -16,7 +16,7 @@ class StyleActivity: AppCompatActivity() {
         setContentView(R.layout.activity_style)
 
         findViewById<ImageView>(R.id.close).setOnClickListener {
-            styleToolbar.hideWithAnimation()
+            //styleToolbar.hideWithAnimation()
         }
 
         button.setOnClickListener {
@@ -50,7 +50,7 @@ class StyleActivity: AppCompatActivity() {
                     alignment = null
                 )
             )
-            styleToolbar.showWithAnimation()
+            //styleToolbar.showWithAnimation()
 
         }
     }

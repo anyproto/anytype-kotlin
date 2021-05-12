@@ -21,7 +21,7 @@ class LongClickActivity: AppCompatActivity()  {
         setContentView(R.layout.activity_long_clicked)
 
         findViewById<ImageView>(R.id.close).setOnClickListener {
-            styleToolbar.hideWithAnimation()
+            //styleToolbar.hideWithAnimation()
         }
 
         textInputWidget.enableEditMode()

@@ -103,7 +103,7 @@
     <dimen name="indent">28dp</dimen>
 
     <dimen name="default_block_type_width">24dp</dimen>
-    <dimen name="block_style_toolbar_circle_size">56dp</dimen>
+    <dimen name="block_style_toolbar_circle_size">52dp</dimen>
     <dimen name="default_document_content_padding_start">12dp</dimen>
     <dimen name="default_document_content_padding_end">12dp</dimen>
     <dimen name="default_document_item_margin_top">1dp</dimen>

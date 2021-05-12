@@ -152,15 +152,15 @@
             tools:visibility="visible" />
 
         <View
-            android:visibility="invisible"
             android:id="@+id/blocker"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/setMarkupUrlToolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/setMarkupUrlToolbar"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_width="0dp"
-            android:layout_height="0dp"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -204,27 +204,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:behavior_hideable="true"
-        app:cardUseCompatPadding="true"
         app:behavior_skipCollapsed="true"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent" />
+        app:cardUseCompatPadding="true"
+        app:layout_behavior="@string/bottom_sheet_behavior" />
 
     <com.anytypeio.anytype.core_ui.widgets.toolbar.StyleToolbarOther
         android:id="@+id/styleToolbarOther"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:behavior_hideable="true"
-        app:cardUseCompatPadding="true"
         app:behavior_skipCollapsed="true"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent" />
+        app:cardUseCompatPadding="true"
+        app:layout_behavior="@string/bottom_sheet_behavior" />
+
+    <com.anytypeio.anytype.core_ui.widgets.toolbar.style.StyleColorToolbarWidget
+        android:id="@+id/styleToolbarColors"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:behavior_hideable="true"
+        app:behavior_skipCollapsed="true"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        app:cardUseCompatPadding="true"
+        app:layout_behavior="@string/bottom_sheet_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

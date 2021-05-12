@@ -14,7 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.anytypeio.anytype.core_ui.widgets.toolbar.style.StyleToolbarWidget
+    <com.anytypeio.anytype.core_ui.widgets.toolbar.style.StyleColorToolbarWidget
         android:id="@+id/styleToolbar"
         android:layout_width="0dp"
         android:layout_height="@dimen/dp_203"

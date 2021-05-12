@@ -19,6 +19,7 @@ data class ControlPanelState(
     val mainToolbar: Toolbar.Main,
     val stylingToolbar: Toolbar.Styling,
     val styleExtraToolbar: Toolbar.Styling.Other = Toolbar.Styling.Other(),
+    val styleColorToolbar: Toolbar.Styling.Color = Toolbar.Styling.Color(),
     val markupMainToolbar: Toolbar.MarkupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
     val markupUrlToolbar: Toolbar.MarkupUrlToolbar = Toolbar.MarkupUrlToolbar(),
     val markupColorToolbar: Toolbar.MarkupColorToolbar = Toolbar.MarkupColorToolbar(),
@@ -117,6 +118,7 @@ data class ControlPanelState(
             }
 
             data class Other(override val isVisible: Boolean = false) : Toolbar()
+            data class Color(override val isVisible: Boolean = false) : Toolbar()
 
             /**
              * Target's properties corresponding to current selection or styling mode.

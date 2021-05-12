@@ -148,6 +148,9 @@ open class PageFragment :
                     stylingToolbar.id -> {
                         vm.onCloseBlockStyleToolbarClicked()
                     }
+                    styleToolbarColors.id -> {
+                        vm.onCloseBlockStyleColorToolbarClicked()
+                    }
                 }
             }
         }
@@ -594,6 +597,10 @@ open class PageFragment :
             vm.onBlockStyleToolbarOtherClicked()
         }
 
+        lifecycleScope.subscribe(stylingToolbar.colors) {
+            vm.onBlockStyleToolbarColorClicked()
+        }
+
         mentionSuggesterToolbar.setupClicks(
             mentionClick = vm::onMentionSuggestClick,
             newPageClick = vm::onAddMentionNewPageClicked
@@ -621,6 +628,7 @@ open class PageFragment :
 
         BottomSheetBehavior.from(stylingToolbar).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(styleToolbarColors).state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun onApplyScrollAndMoveClicked() {
@@ -1138,6 +1146,22 @@ open class PageFragment :
                 }
             } else {
                 BottomSheetBehavior.from(styleToolbarOther).apply {
+                    removeBottomSheetCallback(onHideBottomSheetCallback)
+                    setState(BottomSheetBehavior.STATE_HIDDEN)
+                }
+            }
+        }
+
+        state.styleColorToolbar.apply {
+            if (isVisible) {
+                lifecycleScope.launch {
+                    BottomSheetBehavior.from(styleToolbarColors).apply {
+                        setState(BottomSheetBehavior.STATE_EXPANDED)
+                        addBottomSheetCallback(onHideBottomSheetCallback)
+                    }
+                }
+            } else {
+                BottomSheetBehavior.from(styleToolbarColors).apply {
                     removeBottomSheetCallback(onHideBottomSheetCallback)
                     setState(BottomSheetBehavior.STATE_HIDDEN)
                 }

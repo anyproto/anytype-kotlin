@@ -1971,6 +1971,12 @@ class PageViewModel(
         )
     }
 
+    fun onCloseBlockStyleColorToolbarClicked() {
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.StylingToolbar.OnColorClosed
+        )
+    }
+
     fun onBlockToolbarBlockActionsClicked() {
         val target = orchestrator.stores.focus.current().id
         val view = views.first { it.id == target }
@@ -2265,6 +2271,10 @@ class PageViewModel(
 
     fun onBlockStyleToolbarOtherClicked() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnExtraClicked)
+    }
+
+    fun onBlockStyleToolbarColorClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnColorClicked)
     }
 
     private fun proceedUpdateBlockStyle(

@@ -150,7 +150,9 @@ sealed class ControlPanelMachine {
 
         sealed class StylingToolbar : Event() {
             object OnExtraClicked : StylingToolbar()
+            object OnColorClicked : StylingToolbar()
             object OnExtraClosed : StylingToolbar()
+            object OnColorClosed : StylingToolbar()
             data class OnClose(val focused: Boolean) : StylingToolbar()
         }
 
@@ -682,12 +684,28 @@ sealed class ControlPanelMachine {
                     styleExtraToolbar = Toolbar.Styling.Other(true)
                 )
             }
+            is Event.StylingToolbar.OnColorClicked -> {
+                state.copy(
+                    stylingToolbar = state.stylingToolbar.copy(
+                        isVisible = false
+                    ),
+                    styleColorToolbar = Toolbar.Styling.Color(true)
+                )
+            }
             is Event.StylingToolbar.OnExtraClosed -> {
                 state.copy(
                     stylingToolbar = state.stylingToolbar.copy(
                         isVisible = true
                     ),
                     styleExtraToolbar = Toolbar.Styling.Other(false)
+                )
+            }
+            is Event.StylingToolbar.OnColorClosed -> {
+                state.copy(
+                    stylingToolbar = state.stylingToolbar.copy(
+                        isVisible = true
+                    ),
+                    styleColorToolbar = Toolbar.Styling.Color(false)
                 )
             }
         }

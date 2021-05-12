@@ -138,10 +138,17 @@ open class PageFragment :
         DefaultScrollAndMoveTargetDescriptor()
     }
 
-    private val onHideStyleToolbarCallback = object: BottomSheetBehavior.BottomSheetCallback() {
+    private val onHideBottomSheetCallback = object: BottomSheetBehavior.BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                vm.onCloseBlockStyleToolbarClicked()
+                when(bottomSheet.id) {
+                    styleToolbarOther.id -> {
+                        vm.onCloseBlockStyleExtraToolbarClicked()
+                    }
+                    stylingToolbar.id -> {
+                        vm.onCloseBlockStyleToolbarClicked()
+                    }
+                }
             }
         }
 
@@ -583,6 +590,10 @@ open class PageFragment :
             vm.onUpdateSingleTextBlockStyle(it)
         }
 
+        lifecycleScope.subscribe(stylingToolbar.other) {
+            vm.onBlockStyleToolbarOtherClicked()
+        }
+
         mentionSuggesterToolbar.setupClicks(
             mentionClick = vm::onMentionSuggestClick,
             newPageClick = vm::onAddMentionNewPageClicked
@@ -607,6 +618,9 @@ open class PageFragment :
         lifecycleScope.launch {
             searchToolbar.events().collect { vm.onSearchToolbarEvent(it) }
         }
+
+        BottomSheetBehavior.from(stylingToolbar).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun onApplyScrollAndMoveClicked() {
@@ -1103,12 +1117,28 @@ open class PageFragment :
                     delay(DEFAULT_ANIM_DURATION)
                     BottomSheetBehavior.from(stylingToolbar).apply {
                         setState(BottomSheetBehavior.STATE_EXPANDED)
-                        addBottomSheetCallback(onHideStyleToolbarCallback)
+                        addBottomSheetCallback(onHideBottomSheetCallback)
                     }
                 }
             } else {
                 BottomSheetBehavior.from(stylingToolbar).apply {
-                    removeBottomSheetCallback(onHideStyleToolbarCallback)
+                    removeBottomSheetCallback(onHideBottomSheetCallback)
+                    setState(BottomSheetBehavior.STATE_HIDDEN)
+                }
+            }
+        }
+
+        state.styleExtraToolbar.apply {
+            if (isVisible) {
+                lifecycleScope.launch {
+                    BottomSheetBehavior.from(styleToolbarOther).apply {
+                        setState(BottomSheetBehavior.STATE_EXPANDED)
+                        addBottomSheetCallback(onHideBottomSheetCallback)
+                    }
+                }
+            } else {
+                BottomSheetBehavior.from(styleToolbarOther).apply {
+                    removeBottomSheetCallback(onHideBottomSheetCallback)
                     setState(BottomSheetBehavior.STATE_HIDDEN)
                 }
             }

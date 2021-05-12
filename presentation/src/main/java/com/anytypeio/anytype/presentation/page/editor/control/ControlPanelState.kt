@@ -18,6 +18,7 @@ data class ControlPanelState(
     val navigationToolbar: Toolbar.Navigation,
     val mainToolbar: Toolbar.Main,
     val stylingToolbar: Toolbar.Styling,
+    val styleExtraToolbar: Toolbar.Styling.Other = Toolbar.Styling.Other(),
     val markupMainToolbar: Toolbar.MarkupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
     val markupUrlToolbar: Toolbar.MarkupUrlToolbar = Toolbar.MarkupUrlToolbar(),
     val markupColorToolbar: Toolbar.MarkupColorToolbar = Toolbar.MarkupColorToolbar(),
@@ -63,7 +64,7 @@ data class ControlPanelState(
             val isBackgroundColorSelected: Boolean = false
         ) : Toolbar() {
             companion object {
-                fun reset() : MarkupMainToolbar = MarkupMainToolbar(
+                fun reset(): MarkupMainToolbar = MarkupMainToolbar(
                     isVisible = false,
                     style = null,
                     isTextColorSelected = false,
@@ -114,6 +115,8 @@ data class ControlPanelState(
                     mode = null
                 )
             }
+
+            data class Other(override val isVisible: Boolean = false) : Toolbar()
 
             /**
              * Target's properties corresponding to current selection or styling mode.
@@ -218,7 +221,7 @@ data class ControlPanelState(
             val updateList: Boolean = false,
             val items: List<String> = emptyList(),
             val command: SlashCommand? = null
-        ): Toolbar() {
+        ) : Toolbar() {
             companion object {
                 fun reset(): SlashWidget = SlashWidget(
                     isVisible = false,

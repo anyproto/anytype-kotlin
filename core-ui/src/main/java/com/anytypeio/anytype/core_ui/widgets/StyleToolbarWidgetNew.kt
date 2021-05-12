@@ -35,4 +35,7 @@ class StyleToolbarWidgetNew @JvmOverloads constructor(
         highlight.clicks().map { UiBlock.HIGHLIGHTED },
     ).flattenMerge()
 
+    val other = dots.clicks()
+    val colors = markupColors.clicks()
+
 }

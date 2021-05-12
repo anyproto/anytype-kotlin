@@ -2,23 +2,24 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <View
-        android:id="@+id/group1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/rounded_rectangle_block_style_toolbar_group"
-        app:layout_constraintBottom_toBottomOf="@+id/divider2"
-        app:layout_constraintEnd_toEndOf="@+id/code"
-        app:layout_constraintStart_toStartOf="@+id/bold"
-        app:layout_constraintTop_toTopOf="@+id/divider2" />
+        android:id="@+id/dragger"
+        android:layout_width="48dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/dragger"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/bold"
-        style="@style/BlockStyleToolbarLeftBlockStyle"
+        style="@style/BlockStyleButtonContainerStyle"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toStartOf="@+id/divider1"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
@@ -30,14 +31,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_toolbar_style_bold_selector" />
+            android:src="@drawable/ic_toolbar_markup_bold_active" />
 
     </FrameLayout>
 
     <View
         android:id="@+id/divider1"
-        style="@style/BlockStyleGroupDividerStyle"
-        android:layout_marginTop="20dp"
+        style="@style/BlockStyleDividerStyle"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toStartOf="@+id/italic"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/bold"
@@ -45,8 +46,8 @@
 
     <FrameLayout
         android:id="@+id/italic"
-        style="@style/BlockStyleToolbarMiddleBlockStyle"
-        android:layout_marginTop="20dp"
+        style="@style/BlockStyleButtonContainerStyle"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toStartOf="@+id/divider2"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/divider1"
@@ -57,14 +58,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_toolbar_style_italic_selector" />
+            android:src="@drawable/ic_toolbar_markup_italic_active" />
 
     </FrameLayout>
 
     <View
         android:id="@+id/divider2"
-        style="@style/BlockStyleGroupDividerStyle"
-        android:layout_marginTop="20dp"
+        style="@style/BlockStyleDividerStyle"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toStartOf="@+id/strikethrough"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/italic"
@@ -72,8 +73,8 @@
 
     <FrameLayout
         android:id="@+id/strikethrough"
-        style="@style/BlockStyleToolbarMiddleBlockStyle"
-        android:layout_marginTop="20dp"
+        style="@style/BlockStyleButtonContainerStyle"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toStartOf="@+id/divider3"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/divider2"
@@ -84,14 +85,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_toolbar_style_strike_through_selector" />
+            android:src="@drawable/ic_toolbar_markup_strike_through_active" />
 
     </FrameLayout>
 
     <View
         android:id="@+id/divider3"
-        style="@style/BlockStyleGroupDividerStyle"
-        android:layout_marginTop="20dp"
+        style="@style/BlockStyleDividerStyle"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toStartOf="@+id/code"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/strikethrough"
@@ -99,8 +100,8 @@
 
     <FrameLayout
         android:id="@+id/code"
-        style="@style/BlockStyleToolbarRightBlockStyle"
-        android:layout_marginTop="20dp"
+        style="@style/BlockStyleButtonContainerStyle"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -112,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_toolbar_style_code_selector" />
+            android:src="@drawable/ic_toolbar_markup_code_active" />
 
     </FrameLayout>
 
@@ -131,6 +132,7 @@
         style="@style/BlockStyleToolbarLeftBlockStyle"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="20dp"
         app:layout_constraintEnd_toStartOf="@+id/alignmentMiddle"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -152,12 +154,13 @@
         app:layout_constraintEnd_toStartOf="@+id/alignmentMiddle"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/alignmentLeft"
-        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+        app:layout_constraintTop_toBottomOf="@+id/bold" />
 
     <FrameLayout
         android:id="@+id/alignmentMiddle"
         style="@style/BlockStyleToolbarMiddleBlockStyle"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="20dp"
         app:layout_constraintEnd_toStartOf="@+id/alignmentRight"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/alignmentLeft"
@@ -179,7 +182,7 @@
         app:layout_constraintEnd_toStartOf="@+id/alignmentRight"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/alignmentMiddle"
-        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+        app:layout_constraintTop_toBottomOf="@+id/bold" />
 
     <FrameLayout
         android:id="@+id/alignmentRight"
@@ -206,7 +209,9 @@
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/bg_toolbar_style_set_link_selector"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/code">
 

@@ -189,7 +189,7 @@
             android:orientation="horizontal">
 
             <FrameLayout
-                android:id="@+id/colors"
+                android:id="@+id/markupColors"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="48dp">
@@ -198,7 +198,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center"
-                    android:background="@drawable/circle_solid_default" />
+                    android:background="@drawable/ic_style_toolbar_color" />
             </FrameLayout>
 
             <FrameLayout

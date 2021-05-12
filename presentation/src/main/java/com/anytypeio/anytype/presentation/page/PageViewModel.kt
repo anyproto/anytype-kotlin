@@ -1965,6 +1965,12 @@ class PageViewModel(
         }
     }
 
+    fun onCloseBlockStyleExtraToolbarClicked() {
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.StylingToolbar.OnExtraClosed
+        )
+    }
+
     fun onBlockToolbarBlockActionsClicked() {
         val target = orchestrator.stores.focus.current().id
         val view = views.first { it.id == target }
@@ -2255,6 +2261,10 @@ class PageViewModel(
                 errorAction = { _toasts.offer("Cannot convert block to $uiBlock") }
             )
         }
+    }
+
+    fun onBlockStyleToolbarOtherClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnExtraClicked)
     }
 
     private fun proceedUpdateBlockStyle(

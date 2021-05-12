@@ -213,4 +213,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent" />
 
+    <com.anytypeio.anytype.core_ui.widgets.toolbar.StyleToolbarOther
+        android:id="@+id/styleToolbarOther"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:behavior_hideable="true"
+        app:cardUseCompatPadding="true"
+        app:behavior_skipCollapsed="true"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

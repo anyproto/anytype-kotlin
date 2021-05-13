@@ -146,6 +146,145 @@ fun List<BlockView>.singleStylingMode(
     }
 }
 
+fun List<BlockView>.enterSAM(
+    targets: Set<Id>
+): List<BlockView> = map { view ->
+    val isSelected = targets.contains(view.id)
+    when (view) {
+        is BlockView.Text.Paragraph -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            isFocused = false,
+            cursor = null
+        )
+        is BlockView.Text.Checkbox -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            isFocused = false,
+            cursor = null
+        )
+        is BlockView.Text.Bulleted -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            isFocused = false,
+            cursor = null
+        )
+        is BlockView.Text.Numbered -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            isFocused = false,
+            cursor = null
+        )
+        is BlockView.Text.Highlight -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            isFocused = false,
+            cursor = null
+        )
+        is BlockView.Text.Header.One -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            isFocused = false,
+            cursor = null
+        )
+        is BlockView.Text.Header.Two -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            isFocused = false,
+            cursor = null
+        )
+        is BlockView.Text.Header.Three -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            isFocused = false,
+            cursor = null
+        )
+        is BlockView.Text.Toggle -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            isFocused = false,
+            cursor = null
+        )
+        is BlockView.Code -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Error.File -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Error.Video -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Error.Picture -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Error.Bookmark -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Upload.File -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Upload.Video -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Upload.Picture -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.MediaPlaceholder.File -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.MediaPlaceholder.Video -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.MediaPlaceholder.Bookmark -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.MediaPlaceholder.Picture -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Media.File -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Media.Video -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Media.Bookmark -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Media.Picture -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Title.Basic -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.Profile -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.Archive -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Description -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        else -> view.also { check(view !is BlockView.Permission) }
+    }
+}
+
 fun List<BlockView>.exitSingleStylingMode(
     target: Id,
     cursor: Int?

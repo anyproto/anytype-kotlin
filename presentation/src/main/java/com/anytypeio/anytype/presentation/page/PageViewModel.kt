@@ -3880,17 +3880,26 @@ class PageViewModel(
                 duplicateBlock(targetId)
             }
             SlashItem.Actions.Move -> {
-                mode = EditorMode.SAM
-                viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
-                viewModelScope.launch { refresh() }
-                proceedWithSAMQuickStartSelection(targetId)
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnQuickStart(1))
+                viewModelScope.launch {
+                    mode = EditorMode.SAM
+                    selectWithDescendants(targetId)
+                    val updated = views.enterSAM(currentSelection())
+                    orchestrator.stores.views.update(updated)
+                    renderCommand.send(Unit)
+                    controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnQuickStart(currentSelection().size))
+                }
             }
             SlashItem.Actions.MoveTo -> {
                 onHideKeyboardClicked()
                 proceedWithMoveTo(targetId)
             }
         }
+    }
+
+    private fun selectWithDescendants(targetId: Id) {
+        select(targetId)
+        val descendants = blocks.asMap().descendants(parent = targetId)
+        descendants.forEach { child -> select(child) }
     }
 
     private fun proceedWithClearStyle(targetId: Id) {

@@ -1060,7 +1060,7 @@ open class PageFragment :
     }
 
     private fun render(state: ControlPanelState) {
-        if (state.navigationToolbar.isVisible) {
+       if (state.navigationToolbar.isVisible) {
             placeholder.requestFocus()
             hideKeyboard()
             bottomToolbar.visible()
@@ -1376,7 +1376,7 @@ open class PageFragment :
     }
 
     private fun enterScrollAndMove() {
-        if (recycler.itemDecorationCount == 0) {
+        if (recycler.itemDecorationCount == 0 || recycler.getItemDecorationAt(0) !is ScrollAndMoveTargetHighlighter) {
 
             val offset = recycler.computeVerticalScrollOffset()
 

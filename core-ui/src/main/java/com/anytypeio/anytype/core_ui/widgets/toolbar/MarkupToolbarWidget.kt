@@ -13,9 +13,8 @@ import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.page.markup.MarkupStyleDescriptor
 import kotlinx.android.synthetic.main.widget_markup_toolbar_main.view.*
-import kotlinx.coroutines.flow.flattenMerge
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 
 class MarkupToolbarWidget : LinearLayout {
 
@@ -40,26 +39,37 @@ class MarkupToolbarWidget : LinearLayout {
         LayoutInflater.from(context).inflate(R.layout.widget_markup_toolbar_main, this)
     }
 
-    fun markup() = flowOf(bold(), italic(), strike(), code()).flattenMerge()
     private fun bold() = bold.clicks().map { Markup.Type.BOLD }
     private fun italic() = italic.clicks().map { Markup.Type.ITALIC }
     private fun strike() = strike.clicks().map { Markup.Type.STRIKETHROUGH }
-    fun linkClicks() = url.clicks().map { Markup.Type.LINK }
     private fun code() = code.clicks().map { Markup.Type.KEYBOARD }
 
+    fun linkClicks() = url.clicks().map { Markup.Type.LINK }
     fun colorClicks() = color.clicks()
     fun highlightClicks() = highlight.clicks()
+    fun markup() = merge(bold(), italic(), strike(), code())
 
     fun setProps(
         props: MarkupStyleDescriptor?,
+        supportedTypes: List<Markup.Type>,
         isBackgroundColorSelected: Boolean,
         isTextColorSelected: Boolean
     ) {
         bold.isSelected = props?.isBold ?: false
+        bold.isEnabled = supportedTypes.contains(Markup.Type.BOLD)
+        boldIcon.isEnabled = bold.isEnabled
         italic.isSelected = props?.isItalic ?: false
+        italic.isEnabled = supportedTypes.contains(Markup.Type.ITALIC)
+        italicIcon.isEnabled = italic.isEnabled
         strike.isSelected = props?.isStrikethrough ?: false
+        strike.isEnabled = supportedTypes.contains(Markup.Type.STRIKETHROUGH)
+        strikeIcon.isEnabled = strike.isEnabled
         code.isSelected = props?.isCode ?: false
+        code.isEnabled = supportedTypes.contains(Markup.Type.KEYBOARD)
+        codeIcon.isEnabled = code.isEnabled
         url.isSelected = props?.isLinked ?: false
+        url.isEnabled = supportedTypes.contains(Markup.Type.LINK)
+        urlIcon.isEnabled = url.isEnabled
 
         if (props?.markupTextColor != null) {
             val code = ThemeColor.values().first { it.title == props.markupTextColor }

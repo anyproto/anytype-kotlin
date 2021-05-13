@@ -1141,7 +1141,10 @@ open class PageFragment :
 
         state.styleExtraToolbar.apply {
             if (isVisible) {
-                styleToolbarOther.setProperties(state.stylingToolbar.props)
+                styleToolbarOther.setProperties(
+                    props = state.stylingToolbar.props,
+                    config = state.stylingToolbar.config
+                )
                 lifecycleScope.launch {
                     BottomSheetBehavior.from(styleToolbarOther).apply {
                         setState(BottomSheetBehavior.STATE_EXPANDED)
@@ -1223,6 +1226,7 @@ open class PageFragment :
         if (state.markupMainToolbar.isVisible) {
             markupToolbar.setProps(
                 props = state.markupMainToolbar.style,
+                supportedTypes = state.markupMainToolbar.supportedTypes,
                 isBackgroundColorSelected = state.markupMainToolbar.isBackgroundColorSelected,
                 isTextColorSelected = state.markupMainToolbar.isTextColorSelected
             )

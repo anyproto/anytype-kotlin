@@ -94,6 +94,47 @@ fun Block.Content.Text.getStyleConfig(selection: IntRange? = null): StyleConfig 
     }
 }
 
+fun Block.Content.Text.getSupportedMarkupTypes() : List<Markup.Type> = when(style) {
+    Block.Content.Text.Style.P -> {
+        listOf(
+            Markup.Type.BOLD,
+            Markup.Type.ITALIC,
+            Markup.Type.STRIKETHROUGH,
+            Markup.Type.KEYBOARD,
+            Markup.Type.LINK
+        )
+    }
+    Block.Content.Text.Style.H1, Block.Content.Text.Style.H2,
+    Block.Content.Text.Style.H3, Block.Content.Text.Style.H4 -> {
+        listOf(
+            Markup.Type.ITALIC,
+            Markup.Type.STRIKETHROUGH,
+            Markup.Type.KEYBOARD,
+            Markup.Type.LINK
+        )
+    }
+    Block.Content.Text.Style.QUOTE -> {
+        listOf(
+            Markup.Type.BOLD,
+            Markup.Type.ITALIC,
+            Markup.Type.STRIKETHROUGH,
+            Markup.Type.KEYBOARD,
+            Markup.Type.LINK
+        )
+    }
+    Block.Content.Text.Style.BULLET, Block.Content.Text.Style.NUMBERED,
+    Block.Content.Text.Style.TOGGLE, Block.Content.Text.Style.CHECKBOX -> {
+        listOf(
+            Markup.Type.BOLD,
+            Markup.Type.ITALIC,
+            Markup.Type.STRIKETHROUGH,
+            Markup.Type.KEYBOARD,
+            Markup.Type.LINK
+        )
+    }
+    else -> emptyList()
+}
+
 fun Block.Content.Text.getBlockStyle(style: Block.Content.Text.Style) = when (style) {
     Block.Content.Text.Style.P -> {
         StyleConfig(

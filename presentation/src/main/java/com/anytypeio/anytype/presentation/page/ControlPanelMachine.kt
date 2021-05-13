@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.page
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.ext.overlap
 import com.anytypeio.anytype.core_models.misc.Overlap
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.presentation.page.editor.model.Alignment
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.page.editor.styling.getStyleConfig
+import com.anytypeio.anytype.presentation.page.editor.styling.getSupportedMarkupTypes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -258,7 +260,14 @@ sealed class ControlPanelMachine {
                                 ),
                                 markupMainToolbar = state.markupMainToolbar.copy(
                                     isVisible = true,
-                                    style= event.target.style(event.selection)
+                                    style= event.target.style(event.selection),
+                                    supportedTypes = event.target.content.let { content ->
+                                        if (content is TextBlock) {
+                                            content.getSupportedMarkupTypes()
+                                        } else {
+                                            emptyList()
+                                        }
+                                    }
                                 )
                             )
                         }

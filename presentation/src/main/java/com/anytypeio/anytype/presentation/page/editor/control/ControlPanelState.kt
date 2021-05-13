@@ -62,6 +62,7 @@ data class ControlPanelState(
         data class MarkupMainToolbar(
             override val isVisible: Boolean,
             val style: MarkupStyleDescriptor? = null,
+            val supportedTypes: List<Markup.Type> = emptyList(),
             val isTextColorSelected: Boolean = false,
             val isBackgroundColorSelected: Boolean = false
         ) : Toolbar() {

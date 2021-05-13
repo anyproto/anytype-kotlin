@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_toolbar_markup_bold_active" />
+            android:src="@drawable/ic_toolbar_style_bold_selector" />
 
     </FrameLayout>
 
@@ -58,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_toolbar_markup_italic_active" />
+            android:src="@drawable/ic_toolbar_style_italic_selector" />
 
     </FrameLayout>
 
@@ -85,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_toolbar_markup_strike_through_active" />
+            android:src="@drawable/ic_toolbar_style_strike_through_selector" />
 
     </FrameLayout>
 
@@ -113,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_toolbar_markup_code_active" />
+            android:src="@drawable/ic_toolbar_style_code_selector" />
 
     </FrameLayout>
 
@@ -143,7 +143,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_toolbar_style_align_left" />
+            android:src="@drawable/ic_toolbar_style_align_left_selector" />
 
     </FrameLayout>
 
@@ -171,7 +171,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_toolbar_style_align_center" />
+            android:src="@drawable/ic_toolbar_style_align_center_selector" />
 
     </FrameLayout>
 
@@ -199,7 +199,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_toolbar_style_align_right" />
+            android:src="@drawable/ic_toolbar_style_align_right_selector" />
 
     </FrameLayout>
 

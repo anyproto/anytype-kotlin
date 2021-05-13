@@ -2,13 +2,13 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <HorizontalScrollView
-        android:scrollbars="none"
-        android:id="@+id/container"
+        android:id="@+id/textInputContainer"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:paddingStart="16dp"
-        android:paddingEnd="8dp">
+        android:paddingEnd="8dp"
+        android:scrollbars="none">
 
         <EditText
             android:id="@+id/setUrlMarkupTextInput"
@@ -38,9 +38,9 @@
     <TextView
         android:id="@+id/setMarkupDoneButton"
         style="@style/DefaultOrangeTextButtonStyle"
-        android:gravity="center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:gravity="center_vertical"
         android:paddingStart="8dp"
         android:paddingEnd="16dp"
         android:text="@string/done" />

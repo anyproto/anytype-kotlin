@@ -9,7 +9,7 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateTextColor
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.page.PageViewModel
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashCommand
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -104,7 +104,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command
+        val command = state?.slashWidget?.widgetState
 
         assertNotNull(command)
 
@@ -125,7 +125,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         assertEquals(
             expected = expected,
-            actual = (command as SlashCommand.UpdateItems).colorItems
+            actual = (command as SlashWidgetState.UpdateItems).colorItems
         )
     }
 
@@ -191,7 +191,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
         assertNotNull(command)
 
@@ -278,7 +278,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
         assertNotNull(command)
 
@@ -481,7 +481,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
         assertNotNull(command)
 
@@ -568,7 +568,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
         assertNotNull(command)
 
@@ -655,7 +655,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
         assertNotNull(command)
 

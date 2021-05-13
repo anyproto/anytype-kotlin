@@ -81,6 +81,8 @@ import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDes
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
 import com.anytypeio.anytype.presentation.page.editor.search.SearchInDocEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.*
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashExtensions.SLASH_CHAR
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashExtensions.SLASH_EMPTY_SEARCH_MAX
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
@@ -3646,17 +3648,17 @@ class PageViewModel(
         when (item) {
             is SlashItem.Main.Style -> {
                 val items =
-                    listOf(SlashItem.Subheader.StyleWithBack) + SlashExtensions.getStyleItems()
-                onSlashCommand(
-                    SlashCommand.UpdateItems.empty().copy(
+                    listOf(SlashItem.Subheader.StyleWithBack) + SlashExtensions.getSlashWidgetStyleItems()
+                onSlashWidgetStateChanged(
+                    SlashWidgetState.UpdateItems.empty().copy(
                         styleItems = items
                     )
                 )
             }
             is SlashItem.Main.Media -> {
-                val items = listOf(SlashItem.Subheader.MediaWithBack) + SlashExtensions.getMediaItems()
-                onSlashCommand(
-                    SlashCommand.UpdateItems.empty().copy(
+                val items = listOf(SlashItem.Subheader.MediaWithBack) + SlashExtensions.getSlashWidgetMediaItems()
+                onSlashWidgetStateChanged(
+                    SlashWidgetState.UpdateItems.empty().copy(
                         mediaItems = items
                     )
                 )
@@ -3668,39 +3670,39 @@ class PageViewModel(
                 getObjectTypes { proceedWithObjectTypes(it) }
             }
             is SlashItem.Main.Other -> {
-                val items = listOf(SlashItem.Subheader.OtherWithBack) + SlashExtensions.getOtherItems()
-                onSlashCommand(SlashCommand.UpdateItems.empty().copy(
+                val items = listOf(SlashItem.Subheader.OtherWithBack) + SlashExtensions.getSlashWidgetOtherItems()
+                onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
                     otherItems = items
                 ))
             }
             is SlashItem.Main.Actions -> {
-                val items = listOf(SlashItem.Subheader.ActionsWithBack) + SlashExtensions.getActionItems()
-                onSlashCommand(SlashCommand.UpdateItems.empty().copy(
+                val items = listOf(SlashItem.Subheader.ActionsWithBack) + SlashExtensions.getSlashWidgetActionItems()
+                onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
                     actionsItems = items
                 ))
             }
             is SlashItem.Main.Alignment -> {
-                val items = listOf(SlashItem.Subheader.AlignmentWithBack) + SlashExtensions.getAlignmentItems()
-                onSlashCommand(SlashCommand.UpdateItems.empty().copy(
+                val items = listOf(SlashItem.Subheader.AlignmentWithBack) + SlashExtensions.getSlashWidgetAlignmentItems()
+                onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
                     alignmentItems = items
                 ))
             }
             is SlashItem.Main.Color -> {
                 val block = blocks.first { it.id == targetId }
-                val items = listOf(SlashItem.Subheader.ColorWithBack) + SlashExtensions.getColorItems(
+                val items = listOf(SlashItem.Subheader.ColorWithBack) + SlashExtensions.getSlashWidgetColorItems(
                     code = block.content.asText().color
                 )
-                onSlashCommand(SlashCommand.UpdateItems.empty().copy(
+                onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
                     colorItems = items
                 ))
             }
             is SlashItem.Main.Background -> {
                 val block = blocks.first { it.id == targetId }
                 val items = listOf(SlashItem.Subheader.BackgroundWithBack) +
-                        SlashExtensions.getBackgroundItems(
+                        SlashExtensions.getSlashWidgetBackgroundItems(
                     code = block.content.asText().backgroundColor
                 )
-                onSlashCommand(SlashCommand.UpdateItems.empty().copy(
+                onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
                     backgroundItems = items
                 ))
             }
@@ -3752,7 +3754,7 @@ class PageViewModel(
         }
     }
 
-    private fun getRelations(action: (List<RelationListViewModel.Model>) -> Unit) {
+    private fun getRelations(action: (List<RelationListViewModel.Model.Item>) -> Unit) {
         val relations = orchestrator.stores.relations.current()
         val details = orchestrator.stores.details.current()
         val detail = details.details[context]
@@ -3767,17 +3769,17 @@ class PageViewModel(
     }
 
     private fun proceedWithObjectTypes(objectTypes: List<ObjectType>) {
-        onSlashCommand(
-            SlashCommand.UpdateItems.empty().copy(
-                objectItems = SlashExtensions.getObjectTypeItems(objectTypes = objectTypes)
+        onSlashWidgetStateChanged(
+            SlashWidgetState.UpdateItems.empty().copy(
+                objectItems = SlashExtensions.getSlashWidgetObjectTypeItems(objectTypes = objectTypes)
             )
         )
     }
 
     private fun proceedWithRelations(relations: List<RelationListViewModel.Model>) {
-        onSlashCommand(
-            SlashCommand.UpdateItems.empty().copy(
-                relationItems = SlashExtensions.getRelationItems(relations)
+        onSlashWidgetStateChanged(
+            SlashWidgetState.UpdateItems.empty().copy(
+                relationItems = SlashExtensions.getSlashWidgetRelationItems(relations)
             )
         )
     }
@@ -3915,29 +3917,86 @@ class PageViewModel(
         )
     }
 
-    private fun onSlashCommand(command: SlashCommand) {
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.Slash.Update(
-                command = command
-            )
+    private fun onSlashWidgetStateChanged(widgetState: SlashWidgetState) {
+        val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
+            widgetState = widgetState
         )
+        controlPanelInteractor.onEvent(panelEvent)
     }
 
     fun onSlashBackClicked() {
-        val items = SlashExtensions.getSlashMainItems()
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.Slash.Update(
-                command = SlashCommand.UpdateItems.empty().copy(
-                    mainItems = items
-                )
-            )
+        val items = SlashExtensions.getSlashWidgetMainItems()
+        val widgetState = SlashWidgetState.UpdateItems.empty().copy(
+            mainItems = items
         )
+        val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
+            widgetState = widgetState
+        )
+        controlPanelInteractor.onEvent(panelEvent)
+    }
+
+    private var filterSearchEmptyCount = 0
+
+    private fun incFilterSearchEmptyCount(widgetState: SlashWidgetState.UpdateItems) {
+        if (SlashExtensions.isSlashWidgetEmpty(widgetState)) {
+            filterSearchEmptyCount += 1
+        }
     }
 
     fun onSlashTextWatcherEvent(event: SlashEvent) {
-        controlPanelInteractor.onEvent(
-            event = SlashExtensions.getControlPanelMachineEvent(event)
-        )
+        when (event) {
+            is SlashEvent.Start -> {
+                filterSearchEmptyCount = 0
+                val panelEvent = ControlPanelMachine.Event.Slash.OnStart(
+                    cursorCoordinate = event.cursorCoordinate,
+                    slashFrom = event.slashStart
+                )
+                controlPanelInteractor.onEvent(panelEvent)
+            }
+            is SlashEvent.Filter -> {
+                if (event.filter.isEmpty() || event.filter.first() != SLASH_CHAR) {
+                    val widgetState = SlashWidgetState.UpdateItems.empty()
+                    val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
+                        widgetState = widgetState
+                    )
+                    controlPanelInteractor.onEvent(panelEvent)
+                    return
+                }
+                if (event.filter.length == 1) {
+                    val widgetState = SlashWidgetState.UpdateItems.empty()
+                        .copy(
+                            mainItems = SlashExtensions.getSlashWidgetMainItems()
+                        )
+                    val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
+                        widgetState = widgetState
+                    )
+                    controlPanelInteractor.onEvent(panelEvent)
+                    return
+                }
+                getObjectTypes { objectTypes ->
+                    getRelations { relations ->
+                        val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
+                            text = event.filter,
+                            objectTypes = objectTypes.toView(),
+                            relations = relations
+                        )
+                        incFilterSearchEmptyCount(widgetState)
+                        val panelEvent = if (filterSearchEmptyCount == SLASH_EMPTY_SEARCH_MAX) {
+                            filterSearchEmptyCount = 0
+                            ControlPanelMachine.Event.Slash.OnStop
+                        } else {
+                            ControlPanelMachine.Event.Slash.OnFilterChange(widgetState)
+                        }
+                        controlPanelInteractor.onEvent(panelEvent)
+                    }
+                }
+            }
+            SlashEvent.Stop -> {
+                filterSearchEmptyCount = 0
+                val panelEvent = ControlPanelMachine.Event.Slash.OnStop
+                controlPanelInteractor.onEvent(panelEvent)
+            }
+        }
     }
     //endregion
 

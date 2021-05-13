@@ -1,11 +1,9 @@
 package com.anytypeio.anytype.presentation.page.editor.slash
 
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.presentation.page.ControlPanelMachine
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
-import timber.log.Timber
 
 fun List<ObjectType>.toView(): List<SlashItem.ObjectType> = map { oType ->
     SlashItem.ObjectType(
@@ -31,7 +29,12 @@ fun SlashItem.Style.Type.convertToUiBlock() = when (this) {
 
 object SlashExtensions {
 
-    fun getSlashMainItems() = listOf(
+    const val SLASH_CHAR = '/'
+    private const val SLASH_ALIGN = "Align"
+    const val SLASH_EMPTY_SEARCH_MAX = 3
+
+    //region {SLASH ITEMS FOR WIDGET}
+    fun getSlashWidgetMainItems() = listOf(
         SlashItem.Main.Style,
         SlashItem.Main.Media,
         SlashItem.Main.Objects,
@@ -43,7 +46,7 @@ object SlashExtensions {
         SlashItem.Main.Background,
     )
 
-    fun getStyleItems() = listOf(
+    fun getSlashWidgetStyleItems() = listOf(
         SlashItem.Style.Type.Text,
         SlashItem.Style.Type.Title,
         SlashItem.Style.Type.Heading,
@@ -60,7 +63,7 @@ object SlashExtensions {
         SlashItem.Style.Markup.Code
     )
 
-    fun getMediaItems() = listOf(
+    fun getSlashWidgetMediaItems() = listOf(
         SlashItem.Media.File,
         SlashItem.Media.Picture,
         SlashItem.Media.Video,
@@ -68,12 +71,12 @@ object SlashExtensions {
         SlashItem.Media.Code
     )
 
-    fun getOtherItems() = listOf(
+    fun getSlashWidgetOtherItems() = listOf(
         SlashItem.Other.Line,
         SlashItem.Other.Dots
     )
 
-    fun getActionItems() = listOf(
+    fun getSlashWidgetActionItems() = listOf(
         SlashItem.Actions.Delete,
         SlashItem.Actions.Duplicate,
         SlashItem.Actions.Copy,
@@ -83,37 +86,19 @@ object SlashExtensions {
         SlashItem.Actions.CleanStyle
     )
 
-    fun getAlignmentItems() = listOf(
+    fun getSlashWidgetAlignmentItems() = listOf(
         SlashItem.Alignment.Left,
         SlashItem.Alignment.Center,
         SlashItem.Alignment.Right
     )
 
-    fun getObjectTypeItems(objectTypes: List<ObjectType>): List<SlashItem> =
+    fun getSlashWidgetObjectTypeItems(objectTypes: List<ObjectType>): List<SlashItem> =
         listOf(SlashItem.Subheader.ObjectTypeWithBlack) + objectTypes.toView()
 
-    fun getRelationItems(relations: List<RelationListViewModel.Model>): List<RelationListViewModel.Model> =
+    fun getSlashWidgetRelationItems(relations: List<RelationListViewModel.Model>): List<RelationListViewModel.Model> =
         listOf(RelationListViewModel.Model.Section.NoSection) + relations
 
-    fun getControlPanelMachineEvent(event: SlashEvent): ControlPanelMachine.Event =
-        when (event) {
-            is SlashEvent.Start -> {
-                ControlPanelMachine.Event.Slash.OnStart(
-                    cursorCoordinate = event.cursorCoordinate,
-                    slashFrom = event.slashStart
-                )
-            }
-            is SlashEvent.Filter -> {
-                ControlPanelMachine.Event.Slash.Update(
-                    command = onGetFilterUpdate(filter = event.filter)
-                )
-            }
-            SlashEvent.Stop -> {
-                ControlPanelMachine.Event.Slash.OnStop
-            }
-        }
-
-    fun getColorItems(code: String?): List<SlashItem.Color> =
+    fun getSlashWidgetColorItems(code: String?): List<SlashItem.Color.Text> =
         ThemeColor.values().map { themeColor ->
             val isSelected = if (themeColor.title == ThemeColor.DEFAULT.title && code == null) {
                 true
@@ -126,7 +111,7 @@ object SlashExtensions {
             )
         }
 
-    fun getBackgroundItems(code: String?): List<SlashItem.Color> =
+    fun getSlashWidgetBackgroundItems(code: String?): List<SlashItem.Color.Background> =
         ThemeColor.values().map { themeColor ->
             val isSelected = if (themeColor.title == ThemeColor.DEFAULT.title && code == null) {
                 true
@@ -138,59 +123,94 @@ object SlashExtensions {
                 isSelected = isSelected
             )
         }
+    //endregion
 
-    //TODO in progress
-    fun onGetFilterUpdate(filter: CharSequence): SlashCommand.UpdateItems {
-        if (filter.isEmpty() || filter.first() != '/') {
-            return SlashCommand.UpdateItems.empty()
-        }
-        if (filter.length == 1 && filter.first() == '/') {
-            return SlashCommand.UpdateItems.empty().copy(
-                mainItems = getSlashMainItems()
-            )
-        }
-
-        throw RuntimeException("Not implemented")
-    }
-
-    //TODO in progress
-    fun filterSlashItems(filter: String): SlashCommand.UpdateItems {
-        var count = 0
-        val command = SlashCommand.UpdateItems(
-            mainItems = emptyList(),
-            styleItems = filterSlashItems(filter = filter, items = getStyleItems())
-                .also {
-                    if (it.isNotEmpty()) count++
-                },
-            mediaItems = filterSlashItems(filter = filter, items = getMediaItems())
-                .also {
-                    if (it.isNotEmpty()) count++
-                },
-            objectItems = emptyList(),
-            relationItems = emptyList(),
-            otherItems = filterSlashItems(filter = filter, items = getOtherItems()),
-            actionsItems = filterSlashItems(filter = filter, items = getActionItems()),
-            alignmentItems = filterSlashItems(filter = filter, items = getAlignmentItems()),
-            colorItems = filterSlashItems(filter = filter, items = getColorItems(code = null)),
-            backgroundItems = filterSlashItems(
+    fun getUpdatedSlashWidgetState(
+        text: CharSequence,
+        objectTypes: List<SlashItem.ObjectType>,
+        relations: List<RelationListViewModel.Model.Item>
+    ): SlashWidgetState.UpdateItems {
+        val filter = text.subSequence(1, text.length).toString()
+        return SlashWidgetState.UpdateItems.empty().copy(
+            styleItems = filterSlashItems(filter = filter, items = getSlashWidgetStyleItems()),
+            mediaItems = filterSlashItems(filter = filter, items = getSlashWidgetMediaItems()),
+            objectItems = filterObjectTypes(filter = filter, items = objectTypes),
+            relationItems = filterRelations(filter = filter, items = relations),
+            otherItems = filterSlashItems(filter = filter, items = getSlashWidgetOtherItems()),
+            actionsItems = filterSlashItems(filter = filter, items = getSlashWidgetActionItems()),
+            alignmentItems = filterAlignItems(filter = filter, items = getSlashWidgetAlignmentItems()),
+            colorItems = filterColor(filter = filter, items = getSlashWidgetColorItems(code = null)),
+            backgroundItems = filterBackground(
                 filter = filter,
-                items = getBackgroundItems(code = null)
+                items = getSlashWidgetBackgroundItems(code = null)
             )
         )
-        Timber.d("Count:$count")
-        return command
+    }
+
+    fun isSlashWidgetEmpty(widgetState: SlashWidgetState.UpdateItems): Boolean =
+        widgetState == SlashWidgetState.UpdateItems.empty()
+
+    //region {PRIVATE HELPING METHODS}
+    private fun filterColor(filter: String, items: List<SlashItem.Color.Text>): List<SlashItem> {
+        val filtered = items.filter {
+            it.code.contains(filter, ignoreCase = true)
+        }
+        return updateWithSubheader(filtered)
+    }
+
+    private fun filterBackground(
+        filter: String,
+        items: List<SlashItem.Color.Background>
+    ): List<SlashItem> {
+        val filtered = items.filter {
+            it.code.contains(filter, ignoreCase = true)
+        }
+        return updateWithSubheader(filtered)
+    }
+
+    private fun filterRelations(
+        filter: String,
+        items: List<RelationListViewModel.Model.Item>
+    ): List<RelationListViewModel.Model> {
+        val filtered = items.filter {
+            it.view.name.contains(filter, ignoreCase = true)
+        }
+        return if (filtered.isEmpty()) {
+            filtered
+        } else {
+            listOf(RelationListViewModel.Model.Section.NoSection) + filtered
+        }
+    }
+
+    private fun filterObjectTypes(
+        filter: String,
+        items: List<SlashItem.ObjectType>
+    ): List<SlashItem> {
+        val filtered = items.filter {
+            it.name.contains(filter, ignoreCase = true)
+        }
+        return updateWithSubheader(items = filtered)
     }
 
     private fun filterSlashItems(filter: String, items: List<SlashItem>): List<SlashItem> {
-        val style = items
+        val filtered = items
             .filter {
                 it.javaClass.simpleName.contains(filter, ignoreCase = true)
             }
-        return updateWithSubheader(items = style)
+        return updateWithSubheader(items = filtered)
     }
 
-    private fun updateWithSubheader(items: List<SlashItem>): List<SlashItem> {
-        return if (items.isNotEmpty()) {
+    private fun filterAlignItems(filter: String, items: List<SlashItem>): List<SlashItem> {
+        val filtered = items
+            .filter {
+                val name = "$SLASH_ALIGN ${it.javaClass.simpleName}"
+                name.contains(filter, ignoreCase = true)
+            }
+        return updateWithSubheader(items = filtered)
+    }
+
+    private fun updateWithSubheader(items: List<SlashItem>): List<SlashItem> =
+        if (items.isNotEmpty()) {
             when (items.first()) {
                 is SlashItem.Actions -> listOf(SlashItem.Subheader.Actions) + items
                 is SlashItem.Alignment -> listOf(SlashItem.Subheader.Alignment) + items
@@ -205,5 +225,5 @@ object SlashExtensions {
         } else {
             items
         }
-    }
+    //endregion
 }

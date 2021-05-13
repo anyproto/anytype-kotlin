@@ -7,7 +7,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashCommand
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import kotlinx.android.synthetic.main.widget_editor_slash.view.*
 import kotlinx.coroutines.channels.Channel
@@ -118,25 +118,25 @@ class SlashWidget @JvmOverloads constructor(
         }
     }
 
-    fun onCommand(command: SlashCommand) {
-        when (command) {
-            is SlashCommand.UpdateItems -> {
+    fun onStateChanged(widgetState: SlashWidgetState) {
+        when (widgetState) {
+            is SlashWidgetState.UpdateItems -> {
                 rvSlash.smoothScrollToPosition(0)
 
-                mainAdapter.update(command.mainItems)
-                styleAdapter.update(command.styleItems)
-                mediaAdapter.update(command.mediaItems)
-                objectTypesAdapter.update(command.objectItems)
-                if (command.relationItems.isEmpty()) {
+                mainAdapter.update(widgetState.mainItems)
+                styleAdapter.update(widgetState.styleItems)
+                mediaAdapter.update(widgetState.mediaItems)
+                objectTypesAdapter.update(widgetState.objectItems)
+                if (widgetState.relationItems.isEmpty()) {
                     relationsAdapter.clear()
                 } else {
-                    relationsAdapter.update(command.relationItems)
+                    relationsAdapter.update(widgetState.relationItems)
                 }
-                otherAdapter.update(command.otherItems)
-                actionsAdapter.update(command.actionsItems)
-                alignAdapter.update(command.alignmentItems)
-                colorAdapter.update(command.colorItems)
-                backgroundAdapter.update(command.backgroundItems)
+                otherAdapter.update(widgetState.otherItems)
+                actionsAdapter.update(widgetState.actionsItems)
+                alignAdapter.update(widgetState.alignmentItems)
+                colorAdapter.update(widgetState.colorItems)
+                backgroundAdapter.update(widgetState.backgroundItems)
             }
         }
     }
@@ -149,6 +149,5 @@ class SlashWidget @JvmOverloads constructor(
 
     companion object {
         const val MIN_VISIBLE_ITEMS = 4
-        const val SLASH_PREFIX = "/"
     }
 }

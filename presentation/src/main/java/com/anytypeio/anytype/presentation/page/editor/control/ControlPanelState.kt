@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashCommand
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.page.markup.MarkupStyleDescriptor
@@ -224,7 +224,7 @@ data class ControlPanelState(
             val cursorCoordinate: Int? = null,
             val updateList: Boolean = false,
             val items: List<String> = emptyList(),
-            val command: SlashCommand? = null
+            val widgetState: SlashWidgetState? = null
         ) : Toolbar() {
             companion object {
                 fun reset(): SlashWidget = SlashWidget(
@@ -234,7 +234,7 @@ data class ControlPanelState(
                     cursorCoordinate = null,
                     items = emptyList(),
                     updateList = false,
-                    command = null
+                    widgetState = null
                 )
             }
         }

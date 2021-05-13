@@ -1200,8 +1200,8 @@ open class PageFragment :
                 if (!slashWidget.isVisible) {
                     showSlashWidget(this)
                 }
-                command?.let {
-                    slashWidget.onCommand(it)
+                widgetState?.let {
+                    slashWidget.onStateChanged(it)
                 }
             } else {
                 slashWidget.gone()

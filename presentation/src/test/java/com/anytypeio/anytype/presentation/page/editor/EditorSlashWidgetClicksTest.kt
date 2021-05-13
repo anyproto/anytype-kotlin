@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.page.editor.model.Types
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashCommand
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
@@ -82,11 +82,11 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val stateWidget = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
-        assertNotNull(command)
+        assertNotNull(stateWidget)
 
-        val expected = SlashCommand.UpdateItems(
+        val expected = SlashWidgetState.UpdateItems(
             mainItems = emptyList(),
             styleItems = listOf(
                 SlashItem.Subheader.StyleWithBack,
@@ -114,7 +114,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             colorItems = emptyList(),
             backgroundItems = emptyList()
         )
-        assertEquals(expected = expected, actual = command)
+        assertEquals(expected = expected, actual = stateWidget)
     }
     //endregion
 
@@ -154,11 +154,11 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val stateWidget = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
-        assertNotNull(command)
+        assertNotNull(stateWidget)
 
-        val expected = SlashCommand.UpdateItems(
+        val expected = SlashWidgetState.UpdateItems(
             mainItems = emptyList(),
             styleItems = emptyList(),
             mediaItems = listOf(
@@ -177,7 +177,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             colorItems = emptyList(),
             backgroundItems = emptyList()
         )
-        assertEquals(expected = expected, actual = command)
+        assertEquals(expected = expected, actual = stateWidget)
     }
     //endregion
 
@@ -276,9 +276,9 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val stateWidget = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
-        assertNotNull(command)
+        assertNotNull(stateWidget)
 
         val expectedObjectItems = listOf(
             SlashItem.Subheader.ObjectTypeWithBlack,
@@ -302,7 +302,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         )
 
-        val expected = SlashCommand.UpdateItems(
+        val expected = SlashWidgetState.UpdateItems(
             mainItems = emptyList(),
             styleItems = emptyList(),
             mediaItems = emptyList(),
@@ -314,7 +314,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             colorItems = emptyList(),
             backgroundItems = emptyList()
         )
-        assertEquals(expected = expected, actual = command)
+        assertEquals(expected = expected, actual = stateWidget)
 
     }
     //endregion
@@ -427,9 +427,9 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val stateWidget = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
-        assertNotNull(command)
+        assertNotNull(stateWidget)
 
         val expectedRelationItems = listOf(
             RelationListViewModel.Model.Section.NoSection,
@@ -456,7 +456,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         )
 
-        val expected = SlashCommand.UpdateItems(
+        val expected = SlashWidgetState.UpdateItems(
             mainItems = emptyList(),
             styleItems = emptyList(),
             mediaItems = emptyList(),
@@ -468,7 +468,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             colorItems = emptyList(),
             backgroundItems = emptyList()
         )
-        assertEquals(expected = expected, actual = command)
+        assertEquals(expected = expected, actual = stateWidget)
     }
     //endregion
 
@@ -508,9 +508,9 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val stateWidget = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
-        assertNotNull(command)
+        assertNotNull(stateWidget)
 
         val expectedOtherItems = listOf(
             SlashItem.Subheader.OtherWithBack,
@@ -518,7 +518,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashItem.Other.Dots
         )
 
-        val expected = SlashCommand.UpdateItems(
+        val expected = SlashWidgetState.UpdateItems(
             mainItems = emptyList(),
             styleItems = emptyList(),
             mediaItems = emptyList(),
@@ -530,7 +530,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             colorItems = emptyList(),
             backgroundItems = emptyList()
         )
-        assertEquals(expected = expected, actual = command)
+        assertEquals(expected = expected, actual = stateWidget)
     }
     //endregion
 
@@ -570,9 +570,9 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val stateWidget = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
-        assertNotNull(command)
+        assertNotNull(stateWidget)
 
         val expectedActionsItems = listOf(
             SlashItem.Subheader.ActionsWithBack,
@@ -585,7 +585,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashItem.Actions.CleanStyle
         )
 
-        val expected = SlashCommand.UpdateItems(
+        val expected = SlashWidgetState.UpdateItems(
             mainItems = emptyList(),
             styleItems = emptyList(),
             mediaItems = emptyList(),
@@ -597,7 +597,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             colorItems = emptyList(),
             backgroundItems = emptyList()
         )
-        assertEquals(expected = expected, actual = command)
+        assertEquals(expected = expected, actual = stateWidget)
     }
     //endregion
 
@@ -637,9 +637,9 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         val state = vm.controlPanelViewState.value
 
-        val command = state?.slashWidget?.command as SlashCommand.UpdateItems
+        val stateWidget = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
-        assertNotNull(command)
+        assertNotNull(stateWidget)
 
         val expectedAlignmentItems = listOf(
             SlashItem.Subheader.AlignmentWithBack,
@@ -648,7 +648,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashItem.Alignment.Right
         )
 
-        val expected = SlashCommand.UpdateItems(
+        val expected = SlashWidgetState.UpdateItems(
             mainItems = emptyList(),
             styleItems = emptyList(),
             mediaItems = emptyList(),
@@ -660,7 +660,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             colorItems = emptyList(),
             backgroundItems = emptyList()
         )
-        assertEquals(expected = expected, actual = command)
+        assertEquals(expected = expected, actual = stateWidget)
     }
     //endregion
 

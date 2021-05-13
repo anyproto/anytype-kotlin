@@ -1,9 +1,7 @@
 package com.anytypeio.anytype.presentation
 
 import MockDataFactory
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Document
-import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.*
 
 object MockTypicalDocumentFactory {
 
@@ -61,4 +59,21 @@ object MockTypicalDocumentFactory {
         )
         return listOf(page, header, title, a)
     }
+
+    fun relation(name: String) = Relation(
+        key = MockDataFactory.randomString(),
+        name = name,
+        format = Relation.Format.SHORT_TEXT,
+        source = Relation.Source.values().random()
+    )
+
+    fun objectType(name: String) = ObjectType(
+        url = MockDataFactory.randomUuid(),
+        name = name,
+        relations = emptyList(),
+        layout = ObjectType.Layout.values().random(),
+        emoji = MockDataFactory.randomString(),
+        description = MockDataFactory.randomString(),
+        isHidden = MockDataFactory.randomBoolean()
+    )
 }

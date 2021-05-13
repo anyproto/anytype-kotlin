@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 
-sealed class SlashCommand {
+sealed class SlashWidgetState {
     data class UpdateItems(
         val mainItems: List<SlashItem>,
         val styleItems: List<SlashItem>,
@@ -16,7 +16,7 @@ sealed class SlashCommand {
         val alignmentItems: List<SlashItem>,
         val colorItems: List<SlashItem>,
         val backgroundItems: List<SlashItem>
-    ) : SlashCommand() {
+    ) : SlashWidgetState() {
         companion object {
             fun empty() = UpdateItems(
                 mainItems = emptyList(),

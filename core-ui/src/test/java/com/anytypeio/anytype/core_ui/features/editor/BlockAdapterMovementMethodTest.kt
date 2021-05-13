@@ -268,7 +268,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         val testMM = holder.content.movementMethod
@@ -341,7 +342,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         val testMM = holder.content.movementMethod
@@ -415,7 +417,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         val testMM = holder.content.movementMethod
@@ -489,7 +492,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         val testMM = holder.content.movementMethod
@@ -563,7 +567,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         val testMM = holder.content.movementMethod
@@ -637,7 +642,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         val testMM = holder.content.movementMethod
@@ -718,7 +724,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         val testMM = holder.content.movementMethod
@@ -799,7 +806,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         val testMM = holder.content.movementMethod
@@ -881,7 +889,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         val testMM = holder.content.movementMethod
@@ -951,7 +960,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         val testMM = holder.content.movementMethod

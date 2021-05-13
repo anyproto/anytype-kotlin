@@ -215,7 +215,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -269,7 +270,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -324,7 +326,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -389,7 +392,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -547,7 +551,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -1762,7 +1767,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2271,7 +2277,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2306,7 +2313,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2341,7 +2349,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2446,7 +2455,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2548,7 +2558,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2696,7 +2707,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2844,7 +2856,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2995,7 +3008,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -3151,7 +3165,8 @@ class BlockAdapterTest {
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
             clicked = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(

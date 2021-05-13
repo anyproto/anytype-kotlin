@@ -16,6 +16,7 @@ import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import kotlinx.android.synthetic.main.item_block_numbered.view.*
 
 class Numbered(
@@ -38,6 +39,7 @@ class Numbered(
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
+        onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
@@ -62,6 +64,7 @@ class Numbered(
     ).also {
         setNumber(item)
         setupMentionWatcher(onMentionEvent)
+        setupSlashWatcher(onSlashEvent, item.getViewType())
     }
 
     private fun setNumber(item: BlockView.Text.Numbered) {
@@ -85,9 +88,10 @@ class Numbered(
         onTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit
+        onMentionEvent: (MentionEvent) -> Unit,
+        onSlashEvent: (SlashEvent) -> Unit
     ) {
-        super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked, onMentionEvent)
+        super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked, onMentionEvent, onSlashEvent)
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.NUMBER_CHANGED))
                 number.text = (item as BlockView.Text.Numbered).number.addDot()

@@ -13,11 +13,7 @@ import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
-import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
-import com.anytypeio.anytype.core_ui.tools.CustomBetterLinkMovementMethod
-import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
-import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
-import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
+import com.anytypeio.anytype.core_ui.tools.*
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightDrawer
 import com.anytypeio.anytype.core_utils.ext.multilineIme
@@ -142,12 +138,14 @@ class TextInputWidget : AppCompatEditText {
     private fun lockTextWatchers() {
         watchers.forEach { watcher ->
             if (watcher is DefaultTextWatcher) watcher.lock()
+            if (watcher is SlashTextWatcher) watcher.lock()
         }
     }
 
     private fun unlockTextWatchers() {
         watchers.forEach { watcher ->
             if (watcher is DefaultTextWatcher) watcher.unlock()
+            if (watcher is SlashTextWatcher) watcher.unlock()
         }
     }
 

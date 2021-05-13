@@ -574,7 +574,8 @@ class BlockAdapter(
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent
+                            onMentionEvent = onMentionEvent,
+                            onSlashEvent = onSlashEvent
                         )
                     }
                     is Bulleted -> {
@@ -584,7 +585,8 @@ class BlockAdapter(
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent
+                            onMentionEvent = onMentionEvent,
+                            onSlashEvent = onSlashEvent
                         )
                     }
                     is Checkbox -> {
@@ -594,7 +596,8 @@ class BlockAdapter(
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent
+                            onMentionEvent = onMentionEvent,
+                            onSlashEvent = onSlashEvent
                         )
                     }
                     is Title.Document -> {
@@ -622,7 +625,8 @@ class BlockAdapter(
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent
+                            onMentionEvent = onMentionEvent,
+                            onSlashEvent = onSlashEvent
                         )
                     }
                     is HeaderOne -> {
@@ -632,7 +636,8 @@ class BlockAdapter(
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent
+                            onMentionEvent = onMentionEvent,
+                            onSlashEvent = onSlashEvent
                         )
                     }
                     is HeaderTwo -> {
@@ -642,7 +647,8 @@ class BlockAdapter(
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent
+                            onMentionEvent = onMentionEvent,
+                            onSlashEvent = onSlashEvent
                         )
                     }
                     is HeaderThree -> {
@@ -652,7 +658,8 @@ class BlockAdapter(
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent
+                            onMentionEvent = onMentionEvent,
+                            onSlashEvent = onSlashEvent
                         )
                     }
                     is Toggle -> {
@@ -662,7 +669,8 @@ class BlockAdapter(
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent
+                            onMentionEvent = onMentionEvent,
+                            onSlashEvent = onSlashEvent
                         )
                     }
                     is Highlight -> {
@@ -672,7 +680,8 @@ class BlockAdapter(
                             onTextChanged = onTextBlockTextChanged,
                             onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent
+                            onMentionEvent = onMentionEvent,
+                            onSlashEvent = onSlashEvent
                         )
                     }
                     is File -> {
@@ -834,6 +843,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
+                    onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -848,6 +858,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
+                    onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -862,6 +873,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
+                    onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -877,6 +889,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
+                    onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -891,6 +904,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
+                    onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -905,6 +919,7 @@ class BlockAdapter(
                     onSelectionChanged = onSelectionChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
+                    onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -921,6 +936,7 @@ class BlockAdapter(
                     onToggleClicked = onToggleClicked,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
+                    onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
@@ -934,6 +950,7 @@ class BlockAdapter(
                     onTextBlockTextChanged = onTextBlockTextChanged,
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
+                    onSlashEvent = onSlashEvent,
                     onSelectionChanged = onSelectionChanged,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,

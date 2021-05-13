@@ -192,6 +192,7 @@ interface TextBlockHolder : TextHolder {
     fun setupTextWatcher(
         item: BlockView,
         onMentionEvent: ((MentionEvent) -> Unit),
+        onSlashEvent: (SlashEvent) -> Unit,
         onTextChanged: (String, Editable) -> Unit,
     ) {
         content.addTextChangedListener(
@@ -200,6 +201,7 @@ interface TextBlockHolder : TextHolder {
             }
         )
         setupMentionWatcher(onMentionEvent)
+        setupSlashWatcher(onSlashEvent, item.getViewType())
     }
 
     fun setupMentionWatcher(
@@ -259,7 +261,8 @@ interface TextBlockHolder : TextHolder {
         onTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit
+        onMentionEvent: (MentionEvent) -> Unit,
+        onSlashEvent: (SlashEvent) -> Unit
     ) = payloads.forEach { payload ->
 
         check(item is BlockView.Text)
@@ -321,7 +324,8 @@ interface TextBlockHolder : TextHolder {
                             }
                             onTextChanged(item)
                         },
-                        onMentionEvent = onMentionEvent
+                        onMentionEvent = onMentionEvent,
+                        onSlashEvent = onSlashEvent
                     )
                     content.selectionWatcher = { onSelectionChanged(item.id, it) }
                     enableEditMode()

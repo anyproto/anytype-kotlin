@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 
 class Toggle(
@@ -40,6 +41,7 @@ class Toggle(
         onTogglePlaceholderClicked: (String) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
+        onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
@@ -75,6 +77,7 @@ class Toggle(
             if (mode == BlockView.Mode.EDIT) onToggleClicked(item.id)
         }
         setupMentionWatcher(onMentionEvent)
+        setupSlashWatcher(onSlashEvent, item.getViewType())
     }
 
     override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
@@ -108,10 +111,11 @@ class Toggle(
         onTextChanged: (BlockView.Text) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit
+        onMentionEvent: (MentionEvent) -> Unit,
+        onSlashEvent: (SlashEvent) -> Unit
     ) {
         check(item is BlockView.Text.Toggle) { "Expected a toggle block, but was: $item" }
-        super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked, onMentionEvent)
+        super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked, onMentionEvent, onSlashEvent)
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.TOGGLE_EMPTY_STATE_CHANGED))
                 placeholder.isVisible = item.isEmpty

@@ -215,7 +215,8 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -273,7 +274,8 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -331,7 +333,8 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -380,7 +383,8 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(
@@ -428,7 +432,8 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             clicked = {},
             onSelectionChanged = { _, _ -> },
             onTextChanged = {},
-            onMentionEvent = {}
+            onMentionEvent = {},
+            onSlashEvent = {}
         )
 
         assertEquals(

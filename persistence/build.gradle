@@ -32,9 +32,11 @@ dependencies {
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.gson
+    implementation applicationDependencies.lifecycleLiveData
 
     implementation databaseDependencies.room
     implementation databaseDependencies.roomKtx
+
     kapt databaseDependencies.annotations
 
     implementation applicationDependencies.timber
@@ -44,6 +46,6 @@ dependencies {
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.mockitoKotlin
-    testImplementation unitTestDependencies.robolectric
+    testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.archCoreTesting
 }

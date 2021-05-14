@@ -7,7 +7,7 @@ allprojects {
 
 ext {
     // Kotlin
-    kotlin_coroutines_version = '1.4.3'
+    kotlin_coroutines_version = '1.5.0'
     kotlinx_serialization_json_version = '1.0.0'
 
     // AndroidX
@@ -36,7 +36,7 @@ ext {
     blurry_version = '3.0.0'
     shimmer_layout_version = "0.5.0"
     photo_view_version = '2.3.0'
-    dagger_version = '2.33'
+    dagger_version = '2.35.1'
     javaxAnnotations_version = '1.0'
     javaxInject_version = '1'
     retrofit_version = '2.3.0'
@@ -81,9 +81,9 @@ ext {
     protoc_version = '3.9.0'
     wire_version = '3.5.0'
 
-    // DB
+    // DBB
 
-    room_version = '2.2.0'
+    room_version = '2.3.0'
 
     // Analytics
 

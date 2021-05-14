@@ -286,19 +286,22 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                 url = type1.url,
                 name = type1.name,
                 emoji = type1.emoji,
-                description = type1.description
+                description = type1.description,
+                layout = type1.layout
             ),
             SlashItem.ObjectType(
                 url = type2.url,
                 name = type2.name,
                 emoji = type2.emoji,
-                description = type2.description
+                description = type2.description,
+                layout = type2.layout
             ),
             SlashItem.ObjectType(
                 url = type3.url,
                 name = type3.name,
                 emoji = type3.emoji,
-                description = type3.description
+                description = type3.description,
+                layout = type3.layout
             )
         )
 

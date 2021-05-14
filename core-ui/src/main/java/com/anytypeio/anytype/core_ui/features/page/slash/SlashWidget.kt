@@ -53,8 +53,7 @@ class SlashWidget @JvmOverloads constructor(
     private val relationsAdapter by lazy {
         SlashRelationsAdapter(
             items = listOf(),
-            onRelationClicked = {},
-            onBackClicked = { _clickEvents.offer(it) }
+            clicks = { _clickEvents.offer(it) }
         )
     }
 

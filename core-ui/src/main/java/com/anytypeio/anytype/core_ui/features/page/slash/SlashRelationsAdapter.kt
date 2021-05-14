@@ -20,8 +20,7 @@ import timber.log.Timber
 
 class SlashRelationsAdapter(
     private var items: List<RelationListViewModel.Model>,
-    private val onRelationClicked: (RelationListViewModel.Model.Item) -> Unit,
-    private val onBackClicked: (SlashItem.Back) -> Unit
+    private val clicks: (SlashItem) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -32,7 +31,7 @@ class SlashRelationsAdapter(
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
                         check(view is RelationListViewModel.Model.Item)
-                        onRelationClicked(view)
+                        clicks(SlashItem.Relation(view))
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                         gone()
@@ -48,7 +47,7 @@ class SlashRelationsAdapter(
                         itemView.setOnClickListener {
                             val view = items[bindingAdapterPosition]
                             check(view is RelationListViewModel.Model.Item)
-                            onRelationClicked(view)
+                            clicks(SlashItem.Relation(view))
                         }
                         itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                             gone()
@@ -63,7 +62,7 @@ class SlashRelationsAdapter(
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
                         check(view is RelationListViewModel.Model.Item)
-                        onRelationClicked(view)
+                        clicks(SlashItem.Relation(view))
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                         gone()
@@ -78,7 +77,7 @@ class SlashRelationsAdapter(
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
                         check(view is RelationListViewModel.Model.Item)
-                        onRelationClicked(view)
+                        clicks(SlashItem.Relation(view))
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                         gone()
@@ -93,7 +92,7 @@ class SlashRelationsAdapter(
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
                         check(view is RelationListViewModel.Model.Item)
-                        onRelationClicked(view)
+                        clicks(SlashItem.Relation(view))
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                         gone()
@@ -108,7 +107,7 @@ class SlashRelationsAdapter(
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
                         check(view is RelationListViewModel.Model.Item)
-                        onRelationClicked(view)
+                        clicks(SlashItem.Relation(view))
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                         gone()
@@ -132,7 +131,7 @@ class SlashRelationsAdapter(
                     view = inflater.inflate(viewType, parent, false)
                 ).apply {
                     itemView.flBack.setOnClickListener {
-                        onBackClicked(SlashItem.Back)
+                        clicks(SlashItem.Back)
                     }
                 }
             }

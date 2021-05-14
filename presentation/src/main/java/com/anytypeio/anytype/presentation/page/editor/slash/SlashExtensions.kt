@@ -11,6 +11,7 @@ fun List<ObjectType>.toView(): List<SlashItem.ObjectType> = map { oType ->
         url = oType.url,
         name = oType.name,
         emoji = oType.emoji,
+        layout = oType.layout,
         description = oType.description
     )
 }

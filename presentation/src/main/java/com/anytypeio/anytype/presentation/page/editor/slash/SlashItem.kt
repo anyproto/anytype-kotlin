@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.page.editor.slash
 
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.ObjectType.Layout as ObjectTypeLayout
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 
 sealed class SlashWidgetState {
@@ -113,15 +113,13 @@ sealed class SlashItem {
         val url: Url,
         val name: String,
         val emoji: String,
-        val description: String?
+        val description: String?,
+        val layout: ObjectTypeLayout
     ) : SlashItem()
     //endregion
 
     //region RELATION
-    sealed class SlashRelation {
-        object New: SlashRelation()
-        data class Items(val relations: List<Relation>): SlashRelation()
-    }
+    data class Relation(val relation: RelationListViewModel.Model.Item) : SlashItem()
     //endregion
 
     //region OTHER

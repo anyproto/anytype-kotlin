@@ -396,6 +396,23 @@ open class EditorPresentationTestSetup {
         }
     }
 
+    fun stubCreateObject(root: String, target: String) {
+        createObject.stub {
+            onBlocking {
+                invoke(any())
+            } doReturn Either.Right(
+                CreateObject.Result(
+                    id = root,
+                    target = target,
+                    payload = Payload(
+                        context = root,
+                        events = emptyList()
+                    )
+                )
+            )
+        }
+    }
+
     fun stubUpdateText() {
         updateText.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)

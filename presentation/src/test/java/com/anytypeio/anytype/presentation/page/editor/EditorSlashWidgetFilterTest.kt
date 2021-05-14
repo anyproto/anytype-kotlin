@@ -4,6 +4,7 @@ import MockDataFactory
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
@@ -417,13 +418,15 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
                 url = type1.url,
                 name = type1.name,
                 emoji = type1.emoji,
-                description = type1.description
+                description = type1.description,
+                layout = type1.layout
             ),
             SlashItem.ObjectType(
                 url = type2.url,
                 name = type2.name,
                 emoji = type2.emoji,
-                description = type2.description
+                description = type2.description,
+                layout = type2.layout
             )
         )
         assertEquals(expected = expectedItems, actual = command.objectItems)

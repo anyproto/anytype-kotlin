@@ -3716,6 +3716,10 @@ class PageViewModel(
                 onSlashMediaItemClicked(item)
             }
             is SlashItem.ObjectType -> {
+                onSlashObjectTypeItemClicked(item)
+            }
+            is SlashItem.Relation -> {
+                onSlashRelationItemClicked(item)
             }
             is SlashItem.Other.Line -> {
                 proceedWithClearingFocus()
@@ -4042,6 +4046,19 @@ class PageViewModel(
                 controlPanelInteractor.onEvent(panelEvent)
             }
         }
+    }
+
+    private fun onSlashObjectTypeItemClicked(item: SlashItem.ObjectType) {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+
+        onAddNewObjectClicked(
+            type = item.url,
+            layout = item.layout
+        )
+    }
+
+    private fun onSlashRelationItemClicked(item: SlashItem.Relation) {
+        Timber.d("On Pick Relation:${item.relation}")
     }
     //endregion
 

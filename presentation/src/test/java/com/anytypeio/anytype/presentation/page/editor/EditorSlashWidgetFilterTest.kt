@@ -506,7 +506,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
 
         assertNotNull(command)
         val expectedItems = listOf(
-            RelationListViewModel.Model.Section.NoSection,
+            RelationListViewModel.Model.Section.SlashWidget.Subheader,
             RelationListViewModel.Model.Item(
                 view = DocumentRelationView.Default(
                     relationId = r1.key,

@@ -53,7 +53,8 @@ class SlashWidget @JvmOverloads constructor(
     private val relationsAdapter by lazy {
         SlashRelationsAdapter(
             items = listOf(),
-            onRelationClicked = {}
+            onRelationClicked = {},
+            onBackClicked = { _clickEvents.offer(it) }
         )
     }
 
@@ -142,8 +143,7 @@ class SlashWidget @JvmOverloads constructor(
     }
 
     fun getWidgetMinHeight() = with(context.resources) {
-        getDimensionPixelSize(R.dimen.mention_suggester_item_height) * MIN_VISIBLE_ITEMS +
-                getDimensionPixelSize(R.dimen.mention_list_padding_bottom) +
+        getDimensionPixelSize(R.dimen.slash_widget_item_height) * MIN_VISIBLE_ITEMS +
                 getDimensionPixelSize(R.dimen.mention_divider_height)
     }
 

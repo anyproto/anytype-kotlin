@@ -432,7 +432,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         assertNotNull(stateWidget)
 
         val expectedRelationItems = listOf(
-            RelationListViewModel.Model.Section.NoSection,
+            RelationListViewModel.Model.Section.SlashWidget.SubheaderWithBack,
             RelationListViewModel.Model.Item(
                 view = DocumentRelationView.Default(
                     relationId = relation1.key,

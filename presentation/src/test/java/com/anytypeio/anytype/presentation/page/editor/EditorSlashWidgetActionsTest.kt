@@ -460,43 +460,6 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         assertEquals(expected, state.multiSelect)
     }
-
-    @Test
-    fun `should clear focus after action Move`() {
-        val doc = MockTypicalDocumentFactory.page(root)
-        val block = MockTypicalDocumentFactory.a
-
-        stubInterceptEvents()
-        stubOpenDocument(document = doc)
-        val vm = buildViewModel()
-
-        vm.onStart(root)
-
-        vm.apply {
-            onBlockFocusChanged(
-                id = block.id,
-                hasFocus = true
-            )
-            onSlashTextWatcherEvent(
-                SlashEvent.Start(
-                    cursorCoordinate = 100,
-                    slashStart = 0
-                )
-            )
-        }
-
-        // TESTING
-
-        val focusBefore = orchestrator.stores.focus.current()
-
-        assertEquals(block.id, focusBefore.id)
-
-        vm.onSlashItemClicked(SlashItem.Actions.Move)
-
-        val focusAfter = orchestrator.stores.focus.current()
-
-        assertEquals("", focusAfter.id)
-    }
     //endregion
 
     //region {Action MOVE TO}

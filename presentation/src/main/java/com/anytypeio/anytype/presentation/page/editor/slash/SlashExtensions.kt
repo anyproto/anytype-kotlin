@@ -104,7 +104,7 @@ object SlashExtensions {
         listOf(SlashItem.Subheader.ObjectTypeWithBlack) + objectTypes.toView()
 
     fun getSlashWidgetRelationItems(relations: List<RelationListViewModel.Model>): List<RelationListViewModel.Model> =
-        listOf(RelationListViewModel.Model.Section.NoSection) + relations
+        listOf(RelationListViewModel.Model.Section.SlashWidget.SubheaderWithBack) + relations
 
     fun getSlashWidgetColorItems(code: String?): List<SlashItem.Color.Text> =
         ThemeColor.values().map { themeColor ->
@@ -186,7 +186,7 @@ object SlashExtensions {
         return if (filtered.isEmpty()) {
             filtered
         } else {
-            listOf(RelationListViewModel.Model.Section.NoSection) + filtered
+            listOf(RelationListViewModel.Model.Section.SlashWidget.Subheader) + filtered
         }
     }
 

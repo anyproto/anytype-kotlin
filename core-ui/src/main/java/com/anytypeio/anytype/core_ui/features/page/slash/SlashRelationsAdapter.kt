@@ -7,16 +7,21 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
+import com.anytypeio.anytype.core_ui.features.page.slash.holders.RelationsSubheaderMenuHolder
 import com.anytypeio.anytype.core_ui.features.relations.DocumentRelationAdapter
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
 import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
+import kotlinx.android.synthetic.main.item_slash_widget_subheader.view.*
 import timber.log.Timber
 
 class SlashRelationsAdapter(
     private var items: List<RelationListViewModel.Model>,
     private val onRelationClicked: (RelationListViewModel.Model.Item) -> Unit,
+    private val onBackClicked: (SlashItem.Back) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -32,6 +37,9 @@ class SlashRelationsAdapter(
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                         gone()
                     }
+                    itemView.findViewById<View>(R.id.divider).apply {
+                        visible()
+                    }
                 }
             }
             R.layout.item_relation_list_relation_checkbox -> {
@@ -45,6 +53,9 @@ class SlashRelationsAdapter(
                         itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                             gone()
                         }
+                        itemView.findViewById<View>(R.id.divider).apply {
+                            visible()
+                        }
                     }
             }
             R.layout.item_relation_list_relation_object -> {
@@ -56,6 +67,9 @@ class SlashRelationsAdapter(
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                         gone()
+                    }
+                    itemView.findViewById<View>(R.id.divider).apply {
+                        visible()
                     }
                 }
             }
@@ -69,6 +83,9 @@ class SlashRelationsAdapter(
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                         gone()
                     }
+                    itemView.findViewById<View>(R.id.divider).apply {
+                        visible()
+                    }
                 }
             }
             R.layout.item_relation_list_relation_tag -> {
@@ -80,6 +97,9 @@ class SlashRelationsAdapter(
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                         gone()
+                    }
+                    itemView.findViewById<View>(R.id.divider).apply {
+                        visible()
                     }
                 }
             }
@@ -93,6 +113,9 @@ class SlashRelationsAdapter(
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
                         gone()
                     }
+                    itemView.findViewById<View>(R.id.divider).apply {
+                        visible()
+                    }
                 }
             }
             R.layout.item_relation_list_section -> {
@@ -103,6 +126,15 @@ class SlashRelationsAdapter(
                         false
                     )
                 )
+            }
+            R.layout.item_slash_widget_subheader -> {
+                RelationsSubheaderMenuHolder(
+                    view = inflater.inflate(viewType, parent, false)
+                ).apply {
+                    itemView.flBack.setOnClickListener {
+                        onBackClicked(SlashItem.Back)
+                    }
+                }
             }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
@@ -151,6 +183,10 @@ class SlashRelationsAdapter(
                 check(item is RelationListViewModel.Model.Section)
                 holder.bind(item)
             }
+            is RelationsSubheaderMenuHolder -> {
+                check(item is RelationListViewModel.Model.Section.SlashWidget)
+                holder.bind(item)
+            }
             else -> {
                 Timber.d("Skipping binding for: $holder")
             }
@@ -172,7 +208,7 @@ class SlashRelationsAdapter(
         }
         RelationListViewModel.Model.Section.Featured -> R.layout.item_relation_list_section
         RelationListViewModel.Model.Section.Other -> R.layout.item_relation_list_section
-        RelationListViewModel.Model.Section.NoSection -> R.layout.item_relation_list_section
+        is RelationListViewModel.Model.Section.SlashWidget -> R.layout.item_slash_widget_subheader
     }
 
     fun update(update: List<RelationListViewModel.Model>) {

@@ -3843,16 +3843,11 @@ class PageViewModel(
     }
 
     private fun onSlashStyleTypeItemClicked(item: SlashItem.Style.Type, targetId: Id) {
-        viewModelScope.launch {
-            orchestrator.stores.focus.update(
-                Editor.Focus(
-                    id = targetId,
-                    cursor = Editor.Cursor.End
-                )
-            )
-        }
-        val uiBlock = item.convertToUiBlock()
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+
+        saveTextSelectionPosition(targetId)
+
+        val uiBlock = item.convertToUiBlock()
         onTurnIntoBlockClicked(
             target = targetId,
             uiBlock = uiBlock

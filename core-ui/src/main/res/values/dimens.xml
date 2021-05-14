@@ -154,4 +154,6 @@
     <dimen name="relation_view_padding_top">12dp</dimen>
     <dimen name="relation_view_padding_bottom">12dp</dimen>
 
+    <dimen name="slash_widget_item_height">55dp</dimen>
+
 </resources>

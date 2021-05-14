@@ -179,7 +179,7 @@ class DocumentRelationAdapter(
         }
         RelationListViewModel.Model.Section.Featured -> R.layout.item_relation_list_section
         RelationListViewModel.Model.Section.Other -> R.layout.item_relation_list_section
-        RelationListViewModel.Model.Section.NoSection -> R.layout.item_relation_list_section
+        else -> throw IllegalStateException("Unexpected item type: $item")
     }
 
     fun update(update: List<RelationListViewModel.Model>) {
@@ -199,9 +199,7 @@ class DocumentRelationAdapter(
                 RelationListViewModel.Model.Section.Other -> {
                     itemView.tvSectionName.setText(R.string.other_relations)
                 }
-                RelationListViewModel.Model.Section.NoSection -> {
-                    itemView.tvSectionName.setText(R.string.slash_widget_main_relations)
-                }
+                else -> throw IllegalStateException("Unexpected item type: $section")
             }
         }
     }

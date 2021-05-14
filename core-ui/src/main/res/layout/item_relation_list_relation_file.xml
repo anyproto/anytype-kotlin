@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <include
+            layout="@layout/item_document_relation_file"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/featuredRelationCheckbox"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/ic_featured_relation_checkbox" />
+
+    </LinearLayout>
 
     <include
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        layout="@layout/item_document_relation_file"/>
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        layout="@layout/view_divider"
+        android:layout_gravity="bottom"
+        android:visibility="gone" />
 
-    <ImageView
-        android:layout_marginStart="5dp"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_featured_relation_checkbox"
-        android:id="@+id/featuredRelationCheckbox"
-        android:layout_width="24dp"
-        android:layout_height="24dp"/>
+</FrameLayout>
 
-</LinearLayout>

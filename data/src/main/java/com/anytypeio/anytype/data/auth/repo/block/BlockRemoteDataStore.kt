@@ -347,4 +347,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         key = key,
         value = value
     )
+
+    override suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload =
+        remote.updateBlocksMark(command)
 }

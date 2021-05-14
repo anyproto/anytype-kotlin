@@ -82,6 +82,9 @@ open class EditorPresentationTestSetup {
     lateinit var updateTextColor: UpdateTextColor
 
     @Mock
+    lateinit var updateBlocksMark: UpdateBlocksMark
+
+    @Mock
     lateinit var updateDivider: UpdateDivider
 
     @Mock
@@ -230,7 +233,8 @@ open class EditorPresentationTestSetup {
             analytics = analytics,
             updateFields = updateFields,
             setRelationKey = setRelationKey,
-            turnIntoStyle = turnIntoStyle
+            turnIntoStyle = turnIntoStyle,
+            updateBlocksMark = updateBlocksMark
         )
 
         return PageViewModel(
@@ -443,6 +447,16 @@ open class EditorPresentationTestSetup {
                 invoke(any())
             } doReturn Either.Right(
                 objectTypes
+            )
+        }
+    }
+
+    fun stubUpdateBlocksMark() {
+        updateBlocksMark.stub {
+            onBlocking {
+                invoke(any())
+            } doReturn Either.Right(
+                Payload(context = root, events = emptyList())
             )
         }
     }

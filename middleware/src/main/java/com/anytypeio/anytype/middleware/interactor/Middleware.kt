@@ -1295,6 +1295,24 @@ class Middleware(
         return response.event.toPayload()
     }
 
+    @Throws(Exception::class)
+    fun blockListSetTextMarkup(command: Command.UpdateBlocksMark) : Payload {
+        val context = command.context
+        val mark = command.mark.toMiddlewareModel()
+        val targets = command.targets
+
+        val request = BlockList.Set.Text.Mark.Request(
+            contextId = context,
+            blockIds = targets,
+            mark = mark
+        )
+
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListSetTextMark(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
     private fun logRequest(any: Any) {
         val message = "===> " + any::class.java.canonicalName + ":" + "\n" + any.toString()
         Timber.d(message)

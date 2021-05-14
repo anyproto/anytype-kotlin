@@ -368,4 +368,7 @@ class BlockMiddleware(
         key = key,
         value = value
     )
+
+    override suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload =
+        middleware.blockListSetTextMarkup(command)
 }

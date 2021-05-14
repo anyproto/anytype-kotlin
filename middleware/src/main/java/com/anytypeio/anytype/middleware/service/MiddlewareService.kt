@@ -173,4 +173,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun blockListTurnInto(request: BlockList.TurnInto.Request): BlockList.TurnInto.Response
+
+    @Throws(Exception::class)
+    fun blockListSetTextMark(request: BlockList.Set.Text.Mark.Request): BlockList.Set.Text.Mark.Response
 }

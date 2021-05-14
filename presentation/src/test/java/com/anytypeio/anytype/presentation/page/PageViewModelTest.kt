@@ -118,6 +118,9 @@ open class PageViewModelTest {
     lateinit var setRelationKey: SetRelationKey
 
     @Mock
+    lateinit var updateBlocksMark: UpdateBlocksMark
+
+    @Mock
     lateinit var removeLinkMark: RemoveLinkMark
 
     @Mock
@@ -3980,7 +3983,8 @@ open class PageViewModelTest {
                 analytics = analytics,
                 updateFields = updateFields,
                 setRelationKey = setRelationKey,
-                turnIntoStyle = turnIntoStyle
+                turnIntoStyle = turnIntoStyle,
+                updateBlocksMark = updateBlocksMark
             ),
             dispatcher = Dispatcher.Default(),
             setDocCoverImage = setDocCoverImage,

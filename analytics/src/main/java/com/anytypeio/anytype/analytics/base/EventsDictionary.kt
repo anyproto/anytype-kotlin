@@ -89,5 +89,6 @@ object EventsDictionary {
     const val BLOCK_PASTE = "BlockPaste"
     const val BLOCK_COPY = "BlockCopy"
     const val BLOCK_DIVIDER_UPDATE = "BlockListSetDivStyle"
+    const val BLOCK_UPDATE_MARK = "BlockListSetTextMark"
 
 }

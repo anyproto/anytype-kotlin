@@ -218,4 +218,6 @@ interface BlockRepository {
         key: String,
         value: Any?
     ): Payload
+
+    suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload
 }

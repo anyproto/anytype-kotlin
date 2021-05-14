@@ -416,4 +416,7 @@ class BlockDataRepository(
         key = key,
         value = value
     )
+
+    override suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload =
+        factory.remote.updateBlocksMark(command)
 }

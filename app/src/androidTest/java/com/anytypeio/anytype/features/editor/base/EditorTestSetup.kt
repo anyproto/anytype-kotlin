@@ -127,6 +127,9 @@ open class EditorTestSetup {
     lateinit var uriMatcher: Clipboard.UriMatcher
 
     @Mock
+    lateinit var updateBlocksMark: UpdateBlocksMark
+
+    @Mock
     lateinit var repo: BlockRepository
 
     @Mock
@@ -269,7 +272,8 @@ open class EditorTestSetup {
                 updateDivider = updateDivider,
                 updateFields = updateFields,
                 turnIntoDocument = turnIntoDocument,
-                turnIntoStyle = turnIntoStyle
+                turnIntoStyle = turnIntoStyle,
+                updateBlocksMark = updateBlocksMark
             ),
             createNewDocument = createNewDocument,
             interceptThreadStatus = interceptThreadStatus,

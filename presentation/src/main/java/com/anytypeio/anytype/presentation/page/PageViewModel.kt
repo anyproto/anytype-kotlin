@@ -3709,6 +3709,9 @@ class PageViewModel(
             is SlashItem.Style.Type -> {
                 onSlashStyleTypeItemClicked(item, targetId)
             }
+            is SlashItem.Style.Markup -> {
+                onSlashStyleMarkupItemClicked(item, targetId)
+            }
             is SlashItem.Media -> {
                 onSlashMediaItemClicked(item)
             }
@@ -3854,6 +3857,44 @@ class PageViewModel(
             target = targetId,
             uiBlock = uiBlock
         )
+    }
+
+    private fun onSlashStyleMarkupItemClicked(item: SlashItem.Style.Markup, targetId: Id) {
+
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+
+        saveTextSelectionPosition(targetId)
+
+        val block = blocks.first { it.id == targetId }
+        val range = IntRange(0, block.content.asText().text.length)
+
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Text.UpdateMark(
+                    context = context,
+                    targets = listOf(targetId),
+                    mark = Content.Text.Mark(
+                        range = range,
+                        type = item.convertToMarkType()
+                    )
+                )
+            )
+        }
+    }
+
+    private fun saveTextSelectionPosition(targetId: Id) {
+        val selection = orchestrator.stores.textSelection.current().selection
+        val focus = if (selection != null) {
+            Editor.Focus(
+                id = targetId,
+                cursor = Editor.Cursor.Range(selection)
+            )
+        } else {
+            Editor.Focus.empty()
+        }
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(focus)
+        }
     }
 
     private fun onSlashActionItemClicked(item: SlashItem.Actions, targetId: Id) {

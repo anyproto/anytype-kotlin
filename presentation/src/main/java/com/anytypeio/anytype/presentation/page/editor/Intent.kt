@@ -150,6 +150,12 @@ sealed class Intent {
             val target: Id,
             val alignment: Block.Align
         ) : Text()
+
+        class UpdateMark(
+            val context: Id,
+            val targets: List<Id>,
+            val mark: Block.Content.Text.Mark
+        ) : Text()
     }
 
     sealed class Media : Intent() {

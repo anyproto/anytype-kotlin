@@ -677,4 +677,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun blockListSetTextMark(request: BlockList.Set.Text.Mark.Request): BlockList.Set.Text.Mark.Response {
+        val encoded = Service.blockListSetTextMark(
+            BlockList.Set.Text.Mark.Request.ADAPTER.encode(request)
+        )
+        val response = BlockList.Set.Text.Mark.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != BlockList.Set.Text.Mark.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

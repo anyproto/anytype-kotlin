@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.page.editor.slash
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
@@ -25,6 +26,13 @@ fun SlashItem.Style.Type.convertToUiBlock() = when (this) {
     SlashItem.Style.Type.Text -> UiBlock.TEXT
     SlashItem.Style.Type.Title -> UiBlock.HEADER_ONE
     SlashItem.Style.Type.Toggle -> UiBlock.TOGGLE
+}
+
+fun SlashItem.Style.Markup.convertToMarkType() = when (this) {
+    SlashItem.Style.Markup.Bold -> Block.Content.Text.Mark.Type.BOLD
+    SlashItem.Style.Markup.Breakthrough -> Block.Content.Text.Mark.Type.STRIKETHROUGH
+    SlashItem.Style.Markup.Code -> Block.Content.Text.Mark.Type.KEYBOARD
+    SlashItem.Style.Markup.Italic -> Block.Content.Text.Mark.Type.ITALIC
 }
 
 object SlashExtensions {

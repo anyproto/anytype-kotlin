@@ -229,7 +229,8 @@ object EditorSessionModule {
         undo: Undo,
         redo: Redo,
         setRelationKey: SetRelationKey,
-        analytics: Analytics
+        analytics: Analytics,
+        updateBlocksMark: UpdateBlocksMark
     ): Orchestrator = Orchestrator(
         stores = storage,
         createBlock = createBlock,
@@ -265,7 +266,8 @@ object EditorSessionModule {
         setRelationKey = setRelationKey,
         analytics = analytics,
         updateFields = updateFields,
-        turnIntoStyle = turnInto
+        turnIntoStyle = turnInto,
+        updateBlocksMark = updateBlocksMark
     )
 }
 
@@ -408,6 +410,15 @@ object EditorUseCaseModule {
     fun provideUploadUrl(
         repo: BlockRepository
     ): UploadBlock = UploadBlock(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideUpdateBlocksMark(
+        repo: BlockRepository
+    ): UpdateBlocksMark = UpdateBlocksMark(
         repo = repo
     )
 

@@ -87,6 +87,12 @@ sealed class Command {
         val color: String
     )
 
+    data class UpdateBlocksMark(
+        val context: Id,
+        val targets: List<Id>,
+        val mark : Block.Content.Text.Mark
+    )
+
     /**
      * Command for updating alignment for the block.
      * @property context context id

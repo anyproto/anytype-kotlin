@@ -20,6 +20,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_TURN_INTO_DOC
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UNDO
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UNLINK
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPDATE_CHECKBOX
+import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPDATE_MARK
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPDATE_STYLE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPDATE_TEXT
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPDATE_TITLE
@@ -73,6 +74,7 @@ class Orchestrator(
     private val undo: Undo,
     private val redo: Redo,
     private val setRelationKey: SetRelationKey,
+    private val updateBlocksMark: UpdateBlocksMark,
     val memory: Editor.Memory,
     val stores: Editor.Storage,
     val proxies: Editor.Proxer,
@@ -318,6 +320,29 @@ class Orchestrator(
                         success = { payload ->
                             val event = EventAnalytics.Anytype(
                                 name = BLOCK_BACKGROUND_COLOR,
+                                props = Props.empty(),
+                                duration = EventAnalytics.Duration(
+                                    start = startTime,
+                                    middleware = System.currentTimeMillis()
+                                )
+                            )
+                            defaultPayloadWithEvent(Pair(payload, event))
+                        }
+                    )
+                }
+                is Intent.Text.UpdateMark -> {
+                    val startTime = System.currentTimeMillis()
+                    updateBlocksMark(
+                        params = UpdateBlocksMark.Params(
+                            context = intent.context,
+                            targets = intent.targets,
+                            mark = intent.mark
+                        )
+                    ).proceed(
+                        failure = defaultOnError,
+                        success = { payload ->
+                            val event = EventAnalytics.Anytype(
+                                name = BLOCK_UPDATE_MARK,
                                 props = Props.empty(),
                                 duration = EventAnalytics.Duration(
                                     start = startTime,

@@ -24,5 +24,6 @@ open class MentionFooterItemDecorator(private val screen: Point) : RecyclerView.
     }
 }
 
-class MarkupColorToolbarFooterItemDecorator(screen: Point) : MentionFooterItemDecorator(screen)
+class MarkupColorToolbarFooter(screen: Point) : MentionFooterItemDecorator(screen)
 class SlashWidgetFooterItemDecorator(screen: Point) : MentionFooterItemDecorator(screen)
+class StyleToolbarItemDecorator(screen: Point) : MentionFooterItemDecorator(screen)

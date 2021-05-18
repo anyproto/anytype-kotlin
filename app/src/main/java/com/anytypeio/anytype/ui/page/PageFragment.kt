@@ -10,7 +10,6 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -56,10 +55,8 @@ import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveSt
 import com.anytypeio.anytype.core_ui.features.page.scrollandmove.ScrollAndMoveTargetHighlighter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.layoutChanges
-import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.tools.*
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-import com.anytypeio.anytype.core_utils.OnSwipeListener
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
@@ -138,14 +135,14 @@ open class PageFragment :
         DefaultScrollAndMoveTargetDescriptor()
     }
 
-    private val onHideBottomSheetCallback = object: BottomSheetBehavior.BottomSheetCallback() {
+    private val onHideBottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                when(bottomSheet.id) {
+                when (bottomSheet.id) {
                     styleToolbarOther.id -> {
                         vm.onCloseBlockStyleExtraToolbarClicked()
                     }
-                    stylingToolbar.id -> {
+                    styleToolbarMain.id -> {
                         vm.onCloseBlockStyleToolbarClicked()
                     }
                     styleToolbarColors.id -> {
@@ -182,28 +179,10 @@ open class PageFragment :
         )
     }
 
-    private val footerMentionDecorator by lazy {
-        MentionFooterItemDecorator(screen = screen)
-    }
-
-    private val markupColorToolbarItemDecorator by lazy {
-        MarkupColorToolbarFooterItemDecorator(screen = screen)
-    }
-
-    private val footerSlashDecorator by lazy {
-        SlashWidgetFooterItemDecorator(screen = screen)
-    }
-
-    private val swipeListener = object : OnSwipeListener() {
-        override fun onSwipe(direction: Direction?): Boolean {
-            if (direction == Direction.DOWN) vm.onCloseBlockStyleToolbarClicked()
-            return true
-        }
-    }
-
-    private val swipeDetector by lazy {
-        GestureDetector(context, swipeListener)
-    }
+    private val footerMentionDecorator by lazy { MentionFooterItemDecorator(screen) }
+    private val markupColorToolbarFooter by lazy { MarkupColorToolbarFooter(screen) }
+    private val slashWidgetFooter by lazy { SlashWidgetFooterItemDecorator(screen) }
+    private val styleToolbarFooter by lazy { StyleToolbarItemDecorator(screen) }
 
     private val vm by viewModels<PageViewModel> { factory }
 
@@ -585,19 +564,15 @@ open class PageFragment :
             vm.onActionRedoClicked()
         }.launchIn(lifecycleScope)
 
-        lifecycleScope.subscribe(stylingToolbar.touches()) {
-            swipeDetector.onTouchEvent(it)
-        }
-
-        lifecycleScope.subscribe(stylingToolbar.styles) {
+        lifecycleScope.subscribe(styleToolbarMain.styles) {
             vm.onUpdateSingleTextBlockStyle(it)
         }
 
-        lifecycleScope.subscribe(stylingToolbar.other) {
+        lifecycleScope.subscribe(styleToolbarMain.other) {
             vm.onBlockStyleToolbarOtherClicked()
         }
 
-        lifecycleScope.subscribe(stylingToolbar.colors) {
+        lifecycleScope.subscribe(styleToolbarMain.colors) {
             vm.onBlockStyleToolbarColorClicked()
         }
 
@@ -620,15 +595,11 @@ open class PageFragment :
             }
         }
 
-        stylingToolbar.setOnClickListener {
-            // TODO
-        }
-
         lifecycleScope.launch {
             searchToolbar.events().collect { vm.onSearchToolbarEvent(it) }
         }
 
-        BottomSheetBehavior.from(stylingToolbar).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(styleToolbarColors).state = BottomSheetBehavior.STATE_HIDDEN
     }
@@ -1060,7 +1031,7 @@ open class PageFragment :
     }
 
     private fun render(state: ControlPanelState) {
-       if (state.navigationToolbar.isVisible) {
+        if (state.navigationToolbar.isVisible) {
             placeholder.requestFocus()
             hideKeyboard()
             bottomToolbar.visible()
@@ -1121,18 +1092,27 @@ open class PageFragment :
         }
 
         state.stylingToolbar.apply {
+            val behavior = BottomSheetBehavior.from(styleToolbarMain)
             if (isVisible) {
-                lifecycleScope.launch {
-                    hideSoftInput()
-                    delay(DEFAULT_ANIM_DURATION)
-                    stylingToolbar.setSelectedStyle(style)
-                    BottomSheetBehavior.from(stylingToolbar).apply {
-                        setState(BottomSheetBehavior.STATE_EXPANDED)
-                        addBottomSheetCallback(onHideBottomSheetCallback)
+                if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
+                    lifecycleScope.launch {
+                        if (recycler.itemDecorationCount == 0) {
+                            recycler.addItemDecoration(styleToolbarFooter)
+                        }
+                        hideSoftInput()
+                        delay(DEFAULT_ANIM_DURATION)
+                        styleToolbarMain.setSelectedStyle(style)
+                        behavior.apply {
+                            setState(BottomSheetBehavior.STATE_EXPANDED)
+                            addBottomSheetCallback(onHideBottomSheetCallback)
+                        }
                     }
                 }
             } else {
-                BottomSheetBehavior.from(stylingToolbar).apply {
+                if (!state.styleColorToolbar.isVisible && !state.styleExtraToolbar.isVisible) {
+                    recycler.removeItemDecoration(styleToolbarFooter)
+                }
+                behavior.apply {
                     removeBottomSheetCallback(onHideBottomSheetCallback)
                     setState(BottomSheetBehavior.STATE_HIDDEN)
                 }
@@ -1208,7 +1188,7 @@ open class PageFragment :
                 }
             } else {
                 slashWidget.gone()
-                recycler.removeItemDecoration(footerSlashDecorator)
+                recycler.removeItemDecoration(slashWidgetFooter)
             }
         }
 
@@ -1248,12 +1228,12 @@ open class PageFragment :
                     )
                 }
                 if (markupColorToolbar.translationY > 0) {
-                    recycler.addItemDecoration(markupColorToolbarItemDecorator)
+                    recycler.addItemDecoration(markupColorToolbarFooter)
                 }
                 showMarkupColorToolbarWithAnimation()
             } else {
                 if (markupColorToolbar.translationY == 0f) {
-                    recycler.removeItemDecoration(markupColorToolbarItemDecorator)
+                    recycler.removeItemDecoration(markupColorToolbarFooter)
                     hideMarkupColorToolbarWithAnimation()
                 }
             }
@@ -1346,7 +1326,7 @@ open class PageFragment :
 
             if (minPosY <= cursorCoordinate) {
                 val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoordinate)
-                recycler.addItemDecoration(footerSlashDecorator)
+                recycler.addItemDecoration(slashWidgetFooter)
                 recycler.post {
                     recycler.smoothScrollBy(0, scrollY)
                 }

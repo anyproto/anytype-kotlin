@@ -200,7 +200,7 @@
     </FrameLayout>
 
     <com.anytypeio.anytype.core_ui.widgets.StyleToolbarMainWidget
-        android:id="@+id/stylingToolbar"
+        android:id="@+id/styleToolbarMain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:behavior_hideable="true"

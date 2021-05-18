@@ -52,6 +52,7 @@ class ViewerTypeAdapter(
     override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        Timber.d("onBindViewHolder")
         when (holder) {
             is GridHolder -> holder.bind(
                 viewer = items[position] as Viewer.GridView,
@@ -89,11 +90,18 @@ class ViewerTypeAdapter(
             headerAdapter: ViewerGridHeaderAdapter
         ) {
             Timber.d("Binding grid")
-            headerAdapter.update(viewer.columns)
-            gridAdapter.update(viewer.rows)
 
-            if (columns.adapter == null) columns.adapter = headerAdapter
-            if (rows.adapter == null) rows.adapter = gridAdapter
+            if (columns.adapter == null) {
+                Timber.d("Setting columns adapter")
+                columns.adapter = headerAdapter
+            }
+            if (rows.adapter == null) {
+                Timber.d("Setting rows adapter")
+                rows.adapter = gridAdapter
+            }
+
+            headerAdapter.submitList(viewer.columns)
+            gridAdapter.submitList(viewer.rows)
 
             itemView.horizontalScrollView.setOnScrollChangeListener { _, scrollX, _, _, _ ->
                 val translationX = scrollX.toFloat()
@@ -106,7 +114,6 @@ class ViewerTypeAdapter(
     }
 
     class ListHolder(view: View) : RecyclerView.ViewHolder(view) {
-
         fun bind(adapter: ViewerListAdapter) {
             itemView.rvRows.adapter = adapter
         }

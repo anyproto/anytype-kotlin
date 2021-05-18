@@ -17,7 +17,11 @@ class GridRowDiffUtil(
     override fun areContentsTheSame(
         oldItemPosition: Int,
         newItemPosition: Int
-    ): Boolean = false
+    ): Boolean {
+        val oldItem = old[oldItemPosition]
+        val newItem = new[newItemPosition]
+        return oldItem == newItem
+    }
 
     override fun getOldListSize(): Int = old.size
     override fun getNewListSize(): Int = new.size

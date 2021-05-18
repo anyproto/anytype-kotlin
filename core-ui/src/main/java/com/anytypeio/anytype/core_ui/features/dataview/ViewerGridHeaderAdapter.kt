@@ -1,69 +1,88 @@
 package com.anytypeio.anytype.core_ui.features.dataview
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.AbstractAdapter
-import com.anytypeio.anytype.core_ui.common.AbstractViewHolder
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import kotlinx.android.synthetic.main.viewer_cell.view.*
+import timber.log.Timber
 
 class ViewerGridHeaderAdapter(
-    items: List<ColumnView> = emptyList(),
     val onCreateNewColumnClicked: () -> Unit,
-) : AbstractAdapter<ColumnView>(items) {
+) : ListAdapter<ColumnView, ViewerGridHeaderAdapter.HeaderViewHolder>(ColumnHeaderDiffCallback) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): AbstractViewHolder<ColumnView> = when (viewType) {
-        HEADER_TYPE -> {
-            DefaultHolder(
-                view = inflate(parent, R.layout.item_grid_column_header)
-            )
-        }
-        PLUS_TYPE -> {
-            PlusHolder(
-                view = inflate(parent, R.layout.item_grid_column_header_plus)
-            ).apply {
-                itemView.setOnClickListener {
-                    onCreateNewColumnClicked()
-                }
+    ): HeaderViewHolder = when (viewType) {
+        HEADER_TYPE -> HeaderViewHolder.DefaultHolder.create(parent)
+        PLUS_TYPE -> HeaderViewHolder.PlusHolder.create(parent).apply {
+            itemView.setOnClickListener {
+                onCreateNewColumnClicked()
             }
         }
         else -> throw IllegalStateException("Unexpected view type: $viewType")
     }
 
-    override fun onBindViewHolder(holder: AbstractViewHolder<ColumnView>, position: Int) {
-        if (position < items.size) super.onBindViewHolder(holder, position)
+    override fun onBindViewHolder(holder: HeaderViewHolder, position: Int) {
+        if (holder is HeaderViewHolder.DefaultHolder) holder.bind(getItem(position))
     }
 
-    override fun getItemViewType(position: Int) = if (position == items.size) {
+    override fun getItemViewType(position: Int) = if (position == super.getItemCount()) {
         PLUS_TYPE
     } else {
         HEADER_TYPE
     }
 
-    override fun getItemCount(): Int {
-        return if (super.getItemCount() == 0)
-            0
-        else
-            super.getItemCount() + 1
-    }
+    override fun getItemCount(): Int = if (super.getItemCount() == 0) 0 else super.getItemCount() + 1
 
-    class DefaultHolder(view: View) : AbstractViewHolder<ColumnView>(view) {
-        override fun bind(item: ColumnView) {
-            itemView.cellText.text = item.text
+    sealed class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        class DefaultHolder(view: View) : HeaderViewHolder(view) {
+            fun bind(item: ColumnView) {
+                Timber.d("Binding default holder")
+                itemView.cellText.text = item.text
+            }
+
+            companion object {
+                fun create(
+                    parent: ViewGroup
+                ): DefaultHolder = DefaultHolder(
+                    LayoutInflater.from(parent.context).inflate(
+                        R.layout.item_grid_column_header,
+                        parent,
+                        false
+                    )
+                )
+            }
+        }
+        class PlusHolder(view: View) : HeaderViewHolder(view) {
+            companion object {
+                fun create(
+                    parent: ViewGroup
+                ): PlusHolder = PlusHolder(
+                    LayoutInflater.from(parent.context).inflate(
+                        R.layout.item_grid_column_header_plus,
+                        parent,
+                        false
+                    )
+                )
+            }
         }
     }
 
-    class PlusHolder(view: View) : AbstractViewHolder<ColumnView>(view) {
-        override fun bind(item: ColumnView) {}
-    }
-
-    override fun update(update: List<ColumnView>) {
-        items = update
-        notifyDataSetChanged()
+    object ColumnHeaderDiffCallback : DiffUtil.ItemCallback<ColumnView>() {
+        override fun areItemsTheSame(
+            oldItem: ColumnView,
+            newItem: ColumnView
+        ): Boolean = oldItem.key == newItem.key
+        override fun areContentsTheSame(
+            oldItem: ColumnView,
+            newItem: ColumnView
+        ): Boolean = oldItem == newItem
     }
 
     companion object {

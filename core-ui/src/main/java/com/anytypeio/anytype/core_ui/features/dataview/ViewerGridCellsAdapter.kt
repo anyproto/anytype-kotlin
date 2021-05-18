@@ -9,21 +9,24 @@ import com.anytypeio.anytype.core_ui.features.dataview.diff.CellViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.dataview.holders.*
 import com.anytypeio.anytype.presentation.sets.CellAction
 import com.anytypeio.anytype.presentation.sets.model.CellView
+import timber.log.Timber
 
 class ViewerGridCellsAdapter(
-    private var cells: List<CellView> = listOf(),
+    var cells: List<CellView> = listOf(),
     private val onCellClicked: (CellView) -> Unit,
     private val onCellAction: (CellAction) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun update(update: List<CellView>) {
+        Timber.d("Updating cells: update size - ${update.size}, current - ${cells.size}")
         // TODO maybe disable detectMoves
-        val diff = DiffUtil.calculateDiff(CellViewDiffUtil(old = cells, new = update))
+        val diff = DiffUtil.calculateDiff(CellViewDiffUtil(old = cells, new = update), false)
         cells = update
         diff.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        Timber.d("onCreateViewHolder")
         val inflater = LayoutInflater.from(parent.context)
         //todo Take cells width from columns width property
         return when (viewType) {
@@ -173,6 +176,7 @@ class ViewerGridCellsAdapter(
     override fun getItemCount(): Int = cells.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        Timber.d("onBindViewHolder")
         when (holder) {
             is DVGridCellDescriptionHolder -> holder.bind(cells[position] as CellView.Description)
             is DVGridCellDateHolder -> holder.bind(cells[position] as CellView.Date)

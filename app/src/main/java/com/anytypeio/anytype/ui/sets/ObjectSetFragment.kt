@@ -19,7 +19,10 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.extensions.setImageOrNull
-import com.anytypeio.anytype.core_ui.features.dataview.*
+import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
+import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
+import com.anytypeio.anytype.core_ui.features.dataview.ViewerListAdapter
+import com.anytypeio.anytype.core_ui.features.dataview.ViewerTypeAdapter
 import com.anytypeio.anytype.core_ui.reactive.*
 import com.anytypeio.anytype.core_utils.OnSwipeListener
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -73,12 +76,6 @@ open class ObjectSetFragment :
         GestureDetector(context, swipeListener)
     }
 
-    private val viewerTabAdapter by lazy {
-        ViewerTabItemAdapter(
-            onAddNewViewerClicked = { vm.onCreateNewViewerClicked() },
-            onViewerTabClicked = { vm.onViewerTabClicked(it) }
-        )
-    }
     private val viewerGridHeaderAdapter by lazy {
         ViewerGridHeaderAdapter(
             onCreateNewColumnClicked = { vm.onAddNewDataViewRelation() }
@@ -345,7 +342,6 @@ open class ObjectSetFragment :
         super.onStart()
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header.filterNotNull()) { observeHeader(it) }
-        jobs += lifecycleScope.subscribe(vm.viewerTabs) { viewerTabAdapter.update(it) }
         jobs += lifecycleScope.subscribe(vm.viewerGrid) { observeGrid(it) }
         vm.onStart(ctx)
     }

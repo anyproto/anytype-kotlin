@@ -1094,6 +1094,7 @@ open class PageFragment :
         state.stylingToolbar.apply {
             val behavior = BottomSheetBehavior.from(styleToolbarMain)
             if (isVisible) {
+                styleToolbarMain.setSelectedStyle(style)
                 if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
                     lifecycleScope.launch {
                         if (recycler.itemDecorationCount == 0) {
@@ -1101,7 +1102,6 @@ open class PageFragment :
                         }
                         hideSoftInput()
                         delay(DEFAULT_ANIM_DURATION)
-                        styleToolbarMain.setSelectedStyle(style)
                         behavior.apply {
                             setState(BottomSheetBehavior.STATE_EXPANDED)
                             addBottomSheetCallback(onHideBottomSheetCallback)

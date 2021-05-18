@@ -61,6 +61,7 @@
                     style="@style/StyleToolbarTextStyleStyle"/>
 
                 <TextView
+                    android:layout_marginEnd="26dp"
                     android:textSize="15sp"
                     android:fontFamily="@font/inter_regular"
                     android:text="@string/text"

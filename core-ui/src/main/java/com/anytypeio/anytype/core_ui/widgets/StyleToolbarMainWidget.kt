@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.core.view.marginRight
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.toast
@@ -65,10 +66,32 @@ class StyleToolbarMainWidget @JvmOverloads constructor(
     }
 
     private fun select(selectedViewId: Int) {
+
+        // Selecting views in scrollable parent
+
         tvStyleText.apply { isSelected = id == selectedViewId }
+
+        if (tvStyleText.isSelected) {
+            val delta = (textStyles.right) - tvStyleText.left
+            if (delta < 0) {
+                textStyles.smoothScrollBy(
+                    (-delta) + (tvStyleText.width) + tvStyleText.marginRight - textStyles.scrollX,
+                    0
+                )
+            }
+        }
+
         tvStyleTitle.apply { isSelected = id == selectedViewId }
+
+        if (tvStyleTitle.isSelected) {
+            textStyles.smoothScrollTo(0, 0)
+        }
+
         tvStyleHeading.apply { isSelected = id == selectedViewId }
         tvStyleSubheading.apply { isSelected = id == selectedViewId }
+
+        // Selecting views in non-scrolling parent
+
         checkbox.apply { isSelected = id == selectedViewId }
         bulleted.apply { isSelected = id == selectedViewId }
         numbered.apply { isSelected = id == selectedViewId }

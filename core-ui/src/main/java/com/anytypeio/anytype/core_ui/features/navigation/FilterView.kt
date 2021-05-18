@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
@@ -28,6 +29,8 @@ class FilterView @JvmOverloads constructor(
     private val cancel: TextView
     private val sorting: View
     private var links: MutableList<PageLinkView> = mutableListOf()
+
+    val inputField : EditText get() = filterInputField
 
     var cancelClicked: (() -> Unit)? = null
     var pageClicked: ((String) -> Unit)? = null

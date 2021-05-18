@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.navigation
 
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.core.view.minusAssign
 import androidx.core.view.plusAssign
 import androidx.fragment.app.viewModels
@@ -54,16 +55,17 @@ class PageNavigationFragment
                     }
                 })
                 viewPager.adapter = PageNavigationAdapter(vm::onPageLinkClick) { links ->
-                    filterContainer.plusAssign(
-                        FilterView(requireContext()).apply {
-                            cancelClicked = { closeFilterView() }
-                            pageClicked = {
-                                closeFilterView()
-                                vm.onPageLinkClick(it)
-                            }
-                            bind(links)
+                    val filterView = FilterView(requireContext()).apply {
+                        cancelClicked = { closeFilterView() }
+                        pageClicked = {
+                            closeFilterView()
+                            vm.onPageLinkClick(it)
                         }
-                    )
+                        bind(links)
+                    }
+                    filterContainer.plusAssign(filterView)
+                    filterView.inputField.requestFocus()
+                    context?.imm()?.showSoftInput(filterView.inputField, InputMethodManager.SHOW_FORCED)
                 }
                 viewPager.setCurrentItem(1, false)
                 TabLayoutMediator(tabLayout, viewPager) { tab, position ->

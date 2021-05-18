@@ -635,6 +635,15 @@ class PageViewModel(
                 state.multiSelect.isVisible -> {
                     onExitMultiSelectModeClicked()
                 }
+                state.stylingToolbar.isVisible -> {
+                    onCloseBlockStyleToolbarClicked()
+                }
+                state.styleColorToolbar.isVisible -> {
+                    onCloseBlockStyleColorToolbarClicked()
+                }
+                state.styleExtraToolbar.isVisible -> {
+                    onCloseBlockStyleExtraToolbarClicked()
+                }
                 else -> {
                     proceedWithExitingBack()
                 }

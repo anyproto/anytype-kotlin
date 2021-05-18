@@ -1971,8 +1971,36 @@ class PageViewModel(
                 )
                 renderCommand.send(Unit)
             }
-        } else {
-            // TODO
+        }
+    }
+
+    /**
+     * Closing style-toolbar and its dependent toolbars (color, extra). Back to edit mode.
+     */
+    private fun onExitBlockStyleToolbarClicked() {
+        if (mode is EditorMode.Styling.Single) {
+            val target = (mode as EditorMode.Styling.Single).target
+            val cursor = (mode as EditorMode.Styling.Single).cursor
+            mode = EditorMode.Edit
+            viewModelScope.launch {
+                orchestrator.stores.focus.update(
+                    Editor.Focus(
+                        id = target,
+                        cursor = cursor?.let { c -> Editor.Cursor.Range(c..c) }
+                    )
+                )
+                orchestrator.stores.textSelection.update(
+                    Editor.TextSelection(target, cursor?.let { it..it })
+                )
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnExit)
+                orchestrator.stores.views.update(
+                    views.exitSingleStylingMode(
+                        target = target,
+                        cursor = cursor
+                    )
+                )
+                renderCommand.send(Unit)
+            }
         }
     }
 
@@ -2432,6 +2460,10 @@ class PageViewModel(
     }
 
     fun onOutsideClicked() {
+        if (mode is EditorMode.Styling) {
+            onExitBlockStyleToolbarClicked()
+            return
+        }
 
         val root = blocks.find { it.id == context } ?: return
 
@@ -2786,6 +2818,10 @@ class PageViewModel(
         dispatch(command = Command.Browse(view.url))
 
     fun onTitleTextInputClicked() {
+        if (mode is EditorMode.Styling) {
+            onExitBlockStyleToolbarClicked()
+            return
+        }
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
     }
 
@@ -2795,7 +2831,7 @@ class PageViewModel(
                 onBlockMultiSelectClicked(target)
             }
             is EditorMode.Styling.Single -> {
-                // do nothing
+                onExitBlockStyleToolbarClicked()
             }
             else -> {
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnTextInputClicked)
@@ -3022,218 +3058,224 @@ class PageViewModel(
         }
     }
 
-    fun onClickListener(clicked: ListenerType) = when (clicked) {
-        is ListenerType.Bookmark.View -> {
-            when (mode) {
-                EditorMode.Edit -> onBookmarkClicked(clicked.item)
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
-                else -> Unit
-            }
+    fun onClickListener(clicked: ListenerType) {
+        if (mode is EditorMode.Styling) {
+            onExitBlockStyleToolbarClicked()
+            return
         }
-        is ListenerType.Bookmark.Placeholder -> {
-            when (mode) {
-                EditorMode.Edit -> onBookmarkPlaceholderClicked(clicked.target)
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
+        when (clicked) {
+            is ListenerType.Bookmark.View -> {
+                when (mode) {
+                    EditorMode.Edit -> onBookmarkClicked(clicked.item)
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
+                    else -> Unit
+                }
             }
-        }
-        is ListenerType.Bookmark.Error -> {
-            when (mode) {
-                EditorMode.Edit -> onFailedBookmarkClicked(clicked.item)
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
-                else -> Unit
+            is ListenerType.Bookmark.Placeholder -> {
+                when (mode) {
+                    EditorMode.Edit -> onBookmarkPlaceholderClicked(clicked.target)
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
             }
-        }
-        is ListenerType.File.View -> {
-            when (mode) {
-                EditorMode.Edit -> onFileClicked(clicked.target)
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
+            is ListenerType.Bookmark.Error -> {
+                when (mode) {
+                    EditorMode.Edit -> onFailedBookmarkClicked(clicked.item)
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
+                    else -> Unit
+                }
             }
-        }
-        is ListenerType.File.Placeholder -> {
-            when (mode) {
-                EditorMode.Edit -> onAddLocalFileClicked(clicked.target)
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
+            is ListenerType.File.View -> {
+                when (mode) {
+                    EditorMode.Edit -> onFileClicked(clicked.target)
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
             }
-        }
-        is ListenerType.File.Error -> {
-            when (mode) {
-                EditorMode.Edit -> onAddLocalFileClicked(clicked.target)
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
+            is ListenerType.File.Placeholder -> {
+                when (mode) {
+                    EditorMode.Edit -> onAddLocalFileClicked(clicked.target)
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
             }
-        }
-        is ListenerType.File.Upload -> {
-            when (mode) {
-                EditorMode.Edit -> Unit
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
+            is ListenerType.File.Error -> {
+                when (mode) {
+                    EditorMode.Edit -> onAddLocalFileClicked(clicked.target)
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
             }
-        }
-        is ListenerType.Picture.View -> {
-            when (mode) {
-                EditorMode.Edit -> {
-                    val target = blocks.find { it.id == clicked.target }
-                    if (target != null) {
-                        val content = target.content
-                        check(content is Content.File)
-                        dispatch(
-                            Command.OpenFullScreenImage(
-                                target = clicked.target,
-                                url = urlBuilder.original(content.hash)
+            is ListenerType.File.Upload -> {
+                when (mode) {
+                    EditorMode.Edit -> Unit
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Picture.View -> {
+                when (mode) {
+                    EditorMode.Edit -> {
+                        val target = blocks.find { it.id == clicked.target }
+                        if (target != null) {
+                            val content = target.content
+                            check(content is Content.File)
+                            dispatch(
+                                Command.OpenFullScreenImage(
+                                    target = clicked.target,
+                                    url = urlBuilder.original(content.hash)
+                                )
                             )
+                        } else {
+                            Timber.e("Could not find target for picture")
+                        }
+                    }
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Picture.Placeholder -> {
+                when (mode) {
+                    EditorMode.Edit -> onAddLocalPictureClicked(clicked.target)
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Picture.Error -> {
+                when (mode) {
+                    EditorMode.Edit -> Unit
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Picture.Upload -> {
+                when (mode) {
+                    EditorMode.Edit -> Unit
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Video.View -> {
+                when (mode) {
+                    EditorMode.Edit -> Unit
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Video.Placeholder -> {
+                when (mode) {
+                    EditorMode.Edit -> onAddLocalVideoClicked(clicked.target)
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Video.Error -> {
+                when (mode) {
+                    EditorMode.Edit -> Unit
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Video.Upload -> {
+                when (mode) {
+                    EditorMode.Edit -> Unit
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.LongClick -> {
+                when (mode) {
+                    EditorMode.Edit -> onBlockLongPressedClicked(clicked.target, clicked.dimensions)
+                    EditorMode.Select -> Unit
+                    else -> Unit
+                }
+            }
+            is ListenerType.Page -> {
+                when (mode) {
+                    EditorMode.Edit -> onPageClicked(clicked.target)
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Mention -> {
+                when (mode) {
+                    EditorMode.Edit -> onMentionClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.EditableBlock -> {
+                //Todo block view refactoring
+            }
+            ListenerType.TitleBlock -> {
+                //Todo block view refactoring
+            }
+            is ListenerType.DividerClick -> {
+                when (mode) {
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Code.SelectLanguage -> {
+                when (mode) {
+                    EditorMode.Edit -> dispatch(Command.Dialog.SelectLanguage(clicked.target))
+                    else -> Unit
+                }
+            }
+            is ListenerType.Relation.Placeholder -> {
+                when (mode) {
+                    EditorMode.Edit -> dispatch(
+                        Command.OpenObjectRelationScreen.Add(
+                            ctx = context,
+                            target = clicked.target
                         )
-                    } else {
-                        Timber.e("Could not find target for picture")
-                    }
-                }
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
-            }
-        }
-        is ListenerType.Picture.Placeholder -> {
-            when (mode) {
-                EditorMode.Edit -> onAddLocalPictureClicked(clicked.target)
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
-            }
-        }
-        is ListenerType.Picture.Error -> {
-            when (mode) {
-                EditorMode.Edit -> Unit
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
-            }
-        }
-        is ListenerType.Picture.Upload -> {
-            when (mode) {
-                EditorMode.Edit -> Unit
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
-            }
-        }
-        is ListenerType.Video.View -> {
-            when (mode) {
-                EditorMode.Edit -> Unit
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
-            }
-        }
-        is ListenerType.Video.Placeholder -> {
-            when (mode) {
-                EditorMode.Edit -> onAddLocalVideoClicked(clicked.target)
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
-            }
-        }
-        is ListenerType.Video.Error -> {
-            when (mode) {
-                EditorMode.Edit -> Unit
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
-            }
-        }
-        is ListenerType.Video.Upload -> {
-            when (mode) {
-                EditorMode.Edit -> Unit
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
-            }
-        }
-        is ListenerType.LongClick -> {
-            when (mode) {
-                EditorMode.Edit -> onBlockLongPressedClicked(clicked.target, clicked.dimensions)
-                EditorMode.Select -> Unit
-                else -> Unit
-            }
-        }
-        is ListenerType.Page -> {
-            when (mode) {
-                EditorMode.Edit -> onPageClicked(clicked.target)
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
-            }
-        }
-        is ListenerType.Mention -> {
-            when (mode) {
-                EditorMode.Edit -> onMentionClicked(clicked.target)
-                else -> Unit
-            }
-        }
-        is ListenerType.EditableBlock -> {
-            //Todo block view refactoring
-        }
-        ListenerType.TitleBlock -> {
-            //Todo block view refactoring
-        }
-        is ListenerType.DividerClick -> {
-            when (mode) {
-                EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                else -> Unit
-            }
-        }
-        is ListenerType.Code.SelectLanguage -> {
-            when (mode) {
-                EditorMode.Edit -> dispatch(Command.Dialog.SelectLanguage(clicked.target))
-                else -> Unit
-            }
-        }
-        is ListenerType.Relation.Placeholder -> {
-            when (mode) {
-                EditorMode.Edit -> dispatch(
-                    Command.OpenObjectRelationScreen.Add(
-                        ctx = context,
-                        target = clicked.target
                     )
-                )
-                else -> onBlockMultiSelectClicked(clicked.target)
+                    else -> onBlockMultiSelectClicked(clicked.target)
+                }
             }
-        }
-        is ListenerType.Relation.Related -> {
-            when (mode) {
-                EditorMode.Edit -> {
-                    val relation = (clicked.value as BlockView.Relation.Related).view.relationId
-                    when (orchestrator.stores.relations.current().first { it.key == relation }.format) {
-                        Relation.Format.SHORT_TEXT,
-                        Relation.Format.LONG_TEXT,
-                        Relation.Format.URL,
-                        Relation.Format.PHONE,
-                        Relation.Format.NUMBER,
-                        Relation.Format.EMAIL -> {
-                            dispatch(
-                                Command.OpenObjectRelationScreen.Value.Text(
-                                    ctx = context,
-                                    target = context,
-                                    relation = relation
+            is ListenerType.Relation.Related -> {
+                when (mode) {
+                    EditorMode.Edit -> {
+                        val relation = (clicked.value as BlockView.Relation.Related).view.relationId
+                        when (orchestrator.stores.relations.current().first { it.key == relation }.format) {
+                            Relation.Format.SHORT_TEXT,
+                            Relation.Format.LONG_TEXT,
+                            Relation.Format.URL,
+                            Relation.Format.PHONE,
+                            Relation.Format.NUMBER,
+                            Relation.Format.EMAIL -> {
+                                dispatch(
+                                    Command.OpenObjectRelationScreen.Value.Text(
+                                        ctx = context,
+                                        target = context,
+                                        relation = relation
+                                    )
                                 )
-                            )
-                        }
-                        Relation.Format.CHECKBOX -> {
-                            proceedWithTogglingBlockRelationCheckbox(clicked.value, relation)
-                        }
-                        Relation.Format.DATE -> {
-                            dispatch(
-                                Command.OpenObjectRelationScreen.Value.Date(
-                                    ctx = context,
-                                    target = context,
-                                    relation = relation
+                            }
+                            Relation.Format.CHECKBOX -> {
+                                proceedWithTogglingBlockRelationCheckbox(clicked.value, relation)
+                            }
+                            Relation.Format.DATE -> {
+                                dispatch(
+                                    Command.OpenObjectRelationScreen.Value.Date(
+                                        ctx = context,
+                                        target = context,
+                                        relation = relation
+                                    )
                                 )
-                            )
-                        }
-                        else -> {
-                            dispatch(
-                                Command.OpenObjectRelationScreen.Value.Default(
-                                    ctx = context,
-                                    target = context,
-                                    relation = relation
+                            }
+                            else -> {
+                                dispatch(
+                                    Command.OpenObjectRelationScreen.Value.Default(
+                                        ctx = context,
+                                        target = context,
+                                        relation = relation
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
+                    else -> onBlockMultiSelectClicked(clicked.value.id)
                 }
-                else -> onBlockMultiSelectClicked(clicked.value.id)
             }
         }
     }

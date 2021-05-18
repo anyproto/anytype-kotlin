@@ -24,7 +24,7 @@ class StyleTextColorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         onStylingEvent: (StylingEvent) -> Unit,
         color: String?
     ) {
-        default.isSelected = color == ThemeColor.DEFAULT.title
+        default.isSelected = color == ThemeColor.DEFAULT.title || color == null
         grey.isSelected = color == ThemeColor.GREY.title
         yellow.isSelected = color == ThemeColor.YELLOW.title
         orange.isSelected = color == ThemeColor.ORANGE.title

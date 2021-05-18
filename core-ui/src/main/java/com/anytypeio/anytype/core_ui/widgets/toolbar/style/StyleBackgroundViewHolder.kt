@@ -25,7 +25,7 @@ class StyleBackgroundViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         background: String?
     ) {
 
-        default.isSelected = background == ThemeColor.DEFAULT.title
+        default.isSelected = background == ThemeColor.DEFAULT.title || background == null
         grey.isSelected = background == ThemeColor.GREY.title
         yellow.isSelected = background == ThemeColor.YELLOW.title
         orange.isSelected = background == ThemeColor.ORANGE.title

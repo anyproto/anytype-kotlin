@@ -155,5 +155,6 @@
     <dimen name="relation_view_padding_bottom">12dp</dimen>
 
     <dimen name="slash_widget_item_height">55dp</dimen>
+    <dimen name="data_view_divider_height">0.5dp</dimen>
 
 </resources>

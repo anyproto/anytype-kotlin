@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.dataview
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
@@ -68,19 +69,26 @@ class ViewerTypeAdapter(
         val columns: RecyclerView = itemView.rvHeader
         val rows: RecyclerView = itemView.rvRows
 
+        private val horizontalDivider = ContextCompat.getDrawable(view.context, R.drawable.divider_dv_horizontal)
+        private val verticalDivider = ContextCompat.getDrawable(view.context, R.drawable.divider_dv_grid)
+
         init {
             rows.setItemViewCacheSize(20)
             columns.addItemDecoration(
                 DividerItemDecoration(
                     itemView.context,
                     DividerItemDecoration.HORIZONTAL
-                )
+                ).apply {
+                    if (horizontalDivider != null) setDrawable(horizontalDivider)
+                }
             )
             rows.addItemDecoration(
                 DividerItemDecoration(
                     itemView.context,
                     DividerItemDecoration.VERTICAL
-                )
+                ).apply {
+                    if (verticalDivider != null) setDrawable(verticalDivider)
+                }
             )
         }
 

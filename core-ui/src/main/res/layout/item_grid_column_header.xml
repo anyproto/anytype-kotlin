@@ -13,6 +13,7 @@
         android:ellipsize="end"
         android:fontFamily="@font/inter_medium"
         android:maxLines="1"
+        android:singleLine="true"
         android:textColor="#ACA996"
         android:textSize="13sp"
         android:layout_gravity="center_vertical"

@@ -25,8 +25,8 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#DFDDD0" />
+                android:layout_height="@dimen/data_view_divider_height"
+                android:background="@color/data_view_divider_color" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvRows"

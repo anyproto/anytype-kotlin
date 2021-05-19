@@ -120,5 +120,6 @@
     <color name="default_filter_tag_background_color">#F3F2EC</color>
     <color name="default_filter_tag_text_color">#6C6A5F</color>
     <color name="default_filter_status_text_color">@color/black</color>
+    <color name="data_view_divider_color">#DFDDD0</color>
 
 </resources>

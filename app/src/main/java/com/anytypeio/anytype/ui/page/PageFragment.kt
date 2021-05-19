@@ -866,7 +866,9 @@ open class PageFragment :
                     fr.show(childFragmentManager, null)
                 }
                 is Command.OpenObjectLayout -> {
-                    val fr = ObjectLayoutFragment.new(command.ctx)
+                    val fr = ObjectLayoutFragment.new(command.ctx).apply {
+                        onDismissListener = { vm.onLayoutDialogDismissed() }
+                    }
                     fr.show(childFragmentManager, null)
                 }
                 is Command.OpenFullScreenImage -> {

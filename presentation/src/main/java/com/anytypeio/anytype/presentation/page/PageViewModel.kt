@@ -965,6 +965,10 @@ class PageViewModel(
     }
 
     fun onDocumentMenuClicked() {
+        proceedWithOpeningObjectMenu()
+    }
+
+    private fun proceedWithOpeningObjectMenu() {
         blocks.find { it.id == context }?.let { root ->
             val content = root.content
             check(content is Content.Smart)
@@ -2687,6 +2691,10 @@ class PageViewModel(
 
     fun onLayoutClicked() {
         dispatch(Command.OpenObjectLayout(context))
+    }
+
+    fun onLayoutDialogDismissed() {
+        proceedWithOpeningObjectMenu()
     }
 
     fun onDocCoverImagePicked(path: String) {

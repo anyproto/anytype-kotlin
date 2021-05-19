@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.page.layout
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +28,8 @@ class ObjectLayoutFragment : BaseBottomSheetFragment() {
     @Inject
     lateinit var factory: ObjectLayoutViewModel.Factory
     private val vm by viewModels<ObjectLayoutViewModel> { factory }
+
+    var onDismissListener: (() -> Unit)? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,6 +78,11 @@ class ObjectLayoutFragment : BaseBottomSheetFragment() {
                 )
             }
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        onDismissListener?.invoke()
     }
 
     override fun onStart() {

@@ -304,7 +304,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should store focus as target block end when text color picked`() {
+    fun `should save selection and focus when text color picked`() {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -315,7 +315,13 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(root)
 
+        val selection = IntRange(4, 4)
+
         vm.apply {
+            onSelectionChanged(
+                id = block.id,
+                selection = selection
+            )
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
@@ -333,10 +339,11 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         vm.onSlashItemClicked(SlashItem.Main.Color)
         vm.onSlashItemClicked(SlashItem.Color.Text(code = "red", isSelected = false))
 
-        val focusAfter = orchestrator.stores.focus.current()
+        val focus = orchestrator.stores.focus.current()
+        val cursor = Editor.Cursor.Range(range = selection)
 
-        assertEquals(block.id, focusAfter.id)
-        assertEquals(Editor.Cursor.End, focusAfter.cursor)
+        assertEquals(block.id, focus.id)
+        assertEquals(cursor, focus.cursor)
     }
 
     @Test
@@ -681,7 +688,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should store focus as target block end when background color picked`() {
+    fun `should save selection and focus when background color picked`() {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -692,7 +699,14 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(root)
 
+        val selection = IntRange(4, 4)
+
         vm.apply {
+            onSelectionChanged(
+                id = block.id,
+                selection = selection
+            )
+
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
@@ -710,10 +724,11 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         vm.onSlashItemClicked(SlashItem.Main.Background)
         vm.onSlashItemClicked(SlashItem.Color.Background(code = "red", isSelected = false))
 
-        val focusAfter = orchestrator.stores.focus.current()
+        val focus = orchestrator.stores.focus.current()
+        val cursor = Editor.Cursor.Range(range = selection)
 
-        assertEquals(block.id, focusAfter.id)
-        assertEquals(Editor.Cursor.End, focusAfter.cursor)
+        assertEquals(block.id, focus.id)
+        assertEquals(cursor, focus.cursor)
     }
 
     @Test

@@ -3703,6 +3703,62 @@ class PageViewModel(
         }
     }
 
+    fun onSlashTextWatcherEvent(event: SlashEvent) {
+        when (event) {
+            is SlashEvent.Start -> {
+                filterSearchEmptyCount = 0
+                val panelEvent = ControlPanelMachine.Event.Slash.OnStart(
+                    cursorCoordinate = event.cursorCoordinate,
+                    slashFrom = event.slashStart
+                )
+                controlPanelInteractor.onEvent(panelEvent)
+            }
+            is SlashEvent.Filter -> {
+                if (event.filter.isEmpty() || event.filter.first() != SLASH_CHAR) {
+                    val widgetState = SlashWidgetState.UpdateItems.empty()
+                    val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
+                        widgetState = widgetState
+                    )
+                    controlPanelInteractor.onEvent(panelEvent)
+                    return
+                }
+                if (event.filter.length == 1) {
+                    val widgetState = SlashWidgetState.UpdateItems.empty()
+                        .copy(
+                            mainItems = SlashExtensions.getSlashWidgetMainItems()
+                        )
+                    val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
+                        widgetState = widgetState
+                    )
+                    controlPanelInteractor.onEvent(panelEvent)
+                    return
+                }
+                getObjectTypes { objectTypes ->
+                    getRelations { relations ->
+                        val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
+                            text = event.filter,
+                            objectTypes = objectTypes.toView(),
+                            relations = relations
+                        )
+                        incFilterSearchEmptyCount(widgetState)
+                        val panelEvent = if (filterSearchEmptyCount == SLASH_EMPTY_SEARCH_MAX) {
+                            filterSearchEmptyCount = 0
+                            ControlPanelMachine.Event.Slash.OnStop
+                        } else {
+                            ControlPanelMachine.Event.Slash.OnFilterChange(widgetState)
+                        }
+                        controlPanelInteractor.onEvent(panelEvent)
+                    }
+                }
+            }
+            SlashEvent.Stop -> {
+                filterSearchEmptyCount = 0
+                val panelEvent = ControlPanelMachine.Event.Slash.OnStop
+                controlPanelInteractor.onEvent(panelEvent)
+            }
+        }
+    }
+
     private fun proceedWithSlashItem(item: SlashItem, targetId: Id) {
         when (item) {
             is SlashItem.Main.Style -> {
@@ -3851,14 +3907,9 @@ class PageViewModel(
     }
 
     private fun onSlashItemColorClicked(item: SlashItem.Color, targetId: Id) {
-        viewModelScope.launch {
-            orchestrator.stores.focus.update(
-                Editor.Focus(
-                    id = targetId,
-                    cursor = Editor.Cursor.End
-                )
-            )
-        }
+
+        saveTextSelectionPosition(targetId)
+
         val intent = when (item) {
             is SlashItem.Color.Background -> {
                 Intent.Text.UpdateBackgroundColor(
@@ -4032,7 +4083,7 @@ class PageViewModel(
         controlPanelInteractor.onEvent(panelEvent)
     }
 
-    fun onSlashBackClicked() {
+    private fun onSlashBackClicked() {
         val items = SlashExtensions.getSlashWidgetMainItems()
         val widgetState = SlashWidgetState.UpdateItems.empty().copy(
             mainItems = items
@@ -4048,62 +4099,6 @@ class PageViewModel(
     private fun incFilterSearchEmptyCount(widgetState: SlashWidgetState.UpdateItems) {
         if (SlashExtensions.isSlashWidgetEmpty(widgetState)) {
             filterSearchEmptyCount += 1
-        }
-    }
-
-    fun onSlashTextWatcherEvent(event: SlashEvent) {
-        when (event) {
-            is SlashEvent.Start -> {
-                filterSearchEmptyCount = 0
-                val panelEvent = ControlPanelMachine.Event.Slash.OnStart(
-                    cursorCoordinate = event.cursorCoordinate,
-                    slashFrom = event.slashStart
-                )
-                controlPanelInteractor.onEvent(panelEvent)
-            }
-            is SlashEvent.Filter -> {
-                if (event.filter.isEmpty() || event.filter.first() != SLASH_CHAR) {
-                    val widgetState = SlashWidgetState.UpdateItems.empty()
-                    val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
-                        widgetState = widgetState
-                    )
-                    controlPanelInteractor.onEvent(panelEvent)
-                    return
-                }
-                if (event.filter.length == 1) {
-                    val widgetState = SlashWidgetState.UpdateItems.empty()
-                        .copy(
-                            mainItems = SlashExtensions.getSlashWidgetMainItems()
-                        )
-                    val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
-                        widgetState = widgetState
-                    )
-                    controlPanelInteractor.onEvent(panelEvent)
-                    return
-                }
-                getObjectTypes { objectTypes ->
-                    getRelations { relations ->
-                        val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
-                            text = event.filter,
-                            objectTypes = objectTypes.toView(),
-                            relations = relations
-                        )
-                        incFilterSearchEmptyCount(widgetState)
-                        val panelEvent = if (filterSearchEmptyCount == SLASH_EMPTY_SEARCH_MAX) {
-                            filterSearchEmptyCount = 0
-                            ControlPanelMachine.Event.Slash.OnStop
-                        } else {
-                            ControlPanelMachine.Event.Slash.OnFilterChange(widgetState)
-                        }
-                        controlPanelInteractor.onEvent(panelEvent)
-                    }
-                }
-            }
-            SlashEvent.Stop -> {
-                filterSearchEmptyCount = 0
-                val panelEvent = ControlPanelMachine.Event.Slash.OnStop
-                controlPanelInteractor.onEvent(panelEvent)
-            }
         }
     }
 

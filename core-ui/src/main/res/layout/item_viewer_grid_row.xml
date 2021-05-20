@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_medium"
             android:textColor="@color/black"
+            android:hint="@string/untitled"
             android:textSize="15sp"
             tools:text="Name" />
         

@@ -19,7 +19,6 @@ class ViewerGridCellsAdapter(
 
     fun update(update: List<CellView>) {
         Timber.d("Updating cells: update size - ${update.size}, current - ${cells.size}")
-        // TODO maybe disable detectMoves
         val diff = DiffUtil.calculateDiff(CellViewDiffUtil(old = cells, new = update), false)
         cells = update
         diff.dispatchUpdatesTo(this)
@@ -28,7 +27,6 @@ class ViewerGridCellsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         Timber.d("onCreateViewHolder")
         val inflater = LayoutInflater.from(parent.context)
-        //todo Take cells width from columns width property
         return when (viewType) {
             HOLDER_DESCRIPTION -> {
                 DVGridCellDescriptionHolder(

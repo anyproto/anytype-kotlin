@@ -12,24 +12,21 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.activity.addCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.core.view.children
 import androidx.core.view.marginBottom
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.extensions.setImageOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
-import com.anytypeio.anytype.core_ui.features.dataview.ViewerListAdapter
-import com.anytypeio.anytype.core_ui.features.dataview.ViewerTypeAdapter
 import com.anytypeio.anytype.core_ui.reactive.*
 import com.anytypeio.anytype.core_utils.OnSwipeListener
-import com.anytypeio.anytype.core_utils.ext.argString
-import com.anytypeio.anytype.core_utils.ext.hideKeyboard
-import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ui.NonScrollLinearLayoutManager
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
@@ -56,7 +53,10 @@ open class ObjectSetFragment :
     NavigationFragment(R.layout.fragment_object_set),
     OnAddDataViewRelationRequestReceiver,
     TextValueEditReceiver,
-    DateValueEditReceiver{
+    DateValueEditReceiver {
+
+    private val rvHeaders: RecyclerView get() = root.findViewById(R.id.rvHeader)
+    private val rvRows: RecyclerView get() = root.findViewById(R.id.rvRows)
 
     private val bottomPanelTranslationDelta: Float
         get() = (bottomPanel.height + bottomPanel.marginBottom).toFloat()
@@ -88,14 +88,6 @@ open class ObjectSetFragment :
             onObjectHeaderClicked = vm::onObjectHeaderClicked
         )
     }
-    private val viewerListAdapter by lazy { ViewerListAdapter() }
-    private val viewerTypeAdapter by lazy {
-        ViewerTypeAdapter(
-            gridHeaderAdapter = viewerGridHeaderAdapter,
-            gridAdapter = viewerGridAdapter,
-            listAdapter = viewerListAdapter
-        )
-    }
 
     private val ctx: String get() = argString(CONTEXT_ID_KEY)
 
@@ -110,13 +102,11 @@ open class ObjectSetFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        topRecycler.apply {
-            layoutManager = NonScrollLinearLayoutManager(requireContext())
-            adapter = viewerTypeAdapter
-            setHasFixedSize(true)
-        }
+
+        setupGridAdapters(view)
         title.clearFocus()
         root.setTransitionListener(transitionListener)
+
         with(lifecycleScope) {
             subscribe(addNewButton.clicks()) { vm.onCreateNewRecord() }
             subscribe(title.afterTextChanges()) { vm.onTitleChanged(it.toString()) }
@@ -145,6 +135,44 @@ open class ObjectSetFragment :
             }
 
             subscribe(bottomPanel.touches()) { swipeDetector.onTouchEvent(it) }
+        }
+    }
+
+    private fun setupGridAdapters(view: View) {
+
+        val horizontalDivider = drawable(R.drawable.divider_dv_horizontal)
+        val verticalDivider = drawable(R.drawable.divider_dv_grid)
+
+        rvHeaders.apply {
+            adapter = viewerGridHeaderAdapter
+            addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    DividerItemDecoration.HORIZONTAL
+                ).apply {
+                    setDrawable(horizontalDivider)
+                }
+            )
+        }
+
+        rvRows.apply {
+            adapter = viewerGridAdapter
+            addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    DividerItemDecoration.VERTICAL
+                ).apply {
+                    setDrawable(verticalDivider)
+                }
+            )
+        }
+
+        gridContainer.setOnScrollChangeListener { _, scrollX, _, _, _ ->
+            val translationX = scrollX.toFloat()
+            viewerGridAdapter.recordNamePositionX = translationX
+            rvRows.children.forEach { child ->
+                child.findViewById<View>(R.id.headerContainer).translationX = translationX
+            }
         }
     }
 
@@ -177,7 +205,8 @@ open class ObjectSetFragment :
         tvCurrentViewerName.text = viewer.title
         when (viewer) {
             is Viewer.GridView -> {
-                viewerTypeAdapter.update(viewer)
+                viewerGridHeaderAdapter.submitList(viewer.columns)
+                viewerGridAdapter.submitList(viewer.rows)
             }
             is Viewer.ListView -> {
                 // TODO

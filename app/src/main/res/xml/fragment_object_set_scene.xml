@@ -8,7 +8,7 @@
         motion:duration="500">
         <OnSwipe
             motion:dragDirection="dragUp"
-            motion:touchAnchorId="@id/topRecycler"
+            motion:touchAnchorId="@id/gridContainer"
             motion:touchAnchorSide="top" />
     </Transition>
 

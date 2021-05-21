@@ -16,7 +16,6 @@ import timber.log.Timber
 
 class ViewerGridAdapter(
     private val onCellClicked: (CellView) -> Unit,
-    private val onCellAction: (CellAction) -> Unit,
     private val onObjectHeaderClicked: (String, String) -> Unit
 ) : ListAdapter<Viewer.GridView.Row, ViewerGridAdapter.RecordHolder>(GridDiffUtil) {
 
@@ -31,8 +30,7 @@ class ViewerGridAdapter(
         val view = inflater.inflate(R.layout.item_viewer_grid_row, parent, false)
         view.rowCellRecycler.apply {
             adapter = ViewerGridCellsAdapter(
-                onCellClicked = onCellClicked,
-                onCellAction = onCellAction
+                onCellClicked = onCellClicked
             )
         }
         return RecordHolder(view).apply {

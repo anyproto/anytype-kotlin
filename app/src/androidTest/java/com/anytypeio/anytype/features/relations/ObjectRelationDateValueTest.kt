@@ -12,6 +12,7 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.timeInSecondsFormat
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -20,7 +21,6 @@ import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValu
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
-import com.anytypeio.anytype.presentation.sets.TIME_FORMAT_DEFAULT
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -59,7 +59,7 @@ class ObjectRelationDateValueTest {
     }
 
     @Test
-    fun shouldSetNullDateValue() {
+    fun shouldSetNoDateValue() {
 
         // SETUP
 
@@ -120,6 +120,7 @@ class ObjectRelationDateValueTest {
         )
 
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.ivNoDateCheck)).check(matches((isDisplayed())))
         onView(withId(R.id.ivYesterdayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTomorrowCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivExactDayCheck)).check(matches(not(isDisplayed())))
@@ -188,6 +189,7 @@ class ObjectRelationDateValueTest {
         )
 
         onView(withId(R.id.ivTodayCheck)).check(matches(isDisplayed()))
+        onView(withId(R.id.ivNoDateCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivYesterdayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTomorrowCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivExactDayCheck)).check(matches(not(isDisplayed())))
@@ -256,6 +258,7 @@ class ObjectRelationDateValueTest {
             )
         )
 
+        onView(withId(R.id.ivNoDateCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTomorrowCheck)).check(matches((isDisplayed())))
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivYesterdayCheck)).check(matches(not(isDisplayed())))
@@ -325,6 +328,7 @@ class ObjectRelationDateValueTest {
             )
         )
 
+        onView(withId(R.id.ivNoDateCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivYesterdayCheck)).check(matches((isDisplayed())))
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTomorrowCheck)).check(matches(not(isDisplayed())))
@@ -394,7 +398,8 @@ class ObjectRelationDateValueTest {
             )
         )
 
-        val exactDateFormat = valueDate.timeInSecondsFormat(TIME_FORMAT_DEFAULT)
+        val exactDateFormat = valueDate.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
+        onView(withId(R.id.ivNoDateCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivYesterdayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTomorrowCheck)).check(matches(not(isDisplayed())))
@@ -464,7 +469,8 @@ class ObjectRelationDateValueTest {
             )
         )
 
-        val exactDateFormat = valueDate.timeInSecondsFormat(TIME_FORMAT_DEFAULT)
+        val exactDateFormat = valueDate.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
+        onView(withId(R.id.ivNoDateCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivYesterdayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTomorrowCheck)).check(matches(not(isDisplayed())))
@@ -477,7 +483,7 @@ class ObjectRelationDateValueTest {
             it.onPickDate(valueUpdate)
         }
 
-        val updatedDateFormat = valueUpdate.timeInSecondsFormat(TIME_FORMAT_DEFAULT)
+        val updatedDateFormat = valueUpdate.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
         onView(withId(R.id.ivTomorrowCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivYesterdayCheck)).check(matches(not(isDisplayed())))
@@ -547,7 +553,7 @@ class ObjectRelationDateValueTest {
             )
         )
 
-        val exactDateFormat = valueDate.timeInSecondsFormat(TIME_FORMAT_DEFAULT)
+        val exactDateFormat = valueDate.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
         onView(withId(R.id.ivYesterdayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTomorrowCheck)).check(matches(not(isDisplayed())))
@@ -572,13 +578,13 @@ class ObjectRelationDateValueTest {
 
         fragment.onFragment { it.vm.onYesterdayClicked() }
 
+        onView(withId(R.id.ivNoDateCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTomorrowCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivYesterdayCheck)).check(matches((isDisplayed())))
         onView(withId(R.id.ivExactDayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tvDate)).check(matches(withText("")))
     }
-
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestRelationDateValueFragment> {
         return launchFragmentInContainer<TestRelationDateValueFragment>(

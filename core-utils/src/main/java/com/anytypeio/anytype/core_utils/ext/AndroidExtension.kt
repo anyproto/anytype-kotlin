@@ -87,7 +87,6 @@ fun Uri.parsePath(context: Context): String {
 
 fun Throwable.timber() = Timber.e("Get error : ${this.message}")
 
-const val DATE_FORMAT_MMMdYYYY = "MMM d, yyyy"
 const val KEY_ROUNDED = "key"
 const val VALUE_ROUNDED = "rounded"
 const val MIME_VIDEO_ALL = "video/*"

@@ -249,12 +249,12 @@ data class Block(
                 )
             }
 
-            enum class DateFormat {
-                MONTH_ABBR_BEFORE_DAY,  // Jul 30, 2020
-                MONTH_ABBR_AFTER_DAY,   // 30 Jul 2020
-                SHORT,                  // 30/07/2020
-                SHORTUS,                // 07/30/2020
-                ISO                     // 2020-07-30
+            enum class DateFormat(val format: String) {
+                MONTH_ABBR_BEFORE_DAY("MMM dd, yyyy"),  // Jul 30, 2020
+                MONTH_ABBR_AFTER_DAY("dd MMM yyyy"),    // 30 Jul 2020
+                SHORT("dd/MM/yyyy"),                    // 30/07/2020
+                SHORTUS("MM/dd/yyyy"),                  // 07/30/2020
+                ISO("yyyy-MM-dd")                       // 2020-07-30
             }
 
             enum class TimeFormat { H12, H24 }

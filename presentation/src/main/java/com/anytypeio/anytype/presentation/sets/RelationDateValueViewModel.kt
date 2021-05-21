@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.const.DateConst
+import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.presentation.relations.convertToRelationDateValue
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -12,8 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.*
-
-const val TIME_FORMAT_DEFAULT = "dd MMMM yyyy"
 
 class RelationDateValueViewModel(
     private val relations: ObjectRelationProvider,
@@ -26,9 +27,10 @@ class RelationDateValueViewModel(
 
     fun onStart(relationId: Id, objectId: String) {
         val relation = relations.get(relationId)
-        val values = values.get(objectId)
+        val value = values.get(objectId)
         setName(relation.name)
-        setDate(timeInSeconds = getTimestampFromValue(values[relationId]))
+        val timeInMillis = value[relationId].convertToRelationDateValue()
+        setDate(timeInSeconds = timeInMillis?.toTimeSecondsLong())
     }
 
     fun onTodayClicked() {
@@ -59,10 +61,8 @@ class RelationDateValueViewModel(
         }
     }
 
-    fun onClearClicked() {
-        viewModelScope.launch {
-            commands.emit(DateValueCommand.DispatchResult(timeInSeconds = null))
-        }
+    fun onNoDateClicked() {
+        setDate(timeInSeconds = null)
     }
 
     fun onActionClicked() {
@@ -93,7 +93,7 @@ class RelationDateValueViewModel(
             val isYesterday = exactDay.isSameDay(yesterday)
             var exactDayFormat: String? = null
             if (!isToday && !isTomorrow && !isYesterday) {
-                exactDayFormat = timeInSeconds.timeInSecondsFormat(TIME_FORMAT_DEFAULT)
+                exactDayFormat = timeInSeconds.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
             }
             _views.value = views.value.copy(
                 isToday = isToday,

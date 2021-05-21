@@ -589,7 +589,10 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
                             width = viewerRelation.width ?: 0,
                             isVisible = viewerRelation.isVisible,
                             isHidden = relation.isHidden,
-                            isReadOnly = relation.isReadOnly
+                            isReadOnly = relation.isReadOnly,
+                            isDateIncludeTime = viewerRelation.isDateIncludeTime,
+                            dateFormat = viewerRelation.dateFormat,
+                            timeFormat = viewerRelation.timeFormat
                         )
                     )
                 }

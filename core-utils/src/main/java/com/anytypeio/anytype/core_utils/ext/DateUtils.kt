@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_utils.ext
 
+import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -21,8 +22,9 @@ fun getMonthAheadTimeUnit(): Calendar = Calendar.getInstance().apply { add(Calen
 fun getMonthAgoTimeUnit(): Calendar = Calendar.getInstance().apply { add(Calendar.MONTH, -1) }
 
 fun Long.toTimeSeconds(): Double = (this / 1000).toDouble()
+fun Long.toTimeSecondsLong(): Long = (this / 1000)
 
-fun Long.formatTimestamp(isMillis: Boolean): String {
+fun Long.formatTimestamp(isMillis: Boolean, format: String? = null): String {
     val filterTime = Calendar.getInstance()
     if (isMillis) {
         filterTime.timeInMillis = this
@@ -55,7 +57,11 @@ fun Long.formatTimestamp(isMillis: Boolean): String {
     val isExactDay = !isToday && !isTomorrow && !isYesterday && !isWeekAgo && !isWeekAhead
             && !isMonthAgo && !isMonthAhead
     return if (isExactDay) {
-        val simpleDateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+        val simpleDateFormat = if (format != null) {
+            SimpleDateFormat(format, Locale.getDefault())
+        } else {
+            SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.getDefault())
+        }
         simpleDateFormat.format(filterTime.time)
     } else {
         ""
@@ -67,6 +73,7 @@ fun Long.timeInSecondsFormat(pattern: String): String {
     return simpleDateFormat.format(this * 1000)
 }
 
+const val NO_DATE = "No date"
 const val TODAY = "Today"
 const val TOMORROW = "Tomorrow"
 const val YESTERDAY = "Yesterday"

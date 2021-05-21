@@ -187,6 +187,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="tomorrow">Tomorrow</string>
+    <string name="no_date">No date</string>
     <string name="exact_day">Exact day</string>
     <string name="reorder">Reorder</string>
     <string name="choose_an_image">Choose an image</string>

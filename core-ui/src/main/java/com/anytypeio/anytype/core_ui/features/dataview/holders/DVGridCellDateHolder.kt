@@ -9,6 +9,9 @@ import kotlinx.android.synthetic.main.item_viewer_grid_cell_description.view.*
 class DVGridCellDateHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(cell: CellView.Date) {
-        itemView.tvText.text = cell.timestamp?.formatTimestamp(isMillis = true)
+        itemView.tvText.text = cell.timeInMillis?.formatTimestamp(
+            isMillis = true,
+            format = cell.dateFormat
+        )
     }
 }

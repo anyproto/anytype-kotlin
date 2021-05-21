@@ -84,7 +84,6 @@ open class ObjectSetFragment :
     private val viewerGridAdapter by lazy {
         ViewerGridAdapter(
             onCellClicked = vm::onGridCellClicked,
-            onCellAction = vm::onCellAction,
             onObjectHeaderClicked = vm::onObjectHeaderClicked
         )
     }

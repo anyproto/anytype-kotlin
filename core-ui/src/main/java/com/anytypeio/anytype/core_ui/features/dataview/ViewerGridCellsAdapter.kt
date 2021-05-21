@@ -13,8 +13,7 @@ import timber.log.Timber
 
 class ViewerGridCellsAdapter(
     var cells: List<CellView> = listOf(),
-    private val onCellClicked: (CellView) -> Unit,
-    private val onCellAction: (CellAction) -> Unit
+    private val onCellClicked: (CellView) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun update(update: List<CellView>) {

@@ -6,11 +6,10 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.relations.convertToRelationDateValue
+import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.sets.model.*
-import java.sql.Date
-import java.text.SimpleDateFormat
-import java.util.*
 
 fun List<ColumnView>.buildGridRow(
     record: Map<String, Any?>,
@@ -35,7 +34,7 @@ fun List<ColumnView>.buildGridRow(
                         text = if (record.containsKey(column.key)) {
                             record[column.key].toString()
                         } else {
-                            EMPTY_VALUE
+                            ""
                         }
                     )
                 }
@@ -44,7 +43,7 @@ fun List<ColumnView>.buildGridRow(
                     val value = (record[column.key])
                     if (value is String)
                         number = value.toInt()
-                    else if (value is Number)
+                        else if (value is Number)
                         number = value.toInt()
                     CellView.Number(
                         id = record[ObjectSetConfig.ID_KEY] as String,
@@ -53,20 +52,12 @@ fun List<ColumnView>.buildGridRow(
                     )
                 }
                 ColumnView.Format.DATE -> {
-                    val format = SimpleDateFormat(MONTH_DAY_AND_YEAR, Locale.US)
-                    val time: Long? = (record[column.key] as Double?)?.toLong()
-                    val timestamp = if (time != null) time * 1000L else null
+                    val value = record[column.key]
                     CellView.Date(
                         id = record[ObjectSetConfig.ID_KEY] as String,
                         key = column.key,
-                        text = if (timestamp != null) {
-                            val date = Date(timestamp)
-                            format.format(date)
-                        } else {
-                            EMPTY_VALUE
-                        },
-                        timestamp = timestamp,
-                        dateFormat = ""
+                        timeInMillis = value.convertToRelationDateValue(),
+                        dateFormat = column.getDateRelationFormat()
                     )
                 }
                 ColumnView.Format.FILE -> {
@@ -112,7 +103,7 @@ fun List<ColumnView>.buildGridRow(
                         phone = if (record.containsKey(column.key)) {
                             record[column.key].toString()
                         } else {
-                            EMPTY_VALUE
+                            ""
                         }
                     )
                 }
@@ -152,7 +143,8 @@ fun List<ColumnView>.buildGridRow(
                         status = status
                     )
                 }
-                else -> TODO()
+                ColumnView.Format.EMOJI -> TODO()
+                ColumnView.Format.RELATIONS -> TODO()
             }
         )
     }
@@ -309,7 +301,3 @@ fun Any?.addIds(ids: List<Id>): List<Id> {
     }
     return remaining.toList()
 }
-
-const val MONTH_DAY_AND_YEAR = "MMM dd, yyyy"
-const val EMPTY_VALUE = ""
-val VALUE_MISSING = null

@@ -4,21 +4,18 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
-import com.anytypeio.anytype.core_utils.ext.DATE_FORMAT_MMMdYYYY
-import com.anytypeio.anytype.core_utils.ext.formatToDateString
 import com.anytypeio.anytype.presentation.databaseview.models.ListItem
 import com.anytypeio.anytype.presentation.databaseview.models.TagView
 import com.anytypeio.anytype.ui.database.tags.TagAdapter
 import kotlinx.android.synthetic.main.item_list_board.view.*
-import java.util.*
 
+@Deprecated("Legacy")
 class ListBoardViewHolder(itemView: View) :
     RecyclerView.ViewHolder(itemView) {
 
     fun bind(item: ListItem, click: (String) -> Unit) {
         with(itemView) {
             name.text = item.name
-            date.text = item.date.formatToDateString(DATE_FORMAT_MMMdYYYY, Locale.getDefault())
             avatar.bind(item.name)
             if (databaseViewTags.adapter == null) {
                 initRecyclerView(databaseViewTags, item.tags)

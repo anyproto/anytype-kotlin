@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.model
 
 import android.os.Parcelable
+import com.anytypeio.anytype.core_models.Block
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -11,7 +12,10 @@ data class ColumnView(
     val width: Int,
     val isVisible: Boolean,
     val isHidden: Boolean,
-    val isReadOnly: Boolean
+    val isReadOnly: Boolean,
+    val isDateIncludeTime: Boolean? = null,
+    val dateFormat: Block.Content.DataView.DateFormat? = null,
+    val timeFormat: Block.Content.DataView.TimeFormat? = null
 ) : Parcelable {
 
     @Parcelize

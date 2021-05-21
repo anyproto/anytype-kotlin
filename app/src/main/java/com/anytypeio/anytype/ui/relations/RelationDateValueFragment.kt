@@ -41,7 +41,7 @@ open class RelationDateValueFragment : BaseBottomSheetFragment(),
         super.onViewCreated(view, savedInstanceState)
         setTransparentBackground()
         btnBottomAction.setOnClickListener { vm.onActionClicked() }
-        btnClear.setOnClickListener { vm.onClearClicked() }
+        tvNoDate.setOnClickListener { vm.onNoDateClicked() }
         ivExactDayCheck.setOnClickListener { vm.onExactDayClicked() }
         tvExactDay.setOnClickListener { vm.onExactDayClicked() }
         tvDate.setOnClickListener { vm.onExactDayClicked() }
@@ -62,6 +62,7 @@ open class RelationDateValueFragment : BaseBottomSheetFragment(),
 
     private fun observeState(state: DateValueView) {
         tvRelationHeader.text = state.title
+        ivNoDateCheck.invisible()
         ivTodayCheck.invisible()
         ivYesterdayCheck.invisible()
         ivTomorrowCheck.invisible()
@@ -79,6 +80,9 @@ open class RelationDateValueFragment : BaseBottomSheetFragment(),
         if (state.exactDayFormat != null) {
             tvDate.text = state.exactDayFormat
             ivExactDayCheck.visible()
+        }
+        if (state.timeInSeconds == null) {
+            ivNoDateCheck.visible()
         }
     }
 

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.toTimeSeconds
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -25,7 +26,6 @@ import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
-import com.anytypeio.anytype.presentation.sets.MONTH_DAY_AND_YEAR
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import com.anytypeio.anytype.utils.*
@@ -352,7 +352,7 @@ class ObjectRelationListTest {
 
         // SETUP
 
-        val format = SimpleDateFormat(MONTH_DAY_AND_YEAR, Locale.US)
+        val format = SimpleDateFormat(DateConst.DEFAULT_DATE_FORMAT, Locale.getDefault())
 
         val name1 = "Date of birth"
         val date1 = System.currentTimeMillis()

@@ -334,40 +334,6 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onCellAction(action: CellAction) {
-        when (action) {
-            is CellAction.Edit -> {
-                onGridCellClicked(action.cell)
-            }
-            is CellAction.Url -> {
-                val url = (action.cell as CellView.Url).url
-                if (url != null) {
-                    try {
-                        val normalized = UrlCleaner.normalizeUrl(url)
-                        dispatch(ObjectSetCommand.Intent.GoTo(normalized))
-                    } catch (e: Exception) {
-                        Timber.e(e, "Error while normalizing url")
-                    }
-                } else
-                    toast("Url is empty or missing")
-            }
-            is CellAction.Email -> {
-                val email = (action.cell as CellView.Email).email
-                if (email != null) {
-                    dispatch(ObjectSetCommand.Intent.MailTo(email))
-                } else
-                    toast("Email is empty or missing")
-            }
-            is CellAction.Call -> {
-                val phone = (action.cell as CellView.Phone).phone
-                if (!phone.isNullOrBlank()) {
-                    dispatch(ObjectSetCommand.Intent.Call(phone))
-                } else
-                    toast("Phone is empty or missing")
-            }
-        }
-    }
-
     fun onObjectHeaderClicked(id: Id, type: String) {
         val set = reducer.state.value
         val objectType = set.objectTypes.find { it.url == type }

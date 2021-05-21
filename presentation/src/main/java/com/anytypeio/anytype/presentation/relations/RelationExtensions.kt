@@ -1,8 +1,10 @@
 package com.anytypeio.anytype.presentation.relations
 
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.sets.*
+import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import java.sql.Date
 import java.text.SimpleDateFormat
 import java.util.*
@@ -56,18 +58,21 @@ fun Relation.view(
             )
         }
         relation.format == Relation.Format.DATE -> {
-            val format = SimpleDateFormat(MONTH_DAY_AND_YEAR, Locale.US)
-            val time: Long? = (values[relation.key] as Double?)?.toLong()
-            val timestamp = if (time != null) time * 1000L else null
+            //TODO In DataView Relation Date uses DateFormat and TimeFormat
+            // so SimpleDateFormat can be different from what we have here
+            // see {SetsExtension:buildGridRow()}
+            val format = SimpleDateFormat(DateConst.DEFAULT_DATE_FORMAT, Locale.getDefault())
+            val value = values[relation.key]
+            val timeInMillis = value.convertToRelationDateValue()
+            val formattedDate = if (timeInMillis != null) {
+                format.format(Date(timeInMillis))
+            } else {
+                null
+            }
             DocumentRelationView.Default(
                 relationId = relation.key,
                 name = relation.name,
-                value = if (timestamp != null) {
-                    val date = Date(timestamp)
-                    format.format(date)
-                } else {
-                    null
-                },
+                value = formattedDate,
                 isFeatured = isFeatured
             )
         }
@@ -135,4 +140,35 @@ fun Relation.searchObjectsFilter(): List<DVFilter> {
         )
     }
     return filter.toList()
+}
+
+/**
+ * Converts relation {format DATE} value {Any?} to time in millis {Long} or null
+ * @tests [RelationValueExtensionTest]
+ */
+fun Any?.convertToRelationDateValue(): Long? {
+    val timeInMillis: Long? = when (this) {
+        is String -> this.toLongOrNull()
+        is Double -> this.toLong()
+        is Long -> this
+        else -> null
+    }
+    return timeInMillis?.times(1000)
+}
+
+/**
+ *  Get date format for ColumnView type DATE
+ *  @tests [SetsExtensionTests]
+ */
+fun ColumnView.getDateRelationFormat(): String {
+    val format = dateFormat?.format ?: return DateConst.DEFAULT_DATE_FORMAT
+    return if (isDateIncludeTime == true) {
+        if (timeFormat == Block.Content.DataView.TimeFormat.H12) {
+            format + DateConst.DATE_FORMAT_SPACE + DateConst.TIME_H12
+        } else {
+            format + DateConst.DATE_FORMAT_SPACE + DateConst.TIME_H24
+        }
+    } else {
+        format
+    }
 }

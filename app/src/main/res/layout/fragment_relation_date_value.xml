@@ -41,7 +41,7 @@
         android:text="@string/today"
         app:layout_constraintEnd_toStartOf="@+id/ivTodayCheck"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvRelationHeader"
+        app:layout_constraintTop_toBottomOf="@+id/view_no_date"
         app:layout_goneMarginEnd="@dimen/dp_20"
         tools:text="Today" />
 
@@ -210,18 +210,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnBottomAction" />
 
-    <TextView
-        android:id="@+id/btnClear"
-        style="@style/DefaultCellInteractionTextButtonStyle"
+    <ImageView
+        android:id="@+id/ivNoDateCheck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/dp_16"
-        android:paddingTop="10dp"
-        android:paddingEnd="@dimen/dp_16"
-        android:paddingBottom="10dp"
-        android:text="@string/clear"
-        app:layout_constraintBottom_toBottomOf="@+id/tvRelationHeader"
+        android:layout_marginEnd="20dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/tvNoDate"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvRelationHeader" />
+        app:layout_constraintTop_toTopOf="@+id/tvNoDate"
+        android:src="@drawable/ic_option_checked"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tvNoDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/no_date"
+        style="@style/DefaultDataViewDateCellTextViewStyle"
+        app:layout_constraintEnd_toStartOf="@+id/ivNoDateCheck"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvRelationHeader" />
+
+    <View
+        android:id="@+id/view_no_date"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/viewer_divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvNoDate" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

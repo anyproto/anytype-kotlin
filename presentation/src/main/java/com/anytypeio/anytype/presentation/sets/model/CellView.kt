@@ -43,10 +43,9 @@ sealed class CellView : Parcelable {
     data class Date(
         override val id: String,
         override val key: String,
-        override val text: String,
-        val timestamp: Long? = null,
+        val timeInMillis: Long? = null,
         override val dateFormat: String,
-    ) : CellView(), Text, DateFormat, Parcelable
+    ) : CellView(), DateFormat, Parcelable
 
     @Parcelize
     data class Number(

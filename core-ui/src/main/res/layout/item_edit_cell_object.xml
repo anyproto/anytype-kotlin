@@ -38,6 +38,7 @@
         tools:background="@drawable/circle_solid_default" />
 
     <TextView
+        android:hint="@string/untitled"
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

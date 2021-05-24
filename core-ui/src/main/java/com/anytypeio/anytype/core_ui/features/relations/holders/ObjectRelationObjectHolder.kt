@@ -17,13 +17,7 @@ class ObjectRelationObjectHolder(view: View) : RecyclerView.ViewHolder(view) {
             tvSubtitle.setText(R.string.unknown_object_type)
         }
         objectSelectionIndex.visible()
-        if (item.isSelected == true) {
-            objectSelectionIndex.isSelected = true
-            objectSelectionIndex.text = item.selectedNumber
-        } else {
-            objectSelectionIndex.isSelected = false
-            objectSelectionIndex.text = null
-        }
+        objectSelectionIndex.isSelected = item.isSelected == true
         iconWidget.setIcon(
             emoji = item.emoji,
             image = item.image,

@@ -68,3 +68,5 @@ inline fun <reified T> Fragment.withParent(action: T.() -> Unit) {
     check(parentFragment is T) { "Parent is not ${T::class.java}. Please specify correct type" }
     (parentFragment as T).action()
 }
+
+fun Double.isWhole(): Boolean = this - this.toInt() == 0.0

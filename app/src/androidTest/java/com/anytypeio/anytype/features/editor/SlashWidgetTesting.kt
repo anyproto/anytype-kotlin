@@ -21,6 +21,7 @@ import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestPageFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.page.PageViewModel
+import com.anytypeio.anytype.presentation.relations.NumberParser
 import com.anytypeio.anytype.ui.page.PageFragment
 import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -466,7 +467,7 @@ class SlashWidgetTesting : EditorTestSetup() {
             source = Relation.Source.DETAILS
         )
         val relation1Value = "Earth"
-        val relation2Value = 1619609201.0
+        val relation2Value = 16196.04
 
         val relations = listOf(relation1, relation2)
 
@@ -484,6 +485,7 @@ class SlashWidgetTesting : EditorTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubUpdateText()
+        stubGetObjectTypes(objectTypes = emptyList())
         stubOpenDocument(document, details, relations)
 
         launchFragment(args)
@@ -501,11 +503,14 @@ class SlashWidgetTesting : EditorTestSetup() {
         with(R.id.rvSlash.rVMatcher()) {
             onItemView(3, R.id.textMain).performClick()
 
-            onItemView(0, R.id.tvSectionName).checkHasText(R.string.slash_widget_main_relations)
             onItemView(1, R.id.tvRelationTitle).checkHasText(relation1.name)
             onItemView(1, R.id.tvRelationValue).checkHasText(relation1Value)
             onItemView(2, R.id.tvRelationTitle).checkHasText(relation2.name)
-            onItemView(2, R.id.tvRelationValue).checkHasText(relation2Value.toString())
+
+            val numValue = NumberParser.parse(relation2Value)
+            checkNotNull(numValue)
+
+            onItemView(2, R.id.tvRelationValue).checkHasText(numValue)
 
             checkIsRecyclerSize(3)
         }

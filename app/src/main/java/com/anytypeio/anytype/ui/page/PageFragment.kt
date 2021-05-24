@@ -1638,7 +1638,7 @@ open class PageFragment :
         )
     }
 
-    override fun onNumberValueChanged(ctx: Id, number: Number, objectId: Id, relationId: Id) {
+    override fun onNumberValueChanged(ctx: Id, number: Double?, objectId: Id, relationId: Id) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
             value = number,

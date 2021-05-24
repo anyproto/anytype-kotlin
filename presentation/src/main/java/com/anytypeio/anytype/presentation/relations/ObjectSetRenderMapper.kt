@@ -331,13 +331,6 @@ fun Relation.toEmail(value: Any?): String? =
         throw IllegalArgumentException("Text relation format $format value should be String, actual:$value")
     }
 
-fun Relation.toNumber(value: Any?): String? =
-    if (value is String?) {
-        value
-    } else {
-        throw IllegalArgumentException("Relation format $format value should be String, actual:$value")
-    }
-
 fun Relation.toDate(value: Any?): Long =
     if (value is Double?) {
         val date = value
@@ -484,7 +477,7 @@ fun DVFilter.toView(
             title = relation.name,
             operator = operator.toView(),
             condition = condition.toNumberView(),
-            filterValue = FilterValue.Number(relation.toNumber(value)),
+            filterValue = FilterValue.Number(NumberParser.parse(value)),
             format = relation.format.toView(),
             isValueRequired = true,
             isInEditMode = isInEditMode
@@ -561,7 +554,7 @@ fun Relation.toFilterValue(
     when (this.format) {
         Relation.Format.SHORT_TEXT -> FilterValue.TextShort(toText(value))
         Relation.Format.LONG_TEXT -> FilterValue.Text(toText(value))
-        Relation.Format.NUMBER -> FilterValue.Number(toNumber(value))
+        Relation.Format.NUMBER -> FilterValue.Number(NumberParser.parse(value))
         Relation.Format.STATUS -> FilterValue.Status(toStatus(value))
         Relation.Format.TAG -> FilterValue.Tag(toTags(value))
         Relation.Format.DATE -> FilterValue.Date(toDate(value))

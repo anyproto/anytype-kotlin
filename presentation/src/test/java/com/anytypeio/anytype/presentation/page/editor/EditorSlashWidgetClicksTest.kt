@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.NumberParser
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import org.junit.Before
@@ -447,7 +448,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                 view = DocumentRelationView.Default(
                     relationId = relation2.key,
                     name = relation2.name,
-                    value = value2.toString()
+                    value = NumberParser.parse(value2)
                 )
             ),
             RelationListViewModel.Model.Item(

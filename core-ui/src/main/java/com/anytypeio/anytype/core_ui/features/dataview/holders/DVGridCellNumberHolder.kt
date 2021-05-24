@@ -8,6 +8,6 @@ import kotlinx.android.synthetic.main.item_viewer_grid_cell_description.view.*
 class DVGridCellNumberHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(cell: CellView.Number) {
-        itemView.tvText.text = cell.number?.toString().orEmpty()
+        itemView.tvText.text = cell.number
     }
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.presentation.relations.NumberParser
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,14 +30,9 @@ class RelationTextValueViewModel(
                     RelationTextValueView.Text(value = values[relationId] as? String)
                 }
                 Relation.Format.NUMBER -> {
+                    val value = values[relationId]
                     RelationTextValueView.Number(
-                        value = values[relationId]?.let { value ->
-                            when (value) {
-                                is String -> value.toIntOrNull().toString()
-                                is Number -> value.toInt().toString()
-                                else -> null
-                            }
-                        }
+                        value = NumberParser.parse(value)
                     )
                 }
                 Relation.Format.URL -> {

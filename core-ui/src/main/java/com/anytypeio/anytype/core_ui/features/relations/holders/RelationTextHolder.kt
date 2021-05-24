@@ -99,7 +99,7 @@ class RelationNumberHolder(view: View) : RelationBaseHolder(view) {
             textInputField.requestFocus()
         }
         textInputField.setHint(R.string.dv_cell_number_hint)
-        textInputField.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        textInputField.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED
         btnAction.gone()
     }
 }

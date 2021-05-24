@@ -44,7 +44,11 @@ open class RelationTextValueFragment : BaseBottomSheetFragment() {
             onEditCompleted = { view, txt ->
                 if (view is RelationTextValueView.Number) {
                     try {
-                        dispatchNumberResultAndExit(txt.toDouble())
+                        if (txt.isBlank()) {
+                            dispatchNumberResultAndExit(null)
+                        } else {
+                            dispatchNumberResultAndExit(txt.toDouble())
+                        }
                     } catch (e: NumberFormatException) {
                         toast("Invalid number format. Please try again.")
                     }
@@ -132,7 +136,7 @@ open class RelationTextValueFragment : BaseBottomSheetFragment() {
         dismiss()
     }
 
-    private fun dispatchNumberResultAndExit(number: Number) {
+    private fun dispatchNumberResultAndExit(number: Double?) {
         recycler.hideKeyboard()
         withParent<TextValueEditReceiver> {
             onNumberValueChanged(
@@ -213,7 +217,7 @@ open class RelationTextValueFragment : BaseBottomSheetFragment() {
 
         fun onNumberValueChanged(
             ctx: Id,
-            number: Number,
+            number: Double?,
             objectId: Id,
             relationId: Id
         )

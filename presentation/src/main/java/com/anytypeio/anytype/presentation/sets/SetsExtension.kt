@@ -3,12 +3,10 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_utils.ext.isWhole
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
-import com.anytypeio.anytype.presentation.relations.convertToRelationDateValue
-import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
-import com.anytypeio.anytype.presentation.relations.type
+import com.anytypeio.anytype.presentation.relations.*
 import com.anytypeio.anytype.presentation.sets.model.*
 
 fun List<ColumnView>.buildGridRow(
@@ -39,16 +37,11 @@ fun List<ColumnView>.buildGridRow(
                     )
                 }
                 ColumnView.Format.NUMBER -> {
-                    var number: Int? = null
-                    val value = (record[column.key])
-                    if (value is String)
-                        number = value.toInt()
-                        else if (value is Number)
-                        number = value.toInt()
+                    val value = record[column.key]
                     CellView.Number(
                         id = record[ObjectSetConfig.ID_KEY] as String,
                         key = column.key,
-                        number = number
+                        number = NumberParser.parse(value)
                     )
                 }
                 ColumnView.Format.DATE -> {

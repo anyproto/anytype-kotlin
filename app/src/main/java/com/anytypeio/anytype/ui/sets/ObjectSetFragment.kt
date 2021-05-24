@@ -428,7 +428,7 @@ open class ObjectSetFragment :
 
     override fun onNumberValueChanged(
         ctx: Id,
-        number: Number,
+        number: Double?,
         objectId: Id,
         relationId: Id
     ) = vm.onRelationTextValueChanged(

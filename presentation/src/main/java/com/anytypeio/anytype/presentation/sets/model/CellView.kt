@@ -13,7 +13,7 @@ sealed class CellView : Parcelable {
     }
 
     interface Numbered {
-        val number: Int?
+        val number: String?
     }
 
     interface Icon {
@@ -51,7 +51,7 @@ sealed class CellView : Parcelable {
     data class Number(
         override val id: String,
         override val key: String,
-        override val number: Int?
+        override val number: String?
     ) : CellView(), Numbered, Parcelable
 
     @Parcelize

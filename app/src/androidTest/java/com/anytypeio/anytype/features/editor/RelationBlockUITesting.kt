@@ -163,7 +163,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         )
 
         val value1 = "Anytype"
-        val value2 = 2021.0
+        val value2 = 2021.01
         val value3 = "+00000000000"
         val value4 = "https://anytype.io/"
         val value5 = "team@anytype.io"

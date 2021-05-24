@@ -6,8 +6,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -79,7 +78,6 @@ class ModifyInputValueFilterTest {
         )
     }
 
-    //todo Тесты выключены пока DataView in read mode only 15/03/21
     @Test
     fun shouldTypeTextThenClickActionButtonToApplyChanges() {
 
@@ -176,6 +174,12 @@ class ModifyInputValueFilterTest {
         inputFieldInteraction.perform(
             typeText(textToType)
         )
+
+        inputFieldInteraction.perform(
+            closeSoftKeyboard()
+        )
+
+        Thread.sleep(1000)
 
         // Clicking to apply button, in order to save filter changes
 
@@ -284,7 +288,8 @@ class ModifyInputValueFilterTest {
 
         // Checking input type
 
-        inputFieldInteraction.check(matches(withInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)))
+        inputFieldInteraction.check(matches(withInputType(InputType.TYPE_CLASS_NUMBER
+                or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED)))
 
         // Typing additional text before pressing action button
 
@@ -292,7 +297,13 @@ class ModifyInputValueFilterTest {
             typeText(textToType)
         )
 
+        inputFieldInteraction.perform(
+            closeSoftKeyboard()
+        )
+
         // Clicking to apply button, in order to save filter changes
+
+        Thread.sleep(1000)
 
         onView(withId(R.id.btnBottomAction)).apply {
             perform(click())

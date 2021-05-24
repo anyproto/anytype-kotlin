@@ -83,7 +83,7 @@ fun EditText.setInputTypeBaseOnFormat(format: ColumnView.Format) = when (format)
         isSingleLine = false
     }
     ColumnView.Format.NUMBER -> {
-        inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED
     }
     ColumnView.Format.URL -> {
         inputType = InputType.TYPE_TEXT_VARIATION_URI

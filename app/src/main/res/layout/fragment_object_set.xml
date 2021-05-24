@@ -64,7 +64,7 @@
     <TextView
         android:id="@+id/tvCurrentViewerName"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:drawablePadding="2dp"
@@ -92,7 +92,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="12dp"
         android:src="@drawable/ic_add_new_object_to_set"
         app:layout_constraintBottom_toBottomOf="@+id/tvCurrentViewerName"
         app:layout_constraintEnd_toEndOf="parent"

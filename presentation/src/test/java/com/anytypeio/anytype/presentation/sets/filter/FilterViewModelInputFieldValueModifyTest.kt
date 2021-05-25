@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.sets.filter
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -18,8 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.*
 
 class FilterViewModelInputFieldValueModifyTest {
 
@@ -175,7 +175,7 @@ class FilterViewModelInputFieldValueModifyTest {
         val textInput = EMPTY_STRING
         val filterIndex = 0
 
-        shouldSendFilterValueAsEmptyString(relation1.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNullString(relation1.key, condition, textInput, filterIndex)
     }
 
     @Test
@@ -186,7 +186,7 @@ class FilterViewModelInputFieldValueModifyTest {
         val textInput = NOT_EMPTY_STRING
         val filterIndex = 0
 
-        shouldSendFilterValueAsEmptyString(relation1.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNullString(relation1.key, condition, textInput, filterIndex)
     }
 
     @Test
@@ -197,7 +197,7 @@ class FilterViewModelInputFieldValueModifyTest {
         val textInput = EMPTY_STRING
         val filterIndex = 0
 
-        shouldSendFilterValueAsEmptyString(relation1.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNullString(relation1.key, condition, textInput, filterIndex)
     }
 
     @Test
@@ -208,7 +208,7 @@ class FilterViewModelInputFieldValueModifyTest {
         val textInput = NOT_EMPTY_STRING
         val filterIndex = 0
 
-        shouldSendFilterValueAsEmptyString(relation1.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNullString(relation1.key, condition, textInput, filterIndex)
     }
 
     @Test
@@ -257,12 +257,14 @@ class FilterViewModelInputFieldValueModifyTest {
 
     //endregion
 
-    private fun shouldSendFilterValueAsEmptyString(
+    private fun shouldSendFilterValueAsNullString(
         relationKey: String,
         condition: Viewer.Filter.Condition,
         textInput: String,
         filterIndex: Int?
     ) {
+        stubUpdateDataView()
+
         viewModel.onStart(
             relationId = relation1.key,
             filterIndex = filterIndex
@@ -288,7 +290,7 @@ class FilterViewModelInputFieldValueModifyTest {
                                 relationKey = relationKey,
                                 operator = DEFAULT_OPERATOR,
                                 condition = condition.toDomain(),
-                                value = EMPTY_STRING
+                                value = null
                             )
                         )
                     )
@@ -303,6 +305,9 @@ class FilterViewModelInputFieldValueModifyTest {
         textInput: String,
         filterIndex: Int?
     ) {
+
+        stubUpdateDataView()
+
         viewModel.onStart(
             relationId = relation1.key,
             filterIndex = filterIndex
@@ -332,6 +337,17 @@ class FilterViewModelInputFieldValueModifyTest {
                             )
                         )
                     )
+                )
+            )
+        }
+    }
+
+    private fun stubUpdateDataView() {
+        updateDataViewViewer.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = "",
+                    events = emptyList()
                 )
             )
         }

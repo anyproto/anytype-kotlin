@@ -4,10 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.*
-import com.anytypeio.anytype.presentation.relations.convertToRelationDateValue
+import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,7 +28,7 @@ class RelationDateValueViewModel(
         val relation = relations.get(relationId)
         val value = values.get(objectId)
         setName(relation.name)
-        val timeInMillis = value[relationId].convertToRelationDateValue()
+        val timeInMillis = DateParser.parse(value[relationId])
         setDate(timeInSeconds = timeInMillis?.toTimeSecondsLong())
     }
 

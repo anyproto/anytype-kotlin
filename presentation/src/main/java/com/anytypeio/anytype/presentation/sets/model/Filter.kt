@@ -61,8 +61,8 @@ sealed class FilterValue : Parcelable {
     }
 
     @Parcelize
-    data class Date(val value: Long) : FilterValue() {
-        fun isEmpty(): Boolean = this == empty()
+    data class Date(val value: Long?) : FilterValue() {
+        fun isEmpty(): Boolean = this.value == null || this == empty()
 
         companion object {
             fun empty() = Date(0L)

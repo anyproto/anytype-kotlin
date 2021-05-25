@@ -311,12 +311,13 @@ class ModifyInputValueFilterTest {
 
         // Veryfying that the appropriate request was made
 
+        val value = (initialFilterText + textToType).toDouble()
         verifyBlocking(repo, times(1)) {
             updateDataViewViewer(
                 context = root,
                 target = dv.id,
                 viewer = viewer.copy(
-                    filters = listOf(filter.copy(value = initialFilterText + textToType))
+                    filters = listOf(filter.copy(value = value))
                 )
             )
         }

@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_utils.ext.isWhole
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.relations.*
@@ -49,7 +48,7 @@ fun List<ColumnView>.buildGridRow(
                     CellView.Date(
                         id = record[ObjectSetConfig.ID_KEY] as String,
                         key = column.key,
-                        timeInMillis = value.convertToRelationDateValue(),
+                        timeInMillis = DateParser.parse(value),
                         dateFormat = column.getDateRelationFormat()
                     )
                 }

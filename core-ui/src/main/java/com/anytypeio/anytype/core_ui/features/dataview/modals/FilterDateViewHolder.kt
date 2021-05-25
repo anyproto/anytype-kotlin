@@ -24,6 +24,6 @@ class FilterDateViewHolder(view: View) : FilterViewHolder(view) {
             condition = item.condition.title,
             format = item.format
         )
-        tvValue.text = item.filterValue.value.formatTimestamp(isMillis = false)
+        tvValue.text = item.filterValue.value?.formatTimestamp(isMillis = true)
     }
 }

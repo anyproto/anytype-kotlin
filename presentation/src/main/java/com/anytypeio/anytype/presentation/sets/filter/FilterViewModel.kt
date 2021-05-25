@@ -339,12 +339,19 @@ open class FilterViewModel(
     fun onCreateInputValueFilterClicked(ctx: Id, relation: Id, input: String) {
         val condition = conditionState.value?.condition
         checkNotNull(condition)
+        val format = relationState.value?.format
+        checkNotNull(format)
+        val value = FilterInputValueParser.parse(
+            value = input,
+            condition = condition,
+            format = format
+        )
         viewModelScope.launch {
             proceedWithCreatingFilter(
                 ctx = ctx,
                 filter = DVFilter(
                     relationKey = relation,
-                    value = if (condition.hasValue()) input else "",
+                    value = value,
                     condition = condition.toDomain()
                 )
             )
@@ -454,6 +461,13 @@ open class FilterViewModel(
         checkNotNull(relation)
         val idx = filterIndex
         checkNotNull(idx)
+        val format = relationState.value?.format
+        checkNotNull(format)
+        val value = FilterInputValueParser.parse(
+            value = input,
+            condition = condition,
+            format = format
+        )
         viewModelScope.launch {
             val block = objectSetState.value.dataview
             val dv = block.content as DV
@@ -466,7 +480,7 @@ open class FilterViewModel(
                 updatedFilter = DVFilter(
                     relationKey = relation,
                     condition = condition.toDomain(),
-                    value = if (condition.hasValue()) input else ""
+                    value = value
                 )
             )
         }

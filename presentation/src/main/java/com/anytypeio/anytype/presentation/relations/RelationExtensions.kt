@@ -4,8 +4,10 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.isWhole
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.sets.*
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
+import com.anytypeio.anytype.presentation.sets.model.Viewer
 import java.sql.Date
 import java.text.SimpleDateFormat
 import java.util.*
@@ -64,7 +66,7 @@ fun Relation.view(
             // see {SetsExtension:buildGridRow()}
             val format = SimpleDateFormat(DateConst.DEFAULT_DATE_FORMAT, Locale.getDefault())
             val value = values[relation.key]
-            val timeInMillis = value.convertToRelationDateValue()
+            val timeInMillis = DateParser.parse(value)
             val formattedDate = if (timeInMillis != null) {
                 format.format(Date(timeInMillis))
             } else {
@@ -144,18 +146,35 @@ fun Relation.searchObjectsFilter(): List<DVFilter> {
     return filter.toList()
 }
 
+object FilterInputValueParser {
+    fun parse(
+        value: String?,
+        format: ColumnView.Format,
+        condition: Viewer.Filter.Condition
+    ): Any? = when (format) {
+        ColumnView.Format.NUMBER -> {
+            if (condition.hasValue()) value?.toDoubleOrNull() else null
+        }
+        else -> {
+            if (condition.hasValue()) value else null
+        }
+    }
+}
+
 /**
  * Converts relation {format DATE} value {Any?} to time in millis {Long} or null
  * @tests [RelationValueExtensionTest]
  */
-fun Any?.convertToRelationDateValue(): Long? {
-    val timeInMillis: Long? = when (this) {
-        is String -> this.toLongOrNull()
-        is Double -> this.toLong()
-        is Long -> this
-        else -> null
+object DateParser {
+    fun parse(value: Any?): Long? {
+        val timeInMillis: Long? = when (value) {
+            is String -> value.toLongOrNull()
+            is Double -> value.toLong()
+            is Long -> value
+            else -> null
+        }
+        return timeInMillis?.times(1000)
     }
-    return timeInMillis?.times(1000)
 }
 
 /**

@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.extension
 import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_utils.const.DateConst
-import com.anytypeio.anytype.presentation.relations.convertToRelationDateValue
+import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import org.junit.Assert.assertNotNull
@@ -19,7 +19,7 @@ class RelationValueExtensionTest {
 
         val value: Any? = null
 
-        val result = value.convertToRelationDateValue()
+        val result = DateParser.parse(value)
 
         assertNull(result)
     }
@@ -29,7 +29,7 @@ class RelationValueExtensionTest {
 
         val value: Any = "t123"
 
-        val result = value.convertToRelationDateValue()
+        val result = DateParser.parse(value)
 
         assertNull(result)
     }
@@ -39,7 +39,7 @@ class RelationValueExtensionTest {
 
         val value: Any = "1621596602"
 
-        val result: Long? = value.convertToRelationDateValue()
+        val result: Long? = DateParser.parse(value)
 
         val expected: Long = 1621596602000L
 
@@ -56,7 +56,7 @@ class RelationValueExtensionTest {
 
         val value: Any = 1621596602.0
 
-        val result: Long? = value.convertToRelationDateValue()
+        val result: Long? = DateParser.parse(value)
 
         val expected: Long = 1621596602000L
 
@@ -73,7 +73,7 @@ class RelationValueExtensionTest {
 
         val value: Any = 1621596602L
 
-        val result: Long? = value.convertToRelationDateValue()
+        val result: Long? = DateParser.parse(value)
 
         val expected: Long = 1621596602000L
 
@@ -90,7 +90,7 @@ class RelationValueExtensionTest {
 
         val value: Any = 1621596602
 
-        val result: Long? = value.convertToRelationDateValue()
+        val result: Long? = DateParser.parse(value)
 
         assertNull(result)
     }

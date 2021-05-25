@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -22,8 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.*
 
 class FilterViewModelInputFieldValueCreateTest {
 
@@ -164,47 +164,47 @@ class FilterViewModelInputFieldValueCreateTest {
 
     //region LONG TEXT
     @Test
-    fun `should empty string value, long text 1`() {
+    fun `should null string value, long text 1`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation1.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation1.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, long text 2`() {
+    fun `should null string value, long text 2`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation1.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation1.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, long text 3`() {
+    fun `should null string value, long text 3`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation1.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation1.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, long text 4`() {
+    fun `should null string value, long text 4`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation1.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation1.key, condition, textInput, filterIndex)
     }
 
     @Test
@@ -255,47 +255,47 @@ class FilterViewModelInputFieldValueCreateTest {
 
     //region SHORT TEXT
     @Test
-    fun `should empty string value, short text 1`() {
+    fun `should null string value, short text 1`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation3.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation3.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, short text 2`() {
+    fun `should null string value, short text 2`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation3.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation3.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, short text 3`() {
+    fun `should null string value, short text 3`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation3.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation3.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, short text 4`() {
+    fun `should null string value, short text 4`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation3.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation3.key, condition, textInput, filterIndex)
     }
 
     @Test
@@ -345,137 +345,185 @@ class FilterViewModelInputFieldValueCreateTest {
 
     //region NUMBER
     @Test
-    fun `should empty string value, number 1`() {
+    fun `should null string value, number 1`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation2.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation2.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, number 2`() {
+    fun `should null string value, number 2`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation2.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation2.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, number 3`() {
+    fun `should null string value, number 3`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation2.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation2.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, number 4`() {
+    fun `should null string value, number 4`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation2.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation2.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should not empty string value, number 1`() {
+    fun `should send null, number 1`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Equal()
-        val textInput = NOT_EMPTY_STRING
+        val textInput = ""
         val filterIndex = null
 
-        shouldSendFilterValueAsNotEmptyString(relation2.key, condition, textInput, filterIndex)
+        val value: Double? = null
+
+        shouldSendFilterValueAsAny(
+            relationKey = relation2.key,
+            condition = condition,
+            textInput = textInput,
+            value = value,
+            filterIndex = filterIndex)
     }
 
     @Test
-    fun `should not empty string value, number 2`() {
+    fun `should send double, number 2`() {
 
         //INIT
-        val condition = Viewer.Filter.Condition.Text.NotEqual()
-        val textInput = NOT_EMPTY_STRING
+        val condition = Viewer.Filter.Condition.Text.Equal()
+        val textInput = "1.01"
         val filterIndex = null
 
-        shouldSendFilterValueAsNotEmptyString(relation2.key, condition, textInput, filterIndex)
+        val value = 1.01
+
+        shouldSendFilterValueAsAny(
+            relationKey = relation2.key,
+            condition = condition,
+            textInput = textInput,
+            value = value,
+            filterIndex = filterIndex)
     }
 
     @Test
-    fun `should not empty string value, number 3`() {
+    fun `should send negative double, number 3`() {
 
         //INIT
-        val condition = Viewer.Filter.Condition.Text.Like()
-        val textInput = NOT_EMPTY_STRING
+        val condition = Viewer.Filter.Condition.Text.Equal()
+        val textInput = "-3.0"
         val filterIndex = null
 
-        shouldSendFilterValueAsNotEmptyString(relation2.key, condition, textInput, filterIndex)
+        val value = -3.0
+
+        shouldSendFilterValueAsAny(
+            relationKey = relation2.key,
+            condition = condition,
+            textInput = textInput,
+            value = value,
+            filterIndex = filterIndex)
     }
 
     @Test
-    fun `should not empty string value, number 4`() {
+    fun `should send negative double, number 4`() {
 
         //INIT
-        val condition = Viewer.Filter.Condition.Text.NotLike()
-        val textInput = NOT_EMPTY_STRING
+        val condition = Viewer.Filter.Condition.Text.Equal()
+        val textInput = "-4"
         val filterIndex = null
 
-        shouldSendFilterValueAsNotEmptyString(relation2.key, condition, textInput, filterIndex)
+        val value = -4.0
+
+        shouldSendFilterValueAsAny(
+            relationKey = relation2.key,
+            condition = condition,
+            textInput = textInput,
+            value = value,
+            filterIndex = filterIndex)
     }
+
+    @Test
+    fun `should send null, number 5`() {
+
+        //INIT
+        val condition = Viewer.Filter.Condition.Text.Equal()
+        val textInput = "e1.0"
+        val filterIndex = null
+
+        val value = null
+
+        shouldSendFilterValueAsAny(
+            relationKey = relation2.key,
+            condition = condition,
+            textInput = textInput,
+            value = value,
+            filterIndex = filterIndex)
+    }
+
+
     //endregion
 
     //region URL
     @Test
-    fun `should empty string value, url 1`() {
+    fun `should null string value, url 1`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation4.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation4.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, url 2`() {
+    fun `should null string value, url 2`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation4.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation4.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, url 3`() {
+    fun `should null string value, url 3`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation4.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation4.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, url 4`() {
+    fun `should null string value, url 4`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation4.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation4.key, condition, textInput, filterIndex)
     }
 
     @Test
@@ -525,47 +573,47 @@ class FilterViewModelInputFieldValueCreateTest {
 
     //region EMAIL
     @Test
-    fun `should empty string value, email 1`() {
+    fun `should null string value, email 1`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation5.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation5.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, email 2`() {
+    fun `should null string value, email 2`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation5.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation5.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, email 3`() {
+    fun `should null string value, email 3`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation5.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation5.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, email 4`() {
+    fun `should null string value, email 4`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation5.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation5.key, condition, textInput, filterIndex)
     }
 
     @Test
@@ -615,47 +663,47 @@ class FilterViewModelInputFieldValueCreateTest {
 
     //region PHONE
     @Test
-    fun `should empty string value, phone 1`() {
+    fun `should null string value, phone 1`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation6.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation6.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, phone 2`() {
+    fun `should null string value, phone 2`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation6.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation6.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, phone 3`() {
+    fun `should null string value, phone 3`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation6.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation6.key, condition, textInput, filterIndex)
     }
 
     @Test
-    fun `should empty string value, phone 4`() {
+    fun `should null string value, phone 4`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
         val textInput = NOT_EMPTY_STRING
         val filterIndex = null
 
-        shouldSendFilterValueAsEmptyString(relation6.key, condition, textInput, filterIndex)
+        shouldSendFilterValueAsNull(relation6.key, condition, textInput, filterIndex)
     }
 
     @Test
@@ -703,12 +751,14 @@ class FilterViewModelInputFieldValueCreateTest {
     }
     //endregion
 
-    private fun shouldSendFilterValueAsEmptyString(
+    private fun shouldSendFilterValueAsNull(
         relationKey: String,
         condition: Viewer.Filter.Condition,
         textInput: String,
         filterIndex: Int?
     ) {
+        stubUpdateDataView()
+
         viewModel.onStart(
             relationId = relation1.key,
             filterIndex = filterIndex
@@ -735,7 +785,7 @@ class FilterViewModelInputFieldValueCreateTest {
                                 relationKey = relationKey,
                                 operator = DEFAULT_OPERATOR,
                                 condition = condition.toDomain(),
-                                value = EMPTY_STRING
+                                value = null
                             )
                         )
                     )
@@ -750,6 +800,8 @@ class FilterViewModelInputFieldValueCreateTest {
         textInput: String,
         filterIndex: Int?
     ) {
+        stubUpdateDataView()
+
         viewModel.onStart(
             relationId = relation1.key,
             filterIndex = filterIndex
@@ -780,6 +832,61 @@ class FilterViewModelInputFieldValueCreateTest {
                             )
                         )
                     )
+                )
+            )
+        }
+    }
+
+    private fun shouldSendFilterValueAsAny(
+        relationKey: String,
+        condition: Viewer.Filter.Condition,
+        textInput: String,
+        filterIndex: Int?,
+        value: Any?
+    ) {
+        stubUpdateDataView()
+
+        viewModel.onStart(
+            relationId = relationKey,
+            filterIndex = filterIndex
+        )
+
+        viewModel.onConditionUpdate(condition)
+
+        viewModel.onCreateInputValueFilterClicked(
+            ctx = root,
+            relation = relationKey,
+            input = textInput
+        )
+
+        val viewer = state.value.viewers[0]
+
+        verifyBlocking(updateDataViewViewer, times(1)) {
+            invoke(
+                UpdateDataViewViewer.Params(
+                    context = root,
+                    target = dataViewId,
+                    viewer = viewer.copy(
+                        filters = listOf(
+                            DVFilter(
+                                relationKey = relationKey,
+                                operator = DEFAULT_OPERATOR,
+                                condition = condition.toDomain(),
+                                value = value
+                            )
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    private fun stubUpdateDataView() {
+        updateDataViewViewer.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = "",
+                    events = emptyList()
                 )
             )
         }
